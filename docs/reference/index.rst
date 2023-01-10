@@ -17,4 +17,5 @@ API reference
     config
     connection/index
     contrib/index
+    handlers/index
     types

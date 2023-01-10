@@ -45,7 +45,7 @@ T = TypeVar("T", bound="BaseRouteHandler")
 
 
 class ParameterConfig(BaseConfig):
-    """Base config for `ModelField`"""
+    """Base config for ``ModelField``"""
 
     extra = Extra.allow
 
@@ -89,17 +89,17 @@ class BaseRouteHandler(Generic[T]):
         opt: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize `HTTPRouteHandler`.
+        """Initialize ``HTTPRouteHandler``.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
-            middleware: A list of [Middleware][starlite.types.Middleware].
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty

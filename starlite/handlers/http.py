@@ -97,7 +97,7 @@ def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
     """Given a dictionary of ResponseHeader, filter them and return a dictionary of values.
 
     Args:
-        headers: A dictionary of [ResponseHeader][starlite.datastructures.ResponseHeader] values
+        headers: A dictionary of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` values
 
     Returns:
         A string keyed dictionary of normalized values
@@ -110,7 +110,7 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
 
     Args:
         data: An arbitrary value
-        plugins: A list of [plugins][starlite.plugins.base.PluginProtocol]
+        plugins: A list of :class:`plugins <starlite.plugins.base.PluginProtocol>`
 
     Returns:
         Value for the response body
@@ -360,58 +360,58 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize `HTTPRouteHandler`.
+        """Initialize ``HTTPRouteHandler``.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
-                If not given defaults to '/'
-            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                If not given defaults to ``'/'``
+            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                [Request][starlite.connection.Request] object and should not return any values.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
-                Defaults to None.
+                :class:`Request <starlite.connection.Request>` object and should not return any values.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+                Defaults to ``None``.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                the `starlite.connection.Request`` instance and any non-``None`` return value is used for the response,
                 bypassing the route handler.
-            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
-                of seconds (e.g. '120') to cache the response.
-            cache_control: A `cache-control` header of type
-                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
-            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a number
+                of seconds (e.g. ``120``) to cache the response.
+            cache_control: A ``cache-control`` header of type
+                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
+            cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
-            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
-            http_method: An [http method string][starlite.types.Method], a member of the enum
-                [HttpMethod][starlite.enums.HttpMethod] or a list of these that correlates to the methods the
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            http_method: An :class:`http method string <starlite.types.Method>`, a member of the enum
+                :class:`HttpMethod <starlite.enums.HttpMethod>` or a list of these that correlates to the methods the
                 route handler function should handle.
-            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+            media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of [Middleware][starlite.types.Middleware].
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
-            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+            response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
             responses: A dictionary of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to '200' for mixed method or 'GET', 'PUT' and
-                'PATCH', '201' for 'POST' and '204' for 'DELETE'.
+            status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
+                ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
-            content_encoding: A string describing the encoding of the content, e.g. "base64".
-            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
+            content_media_type: A string designating the media-type of the content, e.g. ``"image/png"``.
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -493,7 +493,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            The default [Response][starlite.response.Response] class for the route handler.
+            The default :class:`Response <starlite.response.Response>` class for the route handler.
         """
         for layer in list(reversed(self.ownership_layers)):
             if layer.response_class is not None:
@@ -504,7 +504,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """Return all header parameters in the scope of the handler function.
 
         Returns:
-            A dictionary mapping keys to [ResponseHeader][starlite.datastructures.ResponseHeader] instances.
+            A dictionary mapping keys to :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances.
         """
         resolved_response_headers = {}
         for layer in self.ownership_layers:
@@ -526,7 +526,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """Return a list of Cookie instances. Filters the list to ensure each cookie key is unique.
 
         Returns:
-            A list of [Cookie][starlite.datastructures.Cookie] instances.
+            A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
         """
 
         return frozenset(chain.from_iterable(layer.response_cookies or [] for layer in reversed(self.ownership_layers)))
@@ -538,7 +538,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional [before request lifecycle hook handler][starlite.types.BeforeRequestHookHandler]
+            An optional :class:`before request lifecycle hook handler <starlite.types.BeforeRequestHookHandler>`
         """
         if self._resolved_before_request is Empty:
             before_request_handlers: List[AsyncCallable] = [
@@ -557,7 +557,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional [after response lifecycle hook handler][starlite.types.AfterResponseHookHandler]
+            An optional :class:`after response lifecycle hook handler <starlite.types.AfterResponseHookHandler>`
         """
         if self._resolved_after_response is Empty:
             after_response_handlers: List[AsyncCallable] = [
@@ -571,10 +571,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return cast("Optional[AfterResponseHookHandler]", self._resolved_after_response)
 
     def resolve_type_encoders(self) -> Optional[TypeEncodersMap]:
-        """Resolve `type_encoders` by merging existing `type_encoders` from all layers.
+        """Resolve ``type_encoders`` by merging existing ``type_encoders`` from all layers.
 
         Returns:
-            A `TypeEncodersMap` to use for this response or `None`
+            A ``TypeEncodersMap`` to use for this response or ``None``
         """
         type_encoders: TypeEncodersMap = {}
         for layer in self.ownership_layers:
@@ -644,14 +644,14 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     async def to_response(
         self, app: "Starlite", data: Any, plugins: List["PluginProtocol"], request: "Request"
     ) -> "ASGIApp":
-        """Return a [Response][starlite.Response] from the handler by resolving and calling it.
+        """Return a :class:`Response <starlite.Response>` from the handler by resolving and calling it.
 
         Args:
-            app: The [Starlite][starlite.app.Starlite] app instance
-            data: Either an instance of a [ResponseContainer][starlite.datastructures.ResponseContainer],
+            app: The :class:`Starlite <starlite.app.Starlite>` app instance
+            data: Either an instance of a :class:`ResponseContainer <starlite.datastructures.ResponseContainer>`,
                 a Response instance or an arbitrary value.
             plugins: An optional mapping of plugins
-            request: A [Request][starlite.connection.request.Request] instance
+            request: A :class:`Request <starlite.connection.request.Request>` instance
 
         Returns:
             A Response instance
@@ -752,54 +752,54 @@ class get(HTTPRouteHandler):
         type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize `get`.
+        """Initialize ``get``.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
-                If not given defaults to '/'
-            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                If not given defaults to ``'/'``
+            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                [Request][starlite.connection.Request] object and should not return any values.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
-                Defaults to None.
+                :class:`Request <starlite.connection.Request>` object and should not return any values.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+                Defaults to ``None``.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                the `starlite.connection.Request`` instance and any non-``None`` return value is used for the response,
                 bypassing the route handler.
-            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
-                of seconds (e.g. '120') to cache the response.
-            cache_control: A `cache-control` header of type
-                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
-            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a number
+                of seconds (e.g. ``120``) to cache the response.
+            cache_control: A ``cache-control`` header of type
+                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
+            cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
-            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
-            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of [Middleware][starlite.types.Middleware].
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
-            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+            response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
             responses: A dictionary of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to '200'.
+            status_code: An http status code for the response. Defaults to ``200``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
-            content_encoding: A string describing the encoding of the content, e.g. "base64".
-            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
+            content_media_type: A string designating the media-type of the content, e.g. ``"image/png"``.
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -901,7 +901,7 @@ class head(HTTPRouteHandler):
         type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize `head`.
+        """Initialize ``head``.
 
         Notes:
             - A response to a head request cannot include a body.
@@ -909,49 +909,49 @@ class head(HTTPRouteHandler):
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
-                If not given defaults to '/'
-            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                If not given defaults to ``'/'``
+            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                [Request][starlite.connection.Request] object and should not return any values.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
-                Defaults to None.
+                :class:`Request <starlite.connection.Request>` object and should not return any values.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+                Defaults to ``None``.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                the `starlite.connection.Request`` instance and any non-``None`` return value is used for the response,
                 bypassing the route handler.
-            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
-                of seconds (e.g. '120') to cache the response.
-            cache_control: A `cache-control` header of type
-                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
-            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a number
+                of seconds (e.g. ``120``) to cache the response.
+            cache_control: A ``cache-control`` header of type
+                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
+            cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
-            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of [Middleware][starlite.types.Middleware].
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
-            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+            response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
             responses: A dictionary of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to '200'.
+            status_code: An http status code for the response. Defaults to ``200``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
-            content_encoding: A string describing the encoding of the content, e.g. "base64".
-            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
+            content_media_type: A string designating the media-type of the content, e.g. ``"image/png"``.
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -1066,54 +1066,54 @@ class post(HTTPRouteHandler):
         type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize `post`
+        """Initialize ``post``
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
-                If not given defaults to '/'
-            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                If not given defaults to ``'/'``
+            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                [Request][starlite.connection.Request] object and should not return any values.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
-                Defaults to None.
+                :class:`Request <starlite.connection.Request>` object and should not return any values.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+                Defaults to ``None``.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                the `starlite.connection.Request`` instance and any non-``None`` return value is used for the response,
                 bypassing the route handler.
-            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
-                of seconds (e.g. '120') to cache the response.
-            cache_control: A `cache-control` header of type
-                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
-            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a number
+                of seconds (e.g. ``120``) to cache the response.
+            cache_control: A ``cache-control`` header of type
+                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
+            cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
-            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
-            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of [Middleware][starlite.types.Middleware].
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
-            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+            response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
             responses: A dictionary of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to '201' for 'POST'.
+            status_code: An http status code for the response. Defaults to ``201`` for ``POST``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
-            content_encoding: A string describing the encoding of the content, e.g. "base64".
-            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
+            content_media_type: A string designating the media-type of the content, e.g. ``"image/png"``.
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
                 documentation. This list should describe all exceptions raised within the route handler's function/method.
                 The Starlite ValidationException will be added automatically for the schema if any validation is involved.
@@ -1213,54 +1213,54 @@ class put(HTTPRouteHandler):
         type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize `put`
+        """Initialize ``put``
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
-                If not given defaults to '/'
-            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                If not given defaults to ``'/'``
+            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                [Request][starlite.connection.Request] object and should not return any values.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
-                Defaults to None.
+                :class:`Request <starlite.connection.Request>` object and should not return any values.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+                Defaults to ``None``.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                the `starlite.connection.Request`` instance and any non-``None`` return value is used for the response,
                 bypassing the route handler.
-            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
-                of seconds (e.g. '120') to cache the response.
-            cache_control: A `cache-control` header of type
-                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
-            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a number
+                of seconds (e.g. ``120``) to cache the response.
+            cache_control: A ``cache-control`` header of type
+                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
+            cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
-            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
-            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of [Middleware][starlite.types.Middleware].
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
-            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+            response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
             responses: A dictionary of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to '200'.
+            status_code: An http status code for the response. Defaults to ``200``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
-            content_encoding: A string describing the encoding of the content, e.g. "base64".
-            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
+            content_media_type: A string designating the media-type of the content, e.g. ``"image/png"``.
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -1360,54 +1360,54 @@ class patch(HTTPRouteHandler):
         type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize `patch`.
+        """Initialize ``patch``.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
-                If not given defaults to '/'
-            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                If not given defaults to ``'/'``
+            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                [Request][starlite.connection.Request] object and should not return any values.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
-                Defaults to None.
+                :class:`Request <starlite.connection.Request>` object and should not return any values.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+                Defaults to ``None``.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                the `starlite.connection.Request`` instance and any non-``None`` return value is used for the response,
                 bypassing the route handler.
-            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
-                of seconds (e.g. '120') to cache the response.
-            cache_control: A `cache-control` header of type
-                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
-            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a number
+                of seconds (e.g. ``120``) to cache the response.
+            cache_control: A ``cache-control`` header of type
+                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
+            cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
-            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
-            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of [Middleware][starlite.types.Middleware].
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
-            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+            response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
             responses: A dictionary of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to '200'.
+            status_code: An http status code for the response. Defaults to ``200``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
-            content_encoding: A string describing the encoding of the content, e.g. "base64".
-            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
+            content_media_type: A string designating the media-type of the content, e.g. ``"image/png"``.
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -1507,54 +1507,54 @@ class delete(HTTPRouteHandler):
         type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize `delete`
+        """Initialize ``delete``
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments.
-                If not given defaults to '/'
-            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
+                If not given defaults to ``'/'``
+            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                [Request][starlite.connection.Request] object and should not return any values.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
-                Defaults to None.
+                :class:`Request <starlite.connection.Request>` object and should not return any values.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+                Defaults to ``None``.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
+                the `starlite.connection.Request`` instance and any non-``None`` return value is used for the response,
                 bypassing the route handler.
-            cache: Enables response caching if configured on the application level. Valid values are 'true' or a number
-                of seconds (e.g. '120') to cache the response.
-            cache_control: A `cache-control` header of type
-                [CacheControlHeader][starlite.datastructures.CacheControlHeader] that will be added to the response.
-            cache_key_builder: A [cache-key builder function][starlite.types.CacheKeyBuilder]. Allows for customization
+            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a number
+                of seconds (e.g. ``120``) to cache the response.
+            cache_control: A ``cache-control`` header of type
+                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
+            cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
-            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] that will be added to the response.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
-            media_type: A member of the [MediaType][starlite.enums.MediaType] enum or a string with a
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of [Middleware][starlite.types.Middleware].
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
-            response_class: A custom subclass of [starlite.response.Response] to be used as route handler's
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+            response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
             responses: A dictionary of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to '204'.
+            status_code: An http status code for the response. Defaults to ``204``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
-            content_encoding: A string describing the encoding of the content, e.g. "base64".
-            content_media_type: A string designating the media-type of the content, e.g. "image/png".
+            content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
+            content_media_type: A string designating the media-type of the content, e.g. ``"image/png"``.
             deprecated:  A boolean dictating whether this route should be marked as deprecated in the OpenAPI schema.
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
-            operation_id: An identifier used for the route's schema operationId. Defaults to the __name__ of the wrapped function.
+            operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
             raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
