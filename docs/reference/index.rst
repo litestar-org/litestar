@@ -24,4 +24,5 @@ API reference
     plugins/index
     response
     security/index
+    template
     types
