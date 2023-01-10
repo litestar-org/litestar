@@ -24,13 +24,13 @@ def test_typescript_primitive(value: Any) -> None:
 
 
 def test_typescript_intersection() -> None:
-    intersection = TypeScriptIntersection(types=[TypeScriptPrimitive("string"), TypeScriptPrimitive("number")])
+    intersection = TypeScriptIntersection(types=(TypeScriptPrimitive("string"), TypeScriptPrimitive("number")))
     assert intersection.write() == "string & number"
 
 
 def test_typescript_union() -> None:
-    union = TypeScriptUnion(types=[TypeScriptPrimitive("string"), TypeScriptPrimitive("number")])
-    assert union.write() == "string | number"
+    union = TypeScriptUnion(types=(TypeScriptPrimitive("string"), TypeScriptPrimitive("number")))
+    assert union.write() == "number | string"
 
 
 @pytest.mark.parametrize(
@@ -44,7 +44,7 @@ def test_typescript_literal(value: Any, expected: str) -> None:
     "value, expected",
     (
         (TypeScriptPrimitive("string"), "string[]"),
-        (TypeScriptUnion(types=[TypeScriptPrimitive("string"), TypeScriptPrimitive("number")]), "(string | number)[]"),
+        (TypeScriptUnion(types=(TypeScriptPrimitive("string"), TypeScriptPrimitive("number"))), "(number | string)[]"),
     ),
 )
 def test_typescript_array(value: Any, expected: str) -> None:
@@ -61,27 +61,27 @@ def test_typescript_property() -> None:
 def test_typescript_anonymous_interface() -> None:
     first_prop = TypeScriptProperty(required=True, key="aProp", value=TypeScriptPrimitive("string"))
     second_prop = TypeScriptProperty(required=True, key="bProp", value=TypeScriptPrimitive("number"))
-    interface = TypeScriptAnonymousInterface(properties=[first_prop, second_prop])
+    interface = TypeScriptAnonymousInterface(properties=(first_prop, second_prop))
     assert interface.write() == "{\n\taProp: string;\n\tbProp: number;\n}"
 
 
 def test_typescript_named_interface() -> None:
     first_prop = TypeScriptProperty(required=True, key="aProp", value=TypeScriptPrimitive("string"))
     second_prop = TypeScriptProperty(required=True, key="bProp", value=TypeScriptPrimitive("number"))
-    interface = TypeScriptInterface(name="MyInterface", properties=[first_prop, second_prop])
+    interface = TypeScriptInterface(name="MyInterface", properties=(first_prop, second_prop))
     assert interface.write() == "export interface MyInterface {\n\taProp: string;\n\tbProp: number;\n};"
 
 
 def test_typescript_enum() -> None:
-    enum = TypeScriptEnum(name="MyEnum", values=[("FIRST", "a"), ("SECOND", "b")])
+    enum = TypeScriptEnum(name="MyEnum", values=(("FIRST", "a"), ("SECOND", "b")))
     assert enum.write() == 'export enum MyEnum {\n\tFIRST = "a",\n\tSECOND = "b",\n};'
 
 
 def test_typescript_type() -> None:
     ts_type = TypeScriptType(
-        name="MyUnion", value=TypeScriptUnion(types=[TypeScriptPrimitive("string"), TypeScriptPrimitive("number")])
+        name="MyUnion", value=TypeScriptUnion(types=(TypeScriptPrimitive("string"), TypeScriptPrimitive("number")))
     )
-    assert ts_type.write() == "export type MyUnion = string | number;"
+    assert ts_type.write() == "export type MyUnion = number | string;"
 
 
 def test_typescript_const() -> None:
@@ -92,10 +92,10 @@ def test_typescript_const() -> None:
 def test_typescript_namespace() -> None:
     first_prop = TypeScriptProperty(required=True, key="aProp", value=TypeScriptPrimitive("string"))
     second_prop = TypeScriptProperty(required=True, key="bProp", value=TypeScriptPrimitive("number"))
-    interface = TypeScriptInterface(name="MyInterface", properties=[first_prop, second_prop])
+    interface = TypeScriptInterface(name="MyInterface", properties=(first_prop, second_prop))
 
-    enum = TypeScriptEnum(name="MyEnum", values=[("FIRST", "a"), ("SECOND", "b")])
-    namespace = TypeScriptNamespace("MyNamespace", values=[interface, enum])
+    enum = TypeScriptEnum(name="MyEnum", values=(("FIRST", "a"), ("SECOND", "b")))
+    namespace = TypeScriptNamespace("MyNamespace", values=(interface, enum))
 
     assert (
         namespace.write()

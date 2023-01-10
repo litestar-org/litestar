@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, List, Literal, Tuple, Union
+from typing import Any, Literal, Tuple, Union
 
 
 def _as_string(value: Any) -> str:
@@ -9,6 +9,9 @@ def _as_string(value: Any) -> str:
 
     if isinstance(value, bool):
         return "true" if value else "false"
+
+    if value is None:
+        return "null"
 
     return str(value)
 
@@ -45,7 +48,7 @@ class TypeScriptContainer(TypeScriptElement):
 class TypeScriptIntersection(TypeScriptElement):
     """A class representing a TypeScript intersection type."""
 
-    types: List[TypeScriptElement]
+    types: Tuple[TypeScriptElement, ...]
 
     def write(self) -> str:
         """Write a typescript intersection value.
@@ -63,7 +66,7 @@ class TypeScriptIntersection(TypeScriptElement):
 class TypeScriptUnion(TypeScriptElement):
     """A class representing a TypeScript union type."""
 
-    types: List[TypeScriptElement]
+    types: Tuple[TypeScriptElement, ...]
 
     def write(self) -> str:
         """Write a typescript union value.
@@ -74,7 +77,7 @@ class TypeScriptUnion(TypeScriptElement):
         Returns:
             A typescript string
         """
-        return " | ".join(t.write() for t in self.types)
+        return " | ".join(sorted(t.write() for t in self.types))
 
 
 @dataclass(unsafe_hash=True)
@@ -99,7 +102,7 @@ class TypeScriptPrimitive(TypeScriptElement):
 class TypeScriptLiteral(TypeScriptElement):
     """A class representing a TypeScript literal type."""
 
-    value: Union[str, int, float, bool]
+    value: Union[str, int, float, bool, None]
 
     def write(self) -> str:
         """Write a typescript literal type.
@@ -161,7 +164,7 @@ class TypeScriptProperty(TypeScriptElement):
 class TypeScriptAnonymousInterface(TypeScriptElement):
     """A class representing a TypeScript anonymous interface."""
 
-    properties: List[TypeScriptProperty]
+    properties: Tuple[TypeScriptProperty, ...]
 
     def write(self) -> str:
         """Write a typescript interface object, without a name.
@@ -184,7 +187,7 @@ class TypeScriptInterface(TypeScriptContainer):
     """A class representing a TypeScript interface."""
 
     name: str
-    properties: List[TypeScriptProperty]
+    properties: Tuple[TypeScriptProperty, ...]
 
     def write(self) -> str:
         """Write a typescript interface.
@@ -207,7 +210,7 @@ class TypeScriptEnum(TypeScriptContainer):
     """A class representing a TypeScript enum."""
 
     name: str
-    values: Union[List[Tuple[str, str]], List[Tuple[str, Union[int, float]]]]
+    values: Union[Tuple[Tuple[str, str], ...], Tuple[Tuple[str, Union[int, float]], ...]]
 
     def write(self) -> str:
         """Write a typescript enum.
@@ -270,7 +273,7 @@ class TypeScriptNamespace(TypeScriptElement):
     """A class representing a TypeScript namespace."""
 
     name: str
-    values: List[TypeScriptContainer]
+    values: Tuple[TypeScriptContainer, ...]
 
     def write(self) -> str:
         """Write a typescript namespace.
@@ -285,19 +288,3 @@ class TypeScriptNamespace(TypeScriptElement):
         """
         members = "\t" + "\n\n\t".join([value.write() for value in sorted(self.values, key=lambda el: el.name)])
         return f"export namespace {self.name} {{\n{members}\n}};"
-
-
-# def parse_response(response: Response) -> TypeScriptNamespace:
-#     if response.content:
-#
-#         response_type = parse_schema(response.content)
-#
-#
-# def create_typescript_types_from_open_api_schema(components: Components) -> Dict[str, TypeScriptTypeContainer]:
-#     output: Dict[str, TypeScriptTypeContainer] = {}
-#
-#     for response in [r for r in (components.responses or []) if isinstance(r, Response)]:
-#         type_name, response_type = parse_response(response)
-#         output[type_name] = response_type
-#
-#     return output
