@@ -37,12 +37,12 @@ class ParameterCollection:
     """Facilitates conditional deduplication of parameters.
 
     If multiple parameters with the same name are produced for a handler, the condition is ignored if the two
-    `Parameter` instances are the same (the first is retained and any duplicates are ignored). If the `Parameter`
+    ``Parameter`` instances are the same (the first is retained and any duplicates are ignored). If the ``Parameter``
     instances are not the same, an exception is raised.
     """
 
     def __init__(self, route_handler: "BaseRouteHandler") -> None:
-        """Initialize `ParameterCollection`.
+        """Initialize ``ParameterCollection``.
 
         Args:
             route_handler: Associated route handler
@@ -51,13 +51,13 @@ class ParameterCollection:
         self._parameters: Dict[str, Parameter] = {}
 
     def add(self, parameter: Parameter) -> None:
-        """Add a `Parameter` to the collection.
+        """Add a ``Parameter`` to the collection.
 
         If an existing parameter with the same name and type already exists, the
         parameter is ignored.
 
         If an existing parameter with the same name but different type exists, raises
-        `ImproperlyConfiguredException`.
+        ``ImproperlyConfiguredException``.
         """
         if parameter.name not in self._parameters:
             self._parameters[parameter.name] = parameter
@@ -71,7 +71,7 @@ class ParameterCollection:
         )
 
     def list(self) -> List[Parameter]:
-        """Return a list of all `Parameter`'s in the collection."""
+        """Return a list of all ``Parameter``'s in the collection."""
         return list(self._parameters.values())
 
 
@@ -155,7 +155,7 @@ def get_layered_parameter(
 ) -> Parameter:
     """Create a layered parameter for a given signature model field.
 
-    Layer info is extracted from the provided `layered_parameters` dict and set as the field's `field_info` attribute.
+    Layer info is extracted from the provided ``layered_parameters`` dict and set as the field's ``field_info`` attribute.
     """
     layer_field_info = layered_parameters[field_name].field_info
     signature_field_info = signature_model_field.field_info

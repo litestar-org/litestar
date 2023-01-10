@@ -21,8 +21,8 @@ def get_exception_handler(exception_handlers: "ExceptionHandlersMap", exc: Excep
     If no status code match exists, each class in the MRO of the exception type is checked and
     the first matching handler is returned.
 
-    Finally, if a `500` handler is registered, it will be returned for any exception that isn't a
-    subclass of `HTTPException`.
+    Finally, if a ``500`` handler is registered, it will be returned for any exception that isn't a
+    subclass of :class:`HTTPException <starlite.exceptions.HTTPException>`.
 
     Args:
         exception_handlers: Mapping of status codes and exception types to handlers.
@@ -75,9 +75,9 @@ def create_exception_response(exc: Exception) -> "Response":
     """Construct a response from an exception.
 
     Notes:
-    - For instances of [HTTPException][starlite.exceptions.HTTPException] or other exception classes that have a
-        `status_code` attribute (e.g. Starlette exceptions), the status code is drawn from the exception, otherwise
-        response status is `HTTP_500_INTERNAL_SERVER_ERROR`.
+        - For instances of :class:`HTTPException <starlite.exceptions.HTTPException>` or other exception classes that have a
+          ``status_code`` attribute (e.g. Starlette exceptions), the status code is drawn from the exception, otherwise
+          response status is ``HTTP_500_INTERNAL_SERVER_ERROR``.
 
     Args:
         exc: An exception.

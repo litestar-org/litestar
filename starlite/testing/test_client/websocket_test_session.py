@@ -94,7 +94,7 @@ class WebSocketTestSession:
 
         Args:
             data: Either a string or a byte string.
-            mode: The key to use - 'text' or 'bytes'
+            mode: The key to use - ``text`` or ``bytes``
             encoding: The encoding to use when encoding or decoding data.
 
         Returns:
@@ -110,7 +110,7 @@ class WebSocketTestSession:
             self.receive_queue.put(binary_event)
 
     def send_text(self, data: str, encoding: str = "utf-8") -> None:
-        """Sends the data using the 'text' key.
+        """Sends the data using the ``text`` key.
 
         Args:
             data: Data to send.
@@ -122,7 +122,7 @@ class WebSocketTestSession:
         self.send(data=data, encoding=encoding)
 
     def send_bytes(self, data: bytes, encoding: str = "utf-8") -> None:
-        """Sends the data using the 'bytes' key.
+        """Sends the data using the ``bytes`` key.
 
         Args:
             data: Data to send.
@@ -138,7 +138,7 @@ class WebSocketTestSession:
 
         Args:
             data: The data to send.
-            mode: Either 'text' or 'binary'
+            mode: Either ``text`` or ``binary``
 
         Returns:
             None.
@@ -196,7 +196,7 @@ class WebSocketTestSession:
         """Receives JSON.
 
         Args:
-            mode: Either 'text' or 'binary'
+            mode: Either ``text`` or ``binary``
 
         Returns:
             An arbitrary value

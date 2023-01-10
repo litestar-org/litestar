@@ -33,6 +33,8 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "msgspec": ("https://jcristharif.com/msgspec/", None),
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
+    "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
+    "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),
 }
 
 
@@ -52,9 +54,7 @@ napoleon_attr_annotations = True
 
 autoclass_content = "class"
 autodoc_class_signature = "separated"
-autodoc_default_options = {
-    "special-members": "__init__",
-}
+autodoc_default_options = {"special-members": "__init__", "show-inheritance": True}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 # autodoc_typehints = "description"

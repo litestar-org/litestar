@@ -21,11 +21,11 @@ class ExceptionHandlerMiddleware:
     """
 
     def __init__(self, app: "ASGIApp", debug: bool, exception_handlers: "ExceptionHandlersMap") -> None:
-        """Initialize `ExceptionHandlerMiddleware`.
+        """Initialize ``ExceptionHandlerMiddleware``.
 
         Args:
-            app: The 'next' ASGI app to call.
-            debug: Whether 'debug' mode is enabled
+            app: The ``next`` ASGI app to call.
+            debug: Whether ``debug`` mode is enabled
             exception_handlers: A dictionary mapping status codes and/or exception types to handler functions.
         """
         self.app = app
@@ -68,7 +68,7 @@ class ExceptionHandlerMiddleware:
             await send(event)
 
     def default_http_exception_handler(self, request: Request, exc: Exception) -> "Response[Any]":
-        """Handle `HTTPException`s and its subclasses."""
+        """Handle ``HTTPException``s and its subclasses."""
         status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
             return create_debug_response(request=request, exc=exc)

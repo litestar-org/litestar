@@ -28,7 +28,7 @@ def warn_deprecation(
         removal_in: Starlite version where the deprecated function will be removed
         alternative: Name of a function that should be used instead
         info: Additional information
-        pending: Use `PendingDeprecationWarning` instead of `DeprecationWarning`
+        pending: Use ``PendingDeprecationWarning`` instead of ``DeprecationWarning``
         kind: Type of the deprecated thing
     """
     parts = []
@@ -76,8 +76,8 @@ def deprecated(
         removal_in: Starlite version where the deprecated function will be removed
         alternative: Name of a function that should be used instead
         info: Additional information
-        pending: Use `PendingDeprecationWarning` instead of `DeprecationWarning`
-        kind: Type of the deprecated callable. If `None`, will use `inspect` to figure
+        pending: Use ``PendingDeprecationWarning`` instead of ``DeprecationWarning``
+        kind: Type of the deprecated callable. If ``None``, will use ``inspect`` to figure
             out if it's a function or method
 
     Returns:

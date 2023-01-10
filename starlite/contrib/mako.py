@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 class MakoTemplate(TemplateProtocol):
-    """Mako template, implementing `TemplateProtocol`"""
+    """Mako template, implementing ``TemplateProtocol``"""
 
     def __init__(
         self, template: "_MakoTemplate", template_callables: List[Tuple[str, Callable[[Dict[str, Any]], Any]]]
@@ -31,7 +31,7 @@ class MakoTemplate(TemplateProtocol):
         """Initialize a template.
 
         Args:
-            template: Base `MakoTemplate` used by the underlying mako-engine
+            template: Base ``MakoTemplate`` used by the underlying mako-engine
             template_callables: List of callables passed to the template
         """
         super().__init__()
@@ -42,8 +42,8 @@ class MakoTemplate(TemplateProtocol):
         """Render a template.
 
         Args:
-            args: Positional arguments passed to the engines `render` function
-            kwargs: Keyword arguments passed to the engines `render` function
+            args: Positional arguments passed to the engines ``render`` function
+            kwargs: Keyword arguments passed to the engines ``render`` function
 
         Returns:
             Rendered template as a string
@@ -80,7 +80,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
             MakoTemplate instance
 
         Raises:
-            [TemplateNotFoundException][starlite.exceptions.TemplateNotFoundException]: if no template is found.
+            :class:`TemplateNotFoundException <starlite.exceptions.TemplateNotFoundException>`: if no template is found.
         """
         try:
             return MakoTemplate(

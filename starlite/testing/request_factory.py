@@ -32,7 +32,7 @@ def _create_default_app() -> Starlite:
 
 
 class RequestFactory:
-    """Factory to create [Request][starlite.connection.Request] instances."""
+    """Factory to create :class:`Request <starlite.connection.Request>` instances."""
 
     def __init__(
         self,
@@ -42,47 +42,48 @@ class RequestFactory:
         root_path: str = "",
         scheme: str = "http",
     ) -> None:
-        """Initialize `RequestFactory`
+        """Initialize ``RequestFactory``
 
         Args:
-             app: An instance of [Starlite][starlite.app.Starlite] to set as `request.scope["app"]`.
+             app: An instance of :class:`Starlite <starlite.app.Starlite>` to set as `request.scope["app"]`.
              server: The server's domain.
              port: The server's port.
              root_path: Root path for the server.
              scheme: Scheme for the server.
 
         Examples:
-            ```python
-            from starlite import RequestEncodingType, Starlite, RequestFactory
+            .. code-block: python
 
-            from tests import PersonFactory
+                from starlite import RequestEncodingType, Starlite, RequestFactory
 
-            my_app = Starlite(route_handlers=[])
-            my_server = "starlite.org"
+                from tests import PersonFactory
 
-            # Create a GET request
-            query_params = {"id": 1}
-            get_user_request = RequestFactory(app=my_app, server=my_server).get(
-                "/person", query_params=query_params
-            )
+                my_app = Starlite(route_handlers=[])
+                my_server = "starlite.org"
 
-            # Create a POST request
-            new_person = PersonFactory.build()
-            create_user_request = RequestFactory(app=my_app, server=my_server).post(
-                "/person", data=person
-            )
+                # Create a GET request
+                query_params = {"id": 1}
+                get_user_request = RequestFactory(app=my_app, server=my_server).get(
+                    "/person", query_params=query_params
+                )
 
-            # Create a request with a special header
-            headers = {"header1": "value1"}
-            request_with_header = RequestFactory(app=my_app, server=my_server).get(
-                "/person", query_params=query_params, headers=headers
-            )
+                # Create a POST request
+                new_person = PersonFactory.build()
+                create_user_request = RequestFactory(app=my_app, server=my_server).post(
+                    "/person", data=person
+                )
 
-            # Create a request with a media type
-            request_with_media_type = RequestFactory(app=my_app, server=my_server).post(
-                "/person", data=person, request_media_type=RequestEncodingType.MULTI_PART
-            )
-            ```
+                # Create a request with a special header
+                headers = {"header1": "value1"}
+                request_with_header = RequestFactory(app=my_app, server=my_server).get(
+                    "/person", query_params=query_params, headers=headers
+                )
+
+                # Create a request with a media type
+                request_with_media_type = RequestFactory(app=my_app, server=my_server).post(
+                    "/person", data=person, request_media_type=RequestEncodingType.MULTI_PART
+                )
+
         """
 
         self.app = app if app is not None else _create_default_app()
@@ -104,7 +105,7 @@ class RequestFactory:
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
     ) -> HTTPScope:
-        """Create the scope for the [Request][starlite.connection.Request].
+        """Create the scope for the :class:`Request <starlite.connection.Request>`.
 
         Args:
             path: The request's path.
@@ -119,7 +120,7 @@ class RequestFactory:
             route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
-            A dictionary that can be passed as a scope to the [Request][starlite.connection.Request] ctor.
+            A dictionary that can be passed as a scope to the :class:`Request <starlite.connection.Request>` ctor.
         """
         if session is None:
             session = {}
@@ -157,7 +158,7 @@ class RequestFactory:
     def _create_cookie_header(
         cls, headers: Dict[str, str], cookies: Optional[Union[List["Cookie"], str]] = None
     ) -> None:
-        """Create the cookie header and add it to the `headers` dictionary.
+        """Create the cookie header and add it to the ``headers`` dictionary.
 
         Args:
             headers: A dictionary of headers, the cookie header will be added to it.
@@ -213,7 +214,7 @@ class RequestFactory:
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
-        """Create a [Request][starlite.connection.Request] instance that has body (data)
+        """Create a :class:`Request <starlite.connection.Request>` instance that has body (data)
 
         Args:
             http_method: The request's HTTP method.
@@ -234,7 +235,7 @@ class RequestFactory:
             route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
-            A [Request][starlite.connection.Request] instance
+            A :class:`Request <starlite.connection.Request>` instance
         """
         scope = self._create_scope(
             path=path,
@@ -282,7 +283,7 @@ class RequestFactory:
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
-        """Create a GET [Request][starlite.connection.Request] instance.
+        """Create a GET :class:`Request <starlite.connection.Request>` instance.
 
         Args:
             path: The request's path.
@@ -299,7 +300,7 @@ class RequestFactory:
             route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
-            A [Request][starlite.connection.Request] instance
+            A :class:`Request <starlite.connection.Request>` instance
         """
         scope = self._create_scope(
             path=path,
@@ -333,7 +334,7 @@ class RequestFactory:
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
-        """Create a POST [Request][starlite.connection.Request] instance.
+        """Create a POST :class:`Request <starlite.connection.Request>` instance.
 
         Args:
             path: The request's path.
@@ -353,7 +354,7 @@ class RequestFactory:
             route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
-            A [Request][starlite.connection.Request] instance
+            A :class:`Request <starlite.connection.Request>` instance
         """
         return self._create_request_with_data(
             auth=auth,
@@ -388,7 +389,7 @@ class RequestFactory:
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
-        """Create a PUT [Request][starlite.connection.Request] instance.
+        """Create a PUT :class:`Request <starlite.connection.Request>` instance.
 
         Args:
             path: The request's path.
@@ -408,7 +409,7 @@ class RequestFactory:
             route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
-            A [Request][starlite.connection.Request] instance
+            A :class:`Request <starlite.connection.Request>` instance
         """
         return self._create_request_with_data(
             auth=auth,
@@ -443,7 +444,7 @@ class RequestFactory:
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
-        """Create a PATCH [Request][starlite.connection.Request] instance.
+        """Create a PATCH :class:`Request <starlite.connection.Request>` instance.
 
         Args:
             path: The request's path.
@@ -463,7 +464,7 @@ class RequestFactory:
             route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
-            A [Request][starlite.connection.Request] instance
+            A :class:`Request <starlite.connection.Request>` instance
         """
         return self._create_request_with_data(
             auth=auth,
@@ -496,7 +497,7 @@ class RequestFactory:
         http_version: Optional[str] = "1.1",
         route_handler: Optional[RouteHandlerType] = None,
     ) -> Request[Any, Any]:
-        """Create a POST [Request][starlite.connection.Request] instance.
+        """Create a POST :class:`Request <starlite.connection.Request>` instance.
 
         Args:
             path: The request's path.
@@ -513,7 +514,7 @@ class RequestFactory:
             route_handler: A route handler instance or method. If not provided a default handler is set.
 
         Returns:
-            A [Request][starlite.connection.Request] instance
+            A :class:`Request <starlite.connection.Request>` instance
         """
         scope = self._create_scope(
             path=path,
