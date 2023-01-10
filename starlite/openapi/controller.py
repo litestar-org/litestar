@@ -26,7 +26,7 @@ class OpenAPISchemaResponse(Response):
         """Handle rendering of schema into the correct format - either YAML or JSON.
 
         Args:
-            content: The [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI] instance to render.
+            content: The :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.open_api.OpenAPI>` instance to render.
 
         Returns:
             Rendered bytes.
@@ -55,7 +55,7 @@ class OpenAPIController(Controller):
     redoc_google_fonts: bool = True
     """Download google fonts via CDN.
 
-    Should be set to `False` when not using a CDN.
+    Should be set to ``False`` when not using a CDN.
     """
     redoc_js_url: str = f"https://cdn.jsdelivr.net/npm/redoc@{redoc_version}/bundles/redoc.standalone.js"
     """Download url for the Redoc JS bundle."""
@@ -89,13 +89,13 @@ class OpenAPIController(Controller):
         """Return the OpenAPI pydantic model from the request instance.
 
         Args:
-            request: A [Starlite][starlite.connection.Request] instance.
+            request: A :class:`Starlite <starlite.connection.Request>` instance.
 
         Returns:
-            An [OpenAPI][pydantic_openapi_schema.v3_1_0.open_api.OpenAPI] instance.
+            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.open_api.OpenAPI>` instance.
 
         Raises:
-            ImproperlyConfiguredException: If the application `openapi_config` attribute is `None`.
+            ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
         if not request.app.openapi_schema:  # pragma: no cover
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
@@ -111,7 +111,7 @@ class OpenAPIController(Controller):
             A boolean.
 
         Raises:
-            ImproperlyConfiguredException: If the application `openapi_config` attribute is `None`.
+            ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException("Starlite has not been instantiated with an OpenAPIConfig")
@@ -163,7 +163,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.connection.Request] instance.
+                A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             A Response instance with the YAML object rendered into a string.
@@ -183,7 +183,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.connection.Request] instance.
+                A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             A Response instance with the JSON object rendered into a string.
@@ -201,19 +201,19 @@ class OpenAPIController(Controller):
     def root(self, request: Request) -> Response:
         """Render a static documentation site.
 
-         The site to be rendered is based on the `root_schema_site` value set in the
-         application's [OpenAPIConfig][starlite.config.openapi.OpenAPIConfig].
-         Defaults to `redoc`.
+         The site to be rendered is based on the ``root_schema_site`` value set in the
+         application's :class:`OpenAPIConfig <starlite.config.openapi.OpenAPIConfig>`.
+         Defaults to ``redoc``.
 
         Args:
             request:
-                A [Request][starlite.connection.Request] instance.
+                A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             A response with the rendered site defined in root_schema_site.
 
         Raises:
-            ImproperlyConfiguredException: If the application `openapi_config` attribute is `None`.
+            ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
         config = request.app.openapi_config
         if not config:  # pragma: no cover
@@ -236,7 +236,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.connection.Request] instance.
+                A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             response: With a rendered swagger documentation site
@@ -258,7 +258,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.connection.Request] instance.
+                A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             A response with a rendered stoplight elements documentation site
@@ -276,7 +276,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.connection.Request] instance.
+                A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             A response with a rendered redoc documentation site
@@ -296,7 +296,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.connection.Request] instance.
+                A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             A rendered html string.
@@ -359,7 +359,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.connection.Request] instance.
+                A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             A rendered html string.
@@ -403,7 +403,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A [Request][starlite.connection.Request] instance.
+                A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             A rendered html string.

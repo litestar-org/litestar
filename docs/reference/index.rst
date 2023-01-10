@@ -19,4 +19,5 @@ API reference
     contrib/index
     handlers/index
     middleware/index
+    openapi
     types
