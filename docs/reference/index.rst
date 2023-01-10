@@ -23,4 +23,5 @@ API reference
     params
     plugins/index
     response
+    security/index
     types

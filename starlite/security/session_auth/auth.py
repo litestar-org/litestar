@@ -24,7 +24,7 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
     authentication_middleware_class: Type[SessionAuthMiddleware] = SessionAuthMiddleware
     """The authentication middleware class to use.
 
-    Must inherit from [SessionAuthMiddleware][starlite.security.session_auth.middleware.SessionAuthMiddleware]
+    Must inherit from :class:`SessionAuthMiddleware <starlite.security.session_auth.middleware.SessionAuthMiddleware>`
     """
 
     @property
@@ -32,34 +32,35 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
         """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
-            ```python
-            from typing import Any
-            from os import urandom
+            .. code-block: python
 
-            from starlite import Starlite, Request, get
-            from starlite_session import SessionAuth
+                from typing import Any
+                from os import urandom
 
-
-            async def retrieve_user_from_session(session: dict[str, Any]) -> Any:
-                # implement logic here to retrieve a 'user' datum given the session dictionary
-                ...
+                from starlite import Starlite, Request, get
+                from starlite_session import SessionAuth
 
 
-            session_auth_config = SessionAuth(
-                secret=urandom(16), retrieve_user_handler=retrieve_user_from_session
-            )
+                async def retrieve_user_from_session(session: dict[str, Any]) -> Any:
+                    # implement logic here to retrieve a ``user`` datum given the session dictionary
+                    ...
 
 
-            @get("/")
-            def my_handler(request: Request) -> None:
-                ...
+                session_auth_config = SessionAuth(
+                    secret=urandom(16), retrieve_user_handler=retrieve_user_from_session
+                )
 
 
-            app = Starlite(route_handlers=[my_handler], middleware=[session_auth_config.middleware])
-            ```
+                @get("/")
+                def my_handler(request: Request) -> None:
+                    ...
+
+
+                app = Starlite(route_handlers=[my_handler], middleware=[session_auth_config.middleware])
+
 
         Returns:
-            An instance of DefineMiddleware including 'self' as the config kwarg value.
+            An instance of DefineMiddleware including ``self`` as the config kwarg value.
         """
         return DefineMiddleware(MiddlewareWrapper, config=self)
 
@@ -68,7 +69,7 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
         """Create a session backend.
 
         Returns:
-            A subclass of [BaseSessionBackend][starlite.middleware.session.base.BaseSessionBackend]
+            A subclass of :class:`BaseSessionBackend <starlite.middleware.session.base.BaseSessionBackend>`
         """
         return self.session_backend_config._backend_class(config=self.session_backend_config)
 
@@ -77,7 +78,7 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
         """Create OpenAPI documentation for the Session Authentication schema used.
 
         Returns:
-            An [Components][pydantic_openapi_schema.v3_1_0.components.Components] instance.
+            An :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` instance.
         """
         return Components(
             securitySchemes={
@@ -94,10 +95,10 @@ class SessionAuth(Generic[UserType], AbstractSecurityConfig[UserType, Dict[str, 
     def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
-        [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for the auth
+        :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
         backend.
 
         Returns:
-            An OpenAPI 3.1 [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] dictionary.
+            An OpenAPI 3.1 :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
         """
         return {"sessionCookie": []}
