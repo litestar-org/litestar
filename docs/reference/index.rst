@@ -1,5 +1,5 @@
 API reference
-==============
+=============
 
 
 .. toctree::
@@ -27,3 +27,4 @@ API reference
     template
     testing
     types
+    utils/index

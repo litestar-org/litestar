@@ -27,13 +27,11 @@ T = TypeVar("T")
 
 
 def is_class_and_subclass(value: Any, t_type: Type[T]) -> TypeGuard[Type[T]]:
-    """Return `True` if `value` is a `class` and is a subtype of `t_type`.
-
-    See https://github.com/starlite-api/starlite/issues/367
+    """Return ``True`` if ``value`` is a ``class`` and is a subtype of ``t_type``.
 
     Args:
-        value: The value to check if is class and subclass of `t_type`.
-        t_type: Type used for `issubclass()` check of `value`
+        value: The value to check if is class and subclass of ``t_type``.
+        t_type: Type used for :func:`issubclass` check of ``value``
 
     Returns:
         bool
@@ -62,36 +60,36 @@ def is_optional_union(annotation: Any) -> bool:
 
 
 def is_dataclass_class_typeguard(value: Any) -> "TypeGuard[DataclassClass]":
-    """Wrap `is_dataclass()` in a `TypeGuard`, narrowing to type only, not instance.
+    """Wrap :func:`dataclasses.is_dataclass` in a :data:`typing.TypeGuard`, narrowing to type only, not instance.
 
     Args:
-        value: tested to determine if type of `dataclass`.
+        value: tested to determine if type of :class:`dataclasses.dataclass`.
 
     Returns:
-        `True` if `value` is a `dataclass` type.
+        ``True`` if ``value`` is a ``dataclass`` type.
     """
     return is_dataclass(value) and isinstance(value, type)
 
 
 def is_dataclass_class_or_instance_typeguard(value: Any) -> "TypeGuard[DataclassClassOrInstance]":
-    """Wrap `is_dataclass()` in a `TypeGuard`.
+    """Wrap :func:`dataclasses.is_dataclass` in a :data:`typing.TypeGuard`.
 
     Args:
-        value: tested to determine if instance or type of `dataclass`.
+        value: tested to determine if instance or type of ``dataclass``.
 
     Returns:
-        `True` if instance or type of `dataclass`.
+        ``True`` if instance or type of ``dataclass``.
     """
     return is_dataclass(value)
 
 
 def is_typeddict_typeguard(value: Any) -> "TypeGuard[TypedDictClass]":
-    """Wrap `is_typeddict()` in a `TypeGuard`.
+    """Wrap :func:`typing.is_typeddict` in a :data:`typing.TypeGuard`.
 
     Args:
-        value: tested to determine if instance or type of `dataclass`.
+        value: tested to determine if instance or type of ``dataclass``.
 
     Returns:
-        `True` if instance or type of `dataclass`.
+        ``True`` if instance or type of ``dataclass``.
     """
     return is_typeddict(value)

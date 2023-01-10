@@ -65,7 +65,7 @@ DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
 
 
 def default_serializer(value: Any, type_encoders: Optional[Dict[Any, Callable[[Any], Any]]] = None) -> Any:
-    """Transform values non-natively supported by `msgspec`
+    """Transform values non-natively supported by ``msgspec``
 
     Args:
         value: A value to serialize#
@@ -87,14 +87,14 @@ def default_serializer(value: Any, type_encoders: Optional[Dict[Any, Callable[[A
 
 
 def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
-    """Transform values non-natively supported by `msgspec`
+    """Transform values non-natively supported by ``msgspec``
 
     Args:
         type_: Encountered type
         value: Value to coerce
 
     Returns:
-        A `msgspec`-supported type
+        A ``msgspec``-supported type
     """
     if issubclass(type_, BaseModel):
         return type_(**value)
@@ -118,7 +118,7 @@ def encode_json(obj: Any, default: Optional[Callable[[Any], Any]] = default_seri
         JSON as bytes
 
     Raises:
-        SerializationException: If error encoding `obj`.
+        SerializationException: If error encoding ``obj``.
     """
     try:
         if default is None or default is default_serializer:
@@ -138,7 +138,7 @@ def decode_json(raw: Union[str, bytes]) -> Any:
         An object
 
     Raises:
-        SerializationException: If error decoding `raw`.
+        SerializationException: If error decoding ``raw``.
     """
     try:
         return _msgspec_json_decoder.decode(raw)
@@ -157,7 +157,7 @@ def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_
         MessagePack as bytes
 
     Raises:
-        SerializationException: If error encoding `obj`.
+        SerializationException: If error encoding ``obj``.
     """
     try:
         if enc_hook is None or enc_hook is default_serializer:
@@ -177,7 +177,7 @@ def decode_msgpack(raw: bytes) -> Any:
         An object
 
     Raises:
-        SerializationException: If error decoding `raw`.
+        SerializationException: If error decoding ``raw``.
     """
     try:
         return _msgspec_msgpack_decoder.decode(raw)
