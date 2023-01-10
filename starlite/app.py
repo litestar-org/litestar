@@ -240,7 +240,7 @@ class Starlite(Router):
             csrf_config: If set this enables the builtin CSRF middleware.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
-            etag: An ``etag`` header of type :ref:`ETag <starlite.datastructures.ETag>` to add to route handlers of this app.
+            etag: An ``etag`` header of type :class:`ETag <datastructures.ETag>` to add to route handlers of this app.
                 Can be overridden by route handlers.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
             guards: A list of :class:`Guard <starlite.types.Guard>` callables.

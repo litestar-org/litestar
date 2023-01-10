@@ -53,9 +53,9 @@ class ResponseContainer(ABC, GenericModel, Generic[R]):
         arbitrary_types_allowed = True
 
     background: Optional[Union[BackgroundTask, BackgroundTasks]] = None
-    """A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or.
+    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
 
-    [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
     Defaults to None.
     """
     headers: Dict[str, Any] = {}
@@ -86,10 +86,10 @@ class ResponseContainer(ABC, GenericModel, Generic[R]):
 
         Args:
             headers: A dictionary of headers.
-            media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
+            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum.
             status_code: A response status code.
-            app: The [Starlite][starlite.app.Starlite] application instance.
-            request: A [Request][starlite.connection.request.Request] instance.
+            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
+            request: A :class:`Request <starlite.connection.request.Request>` instance.
 
         Returns:
             A Response Object
@@ -117,7 +117,7 @@ class File(ResponseContainer[FileResponse]):
     Either 'inline' or 'attachment'.
     """
     etag: Optional[ETag] = None
-    """An optional [ETag][starlite.datastructures.ETag] instance.
+    """An optional :class:`ETag <starlite.datastructures.ETag>` instance.
 
     If not provided, an etag will be automatically generated.
     """
@@ -126,12 +126,12 @@ class File(ResponseContainer[FileResponse]):
 
     Notes:
         - A file_system is a class that adheres to the
-            [FileSystemProtocol][starlite.types.FileSystemProtocol].
+            :class:`FileSystemProtocol <starlite.types.FileSystemProtocol>`.
         - You can use any of the file systems exported from the
             [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
     """
     file_info: Optional[FileInfo] = None
-    """The output of calling `file_system.info(..)`, equivalent to providing a `stat_result`."""
+    """The output of calling `file_system.info(..)`, equivalent to providing a ``stat_result``."""
 
     @validator("stat_result", always=True)
     def validate_status_code(  # pylint: disable=no-self-argument
@@ -140,7 +140,7 @@ class File(ResponseContainer[FileResponse]):
         """Set the stat_result value for the given filepath.
 
         Args:
-            value: An optional result [stat][os.stat] result.
+            value: An optional result :func:`stat <os.stat>` result.
             values: The dict of values.
 
         Returns:
@@ -176,10 +176,10 @@ class File(ResponseContainer[FileResponse]):
 
         Args:
             headers: A dictionary of headers.
-            media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
+            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum.
             status_code: A response status code.
-            app: The [Starlite][starlite.app.Starlite] application instance.
-            request: A [Request][starlite.connection.request.Request] instance.
+            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
+            request: A :class:`Request <starlite.connection.request.Request>` instance.
 
         Returns:
             A FileResponse instance
@@ -221,10 +221,10 @@ class Redirect(ResponseContainer[RedirectResponse]):
 
         Args:
             headers: A dictionary of headers.
-            media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
+            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum.
             status_code: A response status code.
-            app: The [Starlite][starlite.app.Starlite] application instance.
-            request: A [Request][starlite.connection.request.Request] instance.
+            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
+            request: A :class:`Request <starlite.connection.request.Request>` instance.
 
         Returns:
             A RedirectResponse instance
@@ -271,10 +271,10 @@ class Stream(ResponseContainer[StreamingResponse]):
 
         Args:
             headers: A dictionary of headers.
-            media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
+            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum.
             status_code: A response status code.
-            app: The [Starlite][starlite.app.Starlite] application instance.
-            request: A [Request][starlite.connection.request.Request] instance.
+            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
+            request: A :class:`Request <starlite.connection.request.Request>` instance.
 
         Returns:
             A StreamingResponse instance
@@ -313,13 +313,13 @@ class Template(ResponseContainer[TemplateResponse]):
 
         Args:
             headers: A dictionary of headers.
-            media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum.
+            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum.
             status_code: A response status code.
-            app: The [Starlite][starlite.app.Starlite] application instance.
-            request: A [Request][starlite.connection.request.Request] instance.
+            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
+            request: A :class:`Request <starlite.connection.request.Request>` instance.
 
         Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: if app.template_engine
+            :class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>`: if app.template_engine
                 is not configured.
 
         Returns:
@@ -343,7 +343,7 @@ class Template(ResponseContainer[TemplateResponse]):
         """Create a context object for the template.
 
         Args:
-            request: A [Request][starlite.connection.request.Request] instance.
+            request: A :class:`Request <starlite.connection.request.Request>` instance.
 
         Returns:
             A dictionary holding the template context

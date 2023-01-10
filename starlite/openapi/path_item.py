@@ -26,7 +26,7 @@ def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_d
 
     Args:
         route_handler: A route handler instance.
-        use_handler_docstrings: If `True` and `route_handler.description` is `None` returns docstring of wrapped
+        use_handler_docstrings: If ``True`` and `route_handler.description`` is ``None` returns docstring of wrapped
             handler function.
 
     Returns:

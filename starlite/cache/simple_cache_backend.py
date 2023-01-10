@@ -21,7 +21,7 @@ class SimpleCacheBackend(CacheBackendProtocol):
     """In-memory cache backend."""
 
     def __init__(self) -> None:
-        """Initialize `SimpleCacheBackend`"""
+        """Initialize ``SimpleCacheBackend``"""
         self._store: Dict[str, CacheObject] = {}
         self._lock = Lock()
 
@@ -32,7 +32,7 @@ class SimpleCacheBackend(CacheBackendProtocol):
             key: name of cached value.
 
         Returns:
-            Cached value or `None`.
+            Cached value or ``None``.
         """
         async with self._lock:
             cache_obj = self._store.get(key)
@@ -48,7 +48,7 @@ class SimpleCacheBackend(CacheBackendProtocol):
         """Set a value in cache for a given key with a given expiration in seconds.
 
         Args:
-            key: key to cache `value` under.
+            key: key to cache ``value`` under.
             value: the value to be cached.
             expiration: expiration of cached value in seconds.
 

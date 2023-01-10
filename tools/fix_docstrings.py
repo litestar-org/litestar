@@ -2,15 +2,21 @@ import re
 import sys
 from pathlib import Path
 
-from utils import RGX_CODE_BLOCK, get_indentation, indent
+from utils import get_indentation, indent
 
 INLINE_CODE_RGX = re.compile(r"(?<![`:])`([\w -]+?)`")
 REFERENCE_RGX = re.compile(r"\[(.+?)]\[(.+?)]")
 DOCSTRING_RGX = re.compile(r'"""[\w\W]+?"""')
+RGX_CODE_BLOCK = re.compile(r" *```python([\w\W]+?)```")
+RGX_SINGLE_QUOTES = re.compile(r"'(\w+?)'")
 
 
 def fix_inline_code(content: str) -> str:
     return INLINE_CODE_RGX.sub(r"``\g<1>``", content)
+
+
+def fix_single_quoted_ref(content: str) -> str:
+    return RGX_SINGLE_QUOTES.sub(r"``\g<1>``", content)
 
 
 def fix_references_in_docstring(content: str) -> str:
@@ -20,6 +26,8 @@ def fix_references_in_docstring(content: str) -> str:
         label = match.group(1)
         target = match.group(2)
 
+        label = label.replace("`", "")
+
         target_kind = "ref"
         target_parts = target.split(".")
         if target_parts[-1][0].islower():
@@ -27,6 +35,7 @@ def fix_references_in_docstring(content: str) -> str:
                 target_kind = "func"
         elif target_parts[-1][1].islower():
             target_kind = "class"
+
         replacements[source] = f":{target_kind}:`{label} <{target}>`"
 
     for source, replacement in replacements.items():
@@ -49,6 +58,7 @@ def fix_code_blocks(content: str) -> str:
 def fix_docstrings(content: str) -> str:
     for docstring in DOCSTRING_RGX.findall(content):
         fixed_docstring = fix_references_in_docstring(docstring)
+        fixed_docstring = fix_single_quoted_ref(fixed_docstring)
         fixed_docstring = fix_code_blocks(fixed_docstring)
         content = content.replace(docstring, fixed_docstring)
 
@@ -63,11 +73,13 @@ def fix_file(path: Path) -> None:
 
 def main(path: Path) -> None:
     if path.is_dir():
-        for file in path.rglob(".py"):
+        for file in path.rglob("*.py"):
+            if file.is_dir():
+                continue
             fix_file(file)
     else:
         fix_file(path)
 
 
 if __name__ == "__main__":
-    fix_file(Path.cwd() / sys.argv[1])
+    main(Path.cwd() / sys.argv[1])

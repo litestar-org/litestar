@@ -35,14 +35,14 @@ class TemplateResponse(Response[bytes]):
             template_engine: The template engine class to use to render the response.
             status_code: A value for the response HTTP status code.
             context: A dictionary of key/value pairs to be passed to the temple engine's render method.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response
+            cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances to be set under the response
                 'Set-Cookie' header.
             encoding: Content encoding
-            media_type: A string or member of the [MediaType][starlite.enums.MediaType] enum. If not set, try to infer
+            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum. If not set, try to infer
                 the media type based on the template name. If this fails, fall back to `text/plain`.
         """
         if media_type == MediaType.JSON:  # we assume this is the default

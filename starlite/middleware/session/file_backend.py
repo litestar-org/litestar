@@ -21,10 +21,10 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
     __slots__ = ("path",)
 
     def __init__(self, config: "FileBackendConfig") -> None:
-        """Initialize `FileBackend`
+        """Initialize ``FileBackend``
 
         Args:
-            config: A `FileBackendConfig`
+            config: A ``FileBackendConfig``
         """
         super().__init__(config=config)
         self.path = Path(config.storage_path)
@@ -43,13 +43,13 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         return datetime.fromisoformat(wrapped_data.expires) > datetime.utcnow().replace(tzinfo=None)
 
     async def get(self, session_id: str) -> Optional[bytes]:
-        """Load data associated with `session_id` from a file.
+        """Load data associated with ``session_id`` from a file.
 
         Args:
             session_id: The session-ID
 
         Returns:
-            The session data, if existing, otherwise `None`.
+            The session data, if existing, otherwise ``None``.
         """
 
         path = self._id_to_storage_path(session_id)
@@ -61,8 +61,8 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         return None
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` alongside metadata under the `session_id`, using the ID as a filename. If a file already exists
-        for `session_id`, replace it with `data` and reset its expiry time.
+        """Store ``data`` alongside metadata under the ``session_id``, using the ID as a filename. If a file already exists
+        for ``session_id``, replace it with ``data`` and reset its expiry time.
 
         Args:
             session_id: The session-ID
@@ -80,7 +80,7 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
         await path.write_bytes(encode_json(wrapped_data._asdict()))
 
     async def delete(self, session_id: str) -> None:
-        """Delete the file associated with `session_id`.
+        """Delete the file associated with ``session_id``.
 
         Fails silently if no such file exists
 
@@ -115,7 +115,7 @@ class FileBackend(ServerSideBackend["FileBackendConfig"]):
 
 
 class FileBackendConfig(ServerSideSessionConfig):
-    """Backend configuration for `FileBackend`"""
+    """Backend configuration for ``FileBackend``"""
 
     _backend_class: Type[FileBackend] = FileBackend
 

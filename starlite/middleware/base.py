@@ -48,7 +48,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
 
 
 class DefineMiddleware:
-    """Container enabling passing *args and **kwargs to Middleware class constructors and factory functions."""
+    """Container enabling passing ``*args`` and ``**kwargs`` to Middleware class constructors and factory functions."""
 
     __slots__ = (
         "middleware",
@@ -57,7 +57,7 @@ class DefineMiddleware:
     )
 
     def __init__(self, middleware: Callable[..., "ASGIApp"], *args: Any, **kwargs: Any) -> None:
-        """Initialize `DefineMiddleware`.
+        """Initialize ``DefineMiddleware``.
 
         Args:
             middleware: A callable that returns an ASGIApp.
@@ -65,7 +65,7 @@ class DefineMiddleware:
             **kwargs: Key word arguments to pass to the callable.
 
         Notes:
-            The callable will be passed a kwarg `app`, which is the next ASGI app to call in the middleware stack.
+            The callable will be passed a kwarg ``app``, which is the next ASGI app to call in the middleware stack.
             It therefore must define such a kwarg.
         """
         self.middleware = middleware
@@ -79,7 +79,7 @@ class DefineMiddleware:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
 
         Returns:
-            Calls 'self.middleware' and returns the ASGIApp created.
+            Calls :attr:`DefineMiddleware.middleware` and returns the ASGIApp created.
         """
 
         return self.middleware(*self.args, app=app, **self.kwargs)
@@ -87,7 +87,7 @@ class DefineMiddleware:
 
 class AbstractMiddleware:
     """Abstract middleware providing base functionality common to all middlewares, for dynamically engaging/bypassing
-    the middleware based on paths, `opt`-keys and scope types.
+    the middleware based on paths, ``opt``-keys and scope types.
 
     When implementing new middleware, this class should be used as a base.
     """
@@ -106,11 +106,11 @@ class AbstractMiddleware:
         """Initialize the middleware.
 
         Args:
-            app: The 'next' ASGI app to call.
+            app: The ``next`` ASGI app to call.
             exclude: A pattern or list of patterns to match against a request's path.
-                If a match is found, the middleware will be skipped. .
+                If a match is found, the middleware will be skipped.
             exclude_opt_key: An identifier that is set in the route handler
-                'opt' key which allows skipping the middleware.
+                ``opt`` key which allows skipping the middleware.
             scopes: ASGI scope types, should be a set including
                 either or both 'ScopeType.HTTP' and 'ScopeType.WEBSOCKET'.
         """

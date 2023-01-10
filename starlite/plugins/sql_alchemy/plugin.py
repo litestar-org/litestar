@@ -51,14 +51,14 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     __slots__ = ("_model_namespace_map", "_config")
 
     def __init__(self, config: Optional["SQLAlchemyConfig"] = None) -> None:
-        """Initialize `SQLAlchemyPlugin`.
+        """Initialize ``SQLAlchemyPlugin``.
 
         Support (de)serialization and OpenAPI generation for SQLAlchemy
         ORM types.
 
         Args:
-            config: Optional [SQLAlchemyConfig][starlite.plugins.sql_alchemy.SQLAlchemyConfig] instance. If passed,
-                the plugin will establish a DB connection and hook handlers and dependencies.
+            config: Optional :class:`SQLAlchemyConfig <starlite.plugins.sql_alchemy.SQLAlchemyConfig>` instance. If
+                passed, the plugin will establish a DB connection and hook handlers and dependencies.
         """
         self._model_namespace_map: Dict[str, "Type[BaseModel]"] = {}
         self._config = config
@@ -69,7 +69,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
         Executed on the application's init process.
 
         Args:
-            app: The [Starlite][starlite.app.Starlite] application instance.
+            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
 
         Returns:
             None
@@ -83,7 +83,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[DeclarativeMeta]":
-        """`TypeGuard` testing whether values are subclasses of SQLAlchemy's 'DeclarativeMeta' class.
+        """:class:`typing.TypeGuard` testing whether values are subclasses of SQLAlchemy's ``DeclarativeMeta`` class.
 
         Args:
             value: An arbitrary type to test.
@@ -330,13 +330,13 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
 
     @staticmethod
     def parse_model(model_class: Type[DeclarativeMeta]) -> Mapper:
-        """Validate that the passed in model_class is an SQLAlchemy declarative model, and return a `Mapper` of it.
+        """Validate that the passed in model_class is an SQLAlchemy declarative model, and return a ``Mapper`` of it.
 
         Args:
             model_class: An SQLAlchemy declarative class.
 
         Returns:
-            A SQLAlchemy `Mapper`.
+            A SQLAlchemy ``Mapper``.
         """
         try:
             inspected = inspect(model_class)
@@ -346,7 +346,7 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             if isinstance(inspected, Mapper):
                 return inspected
         raise ImproperlyConfiguredException(
-            "Unsupported 'model_class' kwarg: only subclasses of the SQLAlchemy `DeclarativeMeta` are supported"
+            "Unsupported 'model_class' kwarg: only subclasses of the SQLAlchemy ``DeclarativeMeta`` are supported"
         )
 
     def to_pydantic_model_class(self, model_class: Type[DeclarativeMeta], **kwargs: Any) -> "Type[BaseModel]":

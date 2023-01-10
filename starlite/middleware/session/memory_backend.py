@@ -11,10 +11,10 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
     _cache = SimpleCacheBackend()
 
     def __init__(self, config: "MemoryBackendConfig") -> None:
-        """Initialize `MemoryBackend`.
+        """Initialize ``MemoryBackend``.
 
         Args:
-            config: An instance of `MemoryBackendConfig`
+            config: An instance of ``MemoryBackendConfig``
 
         Warning:
             This should not be used in production and serves mainly as a dummy backend
@@ -23,21 +23,21 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         super().__init__(config=config)
 
     async def get(self, session_id: str) -> Optional[bytes]:
-        """Retrieve data associated with `session_id`.
+        """Retrieve data associated with ``session_id``.
 
         Args:
             session_id: The session-ID
 
         Returns:
-            The session data, if existing, otherwise `None`.
+            The session data, if existing, otherwise ``None``.
         """
         return cast("Optional[bytes]", await self._cache.get(session_id))
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` under the `session_id` for later retrieval.
+        """Store ``data`` under the ``session_id`` for later retrieval.
 
-        If there is already data associated with `session_id`, replace
-        it with `data` and reset its expiry time
+        If there is already data associated with ``session_id``, replace
+        it with ``data`` and reset its expiry time
 
         Args:
             session_id: The session-ID
@@ -50,7 +50,7 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
         await self._cache.set(session_id, data, expiration=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`. Fails silently if no such session-ID exists.
+        """Delete the data associated with ``session_id``. Fails silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID
@@ -70,6 +70,6 @@ class MemoryBackend(ServerSideBackend["MemoryBackendConfig"]):
 
 
 class MemoryBackendConfig(ServerSideSessionConfig):
-    """Configuration for `MemoryBackend`"""
+    """Configuration for ``MemoryBackend``"""
 
     _backend_class: Type[MemoryBackend] = MemoryBackend

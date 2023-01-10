@@ -153,7 +153,7 @@ class URL:
 
     @classmethod
     def from_scope(cls, scope: "Scope") -> "URL":
-        """Construct a URL from a [Scope][starlite.types.Scope]
+        """Construct a URL from a :class:`Scope <starlite.types.Scope>`
 
         Args:
             scope: A scope
@@ -219,17 +219,16 @@ class URL:
 
     @property
     def query_params(self) -> "MultiDict":
-        """Query parameters of a URL as a [MultiDict][multidict.MultiDict]
+        """Query parameters of a URL as a :class:`MultiDict <multidict.MultiDict>`
 
         Returns:
-            A [MultiDict][multidict.MultiDict] with query parameters
+            A :class:`MultiDict <multidict.MultiDict>` with query parameters
 
         Notes:
-            - While the returned `MultiDict` is mutable, [URL][starlite.datastructures.URL]
-                itself is *immutable*, therefore mutating the query parameters will not
-                directly mutate the `URL`. If you want to modify query parameters, make
-                modifications in the multidict and pass them back to
-                [with_replacements][starlite.datastructures.URL.with_replacements]
+            - The returned `MultiDict` is mutable, :class:`URL` itself is *immutable*,
+                therefore mutating the query parameters will not directly mutate the ``URL``.
+                If you want to modify query parameters, make  modifications in the
+                multidict and pass them back to :meth:`with_replacements`
         """
         if self._query_params is Empty:
             self._query_params = MultiDict(parse_query_string(query_string=self.query.encode()))

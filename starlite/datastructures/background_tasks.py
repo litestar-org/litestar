@@ -17,7 +17,7 @@ class BackgroundTask:
     __slots__ = ("fn", "args", "kwargs")
 
     def __init__(self, fn: Callable[P, Any], *args: P.args, **kwargs: P.kwargs) -> None:
-        """Initialize `BackgroundTask`.
+        """Initialize ``BackgroundTask``.
 
         Args:
             fn: A sync or async function to call as the background task.
@@ -46,11 +46,11 @@ class BackgroundTasks:
     __slots__ = ("tasks", "run_in_task_group")
 
     def __init__(self, tasks: Iterable[BackgroundTask], run_in_task_group: bool = False) -> None:
-        """Initialize `BackgroundTasks`.
+        """Initialize ``BackgroundTasks``.
 
         Args:
-            tasks: An iterable of [BackgroundTask][starlite.datastructures.BackgroundTask] instances.
-            run_in_task_group: If you set this value to `True` than the tasks will run concurrently, using
+            tasks: An iterable of :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instances.
+            run_in_task_group: If you set this value to ``True`` than the tasks will run concurrently, using
                 an [anyio.task_group](https://anyio.readthedocs.io/en/stable/tasks.html). Note: this will
                 not preserve execution order.
         """

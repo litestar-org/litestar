@@ -100,13 +100,13 @@ class TestClient(Client, Generic[T]):
         """A client implementation providing a context manager for testing applications.
 
         Args:
-            app: The instance of [Starlite][starlite.app.Starlite] under test.
+            app: The instance of :class:`Starlite <starlite.app.Starlite>` under test.
             base_url: URL scheme and domain for test request paths, e.g. 'http://testserver'.
             raise_server_exceptions: Flag for the underlying test client to raise server exceptions instead of
                 wrapping them in an HTTP response.
             root_path: Path prefix for requests.
             backend: The async backend to use, options are "asyncio" or "trio".
-            backend_options: 'anyio' options.
+            backend_options: ``anyio`` options.
             session_config: Configuration for Session Middleware class to create raw session cookies for request to the
                 route handlers.
             cookies: Cookies to set on the client.
@@ -572,7 +572,7 @@ class TestClient(Client, Generic[T]):
             extensions: Dictionary of ASGI extensions.
 
         Returns:
-            An [WebSocketTestSession][starlite.testing.test_client.WebSocketTestSession] instance.
+            An :class:`WebSocketTestSession <starlite.testing.test_client.WebSocketTestSession>` instance.
         """
         url = urljoin("ws://testserver", url)
         default_headers: Dict[str, str] = {}
@@ -610,32 +610,34 @@ class TestClient(Client, Generic[T]):
         Returns:
             A dictionary with cookie name as key and cookie value as value.
 
-        Notes:
-            - Deprecated. Use the explicit `TestClient.set_session_data` method
+        .. deprecated:: 1.34.0
+
+            Use the explicit :meth:`TestClient.set_session_data` method
 
         Examples:
 
-            ```python
-            import pytest
-            from starlite.testing import TestClient
+            .. code-block: python
 
-            from my_app.main import app, session_cookie_config_instance
+                import pytest
+                from starlite.testing import TestClient
+
+                from my_app.main import app, session_cookie_config_instance
 
 
-            class TestClass:
-                @pytest.fixture()
-                def test_client(self) -> TestClient:
-                    with TestClient(
-                        app=app, session_config=session_cookie_config_instance
-                    ) as client:
-                        yield client
+                class TestClass:
+                    @pytest.fixture()
+                    def test_client(self) -> TestClient:
+                        with TestClient(
+                            app=app, session_config=session_cookie_config_instance
+                        ) as client:
+                            yield client
 
-                def test_something(self, test_client: TestClient) -> None:
-                    cookies = test_client.create_session_cookies(session_data={"user": "test_user"})
-                    # Set raw session cookies to the "cookies" attribute of test_client instance.
-                    test_client.cookies = cookies
-                    test_client.get(url="/my_route")
-            ```
+                    def test_something(self, test_client: TestClient) -> None:
+                        cookies = test_client.create_session_cookies(session_data={"user": "test_user"})
+                        # Set raw session cookies to the "cookies" attribute of test_client instance.
+                        test_client.cookies = cookies
+                        test_client.get(url="/my_route")
+
         """
         if self._session_backend is None:
             return {}
@@ -650,17 +652,19 @@ class TestClient(Client, Generic[T]):
         Returns:
             A dictionary containing session data.
 
-        Notes:
-            - Deprecated. Use the explicit `TestClient.get_session_data` method
+        .. deprecated:: 1.34.0
+
+            Use the explicit :meth:`TestClient.get_session_data` method
 
         Examples:
 
-            ```python
-            def test_something(self, test_client: TestClient) -> None:
-                test_client.get(url="/my_route")
-                session = test_client.get_session_from_cookies()
-                assert "user" in session
-            ```
+            .. code-block: python
+
+                def test_something(self, test_client: TestClient) -> None:
+                    test_client.get(url="/my_route")
+                    session = test_client.get_session_from_cookies()
+                    assert "user" in session
+
         """
         if self._session_backend is None:
             return {}
@@ -707,26 +711,27 @@ class TestClient(Client, Generic[T]):
             None
 
         Examples:
-            ```python
-            from starlite import Starlite, get
-            from starlite.middleware.session.memory_backend import MemoryBackendConfig
+            .. code-block: python
 
-            session_config = MemoryBackendConfig()
+                from starlite import Starlite, get
+                from starlite.middleware.session.memory_backend import MemoryBackendConfig
 
-
-            @get(path="/test")
-            def get_session_data(request: Request) -> Dict[str, Any]:
-                return request.session
+                session_config = MemoryBackendConfig()
 
 
-            app = Starlite(
-                route_handlers=[get_session_data], middleware=[session_config.middleware]
-            )
+                @get(path="/test")
+                def get_session_data(request: Request) -> Dict[str, Any]:
+                    return request.session
 
-            with TestClient(app=app, session_config=session_config) as client:
-                client.set_session_data({"foo": "bar"})
-                assert client.get("/test").json() == {"foo": "bar"}
-            ```
+
+                app = Starlite(
+                    route_handlers=[get_session_data], middleware=[session_config.middleware]
+                )
+
+                with TestClient(app=app, session_config=session_config) as client:
+                    client.set_session_data({"foo": "bar"})
+                    assert client.get("/test").json() == {"foo": "bar"}
+
         """
         with self.portal() as portal:
             portal.call(self._set_session_data_async, data)
@@ -738,26 +743,27 @@ class TestClient(Client, Generic[T]):
             A dictionary containing session data.
 
         Examples:
-            ```python
-            from starlite import Starlite, post
-            from starlite.middleware.session.memory_backend import MemoryBackendConfig
+            .. code-block: python
 
-            session_config = MemoryBackendConfig()
+                from starlite import Starlite, post
+                from starlite.middleware.session.memory_backend import MemoryBackendConfig
 
-
-            @post(path="/test")
-            def set_session_data(request: Request) -> None:
-                request.session["foo"] == "bar"
+                session_config = MemoryBackendConfig()
 
 
-            app = Starlite(
-                route_handlers=[set_session_data], middleware=[session_config.middleware]
-            )
+                @post(path="/test")
+                def set_session_data(request: Request) -> None:
+                    request.session["foo"] == "bar"
 
-            with TestClient(app=app, session_config=session_config) as client:
-                client.post("/test")
-                assert client.get_session_data() == {"foo": "bar"}
-            ```
+
+                app = Starlite(
+                    route_handlers=[set_session_data], middleware=[session_config.middleware]
+                )
+
+                with TestClient(app=app, session_config=session_config) as client:
+                    client.post("/test")
+                    assert client.get_session_data() == {"foo": "bar"}
+
         """
         with self.portal() as portal:
             return portal.call(self._get_session_data_async)
