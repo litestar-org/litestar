@@ -22,4 +22,5 @@ API reference
     openapi
     params
     plugins/index
+    response
     types
