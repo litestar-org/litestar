@@ -35,11 +35,11 @@ def Parameter(
     max_length: Optional[int] = None,
     regex: Optional[str] = None
 ) -> Any:
-    """Create a pydantic `FieldInfo` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
+    """Create a pydantic ``FieldInfo`` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
     generation.
 
     Args:
-        value_type: `Undefined` by default.
+        value_type: ``Undefined`` by default.
         header: The header parameter key - required for header parameters.
         cookie: The cookie parameter key - required for cookie parameters.
         query: The query parameter key for this parameter.
@@ -129,7 +129,7 @@ def Body(
     max_length: Optional[int] = None,
     regex: Optional[str] = None
 ) -> Any:
-    """Create a pydantic `FieldInfo` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
+    """Create a pydantic ``FieldInfo`` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
     generation.
 
     Args:
@@ -194,12 +194,12 @@ def Body(
 
 @validate_arguments(config={"arbitrary_types_allowed": True})
 def Dependency(*, default: Any = Undefined, skip_validation: bool = False) -> Any:
-    """Create a pydantic `FieldInfo` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
+    """Create a pydantic ``FieldInfo`` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
     generation.
 
     Args:
         default: default value if dependency not provided.
-        skip_validation: If `True` provided dependency values are not validated by signature model.
+        skip_validation: If ``True`` provided dependency values are not validated by signature model.
     """
     extra: Dict[str, Any] = {EXTRA_KEY_IS_DEPENDENCY: True, EXTRA_KEY_SKIP_VALIDATION: skip_validation}
     return Field(default, **extra)  # type: ignore[pydantic-field]

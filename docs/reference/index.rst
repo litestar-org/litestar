@@ -20,4 +20,5 @@ API reference
     handlers/index
     middleware/index
     openapi
+    params
     types
