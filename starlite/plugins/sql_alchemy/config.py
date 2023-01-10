@@ -65,9 +65,9 @@ async def default_before_send_handler(message: "Message", _: "State", scope: "Sc
     """Handle closing and cleaning up sessions before sending.
 
     Args:
-        message: ASGI-`Message`
-        _: A `State` (not used)
-        scope: An ASGI-`Scope`
+        message: ASGI-``Message``
+        _: A ``State`` (not used)
+        scope: An ASGI-``Scope``
 
     Returns:
         None
@@ -100,7 +100,7 @@ class SQLAlchemySessionConfig(BaseModel):
 
 
 class SQLAlchemyEngineConfig(BaseModel):
-    """Configuration for SQLAlchemy's `Engine`.
+    """Configuration for SQLAlchemy's :class`Engine <sqlalchemy.engine.Engine>`.
 
     For details see: https://docs.sqlalchemy.org/en/14/core/engines.html
     """
@@ -140,7 +140,7 @@ class SQLAlchemyEngineConfig(BaseModel):
 
 
 class SQLAlchemyConfig(BaseModel):
-    """Configuration for SQLAlchemy's `sessionmaker`.
+    """Configuration for SQLAlchemy's :class:`sessionmaker <sqlalchemy.orm.sessionmaker>.
 
     For details see: https://docs.sqlalchemy.org/en/14/orm/session_api.html
     """
@@ -153,23 +153,28 @@ class SQLAlchemyConfig(BaseModel):
 
     Notes:
     - For async connections, the connection string must include the correct async prefix.
-        e.g. 'postgresql+asyncpg://...' instead of 'postgresql://', and for sync connections its the opposite.
+      e.g. ``'postgresql+asyncpg://...'`` instead of ``'postgresql://'``, and for sync connections its the opposite.
+
     """
     use_async_engine: bool = True
     """Dictate whether the engine created is an async connection or not.
 
     Notes:
-    - This option must correlate to the type of 'connection_string'. That is, an async connection string required an
-        async connection and vice versa.
+        - This option must correlate to the type of ``connection_string``. That is, an async connection string required an
+          async connection and vice versa.
+
     """
     create_async_engine_callable: Callable[[str], AsyncEngine] = create_async_engine
-    """Callable that creates an 'AsyncEngine' instance or instance of its subclass."""
+    """Callable that creates an :class:`AsyncEngine <sqlalchemy.ext.asyncio.AsyncEngine>` instance or instance of its
+    subclass.
+    """
     create_engine_callable: Callable[[str], Union[Engine, FutureEngine]] = create_engine
-    """Callable that creates an 'Engine' or 'FutureEngine' instance or instance of its subclass."""
+    """Callable that creates an :class:`Engine <sqlalchemy.engine.Engine>` or ``FutureEngine`` instance or instance of its
+    subclass."""
     dependency_key: str = "db_session"
     """Key to use for the dependency injection of database sessions."""
     engine_app_state_key: str = "db_engine"
-    """Key under which to store the SQLAlchemy engine in the application [State][starlite.datastructures.State]
+    """Key under which to store the SQLAlchemy engine in the application :class:`State <starlite.datastructures.State>`
     instance.
     """
     engine_config: SQLAlchemyEngineConfig = SQLAlchemyEngineConfig()
@@ -178,27 +183,28 @@ class SQLAlchemyConfig(BaseModel):
     The configuration options are documented in the SQLAlchemy documentation.
     """
     set_json_serializers: bool = True
-    """A boolean flag dictating whether to set 'msgspec' based serializer/deserializer functions.
+    """A boolean flag dictating whether to set ``msgspec`` based serializer/deserializer functions.
 
     Notes:
-    - Some databases or some versions of some databases do not have a JSON column type. E.g. some older versions of
-        SQLite for example. In this case this flag should be false or an error will be raised by SQLAlchemy.
+        - Some databases or some versions of some databases do not have a JSON column type. E.g. some older versions of
+          SQLite for example. In this case this flag should be false or an error will be raised by SQLAlchemy.
+
     """
     session_class: Optional[Union[Type[Session], Type[AsyncSession]]] = None
     """The session class to use.
 
-    If not set, the session class will default to 'sqlalchemy.orm.Session' for sync connections and
-    'sqlalchemy.ext.asyncio.AsyncSession' for async ones.
+    If not set, the session class will default to :class:`sqlalchemy.orm.Session` for sync connections and
+    :class:`sqlalchemy.ext.asyncio.AsyncSession` for async ones.
     """
     session_config: SQLAlchemySessionConfig = SQLAlchemySessionConfig()
-    """Configuration options for the 'sessionmaker'.
+    """Configuration options for the ``sessionmaker``.
 
     The configuration options are documented in the SQLAlchemy documentation.
     """
     session_maker_class: Type[SessionMakerTypeProtocol] = sessionmaker
     """Sessionmaker class to use."""
     session_maker_app_state_key: str = "session_maker_class"
-    """Key under which to store the SQLAlchemy 'sessionmaker' in the application [State][starlite.datastructures.State]
+    """Key under which to store the SQLAlchemy ``sessionmaker`` in the application :class:`State <starlite.datastructures.State>`
     instance.
     """
     session_maker_instance: Optional[SessionMakerInstanceProtocol] = None
@@ -222,13 +228,13 @@ class SQLAlchemyConfig(BaseModel):
     def validate_before_send_handler(  # pylint: disable=no-self-argument
         cls, value: BeforeMessageSendHookHandler
     ) -> Any:
-        """Wrap `before_send_handler` in an `AsyncCallable`
+        """Wrap ``before_send_handler`` in an ``AsyncCallable``
 
         Args:
             value: A before send handler callable.
 
         Returns:
-            An `AsyncCallable`
+            An ``AsyncCallable``
         """
         return AsyncCallable(value)  # type: ignore[arg-type]
 
@@ -236,7 +242,7 @@ class SQLAlchemyConfig(BaseModel):
     def check_connection_string_or_engine_instance(  # pylint: disable=no-self-argument
         cls, values: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Either `connection_string` or `engine_instance` must be specified, and not both.
+        """Either ``connection_string`` or ``engine_instance`` must be specified, and not both.
 
         Args:
             values: Field values, after validation.
@@ -260,7 +266,7 @@ class SQLAlchemyConfig(BaseModel):
         """Return the engine configuration as a dict.
 
         Returns:
-            A string keyed dict of config kwargs for the SQLAlchemy 'create_engine' function.
+            A string keyed dict of config kwargs for the SQLAlchemy ``create_engine`` function.
         """
         engine_excluded_fields: Set[str] = {"future", "logging_level"} if self.use_async_engine else {"logging_level"}
 
@@ -351,7 +357,7 @@ class SQLAlchemyConfig(BaseModel):
         """Add the SQLAlchemy loggers to the logging config.
 
         Notes:
-            - Currently only works with [LoggingConfig][starlite.config.logging.LoggingConfig].
+            - Currently only works with :class:`LoggingConfig <starlite.config.logging.LoggingConfig>`.
 
         Args:
             logging_config: Logging config.

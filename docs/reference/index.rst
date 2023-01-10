@@ -21,4 +21,5 @@ API reference
     middleware/index
     openapi
     params
+    plugins/index
     types
