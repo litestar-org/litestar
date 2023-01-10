@@ -10,7 +10,7 @@ from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
 
-    from starlite.testing.sync_test_client.client import TestClient
+    from starlite.testing.client.sync_client import TestClient
     from starlite.types import (
         WebSocketConnectEvent,
         WebSocketDisconnectEvent,

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, Generic, Mapping, Optional, TypeVar
 from starlite import HttpMethod
 from starlite.datastructures import MutableScopeHeaders
 from starlite.exceptions import MissingDependencyException
-from starlite.testing.base.client_base import (
+from starlite.testing.client.base import (
     BaseTestClient,
     fake_asgi_connection,
     fake_http_send_message,

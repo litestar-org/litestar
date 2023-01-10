@@ -17,7 +17,7 @@ from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
 
 from starlite import HttpMethod, ImproperlyConfiguredException
 from starlite.datastructures import MutableScopeHeaders
-from starlite.testing.base.client_base import (
+from starlite.testing.client.base import (
     BaseTestClient,
     fake_asgi_connection,
     fake_http_send_message,
@@ -43,9 +43,7 @@ if TYPE_CHECKING:
 
     from starlite.middleware.session.base import BaseBackendConfig
     from starlite.middleware.session.cookie_backend import CookieBackend
-    from starlite.testing.sync_test_client.websocket_test_session import (
-        WebSocketTestSession,
-    )
+    from starlite.testing.websocket_test_session import WebSocketTestSession
 
 
 T = TypeVar("T", bound=ASGIApp)

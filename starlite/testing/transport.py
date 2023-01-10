@@ -8,9 +8,7 @@ from httpx import AsyncBaseTransport, BaseTransport, ByteStream, Response
 from typing_extensions import TypedDict
 
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from starlite.testing.sync_test_client.websocket_test_session import (
-    WebSocketTestSession,
-)
+from starlite.testing.websocket_test_session import WebSocketTestSession
 
 if TYPE_CHECKING:
     from httpx import Request
