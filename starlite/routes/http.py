@@ -7,7 +7,11 @@ from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.datastructures.headers import Headers
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, MediaType, ScopeType
-from starlite.exceptions import ImproperlyConfiguredException
+from starlite.exceptions import (
+    ClientException,
+    ImproperlyConfiguredException,
+    SerializationException,
+)
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.response import Response
 from starlite.routes.base import BaseRoute
@@ -185,7 +189,10 @@ class HTTPRoute(BaseRoute):
             kwargs = parameter_model.to_kwargs(connection=request)
 
             if "data" in kwargs:
-                kwargs["data"] = await kwargs["data"]
+                try:
+                    kwargs["data"] = await kwargs["data"]
+                except SerializationException as exc:
+                    raise ClientException(str(exc)) from exc
 
             if "body" in kwargs:
                 kwargs["body"] = await kwargs["body"]

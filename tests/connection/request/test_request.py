@@ -8,11 +8,11 @@ from typing import TYPE_CHECKING, Any, Dict, Generator, Optional
 from unittest.mock import patch
 
 import pytest
-from msgspec import DecodeError
 
 from starlite import InternalServerException, MediaType, StaticFilesConfig, get
 from starlite.connection import Request, empty_send
 from starlite.datastructures import Address
+from starlite.exceptions import SerializationException
 from starlite.response import Response
 from starlite.testing import TestClient, create_test_client
 from starlite.utils.serialization import encode_msgpack
@@ -31,7 +31,7 @@ async def test_request_empty_body_to_json(anyio_backend: str) -> None:
 
 
 async def test_request_invalid_body_to_json(anyio_backend: str) -> None:
-    with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(DecodeError):
+    with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(SerializationException):
         request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
         await request_empty_payload.json()
 
@@ -51,7 +51,7 @@ async def test_request_empty_body_to_msgpack(anyio_backend: str) -> None:
 
 
 async def test_request_invalid_body_to_msgpack(anyio_backend: str) -> None:
-    with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(DecodeError):
+    with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(SerializationException):
         request_empty_payload: Request = Request(scope={"type": "http"})  # type: ignore
         await request_empty_payload.msgpack()
 

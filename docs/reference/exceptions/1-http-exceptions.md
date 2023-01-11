@@ -1,5 +1,10 @@
 # HTTP Exceptions
 
+::: starlite.exceptions.ClientException
+    options:
+        members:
+            - status_code
+
 :::starlite.exceptions.HTTPException
     options:
         members:

@@ -1,5 +1,10 @@
-from .base_exceptions import MissingDependencyException, StarLiteException
+from .base_exceptions import (
+    MissingDependencyException,
+    SerializationException,
+    StarLiteException,
+)
 from .http_exceptions import (
+    ClientException,
     HTTPException,
     ImproperlyConfiguredException,
     InternalServerException,
@@ -16,6 +21,7 @@ from .http_exceptions import (
 from .websocket_exceptions import WebSocketDisconnect, WebSocketException
 
 __all__ = (
+    "ClientException",
     "HTTPException",
     "ImproperlyConfiguredException",
     "InternalServerException",
@@ -25,6 +31,7 @@ __all__ = (
     "NotAuthorizedException",
     "NotFoundException",
     "PermissionDeniedException",
+    "SerializationException",
     "ServiceUnavailableException",
     "StarLiteException",
     "TemplateNotFoundException",

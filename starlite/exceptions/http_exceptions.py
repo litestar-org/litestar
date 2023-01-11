@@ -68,37 +68,41 @@ class ImproperlyConfiguredException(HTTPException, ValueError):
     """Application has improper configuration."""
 
 
-class ValidationException(HTTPException, ValueError):
+class ClientException(HTTPException):
     """Client error."""
 
-    status_code = HTTP_400_BAD_REQUEST
+    status_code: int = HTTP_400_BAD_REQUEST
 
 
-class NotAuthorizedException(HTTPException):
+class ValidationException(ClientException, ValueError):
+    """Client data validation error."""
+
+
+class NotAuthorizedException(ClientException):
     """Request lacks valid authentication credentials for the requested resource."""
 
     status_code = HTTP_401_UNAUTHORIZED
 
 
-class PermissionDeniedException(HTTPException):
+class PermissionDeniedException(ClientException):
     """Request understood, but not authorized."""
 
     status_code = HTTP_403_FORBIDDEN
 
 
-class NotFoundException(HTTPException, ValueError):
+class NotFoundException(ClientException, ValueError):
     """Cannot find the requested resource."""
 
     status_code = HTTP_404_NOT_FOUND
 
 
-class MethodNotAllowedException(HTTPException):
+class MethodNotAllowedException(ClientException):
     """Server knows the request method, but the target resource doesn't support this method."""
 
     status_code = HTTP_405_METHOD_NOT_ALLOWED
 
 
-class TooManyRequestsException(HTTPException):
+class TooManyRequestsException(ClientException):
     """Request limits have been exceeded."""
 
     status_code = HTTP_429_TOO_MANY_REQUESTS
@@ -107,10 +111,10 @@ class TooManyRequestsException(HTTPException):
 class InternalServerException(HTTPException):
     """Server encountered an unexpected condition that prevented it from fulfilling the request."""
 
-    status_code = HTTP_500_INTERNAL_SERVER_ERROR
+    status_code: int = HTTP_500_INTERNAL_SERVER_ERROR
 
 
-class ServiceUnavailableException(HTTPException):
+class ServiceUnavailableException(InternalServerException):
     """Server is not ready to handle the request."""
 
     status_code = HTTP_503_SERVICE_UNAVAILABLE
