@@ -1,3 +1,4 @@
+import re
 from inspect import cleandoc
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, Union, cast
 
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
     from starlite.routes import HTTPRoute
+
+alphabetic_re = re.compile("[^a-zA-Z]")
 
 
 def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_docstrings: bool) -> Optional[str]:
@@ -74,7 +77,8 @@ def get_start_of_path_components_str(path_components: List[Union[str, PathParame
     for component in path_components:
         if isinstance(component, PathParameterDefinition):
             break
-        output.append(component.title())
+        if cleaned := alphabetic_re.sub(component, ""):
+            output.append(cleaned)
     return output
 
 

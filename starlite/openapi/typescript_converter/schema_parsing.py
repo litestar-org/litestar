@@ -17,12 +17,12 @@ from starlite.openapi.typescript_converter.types import (
 )
 
 openapi_to_typescript_type_map: Dict[str, Literal["string", "boolean", "number", "null", "object", "array"]] = {
-    OpenAPIType.ARRAY: "any[]",
+    OpenAPIType.ARRAY: "unknown[]",
     OpenAPIType.BOOLEAN: "boolean",
     OpenAPIType.INTEGER: "number",
     OpenAPIType.NULL: "null",
     OpenAPIType.NUMBER: "number",
-    OpenAPIType.OBJECT: "object",
+    OpenAPIType.OBJECT: "Record<string, unknown>",
     OpenAPIType.STRING: "string",
 }
 
