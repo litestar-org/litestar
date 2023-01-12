@@ -16,7 +16,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-74-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-75-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -376,6 +376,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://skulason.me"><img src="https://avatars.githubusercontent.com/u/11139514?v=4?s=100" width="100px;" alt="Magnús Ágúst Skúlason"/><br /><sub><b>Magnús Ágúst Skúlason</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=maggias" title="Code">💻</a> <a href="https://github.com/starlite-api/starlite/commits?author=maggias" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://alessioparma.xyz/"><img src="https://avatars.githubusercontent.com/u/4697032?v=4?s=100" width="100px;" alt="Alessio Parma"/><br /><sub><b>Alessio Parma</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=pomma89" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Lugoues"><img src="https://avatars.githubusercontent.com/u/372610?v=4?s=100" width="100px;" alt="Peter Brunner"/><br /><sub><b>Peter Brunner</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Lugoues" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://scriptr.dev/"><img src="https://avatars.githubusercontent.com/u/45884264?v=4?s=100" width="100px;" alt="Jacob Coffee"/><br /><sub><b>Jacob Coffee</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=JacobCoffee" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
