@@ -84,7 +84,7 @@ class TypeScriptUnion(TypeScriptElement):
 class TypeScriptPrimitive(TypeScriptElement):
     """A class representing a TypeScript primitive type."""
 
-    type: Literal["string", "number", "boolean", "any", "null", "undefined", "symbol"]
+    type: Literal["string", "number", "boolean", "any", "null", "undefined", "symbol", "object"]
 
     def write(self) -> str:
         """Write a typescript primitive type.
@@ -269,7 +269,7 @@ class TypeScriptConst(TypeScriptContainer):
 
 
 @dataclass(unsafe_hash=True)
-class TypeScriptNamespace(TypeScriptElement):
+class TypeScriptNamespace(TypeScriptContainer):
     """A class representing a TypeScript namespace."""
 
     name: str
