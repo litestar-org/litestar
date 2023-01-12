@@ -27,3 +27,4 @@ target/
 coverage.*
 setup.py
 /docs/_build/
+/_tmp_docs_examples/
