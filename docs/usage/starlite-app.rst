@@ -10,42 +10,7 @@ Creating an app is straightforward - the only required args is a list of
 `Controllers <1-routing/3-controllers>`_, `Routers <1-routing/2-routers>`_ or
 `Route Handlers <./2-route-handlers/1-http-route-handlers>`_:
 
-.. tab-set::
-
-    .. tab-item:: Python 3.8+
-
-        .. code-block:: python
-
-            from typing import Dict
-
-            from starlite import Starlite, get
-
-
-            @get("/")
-            def hello_world() -> Dict[str, str]:
-                """Handler function that returns a greeting dictionary."""
-                return {"hello": "world"}
-
-
-            app = Starlite(route_handlers=[hello_world])
-
-
-    .. tab-item:: Python 3.9+
-        :sync: starlite
-
-        .. code-block:: python
-
-            from starlite import Starlite, get
-
-
-            @get("/")
-            def hello_world() -> dict[str, str]:
-                """Handler function that returns a greeting dictionary."""
-                return {"hello": "world"}
-
-
-            app = Starlite(route_handlers=[hello_world])
-
+.. literalinclude:: ../../examples/hello_world.py
 
 .. admonition:: Run It!
 

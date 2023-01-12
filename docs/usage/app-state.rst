@@ -21,53 +21,7 @@ is available, e.g in middleware, on |Request|_ & |Websocket|_ instances (accessi
 Therefore, `state` offers an easy way to share contextual data between disparate parts of
 the application as described below:
 
-.. code-block:: python
-
-    import logging
-    from typing import TYPE_CHECKING, Any
-
-    from starlite import Provide, Request, Starlite, State, get
-
-    if TYPE_CHECKING:
-        from starlite.types import ASGIApp, Receive, Scope, Send
-
-    logger = logging.getLogger(__name__)
-
-
-    def set_state_on_startup(state: State) -> None:
-        """Startup and shutdown hooks can receive 'State' as a keyword argument."""
-        state.value = "abc123"
-
-
-    def middleware_factory(*, app: "ASGIApp") -> "ASGIApp":
-        """A middleware can access application state via 'scope'."""
-
-        async def my_middleware(scope: "Scope", receive: "Receive", send: "Send") -> None:
-            state = scope["app"].state
-            logger.info(f"state value in middleware: {state.value}")
-            await app(scope, receive, send)
-
-        return my_middleware
-
-
-    def my_dependency(state: State) -> Any:
-        """Dependencies can receive state via injection."""
-        logger.info(f"state value in dependency: {state.value}")
-
-
-    @get("/", dependencies={"dep", Provide(my_dependency)}, middleware=[middleware_factory])
-    def get_handler(
-        state: State, request: Request, dep: Any
-    ) -> None:  # pylint: disable=unused argument
-        """Handlers can receive state via injection."""
-        logger.info(f"state value in handler from `State`: {state.value}")
-        logger.info(f"state value in handler from `Request`: {request.app.state.value}")
-
-
-    app = Starlite(
-        route_handlers=[get_handler], on_startup=[set_state_on_startup], debug=True
-    )
-
+.. literalinclude:: ../../examples/application_state/using_application_state.py
 
 Initializing Application State
 ==============================
@@ -75,18 +29,7 @@ Initializing Application State
 You can pass an object from which the application state will be instantiated using the
 ``initial_state`` keyword argument of the ``Starlite`` constructor:
 
-.. code-block:: python
-
-    from starlite import Starlite, State, get
-
-
-    @get("/")
-    def handler(state: State) -> dict:
-        return state.dict()
-
-
-    app = Starlite(route_handlers=[handler], initial_state={"count": 100})
-
+.. literalinclude:: ../../examples/application_state/passing_initial_state.py
 
 .. note::
 
@@ -128,18 +71,7 @@ To discourage its usage, Starlite offers a builtin ``ImmutableState`` class whic
 used to type the `state` & ensure no mutation of state is allowed. Here is an example
 showcasing the ``ImmutableState`` class & its usage:
 
-.. code-block:: python
-
-    from starlite import ImmutableState, Starlite, get
-
-
-    @get("/")
-    def handler(state: ImmutableState) -> dict:
-        setattr(state, "count", 1)  # raise an AttributeError
-        return state.dict()
-
-
-    app = Starlite(route_handlers=[handler])
+.. literalinclude:: ../../examples/application_state/using_immutable_state.py
 
 
 .. INFO: Necessary hack for creating a hyperlinked inline code. See this RST docs for
