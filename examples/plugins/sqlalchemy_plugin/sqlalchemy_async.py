@@ -46,7 +46,7 @@ async def create_company(
 
 
 @get(path="/companies/{company_id:int}")
-async def get_company(company_id: str, async_session: AsyncSession) -> Company:
+async def get_company(company_id: int, async_session: AsyncSession) -> Company:
     """Get a company by its ID and return it.
 
     If a company with that ID does not exist, return a 404 response

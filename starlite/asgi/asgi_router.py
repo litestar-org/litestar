@@ -139,23 +139,19 @@ class ASGIRouter:
         """
         new_routes = [route for route in self.app.routes if route not in self._registered_routes]
         for route in new_routes:
-            node = add_route_to_trie(
+            add_route_to_trie(
                 app=self.app,
                 mount_routes=self._mount_routes,
                 plain_routes=self._plain_routes,
                 root_node=self.root_route_map_node,
                 route=route,
             )
-
-            if node.path_parameters != route.path_parameters:
-                raise ImproperlyConfiguredException("Should not use routes with conflicting path parameters")
-
             self._store_handler_to_route_mapping(route)
             self._registered_routes.add(route)
 
         validate_node(node=self.root_route_map_node)
         if self._mount_routes:
-            self._mount_paths_regex = re.compile("|".join(sorted(set(self._mount_routes))))
+            self._mount_paths_regex = re.compile("|".join(sorted(set(self._mount_routes))))  # pyright: ignore
 
     async def lifespan(self, receive: "LifeSpanReceive", send: "LifeSpanSend") -> None:
         """Handle the ASGI "lifespan" event on application startup and shutdown.
@@ -176,7 +172,7 @@ class ASGIRouter:
                 startup_event: "LifeSpanStartupCompleteEvent" = {"type": "lifespan.startup.complete"}
                 await send(startup_event)
                 await receive()
-            else:
+            else:  # pragma: no cover
                 await self.shutdown()
                 await send(shutdown_event)
         except BaseException as e:
@@ -186,7 +182,7 @@ class ASGIRouter:
                     "message": format_exc(),
                 }
                 await send(startup_failure_event)
-            else:
+            else:  # pragma: no cover
                 shutdown_failure_event: "LifeSpanShutdownFailedEvent" = {
                     "type": "lifespan.shutdown.failed",
                     "message": format_exc(),

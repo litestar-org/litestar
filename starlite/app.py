@@ -86,6 +86,7 @@ if TYPE_CHECKING:
         Scope,
         Send,
         SingleOrList,
+        TypeEncodersMap,
     )
     from starlite.types.callable_types import AnyCallable, GetLogger
 
@@ -198,6 +199,7 @@ class Starlite(Router):
         static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
         tags: Optional[List[str]] = None,
         template_config: Optional["TemplateConfig"] = None,
+        type_encoders: Optional["TypeEncodersMap"] = None,
         websocket_class: Optional[Type["WebSocket"]] = None,
     ) -> None:
         """Initialize a `Starlite` application.
@@ -273,6 +275,7 @@ class Starlite(Router):
             static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
             template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             websocket_class: An optional subclass of [WebSocket][starlite.connection.websocket.WebSocket] to use for
                 websocket connections.
         """
@@ -321,6 +324,7 @@ class Starlite(Router):
             static_files_config=static_files_config or [],
             tags=tags or [],
             template_config=template_config,
+            type_encoders=type_encoders,
             websocket_class=websocket_class,
         )
         for handler in on_app_init or []:
@@ -368,6 +372,7 @@ class Starlite(Router):
             route_handlers=[],
             security=config.security,
             tags=config.tags,
+            type_encoders=config.type_encoders,
         )
         for plugin in self.plugins:
             plugin.on_app_init(app=self)

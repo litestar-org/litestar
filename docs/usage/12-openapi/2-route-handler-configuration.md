@@ -34,6 +34,9 @@ You can also modify the generated schema for the route handler using the followi
     The expected content should be based on a Pydantic model describing its structure. It can also include
     a description and the expected media type. For example:
 
+!!! note
+    `operation_id` will be prefixed with the method name when function is decorated with `HTTPRouteHandler` and multiple `http_method`. Will also be prefixed with path strings used in `Routers` and `Controllers` to make sure id is unique.
+
 ```python
 from datetime import datetime
 from typing import Optional

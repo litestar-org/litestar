@@ -70,7 +70,7 @@ across requests, then you might want to inject or inspect session data outside a
 two methods:
 
 - [set_session_data][starlite.testing.test_client.TestClient.set_session_data]
-- [set_session_data][starlite.testing.test_client.TestClient.get_session_data]
+- [get_session_data][starlite.testing.test_client.TestClient.get_session_data]
 
 !!! important
     - The **Session Middleware** must be enabled in Starlite app provided to the TestClient to use sessions.

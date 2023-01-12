@@ -1,6 +1,0 @@
-mkdocs-material
-mkdocstrings[python]
-black
-httpx
-uvicorn
-git+https://github.com/provinzkraut/AutoPyTabs.git

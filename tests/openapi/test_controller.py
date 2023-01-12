@@ -154,6 +154,21 @@ def test_openapi_swagger(root_path: str) -> None:
 
 
 @pytest.mark.parametrize("root_path", root_paths)
+def test_openapi_swagger_caching_schema(root_path: str) -> None:
+    with create_test_client(
+        [PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG, root_path=root_path
+    ) as client:
+        # Make sure that the schema is tweaked for swagger as the openapi version is changed.
+        # Because schema can get cached, make sure that getting a different schema type before works.
+        client.get("/schema/redoc")  # Cache the schema
+        response = client.get("/schema/swagger")  # Request swagger, should use a different cache
+
+        assert "3.0.3" in response.text  # Make sure the injected version is still there
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["content-type"].startswith(MediaType.HTML.value)
+
+
+@pytest.mark.parametrize("root_path", root_paths)
 def test_openapi_stoplight_elements(root_path: str) -> None:
     with create_test_client(
         [PersonController, PetController], openapi_config=DEFAULT_OPENAPI_CONFIG, root_path=root_path

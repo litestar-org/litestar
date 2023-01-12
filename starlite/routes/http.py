@@ -7,7 +7,11 @@ from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.datastructures.headers import Headers
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, MediaType, ScopeType
-from starlite.exceptions import ImproperlyConfiguredException
+from starlite.exceptions import (
+    ClientException,
+    ImproperlyConfiguredException,
+    SerializationException,
+)
 from starlite.handlers.http import HTTPRouteHandler
 from starlite.response import Response
 from starlite.routes.base import BaseRoute
@@ -185,7 +189,13 @@ class HTTPRoute(BaseRoute):
             kwargs = parameter_model.to_kwargs(connection=request)
 
             if "data" in kwargs:
-                kwargs["data"] = await kwargs["data"]
+                try:
+                    kwargs["data"] = await kwargs["data"]
+                except SerializationException as exc:
+                    raise ClientException(str(exc)) from exc
+
+            if "body" in kwargs:
+                kwargs["body"] = await kwargs["body"]
 
             if parameter_model.dependency_batches:
                 cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
@@ -292,7 +302,7 @@ class HTTPRoute(BaseRoute):
                 if pre_flight_requested_headers:
                     if cors_config.is_allow_all_headers:
                         response_headers["Access-Control-Allow-Headers"] = ", ".join(
-                            sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)
+                            sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)  # pyright: ignore
                         )
                     elif any(
                         header.lower() not in cors_config.allow_headers for header in pre_flight_requested_headers

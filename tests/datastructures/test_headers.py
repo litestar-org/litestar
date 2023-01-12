@@ -10,6 +10,7 @@ from starlite.datastructures import (
     Headers,
     MutableScopeHeaders,
 )
+from starlite.datastructures.headers import Header
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
@@ -25,6 +26,18 @@ def raw_headers() -> "RawHeadersList":
 @pytest.fixture
 def raw_headers_tuple() -> "RawHeaders":
     return [(b"foo", b"bar")]
+
+
+def test_header_container_requires_header_key_being_defined() -> None:
+    class TestHeader(Header):
+        def _get_header_value(self) -> str:
+            return ""
+
+        def from_header(self, header_value: str) -> "Header":  # type: ignore
+            return self
+
+    with pytest.raises(ImproperlyConfiguredException):
+        TestHeader().to_header()
 
 
 @pytest.fixture

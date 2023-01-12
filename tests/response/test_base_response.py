@@ -1,3 +1,4 @@
+from pathlib import PurePosixPath
 from typing import Any, Optional
 
 import pytest
@@ -22,6 +23,7 @@ from starlite.status_codes import (
 )
 from starlite.testing import create_test_client
 from starlite.types import Empty
+from starlite.utils import default_serializer
 
 
 def test_response_headers() -> None:
@@ -179,3 +181,32 @@ def test_render_method(body: Any, media_type: MediaType, should_raise: bool) -> 
 def test_head_response_doesnt_support_content() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         Response(content="hello world", media_type=MediaType.TEXT, is_head_response=True)
+
+
+def test_get_serializer() -> None:
+    class Foo:
+        pass
+
+    foo_encoder = {Foo: lambda f: "it's a foo"}
+    path_encoder = {PurePosixPath: lambda p: "it's a path"}
+
+    class CustomResponse(Response):
+        pass
+
+    class ResponseWithSerializer(Response):
+        @classmethod
+        def serializer(cls, value: Any) -> Any:
+            pass
+
+    class FooResponse(Response):
+        type_encoders = foo_encoder
+
+    assert Response.get_serializer() is default_serializer
+    assert CustomResponse.get_serializer() is default_serializer
+    assert ResponseWithSerializer.get_serializer() == ResponseWithSerializer.serializer
+
+    assert Response.get_serializer(type_encoders=foo_encoder)(Foo()) == "it's a foo"
+    assert Response.get_serializer(type_encoders=path_encoder)(PurePosixPath()) == "it's a path"
+
+    assert FooResponse.get_serializer()(Foo()) == "it's a foo"
+    assert FooResponse.get_serializer(type_encoders={Foo: lambda f: "foo"})(Foo()) == "foo"

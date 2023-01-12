@@ -7,7 +7,6 @@ from starlite.asgi.routing_trie.types import (
     create_node,
 )
 from starlite.asgi.utils import wrap_in_exception_handler
-from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.internal_types import PathParameterDefinition
 
 if TYPE_CHECKING:
@@ -34,8 +33,6 @@ def add_mount_route(
     Returns:
         A trie node.
     """
-    if route.path_parameters:
-        raise ImproperlyConfiguredException("Path parameters cannot be configured for a static path.")
 
     # we need to ensure that we can traverse the map both through the full path key, e.g. "/my-route/sub-path" and
     # via the components keys ["my-route, "sub-path"]
@@ -93,17 +90,18 @@ def add_route_to_trie(
             root_node=root_node,
             route=cast("ASGIRoute", route),
         )
+
     elif not has_path_parameters:
         plain_routes.add(route.path)
         if route.path not in root_node.children:
             current_node.children[route.path] = create_node()
         current_node = root_node.children[route.path]
+
     else:
         for component in route.path_components:
+
             if isinstance(component, PathParameterDefinition):
-
                 current_node.is_path_param_node = True
-
                 next_node_key: Union[Type[PathParameterSentinel], str] = PathParameterSentinel
 
             else:
@@ -117,8 +115,6 @@ def add_route_to_trie(
 
             if isinstance(component, PathParameterDefinition) and component.type is Path:
                 current_node.is_path_type = True
-
-        current_node.path_parameters = route.path_parameters
 
     configure_node(route=route, app=app, node=current_node)
     return current_node
@@ -142,7 +138,7 @@ def configure_node(
     from starlite.routes import HTTPRoute, WebSocketRoute
 
     if not node.path_parameters:
-        node.path_parameters = route.path_parameters
+        node.path_parameters = {}
 
     if isinstance(route, HTTPRoute):
         for method, handler_mapping in route.route_handler_map.items():
@@ -151,17 +147,21 @@ def configure_node(
                 asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=handler),
                 handler=handler,
             )
+            node.path_parameters[method] = route.path_parameters
+
     elif isinstance(route, WebSocketRoute):
         node.asgi_handlers["websocket"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),
             handler=route.route_handler,
         )
+        node.path_parameters["websocket"] = route.path_parameters
 
     else:
         node.asgi_handlers["asgi"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),
             handler=route.route_handler,
         )
+        node.path_parameters["asgi"] = route.path_parameters
         node.is_asgi = True
 
 
