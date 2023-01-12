@@ -86,6 +86,6 @@ def test_parse_schema_handle_object() -> None:
         ),
     ),
 )
-def test_parse_schena_handle_enum(schema_type: Any, enum: List[Any], expected: str) -> None:
+def test_parse_schema_handle_enum(schema_type: Any, enum: List[Any], expected: str) -> None:
     result = parse_schema(Schema(type=schema_type, enum=enum))
     assert result.write() == expected
