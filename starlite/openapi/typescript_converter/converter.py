@@ -27,27 +27,67 @@ from starlite.openapi.typescript_converter.types import (
 T = TypeVar("T", bound=BaseModel)
 
 
-def deref(open_api_container: Union[T, dict], components: Components) -> Union[T, dict]:
+def _deref_model(model: T, components: Components) -> None:
+    for field in model.__fields__:
+        if value := getattr(model, field, None):
+            if isinstance(value, Reference):
+                setattr(model, field, deref_container(resolve_ref(value, components=components), components=components))
+            elif isinstance(value, (Schema, (dict, list))):
+                setattr(model, field, deref_container(value, components=components))
+
+
+def _deref_dict(values: dict, components: Components) -> None:
+    for key, value in values.items():
+        if isinstance(value, Reference):
+            values[key] = deref_container(resolve_ref(value, components=components), components=components)
+        elif isinstance(value, (Schema, (dict, list))):
+            values[key] = deref_container(value, components=components)
+
+
+def _deref_list(values: list, components: Components) -> None:
+    for i, value in enumerate(values):
+        if isinstance(value, Reference):
+            values[i] = deref_container(resolve_ref(value, components=components), components=components)
+        elif isinstance(value, (Schema, (dict, list))):
+            values[i] = deref_container(value, components=components)
+
+
+def deref_container(open_api_container: Union[T, dict, list], components: Components) -> Union[T, dict, list]:
+    """Dereference an object that may contain Reference instances.
+
+    Args:
+        open_api_container: Either an OpenAPI content, a dict or a list.
+        components: The OpenAPI schema Components section.
+
+    Returns:
+        A dereferenced object.
+    """
+
     if isinstance(open_api_container, BaseModel):
         copied = open_api_container.copy()
-        for field in open_api_container.__fields__:
-            if value := getattr(copied, field, None):
-                if isinstance(value, Reference):
-                    setattr(copied, field, deref(resolve_ref(value, components=components), components=components))
-                elif isinstance(value, (Schema, dict)):
-                    setattr(copied, field, deref(value, components=components))
-    else:
-        copied = copy(open_api_container)
-        for key, value in copied.items():
-            if isinstance(value, Reference):
-                copied[key] = deref(resolve_ref(value, components=components), components=components)
-            elif isinstance(value, (Schema, dict)):
-                copied[key] = deref(value, components=components)
+        _deref_model(copied, components)
+        return copied
 
+    if isinstance(open_api_container, dict):
+        copied = copy(open_api_container)
+        _deref_dict(copied, components)
+        return copied
+
+    copied = copy(open_api_container)
+    _deref_list(copied, components)
     return copied
 
 
 def resolve_ref(ref: Reference, components: Components) -> Schema:
+    """Resolve a reference object into the actual value it points at.
+
+    Args:
+        ref: A Reference instance.
+        components: The OpenAPI schema Components section.
+
+    Returns:
+        An OpenAPI schema instance.
+    """
     current: Any = components
     for path in [p for p in ref.ref.split("/") if p not in {"#", "components"}]:
         current = current[path] if isinstance(current, dict) else getattr(current, path, None)
@@ -61,15 +101,33 @@ def resolve_ref(ref: Reference, components: Components) -> Schema:
 
 
 def get_openapi_type(value: Optional[Union[Reference, T]], components: Components) -> Optional[T]:
+    """Extract or dereference an OpenAPI container type.
+
+    Args:
+        value: Either a reference or a container type.
+        components: The OpenAPI schema Components section.
+
+    Returns:
+        The extracted container.
+    """
     if isinstance(value, Reference):
-        return deref(resolve_ref(value, components=components), components=components)
-    return deref(value, components=components) if value else None
+        return deref_container(resolve_ref(value, components=components), components=components)
+    return deref_container(value, components=components) if value else None
 
 
 def parse_params(
     params: List[Parameter],
     components: Components,
 ) -> Tuple[TypeScriptInterface, ...]:
+    """Parse request parameters.
+
+    Args:
+        params: An OpenAPI Operation parameters.
+        components: The OpenAPI schema Components section.
+
+    Returns:
+        A tuple of resolved interfaces.
+    """
     cookie_params: List[TypeScriptProperty] = []
     header_params: List[TypeScriptProperty] = []
     path_params: List[TypeScriptProperty] = []
@@ -102,6 +160,15 @@ def parse_params(
 
 
 def parse_body(body: RequestBody, components: Components) -> TypeScriptType:
+    """
+
+    Args:
+        body:
+        components:
+
+    Returns:
+
+    """
     undefined = TypeScriptPrimitive("undefined")
     if body.required:
         return TypeScriptType("RequestBody", undefined)
@@ -140,7 +207,7 @@ def parse_responses(responses: Responses, components: Components) -> Tuple[TypeS
                     [
                         TypeScriptProperty(
                             required=get_openapi_type(header, components=components).required,
-                            key=key,
+                            key=f'"{key}"',
                             value=TypeScriptPrimitive("string"),
                         )
                         for key, header in response.headers.items()
@@ -164,7 +231,7 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
 
     operations: List[TypeScriptNamespace] = []
 
-    for path, path_item in openapi_schema.paths.items():
+    for path_item in openapi_schema.paths.values():
         shared_params = [
             get_openapi_type(p, components=openapi_schema.components) for p in (path_item.parameters or []) if p
         ]
