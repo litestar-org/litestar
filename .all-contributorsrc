@@ -691,6 +691,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "JacobCoffee",
+      "name": "Jacob Coffee",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45884264?v=4",
+      "profile": "https://scriptr.dev/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
