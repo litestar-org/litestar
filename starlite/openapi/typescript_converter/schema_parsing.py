@@ -31,7 +31,8 @@ openapi_to_typescript_type_map: Dict[OpenAPIType, openapi_typescript_equivalent_
     OpenAPIType.STRING: "string",
 }
 
-typescript_namespace_re = re.compile("[a-zA-Z_$][0-9a-zA-Z_$]*")
+invalid_namespace_re = re.compile(r"[^\w+_$]*")
+allowed_key_re = re.compile(r"[\w+_$]*")
 
 
 def normalize_typescript_namespace(value: str, allow_quoted: bool) -> str:
@@ -44,11 +45,13 @@ def normalize_typescript_namespace(value: str, allow_quoted: bool) -> str:
     Returns:
         A normalized value
     """
-    if typescript_namespace_re.fullmatch(value):
-        return value
+    if not allow_quoted and not (value[0].isalpha() or value[0] in {"_", "$"}):
+        raise ValueError(f"invalid typescript namespace {value}")
     if allow_quoted:
+        if allowed_key_re.fullmatch(value):
+            return value
         return f'"{value}"'
-    raise ValueError(f"invalid namespace {value}")  # pragma: no cover
+    return invalid_namespace_re.sub("", value)
 
 
 def is_schema_value(value: Any) -> "TypeGuard[Schema]":
