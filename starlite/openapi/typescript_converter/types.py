@@ -84,7 +84,9 @@ class TypeScriptUnion(TypeScriptElement):
 class TypeScriptPrimitive(TypeScriptElement):
     """A class representing a TypeScript primitive type."""
 
-    type: Literal["string", "number", "boolean", "any", "null", "undefined", "symbol", "object"]
+    type: Literal[
+        "string", "number", "boolean", "any", "null", "undefined", "symbol", "Record<string, unknown>", "unknown[]"
+    ]
 
     def write(self) -> str:
         """Write a typescript primitive type.

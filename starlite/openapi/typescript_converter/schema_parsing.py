@@ -1,3 +1,4 @@
+import re
 from typing import Any, Dict, Literal, Optional, Set, Union, cast, overload
 
 from pydantic_openapi_schema.v3_1_0 import Schema
@@ -16,7 +17,11 @@ from starlite.openapi.typescript_converter.types import (
     TypeScriptUnion,
 )
 
-openapi_to_typescript_type_map: Dict[str, Literal["string", "boolean", "number", "null", "object", "array"]] = {
+openapi_typescript_equivalent_types = Literal[
+    "string", "boolean", "number", "null", "Record<string, unknown>", "unknown[]"
+]
+
+openapi_to_typescript_type_map: Dict[OpenAPIType, openapi_typescript_equivalent_types] = {
     OpenAPIType.ARRAY: "unknown[]",
     OpenAPIType.BOOLEAN: "boolean",
     OpenAPIType.INTEGER: "number",
@@ -25,6 +30,25 @@ openapi_to_typescript_type_map: Dict[str, Literal["string", "boolean", "number",
     OpenAPIType.OBJECT: "Record<string, unknown>",
     OpenAPIType.STRING: "string",
 }
+
+typescript_namespace_re = re.compile("[a-zA-Z_$][0-9a-zA-Z_$]*")
+
+
+def normalize_typescript_namespace(value: str, allow_quoted: bool) -> str:
+    """Normalize a namespace, e.g. variable name, or object key, to values supported by TS.
+
+    Args:
+        value: A string to normalize.
+        allow_quoted: Whether to allow quoting the value.
+
+    Returns:
+        A normalized value
+    """
+    if typescript_namespace_re.fullmatch(value):
+        return value
+    if allow_quoted:
+        return f'"{value}"'
+    raise ValueError(f"invalid namespace {value}")  # pragma: no cover
 
 
 def is_schema_value(value: Any) -> "TypeGuard[Schema]":
@@ -64,7 +88,9 @@ def create_interface(
     """
     parsed_properties = tuple(
         TypeScriptProperty(
-            key=key, value=parse_schema(schema), required=key in required if required is not None else True
+            key=normalize_typescript_namespace(key, allow_quoted=True),
+            value=parse_schema(schema),
+            required=key in required if required is not None else True,
         )
         for key, schema in properties.items()
     )
@@ -96,7 +122,7 @@ def parse_type_schema(schema: Schema) -> Union[TypeScriptPrimitive, TypeScriptLi
             )
         )
     if schema.type in openapi_to_typescript_type_map:
-        return TypeScriptPrimitive(openapi_to_typescript_type_map[schema.type])
+        return TypeScriptPrimitive(openapi_to_typescript_type_map[cast("OpenAPIType", schema.type)])
     raise TypeError(f"received an unexpected openapi type: {schema.type}")  # pragma: no cover
 
 
