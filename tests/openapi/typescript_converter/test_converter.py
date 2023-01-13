@@ -1,9 +1,8 @@
-from openapi.utils import PersonController, PetController
-
 from starlite import Starlite
 from starlite.openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
+from tests.openapi.utils import PersonController, PetController
 
 
 def test_openapi_to_typescript_converter() -> None:
