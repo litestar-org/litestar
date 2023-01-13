@@ -2,13 +2,10 @@
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
-import os
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-import sys
 
-sys.path.append(os.path.abspath("."))
 
 project = "Starlite"
 copyright = "2023, Starlite-API"
@@ -27,7 +24,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_design",
     "myst_parser",
-    "run_examples",
+    "tools.run_examples",
 ]
 
 templates_path = ["_templates"]

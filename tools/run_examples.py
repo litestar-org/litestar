@@ -3,7 +3,6 @@ import logging
 import multiprocessing
 import os
 import re
-import secrets
 import shlex
 import socket
 import subprocess
@@ -11,22 +10,21 @@ import sys
 import time
 from contextlib import contextmanager, redirect_stderr
 from pathlib import Path
-from typing import Generator, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Generator
 
 import httpx
 import uvicorn
-from docutils.nodes import Node, admonition, literal_block
+from docutils.nodes import Node, admonition, literal_block, title
 from sphinx.addnodes import highlightlang
-from sphinx.application import Sphinx
 from sphinx.directives.code import LiteralInclude
+
+if TYPE_CHECKING:
+    from sphinx.application import Sphinx
+    from sphinx.environment import BuildEnvironment
 
 from starlite import Starlite
 
-if TYPE_CHECKING:
-    pass
-
 RGX_RUN = re.compile(r"# +?run:(.*)")
-RGX_SNIPPET = re.compile(r'--8<-- "(.*)"')
 
 AVAILABLE_PORTS = list(range(9000, 9999))
 
@@ -78,7 +76,7 @@ def run_app(path: Path) -> Generator[int, None, None]:
     AVAILABLE_PORTS.append(port)
 
 
-def extract_run_args(content: str) -> tuple[str, list[List[str]]]:
+def extract_run_args(content: str) -> tuple[str, list[list[str]]]:
     """Extract run args from a python file.
 
     Return the file content stripped of the run comments and a list of argument lists
@@ -94,7 +92,7 @@ def extract_run_args(content: str) -> tuple[str, list[List[str]]]:
     return "\n".join(new_lines), run_configs
 
 
-def exec_examples(app_file: Path, run_configs: List[List[str]]) -> str:
+def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
     """Start a server with the example application, run the specified requests against it
     and return their results
     """
@@ -123,16 +121,18 @@ def exec_examples(app_file: Path, run_configs: List[List[str]]) -> str:
     return "\n".join(results)
 
 
-TMP_EXAMPLES_PATH = Path("_tmp_docs_examples")
-
-
 class AutoRunInclude(LiteralInclude):
+    def _make_tmp_filename(self, file: str) -> Path:
+        name = str(Path(file).relative_to(Path.cwd() / "examples")).replace("/", "_")
+        return self.env.tmp_examples_path / name  # type: ignore[attr-defined]
+
     def run(self) -> list[Node]:
+        cwd = Path.cwd()
         language = self.options.get("language")
         if language != "python" or self.options.get("no-run"):
             return super().run()
 
-        rel_filename, filename = self.env.relfn2path(self.arguments[0])
+        filename = self.env.relfn2path(self.arguments[0])[1]
         file = Path(filename)
         content = file.read_text()
         clean_content, run_args = extract_run_args(content)
@@ -140,24 +140,41 @@ class AutoRunInclude(LiteralInclude):
         if not run_args:
             return super().run()
 
-        tmp_file = TMP_EXAMPLES_PATH / secrets.token_hex()
-        self.arguments[0] = str(Path("..") / tmp_file)
+        tmp_file = self._make_tmp_filename(filename)
+
+        self.arguments[0] = tmp_file.relative_to(cwd / "docs")
         tmp_file.write_text(clean_content)
 
         nodes = super().run()
 
-        result = exec_examples(file.relative_to(Path.cwd()), run_args)
+        result = exec_examples(file.relative_to(cwd), run_args)
 
         nodes.append(
-            highlightlang("", literal_block("", result), lang="shell", force=False, linenothreshold=sys.maxsize)
+            admonition(
+                "",
+                title("", "Run it"),
+                highlightlang(
+                    "",
+                    literal_block("", result),
+                    lang="shell",
+                    force=False,
+                    linenothreshold=sys.maxsize,
+                ),
+                literal_block("", result),
+            )
         )
-        nodes.append(admonition("", literal_block("", result)))
 
         return nodes
 
 
-def setup(app: Sphinx) -> dict[str, bool]:
+def on_env_before_read_docs(app: "Sphinx", env: "BuildEnvironment", docnames: set[str]) -> None:
+    tmp_examples_path = Path(app.outdir).parent / "_tmp_examples"
+    tmp_examples_path.mkdir(exist_ok=True)
+    env.tmp_examples_path = tmp_examples_path
+
+
+def setup(app: "Sphinx") -> dict[str, bool]:
     app.add_directive("literalinclude", AutoRunInclude, override=True)
-    TMP_EXAMPLES_PATH.mkdir(exist_ok=True)
+    app.connect("env-before-read-docs", on_env_before_read_docs)
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}
