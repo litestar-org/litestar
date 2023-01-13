@@ -35,6 +35,7 @@ repos:
     rev: v2.2.2
     hooks:
       - id: codespell
+        exclude: "tests/openapi/typescript_converter/test_converter"
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
