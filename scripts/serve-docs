@@ -1,2 +1,0 @@
-#!/bin/sh
-sphinx-autobuild docs docs/_build/ -a -j auto --watch starlite

@@ -1,2 +1,0 @@
-#!/bin/sh
-sphinx-build -M html docs docs/_build/ -W -E -a -j auto --keep-going

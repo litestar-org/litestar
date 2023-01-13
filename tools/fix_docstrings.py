@@ -1,14 +1,25 @@
 import re
 import sys
 from pathlib import Path
-
-from utils import get_indentation, indent
+from typing import Tuple
 
 INLINE_CODE_RGX = re.compile(r"(?<![`:])`([\w -]+?)`")
 REFERENCE_RGX = re.compile(r"\[(.+?)]\[(.+?)]")
 DOCSTRING_RGX = re.compile(r'"""[\w\W]+?"""')
 RGX_CODE_BLOCK = re.compile(r" *```python([\w\W]+?)```")
 RGX_SINGLE_QUOTES = re.compile(r"'(\w+?)'")
+
+
+def indent(string: str, indent_char: str = " ", level: int = 4) -> str:
+    return "\n".join((indent_char * level) + line for line in string.splitlines())
+
+
+def get_indentation(text: str) -> Tuple[str, int]:
+    if match := re.match("^[ \t]+", text):
+        indentation = match.group()
+        indent_char = indentation[0]
+        return indent_char, len(indentation)
+    return " ", 0
 
 
 def fix_inline_code(content: str) -> str:

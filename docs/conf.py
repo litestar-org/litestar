@@ -6,6 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+
 project = "Starlite"
 copyright = "2023, Starlite-API"
 author = "Starlite-API"
@@ -23,6 +24,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_design",
     "myst_parser",
+    "tools.sphinx_ext",
 ]
 
 templates_path = ["_templates"]
