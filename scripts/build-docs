@@ -1,3 +1,3 @@
 #!/bin/sh
 rm -rf docs/_build
-sphinx-build -M html docs docs/_build/ -W -E -a -j 1 --keep-going
+sphinx-build -M html docs docs/_build/ -W -E -a -j auto --keep-going

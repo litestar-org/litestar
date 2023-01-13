@@ -16,7 +16,7 @@ import httpx
 import uvicorn
 from docutils.nodes import Node, admonition, literal_block, title
 from sphinx.addnodes import highlightlang
-from sphinx.directives.code import LiteralInclude
+from sphinx.directives.code import LiteralInclude as BaseLiteralInclude
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -121,28 +121,30 @@ def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
     return "\n".join(results)
 
 
-class AutoRunInclude(LiteralInclude):
-    def _make_tmp_filename(self, file: str) -> Path:
-        name = str(Path(file).relative_to(Path.cwd() / "examples")).replace("/", "_")
-        return self.env.tmp_examples_path / name  # type: ignore[attr-defined]
-
+class LiteralInclude(BaseLiteralInclude):
     def run(self) -> list[Node]:
         cwd = Path.cwd()
         language = self.options.get("language")
+
+        filename = self.arguments[0]
+        if filename.startswith("/examples") and language == "python":
+            file = cwd / filename.lstrip("/")
+            self.arguments[0] = f"../{file.relative_to(cwd)}"
+        else:
+            file = Path(self.env.relfn2path(self.arguments[0])[1])
+
         if language != "python" or self.options.get("no-run"):
             return super().run()
 
-        filename = self.env.relfn2path(self.arguments[0])[1]
-        file = Path(filename)
         content = file.read_text()
         clean_content, run_args = extract_run_args(content)
 
         if not run_args:
             return super().run()
 
-        tmp_file = self._make_tmp_filename(filename)
+        tmp_file = self.env.tmp_examples_path / str(file.relative_to(cwd / "examples")).replace("/", "_")
 
-        self.arguments[0] = tmp_file.relative_to(cwd / "docs")
+        self.arguments[0] = str(tmp_file.relative_to(cwd / "docs"))
         tmp_file.write_text(clean_content)
 
         nodes = super().run()
@@ -168,13 +170,13 @@ class AutoRunInclude(LiteralInclude):
 
 
 def on_env_before_read_docs(app: "Sphinx", env: "BuildEnvironment", docnames: set[str]) -> None:
-    tmp_examples_path = Path(app.outdir).parent / "_tmp_examples"
-    tmp_examples_path.mkdir(exist_ok=True)
+    tmp_examples_path = Path.cwd() / "docs/_build/_tmp_examples"
+    tmp_examples_path.mkdir(exist_ok=True, parents=True)
     env.tmp_examples_path = tmp_examples_path
 
 
 def setup(app: "Sphinx") -> dict[str, bool]:
-    app.add_directive("literalinclude", AutoRunInclude, override=True)
+    app.add_directive("literalinclude", LiteralInclude, override=True)
     app.connect("env-before-read-docs", on_env_before_read_docs)
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}
