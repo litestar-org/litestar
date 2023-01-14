@@ -34,7 +34,6 @@ certain places:
 If any of these files contains an instance of the `Starlite` class, a function named `create_app`,
 or a function annotated as returning a `Starlite` instance, the CLI will pick it up.
 
-
 ## Commands
 
 ### Starlite
@@ -44,10 +43,9 @@ the app will be automatically discovered as described in [the section above](#au
 
 #### Options
 
-| Flag             | Environment variable | Description                                                                       |
-|------------------|----------------------|-----------------------------------------------------------------------------------|
-| `--app`          | `STARLITE_APP`       | Module path to the app in the format of `<modulename>.<submodule>:<app instance>` |
-
+| Flag    | Environment variable | Description                                                                       |
+|---------|----------------------|-----------------------------------------------------------------------------------|
+| `--app` | `STARLITE_APP`       | Module path to the app in the format of `<modulename>.<submodule>:<app instance>` |
 
 #### Run
 
@@ -58,12 +56,14 @@ starlite run
 ```
 
 !!! warning
-    This feature is intended for development purposes only and should not be used to
-    deploy production applications
+This feature is intended for development purposes only and should not be used to
+deploy production applications
 
 
 <!-- markdownlint-disable -->
+
 ##### Options
+
 <!-- markdownlint-restore -->
 
 | Flag             | Environment variable | Description                                                                       |
@@ -73,7 +73,6 @@ starlite run
 | `--host`         | `STARLITE_HOST`      | Bind the server to this host [default: 127.0.0.1]                                 |
 | `--debug`        | `STARLITE_DEBUG`     | Run the application in debug mode                                                 |
 | `--app`          | `STARLITE_APP`       | Module path to the app in the format of `<modulename>.<submodule>:<app instance>` |
-
 
 #### Info
 
@@ -85,7 +84,6 @@ starlite info
 
 ![starlite info](/starlite/images/cli/starlite_info.png)
 
-
 #### Routes
 
 The `routes` command displays a tree view of the routing table
@@ -96,12 +94,10 @@ starlite routes
 
 ![starlite info](/starlite/images/cli/starlite_routes.png)
 
-
 #### Sessions
 
 This command and its subcommands provide management utilities for
 [server-side session backends](/starlite/usage/7-middleware/3-builtin-middlewares/5-session-middleware/#server-side-sessions).
-
 
 ##### Delete
 
@@ -117,6 +113,56 @@ The `clear` subcommand clears all sessions from the backend.
 
 ```shell
 starlite sessions clear
+```
+
+#### OpenAPI
+
+This command provides utilities to generate OpenAPI schema and TypeScript types.
+
+##### Schema
+
+The `schema` subcommand generates OpenAPI specs from the Starlite application, serializing these as either JSON or YAML.
+The serialization format depends on the filename, which is by default `openapi_schema.json`. You can specify a different
+filename using the `--output` flag. For example:
+
+```shell
+starlite openapi schema --output my-specs.yaml
+```
+
+##### TypeScript
+
+The `typescript` subcommand generates TypeScript definitions from the Starlite application's OpenAPI specs.  For example:
+
+```shell
+starlite openapi typescript
+```
+
+By default, this command will output a file called `api-specs.ts`. You can change this using the `--output` option:
+
+```shell
+starlite openapi typescript --output my-types.ts
+```
+
+You can also specify the top level TypeScript namespace that will be created, which by default will be called API:
+
+```typescript
+export namespace API {
+    // ...
+}
+```
+
+To do this use the `--namespace` option:
+
+```shell
+starlite openapi typescript --namespace MyNamespace
+```
+
+Which will result in:
+
+```typescript
+export namespace MyNamespace {
+    // ...
+}
 ```
 
 ## Extending the CLI
