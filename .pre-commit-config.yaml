@@ -141,6 +141,7 @@ repos:
             structlog,
             tortoise_orm,
             uvicorn,
+            jsbeautifier,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.991"
@@ -179,9 +180,10 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
+            jsbeautifier,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.288
+    rev: v1.1.289
     hooks:
       - id: pyright
         exclude: "test_apps|tools"
@@ -222,4 +224,5 @@ repos:
             starlette,
             structlog,
             uvicorn,
+            jsbeautifier,
           ]

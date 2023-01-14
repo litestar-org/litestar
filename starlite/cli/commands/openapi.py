@@ -1,6 +1,8 @@
+from json import dumps
 from pathlib import Path
 
 from click import group, option
+from jsbeautifier import Beautifier
 from yaml import dump as dump_yaml
 
 from starlite import Starlite
@@ -8,6 +10,8 @@ from starlite.cli.utils import StarliteCLIException, StarliteGroup
 from starlite.openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
+
+beautifier = Beautifier()
 
 
 @group(cls=StarliteGroup, name="openapi")
@@ -25,7 +29,7 @@ def generate_openapi_schema(app: Starlite, output: str) -> None:
     if output.lower().endswith(("yml", "yaml")):
         content = dump_yaml(app.openapi_schema.dict(by_alias=True, exclude_none=True), default_flow_style=False)
     else:
-        content = app.openapi_schema.json(by_alias=True, exclude_none=True)
+        content = dumps(app.openapi_schema.dict(by_alias=True, exclude_none=True), indent=4)
 
     try:
         Path(output).write_bytes(content.encode())
@@ -43,6 +47,7 @@ def generate_typescript_specs(app: Starlite, output: str, namespace: str) -> Non
 
     try:
         specs = convert_openapi_to_typescript(app.openapi_schema, namespace)
-        Path(output).write_bytes(specs.write().encode())
+        beautified_output = beautifier.beautify(specs.write())
+        Path(output).write_bytes(beautified_output.encode())
     except OSError as e:
         raise StarliteCLIException(f"failed to write schema to path {output}") from e
