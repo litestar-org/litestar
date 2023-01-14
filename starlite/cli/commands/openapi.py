@@ -20,7 +20,7 @@ def openapi_group() -> None:
 
 
 @openapi_group.command("schema")
-@option("--output", help="output file path", type=str, default="openapi_schema.json")
+@option("--output", help="output file path", type=click.Path(), default="openapi_schema.json", show_default=True)
 def generate_openapi_schema(app: Starlite, output: str) -> None:
     """Generate an OpenAPI Schema."""
     if not app.openapi_schema:
