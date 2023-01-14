@@ -25,6 +25,7 @@ extensions = [
     "sphinx_design",
     "myst_parser",
     "tools.sphinx_ext",
+    "auto_pytabs.sphinx_ext"
 ]
 
 templates_path = ["_templates"]
@@ -61,6 +62,10 @@ autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 # autodoc_typehints = "description"
 autodoc_type_aliases = {"Scope": "starlite.type.asgi_types.Scope"}
+
+auto_pytabs_no_cache = True
+auto_pytabs_min_version = (3, 8)
+auto_pytabs_max_version = (3, 11)
 
 autosectionlabel_prefix_document = True
 

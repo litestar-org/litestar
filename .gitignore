@@ -27,3 +27,4 @@ target/
 coverage.*
 setup.py
 /docs/_build/
+/.auto_pytabs_cache/
