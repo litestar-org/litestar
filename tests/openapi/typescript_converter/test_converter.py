@@ -254,8 +254,8 @@ def test_openapi_to_typescript_converter() -> None:
         "\tfirst_name: string;\n"
         "\tid: string;\n"
         "\tlast_name: string;\n"
-        "\toptional: string;\n"
-        "\tpets: {\n"
+        "\toptional?: string;\n"
+        "\tpets?: {\n"
         "\tage: number;\n"
         "\tname: string;\n"
         '\tspecies?: "Cat" | "Dog" | "Monkey" | "Pig";\n'
