@@ -189,9 +189,9 @@ class ASGIRouter:
                 }
                 await send(shutdown_failure_event)
             raise e
-        else:
-            await self.shutdown()
-            await send(shutdown_event)
+
+        await self.shutdown()
+        await send(shutdown_event)
 
     async def startup(self) -> None:
         """Run any [LifeSpanHandlers][starlite.types.LifeSpanHandler] defined in the application's `.on_startup` list.

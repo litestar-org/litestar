@@ -79,7 +79,7 @@ repos:
             --wrap-summaries=120,
           ]
   - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.2.2
+    rev: 6.2.3
     hooks:
       - id: pydocstyle
         exclude: "test*|examples*"
@@ -106,12 +106,12 @@ repos:
             "flake8-use-pathlib",
           ]
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.16.3
+    rev: v0.16.4
     hooks:
       - id: slotscheck
         exclude: "test_*"
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.15.9"
+    rev: "v2.16.0b0"
     hooks:
       - id: pylint
         exclude: "tests|examples|test_apps"
@@ -181,7 +181,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.287
+    rev: v1.1.288
     hooks:
       - id: pyright
         exclude: "test_apps|tools"
