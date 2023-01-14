@@ -1,14 +1,15 @@
-from json import loads as json_loads
+from json import dumps as json_dumps
 from typing import TYPE_CHECKING
 
 import pytest
-from yaml import unsafe_load as yaml_loads
+from yaml import dump as dump_yaml
 
 from starlite.cli.main import starlite_group as cli_command
+from test_apps.openapi_test_app.main import app as openapi_test_app
 
 if TYPE_CHECKING:
-    from _pytest.monkeypatch import MonkeyPatch
     from click.testing import CliRunner
+    from pytest import MonkeyPatch
     from pytest_mock import MockerFixture
 
 
@@ -17,20 +18,20 @@ def test_openapi_schema_command(
     runner: "CliRunner", mocker: "MockerFixture", monkeypatch: "MonkeyPatch", filename: str
 ) -> None:
     monkeypatch.setenv("STARLITE_APP", "test_apps.openapi_test_app.main:app")
-    mock_path_write_bytes = mocker.patch("pathlib.Path.write_bytes")
+    mock_path_write_text = mocker.patch("pathlib.Path.write_text")
     command = "openapi schema"
 
-    loads = json_loads
+    schema = openapi_test_app.openapi_schema.dict(by_alias=True, exclude_none=True)  # type: ignore[union-attr]
+
+    expected_content = json_dumps(schema, indent=4)
     if filename:
         command += f" --output {filename}"
         if filename.endswith(("yaml", "yml")):
-            loads = yaml_loads  # type: ignore
+            expected_content = dump_yaml(schema, default_flow_style=False)
 
     result = runner.invoke(cli_command, command)
     assert result.exit_code == 0
-    assert mock_path_write_bytes.called
-
-    assert loads(mock_path_write_bytes.call_args[0][0].decode())
+    mock_path_write_text.assert_called_once_with(expected_content)
 
 
 @pytest.mark.parametrize(
@@ -40,7 +41,7 @@ def test_openapi_typescript_command(
     runner: "CliRunner", mocker: "MockerFixture", monkeypatch: "MonkeyPatch", filename: str, namespace: str
 ) -> None:
     monkeypatch.setenv("STARLITE_APP", "test_apps.openapi_test_app.main:app")
-    mock_path_write_bytes = mocker.patch("pathlib.Path.write_bytes")
+    mock_path_write_text = mocker.patch("pathlib.Path.write_text")
     command = "openapi typescript"
 
     if namespace:
@@ -50,4 +51,4 @@ def test_openapi_typescript_command(
 
     result = runner.invoke(cli_command, command)
     assert result.exit_code == 0
-    assert mock_path_write_bytes.called
+    assert mock_path_write_text.called

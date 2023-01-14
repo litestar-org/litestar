@@ -27,7 +27,7 @@ def test_format_is_enabled() -> None:
     assert _format_is_enabled("a") == "[green]Enabled[/]"
 
 
-def test_info_command(mocker: "MockerFixture", runner: "CliRunner") -> None:
+def test_info_command(mocker: "MockerFixture", runner: "CliRunner", app_file: "Path") -> None:
     mock = mocker.patch("starlite.cli.commands.core.show_app_info")
     result = runner.invoke(cli_command, ["info"])
 

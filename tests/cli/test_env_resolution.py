@@ -5,13 +5,7 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 from starlite import Starlite
-from starlite.cli.utils import (
-    AUTODISCOVER_PATHS,
-    StarliteCLIException,
-    StarliteEnv,
-    _autodiscover_app,
-    _path_to_dotted_path,
-)
+from starlite.cli.utils import AUTODISCOVER_PATHS, StarliteEnv, _path_to_dotted_path
 from tests.cli import (
     APP_FILE_CONTENT,
     CREATE_APP_FILE_CONTENT,
@@ -19,11 +13,6 @@ from tests.cli import (
     GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION,
 )
 from tests.cli.conftest import CreateAppFileFixture
-
-
-def test_autodiscover_not_found(tmp_project_dir: Path) -> None:
-    with pytest.raises(StarliteCLIException):
-        _autodiscover_app(None, tmp_project_dir)
 
 
 @pytest.mark.parametrize("env_name,attr_name", [("STARLITE_DEBUG", "debug"), ("STARLITE_RELOAD", "reload")])

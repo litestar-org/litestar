@@ -100,6 +100,7 @@ rich = "*"
 python-dotenv = "*"
 pytest-mock = "*"
 uvicorn = "*"
+jsbeautifier = "^1.14.7"
 
 [tool.poetry.group.docs]
 optional = true

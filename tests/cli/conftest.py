@@ -8,7 +8,6 @@ from _pytest.monkeypatch import MonkeyPatch
 from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
-from starlite.cli.utils import AUTODISCOVER_PATHS
 from tests.cli import APP_FILE_CONTENT
 
 if TYPE_CHECKING:
@@ -18,6 +17,8 @@ if TYPE_CHECKING:
 @pytest.fixture
 def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[List[str]], None]:
     def patcher(paths: List[str]) -> None:
+        from starlite.cli.utils import AUTODISCOVER_PATHS
+
         old_paths = AUTODISCOVER_PATHS[::]
         AUTODISCOVER_PATHS[:] = paths
 
