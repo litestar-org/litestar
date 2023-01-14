@@ -18,6 +18,7 @@ except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
     ) from e
+
 T = TypeVar("T", bound=ASGIApp)
 
 

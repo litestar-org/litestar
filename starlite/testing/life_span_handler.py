@@ -1,10 +1,11 @@
 from math import inf
-from typing import TYPE_CHECKING, Generic, Optional, TypeVar, cast
+from typing import TYPE_CHECKING, Generic, Optional, TypeVar, Union, cast
 
 from anyio import create_memory_object_stream
 from anyio.streams.stapled import StapledObjectStream
 
 if TYPE_CHECKING:
+    from starlite.testing.client import AsyncTestClient, TestClient
     from starlite.types import LifeSpanReceiveMessage  # noqa: F401  # nopycln: import
     from starlite.types import (
         LifeSpanSendMessage,
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
         LifeSpanStartupEvent,
     )
 
-T = TypeVar("T")
+T = TypeVar("T", bound=Union["AsyncTestClient", "TestClient"])
 
 
 class LifeSpanHandler(Generic[T]):
@@ -23,7 +24,7 @@ class LifeSpanHandler(Generic[T]):
         self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](*create_memory_object_stream(inf))
         self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))
 
-        with self.client.portal() as portal:  # type: ignore[attr-defined]
+        with self.client.portal() as portal:
             self.task = portal.start_task_soon(self.lifespan)
             portal.call(self.wait_startup)
 
@@ -63,6 +64,6 @@ class LifeSpanHandler(Generic[T]):
     async def lifespan(self) -> None:
         scope = {"type": "lifespan"}
         try:
-            await self.client.app(scope, self.stream_receive.receive, self.stream_send.send)  # type: ignore
+            await self.client.app(scope, self.stream_receive.receive, self.stream_send.send)
         finally:
             await self.stream_send.send(None)

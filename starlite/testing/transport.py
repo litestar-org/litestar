@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, 
 from urllib.parse import unquote
 
 from anyio import Event
-from httpx import AsyncBaseTransport, BaseTransport, ByteStream, Response
+from httpx import ByteStream, Response
 from typing_extensions import TypedDict
 
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
@@ -13,6 +13,7 @@ from starlite.testing.websocket_test_session import WebSocketTestSession
 if TYPE_CHECKING:
     from httpx import Request
 
+    from starlite.testing.client import AsyncTestClient, TestClient
     from starlite.types import (
         HTTPDisconnectEvent,
         HTTPRequestEvent,
@@ -23,7 +24,8 @@ if TYPE_CHECKING:
         WebSocketScope,
     )
 
-T = TypeVar("T")
+
+T = TypeVar("T", bound=Union["AsyncTestClient", "TestClient"])
 
 
 class ConnectionUpgradeException(Exception):
@@ -40,7 +42,7 @@ class SendReceiveContext(TypedDict):
     context: Optional[Any]
 
 
-class TestClientTransport(AsyncBaseTransport, BaseTransport, Generic[T]):
+class TestClientTransport(Generic[T]):
     def __init__(
         self,
         client: T,
@@ -151,7 +153,7 @@ class TestClientTransport(AsyncBaseTransport, BaseTransport, Generic[T]):
         raw_kwargs: Dict[str, Any] = {"stream": BytesIO()}
 
         try:
-            with self.client.portal() as portal:  # type: ignore [attr-defined]
+            with self.client.portal() as portal:
                 response_complete = portal.call(Event)
                 context: SendReceiveContext = {
                     "response_complete": response_complete,
@@ -162,7 +164,7 @@ class TestClientTransport(AsyncBaseTransport, BaseTransport, Generic[T]):
                     "context": None,
                 }
                 portal.call(
-                    self.client.app,  # type: ignore [attr-defined]
+                    self.client.app,
                     scope,
                     self.create_receive(request=request, context=context),
                     self.create_send(request=request, context=context),

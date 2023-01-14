@@ -11,8 +11,6 @@ from starlite.testing.client.base import (
     fake_http_send_message,
 )
 from starlite.testing.life_span_handler import LifeSpanHandler
-
-# from starlite.testing.async_test_client.transport import AsyncTestClientTransport
 from starlite.testing.transport import TestClientTransport
 from starlite.types import AnyIOBackend, ASGIApp
 
@@ -74,7 +72,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
             headers={"user-agent": "testclient"},
             follow_redirects=True,
             cookies=cookies,
-            transport=TestClientTransport(
+            transport=TestClientTransport(  # type: ignore [arg-type]
                 client=self,
                 raise_server_exceptions=raise_server_exceptions,
                 root_path=root_path,

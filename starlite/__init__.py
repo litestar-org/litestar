@@ -92,6 +92,7 @@ from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from starlite.security import AbstractSecurityConfig
+from starlite.testing.client.async_client import AsyncTestClient
 from starlite.testing.client.sync_client import TestClient
 from starlite.testing.create_test_client import create_test_client
 from starlite.types.partial import Partial
@@ -172,6 +173,7 @@ __all__ = (
     "Template",
     "TemplateConfig",
     "TestClient",
+    "AsyncTestClient",
     "TooManyRequestsException",
     "UploadFile",
     "ValidationException",
