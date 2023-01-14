@@ -30,7 +30,7 @@ def openapi_group() -> None:
 )
 def generate_openapi_schema(app: Starlite, output: Path) -> None:
     """Generate an OpenAPI Schema."""
-    if not app.openapi_schema:
+    if not app.openapi_schema:  # pragma: no cover
         raise StarliteCLIException("Starlite application does not have an OpenAPI schema")
 
     if output.suffix in (".yml", ".yaml"):
@@ -40,7 +40,7 @@ def generate_openapi_schema(app: Starlite, output: Path) -> None:
 
     try:
         output.write_text(content)
-    except OSError as e:
+    except OSError as e:  # pragma: no cover
         raise StarliteCLIException(f"failed to write schema to path {output}") from e
 
 
@@ -55,12 +55,12 @@ def generate_openapi_schema(app: Starlite, output: Path) -> None:
 @option("--namespace", help="namespace to use for the typescript specs", type=str, default="API")
 def generate_typescript_specs(app: Starlite, output: Path, namespace: str) -> None:
     """Generate TypeScript specs from the OpenAPI schema."""
-    if not app.openapi_schema:
+    if not app.openapi_schema:  # pragma: no cover
         raise StarliteCLIException("Starlite application does not have an OpenAPI schema")
 
     try:
         specs = convert_openapi_to_typescript(app.openapi_schema, namespace)
         beautified_output = beautifier.beautify(specs.write())
         output.write_text(beautified_output)
-    except OSError as e:
+    except OSError as e:  # pragma: no cover
         raise StarliteCLIException(f"failed to write schema to path {output}") from e

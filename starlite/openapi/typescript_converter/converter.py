@@ -252,9 +252,9 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
     Returns:
         A string representing the generated types.
     """
-    if not openapi_schema.paths:
+    if not openapi_schema.paths:  # pragma: no cover
         raise ValueError("OpenAPI schema has no paths")
-    if not openapi_schema.components:
+    if not openapi_schema.components:  # pragma: no cover
         raise ValueError("OpenAPI schema has no components")
 
     operations: List[TypeScriptNamespace] = []
