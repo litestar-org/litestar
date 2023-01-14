@@ -168,16 +168,16 @@ class TestClientTransport(BaseTransport):
             return Response(
                 status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
             )
-        else:
-            if not context["response_started"]:  # pragma: no cover
-                if self.raise_server_exceptions:
-                    assert context["response_started"], "TestClient did not receive any response."
-                return Response(
-                    status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
-                )
 
-            stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())
-            response = Response(**raw_kwargs, stream=stream, request=request)
-            setattr(response, "template", context["template"])  # noqa: B010
-            setattr(response, "context", context["context"])  # noqa: B010
-            return response
+        if not context["response_started"]:  # pragma: no cover
+            if self.raise_server_exceptions:
+                assert context["response_started"], "TestClient did not receive any response."
+            return Response(
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR, headers=[], stream=ByteStream(b""), request=request
+            )
+
+        stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())
+        response = Response(**raw_kwargs, stream=stream, request=request)
+        setattr(response, "template", context["template"])  # noqa: B010
+        setattr(response, "context", context["context"])  # noqa: B010
+        return response
