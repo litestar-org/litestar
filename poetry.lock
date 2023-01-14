@@ -131,7 +131,7 @@ sphinx = ["sphinx (>=6.1.3,<7.0.0)"]
 type = "git"
 url = "https://github.com/provinzkraut/AutoPyTabs.git"
 reference = "HEAD"
-resolved_reference = "df8a93554b7eec86dbd48e3a828005a470b98126"
+resolved_reference = "80e4317e86b69962c371dfabd8d40c277463e801"
 
 [[package]]
 name = "autoflake"
