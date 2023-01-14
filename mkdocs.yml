@@ -263,8 +263,6 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - auto_pytabs:
-      min_version: "3.8"
   - pymdownx.details
   - pymdownx.superfences:
       custom_fences:
@@ -299,6 +297,8 @@ plugins:
             line_length: 100
   - mike:
       canonical_version: latest
+  - auto_pytabs:
+      min_version: "3.8"
 hooks:
   - tools/run_examples.py
 watch:
