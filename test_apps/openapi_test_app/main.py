@@ -1,9 +1,11 @@
+from typing import Dict
+
 from starlite import MissingDependencyException, Starlite, get
 from tests.openapi.utils import PersonController, PetController
 
 
 @get("/")
-async def greet() -> dict[str, str]:
+async def greet() -> Dict[str, str]:
     return {"hello": "world"}
 
 

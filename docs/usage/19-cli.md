@@ -56,9 +56,8 @@ starlite run
 ```
 
 !!! warning
-This feature is intended for development purposes only and should not be used to
-deploy production applications
-
+    This feature is intended for development purposes only and should not be used to
+    deploy production applications
 
 <!-- markdownlint-disable -->
 
