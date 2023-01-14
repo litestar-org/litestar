@@ -38,7 +38,7 @@ def generate_openapi_schema(app: Starlite, output: str) -> None:
 
 
 @openapi_group.command("typescript")
-@option("--output", help="output file path", type=str, default="api-specs.ts")
+@option("--output", help="output file path", type=click.Path(), default="api-specs.ts", show_default=True)
 @option("--namespace", help="namespace to use for the typescript specs", type=str, default="API")
 def generate_typescript_specs(app: Starlite, output: str, namespace: str) -> None:
     """Generate TypeScript specs from the OpenAPI schema."""
