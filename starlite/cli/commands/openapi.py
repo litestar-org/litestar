@@ -32,7 +32,7 @@ def generate_openapi_schema(app: Starlite, output: str) -> None:
         content = dumps(app.openapi_schema.dict(by_alias=True, exclude_none=True), indent=4)
 
     try:
-        Path(output).write_bytes(content.encode())
+        Path(output).write_text(content)
     except OSError as e:
         raise StarliteCLIException(f"failed to write schema to path {output}") from e
 
