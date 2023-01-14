@@ -59,7 +59,7 @@ msgspec = ">=0.11.0"
 jinja2 = { version = ">=3.1.2", optional = true }
 mako = { version = ">=1.2.4", optional = true }
 click = {version = "*", optional = true}
-rich = {version = "*", optional = true}
+rich = {version = ">=13.0.0", optional = true}
 jsbeautifier = {version = "*", optional = true}
 importlib-metadata = { version = "*", python = "<3.10" }
 fast-query-parsers = "*"
