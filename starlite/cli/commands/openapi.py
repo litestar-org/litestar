@@ -48,6 +48,6 @@ def generate_typescript_specs(app: Starlite, output: str, namespace: str) -> Non
     try:
         specs = convert_openapi_to_typescript(app.openapi_schema, namespace)
         beautified_output = beautifier.beautify(specs.write())
-        Path(output).write_bytes(beautified_output.encode())
+        Path(output).write_text(beautified_output)
     except OSError as e:
         raise StarliteCLIException(f"failed to write schema to path {output}") from e
