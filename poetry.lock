@@ -1584,6 +1584,21 @@ files = [
 ]
 
 [[package]]
+name = "m2r"
+version = "0.3.1"
+description = "Markdown and reStructuredText in a single file."
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "m2r-0.3.1.tar.gz", hash = "sha256:aafb67fc49cfb1d89e46a3443ac747e15f4bb42df20ed04f067ad9efbee256ab"},
+]
+
+[package.dependencies]
+docutils = "*"
+mistune = "<2"
+
+[[package]]
 name = "mako"
 version = "1.2.4"
 description = "A super-fast templating language that borrows the best ideas from the existing templating languages."
@@ -1761,6 +1776,18 @@ verspec = "*"
 [package.extras]
 dev = ["coverage", "flake8 (>=3.0)", "shtab"]
 test = ["coverage", "flake8 (>=3.0)", "shtab"]
+
+[[package]]
+name = "mistune"
+version = "0.8.4"
+description = "The fastest markdown parser in pure Python"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "mistune-0.8.4-py2.py3-none-any.whl", hash = "sha256:88a1051873018da288eee8538d476dffe1262495144b33ecb586c4ab266bb8d4"},
+    {file = "mistune-0.8.4.tar.gz", hash = "sha256:59a3429db53c50b5c6bcc8a07f8848cb00d7dc8bdb431a4ab41920d201d4756e"},
+]
 
 [[package]]
 name = "mkdocs"
@@ -3931,4 +3958,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "a2091c54bd606b83ba92985f46b46ce072859b87388c0e027e27175a32156de7"
+content-hash = "8211cb3053d4e8a9cd410c5698d02b5e047f02013af14c554da948d1082c0dba"
