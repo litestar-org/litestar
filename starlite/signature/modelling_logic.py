@@ -132,16 +132,13 @@ def create_signature_model(
         dependency_name_set=dependency_name_set,
     )
 
-    try:
-        model: Type[SignatureModel] = create_model(
-            f"{fn_name}_signature_model",
-            __base__=PydanticSignatureModel,
-            __module__=fn_module or "pydantic.main",
-            **field_definitions,
-        )
-        model.return_annotation = return_annotation
-        model.field_plugin_mappings = field_plugin_mappings
-        model.dependency_name_set = {*dependency_name_set, *dependency_names}
-        return model
-    except TypeError as e:
-        raise ImproperlyConfiguredException(f"Error creating signature model for '{fn_name}': '{e}'") from e
+    model: Type[SignatureModel] = create_model(
+        f"{fn_name}_signature_model",
+        __base__=PydanticSignatureModel,
+        __module__=fn_module or "pydantic.main",
+        **field_definitions,
+    )
+    model.return_annotation = return_annotation
+    model.field_plugin_mappings = field_plugin_mappings
+    model.dependency_name_set = {*dependency_name_set, *dependency_names}
+    return model
