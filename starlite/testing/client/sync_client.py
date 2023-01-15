@@ -643,7 +643,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
             ```
         """
         with self.portal() as portal:
-            portal.call(self.set_session_data_async, data)
+            portal.call(self._set_session_data_async, data)
 
     def get_session_data(self) -> Dict[str, Any]:
         """Get session data.
@@ -674,4 +674,4 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
             ```
         """
         with self.portal() as portal:
-            return portal.call(self.get_session_data_async)
+            return portal.call(self._get_session_data_async)

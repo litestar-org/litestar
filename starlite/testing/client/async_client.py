@@ -470,8 +470,8 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore 
             extensions=extensions,
         )
 
-    async def get_session_data_async(self) -> Dict[str, Any]:
-        return await super().get_session_data_async()
+    async def get_session_data(self) -> Dict[str, Any]:
+        return await super()._get_session_data_async()
 
-    async def set_session_data_async(self, data: Dict[str, Any]) -> None:
-        return await super().set_session_data_async(data)
+    async def set_session_data(self, data: Dict[str, Any]) -> None:
+        return await super()._set_session_data_async(data)
