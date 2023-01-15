@@ -109,7 +109,7 @@ def create_exception_html(exc: BaseException, line_limit: int) -> str:
     frames = getinnerframes(exc.__traceback__, line_limit) if exc.__traceback__ else []
     result = []
     for idx, frame in enumerate(reversed(frames)):
-        result.append(create_frame_html(frame=frame, collapsed=(idx > 0)))
+        result.append(create_frame_html(frame=frame, collapsed=idx > 0))
 
     return "".join(result)
 

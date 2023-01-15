@@ -35,6 +35,7 @@ repos:
     rev: v2.2.2
     hooks:
       - id: codespell
+        exclude: "tests/openapi/typescript_converter/test_converter"
   - repo: https://github.com/asottile/blacken-docs
     rev: v1.12.1
     hooks:
@@ -51,7 +52,7 @@ repos:
         exclude: "test_*"
         args: ["-iii", "-ll", "-s=B308,B703"]
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.32.2
+    rev: v0.33.0
     hooks:
       - id: markdownlint
         args:
@@ -78,7 +79,7 @@ repos:
             --wrap-summaries=120,
           ]
   - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.2.2
+    rev: 6.2.3
     hooks:
       - id: pydocstyle
         exclude: "test*|examples*"
@@ -105,12 +106,12 @@ repos:
             "flake8-use-pathlib",
           ]
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.16.3
+    rev: v0.16.4
     hooks:
       - id: slotscheck
         exclude: "test_*"
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.15.9"
+    rev: "v2.16.0b0"
     hooks:
       - id: pylint
         exclude: "tests|examples|test_apps"
@@ -140,6 +141,7 @@ repos:
             structlog,
             tortoise_orm,
             uvicorn,
+            jsbeautifier,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: "v0.991"
@@ -178,9 +180,10 @@ repos:
             types-pyyaml,
             types-redis,
             uvicorn,
+            jsbeautifier,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.287
+    rev: v1.1.289
     hooks:
       - id: pyright
         exclude: "test_apps|tools"
@@ -221,4 +224,5 @@ repos:
             starlette,
             structlog,
             uvicorn,
+            jsbeautifier,
           ]

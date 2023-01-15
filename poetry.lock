@@ -121,15 +121,17 @@ develop = false
 
 [package.dependencies]
 autoflake = "^2.0.0"
-mkdocs = "^1.4.2"
-pymdown-extensions = "^9.9"
 pyupgrade = "^3.3.1"
+
+[package.extras]
+mkdocs = ["mkdocs (>=1.4.2,<2.0.0)"]
+sphinx = ["sphinx (>=6.1.3,<7.0.0)"]
 
 [package.source]
 type = "git"
 url = "https://github.com/provinzkraut/AutoPyTabs.git"
 reference = "HEAD"
-resolved_reference = "1eb9b2370dc4b0a58064f1938026085a7e6cd2f9"
+resolved_reference = "80e4317e86b69962c371dfabd8d40c277463e801"
 
 [[package]]
 name = "autoflake"
@@ -753,6 +755,18 @@ gmpy = ["gmpy"]
 gmpy2 = ["gmpy2"]
 
 [[package]]
+name = "editorconfig"
+version = "0.12.3"
+description = "EditorConfig File Locator and Interpreter for Python"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "EditorConfig-0.12.3-py3-none-any.whl", hash = "sha256:6b0851425aa875b08b16789ee0eeadbd4ab59666e9ebe728e526314c4a2e52c1"},
+    {file = "EditorConfig-0.12.3.tar.gz", hash = "sha256:57f8ce78afcba15c8b18d46b5170848c88d56fd38f05c2ec60dbbfcb8996e89e"},
+]
+
+[[package]]
 name = "email-validator"
 version = "1.3.0"
 description = "A robust email address syntax and deliverability validation library."
@@ -1312,6 +1326,21 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "jsbeautifier"
+version = "1.14.7"
+description = "JavaScript unobfuscator and beautifier."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "jsbeautifier-1.14.7.tar.gz", hash = "sha256:77993254db1ff6f84eb6e1d75e3b6b72cba2ef20813a585b2d81e8e5e3c713c6"},
+]
+
+[package.dependencies]
+editorconfig = ">=0.12.2"
+six = ">=1.13.0"
+
+[[package]]
 name = "lazy-model"
 version = "0.0.5"
 description = ""
@@ -1495,14 +1524,14 @@ mkdocs = ">=1.1"
 
 [[package]]
 name = "mkdocs-material"
-version = "9.0.4"
+version = "9.0.5"
 description = "Documentation that simply works"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "mkdocs_material-9.0.4-py3-none-any.whl", hash = "sha256:f5f94f5daa0e07deb2f192453f9812c66c4bc0cd48078c60bdde32af137f7357"},
-    {file = "mkdocs_material-9.0.4.tar.gz", hash = "sha256:4f429b4e50242544020f0fc21b9e10062418d3cd1e591c040c4c155506250a66"},
+    {file = "mkdocs_material-9.0.5-py3-none-any.whl", hash = "sha256:53194bf8ae7dfb527fef2892a6ee291d3efc7b57d010b04dbb818b4ee88074a5"},
+    {file = "mkdocs_material-9.0.5.tar.gz", hash = "sha256:bbfed71788223b4c548a6e637cb7a9ee5b6ad6593c6d5b04e57c9c4d2c39d76b"},
 ]
 
 [package.dependencies]
@@ -3261,7 +3290,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 
 [extras]
 brotli = ["brotli"]
-cli = ["click", "rich"]
+cli = ["click", "rich", "jsbeautifier"]
 cryptography = ["cryptography"]
 full = ["brotli", "cryptography", "aiomcache", "opentelemetry-instrumentation-asgi", "picologging", "redis", "structlog", "python-jose", "click", "rich"]
 jwt = ["python-jose", "cryptography"]
@@ -3269,11 +3298,11 @@ memcached = ["aiomcache"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
-standard = ["click", "picologging", "rich"]
+standard = ["click", "picologging", "rich", "jsbeautifier"]
 structlog = ["structlog"]
 tortoise-orm = []
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "ea0e7643663abaa4ff45638466a86729b192e44ff571665a1456c0d104ada824"
+content-hash = "6d3d24e15b4cff40108d2c656a7e6336910cdf8b3e2b568c937a59063c57df67"
