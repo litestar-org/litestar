@@ -153,25 +153,11 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
 
     @overload
     async def receive_data(self, mode: Literal["text"]) -> str:
-        """Overload of receive_data.
-
-        Args:
-            mode: Literal value 'text'
-
-        Returns:
-            A string.
-        """
+        ...
 
     @overload
     async def receive_data(self, mode: Literal["binary"]) -> bytes:
-        """Overload of receive_data.
-
-        Args:
-            mode: Literal value 'binary'
-
-        Returns:
-            A byte-string.
-        """
+        ...
 
     async def receive_data(self, mode: Literal["binary", "text"]) -> Union[str, bytes]:
         """Receive an 'websocket.receive' event and returns the data stored on it.
@@ -246,12 +232,10 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
 
     @overload
     async def send_text(self, data: bytes, encoding: str = "utf-8") -> None:
-        """Overload."""
         ...
 
     @overload
     async def send_text(self, data: str) -> None:
-        """Overload."""
         ...
 
     async def send_text(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
@@ -268,12 +252,10 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
 
     @overload
     async def send_bytes(self, data: bytes) -> None:
-        """Overload."""
         ...
 
     @overload
     async def send_bytes(self, data: str, encoding: str = "utf-8") -> None:
-        """Overload."""
         ...
 
     async def send_bytes(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
