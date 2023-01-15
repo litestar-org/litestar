@@ -69,8 +69,8 @@ If you are using [**Session Middleware**](./7-middleware/3-builtin-middlewares/5
 across requests, then you might want to inject or inspect session data outside a request. For this, `TestClient` provides
 two methods:
 
-- [set_session_data][starlite.testing.test_client.TestClient.set_session_data]
-- [get_session_data][starlite.testing.test_client.TestClient.get_session_data]
+- [set_session_data][starlite.testing.client.sync_client.TestClient.set_session_data]
+- [get_session_data][starlite.testing.client.sync_client.TestClient.get_session_data]
 
 !!! important
     - The **Session Middleware** must be enabled in Starlite app provided to the TestClient to use sessions.
@@ -79,11 +79,11 @@ two methods:
       or `poetry install starlite[cryptography]`
 
 ```py title="Setting session data"
---8<-- "examples/testing/set_session_data.py"
+--8<-- "examples/testing/sync/set_session_data.py"
 ```
 
 ```py title="Getting session data"
---8<-- "examples/testing/get_session_data.py"
+--8<-- "examples/testing/sync/get_session_data.py"
 ```
 
 ## Using a blocking portal
@@ -98,5 +98,5 @@ Any tests that are using an instance of `TestClient` can also make use of the bl
 without the test itself being asynchronous.
 
 ```py title="Using a blocking portal"
---8<-- "examples/testing/test_with_portal.py"
+--8<-- "examples/testing/sync/test_with_portal.py"
 ```

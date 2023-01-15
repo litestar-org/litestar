@@ -101,6 +101,7 @@ nav:
           - usage/9-testing/2-create-test-app.md
           - usage/9-testing/3-request-factory.md
           - usage/9-testing/4-pydantic-factories.md
+          - usage/9-testing/5-async-testing.md
       - Plugins:
           - usage/10-plugins/0-plugins-intro.md
           - usage/10-plugins/1-sql-alchemy-plugin.md
@@ -218,6 +219,7 @@ nav:
       - Testing:
           - reference/testing/0-test-client.md
           - reference/testing/1-request-factory.md
+          - reference/testing/2-async-test-client.md
       - Types:
           - reference/types/0-types-intro.md
           - reference/types/1-callable-types.md
@@ -271,7 +273,7 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.magiclink
   - pymdownx.tabbed:
-        alternate_style: true
+      alternate_style: true
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg

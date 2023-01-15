@@ -471,7 +471,64 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore 
         )
 
     async def get_session_data(self) -> Dict[str, Any]:
+        """Get session data.
+
+        Returns:
+            A dictionary containing session data.
+
+        Examples:
+            ```python
+            from starlite import Starlite, post
+            from starlite.middleware.session.memory_backend import MemoryBackendConfig
+
+            session_config = MemoryBackendConfig()
+
+
+            @post(path="/test")
+            def set_session_data(request: Request) -> None:
+                request.session["foo"] == "bar"
+
+
+            app = Starlite(
+                route_handlers=[set_session_data], middleware=[session_config.middleware]
+            )
+
+            async with AsyncTestClient(app=app, session_config=session_config) as client:
+                await client.post("/test")
+                assert await client.get_session_data() == {"foo": "bar"}
+            ```
+        """
         return await super()._get_session_data_async()
 
     async def set_session_data(self, data: Dict[str, Any]) -> None:
+        """Set session data.
+
+        Args:
+            data: Session data
+
+        Returns:
+            None
+
+        Examples:
+            ```python
+            from starlite import Starlite, get
+            from starlite.middleware.session.memory_backend import MemoryBackendConfig
+
+            session_config = MemoryBackendConfig()
+
+
+            @get(path="/test")
+            def get_session_data(request: Request) -> Dict[str, Any]:
+                return request.session
+
+
+            app = Starlite(
+                route_handlers=[get_session_data], middleware=[session_config.middleware]
+            )
+
+            async with AsyncTestClient(app=app, session_config=session_config) as client:
+                await client.set_session_data({"foo": "bar"})
+                assert await client.get("/test").json() == {"foo": "bar"}
+            ```
+        """
         return await super()._set_session_data_async(data)
