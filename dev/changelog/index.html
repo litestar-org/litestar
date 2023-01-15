@@ -15,7 +15,7 @@
       
       
       <link rel="icon" href="../images/starlite-favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.4">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.5">
     
     
       
@@ -23,7 +23,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.9c788c91.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.558e4712.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
@@ -188,7 +188,7 @@
           <div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
       </div>
     </div>
@@ -5524,6 +5524,16 @@
 <!-- markdownlint-disable -->
 
 <h1 id="changelog">Changelog</h1>
+<p>[1.49.0]</p>
+<ul>
+<li>add reserved handler kwarg <code>body</code></li>
+<li>add support for <code>Path</code> alongside <code>PurePath</code> for serialization</li>
+<li>add CLI commands for OpenAPI to TypeScript and OpenAPI schema generation</li>
+<li>ensure HTTP requests with invalid payloads return 400.</li>
+<li>ensure unique OpenAPI operation IDs</li>
+<li>fix issue when response is an empty iterable of DTOs</li>
+<li>fix <code>meter</code> in OpenTelemetry middleware being passed a</li>
+</ul>
 <p>[1.48.1]</p>
 <ul>
 <li>rename <code>enc_hook</code> -&gt; <code>default</code> in <code>encode_json</code></li>
@@ -6283,7 +6293,7 @@
     <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "content.tabs.link", "search.suggest", "search.highlight", "search.share"], "search": "../assets/javascripts/workers/search.e5c33ebb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "latest", "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.ba449ae6.min.js"></script>
+      <script src="../assets/javascripts/bundle.51d95adb.min.js"></script>
       
     
   </body>

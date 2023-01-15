@@ -2,857 +2,857 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/benchmarks/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/changelog/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/migration/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/0-api-reference-intro/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/1-app/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/2-router/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/3-controller/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/5-dto/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/6-enums/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/cache/0-base-cache/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/cache/1-simple-cache/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/cache/2-redis-cache/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/cache/3-memcached-cache/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/config/0-app-config/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/config/1-cache-config/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/config/2-cors-config/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/config/3-csrf-config/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/config/4-compression-config/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/config/5-openapi-config/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/config/6-static-files-config/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/config/7-template-config/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/config/8-logging-config/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/config/9-allowed-hosts-config/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/connection/0-asgi-connection/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/connection/1-request/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/connection/2-websocket/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/contrib/jinja/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/contrib/jwt/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/contrib/mako/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/contrib/opentelemetry/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/datastructures/0-state/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/datastructures/1-cookie/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/datastructures/2-provide/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/datastructures/3-headers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/datastructures/4-background/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/datastructures/5-response-containers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/datastructures/6-upload-file/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/datastructures/7-multi-dicts/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/datastructures/8-url/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/datastructures/9-pagination/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/exceptions/0-base-exceptions/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/exceptions/1-http-exceptions/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/exceptions/2-websocket-exceptions/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/handlers/0-base-handler/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/handlers/1-http-handlers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/handlers/2-websocket-handlers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/handlers/3-asgi-handlers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/0-base/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/1-authentication-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/2-logging-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/3-rate-limit-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/4-compression-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/5-csrf-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/6-exceptions-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/7-cors-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/session-middleware/0-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/session-middleware/1-base-backend/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/session-middleware/2-cookie-backend/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/session-middleware/3-file-backend/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/session-middleware/4-memcached-backend/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/session-middleware/5-memory-backend/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/session-middleware/6-redis-backend/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/middleware/session-middleware/7-sqlalchemy-backend/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/openapi/0-openapi-controller/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/openapi/1-openapi-response-spec/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/params/0-parameter/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/params/1-body/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/params/2-dependency/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/plugins/0-plugin-protocol/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/plugins/1-sqlalchemy-plugin/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/plugins/2-piccolo-orm-plugin/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/plugins/3-tortoise-orm-plugin/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/response/0-base/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/response/1-streaming/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/response/2-file/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/response/3-template/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/response/4-redirect/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/security/0-base/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/security/1-session-auth/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/template/base/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/testing/0-test-client/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/testing/1-request-factory/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/types/0-types-intro/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/types/1-callable-types/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/types/2-asgi-types/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/types/3-helper-types/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/types/4-protocol-types/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/types/5-composite-types/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/types/6-partial-types/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/types/7-file-types/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/utils/0-predicate-utils/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/utils/1-sync-utils/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/utils/2-scope-utils/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/utils/3-exception-utils/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/utils/4-extractor-utils/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/utils/5-sequence-utils/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/utils/6-path-utils/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/reference/utils/7-serialization-utils/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/0-the-starlite-app/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/13-lifecycle-hooks/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/16-templating/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/17-exceptions/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/19-cli/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/4-request-data/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/1-routing/0-routing/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/1-routing/1-registering-routes/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/1-routing/2-routers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/1-routing/3-controllers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/1-routing/4-registering-components-multiple-times/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/1-routing/5-mounting-asgi-apps/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/10-plugins/0-plugins-intro/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/10-plugins/1-sql-alchemy-plugin/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/10-plugins/2-tortoise-orm-plugin/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/10-plugins/3-piccolo-orm-plugin/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/11-data-transfer-objects/0-dto/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/11-data-transfer-objects/1-partial/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/12-openapi/0-openapi-intro/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/12-openapi/1-schema-generation/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/12-openapi/2-route-handler-configuration/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/12-openapi/3-openapi-controller/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/12-openapi/4-viewing-and-accessing-schema/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/12-openapi/5-customizing-pydantic-model-schemas/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/15-caching/0-cache-backends/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/15-caching/1-response-caching/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/15-caching/2-interacting-with-cache/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/18-contrib/0-open-telemetry/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/18-contrib/1-jwt/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/2-route-handlers/0-route-handlers-concept/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/2-route-handlers/1-http-route-handlers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/2-route-handlers/2-websocket-route-handlers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/2-route-handlers/3-asgi-route-handlers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/2-route-handlers/4-route-handler-indexing/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/2-route-handlers/5-handler-opts/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/3-parameters/0-path-parameters/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/3-parameters/1-query-parameters/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/3-parameters/2-header-and-cookie-parameters/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/3-parameters/3-the-parameter-function/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/3-parameters/4-layered-parameters/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/0-responses-intro/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/1-media-type/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/10-custom-responses/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/11-background-tasks/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/12-pagination/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/2-status-codes/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/3-returning-responses/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/4-response-headers/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/5-response-cookies/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/6-redirect-responses/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/7-file-responses/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/8-streaming-responses/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/5-responses/9-template-responses/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/6-dependency-injection/0-dependency-injection-intro/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/6-dependency-injection/1-dependency-kwargs/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/6-dependency-injection/2-overriding-dependencies/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/6-dependency-injection/3-the-provide-class/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/6-dependency-injection/4-dependencies-in-dependencies/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/6-dependency-injection/5-the-dependency-function/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/7-middleware/builtin-middlewares/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/7-middleware/creating-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/7-middleware/middleware-intro/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/7-middleware/using-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/8-security/0-intro/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/8-security/1-abstract-authentication-middleware/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/8-security/2-security-backends/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/8-security/3-guards/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/9-testing/0-intro/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/9-testing/1-test-client/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/9-testing/2-create-test-app/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/9-testing/3-request-factory/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://starlite-api.github.io/starlite/latest/usage/9-testing/4-pydantic-factories/</loc>
-         <lastmod>2023-01-14</lastmod>
+         <lastmod>2023-01-15</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
