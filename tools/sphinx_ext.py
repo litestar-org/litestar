@@ -16,7 +16,7 @@ import httpx
 import uvicorn
 from docutils.nodes import Node, admonition, literal_block, title
 from sphinx.addnodes import highlightlang
-from sphinx.directives.code import LiteralInclude as BaseLiteralInclude
+from auto_pytabs.sphinx_ext import UpgradeLiteralInclude
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -121,7 +121,7 @@ def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
     return "\n".join(results)
 
 
-class LiteralInclude(BaseLiteralInclude):
+class LiteralInclude(UpgradeLiteralInclude):
     def run(self) -> list[Node]:
         cwd = Path.cwd()
         language = self.options.get("language")
