@@ -1,31 +1,21 @@
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
-
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-
+import importlib.metadata
 
 project = "Starlite"
 copyright = "2023, Starlite-API"
 author = "Starlite-API"
-release = "1.48.1"
-
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+# release = "1.48.1"
+release = importlib.metadata.version("starlite")
 
 extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosectionlabel",
-    # "sphinx_toolbox",
-    # "sphinx_toolbox.more_autodoc.genericalias",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_design",
     "myst_parser",
     "tools.sphinx_ext",
-    "auto_pytabs.sphinx_ext"
+    "auto_pytabs.sphinx_ext",
+    "sphinx_copybutton",
 ]
 
 templates_path = ["_templates"]
@@ -42,17 +32,10 @@ intersphinx_mapping = {
 
 
 napoleon_google_docstring = True
-# napoleon_include_init_with_doc = False
-# napoleon_include_private_with_doc = False
 napoleon_include_special_with_doc = True
 napoleon_use_admonition_for_examples = True
 napoleon_use_admonition_for_notes = True
 napoleon_use_admonition_for_references = False
-# napoleon_use_ivar = False
-# napoleon_use_param = True
-# napoleon_use_rtype = True
-# napoleon_preprocess_types = False
-# napoleon_type_aliases = None
 napoleon_attr_annotations = True
 
 autoclass_content = "class"
@@ -60,8 +43,6 @@ autodoc_class_signature = "separated"
 autodoc_default_options = {"special-members": "__init__", "show-inheritance": True}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
-# autodoc_typehints = "description"
-autodoc_type_aliases = {"Scope": "starlite.type.asgi_types.Scope"}
 
 auto_pytabs_no_cache = True
 auto_pytabs_min_version = (3, 8)
@@ -70,12 +51,8 @@ auto_pytabs_max_version = (3, 11)
 autosectionlabel_prefix_document = True
 
 
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
-
 html_theme = "furo"
 html_static_path = ["_static"]
-html_logo = "images/starlite-logo.svg"
 html_favicon = "images/starlite-favicon.ico"
 
 html_theme_options = {
@@ -91,8 +68,20 @@ html_theme_options = {
             "class": "",
         },
     ],
+    "light_logo": "images/starlite-logo-light.svg",
+    "dark_logo": "images/starlite-logo-transparent.svg",
     "source_repository": "https://github.com/starlite-api/starlite",
     "source_branch": "main",
     "source_directory": "docs/",
-    "dark_css_variables": {"color-sidebar-background": "#1d2433", "color-background-primary": "#0c101a"},
+    "sidebar_hide_name": True,
+    "dark_css_variables": {
+        "color-sidebar-background": "#1d2433",
+        "color-background-primary": "#0c101a",
+        "color-brand-content": "#ffae57",
+        "color-brand-primary": "#ffae57",
+    },
+    "light_css_variables": {
+        "color-brand-content": "#f2830d",
+        "color-brand-primary": "#f2830d",
+    },
 }

@@ -231,12 +231,10 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
 
     @overload
     async def send_text(self, data: bytes, encoding: str = "utf-8") -> None:
-        """Overload."""
         ...
 
     @overload
     async def send_text(self, data: str) -> None:
-        """Overload."""
         ...
 
     async def send_text(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
@@ -253,12 +251,10 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
 
     @overload
     async def send_bytes(self, data: bytes) -> None:
-        """Overload."""
         ...
 
     @overload
     async def send_bytes(self, data: str, encoding: str = "utf-8") -> None:
-        """Overload."""
         ...
 
     async def send_bytes(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
