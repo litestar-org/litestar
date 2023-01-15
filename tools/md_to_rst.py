@@ -5,11 +5,12 @@ from typing import Tuple
 import m2r
 
 
-INLINE_CODE_RGX = re.compile(r"(?<![`:])`([\w -]+?)`")
+INLINE_CODE_RGX = re.compile(r"(?<![`:\[])`([\w -]+?)`")
 REFERENCE_RGX = re.compile(r"\[(.+?)]\[(.+?)]")
 DOCSTRING_RGX = re.compile(r'"""[\w\W]+?"""')
-RGX_CODE_BLOCK = re.compile(r" *```python([\w\W]+?)```")
-RGX_SINGLE_QUOTES = re.compile(r"'(\w+?)'")
+CODE_BLOCK_RGX = re.compile(r" *```python([\w\W]+?)```")
+SINGLE_QUOTES_RFGX = re.compile(r"'(\w+?)'")
+MD_CODE_REF_RGX = re.compile(r"\[`(.+?)`]")
 
 
 def indent(string: str, indent_char: str = " ", level: int = 4) -> str:
@@ -29,7 +30,7 @@ def fix_inline_code(content: str) -> str:
 
 
 def fix_single_quoted_ref(content: str) -> str:
-    return RGX_SINGLE_QUOTES.sub(r"``\g<1>``", content)
+    return SINGLE_QUOTES_RFGX.sub(r"``\g<1>``", content)
 
 
 def fix_mkdocstrings_references(content: str) -> str:
@@ -58,7 +59,7 @@ def fix_mkdocstrings_references(content: str) -> str:
 
 
 def fix_code_blocks(content: str) -> str:
-    for match in RGX_CODE_BLOCK.finditer(content):
+    for match in CODE_BLOCK_RGX.finditer(content):
         block = match.group(0)
         code = match.group(1)
         indent_char, indent_level = get_indentation(block)
@@ -76,6 +77,10 @@ def fix_docstrings(content: str) -> str:
         content = content.replace(docstring, fixed_docstring)
 
     return content
+
+
+def fix_code_ref_links(content: str) -> str:
+    return MD_CODE_REF_RGX.sub(r"[\g<1>]", content)
 
 
 def _make_literal_include_block(target: str, caption: str | None = None) -> str:
@@ -146,7 +151,9 @@ def convert_md_to_rst(source_path: Path) -> None:
     content = fix_admonitions(content)
     content = fix_mkdocstrings_references(content)
     content = fix_single_quoted_ref(content)
+    content = fix_code_ref_links(content)
     content = m2r.convert(content)
+    target_path.parent.mkdir(parents=True, exist_ok=True)
     target_path.write_text(content)
 
 
