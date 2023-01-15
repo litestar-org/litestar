@@ -2,7 +2,7 @@ from typing import Optional
 
 from click import Context, group, option, pass_context
 
-from .commands import core, openapi, sessions
+from .commands import core, schema, sessions
 from .utils import StarliteEnv, StarliteExtensionGroup
 
 
@@ -21,4 +21,4 @@ starlite_group.add_command(core.info_command)
 starlite_group.add_command(core.run_command)
 starlite_group.add_command(core.routes_command)
 starlite_group.add_command(sessions.sessions_group)
-starlite_group.add_command(openapi.openapi_group)
+starlite_group.add_command(schema.schema_group)
