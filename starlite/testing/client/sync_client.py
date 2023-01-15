@@ -1,5 +1,4 @@
 from contextlib import ExitStack
-from http.cookiejar import CookieJar
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -13,15 +12,10 @@ from typing import (
 )
 from urllib.parse import urljoin
 
-from httpx import USE_CLIENT_DEFAULT, Client, Cookies, Request, Response
+from httpx import USE_CLIENT_DEFAULT, Client, Response
 
 from starlite import HttpMethod, ImproperlyConfiguredException
-from starlite.datastructures import MutableScopeHeaders
-from starlite.testing.client.base import (
-    BaseTestClient,
-    fake_asgi_connection,
-    fake_http_send_message,
-)
+from starlite.testing.client.base import BaseTestClient
 from starlite.testing.life_span_handler import LifeSpanHandler
 from starlite.testing.transport import ConnectionUpgradeException, TestClientTransport
 from starlite.types import AnyIOBackend, ASGIApp
@@ -49,7 +43,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=ASGIApp)
 
 
-class TestClient(Client, BaseTestClient, Generic[T]):
+class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
     lifespan_handler: LifeSpanHandler
     exit_stack: "ExitStack"
 
@@ -85,6 +79,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):
             backend=backend,
             backend_options=backend_options,
             session_config=session_config,
+            cookies=cookies,
         )
 
         Client.__init__(
@@ -616,32 +611,6 @@ class TestClient(Client, BaseTestClient, Generic[T]):
             return {}
         return self.get_session_data()
 
-    async def _set_session_data_async(self, data: Dict[str, Any]) -> None:
-        # TODO: Expose this in the async client
-        mutable_headers = MutableScopeHeaders()
-        await self.session_backend.store_in_message(
-            scope_session=data,
-            message=fake_http_send_message(mutable_headers),
-            connection=fake_asgi_connection(
-                app=self.app,
-                cookies=dict(self.cookies),
-            ),
-        )
-        response = Response(200, request=Request("GET", self.base_url), headers=mutable_headers.headers)
-
-        cookies = Cookies(CookieJar())
-        cookies.extract_cookies(response)
-        self.cookies.update(cookies)
-
-    async def _get_session_data_async(self) -> Dict[str, Any]:
-        # TODO: Expose this in the async client
-        return await self.session_backend.load_from_connection(
-            connection=fake_asgi_connection(
-                app=self.app,
-                cookies=dict(self.cookies),
-            ),
-        )
-
     def set_session_data(self, data: Dict[str, Any]) -> None:
         """Set session data.
 
@@ -674,7 +643,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):
             ```
         """
         with self.portal() as portal:
-            portal.call(self._set_session_data_async, data)
+            portal.call(self.set_session_data_async, data)
 
     def get_session_data(self) -> Dict[str, Any]:
         """Get session data.
@@ -705,4 +674,4 @@ class TestClient(Client, BaseTestClient, Generic[T]):
             ```
         """
         with self.portal() as portal:
-            return portal.call(self._get_session_data_async)
+            return portal.call(self.get_session_data_async)

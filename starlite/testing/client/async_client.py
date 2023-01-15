@@ -1,21 +1,15 @@
 from contextlib import AsyncExitStack
-from http.cookiejar import CookieJar
 from typing import TYPE_CHECKING, Any, Dict, Generic, Mapping, Optional, TypeVar, Union
 
 from starlite import HttpMethod
-from starlite.datastructures import MutableScopeHeaders
 from starlite.exceptions import MissingDependencyException
-from starlite.testing.client.base import (
-    BaseTestClient,
-    fake_asgi_connection,
-    fake_http_send_message,
-)
+from starlite.testing.client.base import BaseTestClient
 from starlite.testing.life_span_handler import LifeSpanHandler
 from starlite.testing.transport import TestClientTransport
 from starlite.types import AnyIOBackend, ASGIApp
 
 try:
-    from httpx import USE_CLIENT_DEFAULT, AsyncClient, Cookies, Request, Response
+    from httpx import USE_CLIENT_DEFAULT, AsyncClient, Response
 except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
@@ -42,7 +36,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=ASGIApp)
 
 
-class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
+class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore [misc]
     lifespan_handler: LifeSpanHandler
     exit_stack: "AsyncExitStack"
 
@@ -57,6 +51,20 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
         session_config: Optional["BaseBackendConfig"] = None,
         cookies: Optional["CookieTypes"] = None,
     ):
+        """An Async client implementation providing a context manager for testing applications asynchronusly.
+
+        Args:
+            app: The instance of [Starlite][starlite.app.Starlite] under test.
+            base_url: URL scheme and domain for test request paths, e.g. 'http://testserver'.
+            raise_server_exceptions: Flag for the underlying test client to raise server exceptions instead of
+                wrapping them in an HTTP response.
+            root_path: Path prefix for requests.
+            backend: The async backend to use, options are "asyncio" or "trio".
+            backend_options: 'anyio' options.
+            session_config: Configuration for Session Middleware class to create raw session cookies for request to the
+                route handlers.
+            cookies: Cookies to set on the client.
+        """
         BaseTestClient.__init__(
             self,
             app=app,
@@ -64,6 +72,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
             backend=backend,
             backend_options=backend_options,
             session_config=session_config,
+            cookies=cookies,
         )
         AsyncClient.__init__(
             self,
@@ -461,26 +470,8 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):
             extensions=extensions,
         )
 
-    async def set_session_data_async(self, data: Dict[str, Any]) -> None:
-        mutable_headers = MutableScopeHeaders()
-        await self.session_backend.store_in_message(
-            scope_session=data,
-            message=fake_http_send_message(mutable_headers),
-            connection=fake_asgi_connection(
-                app=self.app,
-                cookies=dict(self.cookies),
-            ),
-        )
-        response = Response(200, request=Request("GET", self.base_url), headers=mutable_headers.headers)
-
-        cookies = Cookies(CookieJar())
-        cookies.extract_cookies(response)
-        self.cookies.update(cookies)
-
     async def get_session_data_async(self) -> Dict[str, Any]:
-        return await self.session_backend.load_from_connection(
-            connection=fake_asgi_connection(
-                app=self.app,
-                cookies=dict(self.cookies),
-            ),
-        )
+        return await super().get_session_data_async()
+
+    async def set_session_data_async(self, data: Dict[str, Any]) -> None:
+        return await super().set_session_data_async(data)

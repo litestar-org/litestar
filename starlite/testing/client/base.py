@@ -1,19 +1,22 @@
 import warnings
 from contextlib import contextmanager
+from http.cookiejar import CookieJar
 from typing import TYPE_CHECKING, Any, Dict, Generator, Generic, Optional, TypeVar, cast
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 
 from starlite import ASGIConnection, ImproperlyConfiguredException
-from starlite.datastructures import MutableScopeHeaders  # noqa: TC001
+from starlite.datastructures import MutableScopeHeaders
 from starlite.exceptions import MissingDependencyException
 from starlite.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
 
 if TYPE_CHECKING:
+    from httpx._types import CookieTypes
+
     from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
     from starlite.middleware.session.cookie_backend import CookieBackend
 try:
-    pass
+    from httpx import Cookies, Request, Response
 except ImportError as e:
     raise MissingDependencyException(
         "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
@@ -55,7 +58,15 @@ class BaseTestClient(Generic[T]):
     __test__ = False
     blocking_portal: "BlockingPortal"
 
-    __slots__ = "app", "base_url", "backend", "backend_options", "session_config", "_session_backend"
+    __slots__ = (
+        "app",
+        "base_url",
+        "backend",
+        "backend_options",
+        "session_config",
+        "_session_backend",
+        "cookies",
+    )
 
     def __init__(
         self,
@@ -64,6 +75,7 @@ class BaseTestClient(Generic[T]):
         backend: AnyIOBackend = "asyncio",
         backend_options: Optional[Dict[str, Any]] = None,
         session_config: Optional["BaseBackendConfig"] = None,
+        cookies: Optional["CookieTypes"] = None,
     ):
         if "." not in base_url:
             warnings.warn(
@@ -75,8 +87,10 @@ class BaseTestClient(Generic[T]):
         if session_config:
             self._session_backend = session_config._backend_class(config=session_config)
         self.app = app
+        self.base_url = base_url
         self.backend = backend
         self.backend_options = backend_options
+        self.cookies = cookies
 
     @property
     def session_backend(self) -> "BaseSessionBackend":
@@ -104,3 +118,84 @@ class BaseTestClient(Generic[T]):
     def _create_session_cookies(backend: "CookieBackend", data: Dict[str, Any]) -> Dict[str, str]:
         encoded_data = backend.dump_data(data=data)
         return {cookie.key: cast("str", cookie.value) for cookie in backend._create_session_cookies(encoded_data)}
+
+    async def set_session_data_async(self, data: Dict[str, Any]) -> None:
+        """Set session data.
+
+        Args:
+            data: Session data
+
+        Returns:
+            None
+
+        Examples:
+            ```python
+            from starlite import Starlite, get
+            from starlite.middleware.session.memory_backend import MemoryBackendConfig
+
+            session_config = MemoryBackendConfig()
+
+
+            @get(path="/test")
+            def get_session_data(request: Request) -> Dict[str, Any]:
+                return request.session
+
+
+            app = Starlite(
+                route_handlers=[get_session_data], middleware=[session_config.middleware]
+            )
+
+            with AsyncTestClient(app=app, session_config=session_config) as client:
+                await client.set_session_data({"foo": "bar"})
+                assert await client.get("/test").json() == {"foo": "bar"}
+            ```
+        """
+        mutable_headers = MutableScopeHeaders()
+        await self.session_backend.store_in_message(
+            scope_session=data,
+            message=fake_http_send_message(mutable_headers),
+            connection=fake_asgi_connection(
+                app=self.app,
+                cookies=dict(self.cookies),  # type: ignore [arg-type]
+            ),
+        )
+        response = Response(200, request=Request("GET", self.base_url), headers=mutable_headers.headers)
+
+        cookies = Cookies(CookieJar())
+        cookies.extract_cookies(response)
+        self.cookies.update(cookies)  # type: ignore [union-attr]
+
+    async def get_session_data_async(self) -> Dict[str, Any]:
+        """Get session data.
+
+        Returns:
+            A dictionary containing session data.
+
+        Examples:
+            ```python
+            from starlite import Starlite, post
+            from starlite.middleware.session.memory_backend import MemoryBackendConfig
+
+            session_config = MemoryBackendConfig()
+
+
+            @post(path="/test")
+            def set_session_data(request: Request) -> None:
+                request.session["foo"] == "bar"
+
+
+            app = Starlite(
+                route_handlers=[set_session_data], middleware=[session_config.middleware]
+            )
+
+            with AsyncTestClient(app=app, session_config=session_config) as client:
+                await client.post("/test")
+                assert await client.get_session_data() == {"foo": "bar"}
+            ```
+        """
+        return await self.session_backend.load_from_connection(
+            connection=fake_asgi_connection(
+                app=self.app,
+                cookies=dict(self.cookies),  # type: ignore [arg-type]
+            ),
+        )
