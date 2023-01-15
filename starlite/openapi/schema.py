@@ -209,7 +209,7 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
         return OpenAPI310PydanticSchema(schema_class=convert_dataclass_to_model(field_type))
     if is_typeddict_typeguard(field_type):
         return OpenAPI310PydanticSchema(schema_class=convert_typeddict_to_model(field_type))
-    if isinstance(field_type, EnumMeta):
+    if isinstance(field_type, (EnumMeta, Enum)):
         enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
         openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
         return Schema(type=openapi_type, enum=enum_values)

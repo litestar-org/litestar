@@ -189,9 +189,8 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
                 from picologging import config, getLogger
             except ImportError as e:  # pragma: no cover
                 raise MissingDependencyException("picologging is not installed") from e
-            else:
-                values = self.dict(exclude_none=True, exclude={"incremental"})
 
+            values = self.dict(exclude_none=True, exclude={"incremental"})
         else:
             from logging import config, getLogger  # type: ignore[no-redef]
 

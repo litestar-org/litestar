@@ -595,8 +595,8 @@ class TestClient(Client, Generic[T]):
             )
         except ConnectionUpgradeException as exc:
             return exc.session
-        else:
-            raise RuntimeError("Expected WebSocket upgrade")  # pragma: no cover
+
+        raise RuntimeError("Expected WebSocket upgrade")  # pragma: no cover
 
     @deprecated("1.34.0", alternative="set_session_data", pending=True)
     def create_session_cookies(self, session_data: Dict[str, Any]) -> Dict[str, str]:

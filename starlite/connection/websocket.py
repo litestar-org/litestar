@@ -152,25 +152,11 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
 
     @overload
     async def receive_data(self, mode: Literal["text"]) -> str:
-        """Overload of receive_data.
-
-        Args:
-            mode: Literal value ``text``
-
-        Returns:
-            A string.
-        """
+        ...
 
     @overload
     async def receive_data(self, mode: Literal["binary"]) -> bytes:
-        """Overload of receive_data.
-
-        Args:
-            mode: Literal value ``binary``
-
-        Returns:
-            A byte-string.
-        """
+        ...
 
     async def receive_data(self, mode: Literal["binary", "text"]) -> Union[str, bytes]:
         """Receive an 'websocket.receive' event and returns the data stored on it.
