@@ -19,7 +19,7 @@ def test_openapi_schema_command(
 ) -> None:
     monkeypatch.setenv("STARLITE_APP", "test_apps.openapi_test_app.main:app")
     mock_path_write_text = mocker.patch("pathlib.Path.write_text")
-    command = "openapi schema"
+    command = "schema openapi"
 
     schema = openapi_test_app.openapi_schema.dict(by_alias=True, exclude_none=True)  # type: ignore[union-attr]
 
@@ -42,7 +42,7 @@ def test_openapi_typescript_command(
 ) -> None:
     monkeypatch.setenv("STARLITE_APP", "test_apps.openapi_test_app.main:app")
     mock_path_write_text = mocker.patch("pathlib.Path.write_text")
-    command = "openapi typescript"
+    command = "schema typescript"
 
     if namespace:
         command += f" --namespace {namespace}"

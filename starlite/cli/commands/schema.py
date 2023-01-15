@@ -15,12 +15,12 @@ from starlite.openapi.typescript_converter.converter import (
 beautifier = Beautifier()
 
 
-@group(cls=StarliteGroup, name="openapi")
-def openapi_group() -> None:
-    """Manage server-side openapi."""
+@group(cls=StarliteGroup, name="schema")
+def schema_group() -> None:
+    """Manage server-side OpenAPI schemas."""
 
 
-@openapi_group.command("schema")
+@schema_group.command("openapi")
 @option(
     "--output",
     help="output file path",
@@ -44,7 +44,7 @@ def generate_openapi_schema(app: Starlite, output: Path) -> None:
         raise StarliteCLIException(f"failed to write schema to path {output}") from e
 
 
-@openapi_group.command("typescript")
+@schema_group.command("typescript")
 @option(
     "--output",
     help="output file path",
