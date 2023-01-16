@@ -14,11 +14,10 @@ from typing import (
 )
 
 from pydantic import BaseConfig, Extra, validate_arguments
-from pydantic.fields import ModelField, Undefined
 
-from starlite.constants import EXTRA_KEY_REQUIRED, EXTRA_KEY_VALUE_TYPE
 from starlite.datastructures.provide import Provide
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.signature.models import SignatureField
 from starlite.types import (
     Dependencies,
     Empty,
@@ -104,7 +103,7 @@ class BaseRouteHandler(Generic[T]):
         """
         self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty
         self._resolved_guards: Union[List[Guard], EmptyType] = Empty
-        self._resolved_layered_parameters: Union[Dict[str, "ModelField"], EmptyType] = Empty
+        self._resolved_layered_parameters: Union[Dict[str, "SignatureField"], EmptyType] = Empty
         self.dependencies = dependencies
         self.exception_handlers = exception_handlers
         self.guards = guards
@@ -156,30 +155,15 @@ class BaseRouteHandler(Generic[T]):
 
         return list(reversed(layers))
 
-    def resolve_layered_parameters(self) -> Dict[str, "ModelField"]:
+    def resolve_layered_parameters(self) -> ParametersMap:
         """Return all parameters declared above the handler, transforming them into pydantic ModelField instances."""
         if self._resolved_layered_parameters is Empty:
-            self._resolved_layered_parameters = {}
-            parameters: ParametersMap = {}
-            for layer in self.ownership_layers:
-                parameters.update(getattr(layer, "parameters", None) or {})
+            self._resolved_layered_parameters: ParametersMap = {}
 
-            for key, parameter in parameters.items():
-                is_required = parameter.extra[EXTRA_KEY_REQUIRED]
-                value_type = parameter.extra[EXTRA_KEY_VALUE_TYPE]
-                if value_type is Undefined:
-                    value_type = Any
-                default_value = parameter.default if parameter.default is not Undefined else ...
-                self._resolved_layered_parameters[key] = ModelField(
-                    name=key,
-                    type_=value_type,
-                    field_info=parameter,
-                    default=default_value,
-                    model_config=ParameterConfig,
-                    class_validators=None,
-                    required=is_required,
-                )
-        return cast("Dict[str, ModelField]", self._resolved_layered_parameters)
+            for layer in self.ownership_layers:
+                self._resolved_layered_parameters.update(getattr(layer, "parameters", None) or {})
+
+        return cast("ParametersMap", self._resolved_layered_parameters)
 
     def resolve_guards(self) -> List[Guard]:
         """Return all guards in the handlers scope, starting from highest to current layer."""

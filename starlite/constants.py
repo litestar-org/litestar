@@ -1,10 +1,5 @@
 DEFAULT_ALLOWED_CORS_HEADERS = {"Accept", "Accept-Language", "Content-Language", "Content-Type"}
 DEFAULT_CHUNK_SIZE = 1024 * 128  # 128KB
-EXTRA_KEY_IS_DEPENDENCY = "is_dependency"
-EXTRA_KEY_IS_PARAMETER = "is_parameter"
-EXTRA_KEY_REQUIRED = "required"
-EXTRA_KEY_SKIP_VALIDATION = "skip_validation"
-EXTRA_KEY_VALUE_TYPE = "value_type"
 HTTP_RESPONSE_BODY = "http.response.body"
 HTTP_RESPONSE_START = "http.response.start"
 ONE_MEGABYTE = 1024 * 1024

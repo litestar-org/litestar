@@ -10,7 +10,6 @@ from pydantic_openapi_schema.v3_1_0.schema import Schema
 
 from starlite import Controller, MediaType, Parameter, Provide, Starlite, get
 from starlite.app import DEFAULT_OPENAPI_CONFIG
-from starlite.constants import EXTRA_KEY_REQUIRED
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi import schema

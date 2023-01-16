@@ -6,11 +6,11 @@ from pydantic.fields import FieldInfo, Undefined
 from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
+from starlite.params import Dependency, DependencyKwarg
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
 from starlite.signature.models import PydanticSignatureModel, SignatureModel
 from starlite.signature.parameter import SignatureParameter
-from starlite.utils import is_dependency_field
 from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
@@ -48,7 +48,7 @@ def create_field_definition_from_parameter(parameter: SignatureParameter) -> Tup
         tuple[Any, Any]
     """
     if parameter.should_skip_validation:
-        if is_dependency_field(parameter.default):
+        if isinstance(parameter.default, DependencyKwarg):
             return Any, parameter.default.default
         return Any, ...
 
@@ -90,7 +90,7 @@ def parse_fn_signature(
         for param_name, param_def in signature.parameters.items()
         if param_name not in ("self", "cls")
     ):
-        if is_dependency_field(parameter.default) and parameter.name not in dependency_name_set:
+        if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
             if not parameter.optional and (
                 isinstance(parameter.default, FieldInfo) and parameter.default.default is Undefined
             ):
@@ -141,4 +141,5 @@ def create_signature_model(
     model.return_annotation = return_annotation
     model.field_plugin_mappings = field_plugin_mappings
     model.dependency_name_set = {*dependency_name_set, *dependency_names}
+    model.populate_signature_fields()
     return model

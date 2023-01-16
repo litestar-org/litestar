@@ -1,12 +1,11 @@
 from typing import TYPE_CHECKING, Any, NamedTuple, Set
 
-from pydantic.fields import Undefined
-
-from starlite.constants import EXTRA_KEY_REQUIRED
 from starlite.enums import ParamType
+from starlite.signature.models import SignatureField
+from starlite.types import Empty
 
 if TYPE_CHECKING:
-    from pydantic.fields import FieldInfo
+    pass
 
 
 class ParameterDefinition(NamedTuple):
@@ -21,24 +20,24 @@ class ParameterDefinition(NamedTuple):
 
 
 def create_parameter_definition(
-    allow_none: bool, field_info: "FieldInfo", field_name: str, path_parameters: Set[str], is_sequence: bool
+    signature_field: "SignatureField",
+    field_name: str,
+    path_parameters: Set[str],
 ) -> ParameterDefinition:
     """Create a ParameterDefinition for the given pydantic FieldInfo instance and inserts it into the correct parameter
     set.
 
     Args:
-        allow_none: Whether 'None' is an allowed value for the parameter.
-        field_info: A pydantic field info.
+        signature_field: SignatureField instance.
         field_name: The field's name.
         path_parameters: A set of path parameter names.
-        is_sequence: Whether the value of the parameter is a sequence.
 
     Returns:
         A ParameterDefinition tuple.
     """
-    extra = field_info.extra
-    is_required = extra.get(EXTRA_KEY_REQUIRED, True)
-    default_value = field_info.default if field_info.default is not Undefined else None
+    extra = signature_field.extra
+    is_required = not signature_field.is_optional
+    default_value = signature_field.default_value if signature_field.default_value is not Empty else None
 
     field_alias = extra.get(ParamType.QUERY) or field_name
     param_type = ParamType.QUERY
@@ -58,8 +57,8 @@ def create_parameter_definition(
         field_name=field_name,
         field_alias=field_alias,
         default_value=default_value,
-        is_required=is_required and (default_value is None and not allow_none),
-        is_sequence=is_sequence,
+        is_required=is_required and (default_value is None and not signature_field.allow_none),
+        is_sequence=signature_field.is_sequence,
     )
 
 

@@ -26,8 +26,6 @@ from .callable_types import ExceptionHandler
 
 if TYPE_CHECKING:
 
-    from pydantic.fields import FieldInfo  # noqa: TC004
-
     from starlite.datastructures.cookie import Cookie  # noqa: TC004
     from starlite.datastructures.provide import Provide  # noqa: TC004
     from starlite.datastructures.response_header import ResponseHeader  # noqa: TC004
@@ -35,12 +33,13 @@ if TYPE_CHECKING:
         DefineMiddleware,
         MiddlewareProtocol,
     )
+    from starlite.params import Parameter
 else:
     BaseHTTPMiddleware = Any
     Cookie = Any
     DefineMiddleware = Any
-    FieldInfo = Any
     MiddlewareProtocol = Any
+    Parameter = Any
     Provide = Any
     ResponseHeader = Any
 
@@ -49,7 +48,7 @@ T = TypeVar("T")
 
 Dependencies = Dict[str, Provide]
 ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
-ParametersMap = Dict[str, FieldInfo]
+ParametersMap = Dict[str, Parameter]
 ResponseCookies = List[Cookie]
 ResponseHeadersMap = Dict[str, ResponseHeader]
 StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]

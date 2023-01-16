@@ -1,45 +1,145 @@
-from typing import Any, Dict, List, Optional, Union
+from dataclasses import dataclass, field, asdict
+from typing import Any, List, Optional, Union, Hashable
 
 from pydantic import validate_arguments
-from pydantic.fields import Field, Undefined
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.external_documentation import ExternalDocumentation
 
-from starlite.constants import EXTRA_KEY_IS_DEPENDENCY, EXTRA_KEY_SKIP_VALIDATION
 from starlite.enums import RequestEncodingType
+from starlite.types import Empty
+
+
+@dataclass(frozen=True)
+class ParameterKwarg:
+    """Data container representing a parameter."""
+
+    value_type: Any = field(kw_only=False, default=Empty)
+    """The field value - `Empty` by default."""
+    header: Optional[str] = field(kw_only=True, default=None)
+    """The header parameter key - required for header parameters."""
+    cookie: Optional[str] = field(kw_only=True, default=None)
+    """The cookie parameter key - required for cookie parameters."""
+    query: Optional[str] = field(kw_only=True, default=None)
+    """The query parameter key for this parameter."""
+    examples: Optional[List[Example]] = field(kw_only=True, default=None)
+    """A list of Example models."""
+    external_docs: Optional[ExternalDocumentation] = field(kw_only=True, default=None)
+    """A url pointing at external documentation for the given parameter."""
+    content_encoding: Optional[str] = field(kw_only=True, default=None)
+    """The content encoding of the value.
+
+    Applicable on to string values. See OpenAPI 3.1 for details.
+    """
+    required: bool = field(kw_only=True, default=True)
+    """A boolean flag dictating whether this parameter is required.
+
+    If set to False, None values will be allowed. Defaults to True.
+    """
+    default: Any = field(kw_only=True, default=Empty)
+    """A default value.
+
+    If const is true, this value is required.
+    """
+    title: Optional[str] = field(kw_only=True, default=None)
+    """String value used in the title section of the OpenAPI schema for the given parameter."""
+    description: Optional[str] = field(kw_only=True, default=None)
+    """String value used in the description section of the OpenAPI schema for the given parameter."""
+    const: Optional[bool] = field(kw_only=True, default=None)
+    """A boolean flag dictating whether this parameter is a constant.
+
+    If True, the value passed to the parameter must equal its default value. This also causes the OpenAPI const field to
+    be populated with the default value.
+    """
+    gt: Optional[float] = field(kw_only=True, default=None)
+    """Constrict value to be greater than a given float or int.
+
+    Equivalent to exclusiveMinimum in the OpenAPI specification.
+    """
+    ge: Optional[float] = field(kw_only=True, default=None)
+    """Constrict value to be greater or equal to a given float or int.
+
+    Equivalent to minimum in the OpenAPI specification.
+    """
+    lt: Optional[float] = field(kw_only=True, default=None)
+    """Constrict value to be less than a given float or int.
+
+    Equivalent to exclusiveMaximum in the OpenAPI specification.
+    """
+    le: Optional[float] = field(kw_only=True, default=None)
+    """Constrict value to be less or equal to a given float or int.
+
+    Equivalent to maximum in the OpenAPI specification.
+    """
+    multiple_of: Optional[float] = field(kw_only=True, default=None)
+    """Constrict value to a multiple of a given float or int.
+
+    Equivalent to multipleOf in the OpenAPI specification.
+    """
+    min_items: Optional[int] = field(kw_only=True, default=None)
+    """Constrict a set or a list to have a minimum number of items.
+
+    Equivalent to minItems in the OpenAPI specification.
+    """
+    max_items: Optional[int] = field(kw_only=True, default=None)
+    """Constrict a set or a list to have a maximum number of items.
+
+    Equivalent to maxItems in the OpenAPI specification.
+    """
+    min_length: Optional[int] = field(kw_only=True, default=None)
+    """Constrict a string or bytes value to have a minimum length.
+
+    Equivalent to minLength in the OpenAPI specification.
+    """
+    max_length: Optional[int] = field(kw_only=True, default=None)
+    """Constrict a string or bytes value to have a maximum length.
+
+    Equivalent to maxLength in the OpenAPI specification.
+    """
+    regex: Optional[str] = field(kw_only=True, default=None)
+    """A string representing a regex against which the given string will be matched.
+
+    Equivalent to pattern in the OpenAPI specification.
+    """
+
+    def __hash__(self) -> int:
+        """Hash the dataclass in a safe way
+
+        Returns:
+            A hash
+        """
+        return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
 
 
 @validate_arguments(config={"arbitrary_types_allowed": True})
 def Parameter(
-    value_type: Any = Undefined,
-    *,
-    header: Optional[str] = None,
-    cookie: Optional[str] = None,
-    query: Optional[str] = None,
-    examples: Optional[List[Example]] = None,
-    external_docs: Optional[ExternalDocumentation] = None,
-    content_encoding: Optional[str] = None,
-    required: bool = True,
-    default: Any = Undefined,
-    title: Optional[str] = None,
-    description: Optional[str] = None,
-    const: Optional[bool] = None,
-    gt: Optional[float] = None,
-    ge: Optional[float] = None,
-    lt: Optional[float] = None,
-    le: Optional[float] = None,
-    multiple_of: Optional[float] = None,
-    min_items: Optional[int] = None,
-    max_items: Optional[int] = None,
-    min_length: Optional[int] = None,
-    max_length: Optional[int] = None,
-    regex: Optional[str] = None
+        value_type: Any = Empty,
+        *,
+        header: Optional[str] = None,
+        cookie: Optional[str] = None,
+        query: Optional[str] = None,
+        examples: Optional[List[Example]] = None,
+        external_docs: Optional[ExternalDocumentation] = None,
+        content_encoding: Optional[str] = None,
+        required: bool = True,
+        default: Any = Empty,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        const: Optional[bool] = None,
+        gt: Optional[float] = None,
+        ge: Optional[float] = None,
+        lt: Optional[float] = None,
+        le: Optional[float] = None,
+        multiple_of: Optional[float] = None,
+        min_items: Optional[int] = None,
+        max_items: Optional[int] = None,
+        min_length: Optional[int] = None,
+        max_length: Optional[int] = None,
+        regex: Optional[str] = None
 ) -> Any:
-    """Create a pydantic ``FieldInfo`` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
-    generation.
+    """Create an extended parameter kwarg definition.
 
     Args:
-        value_type: ``Undefined`` by default.
+        value_type: `Empty` by default.
         header: The header parameter key - required for header parameters.
         cookie: The cookie parameter key - required for cookie parameters.
         query: The query parameter key for this parameter.
@@ -79,58 +179,145 @@ def Parameter(
         regex: A string representing a regex against which the given string will be matched.
             Equivalent to pattern in the OpenAPI specification.
     """
-    extra: Dict[str, Any] = {"is_parameter": True}
-    extra.update(header=header)
-    extra.update(cookie=cookie)
-    extra.update(query=query)
-    extra.update(required=required)
-    extra.update(examples=examples)
-    extra.update(external_docs=external_docs)
-    extra.update(content_encoding=content_encoding)
-    extra.update(value_type=value_type)
-    return Field(
-        default,
-        title=title,  # type: ignore
-        description=description,  # type: ignore
-        const=const,  # type: ignore
-        gt=gt,  # type: ignore
-        ge=ge,  # type: ignore
-        lt=lt,  # type: ignore
-        le=le,  # type: ignore
-        multiple_of=multiple_of,  # type: ignore
-        min_items=min_items,  # type: ignore
-        max_items=max_items,  # type: ignore
-        min_length=min_length,  # type: ignore
-        max_length=max_length,  # type: ignore
-        regex=regex,  # type: ignore
-        **extra,
+    return ParameterKwarg(
+        value_type=value_type,
+        header=header,
+        cookie=cookie,
+        query=query,
+        examples=examples,
+        external_docs=external_docs,
+        content_encoding=content_encoding,
+        required=required,
+        default=default,
+        title=title,
+        description=description,
+        const=const,
+        gt=gt,
+        ge=ge,
+        lt=lt,
+        le=le,
+        multiple_of=multiple_of,
+        min_items=min_items,
+        max_items=max_items,
+        min_length=min_length,
+        max_length=max_length,
+        regex=regex,
     )
 
 
+@dataclass(frozen=True)
+class BodyKwarg:
+    """Data container representing a request body."""
+
+    media_type: Union[str, RequestEncodingType] = field(kw_only=True, default=RequestEncodingType.JSON)
+    """Media-Type of the body."""
+    examples: Optional[List[Example]] = field(kw_only=True, default=None)
+    """A list of Example models."""
+    external_docs: Optional[ExternalDocumentation] = field(kw_only=True, default=None)
+    """A url pointing at external documentation for the given parameter."""
+    content_encoding: Optional[str] = field(kw_only=True, default=None)
+    """The content encoding of the value.
+
+    Applicable on to string values. See OpenAPI 3.1 for details.
+    """
+    default: Any = field(kw_only=True, default=Empty)
+    """A default value.
+
+    If const is true, this value is required.
+    """
+    title: Optional[str] = field(kw_only=True, default=None)
+    """String value used in the title section of the OpenAPI schema for the given parameter."""
+    description: Optional[str] = field(kw_only=True, default=None)
+    """String value used in the description section of the OpenAPI schema for the given parameter."""
+    const: Optional[bool] = field(kw_only=True, default=None)
+    """A boolean flag dictating whether this parameter is a constant.
+
+    If True, the value passed to the parameter must equal its default value. This also causes the OpenAPI const field to
+    be populated with the default value.
+    """
+    gt: Optional[float] = field(kw_only=True, default=None)
+    """Constrict value to be greater than a given float or int.
+
+    Equivalent to exclusiveMinimum in the OpenAPI specification.
+    """
+    ge: Optional[float] = field(kw_only=True, default=None)
+    """Constrict value to be greater or equal to a given float or int.
+
+    Equivalent to minimum in the OpenAPI specification.
+    """
+    lt: Optional[float] = field(kw_only=True, default=None)
+    """Constrict value to be less than a given float or int.
+
+    Equivalent to exclusiveMaximum in the OpenAPI specification.
+    """
+    le: Optional[float] = field(kw_only=True, default=None)
+    """Constrict value to be less or equal to a given float or int.
+
+    Equivalent to maximum in the OpenAPI specification.
+    """
+    multiple_of: Optional[float] = field(kw_only=True, default=None)
+    """Constrict value to a multiple of a given float or int.
+
+    Equivalent to multipleOf in the OpenAPI specification.
+    """
+    min_items: Optional[int] = field(kw_only=True, default=None)
+    """Constrict a set or a list to have a minimum number of items.
+
+    Equivalent to minItems in the OpenAPI specification.
+    """
+    max_items: Optional[int] = field(kw_only=True, default=None)
+    """Constrict a set or a list to have a maximum number of items.
+
+    Equivalent to maxItems in the OpenAPI specification.
+    """
+    min_length: Optional[int] = field(kw_only=True, default=None)
+    """Constrict a string or bytes value to have a minimum length.
+
+    Equivalent to minLength in the OpenAPI specification.
+    """
+    max_length: Optional[int] = field(kw_only=True, default=None)
+    """Constrict a string or bytes value to have a maximum length.
+
+    Equivalent to maxLength in the OpenAPI specification.
+    """
+    regex: Optional[str] = field(kw_only=True, default=None)
+    """A string representing a regex against which the given string will be matched.
+
+    Equivalent to pattern in the OpenAPI specification.
+    """
+
+    def __hash__(self) -> int:
+        """Hash the dataclass in a safe way
+
+        Returns:
+            A hash
+        """
+        return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
+
 @validate_arguments(config={"arbitrary_types_allowed": True})
 def Body(
-    *,
-    media_type: Union[str, RequestEncodingType] = RequestEncodingType.JSON,
-    examples: Optional[List[Example]] = None,
-    external_docs: Optional[ExternalDocumentation] = None,
-    content_encoding: Optional[str] = None,
-    default: Any = Undefined,
-    title: Optional[str] = None,
-    description: Optional[str] = None,
-    const: Optional[bool] = None,
-    gt: Optional[float] = None,
-    ge: Optional[float] = None,
-    lt: Optional[float] = None,
-    le: Optional[float] = None,
-    multiple_of: Optional[float] = None,
-    min_items: Optional[int] = None,
-    max_items: Optional[int] = None,
-    min_length: Optional[int] = None,
-    max_length: Optional[int] = None,
-    regex: Optional[str] = None
+        *,
+        media_type: Union[str, RequestEncodingType] = RequestEncodingType.JSON,
+        examples: Optional[List[Example]] = None,
+        external_docs: Optional[ExternalDocumentation] = None,
+        content_encoding: Optional[str] = None,
+        default: Any = Empty,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        const: Optional[bool] = None,
+        gt: Optional[float] = None,
+        ge: Optional[float] = None,
+        lt: Optional[float] = None,
+        le: Optional[float] = None,
+        multiple_of: Optional[float] = None,
+        min_items: Optional[int] = None,
+        max_items: Optional[int] = None,
+        min_length: Optional[int] = None,
+        max_length: Optional[int] = None,
+        regex: Optional[str] = None
 ) -> Any:
-    """Create a pydantic ``FieldInfo`` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
-    generation.
+    """Create an extended request body kwarg definition.
+
 
     Args:
         media_type: Defaults to RequestEncodingType.JSON.
@@ -168,38 +355,52 @@ def Body(
         regex: A string representing a regex against which the given string will be matched.
             Equivalent to pattern in the OpenAPI specification.
     """
-    extra: Dict[str, Any] = {}
-    extra.update(media_type=media_type)
-    extra.update(examples=examples)
-    extra.update(external_docs=external_docs)
-    extra.update(content_encoding=content_encoding)
-    return Field(
-        default,
-        title=title,  # type: ignore
-        description=description,  # type: ignore
-        const=const,  # type: ignore
-        gt=gt,  # type: ignore
-        ge=ge,  # type: ignore
-        lt=lt,  # type: ignore
-        le=le,  # type: ignore
-        multiple_of=multiple_of,  # type: ignore
-        min_items=min_items,  # type: ignore
-        max_items=max_items,  # type: ignore
-        min_length=min_length,  # type: ignore
-        max_length=max_length,  # type: ignore
-        regex=regex,  # type: ignore
-        **extra,
+    return BodyKwarg(
+        media_type=media_type,
+        examples=examples,
+        external_docs=external_docs,
+        content_encoding=content_encoding,
+        default=default,
+        title=title,
+        description=description,
+        const=const,
+        gt=gt,
+        ge=ge,
+        lt=lt,
+        le=le,
+        multiple_of=multiple_of,
+        min_items=min_items,
+        max_items=max_items,
+        min_length=min_length,
+        max_length=max_length,
+        regex=regex,
     )
 
 
-@validate_arguments(config={"arbitrary_types_allowed": True})
-def Dependency(*, default: Any = Undefined, skip_validation: bool = False) -> Any:
-    """Create a pydantic ``FieldInfo`` instance with an extra kwargs, used for both parameter parsing and OpenAPI schema
-    generation.
+
+@dataclass(frozen=True)
+class DependencyKwarg:
+    """Data container representing a dependency."""
+
+    default: Any = field(kw_only=True, default=Empty)
+    """A default value."""
+    skip_validation: bool = field(kw_only=True, default=False)
+    """Flag dictating whether to skip validation."""
+
+    def __hash__(self) -> int:
+        """Hash the dataclass in a safe way
+
+        Returns:
+            A hash
+        """
+        return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
+
+def Dependency(*, default: Any = Empty, skip_validation: bool = False) -> Any:
+    """Create a dependency kwarg definition.
 
     Args:
-        default: default value if dependency not provided.
-        skip_validation: If ``True`` provided dependency values are not validated by signature model.
+        default: A default value to use in case a dependency is not provided.
+        skip_validation: If `True` provided dependency values are not validated by signature model.
     """
-    extra: Dict[str, Any] = {EXTRA_KEY_IS_DEPENDENCY: True, EXTRA_KEY_SKIP_VALIDATION: skip_validation}
-    return Field(default, **extra)  # type: ignore[pydantic-field]
+    return DependencyKwarg(default=default, skip_validation=skip_validation)
+

@@ -5,14 +5,12 @@ from pydantic.fields import Undefined
 from pydantic_openapi_schema.v3_1_0.parameter import Parameter
 
 from starlite.constants import (
-    EXTRA_KEY_IS_PARAMETER,
-    EXTRA_KEY_REQUIRED,
     RESERVED_KWARGS,
 )
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.schema import create_schema
-from starlite.utils.dependency import is_dependency_field
+from starlite.params import DependencyKwarg
 
 if TYPE_CHECKING:
     from pydantic import BaseModel
@@ -201,7 +199,7 @@ def create_parameter_for_handler(
     for field_name, model_field in filter(
         lambda items: items[0] not in RESERVED_KWARGS and items[0] not in layered_parameters, handler_fields.items()
     ):
-        if is_dependency_field(model_field.field_info) and field_name not in dependencies:
+        if isinstance(model_field.field_info.default, DependencyKwarg) and field_name not in dependencies:
             # never document explicit dependencies
             continue
         for parameter in get_recursive_handler_parameters(
