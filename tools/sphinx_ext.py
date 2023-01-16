@@ -14,9 +14,9 @@ from typing import TYPE_CHECKING, Generator
 
 import httpx
 import uvicorn
+from auto_pytabs.sphinx_ext import UpgradeLiteralInclude
 from docutils.nodes import Node, admonition, literal_block, title
 from sphinx.addnodes import highlightlang
-from auto_pytabs.sphinx_ext import UpgradeLiteralInclude
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
