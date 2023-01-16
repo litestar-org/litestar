@@ -1,7 +1,7 @@
 from inspect import isasyncgen, isgenerator
 from typing import TYPE_CHECKING, Any, Dict, List, Set
 
-from starlite.signature import get_signature_model
+from starlite.signature.utils import get_signature_model
 from starlite.utils.compat import async_next
 
 if TYPE_CHECKING:
@@ -54,7 +54,7 @@ async def resolve_dependency(
     signature_model = get_signature_model(dependency.provide)
     dependency_kwargs = (
         signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
-        if signature_model.__fields__
+        if signature_model.fields()
         else {}
     )
     value = await dependency.provide(**dependency_kwargs)

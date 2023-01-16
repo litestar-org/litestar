@@ -32,7 +32,7 @@ from starlite.response import (
     StreamingResponse,
     TemplateResponse,
 )
-from starlite.signature import SignatureModelFactory
+from starlite.signature import create_signature_model
 from starlite.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from starlite.testing import RequestFactory, create_test_client
 from tests import Person, PersonFactory
@@ -100,7 +100,7 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         return data
 
     person_instance = PersonFactory.build()
-    test_function.signature_model = SignatureModelFactory(test_function.fn.value, [], set()).create_signature_model()  #
+    test_function.signature_model = create_signature_model(test_function.fn.value, [], set())
 
     response = await test_function.to_response(
         data=test_function.fn.value(data=person_instance),

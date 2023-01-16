@@ -299,15 +299,15 @@ class KwargsModel:
         cls._validate_raw_kwargs(
             path_parameters=path_parameters,
             dependencies=dependencies,
-            model_fields=signature_model.__fields__,
+            model_fields=signature_model.fields(),
             layered_parameters=layered_parameters,
         )
         expected_reserved_kwargs = {
-            field_name for field_name in signature_model.__fields__ if field_name in RESERVED_KWARGS
+            field_name for field_name in signature_model.fields() if field_name in RESERVED_KWARGS
         }
 
         param_definitions, expected_dependencies = cls._get_param_definitions(
-            path_parameters, layered_parameters, dependencies, signature_model_fields=signature_model.__fields__
+            path_parameters, layered_parameters, dependencies, signature_model_fields=signature_model.fields()
         )
 
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}
@@ -318,7 +318,7 @@ class KwargsModel:
 
         expected_form_data = None
         expected_msgpack_data = None
-        data_model_field = signature_model.__fields__.get("data")
+        data_model_field = signature_model.fields().get("data")
 
         if data_model_field:
             media_type = data_model_field.field_info.extra.get("media_type")
@@ -367,7 +367,7 @@ class KwargsModel:
             expected_header_params=expected_header_parameters,
             expected_reserved_kwargs=cast("Set[ReservedKwargs]", expected_reserved_kwargs),
             sequence_query_parameter_names=sequence_query_parameter_names,
-            is_data_optional=is_optional(signature_model.__fields__["data"])
+            is_data_optional=is_optional(signature_model.fields()["data"])
             if "data" in expected_reserved_kwargs
             else False,
         )
@@ -414,7 +414,7 @@ class KwargsModel:
         list.
         """
         provide = dependencies[key]
-        sub_dependency_keys = [k for k in get_signature_model(provide).__fields__ if k in dependencies]
+        sub_dependency_keys = [k for k in get_signature_model(provide).fields() if k in dependencies]
         return Dependency(
             key=key,
             provide=provide,
@@ -445,7 +445,7 @@ class KwargsModel:
         cls,
         path_parameters: Set[str],
         dependencies: Dict[str, Provide],
-        model_fields: Dict[str, ModelField],
+        model_fields: Dict[str, Any],
         layered_parameters: Dict[str, ModelField],
     ) -> None:
         """Validate that there are no ambiguous kwargs, that is, kwargs declared using the same key in different

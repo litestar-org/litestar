@@ -8,7 +8,7 @@ from starlite import Provide, Router, Starlite, get
 from starlite.enums import ParamType
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameter_for_handler
-from starlite.signature import SignatureModelFactory
+from starlite.signature import create_signature_model
 from starlite.utils import find_index
 from tests.openapi.utils import PersonController
 
@@ -23,11 +23,9 @@ def _create_parameters(app: Starlite, path: str) -> List["OpenAPIParameter"]:
     index = find_index(app.routes, lambda x: x.path_format == path)
     route = app.routes[index]
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
-    handler_fields = (
-        SignatureModelFactory(fn=cast("Callable", route_handler.fn.value), plugins=[], dependency_names=set())
-        .create_signature_model()
-        .__fields__
-    )
+    handler_fields = create_signature_model(
+        fn=cast("Callable", route_handler.fn.value), plugins=[], dependency_name_set=set()
+    ).fields()
     return create_parameter_for_handler(
         route_handler=route_handler,
         handler_fields=handler_fields,
