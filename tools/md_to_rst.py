@@ -2,8 +2,8 @@ import re
 import sys
 from pathlib import Path
 from typing import Tuple
-import m2r
 
+import m2r
 
 INLINE_CODE_RGX = re.compile(r"(?<![`:\[])`([\w -]+?)`")
 REFERENCE_RGX = re.compile(r"\[(.+?)]\[(.+?)]")
