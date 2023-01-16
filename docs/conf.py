@@ -16,6 +16,7 @@ extensions = [
     "tools.sphinx_ext",
     "auto_pytabs.sphinx_ext",
     "sphinx_copybutton",
+    "sphinxcontrib.mermaid",
 ]
 
 templates_path = ["_templates"]
