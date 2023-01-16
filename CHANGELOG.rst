@@ -1,6 +1,17 @@
 Changelog
 =========
 
+1.49.0
+-------
+
+- add reserved handler kwarg `body`
+- add support for `Path` alongside `PurePath` for serialization
+- add CLI commands for OpenAPI to TypeScript and OpenAPI schema generation
+- ensure HTTP requests with invalid payloads return 400.
+- ensure unique OpenAPI operation IDs
+- fix issue when response is an empty iterable of DTOs
+- fix `meter` in OpenTelemetry middleware being passed a
+
 1.48.1
 ------
 -  rename ``enc_hook`` -> ``default`` in ``encode_json``

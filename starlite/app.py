@@ -32,7 +32,7 @@ from starlite.middleware.cors import CORSMiddleware
 from starlite.openapi.path_item import create_path_item
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-from starlite.signature import SignatureModelFactory
+from starlite.signature import create_signature_model
 from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import (
     as_async_callable_list,
@@ -41,7 +41,6 @@ from starlite.utils import (
     join_paths,
     unique,
 )
-from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -670,19 +669,19 @@ class Starlite(Router):
     def _create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:
         """Create function signature models for all route handler functions and provider dependencies."""
         if not route_handler.signature_model:
-            route_handler.signature_model = SignatureModelFactory(
-                fn=cast("AnyCallable", unwrap_partial(route_handler.fn.value)),
+            route_handler.signature_model = create_signature_model(
+                fn=cast("AnyCallable", route_handler.fn.value),
                 plugins=self.plugins,
-                dependency_names=route_handler.dependency_name_set,
-            ).create_signature_model()
+                dependency_name_set=route_handler.dependency_name_set,
+            )
 
         for provider in list(route_handler.resolve_dependencies().values()):
             if not getattr(provider, "signature_model", None):
-                provider.signature_model = SignatureModelFactory(
+                provider.signature_model = create_signature_model(
                     fn=provider.dependency.value,
                     plugins=self.plugins,
-                    dependency_names=route_handler.dependency_name_set,
-                ).create_signature_model()
+                    dependency_name_set=route_handler.dependency_name_set,
+                )
 
     def _wrap_send(self, send: "Send", scope: "Scope") -> "Send":
         """Wrap the ASGI send and handles any 'before send' hooks.
