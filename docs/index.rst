@@ -245,6 +245,7 @@ License
     :maxdepth: 2
     :hidden:
 
+    usage/index
     migration/index
     reference/index
     benchmarks
