@@ -112,8 +112,8 @@ mkdocstrings = {extras = ["python"], version = "^0.19.1"}
 black = "^22.12.0"
 httpx = "^0.23.2"
 uvicorn = "^0.20.0"
-auto-pytabs = {git = "https://github.com/provinzkraut/AutoPyTabs.git"}
 mike = "^1.1.2"
+auto-pytabs = {extras = ["mkdocs"], version = ">=0.1.1"}
 
 
 [tool.poetry.extras]

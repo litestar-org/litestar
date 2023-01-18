@@ -5,15 +5,10 @@ from tests.kwargs import Form
 
 
 def test_request_body_url_encoded() -> None:
-    body = Body(media_type=RequestEncodingType.URL_ENCODED)
-
-    test_path = "/test"
-    data = Form(name="Moishe Zuchmir", age=30, programmer=True).dict()
-
-    @post(path=test_path)
-    def test_method(data: Form = body) -> None:
+    @post(path="/test")
+    def test_method(data: Form = Body(media_type=RequestEncodingType.URL_ENCODED)) -> None:
         assert isinstance(data, Form)
 
     with create_test_client(test_method) as client:
-        response = client.post(test_path, data=data)
+        response = client.post("/test", data=Form(name="Moishe Zuchmir", age=30, programmer=True).dict())
         assert response.status_code == HTTP_201_CREATED

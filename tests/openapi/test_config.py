@@ -21,7 +21,6 @@ def test_merged_components_correct() -> None:
                 "required": False,
                 "deprecated": False,
                 "allowEmptyValue": False,
-                "explode": False,
                 "allowReserved": False,
             },
             "two": {
@@ -30,7 +29,6 @@ def test_merged_components_correct() -> None:
                 "required": False,
                 "deprecated": False,
                 "allowEmptyValue": False,
-                "explode": False,
                 "allowReserved": False,
             },
         },
