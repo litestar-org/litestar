@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Generator
 
 import httpx
 import uvicorn
-from auto_pytabs.sphinx_ext import UpgradeLiteralInclude
+from auto_pytabs.sphinx_ext import LiteralIncludeOverride
 from docutils.nodes import Node, admonition, literal_block, title
 from sphinx.addnodes import highlightlang
 
@@ -121,17 +121,11 @@ def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
     return "\n".join(results)
 
 
-class LiteralInclude(UpgradeLiteralInclude):
+class LiteralInclude(LiteralIncludeOverride):
     def run(self) -> list[Node]:
         cwd = Path.cwd()
         language = self.options.get("language")
-
-        filename = self.arguments[0]
-        if filename.startswith("/examples") and language == "python":
-            file = cwd / filename.lstrip("/")
-            self.arguments[0] = f"../{file.relative_to(cwd)}"
-        else:
-            file = Path(self.env.relfn2path(self.arguments[0])[1])
+        file = Path(self.env.relfn2path(self.arguments[0])[1])
 
         if language != "python" or self.options.get("no-run"):
             return super().run()
