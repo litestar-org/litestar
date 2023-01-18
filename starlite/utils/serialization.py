@@ -10,7 +10,17 @@ from ipaddress import (
 )
 from pathlib import Path, PurePath
 from re import Pattern
-from typing import TYPE_CHECKING, Any, Callable, Dict, Optional, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    overload,
+)
 
 import msgspec
 from pydantic import (
@@ -26,9 +36,12 @@ from pydantic.color import Color
 from pydantic.json import decimal_encoder
 
 from starlite.exceptions import SerializationException
+from starlite.types import Empty
 
 if TYPE_CHECKING:
     from starlite.types import TypeEncodersMap
+
+T = TypeVar("T")
 
 DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
     Path: str,
@@ -97,7 +110,9 @@ def dec_hook(type_: Any, value: Any) -> Any:  # pragma: no cover
         A ``msgspec``-supported type
     """
     if issubclass(type_, BaseModel):
-        return type_(**value)
+        return type_.parse_obj(value)
+    if issubclass(type_, (Path, PurePath)):
+        return type_(value)
     raise TypeError(f"Unsupported type: {type(value)!r}")
 
 
@@ -128,11 +143,22 @@ def encode_json(obj: Any, default: Optional[Callable[[Any], Any]] = default_seri
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
+@overload
 def decode_json(raw: Union[str, bytes]) -> Any:
+    ...
+
+
+@overload
+def decode_json(raw: Union[str, bytes], type_: Type[T]) -> T:
+    ...
+
+
+def decode_json(raw: Union[str, bytes], type_: Any = Empty) -> Any:
     """Decode a JSON string/bytes into an object.
 
     Args:
         raw: Value to decode
+        type_: An optional type to decode the data into
 
     Returns:
         An object
@@ -141,7 +167,9 @@ def decode_json(raw: Union[str, bytes]) -> Any:
         SerializationException: If error decoding ``raw``.
     """
     try:
-        return _msgspec_json_decoder.decode(raw)
+        if type_ is Empty:
+            return _msgspec_json_decoder.decode(raw)
+        return msgspec.json.decode(raw, dec_hook=dec_hook, type=type_)
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
@@ -167,11 +195,22 @@ def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
+@overload
 def decode_msgpack(raw: bytes) -> Any:
+    ...
+
+
+@overload
+def decode_msgpack(raw: bytes, type_: Type[T]) -> T:
+    ...
+
+
+def decode_msgpack(raw: bytes, type_: Any = Empty) -> Any:
     """Decode a MessagePack string/bytes into an object.
 
     Args:
         raw: Value to decode
+        type_: An optional type to decode the data into
 
     Returns:
         An object
@@ -180,6 +219,8 @@ def decode_msgpack(raw: bytes) -> Any:
         SerializationException: If error decoding ``raw``.
     """
     try:
-        return _msgspec_msgpack_decoder.decode(raw)
+        if type_ is Empty:
+            return _msgspec_msgpack_decoder.decode(raw)
+        return msgspec.msgpack.decode(raw, dec_hook=dec_hook, type=type_)
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error

@@ -119,7 +119,7 @@ sphinx-toolbox = "^3.2.0"
 sphinx-copybutton = "^0.5.1"
 m2r = "^0.3.1"
 sphinxcontrib-mermaid = "^0.7.1"
-auto-pytabs = {extras = ["sphinx"], version = "^0.1.0"}
+auto-pytabs = {extras = ["mkdocs"], version = ">=0.1.1"}
 
 
 [tool.poetry.extras]
