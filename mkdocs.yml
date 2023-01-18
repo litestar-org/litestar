@@ -101,7 +101,6 @@ nav:
           - usage/9-testing/2-create-test-app.md
           - usage/9-testing/3-request-factory.md
           - usage/9-testing/4-pydantic-factories.md
-          - usage/9-testing/5-async-testing.md
       - Plugins:
           - usage/10-plugins/0-plugins-intro.md
           - usage/10-plugins/1-sql-alchemy-plugin.md

@@ -119,7 +119,7 @@ class BaseTestClient(Generic[T]):
         encoded_data = backend.dump_data(data=data)
         return {cookie.key: cast("str", cookie.value) for cookie in backend._create_session_cookies(encoded_data)}
 
-    async def _set_session_data_async(self, data: Dict[str, Any]) -> None:
+    async def _set_session_data(self, data: Dict[str, Any]) -> None:
         mutable_headers = MutableScopeHeaders()
         await self.session_backend.store_in_message(
             scope_session=data,
@@ -135,7 +135,7 @@ class BaseTestClient(Generic[T]):
         cookies.extract_cookies(response)
         self.cookies.update(cookies)  # type: ignore [union-attr]
 
-    async def _get_session_data_async(self) -> Dict[str, Any]:
+    async def _get_session_data(self) -> Dict[str, Any]:
         return await self.session_backend.load_from_connection(
             connection=fake_asgi_connection(
                 app=self.app,

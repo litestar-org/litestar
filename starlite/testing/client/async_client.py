@@ -498,7 +498,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore 
                 assert await client.get_session_data() == {"foo": "bar"}
             ```
         """
-        return await super()._get_session_data_async()
+        return await super()._get_session_data()
 
     async def set_session_data(self, data: Dict[str, Any]) -> None:
         """Set session data.
@@ -531,4 +531,4 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore 
                 assert await client.get("/test").json() == {"foo": "bar"}
             ```
         """
-        return await super()._set_session_data_async(data)
+        return await super()._set_session_data(data)
