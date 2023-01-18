@@ -26,3 +26,4 @@ target/
 .python-version
 coverage.*
 setup.py
+/.auto_pytabs_cache/
