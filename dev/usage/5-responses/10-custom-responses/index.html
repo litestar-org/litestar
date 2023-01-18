@@ -3849,10 +3849,13 @@ instances.</p>
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">index</span><span class="p">],</span> <span class="n">response_class</span><span class="o">=</span><span class="n">MultiDictResponse</span><span class="p">)</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="c1"># run: /</span>
 </code></pre></div>
+<div class="admonition example">
+<p class="admonition-title">Run it</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">{</span><span class="s2">&quot;foo&quot;</span>:<span class="o">[</span><span class="s2">&quot;bar&quot;</span>,<span class="s2">&quot;baz&quot;</span><span class="o">]}</span>
+</code></pre></div>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Layered architecture</p>
 <p>Response classes are part of Starlite's layered architecture, which means you can
