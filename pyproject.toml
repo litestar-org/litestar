@@ -113,7 +113,7 @@ black = "^22.12.0"
 httpx = "^0.23.2"
 uvicorn = "^0.20.0"
 mike = "^1.1.2"
-auto-pytabs = {extras = ["mkdocs"], version = "^0.1.0"}
+auto-pytabs = {extras = ["mkdocs"], version = ">=0.1.1"}
 
 
 [tool.poetry.extras]
