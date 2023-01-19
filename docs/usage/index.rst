@@ -11,4 +11,5 @@ Usage
     request-data
     dependency-injection
     security/index
+    plugins/index
     lifecycle-hooks
