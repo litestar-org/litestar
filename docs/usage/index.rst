@@ -8,4 +8,6 @@ Usage
     routing
     route-handlers
     parameters
+    request-data
+    dependency-injection
     lifecycle-hooks
