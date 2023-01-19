@@ -10,4 +10,5 @@ Usage
     parameters
     request-data
     dependency-injection
+    security/index
     lifecycle-hooks
