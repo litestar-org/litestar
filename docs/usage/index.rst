@@ -12,4 +12,5 @@ Usage
     dependency-injection
     security/index
     plugins/index
+    middleware/index
     lifecycle-hooks
