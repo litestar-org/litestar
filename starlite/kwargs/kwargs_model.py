@@ -227,9 +227,7 @@ class KwargsModel:
             signature_signature_fields.items(),
         ):
             # allow users to manually override Parameter definition using Parameter
-            field = (
-                signature_field if signature_field.extra.get(EXTRA_KEY_IS_PARAMETER) else layered_parameters[field_name]
-            )
+            field = signature_field if signature_field.is_parameter_field else layered_parameters[field_name]
 
             # field.default_value = (
             #     signature_.default

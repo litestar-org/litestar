@@ -1,64 +1,92 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, Optional, Set, Tuple
+from functools import cached_property
+from typing import Any, ClassVar, Dict, Optional, Set, Tuple, Union
 
 from pydantic import BaseConfig, BaseModel, ValidationError
-from pydantic.fields import (
-    SHAPE_DEQUE,
-    SHAPE_FROZENSET,
-    SHAPE_LIST,
-    SHAPE_SEQUENCE,
-    SHAPE_SET,
-    SHAPE_SINGLETON,
-    SHAPE_TUPLE,
-    SHAPE_TUPLE_ELLIPSIS,
-    ModelField,
-    Undefined,
-)
-from pydantic_factories.utils import is_any, is_optional
+from pydantic.fields import ModelField, Undefined
 
 from starlite.connection import ASGIConnection, Request
 from starlite.enums import ScopeType
 from starlite.exceptions import InternalServerException, ValidationException
+from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.plugins import PluginMapping
 from starlite.types import Empty
-
-sequence_shapes = {
-    SHAPE_LIST,
-    SHAPE_SET,
-    SHAPE_SEQUENCE,
-    SHAPE_TUPLE,
-    SHAPE_TUPLE_ELLIPSIS,
-    SHAPE_DEQUE,
-    SHAPE_FROZENSET,
-}
+from starlite.utils import is_any, is_optional_union, is_union
+from starlite.utils.predicates import (
+    is_generic,
+    is_mapping,
+    is_non_string_iterable,
+    is_non_string_sequence,
+)
 
 
 @dataclass(unsafe_hash=True, frozen=True)
 class SignatureField:
-    """This class is an abstraction, replacing both the pydantic and msgspec equivalent data structures."""
+    """Abstraction replacing both the pydantic and msgspec equivalent data structures."""
 
     __slots__ = (
-        "field_type",
-        "allow_none",
-        "is_sequence",
         "children",
         "default_value",
         "extra",
-        "is_optional",
-        "is_any",
-        "is_singleton",
+        "field_type",
+        "kwarg_model",
     )
 
-    allow_none: bool
     children: Optional[Tuple["SignatureField", ...]]
     default_value: Any
     extra: Dict[str, Any]
     field_type: Any
-    is_any: bool
-    is_optional: bool
-    is_sequence: bool
-    is_singleton: bool
+    kwarg_model: Optional[Union[ParameterKwarg, BodyKwarg, DependencyKwarg]]
+
+    @cached_property
+    def is_optional(self) -> bool:
+        """Check if the field type is an Optional union.
+
+        Returns:
+            True if the field_type is an Optional union otherwise False.
+        """
+        return is_optional_union(self.field_type)
+
+    @cached_property
+    def is_mapping(self) -> bool:
+        """Check if the field type is a Mapping."""
+        return is_mapping(self.field_type)
+
+    @cached_property
+    def is_iterable(self) -> bool:
+        """Check if the field type is an Iterable."""
+        return is_non_string_iterable(self.field_type)
+
+    @cached_property
+    def is_sequence(self) -> bool:
+        """Check if the field type is a non-string Sequence."""
+        return is_non_string_sequence(self.field_type)
+
+    @cached_property
+    def is_any(self) -> bool:
+        """Check if the field type is Any."""
+        return is_any(self.field_type)
+
+    @cached_property
+    def is_union(self) -> bool:
+        """Check if the field type is a Union."""
+        return is_union(self.field_type)
+
+    @cached_property
+    def is_generic(self) -> bool:
+        """Check if the field type is a Generic TypeVar."""
+        return is_generic(self.field_type)
+
+    @cached_property
+    def is_singleton(self) -> bool:
+        """Check if the field type is a singleton value (e.g. int, str etc.)."""
+        return not (self.is_generic or self.is_optional or self.is_union or self.is_mapping or self.is_iterable)
+
+    @cached_property
+    def is_parameter_field(self) -> bool:
+        """Check if the field type is a parameter kwarg value."""
+        return self.kwarg_model is not None and isinstance(self.kwarg_model, ParameterKwarg)
 
     @classmethod
     def from_model_field(cls, model_field: ModelField) -> "SignatureField":
@@ -79,16 +107,17 @@ class SignatureField:
             model_field.field_info.default if model_field.field_info.default not in {Undefined, Ellipsis} else Empty
         )
 
+        kwarg_model: Optional[Union[ParameterKwarg, DependencyKwarg, BodyKwarg]] = None
+        if isinstance(default_value, (ParameterKwarg, DependencyKwarg, BodyKwarg)):
+            kwarg_model = default_value
+            default_value = default_value.default
+
         return SignatureField(
-            allow_none=model_field.allow_none,
             children=children,
             default_value=default_value,
             extra=model_field.field_info.extra or {},
             field_type=model_field.type_,
-            is_any=is_any(model_field),
-            is_optional=is_optional(model_field),
-            is_sequence=model_field.shape in sequence_shapes,
-            is_singleton=model_field.shape == SHAPE_SINGLETON,
+            kwarg_model=kwarg_model,
         )
 
 

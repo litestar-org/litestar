@@ -1,11 +1,10 @@
 from typing import TYPE_CHECKING, Any, NamedTuple, Set
 
 from starlite.enums import ParamType
-from starlite.signature.models import SignatureField
 from starlite.types import Empty
 
 if TYPE_CHECKING:
-    pass
+    from starlite.signature.models import SignatureField
 
 
 class ParameterDefinition(NamedTuple):
@@ -57,7 +56,7 @@ def create_parameter_definition(
         field_name=field_name,
         field_alias=field_alias,
         default_value=default_value,
-        is_required=is_required and (default_value is None and not signature_field.allow_none),
+        is_required=is_required and (default_value is None and not signature_field.is_optional),
         is_sequence=signature_field.is_sequence,
     )
 

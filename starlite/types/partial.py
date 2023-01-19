@@ -22,8 +22,8 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.builtin_types import NoneType
 from starlite.utils.predicates import (
     is_class_and_subclass,
-    is_dataclass_class_typeguard,
-    is_typeddict_typeguard,
+    is_dataclass_class,
+    is_typed_dict,
 )
 
 try:
@@ -67,9 +67,9 @@ class Partial(Generic[T]):
         if item not in cls._models:
             if is_class_and_subclass(item, BaseModel):
                 cls._create_partial_pydantic_model(item=item)
-            elif is_dataclass_class_typeguard(item):
+            elif is_dataclass_class(item):
                 cls._create_partial_dataclass(item=item)
-            elif is_typeddict_typeguard(item):
+            elif is_typed_dict(item):
                 cls._create_partial_typeddict(item=item)
             else:
                 raise ImproperlyConfiguredException(

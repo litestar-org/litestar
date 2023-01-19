@@ -24,13 +24,13 @@ from starlite.parsers import (
     parse_query_string,
     parse_url_encoded_form_data,
 )
-from starlite.signature.models import SignatureField
 from starlite.types import Empty
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection, Request
     from starlite.kwargs import KwargsModel
     from starlite.kwargs.parameter_definition import ParameterDefinition
+    from starlite.signature.models import SignatureField
 
 
 def create_connection_value_extractor(

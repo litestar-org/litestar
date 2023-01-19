@@ -33,13 +33,13 @@ if TYPE_CHECKING:
         DefineMiddleware,
         MiddlewareProtocol,
     )
-    from starlite.params import Parameter
+    from starlite.params import ParameterKwarg  # noqa: TC004
 else:
     BaseHTTPMiddleware = Any
     Cookie = Any
     DefineMiddleware = Any
     MiddlewareProtocol = Any
-    Parameter = Any
+    ParameterKwarg = Any
     Provide = Any
     ResponseHeader = Any
 
@@ -48,7 +48,7 @@ T = TypeVar("T")
 
 Dependencies = Dict[str, Provide]
 ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
-ParametersMap = Dict[str, Parameter]
+ParametersMap = Dict[str, ParameterKwarg]
 ResponseCookies = List[Cookie]
 ResponseHeadersMap = Dict[str, ResponseHeader]
 StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]

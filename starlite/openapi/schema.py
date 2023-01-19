@@ -38,10 +38,7 @@ from starlite.openapi.constants import (
 )
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.utils import get_openapi_type_for_complex_type
-from starlite.utils import (
-    is_dataclass_class_or_instance_typeguard,
-    is_typeddict_typeguard,
-)
+from starlite.utils import is_dataclass_class_or_instance, is_typed_dict
 from starlite.utils.model import (
     convert_dataclass_to_model,
     convert_typeddict_to_model,
@@ -59,7 +56,7 @@ def normalize_example_value(value: Any) -> Any:
         value = round(float(value), 2)
     if isinstance(value, Enum):
         value = value.value
-    if is_dataclass_class_or_instance_typeguard(value):
+    if is_dataclass_class_or_instance(value):
         value = convert_dataclass_to_model(value)
     if isinstance(value, BaseModel):
         value = value.dict()
@@ -205,9 +202,9 @@ def get_schema_for_field_type(field: ModelField, plugins: List["PluginProtocol"]
         return TYPE_MAP[field_type].copy()
     if is_pydantic_model(field_type):
         return OpenAPI310PydanticSchema(schema_class=field_type)
-    if is_dataclass_class_or_instance_typeguard(field_type):
+    if is_dataclass_class_or_instance(field_type):
         return OpenAPI310PydanticSchema(schema_class=convert_dataclass_to_model(field_type))
-    if is_typeddict_typeguard(field_type):
+    if is_typed_dict(field_type):
         return OpenAPI310PydanticSchema(schema_class=convert_typeddict_to_model(field_type))
     if isinstance(field_type, (EnumMeta, Enum)):
         enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore

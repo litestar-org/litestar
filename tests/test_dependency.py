@@ -7,6 +7,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 
+
 @pytest.mark.parametrize(
     "field_info, exp",
     [

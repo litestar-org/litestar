@@ -6,8 +6,8 @@ from pydantic.fields import FieldInfo, Undefined
 from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
-from starlite.params import Dependency, DependencyKwarg
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.params import DependencyKwarg
 from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
 from starlite.signature.models import PydanticSignatureModel, SignatureModel
 from starlite.signature.parameter import SignatureParameter

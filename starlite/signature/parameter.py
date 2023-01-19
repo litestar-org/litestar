@@ -4,8 +4,8 @@ from typing import Any
 from msgspec._core import nodefault as MsgspecUndefined
 from pydantic.fields import Undefined as PydanticUndefined
 
-from starlite.params import Dependency, DependencyKwarg, ParameterKwarg, BodyKwarg
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.types import Empty
 from starlite.utils import is_optional_union
 
@@ -53,7 +53,10 @@ class SignatureParameter:
         Returns:
             A boolean determining whether a default value is defined.
         """
-        return isinstance(self.default, (ParameterKwarg, DependencyKwarg, BodyKwarg)) or self.default not in UNDEFINED_SENTINELS
+        return (
+            isinstance(self.default, (ParameterKwarg, DependencyKwarg, BodyKwarg))
+            or self.default not in UNDEFINED_SENTINELS
+        )
 
     @property
     def should_skip_validation(self) -> bool:
@@ -62,4 +65,6 @@ class SignatureParameter:
         Returns:
             A boolean indicating whether the parameter should be validated.
         """
-        return self.name in SKIP_VALIDATION_NAMES or (isinstance(self.default, DependencyKwarg) and self.default.skip_validation)
+        return self.name in SKIP_VALIDATION_NAMES or (
+            isinstance(self.default, DependencyKwarg) and self.default.skip_validation
+        )

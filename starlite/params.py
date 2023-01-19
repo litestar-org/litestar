@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field, asdict
-from typing import Any, List, Optional, Union, Hashable
+from dataclasses import asdict, dataclass, field
+from typing import Any, Hashable, List, Optional, Union
 
 from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0.example import Example
@@ -102,7 +102,7 @@ class ParameterKwarg:
     """
 
     def __hash__(self) -> int:
-        """Hash the dataclass in a safe way
+        """Hash the dataclass in a safe way.
 
         Returns:
             A hash
@@ -112,29 +112,29 @@ class ParameterKwarg:
 
 @validate_arguments(config={"arbitrary_types_allowed": True})
 def Parameter(
-        value_type: Any = Empty,
-        *,
-        header: Optional[str] = None,
-        cookie: Optional[str] = None,
-        query: Optional[str] = None,
-        examples: Optional[List[Example]] = None,
-        external_docs: Optional[ExternalDocumentation] = None,
-        content_encoding: Optional[str] = None,
-        required: bool = True,
-        default: Any = Empty,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        const: Optional[bool] = None,
-        gt: Optional[float] = None,
-        ge: Optional[float] = None,
-        lt: Optional[float] = None,
-        le: Optional[float] = None,
-        multiple_of: Optional[float] = None,
-        min_items: Optional[int] = None,
-        max_items: Optional[int] = None,
-        min_length: Optional[int] = None,
-        max_length: Optional[int] = None,
-        regex: Optional[str] = None
+    value_type: Any = Empty,
+    *,
+    header: Optional[str] = None,
+    cookie: Optional[str] = None,
+    query: Optional[str] = None,
+    examples: Optional[List[Example]] = None,
+    external_docs: Optional[ExternalDocumentation] = None,
+    content_encoding: Optional[str] = None,
+    required: bool = True,
+    default: Any = Empty,
+    title: Optional[str] = None,
+    description: Optional[str] = None,
+    const: Optional[bool] = None,
+    gt: Optional[float] = None,
+    ge: Optional[float] = None,
+    lt: Optional[float] = None,
+    le: Optional[float] = None,
+    multiple_of: Optional[float] = None,
+    min_items: Optional[int] = None,
+    max_items: Optional[int] = None,
+    min_length: Optional[int] = None,
+    max_length: Optional[int] = None,
+    regex: Optional[str] = None
 ) -> Any:
     """Create an extended parameter kwarg definition.
 
@@ -287,37 +287,37 @@ class BodyKwarg:
     """
 
     def __hash__(self) -> int:
-        """Hash the dataclass in a safe way
+        """Hash the dataclass in a safe way.
 
         Returns:
             A hash
         """
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
 
+
 @validate_arguments(config={"arbitrary_types_allowed": True})
 def Body(
-        *,
-        media_type: Union[str, RequestEncodingType] = RequestEncodingType.JSON,
-        examples: Optional[List[Example]] = None,
-        external_docs: Optional[ExternalDocumentation] = None,
-        content_encoding: Optional[str] = None,
-        default: Any = Empty,
-        title: Optional[str] = None,
-        description: Optional[str] = None,
-        const: Optional[bool] = None,
-        gt: Optional[float] = None,
-        ge: Optional[float] = None,
-        lt: Optional[float] = None,
-        le: Optional[float] = None,
-        multiple_of: Optional[float] = None,
-        min_items: Optional[int] = None,
-        max_items: Optional[int] = None,
-        min_length: Optional[int] = None,
-        max_length: Optional[int] = None,
-        regex: Optional[str] = None
+    *,
+    media_type: Union[str, RequestEncodingType] = RequestEncodingType.JSON,
+    examples: Optional[List[Example]] = None,
+    external_docs: Optional[ExternalDocumentation] = None,
+    content_encoding: Optional[str] = None,
+    default: Any = Empty,
+    title: Optional[str] = None,
+    description: Optional[str] = None,
+    const: Optional[bool] = None,
+    gt: Optional[float] = None,
+    ge: Optional[float] = None,
+    lt: Optional[float] = None,
+    le: Optional[float] = None,
+    multiple_of: Optional[float] = None,
+    min_items: Optional[int] = None,
+    max_items: Optional[int] = None,
+    min_length: Optional[int] = None,
+    max_length: Optional[int] = None,
+    regex: Optional[str] = None
 ) -> Any:
     """Create an extended request body kwarg definition.
-
 
     Args:
         media_type: Defaults to RequestEncodingType.JSON.
@@ -377,7 +377,6 @@ def Body(
     )
 
 
-
 @dataclass(frozen=True)
 class DependencyKwarg:
     """Data container representing a dependency."""
@@ -388,12 +387,13 @@ class DependencyKwarg:
     """Flag dictating whether to skip validation."""
 
     def __hash__(self) -> int:
-        """Hash the dataclass in a safe way
+        """Hash the dataclass in a safe way.
 
         Returns:
             A hash
         """
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
+
 
 def Dependency(*, default: Any = Empty, skip_validation: bool = False) -> Any:
     """Create a dependency kwarg definition.
@@ -403,4 +403,3 @@ def Dependency(*, default: Any = Empty, skip_validation: bool = False) -> Any:
         skip_validation: If `True` provided dependency values are not validated by signature model.
     """
     return DependencyKwarg(default=default, skip_validation=skip_validation)
-

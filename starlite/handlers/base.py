@@ -17,7 +17,6 @@ from pydantic import BaseConfig, Extra, validate_arguments
 
 from starlite.datastructures.provide import Provide
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.signature.models import SignatureField
 from starlite.types import (
     Dependencies,
     Empty,
@@ -101,9 +100,9 @@ class BaseRouteHandler(Generic[T]):
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
-        self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty
+        self._resolved_dependencies: Union[Dict[str, "Provide"], "EmptyType"] = Empty
         self._resolved_guards: Union[List[Guard], EmptyType] = Empty
-        self._resolved_layered_parameters: Union[Dict[str, "SignatureField"], EmptyType] = Empty
+        self._resolved_layered_parameters: Union["ParametersMap", "EmptyType"] = Empty
         self.dependencies = dependencies
         self.exception_handlers = exception_handlers
         self.guards = guards
@@ -158,7 +157,7 @@ class BaseRouteHandler(Generic[T]):
     def resolve_layered_parameters(self) -> ParametersMap:
         """Return all parameters declared above the handler, transforming them into pydantic ModelField instances."""
         if self._resolved_layered_parameters is Empty:
-            self._resolved_layered_parameters: ParametersMap = {}
+            self._resolved_layered_parameters = {}
 
             for layer in self.ownership_layers:
                 self._resolved_layered_parameters.update(getattr(layer, "parameters", None) or {})

@@ -4,9 +4,7 @@ from typing import TYPE_CHECKING, Dict, List, Tuple, cast
 from pydantic.fields import Undefined
 from pydantic_openapi_schema.v3_1_0.parameter import Parameter
 
-from starlite.constants import (
-    RESERVED_KWARGS,
-)
+from starlite.constants import RESERVED_KWARGS
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.schema import create_schema
@@ -96,11 +94,11 @@ def create_parameter(
     elif extra.get(ParamType.HEADER):
         parameter_name = extra[ParamType.HEADER]
         param_in = ParamType.HEADER
-        is_required = model_field.field_info.extra[EXTRA_KEY_REQUIRED]
+        is_required = model_field.is_parameter_field and model_field.kwargs_model.required
     elif extra.get(ParamType.COOKIE):
         parameter_name = extra[ParamType.COOKIE]
         param_in = ParamType.COOKIE
-        is_required = model_field.field_info.extra[EXTRA_KEY_REQUIRED]
+        is_required = model_field.is_parameter_field and model_field.kwargs_model.required
     else:
         param_in = ParamType.QUERY
         parameter_name = extra.get(ParamType.QUERY) or parameter_name
@@ -160,7 +158,7 @@ def get_layered_parameter(
 
     field_info = layer_field_info
     # allow users to manually override Parameter definition using Parameter
-    if signature_field_info.extra.get(EXTRA_KEY_IS_PARAMETER):
+    if signature_field_info.is_parameter_field:
         field_info = signature_field_info
 
     field_info.default = (
