@@ -44,7 +44,9 @@ def fix_mkdocstrings_references(content: str) -> str:
 
         target_kind = "ref"
         target_parts = target.split(".")
-        if target_parts[-1][0].islower():
+        if len(target_parts[-1]) == 1:
+            pass
+        elif target_parts[-1][0].islower():
             if not (len(target_parts) > 1 and target_parts[-2][0].isupper()):
                 target_kind = "func"
         elif target_parts[-1][1].islower():
@@ -87,6 +89,7 @@ def _make_literal_include_block(target: str, caption: str | None = None) -> str:
     block = f".. literalinclude:: {target}"
     if caption:
         block += f"\n    :caption: {caption}"
+    block += "\n    :language: python"
     block += "\n"
     return block
 
@@ -109,7 +112,11 @@ ADMONITION_MAPPING = {
 def make_admonition(admonition_type: str, title: str | None) -> str:
     sphinx_type = ADMONITION_MAPPING[admonition_type.lower().strip()]
     if title:
-        sphinx_type = "admonition"
+        if "learn more" in title.lower():
+            title = None
+            sphinx_type = "seealso"
+        else:
+            sphinx_type = "admonition"
     admonition = f".. {sphinx_type}::"
     if title:
         admonition += f" {title}"
@@ -132,7 +139,7 @@ def fix_admonitions(content: str) -> str:
 
 
 def fix_fenced_blocks(content: str) -> str:
-    for match in re.finditer(r'```py +?(?:title="(.+?)")?([\w\W]+?)```', content):
+    for match in re.finditer(r'```py ?(?:title="(.+?)")?([\w\W]+?)```', content):
         block = match.group(0)
         caption = match.group(1)
         block_content = match.group(2)
@@ -167,8 +174,6 @@ def fix_docstrings_in_place(path: Path) -> None:
 def fix_docstrings_in_files(path: Path) -> None:
     if path.is_dir():
         for file in path.rglob("*.py"):
-            if file.is_dir():
-                continue
             fix_docstrings_in_place(file)
     else:
         fix_docstrings_in_place(path)
@@ -177,9 +182,7 @@ def fix_docstrings_in_files(path: Path) -> None:
 def convert_md_files(path: Path):
     if path.is_dir():
         for file in path.rglob("*.md"):
-            if file.is_dir():
-                continue
-            convert_md_to_rst(path)
+            convert_md_to_rst(file)
     else:
         convert_md_to_rst(path)
 

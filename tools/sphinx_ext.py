@@ -124,10 +124,11 @@ def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
 class LiteralInclude(LiteralIncludeOverride):
     def run(self) -> list[Node]:
         cwd = Path.cwd()
+        docs_dir = cwd / "docs"
         language = self.options.get("language")
         file = Path(self.env.relfn2path(self.arguments[0])[1])
 
-        if language != "python" or self.options.get("no-run"):
+        if (language != "python" and file.suffix != ".py") or self.options.get("no-run"):
             return super().run()
 
         content = file.read_text()
@@ -136,9 +137,9 @@ class LiteralInclude(LiteralIncludeOverride):
         if not run_args:
             return super().run()
 
-        tmp_file = self.env.tmp_examples_path / str(file.relative_to(cwd / "examples")).replace("/", "_")
+        tmp_file = self.env.tmp_examples_path / str(file.relative_to(docs_dir)).replace("/", "_")
 
-        self.arguments[0] = str(tmp_file.relative_to(cwd / "docs"))
+        self.arguments[0] = "/" + str(tmp_file.relative_to(docs_dir))
         tmp_file.write_text(clean_content)
 
         nodes = super().run()
