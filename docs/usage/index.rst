@@ -13,4 +13,5 @@ Usage
     security/index
     plugins/index
     middleware/index
+    contrib/index
     lifecycle-hooks
