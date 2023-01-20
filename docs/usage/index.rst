@@ -17,6 +17,7 @@ Usage
     plugins/index
     dto
     openapi
+    caching
     middleware/index
     contrib/index
     lifecycle-hooks
