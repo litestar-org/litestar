@@ -29,52 +29,121 @@ Let's say we have a very simple app with a health check endpoint:
 
 We would then test it using the test client like so:
 
-.. code-block:: python
-    :caption: tests/test_health_check.py
+.. tab-set::
 
-    from starlite.status_codes import HTTP_200_OK
-    from starlite.testing import TestClient
+    .. tab-item:: Sync
+        :sync: sync
 
-    from my_app.main import app
+        .. code-block:: python
+            :caption: tests/test_health_check.py
+
+            from starlite.status_codes import HTTP_200_OK
+            from starlite.testing import TestClient
+
+            from my_app.main import app
 
 
-    def test_health_check():
-        with TestClient(app=app) as client:
-            response = client.get("/health-check")
-            assert response.status_code == HTTP_200_OK
-            assert response.text == "healthy"
+            def test_health_check():
+                with TestClient(app=app) as client:
+                    response = client.get("/health-check")
+                    assert response.status_code == HTTP_200_OK
+                    assert response.text == "healthy"
+
+    .. tab-item:: Async
+        :sync: async
+
+        .. code-block:: python
+            :caption: tests/test_health_check.py
+
+            from starlite.status_codes import HTTP_200_OK
+            from starlite.testing import AsyncTestClient
+
+            from my_app.main import app
+
+
+            def test_health_check():
+                async with AsyncTestClient(app=app) as client:
+                    response = await client.get("/health-check")
+                    assert response.status_code == HTTP_200_OK
+                    assert response.text == "healthy"
+
 
 Since we would probably need to use the client in multiple places, it's better to make it into a pytest fixture:
 
 
-.. code-block:: python
-    :caption: tests/conftest.py
+.. tab-set::
 
-    import pytest
+    .. tab-item:: Sync
+        :sync: sync
 
-    from starlite.testing import TestClient
+        .. code-block:: python
+            :caption: tests/conftest.py
 
-    from my_app.main import app
+            import pytest
+
+            from starlite.testing import TestClient
+
+            from my_app.main import app
 
 
-    @pytest.fixture(scope="function")
-    def test_client() -> TestClient:
-        return TestClient(app=app)
+            @pytest.fixture(scope="function")
+            def test_client() -> TestClient:
+                return TestClient(app=app)
+
+
+    .. tab-item:: Async
+        :sync: async
+
+        .. code-block:: python
+            :caption: tests/conftest.py
+
+            import pytest
+
+            from starlite.testing import AsyncTestClient
+
+            from my_app.main import app
+
+
+            @pytest.fixture(scope="function")
+            def test_client() -> AsyncTestClient:
+                return AsyncTestClient(app=app)
+
 
 We would then be able to rewrite our test like so:
 
-.. code-block:: python
-    :caption: tests/test_health_check.py
+.. tab-set::
 
-    from starlite.status_codes import HTTP_200_OK
-    from starlite.testing import TestClient
+    .. tab-item:: Sync
+        :sync: sync
+
+        .. code-block:: python
+            :caption: tests/test_health_check.py
+
+            from starlite.status_codes import HTTP_200_OK
+            from starlite.testing import TestClient
 
 
-    def test_health_check(test_client: TestClient):
-        with test_client as client:
-            response = client.get("/health-check")
-            assert response.status_code == HTTP_200_OK
-            assert response.text == "healthy"
+            def test_health_check(test_client: TestClient):
+                with test_client as client:
+                    response = client.get("/health-check")
+                    assert response.status_code == HTTP_200_OK
+                    assert response.text == "healthy"
+
+    .. tab-item:: Async
+        :sync: async
+
+        .. code-block:: python
+            :caption: tests/test_health_check.py
+
+            from starlite.status_codes import HTTP_200_OK
+            from starlite.testing import AsyncTestClient
+
+
+            def test_health_check(test_client: AsyncTestClient):
+                async with test_client as client:
+                    response = await client.get("/health-check")
+                    assert response.status_code == HTTP_200_OK
+                    assert response.text == "healthy"
 
 Using sessions
 ++++++++++++++
@@ -93,14 +162,31 @@ across requests, then you might want to inject or inspect session data outside a
       to install the ``cryptography`` package. You can do so by installing starlite with e.g. ``pip install starlite[cryptography]``
       or ``poetry add starlite[cryptography]``
 
-.. literalinclude:: /examples/testing/set_session_data.py
-    :caption: Setting session data
-    :language: python
+.. tab-set::
+
+    .. tab-item:: Sync
+        :sync: sync
+
+        .. literalinclude:: /examples/testing/set_session_data.py
+            :caption: Setting session data
+            :language: python
 
 
-.. literalinclude:: /examples/testing/get_session_data.py
-    :caption: Getting session data
-    :language: python
+        .. literalinclude:: /examples/testing/get_session_data.py
+            :caption: Getting session data
+            :language: python
+
+    .. tab-item:: Async
+        :sync: async
+
+        .. literalinclude:: /examples/testing/set_session_data_async.py
+            :caption: Setting session data
+            :language: python
+
+
+        .. literalinclude:: /examples/testing/get_session_data_async.py
+            :caption: Getting session data
+            :language: python
 
 
 Using a blocking portal
