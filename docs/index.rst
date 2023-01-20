@@ -233,12 +233,6 @@ Any and all contributions and involvement with the project is welcome. The easie
 is to check out the open issues - and reach out on our discord server or Matrix space.
 
 
-License
-^^^^^^^
-
-.. include:: ../LICENSE
-
-
 .. toctree::
     :maxdepth: 2
     :hidden:
