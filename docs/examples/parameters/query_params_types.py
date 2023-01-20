@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from starlite import Starlite, get
 
@@ -9,7 +9,7 @@ def index(
     date: datetime,
     number: int,
     floating_number: float,
-    strings: list[str],
+    strings: List[str],
 ) -> Dict[str, Any]:
     return {
         "datetime": date + timedelta(days=1),

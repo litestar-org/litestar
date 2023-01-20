@@ -3,7 +3,7 @@ from typing import Dict
 
 from starlite import Request, Starlite, get
 
-COUNTER: defaultdict[str, int] = defaultdict(int)
+COUNTER: Dict[str, int] = defaultdict(int)
 
 
 async def after_response(request: Request) -> None:

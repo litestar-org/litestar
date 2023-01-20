@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 from starlite import Provide, Starlite, get
 
@@ -9,7 +9,7 @@ def provide_str() -> str:
 
 
 @get("/", dependencies={"injected": Provide(provide_str)})
-def hello_world(injected: int) -> dict[str, Any]:
+def hello_world(injected: int) -> Dict[str, Any]:
     """Handler expects and `int`, but we've provided a `str`."""
     return {"hello": injected}
 

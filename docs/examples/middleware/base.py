@@ -1,5 +1,5 @@
 from time import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 from starlite import AbstractMiddleware, ScopeType, Starlite, get, websocket
 from starlite.datastructures import MutableScopeHeaders
@@ -43,30 +43,36 @@ async def websocket_handler(socket: "WebSocket") -> None:
 
 
 @get("/first_path")
-def first_handler() -> dict[str, str]:
+def first_handler() -> Dict[str, str]:
     """Handler is excluded due to regex pattern matching "first_path"."""
     return {"hello": "first"}
 
 
 @get("/second_path")
-def second_handler() -> dict[str, str]:
+def second_handler() -> Dict[str, str]:
     """Handler is excluded due to regex pattern matching "second_path"."""
     return {"hello": "second"}
 
 
 @get("/third_path", exclude_from_middleware=True)
-def third_handler() -> dict[str, str]:
+def third_handler() -> Dict[str, str]:
     """Handler is excluded due to the opt key 'exclude_from_middleware' matching the middleware 'exclude_opt_key'."""
     return {"hello": "second"}
 
 
 @get("/greet")
-def not_excluded_handler() -> dict[str, str]:
+def not_excluded_handler() -> Dict[str, str]:
     """This handler is not excluded, and thus the middleware will execute on every incoming request to it."""
     return {"hello": "world"}
 
 
 app = Starlite(
-    route_handlers=[websocket_handler, first_handler, second_handler, third_handler, not_excluded_handler],
+    route_handlers=[
+        websocket_handler,
+        first_handler,
+        second_handler,
+        third_handler,
+        not_excluded_handler,
+    ],
     middleware=[MyMiddleware],
 )
