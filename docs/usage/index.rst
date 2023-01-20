@@ -16,6 +16,7 @@ Usage
     testing
     plugins/index
     dto
+    openapi
     middleware/index
     contrib/index
     lifecycle-hooks
