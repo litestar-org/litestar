@@ -13,6 +13,7 @@ Usage
     responses
     templating
     security/index
+    testing
     plugins/index
     middleware/index
     contrib/index
