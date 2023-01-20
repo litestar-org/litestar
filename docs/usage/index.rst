@@ -15,6 +15,7 @@ Usage
     security/index
     testing
     plugins/index
+    dto
     middleware/index
     contrib/index
     lifecycle-hooks
