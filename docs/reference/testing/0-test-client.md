@@ -1,6 +1,6 @@
 # Test Client
 
-::: starlite.testing.TestClient
+::: starlite.testing.client.sync_client.TestClient
     options:
         members:
             - __init__
@@ -17,7 +17,7 @@
             - get_session_data
             - portal
 
-::: starlite.testing.test_client.WebSocketTestSession
+::: starlite.testing.websocket_test_session.WebSocketTestSession
     options:
         members:
             - close
