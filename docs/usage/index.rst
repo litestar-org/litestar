@@ -19,5 +19,6 @@ Usage
     openapi
     caching
     middleware/index
+    exceptions
     contrib/index
     lifecycle-hooks
