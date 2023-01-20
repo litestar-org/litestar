@@ -250,7 +250,13 @@ class DTOFactory:
         """Convert a `BaseModel` subclass, [`TypedDict`][typing.TypedDict], `dataclass` or any other type that has a
         plugin registered into a mapping of `str` to `ModelField`.
         """
-        plugin: Optional[PluginProtocol] = None
+        fields: Optional[Dict[str, ModelField]] = None
+        if plugin := get_plugin_for_value(value=source, plugins=self.plugins):
+            model = plugin.to_pydantic_model_class(model_class=source)
+            fields = model.__fields__
+
+            return fields, plugin
+
         if issubclass(source, BaseModel):
             source.update_forward_refs()
             fields = source.__fields__
@@ -258,15 +264,11 @@ class DTOFactory:
             fields = convert_dataclass_to_model(source).__fields__
         elif is_typeddict_typeguard(source):
             fields = convert_typeddict_to_model(source).__fields__
-        else:
-            plugin = get_plugin_for_value(value=source, plugins=self.plugins)
-            if not plugin:
-                raise ImproperlyConfiguredException(
-                    f"No supported plugin found for value {source} - cannot create value"
-                )
-            model = plugin.to_pydantic_model_class(model_class=source)
-            fields = model.__fields__
-        return fields, plugin
+
+        if fields:
+            return fields, plugin
+
+        raise ImproperlyConfiguredException(f"No supported plugin found for value {source} - cannot create value")
 
     def _populate_field_definitions(
         self,

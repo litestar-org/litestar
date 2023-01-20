@@ -1,10 +1,13 @@
+from dataclasses import dataclass
 from typing import List
 
 from sqlalchemy import JSON, Column, Enum, Float, ForeignKey, Integer, String, Table
 from sqlalchemy.dialects import mysql, postgresql, sqlite
-from sqlalchemy.orm import as_declarative, declared_attr, relationship
+from sqlalchemy.orm import as_declarative, declared_attr, registry, relationship
 
 from tests import Species
+
+mapper_registry = registry()
 
 
 @as_declarative()
@@ -28,6 +31,13 @@ friendship_table = Table(
     SQLAlchemyBase.metadata,
     Column("friend_a_id", Integer, ForeignKey("user.id"), primary_key=True),
     Column("friend_b_id", Integer, ForeignKey("user.id"), primary_key=True),
+)
+
+activities_table = Table(
+    "activities",
+    mapper_registry.metadata,
+    Column("id", Integer, primary_key=True),
+    Column("name", String),
 )
 
 
@@ -68,3 +78,12 @@ class User(SQLAlchemyBase):
     )
     company_id = Column(Integer, ForeignKey("company.id"))
     company: Company = relationship("Company")
+
+
+@dataclass
+class Activity:
+    id: int
+    name: str
+
+
+mapper_registry.map_imperatively(Activity, activities_table)
