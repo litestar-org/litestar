@@ -21,4 +21,5 @@ Usage
     middleware/index
     exceptions
     contrib/index
+    cli
     lifecycle-hooks

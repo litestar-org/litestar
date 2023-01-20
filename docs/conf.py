@@ -53,6 +53,10 @@ auto_pytabs_max_version = (3, 11)
 
 autosectionlabel_prefix_document = True
 
+suppress_warnings = [
+    "autosectionlabel.*",
+]
+
 
 html_theme = "furo"
 html_static_path = ["_static"]
