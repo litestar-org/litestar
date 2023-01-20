@@ -29,7 +29,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from .client import TestClient
-from .websocket_test_session import WebSocketTestSession
+from .async_client import AsyncTestClient
+from .base import BaseTestClient
+from .sync_client import TestClient
 
-__all__ = ("TestClient", "WebSocketTestSession")
+__all__ = ("TestClient", "AsyncTestClient", "BaseTestClient")

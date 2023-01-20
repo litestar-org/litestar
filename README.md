@@ -16,7 +16,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-76-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-77-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -378,6 +378,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Lugoues"><img src="https://avatars.githubusercontent.com/u/372610?v=4?s=100" width="100px;" alt="Peter Brunner"/><br /><sub><b>Peter Brunner</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Lugoues" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://scriptr.dev/"><img src="https://avatars.githubusercontent.com/u/45884264?v=4?s=100" width="100px;" alt="Jacob Coffee"/><br /><sub><b>Jacob Coffee</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=JacobCoffee" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Gamazic"><img src="https://avatars.githubusercontent.com/u/33692402?v=4?s=100" width="100px;" alt="Gamazic"/><br /><sub><b>Gamazic</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Gamazic" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/kareemmahlees"><img src="https://avatars.githubusercontent.com/u/89863279?v=4?s=100" width="100px;" alt="Kareem Mahlees"/><br /><sub><b>Kareem Mahlees</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=kareemmahlees" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
