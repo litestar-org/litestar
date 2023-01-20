@@ -100,18 +100,18 @@ def test_picologging_dictconfig_when_disabled(dict_config_mock: Mock) -> None:
 
 def test_get_default_logger() -> None:
     with create_test_client(route_handlers=[], logging_config=LoggingConfig(handlers=default_handlers)) as client:
-        assert isinstance(client.app.logger.handlers[0], StandardQueueListenerHandler)  # type: ignore
+        assert isinstance(client.app.logger.handlers[0], StandardQueueListenerHandler)
         new_logger = client.app.get_logger()
-        assert isinstance(new_logger.handlers[0], StandardQueueListenerHandler)  # type: ignore
+        assert isinstance(new_logger.handlers[0], StandardQueueListenerHandler)
 
 
 def test_get_picologging_logger() -> None:
     with create_test_client(
         route_handlers=[], logging_config=LoggingConfig(handlers=default_picologging_handlers)
     ) as client:
-        assert isinstance(client.app.logger.handlers[0], PicologgingQueueListenerHandler)  # type: ignore
+        assert isinstance(client.app.logger.handlers[0], PicologgingQueueListenerHandler)
         new_logger = client.app.get_logger()
-        assert isinstance(new_logger.handlers[0], PicologgingQueueListenerHandler)  # type: ignore
+        assert isinstance(new_logger.handlers[0], PicologgingQueueListenerHandler)
 
 
 @pytest.mark.parametrize(
