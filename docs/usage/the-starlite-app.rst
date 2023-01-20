@@ -336,7 +336,7 @@ application ``state``.
 .. attention::
 
     This hook is not meant to handle exceptions - it just receives them to allow for side effects.
-    To handle exceptions you should define [exception handlers](17-exceptions.md#exception-handling).
+    To handle exceptions you should define :ref:`exception handlers <usage/exceptions:exception handling>`.
 
 Before Send
 ^^^^^^^^^^^
@@ -395,16 +395,16 @@ Parameters that support layering are:
 * :ref:`after_request <after_request>`
 * :ref:`after_response <after_response>`
 * :ref:`before_request <before_request>`
-* `cache_control </starlite/usage/5-responses/4-response-headers/#cache-control>`_
-* `dependencies </starlite/usage/6-dependency-injection/0-dependency-injection-intro/>`_
-* `etag </starlite/usage/5-responses/4-response-headers/#etag>`_
-* `exception_handlers </starlite/usage/17-exceptions/#exception-handling>`_
-* `guards </starlite/usage/8-security/3-guards/>`_
-* `middleware </starlite/usage/7-middleware/0-middleware-intro/>`_
-* `opt </starlite/usage/2-route-handlers/5-handler-opts/>`_
-* `response_class </starlite/usage/5-responses/10-custom-responses/>`_
-* `response_cookies </starlite/usage/5-responses/4-response-cookies/>`_
-* `response_headers </starlite/usage/5-responses/4-response-headers/>`_
+* :ref:`cache_control <usage/responses:cache control>`
+* :doc:`dependencies </usage/dependency-injection>`
+* :ref:`etag <usage/responses:etag>`
+* :doc:`exception_handlers </usage/exceptions>`
+* :doc:`guards </usage/security/guards>`
+* :doc:`middleware </usage/middleware/index>`
+* :ref:`opt <handler_opts>`
+* :ref:`response_class <usage/responses:custom responses>`
+* :ref:`response_cookies <usage/responses:response cookies>`
+* :ref:`response_headers <usage/responses:response headers>`
 * ``security``
 * ``tags``
 * ``type_encoders``

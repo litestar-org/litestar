@@ -64,7 +64,7 @@ When a value fails ``pydantic`` validation, the result will be a :class:`Validat
 pydantic validation errors. Thus, this data will be made available for the API consumers by default.
 
 
-Exception Handling
+Exception handling
 ------------------
 
 Starlite handles all errors by default by transforming them into **JSON responses**. If the errors are **instances of**
@@ -98,7 +98,7 @@ the ``ValidationException`` occurring within that route handler:
     :language: python
 
 
-Exception Handling Layers
+Exception handling layers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Since Starlite allows users to define both exception handlers and middlewares in a layered fashion, i.e. on individual
