@@ -10,6 +10,8 @@ Usage
     parameters
     request-data
     dependency-injection
+    responses
+    templating
     security/index
     plugins/index
     middleware/index
