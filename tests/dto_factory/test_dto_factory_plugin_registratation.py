@@ -19,7 +19,7 @@ from tests.plugins.sql_alchemy_plugin import Activity, Pet
         [Activity, [], {}, [SQLAlchemyPlugin()], SQLAlchemyPlugin],
     ],
 )
-def test_regiteration_of_plugin(
+def test_plugin_registration(
     model: Any, exclude: list, field_mapping: dict, plugins: list, expected_dto_plugin: Optional[type]
 ) -> None:
     MyDTO = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
