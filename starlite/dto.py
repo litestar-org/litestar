@@ -252,7 +252,7 @@ class DTOFactory:
         """
         fields: Optional[Dict[str, ModelField]] = None
         plugin = get_plugin_for_value(value=source, plugins=self.plugins)
-        if plugin:
+        if plugin := get_plugin_for_value(value=source, plugins=self.plugins):
             model = plugin.to_pydantic_model_class(model_class=source)
             fields = model.__fields__
 
