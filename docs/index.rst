@@ -6,12 +6,10 @@ Starlite is a powerful, flexible, highly performant and opinionated ASGI framewo
 offering first class typing support and a full `Pydantic <https://github.com/samuelcolvin/pydantic>`_
 integration.
 
-The Starlite framework supports `plugins <usage/10-plugins/0-plugins-intro.md>`_ , ships
-with `dependency injection <usage/6-dependency-injection/0-dependency-injection-intro.md>`,
-`security primitives <usage/8-security/0-intro.md>`_ ,
-`OpenAPI specifications-generation <usage/12-openapi/0-openapi-intro.md>`_ ,
-`MessagePack <https://msgpack.org/>`_ support – among other common API-framework components such
-as `middleware <usage/7-middleware/middleware-intro.md>`_.
+The Starlite framework supports :doc:`/usage/plugins/index`, ships
+with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
+:doc:`OpenAPI schema generation </usage/openapi>`, `MessagePack <https://msgpack.org/>`_,
+:doc:`middlewares </usage/middleware/index>` and much more.
 
 Installation
 ------------
@@ -24,28 +22,28 @@ Installation
 .. dropdown:: Extras
     :icon: star
 
-    [Brotli Compression Middleware](usage/7-middleware/builtin-middlewares#brotli):
+    :ref:`Brotli Compression Middleware <usage/middleware/builtin-middleware:brotli>`:
         :code:`pip install starlite[brotli]`
 
-    [Client-side sessions](usage/7-middleware/builtin-middlewares#client-side-sessions)
+    :ref:`Client-side sessions <usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install starlite[cryptography]`
 
-    [Server-side sessions with redis](usage/7-middleware/builtin-middlewares#redis-storage) / [redis caching](usage/15-caching/0-cache-backends):
+    :ref:`Server-side sessions <usage/middleware/builtin-middleware:redis storage>` / :ref:`redis caching <usage/caching:redis>`:
         :code:`pip install starlite[redis]`
 
-    [Server-side sessions with memcached](usage/7-middleware/builtin-middlewares#memcached-storage) / [memcached caching](usage/15-caching/0-cache-backends):
+    :ref:`Server-side sessions <usage/middleware/builtin-middleware:memcached storage>` / :ref:`redis caching <usage/caching:memcached>`:
         :code:`pip install starlite[memcached]`
 
-    [Picologging](usage/0-the-starlite-app/4-logging/#using-picologging):
+    :ref:`Picologging <usage/the-starlite-app:using picologging>`
         :code:`pip install starlite[picologging]`
 
-    [StructLog](usage/0-the-starlite-app/4-logging/#using-structlog):
+    :ref:`StructLog <usage/the-starlite-app:using structlog>`
         :code:`pip install starlite[structlog]`
 
-    [OpenTelemetry](usage/18-contrib/0-open-telemetry/):
+    :doc:`/usage/contrib/open-telemetry`
         :code:`pip install starlite[openetelemetry]`
 
-    [CLI](usage/19-cli):
+    :doc:`/usage/cli`
         :code:`pip install starlite[cli]`
 
     Standard installation (includes CLI, picologging and Jinja2 templating):

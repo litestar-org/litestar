@@ -5,9 +5,8 @@ Routing Decorators
 ~~~~~~~~~~~~~~~~~~
 
 Starlite does not include any decorator as part of the ``Router`` or ``Starlite`` instances.
-Instead, all routes are declared using `route handlers <usage/2-route-handlers/1-http-route-handlers.md>`_,
-either as standalone functions or controller methods. The handler can then be registered
-on an application or router instance.
+Instead, all routes are declared using :doc:`route handlers </usage/route-handlers>`, either as standalone functions or
+controller methods. The handler can then be registered on an application or router instance.
 
 .. tab-set::
 
@@ -63,7 +62,7 @@ on an application or router instance.
 ..  seealso::
 
     To learn more about registering routes, check out this chapter
-    in the documentation: `registering routes <usage/1-routing/1-registering-routes.md>`_
+    in the documentation: :ref:`registering routes <usage/routing:registering routes>`
 
 Routers and Routes
 ~~~~~~~~~~~~~~~~~~
@@ -71,10 +70,10 @@ Routers and Routes
 There are a few key differences between Starlite’s and Starlette’s ``Router`` class:
 
 1. The Starlite version is not an ASGI app
-2. The Starlite version does not include decorators: Use `route handlers <usage/2-route-handlers/1-http-route-handlers.md>`_.
-3. The Starlite version does not support lifecycle hooks: Those have to be handled on the application layer. See `lifecycle hooks <usage/13-lifecycle-hooks/>`_
+2. The Starlite version does not include decorators: Use :doc:`route handlers </usage/route-handlers>`.
+3. The Starlite version does not support lifecycle hooks: Those have to be handled on the application layer. See :doc:`lifecycle hooks </usage/lifecycle-hooks>`
 
-If you are using Starlette’s ``Route``\ s, you will need to replace these with `route handlers <usage/2-route-handlers/1-http-route-handlers.md>`_.
+If you are using Starlette’s ``Route``\ s, you will need to replace these with :doc:`route handlers </usage/route-handlers>`.
 
 Host based routing
 ~~~~~~~~~~~~~~~~~~
@@ -87,7 +86,7 @@ Dependency Injection
 ~~~~~~~~~~~~~~~~~~~~
 
 The Starlite dependency injection system is different from the one used by FastAPI. You can read about it in
-the `dependency injection <usage/6-dependency-injection/0-dependency-injection-intro.md>`_ section of the documentation.
+the :doc:`dependency injection </usage/dependency-injection>` section of the documentation.
 
 In FastAPI you declare dependencies either as a list of functions passed to the ``Router`` or ``FastAPI`` instances, or as a
 default function argument value wrapped in an instance of the ``Depends`` class.
@@ -188,8 +187,7 @@ Authentication
 ^^^^^^^^^^^^^^
 
 FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Starlite, but the
-preferred way of handling this
-is extending `AbstractAuthenticationMiddleware <usage/8-security/0-intro.md>`_.
+preferred way of handling this is extending :doc:`/usage/security/abstract-authentication-middleware`.
 
 .. tab-set::
     .. tab-item:: FastAPI

@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Generator
 
 import httpx
 import uvicorn
-from auto_pytabs.sphinx_ext import UpgradeLiteralInclude
+from auto_pytabs.sphinx_ext import LiteralIncludeOverride
 from docutils.nodes import Node, admonition, literal_block, title
 from sphinx.addnodes import highlightlang
 
@@ -121,19 +121,14 @@ def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
     return "\n".join(results)
 
 
-class LiteralInclude(UpgradeLiteralInclude):
+class LiteralInclude(LiteralIncludeOverride):
     def run(self) -> list[Node]:
         cwd = Path.cwd()
+        docs_dir = cwd / "docs"
         language = self.options.get("language")
+        file = Path(self.env.relfn2path(self.arguments[0])[1])
 
-        filename = self.arguments[0]
-        if filename.startswith("/examples") and language == "python":
-            file = cwd / filename.lstrip("/")
-            self.arguments[0] = f"../{file.relative_to(cwd)}"
-        else:
-            file = Path(self.env.relfn2path(self.arguments[0])[1])
-
-        if language != "python" or self.options.get("no-run"):
+        if (language != "python" and file.suffix != ".py") or self.options.get("no-run"):
             return super().run()
 
         content = file.read_text()
@@ -142,9 +137,9 @@ class LiteralInclude(UpgradeLiteralInclude):
         if not run_args:
             return super().run()
 
-        tmp_file = self.env.tmp_examples_path / str(file.relative_to(cwd / "examples")).replace("/", "_")
+        tmp_file = self.env.tmp_examples_path / str(file.relative_to(docs_dir)).replace("/", "_")
 
-        self.arguments[0] = str(tmp_file.relative_to(cwd / "docs"))
+        self.arguments[0] = "/" + str(tmp_file.relative_to(docs_dir))
         tmp_file.write_text(clean_content)
 
         nodes = super().run()

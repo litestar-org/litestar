@@ -258,10 +258,11 @@ Request methods
 +---------------------------------+---------------------------------------------------------------------------------------------------+
 
 ..  seealso::
+
     To learn more about requests,, check out these chapters in the documentation
 
-    * [Request data](usage/4-request-data/)
-    * [Request reference](reference/connection/1-request/)
+    * :doc:`/usage/request-data`
+    * :doc:`/reference/connection/index`
 
 Static files
 ~~~~~~~~~~~~
@@ -389,8 +390,8 @@ Setting cookies and headers
     To learn more about response headers and cookies, check out these chapters in the
     documentation:
 
-    - [Response headers](/usage/5-responses/4-response-headers/)
-    - [Response cookies](/usage/5-responses/5-response-cookies/)
+    - :ref:`Response headers <usage/responses:response headers>`
+    - :ref:`Response cookies <usage/responses:response cookies>`
 
 Redirects
 ~~~~~~~~~

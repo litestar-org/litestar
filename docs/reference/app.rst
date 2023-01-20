@@ -6,3 +6,4 @@ starlite.app
 
 .. automodule:: starlite.app
     :members: HandlerIndex, DEFAULT_OPENAPI_CONFIG, DEFAULT_CACHE_CONFIG
+    :no-special-members:
