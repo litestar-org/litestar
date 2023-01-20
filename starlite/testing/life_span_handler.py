@@ -1,11 +1,11 @@
 from math import inf
-from typing import TYPE_CHECKING, Optional, cast
+from typing import TYPE_CHECKING, Generic, Optional, TypeVar, Union, cast
 
 from anyio import create_memory_object_stream
 from anyio.streams.stapled import StapledObjectStream
 
 if TYPE_CHECKING:
-    from starlite.testing import TestClient
+    from starlite.testing.client import AsyncTestClient, TestClient
     from starlite.types import LifeSpanReceiveMessage  # noqa: F401  # nopycln: import
     from starlite.types import (
         LifeSpanSendMessage,
@@ -13,11 +13,13 @@ if TYPE_CHECKING:
         LifeSpanStartupEvent,
     )
 
+T = TypeVar("T", bound=Union["AsyncTestClient", "TestClient"])
 
-class LifeSpanHandler:
-    __slots__ = ("stream_send", "stream_receive", "client", "task")
 
-    def __init__(self, client: "TestClient"):
+class LifeSpanHandler(Generic[T]):
+    __slots__ = "stream_send", "stream_receive", "client", "task"
+
+    def __init__(self, client: T):
         self.client = client
         self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](*create_memory_object_stream(inf))
         self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))
@@ -37,10 +39,11 @@ class LifeSpanHandler:
         await self.stream_receive.send(event)
 
         message = await self.receive()
-        assert message["type"] in (
+        if message["type"] not in (
             "lifespan.startup.complete",
             "lifespan.startup.failed",
-        )
+        ):
+            raise AssertionError
         if message["type"] == "lifespan.startup.failed":
             await self.receive()
 
@@ -50,11 +53,12 @@ class LifeSpanHandler:
             await self.stream_receive.send(lifespan_shutdown_event)
 
             message = await self.receive()
-            assert message["type"] in (
+            if message["type"] not in (
                 "lifespan.shutdown.complete",
                 "lifespan.shutdown.failed",
-            )
-            if message["type"] == "lifespan.shutdown.failed":  # pragma: no cover
+            ):
+                raise AssertionError
+            if message["type"] == "lifespan.shutdown.failed":
                 await self.receive()
 
     async def lifespan(self) -> None:

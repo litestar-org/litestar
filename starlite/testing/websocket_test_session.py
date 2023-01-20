@@ -10,7 +10,7 @@ from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
 
-    from starlite.testing.test_client.client import TestClient
+    from starlite.testing.client.sync_client import TestClient
     from starlite.types import (
         WebSocketConnectEvent,
         WebSocketDisconnectEvent,
@@ -85,6 +85,7 @@ class WebSocketTestSession:
 
         try:
             await self.client.app(self.scope, receive, send)
+
         except BaseException as exc:
             self.send_queue.put(exc)
             raise

@@ -218,6 +218,7 @@ nav:
       - Testing:
           - reference/testing/0-test-client.md
           - reference/testing/1-request-factory.md
+          - reference/testing/2-async-test-client.md
       - Types:
           - reference/types/0-types-intro.md
           - reference/types/1-callable-types.md
@@ -271,7 +272,7 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.magiclink
   - pymdownx.tabbed:
-        alternate_style: true
+      alternate_style: true
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
