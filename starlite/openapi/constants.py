@@ -38,34 +38,10 @@ from pydantic import (
     StrictInt,
     StrictStr,
 )
-from pydantic.fields import (
-    SHAPE_DEFAULTDICT,
-    SHAPE_DEQUE,
-    SHAPE_DICT,
-    SHAPE_FROZENSET,
-    SHAPE_ITERABLE,
-    SHAPE_LIST,
-    SHAPE_SEQUENCE,
-    SHAPE_SET,
-    SHAPE_TUPLE,
-    SHAPE_TUPLE_ELLIPSIS,
-)
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 
-PYDANTIC_FIELD_SHAPE_MAP: Dict[int, OpenAPIType] = {
-    SHAPE_LIST: OpenAPIType.ARRAY,
-    SHAPE_SET: OpenAPIType.ARRAY,
-    SHAPE_TUPLE: OpenAPIType.ARRAY,
-    SHAPE_TUPLE_ELLIPSIS: OpenAPIType.ARRAY,
-    SHAPE_SEQUENCE: OpenAPIType.ARRAY,
-    SHAPE_FROZENSET: OpenAPIType.ARRAY,
-    SHAPE_ITERABLE: OpenAPIType.ARRAY,
-    SHAPE_DEQUE: OpenAPIType.ARRAY,
-    SHAPE_DICT: OpenAPIType.OBJECT,
-    SHAPE_DEFAULTDICT: OpenAPIType.OBJECT,
-}
 TYPE_MAP: Dict[Union[Type[Any], None, Any], Schema] = {
     str: Schema(type=OpenAPIType.STRING),
     bool: Schema(type=OpenAPIType.BOOLEAN),
@@ -189,7 +165,7 @@ TYPE_MAP: Dict[Union[Type[Any], None, Any], Schema] = {
 }
 
 
-PYDANTIC_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
+KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
     "default": "default",
     "multiple_of": "multipleOf",
     "ge": "minimum",

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from functools import cached_property
 from typing import Any, ClassVar, Dict, Optional, Set, Tuple, Union
 
 from pydantic import BaseConfig, BaseModel, ValidationError
@@ -31,15 +30,23 @@ class SignatureField:
         "extra",
         "field_type",
         "kwarg_model",
+        "name",
     )
 
     children: Optional[Tuple["SignatureField", ...]]
+    """A mapping of subtypes, if any."""
     default_value: Any
+    """Field name."""
     extra: Dict[str, Any]
+    """A mapping of extra values."""
     field_type: Any
+    """The type of the kwarg."""
     kwarg_model: Optional[Union[ParameterKwarg, BodyKwarg, DependencyKwarg]]
+    """Kwarg Parameter."""
+    name: str
+    """Field name."""
 
-    @cached_property
+    @property
     def is_optional(self) -> bool:
         """Check if the field type is an Optional union.
 
@@ -48,45 +55,82 @@ class SignatureField:
         """
         return is_optional_union(self.field_type)
 
-    @cached_property
+    @property
     def is_mapping(self) -> bool:
         """Check if the field type is a Mapping."""
         return is_mapping(self.field_type)
 
-    @cached_property
+    @property
     def is_iterable(self) -> bool:
         """Check if the field type is an Iterable."""
         return is_non_string_iterable(self.field_type)
 
-    @cached_property
+    @property
     def is_sequence(self) -> bool:
         """Check if the field type is a non-string Sequence."""
         return is_non_string_sequence(self.field_type)
 
-    @cached_property
+    @property
     def is_any(self) -> bool:
         """Check if the field type is Any."""
         return is_any(self.field_type)
 
-    @cached_property
+    @property
     def is_union(self) -> bool:
         """Check if the field type is a Union."""
         return is_union(self.field_type)
 
-    @cached_property
+    @property
     def is_generic(self) -> bool:
         """Check if the field type is a Generic TypeVar."""
         return is_generic(self.field_type)
 
-    @cached_property
+    @property
     def is_singleton(self) -> bool:
         """Check if the field type is a singleton value (e.g. int, str etc.)."""
         return not (self.is_generic or self.is_optional or self.is_union or self.is_mapping or self.is_iterable)
 
-    @cached_property
+    @property
     def is_parameter_field(self) -> bool:
         """Check if the field type is a parameter kwarg value."""
         return self.kwarg_model is not None and isinstance(self.kwarg_model, ParameterKwarg)
+
+    @property
+    def is_const(self) -> bool:
+        """Check if the field type is a parameter kwarg value."""
+        return bool(self.kwarg_model and getattr(self.kwarg_model, "const", False))
+
+    @classmethod
+    def create(
+        cls,
+        field_type: Any,
+        name: str = "",
+        default_value: Any = Empty,
+        children: Optional[Tuple["SignatureField", ...]] = None,
+        kwarg_model: Optional[Union[ParameterKwarg, BodyKwarg, DependencyKwarg]] = None,
+        extra: Optional[Dict[str, Any]] = None,
+    ) -> "SignatureField":
+        """Create a new SignatureModel instance.
+
+        Args:
+            field_type: The type of the kwarg.
+            name:  Field name.
+            default_value: A default value.
+            children: A mapping of subtypes, if any.
+            kwarg_model: Kwarg Parameter.
+            extra: A mapping of extra values.
+
+        Returns:
+            SignatureField instance.
+        """
+        return SignatureField(
+            name=name,
+            field_type=field_type,
+            default_value=default_value,
+            children=children,
+            kwarg_model=kwarg_model,
+            extra=extra or {},
+        )
 
     @classmethod
     def from_model_field(cls, model_field: ModelField) -> "SignatureField":
@@ -118,6 +162,7 @@ class SignatureField:
             extra=model_field.field_info.extra or {},
             field_type=model_field.type_,
             kwarg_model=kwarg_model,
+            name=model_field.name,
         )
 
 

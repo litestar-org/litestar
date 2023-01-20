@@ -1,7 +1,5 @@
-from copy import copy
 from typing import TYPE_CHECKING, Dict, List, Tuple, cast
 
-from pydantic.fields import Undefined
 from pydantic_openapi_schema.v3_1_0.parameter import Parameter
 
 from starlite.constants import RESERVED_KWARGS
@@ -9,24 +7,32 @@ from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.schema import create_schema
 from starlite.params import DependencyKwarg
+from starlite.signature.models import SignatureField
+from starlite.types import Dependencies, Empty
 
 if TYPE_CHECKING:
-    from pydantic import BaseModel
-    from pydantic.fields import ModelField
     from pydantic_openapi_schema.v3_1_0.schema import Schema
 
     from starlite.handlers import BaseRouteHandler
-    from starlite.types import Dependencies
     from starlite.types.internal_types import PathParameterDefinition
 
 
 def create_path_parameter_schema(
-    path_parameter: "PathParameterDefinition", field: "ModelField", generate_examples: bool
+    path_parameter: "PathParameterDefinition", field: "SignatureField", generate_examples: bool
 ) -> "Schema":
     """Create a path parameter from the given path_param definition."""
-    field.sub_fields = None
-    field.outer_type_ = path_parameter.type
-    return create_schema(field=field, generate_examples=generate_examples, plugins=[])
+    return create_schema(
+        field=SignatureField(
+            name=field.name,
+            field_type=path_parameter.type,
+            children=None,
+            extra=field.extra,
+            kwarg_model=field.kwarg_model,
+            default_value=field.default_value,
+        ),
+        generate_examples=generate_examples,
+        plugins=[],
+    )
 
 
 class ParameterCollection:
@@ -58,9 +64,11 @@ class ParameterCollection:
         if parameter.name not in self._parameters:
             self._parameters[parameter.name] = parameter
             return
+
         pre_existing = self._parameters[parameter.name]
         if parameter == pre_existing:
             return
+
         raise ImproperlyConfiguredException(
             f"OpenAPI schema generation for handler `{self.route_handler}` detected multiple parameters named "
             f"'{parameter.name}' with different types."
@@ -72,15 +80,15 @@ class ParameterCollection:
 
 
 def create_parameter(
-    model_field: "ModelField",
+    signature_field: "SignatureField",
     parameter_name: str,
     path_parameters: Tuple["PathParameterDefinition", ...],
     generate_examples: bool,
 ) -> Parameter:
     """Create an OpenAPI Parameter instance."""
     schema = None
-    is_required = cast("bool", model_field.required) if model_field.required is not Undefined else False
-    extra = model_field.field_info.extra
+    is_required = cast("bool", signature_field.kwarg_model.required) if signature_field.is_parameter_field else False  # type: ignore
+    extra = signature_field.extra
 
     if any(path_param.name == parameter_name for path_param in path_parameters):
         param_in = ParamType.PATH
@@ -88,23 +96,24 @@ def create_parameter(
         path_parameter = [p for p in path_parameters if parameter_name in p.name][0]
         schema = create_path_parameter_schema(
             path_parameter=path_parameter,
-            field=model_field,
+            field=signature_field,
             generate_examples=generate_examples,
         )
+
     elif extra.get(ParamType.HEADER):
         parameter_name = extra[ParamType.HEADER]
         param_in = ParamType.HEADER
-        is_required = model_field.is_parameter_field and model_field.kwargs_model.required
+        is_required = signature_field.is_parameter_field and is_required
     elif extra.get(ParamType.COOKIE):
         parameter_name = extra[ParamType.COOKIE]
         param_in = ParamType.COOKIE
-        is_required = model_field.is_parameter_field and model_field.kwargs_model.required
+        is_required = signature_field.is_parameter_field and is_required
     else:
         param_in = ParamType.QUERY
         parameter_name = extra.get(ParamType.QUERY) or parameter_name
 
     if not schema:
-        schema = create_schema(field=model_field, generate_examples=generate_examples, plugins=[])
+        schema = create_schema(field=signature_field, generate_examples=generate_examples, plugins=[])
 
     return Parameter(
         name=parameter_name,
@@ -117,7 +126,7 @@ def create_parameter(
 
 def get_recursive_handler_parameters(
     field_name: str,
-    model_field: "ModelField",
+    signature_field: "SignatureField",
     dependencies: "Dependencies",
     route_handler: "BaseRouteHandler",
     path_parameters: Tuple["PathParameterDefinition", ...],
@@ -132,20 +141,20 @@ def get_recursive_handler_parameters(
     if field_name not in dependencies:
         return [
             create_parameter(
-                model_field=model_field,
+                signature_field=signature_field,
                 parameter_name=field_name,
                 path_parameters=path_parameters,
                 generate_examples=generate_examples,
             )
         ]
-    dependency_fields = cast("BaseModel", dependencies[field_name].signature_model).__fields__
+    dependency_fields = dependencies[field_name].signature_model.fields()
     return create_parameter_for_handler(route_handler, dependency_fields, path_parameters, generate_examples)
 
 
 def get_layered_parameter(
     field_name: str,
-    signature_model_field: "ModelField",
-    layered_parameters: Dict[str, "ModelField"],
+    signature_field: "SignatureField",
+    layered_parameters: Dict[str, "SignatureField"],
     path_parameters: Tuple["PathParameterDefinition", ...],
     generate_examples: bool,
 ) -> Parameter:
@@ -153,30 +162,32 @@ def get_layered_parameter(
 
     Layer info is extracted from the provided ``layered_parameters`` dict and set as the field's ``field_info`` attribute.
     """
-    layer_field_info = layered_parameters[field_name].field_info
-    signature_field_info = signature_model_field.field_info
+    layer_field = layered_parameters[field_name]
 
-    field_info = layer_field_info
-    # allow users to manually override Parameter definition using Parameter
-    if signature_field_info.is_parameter_field:
-        field_info = signature_field_info
+    field = signature_field if signature_field.is_parameter_field else layer_field
 
-    field_info.default = (
-        signature_field_info.default
-        if signature_field_info.default not in {Undefined, Ellipsis}
-        else layer_field_info.default
+    default_value = (
+        signature_field.default_value
+        if signature_field.default_value not in {Empty, Ellipsis}
+        else layer_field.default_value
     )
 
-    model_field = copy(signature_model_field)
-    model_field.field_info = field_info
-
-    extra = field_info.extra
     parameter_name = (
-        extra.get(ParamType.QUERY) or extra.get(ParamType.HEADER) or extra.get(ParamType.COOKIE) or field_name
+        field.extra.get(ParamType.QUERY)
+        or field.extra.get(ParamType.HEADER)
+        or field.extra.get(ParamType.COOKIE)
+        or field_name
     )
 
     return create_parameter(
-        model_field=model_field,
+        signature_field=SignatureField.create(
+            default_value=default_value,
+            kwarg_model=field.kwarg_model,
+            name=field_name,
+            field_type=field.field_type,
+            extra=field.extra,
+            children=field.children,
+        ),
         parameter_name=parameter_name,
         path_parameters=path_parameters,
         generate_examples=generate_examples,
@@ -185,24 +196,25 @@ def get_layered_parameter(
 
 def create_parameter_for_handler(
     route_handler: "BaseRouteHandler",
-    handler_fields: Dict[str, "ModelField"],
+    handler_fields: Dict[str, "SignatureField"],
     path_parameters: Tuple["PathParameterDefinition", ...],
     generate_examples: bool,
 ) -> List[Parameter]:
     """Create a list of path/query/header Parameter models for the given PathHandler."""
     parameters = ParameterCollection(route_handler=route_handler)
     dependencies = route_handler.resolve_dependencies()
+
     layered_parameters = route_handler.resolve_layered_parameters()
 
-    for field_name, model_field in filter(
+    for field_name, signature_field in filter(
         lambda items: items[0] not in RESERVED_KWARGS and items[0] not in layered_parameters, handler_fields.items()
     ):
-        if isinstance(model_field.field_info.default, DependencyKwarg) and field_name not in dependencies:
+        if isinstance(signature_field.kwarg_model, DependencyKwarg) and field_name not in dependencies:
             # never document explicit dependencies
             continue
         for parameter in get_recursive_handler_parameters(
             field_name=field_name,
-            model_field=model_field,
+            signature_field=signature_field,
             dependencies=dependencies,
             route_handler=route_handler,
             path_parameters=path_parameters,
@@ -210,24 +222,24 @@ def create_parameter_for_handler(
         ):
             parameters.add(parameter)
 
-    for field_name, model_field in filter(
+    for field_name, signature_field in filter(
         lambda items: items[0] not in RESERVED_KWARGS and items[0] not in handler_fields, layered_parameters.items()
     ):
         parameters.add(
             create_parameter(
-                model_field=model_field,
+                signature_field=signature_field,
                 parameter_name=field_name,
                 path_parameters=path_parameters,
                 generate_examples=generate_examples,
             )
         )
-    for field_name, signature_model_field in filter(
+    for field_name, signature_field in filter(
         lambda items: items[0] not in RESERVED_KWARGS and items[0] in layered_parameters, handler_fields.items()
     ):
         parameters.add(
             get_layered_parameter(
                 field_name=field_name,
-                signature_model_field=signature_model_field,
+                signature_field=signature_field,
                 layered_parameters=layered_parameters,
                 path_parameters=path_parameters,
                 generate_examples=generate_examples,

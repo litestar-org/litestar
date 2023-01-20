@@ -181,7 +181,7 @@ class KwargsModel:
         path_parameters: Set[str],
         layered_parameters: Dict[str, SignatureField],
         dependencies: Dict[str, Provide],
-        signature_signature_fields: Dict[str, SignatureField],
+        signature_fields: Dict[str, SignatureField],
     ) -> Tuple[Set[ParameterDefinition], Set[Dependency]]:
         """Get parameter_definitions for the construction of KwargsModel instance.
 
@@ -189,7 +189,7 @@ class KwargsModel:
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
             dependencies: A string keyed dictionary mapping dependency providers.
-            signature_signature_fields: __fields__ definition from SignatureModel.
+            signature_fields: __fields__ definition from SignatureModel.
 
         Returns:
             A Tuple of sets
@@ -197,7 +197,7 @@ class KwargsModel:
         expected_dependencies = {
             cls._create_dependency_graph(key=key, dependencies=dependencies)
             for key in dependencies
-            if key in signature_signature_fields
+            if key in signature_fields
         }
         ignored_keys = {*RESERVED_KWARGS, *(dependency.key for dependency in expected_dependencies)}
 
@@ -209,7 +209,7 @@ class KwargsModel:
                     path_parameters=path_parameters,
                 )
                 for field_name, signature_field in layered_parameters.items()
-                if field_name not in ignored_keys and field_name not in signature_signature_fields
+                if field_name not in ignored_keys and field_name not in signature_fields
             ),
             *(
                 create_parameter_definition(
@@ -217,14 +217,14 @@ class KwargsModel:
                     field_name=field_name,
                     path_parameters=path_parameters,
                 )
-                for field_name, signature_field in signature_signature_fields.items()
+                for field_name, signature_field in signature_fields.items()
                 if field_name not in ignored_keys and field_name not in layered_parameters
             ),
         }
 
         for field_name, signature_field in filter(
             lambda items: items[0] not in ignored_keys and items[0] in layered_parameters,
-            signature_signature_fields.items(),
+            signature_fields.items(),
         ):
             # allow users to manually override Parameter definition using Parameter
             field = signature_field if signature_field.is_parameter_field else layered_parameters[field_name]
@@ -275,7 +275,7 @@ class KwargsModel:
         }
 
         param_definitions, expected_dependencies = cls._get_param_definitions(
-            path_parameters, layered_parameters, dependencies, signature_signature_fields=signature_model.fields()
+            path_parameters, layered_parameters, dependencies, signature_fields=signature_model.fields()
         )
 
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}

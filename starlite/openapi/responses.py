@@ -22,6 +22,7 @@ from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
 from starlite.response import Response as StarliteResponse
+from starlite.signature.models import SignatureField
 from starlite.utils import (
     create_parsed_model_field,
     get_enum_string_value,
@@ -75,8 +76,12 @@ def create_success_response(
             route_handler.media_type = get_enum_string_value(MediaType.HTML)
         elif is_class_and_subclass(get_origin(signature.return_annotation), StarliteResponse):
             return_annotation = get_args(signature.return_annotation)[0] or Any
-        as_parsed_model_field = create_parsed_model_field(return_annotation)
-        schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples, plugins=plugins)
+
+        schema = create_schema(
+            field=SignatureField.from_model_field(create_parsed_model_field(return_annotation)),
+            generate_examples=generate_examples,
+            plugins=plugins,
+        )
         schema.contentEncoding = route_handler.content_encoding
         schema.contentMediaType = route_handler.content_media_type
         response = Response(
@@ -131,8 +136,12 @@ def create_success_response(
         header = Header()
         for attribute_name, attribute_value in value.dict(exclude_none=True).items():
             if attribute_name == "value":
-                model_field = create_parsed_model_field(type(attribute_value))
-                header.param_schema = create_schema(field=model_field, generate_examples=False, plugins=plugins)
+
+                header.param_schema = create_schema(
+                    field=SignatureField.from_model_field(create_parsed_model_field(type(attribute_value))),
+                    generate_examples=False,
+                    plugins=plugins,
+                )
             elif attribute_name != "documentation_only":
                 setattr(header, attribute_name, attribute_value)
         response.headers[key] = header
@@ -188,9 +197,11 @@ def create_additional_responses(
         return
 
     for status_code, additional_response in route_handler.responses.items():
-        model_field = create_parsed_model_field(additional_response.model)
+
         schema = create_schema(
-            field=model_field, generate_examples=additional_response.generate_examples, plugins=plugins
+            field=SignatureField.from_model_field(create_parsed_model_field(additional_response.model)),
+            generate_examples=additional_response.generate_examples,
+            plugins=plugins,
         )
         yield str(status_code), Response(
             description=additional_response.description,
