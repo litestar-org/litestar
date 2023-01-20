@@ -54,6 +54,7 @@ example here lets say it's a pydantic model:
 
     Base = declarative_base()
 
+
     class User(Base):
         id: uuid.UUID | None = Column(
             UUID(as_uuid=True), default=uuid.uuid4, primary_key=True
@@ -83,32 +84,34 @@ JWT Token:
 
 
         class Token(BaseModel):
-           exp: datetime
-           iat: datetime
-           sub: UUID4
+            exp: datetime
+            iat: datetime
+            sub: UUID4
 
 
         def decode_jwt_token(encoded_token: str) -> Token:
-           """
-           Helper function that decodes a jwt token and returns the value stored under the ``sub`` key
+            """
+            Helper function that decodes a jwt token and returns the value stored under the ``sub`` key
 
-           If the token is invalid or expired (i.e. the value stored under the exp key is in the past) an exception is raised
-           """
-           try:
-               payload = jwt.decode(token=encoded_token, key=settings.JWT_SECRET, algorithms=[ALGORITHM])
-               return Token(**payload)
-           except JWTError as e:
-               raise NotAuthorizedException("Invalid token") from e
+            If the token is invalid or expired (i.e. the value stored under the exp key is in the past) an exception is raised
+            """
+            try:
+                payload = jwt.decode(
+                    token=encoded_token, key=settings.JWT_SECRET, algorithms=[ALGORITHM]
+                )
+                return Token(**payload)
+            except JWTError as e:
+                raise NotAuthorizedException("Invalid token") from e
 
 
         def encode_jwt_token(user_id: UUID, expiration: timedelta = DEFAULT_TIME_DELTA) -> str:
-           """Helper function that encodes a JWT token with expiration and a given user_id"""
-           token = Token(
-               exp=datetime.now() + expiration,
-               iat=datetime.now(),
-               sub=user_id,
-           )
-           return jwt.encode(token.dict(), settings.JWT_SECRET, algorithm=ALGORITHM)
+            """Helper function that encodes a JWT token with expiration and a given user_id"""
+            token = Token(
+                exp=datetime.now() + expiration,
+                iat=datetime.now(),
+                sub=user_id,
+            )
+            return jwt.encode(token.dict(), settings.JWT_SECRET, algorithm=ALGORITHM)
 
 We can now create our authentication middleware:
 
@@ -134,31 +137,32 @@ We can now create our authentication middleware:
 
     API_KEY_HEADER = "X-API-KEY"
 
+
     class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         async def authenticate_request(
-                self, connection: ASGIConnection
+            self, connection: ASGIConnection
         ) -> AuthenticationResult:
             """
             Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB
             """
 
-           # retrieve the auth header
-           auth_header = connection.headers.get(API_KEY_HEADER)
-           if not auth_header:
-               raise NotAuthorizedException()
+            # retrieve the auth header
 
-           # decode the token, the result is a ``Token`` model instance
-           token = decode_jwt_token(encoded_token=auth_header)
+        auth_header = connection.headers.get(API_KEY_HEADER)
+        if not auth_header:
+            raise NotAuthorizedException()
 
-           engine = cast("AsyncEngine", connection.app.state.postgres_connection)
-           async with AsyncSession(engine) as async_session:
-               async with async_session.begin():
-                   user = await async_session.execute(
-                       select(User).where(User.id == token.sub)
-                   )
-           if not user:
-               raise NotAuthorizedException()
-           return AuthenticationResult(user=user, auth=token)
+        # decode the token, the result is a ``Token`` model instance
+        token = decode_jwt_token(encoded_token=auth_header)
+
+        engine = cast("AsyncEngine", connection.app.state.postgres_connection)
+        async with AsyncSession(engine) as async_session:
+            async with async_session.begin():
+                user = await async_session.execute(select(User).where(User.id == token.sub))
+        if not user:
+            raise NotAuthorizedException()
+        return AuthenticationResult(user=user, auth=token)
+
 
 Finally, we need to pass our middleware to the Starlite constructor:
 
@@ -169,6 +173,7 @@ Finally, we need to pass our middleware to the Starlite constructor:
     from starlite.middleware.base import DefineMiddleware
 
     from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
+
     # you can optionally exclude certain paths from authentication.
     # the following excludes all routes mounted at or under `/schema*`
     auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, exclude="schema")

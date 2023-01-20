@@ -41,7 +41,7 @@ Memcached
 
 .. note::
 
-    `aiomcache`` is a required dependency when using this backend. You can install it as an extra with
+    ``aiomcache`` is a required dependency when using this backend. You can install it as an extra with
     ``pip install starlite[memcached]`` or independently.
 
 

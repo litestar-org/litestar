@@ -302,4 +302,3 @@ you'll see
 .. image:: /images/examples/template_engine_callable.png
    :target: /images/examples/template_engine_callable.png
    :alt: Template engine callable example
-

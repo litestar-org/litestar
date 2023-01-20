@@ -18,9 +18,11 @@ Let's say we have a very simple app with a health check endpoint:
 
     from starlite import Starlite, MediaType, get
 
+
     @get(path="/health-check", media_type=MediaType.TEXT)
     def health_check() -> str:
         return "healthy"
+
 
     app = Starlite(route_handlers=[health_check])
 
@@ -37,10 +39,10 @@ We would then test it using the test client like so:
 
 
     def test_health_check():
-       with TestClient(app=app) as client:
-           response = client.get("/health-check")
-           assert response.status_code == HTTP_200_OK
-           assert response.text == "healthy"
+        with TestClient(app=app) as client:
+            response = client.get("/health-check")
+            assert response.status_code == HTTP_200_OK
+            assert response.text == "healthy"
 
 Since we would probably need to use the client in multiple places, it's better to make it into a pytest fixture:
 
@@ -53,6 +55,7 @@ Since we would probably need to use the client in multiple places, it's better t
     from starlite.testing import TestClient
 
     from my_app.main import app
+
 
     @pytest.fixture(scope="function")
     def test_client() -> TestClient:
@@ -68,10 +71,10 @@ We would then be able to rewrite our test like so:
 
 
     def test_health_check(test_client: TestClient):
-       with test_client as client:
-           response = client.get("/health-check")
-           assert response.status_code == HTTP_200_OK
-           assert response.text == "healthy"
+        with test_client as client:
+            response = client.get("/health-check")
+            assert response.status_code == HTTP_200_OK
+            assert response.text == "healthy"
 
 Using sessions
 ++++++++++++++
@@ -139,6 +142,7 @@ For example, you can do this:
 
     from my_app.main import health_check
 
+
     def test_health_check():
         with create_test_client(route_handlers=[health_check]) as client:
             response = client.get("/health-check")
@@ -157,10 +161,10 @@ But also this:
 
 
     def test_health_check():
-       with create_test_client(route_handlers=health_check) as client:
-           response = client.get("/health-check")
-           assert response.status_code == HTTP_200_OK
-           assert response.text == "healthy"
+        with create_test_client(route_handlers=health_check) as client:
+            response = client.get("/health-check")
+            assert response.status_code == HTTP_200_OK
+            assert response.text == "healthy"
 
 
 RequestFactory
@@ -171,7 +175,7 @@ Another helper is the :class:`RequestFactory <starlite.testing.RequestFactory>` 
 you need to test logic that expects to receive a request object.
 
 For example, lets say we wanted to unit test a *guard* function in isolation, to which end we'll reuse the examples
-from the :doc:`route guards <usage/security/guards>` documentation:
+from the :doc:`route guards </usage/security/guards>` documentation:
 
 
 .. code-block:: python
@@ -179,8 +183,12 @@ from the :doc:`route guards <usage/security/guards>` documentation:
 
     from starlite import Request, RouteHandler, NotAuthorizedException
 
+
     def secret_token_guard(request: Request, route_handler: RouteHandler) -> None:
-        if route_handler.opt.get("secret") and not request.headers.get("Secret-Header", "") == route_handler.opt["secret"]:
+        if (
+            route_handler.opt.get("secret")
+            and not request.headers.get("Secret-Header", "") == route_handler.opt["secret"]
+        ):
             raise NotAuthorizedException()
 
 We already have our route handler in place:
@@ -197,7 +205,7 @@ We already have our route handler in place:
 
     @get(path="/secret", guards=[secret_token_guard], opt={"secret": environ.get("SECRET")})
     def secret_endpoint() -> None:
-       ...
+        ...
 
 We could thus test the guard function like so:
 
@@ -214,11 +222,13 @@ We could thus test the guard function like so:
 
     request = RequestFactory().get("/")
 
+
     def test_secret_token_guard_failure_scenario():
         copied_endpoint_handler = secret_endpoint.copy()
         copied_endpoint_handler.opt["secret"] = None
         with pytest.raises(NotAuthorizedException):
             secret_token_guard(request=request, route_handler=copied_endpoint_handler)
+
 
     def test_secret_token_guard_success_scenario():
         copied_endpoint_handler = secret_endpoint.copy()
@@ -229,7 +239,7 @@ We could thus test the guard function like so:
 Using pydantic-factories
 ------------------------
 
-`Pydantic-factories <https://github.com/starlite-api/pydantic-factories>`_ offers an easy
+`Pydantic-factories <https://github.com/starlite-api/pydantic-factories>`__ offers an easy
 and powerful way to generate mock data from pydantic models and dataclasses.
 
 Let's say we have an API that talks to an external service and retrieves some data:
@@ -242,13 +252,16 @@ Let's say we have an API that talks to an external service and retrieves some da
     from pydantic import BaseModel
     from starlite import get
 
+
     class Item(BaseModel):
         name: str
+
 
     @runtime_checkable
     class Service(Protocol):
         def get(self) -> Item:
             ...
+
 
     @get(path="/item")
     def get_item(service: Service) -> Item:
@@ -270,18 +283,20 @@ We could test the ``/item`` route like so:
 
     @pytest.fixture()
     def item():
-       return Item(name="Chair")
+        return Item(name="Chair")
 
 
     def test_get_item(item: Item):
-       class MyService(Service):
-           def get_one(self) -> Item:
-               return item
+        class MyService(Service):
+            def get_one(self) -> Item:
+                return item
 
-       with create_test_client(route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}) as client:
-           response = client.get("/item")
-           assert response.status_code == HTTP_200_OK
-           assert response.json() == item.dict()
+        with create_test_client(
+            route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}
+        ) as client:
+            response = client.get("/item")
+            assert response.status_code == HTTP_200_OK
+            assert response.json() == item.dict()
 
 While we can define the test data manually, as is done in the above, this can be quite cumbersome. That's
 where `pydantic-factories <https://github.com/Goldziher/pydantic-factories>`_ library comes in. It generates mock data for
@@ -300,31 +315,40 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
     from starlite import Provide, get
     from starlite.testing import create_test_client
 
+
     class Item(BaseModel):
         name: str
+
 
     @runtime_checkable
     class Service(Protocol):
         def get_one(self) -> Item:
             ...
 
+
     @get(path="/item")
     def get_item(service: Service) -> Item:
         return service.get_one()
 
+
     class ItemFactory(ModelFactory[Item]):
-        **model** = Item
+        model = Item
+
 
     @pytest.fixture()
     def item():
         return ItemFactory.build()
+
 
     def test_get_item(item: Item):
         class MyService(Service):
             def get_one(self) -> Item:
                 return item
 
-    with create_test_client(route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}) as client:
-       response = client.get("/item")
-       assert response.status_code == HTTP_200_OK
-       assert response.json() == item.dict()
+
+    with create_test_client(
+        route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}
+    ) as client:
+        response = client.get("/item")
+        assert response.status_code == HTTP_200_OK
+        assert response.json() == item.dict()

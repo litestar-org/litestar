@@ -378,4 +378,3 @@ If the parameter is marked as a dependency, this allows us to fail early instead
 .. literalinclude:: /examples/dependency_injection/dependency_non_optional_not_provided.py
    :caption: Dependency not provided error
    :language: python
-

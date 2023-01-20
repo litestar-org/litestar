@@ -23,7 +23,7 @@ The example previously given was using a factory function, i.e.:
 
 While using functions is a perfectly viable approach, you can also use classes to do the same. See the next sections on
 two base classes you can use for this purpose - the :class:`MiddlewareProtocol <.middleware.base.MiddlewareProtocol>` ,
-which gives a bare-bones type, or the :class:`AbstractMiddleware <.middleware.base.AbstractMiddleware>`_ that offers a
+which gives a bare-bones type, or the :class:`AbstractMiddleware <.middleware.base.AbstractMiddleware>` that offers a
 base class with some built in functionality.
 
 Using MiddlewareProtocol

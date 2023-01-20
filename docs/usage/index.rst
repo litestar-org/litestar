@@ -9,17 +9,17 @@ Usage
     route-handlers
     parameters
     request-data
-    dependency-injection
     responses
-    templating
+    dependency-injection
+    middleware/index
     security/index
     testing
     plugins/index
     dto
     openapi
+    lifecycle-hooks
     caching
-    middleware/index
+    templating
     exceptions
     contrib/index
     cli
-    lifecycle-hooks
