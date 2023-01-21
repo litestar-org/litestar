@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from pydantic_openapi_schema.v3_1_0 import Components, Example, Header
 
 from starlite import OpenAPIConfig, Starlite, get
+from starlite.handlers.http import post
 from starlite.testing.client.sync_client import TestClient
 
 
@@ -47,8 +48,13 @@ def test_by_alias() -> None:
     def handler() -> ModelWithAlias:
         return ModelWithAlias(second="abc", _underscore="test")
 
+    @post("/")
+    def handler_post(data: ModelWithAlias) -> None:
+        return
+
     app = Starlite(
-        route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=True)
+        route_handlers=[handler, handler_post],
+        openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=True),
     )
 
     assert app.openapi_schema
@@ -65,8 +71,11 @@ def test_by_alias() -> None:
     with TestClient(app=app) as client:
         assert client.get("/").json() == {"second": "abc", "_underscore": "test"}
 
+        assert client.post("/", json={"second": "abc", "_underscore": "test"}).status_code == 201
+
     app = Starlite(
-        route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=False)
+        route_handlers=[handler, handler_post],
+        openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=False),
     )
 
     assert app.openapi_schema
@@ -82,3 +91,5 @@ def test_by_alias() -> None:
 
     with TestClient(app=app) as client:
         assert client.get("/").json() == {"first": "abc", "underscore": "test"}
+
+        assert client.post("/", json={"first": "abc", "underscore": "test"}).status_code == 201
