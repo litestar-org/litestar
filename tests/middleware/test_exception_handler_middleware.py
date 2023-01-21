@@ -3,12 +3,14 @@ from typing import TYPE_CHECKING, Any
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from starlite import HTTPException, Request, Response, Starlite, get
+from starlite import HTTPException, LoggingConfig, Request, Response, Starlite, get
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
+    from _pytest.logging import LogCaptureFixture
+
     from starlite.datastructures import State
     from starlite.types import Scope
 
@@ -120,28 +122,37 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
         assert client.app.state.called
 
 
-def test_exception_handler_middleware_debug_logging() -> None:
-    from unittest.mock import patch
-
+def test_exception_handler_middleware_debug_logging(caplog: "LogCaptureFixture") -> None:
     @get("/test")
     def handler() -> None:
-        raise RuntimeError()
+        raise ValueError("Test debug exception")
 
-    with create_test_client(handler) as client, patch("logging.Logger.debug") as mock_debug:
+    # Debug On -> Exception is logged
+    with create_test_client(handler, logging_config=LoggingConfig()) as client:
+        caplog.set_level("DEBUG")
         client.app.debug = True
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        mock_debug.assert_called_once_with("Exception in ASGI application", exc_info=True)
+        assert "Internal Server Error" in caplog.text
+        assert "ValueError" in caplog.text
+        assert "Test debug exception" in caplog.text
 
-    with create_test_client(handler) as client, patch("logging.Logger.debug") as mock_debug:
+        # Debug Off -> Exception is not logged
+    with create_test_client(handler, logging_config=LoggingConfig()) as client:
+        caplog.set_level("INFO")
         client.app.debug = False
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        mock_debug.assert_not_called()
+        assert "Exception in ASGI application" not in caplog.text
+        assert "ValueError" not in caplog.text
+        assert "Test debug exception" not in caplog.text
 
-    with create_test_client(handler) as client, patch("logging.Logger.debug") as mock_debug:
-        client.app.debug = False
-        client.app.logger = None
+    # Debug On + No Logger -> No Debug Logging
+    with create_test_client(handler, logging_config=None) as client:
+        caplog.set_level("DEBUG")
+        client.app.debug = True
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        mock_debug.assert_not_called()
+        assert "Internal Server Error" not in caplog.text
+        assert "ValueError" not in caplog.text
+        assert "Test debug exception" not in caplog.text
