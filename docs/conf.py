@@ -3,7 +3,6 @@ import importlib.metadata
 project = "Starlite"
 copyright = "2023, Starlite-API"
 author = "Starlite-API"
-# release = "1.48.1"
 release = importlib.metadata.version("starlite")
 
 extensions = [
@@ -60,6 +59,8 @@ suppress_warnings = [
 
 html_theme = "furo"
 html_static_path = ["_static"]
+html_js_files = ["js/version_select.js"]
+html_css_files = ["style.css"]
 html_favicon = "images/starlite-favicon.ico"
 
 html_theme_options = {
