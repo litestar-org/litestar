@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, List, Tuple, cast
+from typing import TYPE_CHECKING, Dict, List, Tuple
 
 from pydantic_openapi_schema.v3_1_0.parameter import Parameter
 
@@ -87,7 +87,7 @@ def create_parameter(
 ) -> Parameter:
     """Create an OpenAPI Parameter instance."""
     schema = None
-    is_required = cast("bool", signature_field.kwarg_model.required) if signature_field.is_parameter_field else False  # type: ignore
+    is_required = signature_field.is_required
     extra = signature_field.extra
 
     if any(path_param.name == parameter_name for path_param in path_parameters):
@@ -103,11 +103,11 @@ def create_parameter(
     elif extra.get(ParamType.HEADER):
         parameter_name = extra[ParamType.HEADER]
         param_in = ParamType.HEADER
-        is_required = signature_field.is_parameter_field and is_required
+        is_required = signature_field.is_required
     elif extra.get(ParamType.COOKIE):
         parameter_name = extra[ParamType.COOKIE]
         param_in = ParamType.COOKIE
-        is_required = signature_field.is_parameter_field and is_required
+        is_required = signature_field.is_required
     else:
         param_in = ParamType.QUERY
         parameter_name = extra.get(ParamType.QUERY) or parameter_name

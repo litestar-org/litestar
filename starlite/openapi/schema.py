@@ -40,7 +40,11 @@ from starlite.openapi.utils import get_openapi_type_for_complex_type
 from starlite.signature.models import SignatureField
 from starlite.types import Empty
 from starlite.utils import is_dataclass_class_or_instance, is_typed_dict
-from starlite.utils.model import convert_dataclass_to_model, convert_typeddict_to_model
+from starlite.utils.model import (
+    convert_dataclass_to_model,
+    convert_typeddict_to_model,
+    create_parsed_model_field,
+)
 
 if TYPE_CHECKING:
     from starlite.plugins.base import PluginProtocol
@@ -171,7 +175,9 @@ def create_constrained_field_schema(
         return create_string_constrained_field_schema(field_type=field_type)
     if issubclass(field_type, ConstrainedDate):
         return create_date_constrained_field_schema(field_type=field_type)
-    return create_collection_constrained_field_schema(field_type=field_type, children=tuple(children) if children else None, plugins=plugins)
+    return create_collection_constrained_field_schema(
+        field_type=field_type, children=tuple(children) if children else None, plugins=plugins
+    )
 
 
 def update_schema_with_signature_field(schema: "Schema", signature_field: "SignatureField") -> "Schema":
@@ -183,10 +189,11 @@ def update_schema_with_signature_field(schema: "Schema", signature_field: "Signa
         and schema.const is None
     ):
         schema.const = signature_field.default_value
-    for kwarg_model_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
-        value = getattr(signature_field.kwarg_model, kwarg_model_key)
-        if value not in {None, ..., Empty}:
-            setattr(schema, schema_key, value)
+    if signature_field.kwarg_model:
+        for kwarg_model_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
+            value = getattr(signature_field.kwarg_model, kwarg_model_key)
+            if value not in {None, ..., Empty}:
+                setattr(schema, schema_key, value)
     for extra_key, schema_key in EXTRA_TO_OPENAPI_PROPERTY_MAP.items():
         if extra_key in signature_field.extra:
             value = signature_field.extra[extra_key]
@@ -309,7 +316,8 @@ def get_schema_for_generic_type(field: "SignatureField", plugins: List["PluginPr
 def create_examples_for_field(field: "SignatureField") -> List["Example"]:
     """Use the pydantic-factories package to create an example value for the given schema."""
     try:
-        value = normalize_example_value(ExampleFactory.get_field_value(field))
+        model_field = create_parsed_model_field(field.field_type)
+        value = normalize_example_value(ExampleFactory.get_field_value(model_field))
         return [Example(description=f"Example {field.name} value", value=value)]
     except ParameterError:  # pragma: no cover
         return []

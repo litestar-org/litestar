@@ -69,6 +69,7 @@ def create_success_response(
         or default_descriptions.get(signature.return_annotation)
         or HTTPStatus(route_handler.status_code).description
     )
+
     if signature.return_annotation not in {signature.empty, None, Redirect, File, Stream}:
         return_annotation = signature.return_annotation
         if signature.return_annotation is Template:
@@ -92,6 +93,7 @@ def create_success_response(
             },
             description=description,
         )
+
     elif signature.return_annotation is Redirect:
         response = Response(
             content=None,
@@ -102,6 +104,7 @@ def create_success_response(
                 )
             },
         )
+
     elif signature.return_annotation in (File, Stream):
         response = Response(
             content={
@@ -125,13 +128,16 @@ def create_success_response(
                 "etag": Header(param_schema=Schema(type=OpenAPIType.STRING), description="Entity tag"),
             },
         )
+
     else:
         response = Response(
             content=None,
             description=description,
         )
+
     if response.headers is None:
         response.headers = {}
+
     for key, value in route_handler.resolve_response_headers().items():
         header = Header()
         for attribute_name, attribute_value in value.dict(exclude_none=True).items():
@@ -145,13 +151,14 @@ def create_success_response(
             elif attribute_name != "documentation_only":
                 setattr(header, attribute_name, attribute_value)
         response.headers[key] = header
-    cookies = route_handler.resolve_response_cookies()
-    if cookies:
+
+    if cookies := route_handler.resolve_response_cookies():
         response.headers["Set-Cookie"] = Header(
             param_schema=Schema(
                 allOf=[create_cookie_schema(cookie=cookie) for cookie in sorted(cookies, key=attrgetter("key"))]
             )
         )
+
     return response
 
 
@@ -215,7 +222,8 @@ def create_responses(
     generate_examples: bool,
     plugins: List["PluginProtocol"],
 ) -> Optional["Responses"]:
-    """Create a Response model embedded in a ``Responses`` dictionary for the given RouteHandler or return None."""
+    """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
+
     responses: "Responses" = {
         str(route_handler.status_code): create_success_response(
             route_handler=route_handler,
@@ -223,6 +231,7 @@ def create_responses(
             plugins=plugins,
         ),
     }
+
     exceptions = route_handler.raises or []
     if raises_validation_error and ValidationException not in exceptions:
         exceptions.append(ValidationException)

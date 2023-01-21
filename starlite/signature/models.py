@@ -47,6 +47,15 @@ class SignatureField:
     """Field name."""
 
     @property
+    def is_empty(self) -> bool:
+        """Check if the default value is an empty type.
+
+        Returns:
+            True if the default_value is Empty or Ellipsis otherwise False.
+        """
+        return self.default_value is Empty or self.default_value is Ellipsis
+
+    @property
     def is_optional(self) -> bool:
         """Check if the field type is an Optional union.
 
@@ -97,8 +106,13 @@ class SignatureField:
 
     @property
     def is_const(self) -> bool:
-        """Check if the field type is a parameter kwarg value."""
+        """Check if the field is defined as constant value."""
         return bool(self.kwarg_model and getattr(self.kwarg_model, "const", False))
+
+    @property
+    def is_required(self) -> bool:
+        """Check if the field is marked as a required parameter."""
+        return bool(self.kwarg_model and getattr(self.kwarg_model, "required", False))
 
     @classmethod
     def create(
@@ -160,7 +174,7 @@ class SignatureField:
             children=children,
             default_value=default_value,
             extra=model_field.field_info.extra or {},
-            field_type=model_field.type_,
+            field_type=model_field.outer_type_,
             kwarg_model=kwarg_model,
             name=model_field.name,
         )

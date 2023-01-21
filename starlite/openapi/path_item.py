@@ -82,6 +82,7 @@ def create_path_item(
 ) -> PathItem:
     """Create a PathItem model for the given route parsing all http_methods into Operation Models."""
     path_item = PathItem()
+
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple
         if route_handler.include_in_schema:
@@ -125,5 +126,6 @@ def create_path_item(
                 parameters=parameters,  # type: ignore[arg-type]
                 security=security,
             )
+
             setattr(path_item, http_method.lower(), operation)
     return path_item
