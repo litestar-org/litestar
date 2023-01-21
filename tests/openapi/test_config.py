@@ -1,7 +1,10 @@
+from re import A
+
 from pydantic import BaseModel, Field
 from pydantic_openapi_schema.v3_1_0 import Components, Example, Header
 
 from starlite import OpenAPIConfig, Starlite, get
+from starlite.testing.client.sync_client import TestClient
 
 
 def test_merged_components_correct() -> None:
@@ -38,10 +41,11 @@ def test_merged_components_correct() -> None:
 def test_by_alias() -> None:
     class ModelWithAlias(BaseModel):
         first: str = Field(alias="second")
+        underscore: str = Field(alias="_underscore")
 
     @get("/")
     def handler() -> ModelWithAlias:
-        return ModelWithAlias(second="abc")
+        return ModelWithAlias(second="abc", _underscore="test")
 
     app = Starlite(
         route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=True)
@@ -49,11 +53,17 @@ def test_by_alias() -> None:
 
     assert app.openapi_schema
     assert app.openapi_schema.dict(exclude_none=True)["components"]["schemas"]["ModelWithAlias"] == {
-        "properties": {"second": {"type": "string", "title": "Second"}},
+        "properties": {
+            "second": {"type": "string", "title": "Second"},
+            "_underscore": {"type": "string", "title": " Underscore"},
+        },
         "type": "object",
-        "required": ["second"],
+        "required": ["second", "_underscore"],
         "title": "ModelWithAlias",
     }
+
+    with TestClient(app=app) as client:
+        assert client.get("/").json() == {"second": "abc", "_underscore": "test"}
 
     app = Starlite(
         route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=False)
@@ -61,8 +71,14 @@ def test_by_alias() -> None:
 
     assert app.openapi_schema
     assert app.openapi_schema.dict(exclude_none=True)["components"]["schemas"]["ModelWithAlias"] == {
-        "properties": {"first": {"type": "string", "title": "Second"}},
+        "properties": {
+            "first": {"type": "string", "title": "Second"},
+            "underscore": {"type": "string", "title": " Underscore"},
+        },
         "type": "object",
-        "required": ["first"],
+        "required": ["first", "underscore"],
         "title": "ModelWithAlias",
     }
+
+    with TestClient(app=app) as client:
+        assert client.get("/").json() == {"first": "abc", "underscore": "test"}

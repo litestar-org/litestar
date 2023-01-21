@@ -47,7 +47,7 @@ DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
     Path: str,
     PurePath: str,
     # pydantic specific types
-    BaseModel: lambda m: m.dict(),
+    BaseModel: lambda m: m.dict(by_alias=False),
     ByteSize: lambda b: b.real,
     NameEmail: str,
     Color: str,
