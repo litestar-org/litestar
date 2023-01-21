@@ -27,3 +27,8 @@
 	border-bottom: 1px solid var(--color-sidebar-background-border);
 	font-size: smaller;
 }
+
+
+.article-container {
+	text-align: justify;
+}
