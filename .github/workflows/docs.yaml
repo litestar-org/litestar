@@ -31,9 +31,7 @@ jobs:
           git config user.email github-actions@github.com
       - name: Deploy to GH-Pages (preview)
         if:  ${{ github.event_name != 'release' }}
-        run: mike deploy dev --push --force
+        run: python tools/publish_docs.py --version dev --push
       - name: Deploy to GH-Pages (release)
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
-        run: |
-          STARLITE_VERSION=$(python -c "print('$(poetry version --short)'.rsplit('.', 1)[0])")
-          mike deploy $STARLITE_VERSION latest --push --force --update-aliases --no-redirect --title "$STARLITE_VERSION (latest)"
+        run: python tools/publish_docs.py --latest --push
