@@ -103,7 +103,7 @@ class ParameterKwarg:
     Equivalent to pattern in the OpenAPI specification.
     """
 
-    def __hash__(self) -> int:
+    def __hash__(self) -> int:  # pragma: no cover
         """Hash the dataclass in a safe way.
 
         Returns:
@@ -287,7 +287,7 @@ class BodyKwarg:
     Equivalent to pattern in the OpenAPI specification.
     """
 
-    def __hash__(self) -> int:
+    def __hash__(self) -> int:  # pragma: no cover
         """Hash the dataclass in a safe way.
 
         Returns:

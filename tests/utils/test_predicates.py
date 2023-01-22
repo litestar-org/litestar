@@ -84,6 +84,7 @@ def test_is_class_and_subclass(args: tuple, expected: bool) -> None:
             (dict, True),
             (Dict[str, Any], True),
             (Union[str, int], False),
+            (1, False),
         )
     ),
 )
@@ -113,6 +114,7 @@ def test_is_non_string_iterable(value: Any, expected: bool) -> None:
             (dict, False),
             (Dict[str, Any], False),
             (Union[str, int], False),
+            (1, False),
         )
     ),
 )
