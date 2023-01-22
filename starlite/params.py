@@ -15,89 +15,89 @@ if TYPE_CHECKING:
 class ParameterKwarg:
     """Data container representing a parameter."""
 
-    value_type: Any = field(kw_only=False, default=Empty)
+    value_type: Any = field(default=Empty)
     """The field value - `Empty` by default."""
-    header: Optional[str] = field(kw_only=True, default=None)
+    header: Optional[str] = field(default=None)
     """The header parameter key - required for header parameters."""
-    cookie: Optional[str] = field(kw_only=True, default=None)
+    cookie: Optional[str] = field(default=None)
     """The cookie parameter key - required for cookie parameters."""
-    query: Optional[str] = field(kw_only=True, default=None)
+    query: Optional[str] = field(default=None)
     """The query parameter key for this parameter."""
-    examples: Optional[List["Example"]] = field(kw_only=True, default=None)
+    examples: Optional[List["Example"]] = field(default=None)
     """A list of Example models."""
-    external_docs: Optional["ExternalDocumentation"] = field(kw_only=True, default=None)
+    external_docs: Optional["ExternalDocumentation"] = field(default=None)
     """A url pointing at external documentation for the given parameter."""
-    content_encoding: Optional[str] = field(kw_only=True, default=None)
+    content_encoding: Optional[str] = field(default=None)
     """The content encoding of the value.
 
     Applicable on to string values. See OpenAPI 3.1 for details.
     """
-    required: Optional[bool] = field(kw_only=True, default=None)
+    required: Optional[bool] = field(default=None)
     """A boolean flag dictating whether this parameter is required.
 
     If set to False, None values will be allowed. Defaults to True.
     """
-    default: Any = field(kw_only=True, default=Empty)
+    default: Any = field(default=Empty)
     """A default value.
 
     If const is true, this value is required.
     """
-    title: Optional[str] = field(kw_only=True, default=None)
+    title: Optional[str] = field(default=None)
     """String value used in the title section of the OpenAPI schema for the given parameter."""
-    description: Optional[str] = field(kw_only=True, default=None)
+    description: Optional[str] = field(default=None)
     """String value used in the description section of the OpenAPI schema for the given parameter."""
-    const: Optional[bool] = field(kw_only=True, default=None)
+    const: Optional[bool] = field(default=None)
     """A boolean flag dictating whether this parameter is a constant.
 
     If True, the value passed to the parameter must equal its default value. This also causes the OpenAPI const field to
     be populated with the default value.
     """
-    gt: Optional[float] = field(kw_only=True, default=None)
+    gt: Optional[float] = field(default=None)
     """Constrict value to be greater than a given float or int.
 
     Equivalent to exclusiveMinimum in the OpenAPI specification.
     """
-    ge: Optional[float] = field(kw_only=True, default=None)
+    ge: Optional[float] = field(default=None)
     """Constrict value to be greater or equal to a given float or int.
 
     Equivalent to minimum in the OpenAPI specification.
     """
-    lt: Optional[float] = field(kw_only=True, default=None)
+    lt: Optional[float] = field(default=None)
     """Constrict value to be less than a given float or int.
 
     Equivalent to exclusiveMaximum in the OpenAPI specification.
     """
-    le: Optional[float] = field(kw_only=True, default=None)
+    le: Optional[float] = field(default=None)
     """Constrict value to be less or equal to a given float or int.
 
     Equivalent to maximum in the OpenAPI specification.
     """
-    multiple_of: Optional[float] = field(kw_only=True, default=None)
+    multiple_of: Optional[float] = field(default=None)
     """Constrict value to a multiple of a given float or int.
 
     Equivalent to multipleOf in the OpenAPI specification.
     """
-    min_items: Optional[int] = field(kw_only=True, default=None)
+    min_items: Optional[int] = field(default=None)
     """Constrict a set or a list to have a minimum number of items.
 
     Equivalent to minItems in the OpenAPI specification.
     """
-    max_items: Optional[int] = field(kw_only=True, default=None)
+    max_items: Optional[int] = field(default=None)
     """Constrict a set or a list to have a maximum number of items.
 
     Equivalent to maxItems in the OpenAPI specification.
     """
-    min_length: Optional[int] = field(kw_only=True, default=None)
+    min_length: Optional[int] = field(default=None)
     """Constrict a string or bytes value to have a minimum length.
 
     Equivalent to minLength in the OpenAPI specification.
     """
-    max_length: Optional[int] = field(kw_only=True, default=None)
+    max_length: Optional[int] = field(default=None)
     """Constrict a string or bytes value to have a maximum length.
 
     Equivalent to maxLength in the OpenAPI specification.
     """
-    regex: Optional[str] = field(kw_only=True, default=None)
+    regex: Optional[str] = field(default=None)
     """A string representing a regex against which the given string will be matched.
 
     Equivalent to pattern in the OpenAPI specification.
@@ -210,78 +210,78 @@ def Parameter(
 class BodyKwarg:
     """Data container representing a request body."""
 
-    media_type: Union[str, "RequestEncodingType"] = field(kw_only=True, default=RequestEncodingType.JSON)
+    media_type: Union[str, "RequestEncodingType"] = field(default=RequestEncodingType.JSON)
     """Media-Type of the body."""
-    examples: Optional[List["Example"]] = field(kw_only=True, default=None)
+    examples: Optional[List["Example"]] = field(default=None)
     """A list of Example models."""
-    external_docs: Optional["ExternalDocumentation"] = field(kw_only=True, default=None)
+    external_docs: Optional["ExternalDocumentation"] = field(default=None)
     """A url pointing at external documentation for the given parameter."""
-    content_encoding: Optional[str] = field(kw_only=True, default=None)
+    content_encoding: Optional[str] = field(default=None)
     """The content encoding of the value.
 
     Applicable on to string values. See OpenAPI 3.1 for details.
     """
-    default: Any = field(kw_only=True, default=Empty)
+    default: Any = field(default=Empty)
     """A default value.
 
     If const is true, this value is required.
     """
-    title: Optional[str] = field(kw_only=True, default=None)
+    title: Optional[str] = field(default=None)
     """String value used in the title section of the OpenAPI schema for the given parameter."""
-    description: Optional[str] = field(kw_only=True, default=None)
+    description: Optional[str] = field(default=None)
     """String value used in the description section of the OpenAPI schema for the given parameter."""
-    const: Optional[bool] = field(kw_only=True, default=None)
+    const: Optional[bool] = field(default=None)
     """A boolean flag dictating whether this parameter is a constant.
 
     If True, the value passed to the parameter must equal its default value. This also causes the OpenAPI const field to
     be populated with the default value.
     """
-    gt: Optional[float] = field(kw_only=True, default=None)
+    gt: Optional[float] = field(default=None)
     """Constrict value to be greater than a given float or int.
 
     Equivalent to exclusiveMinimum in the OpenAPI specification.
     """
-    ge: Optional[float] = field(kw_only=True, default=None)
+    ge: Optional[float] = field(default=None)
     """Constrict value to be greater or equal to a given float or int.
 
     Equivalent to minimum in the OpenAPI specification.
     """
-    lt: Optional[float] = field(kw_only=True, default=None)
+    lt: Optional[float] = field(default=None)
     """Constrict value to be less than a given float or int.
 
     Equivalent to exclusiveMaximum in the OpenAPI specification.
     """
-    le: Optional[float] = field(kw_only=True, default=None)
+    le: Optional[float] = field(default=None)
     """Constrict value to be less or equal to a given float or int.
 
     Equivalent to maximum in the OpenAPI specification.
     """
-    multiple_of: Optional[float] = field(kw_only=True, default=None)
+    multiple_of: Optional[float] = field(default=None)
     """Constrict value to a multiple of a given float or int.
 
     Equivalent to multipleOf in the OpenAPI specification.
     """
-    min_items: Optional[int] = field(kw_only=True, default=None)
+    min_items: Optional[int] = field(default=None)
     """Constrict a set or a list to have a minimum number of items.
 
     Equivalent to minItems in the OpenAPI specification.
     """
-    max_items: Optional[int] = field(kw_only=True, default=None)
+    max_items: Optional[int] = field(default=None)
     """Constrict a set or a list to have a maximum number of items.
 
     Equivalent to maxItems in the OpenAPI specification.
     """
-    min_length: Optional[int] = field(kw_only=True, default=None)
+    min_length: Optional[int] = field(default=None)
     """Constrict a string or bytes value to have a minimum length.
 
     Equivalent to minLength in the OpenAPI specification.
     """
-    max_length: Optional[int] = field(kw_only=True, default=None)
+    max_length: Optional[int] = field(default=None)
     """Constrict a string or bytes value to have a maximum length.
 
     Equivalent to maxLength in the OpenAPI specification.
     """
-    regex: Optional[str] = field(kw_only=True, default=None)
+    regex: Optional[str] = field(default=None)
     """A string representing a regex against which the given string will be matched.
 
     Equivalent to pattern in the OpenAPI specification.
@@ -381,9 +381,9 @@ def Body(
 class DependencyKwarg:
     """Data container representing a dependency."""
 
-    default: Any = field(kw_only=True, default=Empty)
+    default: Any = field(default=Empty)
     """A default value."""
-    skip_validation: bool = field(kw_only=True, default=False)
+    skip_validation: bool = field(default=False)
     """Flag dictating whether to skip validation."""
 
     def __hash__(self) -> int:

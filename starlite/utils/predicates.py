@@ -14,9 +14,7 @@ from typing import (
     Iterable,
     List,
     Mapping,
-    NotRequired,
     Optional,
-    Required,
     Sequence,
     Set,
     Tuple,
@@ -27,7 +25,9 @@ from typing import (
 
 from typing_extensions import (
     Annotated,
+    NotRequired,
     ParamSpec,
+    Required,
     TypeGuard,
     get_args,
     get_origin,
