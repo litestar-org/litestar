@@ -124,7 +124,7 @@ auto-pytabs = {extras = ["sphinx"], version = ">=0.1.1"}
 brotli = ["brotli"]
 cli = ["click", "rich", "jsbeautifier"]
 cryptography = ["cryptography"]
-jina = ["jinja2"]
+jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
 memcached = ["aiomcache"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
