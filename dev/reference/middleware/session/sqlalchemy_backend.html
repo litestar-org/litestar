@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="starlite.openapi" href="../../openapi.html" /><link rel="prev" title="redis_backend" href="redis_backend.html" />
 
     <link rel="shortcut icon" href="../../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>sqlalchemy_backend - Starlite 1.49 documentation</title>
+        <title>sqlalchemy_backend - Starlite 1.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -136,7 +136,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Starlite 1.49 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Starlite 1.50 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -358,14 +358,264 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="sqlalchemy-backend">
-<h1>sqlalchemy_backend<a class="headerlink" href="#sqlalchemy-backend" title="Permalink to this heading">#</a></h1>
+          <section id="module-starlite.middleware.session.sqlalchemy_backend">
+<span id="sqlalchemy-backend"></span><h1>sqlalchemy_backend<a class="headerlink" href="#module-starlite.middleware.session.sqlalchemy_backend" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SessionModelMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.sqlalchemy_backend.</span></span><span class="sig-name descname"><span class="pre">SessionModelMixin</span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SessionModelMixin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Mixin for session storage.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SessionModelMixin.expired">
+<span class="sig-name descname"><span class="pre">expired</span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SessionModelMixin.expired" title="Permalink to this definition">#</a></dt>
+<dd><p>SQL-Expression to check if the session has expired.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SessionModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.sqlalchemy_backend.</span></span><span class="sig-name descname"><span class="pre">SessionModel</span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SessionModel" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SessionModelMixin" title="starlite.middleware.session.sqlalchemy_backend.SessionModelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionModelMixin</span></code></a></p>
+<p>Session storage model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.create_session_model">
+<span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.sqlalchemy_backend.</span></span><span class="sig-name descname"><span class="pre">create_session_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'session'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SessionModelMixin" title="starlite.middleware.session.sqlalchemy_backend.SessionModelMixin"><span class="pre">SessionModelMixin</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.create_session_model" title="Permalink to this definition">#</a></dt>
+<dd><p>Dynamically generate a session storage model and register it with the declarative base.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base</strong> – SQLAlchemy declarative base</p></li>
+<li><p><strong>table_name</strong> – Alternative table name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A mapped model subclassing <code class="docutils literal notranslate"><span class="pre">base</span></code> and <code class="docutils literal notranslate"><span class="pre">SessionModelMixin</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.register_session_model">
+<span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.sqlalchemy_backend.</span></span><span class="sig-name descname"><span class="pre">register_session_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.sqlalchemy.org/en/14/orm/mapping_api.html#sqlalchemy.orm.registry" title="(in SQLAlchemy v1.4)"><span class="pre">registry</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">SessionModelT</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">SessionModelT</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.register_session_model" title="Permalink to this definition">#</a></dt>
+<dd><p>Map and register a pre-existing model subclassing <a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SessionModelMixin" title="starlite.middleware.session.sqlalchemy_backend.SessionModelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionModelMixin</span></code></a> with a declarative base or registry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base</strong> – Either a <a class="reference external" href="https://docs.sqlalchemy.org/en/14/orm/mapping_api.html#sqlalchemy.orm.registry" title="(in SQLAlchemy v1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.registry</span></code></a> or <code class="docutils literal notranslate"><span class="pre">DeclarativeBase</span></code></p></li>
+<li><p><strong>model</strong> – SQLAlchemy model to register</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A mapped model subclassing <a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SessionModelMixin" title="starlite.middleware.session.sqlalchemy_backend.SessionModelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionModelMixin</span></code></a>, and registered in <code class="docutils literal notranslate"><span class="pre">registry</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.sqlalchemy_backend.</span></span><span class="sig-name descname"><span class="pre">BaseSQLAlchemyBackend</span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">AnySASessionT</span></code>], <a class="reference internal" href="base.html#starlite.middleware.session.base.ServerSideBackend" title="starlite.middleware.session.base.ServerSideBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSideBackend</span></code></a>[<a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig" title="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyBackendConfig</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Session backend to store data in a database with SQLAlchemy. Works with both sync and async engines.</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><p>Requires <code class="docutils literal notranslate"><span class="pre">sqlalchemy</span></code> which needs to be installed separately, and a configured
+<a class="reference internal" href="../../plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin" title="starlite.plugins.sql_alchemy.SQLAlchemyPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code></a>.</p></li>
+</ul>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig" title="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig"><span class="pre">SQLAlchemyBackendConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">BaseSQLAlchemyBackend</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> – An instance of <a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig" title="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyBackendConfig</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend.delete_expired">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_expired</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend.delete_expired" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete all expired sessions from the database.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.sqlalchemy_backend.</span></span><span class="sig-name descname"><span class="pre">AsyncSQLAlchemyBackend</span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend" title="starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSQLAlchemyBackend</span></code></a>[<a class="reference external" href="https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncSession" title="(in SQLAlchemy v1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncSession</span></code></a>]</p>
+<p>Asynchronous SQLAlchemy backend.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.get" title="Permalink to this definition">#</a></dt>
+<dd><p>Retrieve data associated with <code class="docutils literal notranslate"><span class="pre">session_id</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>session_id</strong> – The session-ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The session data, if existing, otherwise <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.set">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.set" title="Permalink to this definition">#</a></dt>
+<dd><p>Store <code class="docutils literal notranslate"><span class="pre">data</span></code> under the <code class="docutils literal notranslate"><span class="pre">session_id</span></code> for later retrieval.</p>
+<p>If there is already data associated with <code class="docutils literal notranslate"><span class="pre">session_id</span></code>, replace
+it with <code class="docutils literal notranslate"><span class="pre">data</span></code> and reset its expiry time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session_id</strong> – The session-ID.</p></li>
+<li><p><strong>data</strong> – Serialized session data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.delete" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete the data associated with <code class="docutils literal notranslate"><span class="pre">session_id</span></code>. Fails silently if no such session-ID exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>session_id</strong> – The session-ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.delete_all">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.delete_all" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete all session data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.delete_expired">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_expired</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.delete_expired" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete all expired session from the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.sqlalchemy_backend.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemyBackend</span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend" title="starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSQLAlchemyBackend</span></code></a>[<a class="reference external" href="https://docs.sqlalchemy.org/en/14/orm/session_api.html#sqlalchemy.orm.Session" title="(in SQLAlchemy v1.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a>]</p>
+<p>Synchronous SQLAlchemy backend.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.get" title="Permalink to this definition">#</a></dt>
+<dd><p>Retrieve data associated with <code class="docutils literal notranslate"><span class="pre">session_id</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>session_id</strong> – The session-ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The session data, if existing, otherwise <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.set">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.set" title="Permalink to this definition">#</a></dt>
+<dd><p>Store <code class="docutils literal notranslate"><span class="pre">data</span></code> under the <code class="docutils literal notranslate"><span class="pre">session_id</span></code> for later retrieval.</p>
+<p>If there is already data associated with <code class="docutils literal notranslate"><span class="pre">session_id</span></code>, replace
+it with <code class="docutils literal notranslate"><span class="pre">data</span></code> and reset its expiry time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session_id</strong> – The session-ID</p></li>
+<li><p><strong>data</strong> – Serialized session data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.delete" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete the data associated with <code class="docutils literal notranslate"><span class="pre">session_id</span></code>. Fails silently if no such session-ID exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>session_id</strong> – The session-ID</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.delete_all">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.delete_all" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete all session data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.delete_expired">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_expired</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.delete_expired" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete all expired session from the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.sqlalchemy_backend.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemyBackendConfig</span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#starlite.middleware.session.base.ServerSideSessionConfig" title="starlite.middleware.session.base.ServerSideSessionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSideSessionConfig</span></code></a></p>
+<p>Configuration for <a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend" title="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyBackend</span></code></a> and <a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend" title="starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncSQLAlchemyBackend</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig.validate_plugin_config">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_plugin_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin" title="starlite.plugins.sql_alchemy.plugin.SQLAlchemyPlugin"><span class="pre">SQLAlchemyPlugin</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin" title="starlite.plugins.sql_alchemy.plugin.SQLAlchemyPlugin"><span class="pre">SQLAlchemyPlugin</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig.validate_plugin_config" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if the SQLAlchemyPlugin is configured.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -424,8 +674,58 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">sqlalchemy_backend</a><ul>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SessionModelMixin"><code class="docutils literal notranslate"><span class="pre">SessionModelMixin</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SessionModelMixin.expired"><code class="docutils literal notranslate"><span class="pre">SessionModelMixin.expired</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SessionModel"><code class="docutils literal notranslate"><span class="pre">SessionModel</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.create_session_model"><code class="docutils literal notranslate"><span class="pre">create_session_model()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.register_session_model"><code class="docutils literal notranslate"><span class="pre">register_session_model()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend"><code class="docutils literal notranslate"><span class="pre">BaseSQLAlchemyBackend</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend.__init__"><code class="docutils literal notranslate"><span class="pre">BaseSQLAlchemyBackend.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend.delete_expired"><code class="docutils literal notranslate"><span class="pre">BaseSQLAlchemyBackend.delete_expired()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend"><code class="docutils literal notranslate"><span class="pre">AsyncSQLAlchemyBackend</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.get"><code class="docutils literal notranslate"><span class="pre">AsyncSQLAlchemyBackend.get()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.set"><code class="docutils literal notranslate"><span class="pre">AsyncSQLAlchemyBackend.set()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.delete"><code class="docutils literal notranslate"><span class="pre">AsyncSQLAlchemyBackend.delete()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.delete_all"><code class="docutils literal notranslate"><span class="pre">AsyncSQLAlchemyBackend.delete_all()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend.delete_expired"><code class="docutils literal notranslate"><span class="pre">AsyncSQLAlchemyBackend.delete_expired()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyBackend</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.get"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyBackend.get()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.set"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyBackend.set()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.delete"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyBackend.delete()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.delete_all"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyBackend.delete_all()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend.delete_expired"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyBackend.delete_expired()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyBackendConfig</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig.validate_plugin_config"><code class="docutils literal notranslate"><span class="pre">SQLAlchemyBackendConfig.validate_plugin_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

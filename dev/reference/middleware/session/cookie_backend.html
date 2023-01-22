@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="file_backend" href="file_backend.html" /><link rel="prev" title="base" href="base.html" />
 
     <link rel="shortcut icon" href="../../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>cookie_backend - Starlite 1.49 documentation</title>
+        <title>cookie_backend - Starlite 1.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
@@ -136,7 +136,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Starlite 1.49 documentation</div></a>
+      <a href="../../../index.html"><div class="brand">Starlite 1.50 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -358,14 +358,153 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="cookie-backend">
-<h1>cookie_backend<a class="headerlink" href="#cookie-backend" title="Permalink to this heading">#</a></h1>
+          <section id="module-starlite.middleware.session.cookie_backend">
+<span id="cookie-backend"></span><h1>cookie_backend<a class="headerlink" href="#module-starlite.middleware.session.cookie_backend" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.middleware.session.cookie_backend.CookieBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.cookie_backend.</span></span><span class="sig-name descname"><span class="pre">CookieBackend</span></span><a class="headerlink" href="#starlite.middleware.session.cookie_backend.CookieBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#starlite.middleware.session.base.BaseSessionBackend" title="starlite.middleware.session.base.BaseSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSessionBackend</span></code></a>[<a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackendConfig" title="starlite.middleware.session.cookie_backend.CookieBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code></a>]</p>
+<p>Cookie backend for SessionMiddleware.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.cookie_backend.CookieBackend.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackendConfig" title="starlite.middleware.session.cookie_backend.CookieBackendConfig"><span class="pre">CookieBackendConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.cookie_backend.CookieBackend.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">CookieBackend</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> – SessionCookieConfig instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.cookie_backend.CookieBackend.dump_data">
+<span class="sig-name descname"><span class="pre">dump_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Scope</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.cookie_backend.CookieBackend.dump_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Given serializable data, including pydantic models and numpy types, dump it into a bytes string, encrypt,
+encode and split it into chunks of the desirable size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Data to serialize, encrypt, encode and chunk.</p></li>
+<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><p>The returned list is composed of a chunks of a single base64 encoded
+string that is encrypted using AES-CGM.</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of encoded bytes string of a maximum length equal to the <code class="docutils literal notranslate"><span class="pre">CHUNK_SIZE</span></code> constant.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.cookie_backend.CookieBackend.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.cookie_backend.CookieBackend.load_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a list of strings, decodes them into the session object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – A list of strings derived from the request’s session cookie(s).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A deserialized session value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.cookie_backend.CookieBackend.get_cookie_keys">
+<span class="sig-name descname"><span class="pre">get_cookie_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection/base.html#starlite.connection.base.ASGIConnection" title="starlite.connection.base.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.cookie_backend.CookieBackend.get_cookie_keys" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of cookie-keys from the connection if they match the session-cookie pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>connection</strong> – An ASGIConnection instance</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of session-cookie keys</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.cookie_backend.CookieBackend.store_in_message">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">store_in_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope_session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ScopeSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection/base.html#starlite.connection.base.ASGIConnection" title="starlite.connection.base.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.cookie_backend.CookieBackend.store_in_message" title="Permalink to this definition">#</a></dt>
+<dd><p>Store data from <code class="docutils literal notranslate"><span class="pre">scope_session</span></code> in <code class="docutils literal notranslate"><span class="pre">Message</span></code> in the form of cookies. If the contents of <code class="docutils literal notranslate"><span class="pre">scope_session</span></code>
+are too large to fit a single cookie, it will be split across several cookies, following the naming scheme of
+<code class="docutils literal notranslate"><span class="pre">&lt;cookie</span> <span class="pre">key&gt;-&lt;n&gt;</span></code>. If the session is empty or shrinks, cookies will be cleared by setting their value to
+<code class="docutils literal notranslate"><span class="pre">&quot;null&quot;</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scope_session</strong> – Current session to store</p></li>
+<li><p><strong>message</strong> – Outgoing send-message</p></li>
+<li><p><strong>connection</strong> – Originating ASGIConnection containing the scope</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.cookie_backend.CookieBackend.load_from_connection">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection/base.html#starlite.connection.base.ASGIConnection" title="starlite.connection.base.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.cookie_backend.CookieBackend.load_from_connection" title="Permalink to this definition">#</a></dt>
+<dd><p>Load session data from a connection’s session-cookies and return it as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>connection</strong> – Originating ASGIConnection</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The session data</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.middleware.session.cookie_backend.CookieBackendConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.cookie_backend.</span></span><span class="sig-name descname"><span class="pre">CookieBackendConfig</span></span><a class="headerlink" href="#starlite.middleware.session.cookie_backend.CookieBackendConfig" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#starlite.middleware.session.base.BaseBackendConfig" title="starlite.middleware.session.base.BaseBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBackendConfig</span></code></a></p>
+<p>Configuration for [SessionMiddleware] middleware.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.middleware.session.cookie_backend.CookieBackendConfig.secret">
+<span class="sig-name descname"><span class="pre">secret</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SecretBytes</span></em><a class="headerlink" href="#starlite.middleware.session.cookie_backend.CookieBackendConfig.secret" title="Permalink to this definition">#</a></dt>
+<dd><p>A secret key to use for generating an encryption key.</p>
+<p>Must have a length of 16 (128 bits), 24 (192 bits) or 32 (256 bits) characters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.cookie_backend.CookieBackendConfig.validate_secret">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_secret</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SecretBytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SecretBytes</span></span></span><a class="headerlink" href="#starlite.middleware.session.cookie_backend.CookieBackendConfig.validate_secret" title="Permalink to this definition">#</a></dt>
+<dd><p>Ensure that the <code class="docutils literal notranslate"><span class="pre">secret</span></code> value is 128, 192 or 256 bits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – A bytes string.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.11)"><strong>ValueError</strong></a> – if the bytes string is of incorrect length.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A bytes string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -424,8 +563,40 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">cookie_backend</a><ul>
+<li><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackend"><code class="docutils literal notranslate"><span class="pre">CookieBackend</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackend.__init__"><code class="docutils literal notranslate"><span class="pre">CookieBackend.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackend.dump_data"><code class="docutils literal notranslate"><span class="pre">CookieBackend.dump_data()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackend.load_data"><code class="docutils literal notranslate"><span class="pre">CookieBackend.load_data()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackend.get_cookie_keys"><code class="docutils literal notranslate"><span class="pre">CookieBackend.get_cookie_keys()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackend.store_in_message"><code class="docutils literal notranslate"><span class="pre">CookieBackend.store_in_message()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackend.load_from_connection"><code class="docutils literal notranslate"><span class="pre">CookieBackend.load_from_connection()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackendConfig"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackendConfig.secret"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.secret</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.session.cookie_backend.CookieBackendConfig.validate_secret"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.validate_secret()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

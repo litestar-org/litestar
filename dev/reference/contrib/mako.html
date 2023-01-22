@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="jwt" href="jwt.html" /><link rel="prev" title="jinja" href="jinja.html" />
 
     <link rel="shortcut icon" href="../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>mako - Starlite 1.49 documentation</title>
+        <title>mako - Starlite 1.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -136,7 +136,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Starlite 1.49 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Starlite 1.50 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -358,14 +358,102 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="mako">
-<h1>mako<a class="headerlink" href="#mako" title="Permalink to this heading">#</a></h1>
+          <section id="module-starlite.contrib.mako">
+<span id="mako"></span><h1>mako<a class="headerlink" href="#module-starlite.contrib.mako" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.contrib.mako.MakoTemplate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.contrib.mako.</span></span><span class="sig-name descname"><span class="pre">MakoTemplate</span></span><a class="headerlink" href="#starlite.contrib.mako.MakoTemplate" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../template.html#starlite.template.TemplateProtocol" title="starlite.template.base.TemplateProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateProtocol</span></code></a></p>
+<p>Mako template, implementing <code class="docutils literal notranslate"><span class="pre">TemplateProtocol</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.contrib.mako.MakoTemplate.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_MakoTemplate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_callables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.11)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.contrib.mako.MakoTemplate.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize a template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>template</strong> – Base <code class="docutils literal notranslate"><span class="pre">MakoTemplate</span></code> used by the underlying mako-engine</p></li>
+<li><p><strong>template_callables</strong> – List of callables passed to the template</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.contrib.mako.MakoTemplate.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#starlite.contrib.mako.MakoTemplate.render" title="Permalink to this definition">#</a></dt>
+<dd><p>Render a template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – Positional arguments passed to the engines <code class="docutils literal notranslate"><span class="pre">render</span></code> function</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to the engines <code class="docutils literal notranslate"><span class="pre">render</span></code> function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rendered template as a string</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.contrib.mako.MakoTemplateEngine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.contrib.mako.</span></span><span class="sig-name descname"><span class="pre">MakoTemplateEngine</span></span><a class="headerlink" href="#starlite.contrib.mako.MakoTemplateEngine" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../template.html#starlite.template.TemplateEngineProtocol" title="starlite.template.base.TemplateEngineProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateEngineProtocol</span></code></a>[<a class="reference internal" href="#starlite.contrib.mako.MakoTemplate" title="starlite.contrib.mako.MakoTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">MakoTemplate</span></code></a>]</p>
+<p>Mako based TemplateEngine.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.contrib.mako.MakoTemplateEngine.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DirectoryPath</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DirectoryPath</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.contrib.mako.MakoTemplateEngine.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize template engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>directory</strong> – Direct path or list of directory paths from which to serve templates.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.contrib.mako.MakoTemplateEngine.get_template">
+<span class="sig-name descname"><span class="pre">get_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.contrib.mako.MakoTemplate" title="starlite.contrib.mako.MakoTemplate"><span class="pre">MakoTemplate</span></a></span></span><a class="headerlink" href="#starlite.contrib.mako.MakoTemplateEngine.get_template" title="Permalink to this definition">#</a></dt>
+<dd><p>Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
+:param template_name: A dotted path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MakoTemplate instance</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TemplateNotFoundException &lt;starlite.exceptions.TemplateNotFoundException&gt;</strong> – if no template is found.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.contrib.mako.MakoTemplateEngine.register_template_callable">
+<span class="sig-name descname"><span class="pre">register_template_callable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_callable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.contrib.mako.MakoTemplateEngine.register_template_callable" title="Permalink to this definition">#</a></dt>
+<dd><p>Register a callable on the template engine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – The callable key, i.e. the value to use inside the template to call the callable.</p></li>
+<li><p><strong>template_callable</strong> – A callable to register.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -424,8 +512,37 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">mako</a><ul>
+<li><a class="reference internal" href="#starlite.contrib.mako.MakoTemplate"><code class="docutils literal notranslate"><span class="pre">MakoTemplate</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.contrib.mako.MakoTemplate.__init__"><code class="docutils literal notranslate"><span class="pre">MakoTemplate.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.contrib.mako.MakoTemplate.render"><code class="docutils literal notranslate"><span class="pre">MakoTemplate.render()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.contrib.mako.MakoTemplateEngine"><code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.contrib.mako.MakoTemplateEngine.__init__"><code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.contrib.mako.MakoTemplateEngine.get_template"><code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine.get_template()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.contrib.mako.MakoTemplateEngine.register_template_callable"><code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine.register_template_callable()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="sql_alchemy" href="sql_alchemy.html" /><link rel="prev" title="base" href="base.html" />
 
     <link rel="shortcut icon" href="../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>piccolo_orm - Starlite 1.49 documentation</title>
+        <title>piccolo_orm - Starlite 1.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -136,7 +136,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Starlite 1.49 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Starlite 1.50 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -358,14 +358,57 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="piccolo-orm">
-<h1>piccolo_orm<a class="headerlink" href="#piccolo-orm" title="Permalink to this heading">#</a></h1>
+          <section id="module-starlite.plugins.piccolo_orm">
+<span id="piccolo-orm"></span><h1>piccolo_orm<a class="headerlink" href="#module-starlite.plugins.piccolo_orm" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.plugins.piccolo_orm.PiccoloORMPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.plugins.piccolo_orm.</span></span><span class="sig-name descname"><span class="pre">PiccoloORMPlugin</span></span><a class="headerlink" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#starlite.plugins.base.PluginProtocol" title="starlite.plugins.base.PluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">PluginProtocol</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Table</span></code>]</p>
+<p>Support (de)serialization and OpenAPI generation for Piccolo ORM types.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.piccolo_orm.PiccoloORMPlugin.to_pydantic_model_class">
+<span class="sig-name descname"><span class="pre">to_pydantic_model_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Table</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BaseModel</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin.to_pydantic_model_class" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a piccolo model_class instance, convert it to a subclass of the piccolo “BaseModel”.</p>
+<p>Since incoming request body’s cannot and should not include values for
+related fields, pk fields and read only fields in piccolo-orm, we generate two different kinds of pydantic models here:
+- the first is a regular pydantic model, and the other is for the “data” kwarg only, which is further sanitized.</p>
+<p>This function uses memoization to ensure we don’t recompute unnecessarily.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.piccolo_orm.PiccoloORMPlugin.is_plugin_supported_type">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_plugin_supported_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TypeGuard</span><span class="p"><span class="pre">[</span></span><span class="pre">Table</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin.is_plugin_supported_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.piccolo_orm.PiccoloORMPlugin.from_pydantic_model_instance">
+<span class="sig-name descname"><span class="pre">from_pydantic_model_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Table</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pydantic_model_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseModel</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Table</span></span></span><a class="headerlink" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin.from_pydantic_model_instance" title="Permalink to this definition">#</a></dt>
+<dd><p>Given an instance of a pydantic model created using the plugin’s <code class="docutils literal notranslate"><span class="pre">to_pydantic_model_class</span></code>, return an
+instance of the class from which that pydantic model has been created.</p>
+<p>This class is passed in as the <code class="docutils literal notranslate"><span class="pre">model_class</span></code> kwarg.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.piccolo_orm.PiccoloORMPlugin.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Table</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Given an instance of a model supported by the plugin, return a dictionary of serializable values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.piccolo_orm.PiccoloORMPlugin.from_dict">
+<span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Table</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Table</span></span></span><a class="headerlink" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin.from_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a class supported by this plugin and a dict of values, create an instance of the class.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -424,8 +467,34 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">piccolo_orm</a><ul>
+<li><a class="reference internal" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin"><code class="docutils literal notranslate"><span class="pre">PiccoloORMPlugin</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin.to_pydantic_model_class"><code class="docutils literal notranslate"><span class="pre">PiccoloORMPlugin.to_pydantic_model_class()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin.is_plugin_supported_type"><code class="docutils literal notranslate"><span class="pre">PiccoloORMPlugin.is_plugin_supported_type()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin.from_pydantic_model_instance"><code class="docutils literal notranslate"><span class="pre">PiccoloORMPlugin.from_pydantic_model_instance()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin.to_dict"><code class="docutils literal notranslate"><span class="pre">PiccoloORMPlugin.to_dict()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.plugins.piccolo_orm.PiccoloORMPlugin.from_dict"><code class="docutils literal notranslate"><span class="pre">PiccoloORMPlugin.from_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

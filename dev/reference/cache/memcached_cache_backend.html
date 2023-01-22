@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="redis_cache_backend" href="redis_cache_backend.html" /><link rel="prev" title="base" href="base.html" />
 
     <link rel="shortcut icon" href="../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>memcached_cache_backend - Starlite 1.49 documentation</title>
+        <title>memcached_cache_backend - Starlite 1.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -136,7 +136,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Starlite 1.49 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Starlite 1.50 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -358,14 +358,138 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="memcached-cache-backend">
-<h1>memcached_cache_backend<a class="headerlink" href="#memcached-cache-backend" title="Permalink to this heading">#</a></h1>
+          <section id="module-starlite.cache.memcached_cache_backend">
+<span id="memcached-cache-backend"></span><h1>memcached_cache_backend<a class="headerlink" href="#module-starlite.cache.memcached_cache_backend" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.cache.memcached_cache_backend.</span></span><span class="sig-name descname"><span class="pre">MemcachedCacheBackendConfig</span></span><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Memcached cache backend configuration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.host">
+<span class="sig-name descname"><span class="pre">host</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.host" title="Permalink to this definition">#</a></dt>
+<dd><p>Memcached host.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.port">
+<span class="sig-name descname"><span class="pre">port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.port" title="Permalink to this definition">#</a></dt>
+<dd><p>memcached port (optional, defaults to 11211)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.pool_size">
+<span class="sig-name descname"><span class="pre">pool_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.pool_size" title="Permalink to this definition">#</a></dt>
+<dd><p>Maximum number of memcached open connections (optional, defaults to 2)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.pool_minsize">
+<span class="sig-name descname"><span class="pre">pool_minsize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.pool_minsize" title="Permalink to this definition">#</a></dt>
+<dd><p>memcached minimum pool size (optional, by default set to <code class="docutils literal notranslate"><span class="pre">pool_size</span></code>)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.serialize" title="Permalink to this definition">#</a></dt>
+<dd><p>A callable to serialize data that goes into the cache from an object to bytes, defaults to <cite>pickle.dumps</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.deserialize">
+<span class="sig-name descname"><span class="pre">deserialize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.deserialize" title="Permalink to this definition">#</a></dt>
+<dd><p>A callable to deserialize data coming from the cache from bytes to an object, defaults to <cite>pickle.loads</cite></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.cache.memcached_cache_backend.</span></span><span class="sig-name descname"><span class="pre">MemcachedCacheBackend</span></span><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#starlite.cache.base.CacheBackendProtocol" title="starlite.cache.base.CacheBackendProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheBackendProtocol</span></code></a></p>
+<p>Memcached-based cache backend.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackend.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig" title="starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig"><span class="pre">MemcachedCacheBackendConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackend.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackend</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> – required configuration to connect to memcached.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackend.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackend.get" title="Permalink to this definition">#</a></dt>
+<dd><p>Retrieve a value from cache corresponding to the given key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> – name of cached value.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cached value if existing else <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackend.set">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">expiration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackend.set" title="Permalink to this definition">#</a></dt>
+<dd><p>Set sa value in cache for a given key for a duration determined by expiration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – key to cache <code class="docutils literal notranslate"><span class="pre">value</span></code> under.</p></li>
+<li><p><strong>value</strong> – the value to be cached.</p></li>
+<li><p><strong>expiration</strong> – expiration of cached value in seconds.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><p>expiration is in seconds.</p></li>
+<li><p>return value is not used by Starlite internally.</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.cache.memcached_cache_backend.MemcachedCacheBackend.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackend.delete" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete a value from the cache and remove the given key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> – key to be deleted from the cache.</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><p>return value is not used by Starlite internally.</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -424,8 +548,42 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">memcached_cache_backend</a><ul>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackendConfig</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.host"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackendConfig.host</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.port"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackendConfig.port</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.pool_size"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackendConfig.pool_size</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.pool_minsize"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackendConfig.pool_minsize</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.serialize"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackendConfig.serialize</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.deserialize"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackendConfig.deserialize</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackend"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackend</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackend.__init__"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackend.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackend.get"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackend.get()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackend.set"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackend.set()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.memcached_cache_backend.MemcachedCacheBackend.delete"><code class="docutils literal notranslate"><span class="pre">MemcachedCacheBackend.delete()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

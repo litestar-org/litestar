@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Creating Middleware" href="creating-middleware.html" /><link rel="prev" title="Using Middleware" href="using-middleware.html" />
 
     <link rel="shortcut icon" href="../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Built-in middleware - Starlite 1.49 documentation</title>
+        <title>Built-in middleware - Starlite 1.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -136,7 +136,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Starlite 1.49 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Starlite 1.50 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -750,7 +750,7 @@ A complete reference of the cookie configuration can be found at <a class="refer
 </section>
 <section id="client-side-sessions">
 <h3>Client-side sessions<a class="headerlink" href="#client-side-sessions" title="Permalink to this heading">#</a></h3>
-<p>Client side sessions are available through the <code class="xref py py-class docutils literal notranslate"><span class="pre">CookieBackend</span></code>,
+<p>Client side sessions are available through the <a class="reference internal" href="../../reference/middleware/session/cookie_backend.html#starlite.middleware.session.cookie_backend.CookieBackend" title="starlite.middleware.session.cookie_backend.CookieBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">CookieBackend</span></code></a>,
 which offers strong AES-CGM encryption security best practices while support cookie splitting.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
@@ -772,7 +772,7 @@ which can be installed together with starlite as an extra using <code class="doc
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code></p>
+<p><a class="reference internal" href="../../reference/middleware/session/cookie_backend.html#starlite.middleware.session.cookie_backend.CookieBackendConfig" title="starlite.middleware.session.cookie_backend.CookieBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code></a></p>
 </div>
 </section>
 <section id="server-side-sessions">
@@ -811,7 +811,7 @@ when trying to access them. Expired session files can be manually deleted using 
 </section>
 <section id="redis-storage">
 <h4>Redis storage<a class="headerlink" href="#redis-storage" title="Permalink to this heading">#</a></h4>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Redis</span> <span class="pre">backend</span></code> can store session data
+<p>The <a class="reference internal" href="../../reference/middleware/session/redis_backend.html#starlite.middleware.session.redis_backend.RedisBackend" title="starlite.middleware.session.redis_backend.RedisBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">Redis</span> <span class="pre">backend</span></code></a> can store session data
 in redis. Session data stored in redis will expire automatically after its
 <a class="reference internal" href="../../reference/middleware/session/base.html#starlite.middleware.session.base.BaseBackendConfig.max_age" title="starlite.middleware.session.base.BaseBackendConfig.max_age"><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_age</span></code></a> has been passed.</p>
 <div class="admonition important">
@@ -843,7 +843,7 @@ in redis. Session data stored in redis will expire automatically after its
 </section>
 <section id="memcached-storage">
 <h4>Memcached storage<a class="headerlink" href="#memcached-storage" title="Permalink to this heading">#</a></h4>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">Memcached</span> <span class="pre">backend</span></code> can store session data
+<p>The <a class="reference internal" href="../../reference/middleware/session/memcached_backend.html#starlite.middleware.session.memcached_backend.MemcachedBackend" title="starlite.middleware.session.memcached_backend.MemcachedBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">Memcached</span> <span class="pre">backend</span></code></a> can store session data
 in memcached. Session data stored in memcached will expire automatically after its
 <a class="reference internal" href="../../reference/middleware/session/base.html#starlite.middleware.session.base.BaseBackendConfig.max_age" title="starlite.middleware.session.base.BaseBackendConfig.max_age"><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_age</span></code></a> has been passed.</p>
 <div class="admonition important">
@@ -897,17 +897,17 @@ testing purposes. It is not process safe, and data will not be persisted.</p>
 <section id="database-storage">
 <h4>Database storage<a class="headerlink" href="#database-storage" title="Permalink to this heading">#</a></h4>
 <p>Database storage is currently offered through the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyBackend</span></code>.
+<a class="reference internal" href="../../reference/middleware/session/sqlalchemy_backend.html#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend" title="starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyBackend</span></code></a>.
 It supports both sync and async-engines and integrates with the
 <a class="reference internal" href="../plugins/sqlalchemy.html"><span class="doc">SQLAlchemyPlugin</span></a>. Expired sessions will only be deleted when trying to access them.
 They can be manually deleted using the
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">delete_expired</span></code> method.</p>
+<a class="reference internal" href="../../reference/middleware/session/sqlalchemy_backend.html#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend.delete_expired" title="starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend.delete_expired"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete_expired</span></code></a> method.</p>
 <p>There are two backends for SQLAlchemy:</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyBackend</span></code> for synchronous engines</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncSQLAlchemyBackend</span></code> for asynchronous engines</p></li>
+<li><p><a class="reference internal" href="../../reference/middleware/session/sqlalchemy_backend.html#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend" title="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyBackend</span></code></a> for synchronous engines</p></li>
+<li><p><a class="reference internal" href="../../reference/middleware/session/sqlalchemy_backend.html#starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend" title="starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncSQLAlchemyBackend</span></code></a> for asynchronous engines</p></li>
 </ul>
-<p>When using the <code class="xref py py-class docutils literal notranslate"><span class="pre">configuration</span></code> object,
+<p>When using the <a class="reference internal" href="../../reference/middleware/session/sqlalchemy_backend.html#starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig" title="starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">configuration</span></code></a> object,
 it will automatically pick the correct backend to use based on the engine configuration.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
@@ -997,7 +997,7 @@ Asynchronous engine</label><div class="sd-tab-content docutils">
 <section id="supplying-your-own-session-model">
 <h5>Supplying your own session model<a class="headerlink" href="#supplying-your-own-session-model" title="Permalink to this heading">#</a></h5>
 <p>If you wish to extend the built-in session model, you can mixin the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">SessionModelMixin</span></code> into your own classes:</p>
+<a class="reference internal" href="../../reference/middleware/session/sqlalchemy_backend.html#starlite.middleware.session.sqlalchemy_backend.SessionModelMixin" title="starlite.middleware.session.sqlalchemy_backend.SessionModelMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionModelMixin</span></code></a> into your own classes:</p>
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text">sqlalchemy_backend_custom_model.py</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span>
@@ -1053,7 +1053,7 @@ Asynchronous engine</label><div class="sd-tab-content docutils">
 <h3>Accessing the storage backend directly<a class="headerlink" href="#accessing-the-storage-backend-directly" title="Permalink to this heading">#</a></h3>
 <p>In some situations you might want to access the storage backend directly, outside a
 request. For example to delete a specific session’s data, or delete expired sessions
-from the database when using the <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyBackend</span></code>.</p>
+from the database when using the <a class="reference internal" href="../../reference/middleware/session/sqlalchemy_backend.html#starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend" title="starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyBackend</span></code></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>

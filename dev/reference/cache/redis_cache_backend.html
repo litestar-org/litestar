@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="simple_cache_backend" href="simple_cache_backend.html" /><link rel="prev" title="memcached_cache_backend" href="memcached_cache_backend.html" />
 
     <link rel="shortcut icon" href="../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>redis_cache_backend - Starlite 1.49 documentation</title>
+        <title>redis_cache_backend - Starlite 1.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -136,7 +136,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../index.html"><div class="brand">Starlite 1.49 documentation</div></a>
+      <a href="../../index.html"><div class="brand">Starlite 1.50 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -358,14 +358,132 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="redis-cache-backend">
-<h1>redis_cache_backend<a class="headerlink" href="#redis-cache-backend" title="Permalink to this heading">#</a></h1>
+          <section id="module-starlite.cache.redis_cache_backend">
+<span id="redis-cache-backend"></span><h1>redis_cache_backend<a class="headerlink" href="#module-starlite.cache.redis_cache_backend" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackendConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.cache.redis_cache_backend.</span></span><span class="sig-name descname"><span class="pre">RedisCacheBackendConfig</span></span><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Redis cache backend configuration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackendConfig.url">
+<span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig.url" title="Permalink to this definition">#</a></dt>
+<dd><p>Redis connection URL.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackendConfig.db">
+<span class="sig-name descname"><span class="pre">db</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig.db" title="Permalink to this definition">#</a></dt>
+<dd><p>Redis DB ID (optional)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackendConfig.port">
+<span class="sig-name descname"><span class="pre">port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig.port" title="Permalink to this definition">#</a></dt>
+<dd><p>Redis port (optional)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackendConfig.username">
+<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig.username" title="Permalink to this definition">#</a></dt>
+<dd><p>A username to use when connecting to Redis (optional)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackendConfig.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig.password" title="Permalink to this definition">#</a></dt>
+<dd><p>A password to use when connecting to Redis (optional)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.cache.redis_cache_backend.</span></span><span class="sig-name descname"><span class="pre">RedisCacheBackend</span></span><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#starlite.cache.base.CacheBackendProtocol" title="starlite.cache.base.CacheBackendProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheBackendProtocol</span></code></a></p>
+<p>Redis-based cache backend.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackend.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig" title="starlite.cache.redis_cache_backend.RedisCacheBackendConfig"><span class="pre">RedisCacheBackendConfig</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackend.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">RedisCacheBackend</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>config</strong> – required configuration to connect to Redis.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackend.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackend.get" title="Permalink to this definition">#</a></dt>
+<dd><p>Retrieve a value from cache corresponding to the given key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> – name of cached value.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cached value if existing else <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackend.set">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">expiration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackend.set" title="Permalink to this definition">#</a></dt>
+<dd><p>Set a value in cache for a given key for a duration determined by expiration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – key to cache <code class="docutils literal notranslate"><span class="pre">value</span></code> under.</p></li>
+<li><p><strong>value</strong> – the value to be cached.</p></li>
+<li><p><strong>expiration</strong> – expiration of cached value in seconds.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><p>expiration is in seconds.</p></li>
+<li><p>return value is not used by Starlite internally.</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.cache.redis_cache_backend.RedisCacheBackend.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.cache.redis_cache_backend.RedisCacheBackend.delete" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete a value from the cache and removes the given key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> – key to be deleted from the cache.</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><p>return value is not used by Starlite internally.</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -424,8 +542,41 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">redis_cache_backend</a><ul>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackendConfig</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig.url"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackendConfig.url</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig.db"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackendConfig.db</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig.port"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackendConfig.port</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig.username"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackendConfig.username</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackendConfig.password"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackendConfig.password</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackend"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackend</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackend.__init__"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackend.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackend.get"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackend.get()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackend.set"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackend.set()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.cache.redis_cache_backend.RedisCacheBackend.delete"><code class="docutils literal notranslate"><span class="pre">RedisCacheBackend.delete()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
