@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 def get_name(value: Any) -> str:
-    """Get the `__name__` of an object.
+    """Get the ``__name__`` of an object.
 
     Args:
         value: An arbitrary object.

@@ -62,10 +62,10 @@ class RateLimitMiddleware(AbstractMiddleware):
     cache: "Cache"
 
     def __init__(self, app: "ASGIApp", config: "RateLimitConfig") -> None:
-        """Initialize `RateLimitMiddleware`.
+        """Initialize ``RateLimitMiddleware``.
 
         Args:
-            app: The 'next' ASGI app to call.
+            app: The ``next`` ASGI app to call.
             config: An instance of RateLimitConfig.
         """
         super().__init__(
@@ -109,7 +109,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         await self.app(scope, receive, send)
 
     def create_send_wrapper(self, send: "Send", cache_object: CacheObject) -> "Send":
-        """Create a `send` function that wraps the original send to inject response headers.
+        """Create a ``send`` function that wraps the original send to inject response headers.
 
         Args:
             send: The ASGI send function.
@@ -120,10 +120,10 @@ class RateLimitMiddleware(AbstractMiddleware):
         """
 
         async def send_wrapper(message: "Message") -> None:
-            """Wrap the ASGI `Send` callable.
+            """Wrap the ASGI ``Send`` callable.
 
             Args:
-                message: An ASGI 'Message'
+                message: An ASGI ``Message``
 
             Returns:
                 None
@@ -138,10 +138,10 @@ class RateLimitMiddleware(AbstractMiddleware):
         return send_wrapper
 
     def cache_key_from_request(self, request: "Request[Any, Any]") -> str:
-        """Get a cache-key from a `Request`
+        """Get a cache-key from a ``Request``
 
         Args:
-            request: A [Request][starlite.connection.Request] instance.
+            request: A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             A cache key.
@@ -197,7 +197,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """Return a boolean indicating if a request should be checked for rate limiting.
 
         Args:
-            request: A [Request][starlite.connection.Request] instance.
+            request: A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             Boolean dictating whether the request should be checked for rate-limiting.
@@ -210,7 +210,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """Create ratelimit response headers.
 
         Notes:
-            * see the [IETF RateLimit draft][https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/]
+            * see the :func:`IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>`
 
         Args:
             cache_object: An instance of Cache Object.
@@ -231,7 +231,7 @@ class RateLimitMiddleware(AbstractMiddleware):
 
 
 class RateLimitConfig(BaseModel):
-    """Configuration for `RateLimitMiddleware`"""
+    """Configuration for ``RateLimitMiddleware``"""
 
     rate_limit: Tuple[DurationUnit, int]
     """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
@@ -259,7 +259,7 @@ class RateLimitConfig(BaseModel):
 
     @validator("check_throttle_handler")
     def validate_check_throttle_handler(cls, value: Callable) -> Callable:  # pylint: disable=no-self-argument
-        """Wrap `check_throttle_handler` in an `AsyncCallable`
+        """Wrap ``check_throttle_handler`` in an ``AsyncCallable``
 
         Args:
             value: A callable.
@@ -274,23 +274,24 @@ class RateLimitConfig(BaseModel):
         """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
-            ```python
-            from starlite import Starlite, Request, get
-            from starlite.middleware import RateLimitConfig
+            .. code-block: python
 
-            # limit to 10 requests per minute, excluding the schema path
-            throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
+                from starlite import Starlite, Request, get
+                from starlite.middleware import RateLimitConfig
 
-
-            @get("/")
-            def my_handler(request: Request) -> None:
-                ...
+                # limit to 10 requests per minute, excluding the schema path
+                throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
 
 
-            app = Starlite(route_handlers=[my_handler], middleware=[throttle_config.middleware])
-            ```
+                @get("/")
+                def my_handler(request: Request) -> None:
+                    ...
+
+
+                app = Starlite(route_handlers=[my_handler], middleware=[throttle_config.middleware])
+
 
         Returns:
-            An instance of DefineMiddleware including 'self' as the config kwarg value.
+            An instance of DefineMiddleware including ``self`` as the config kwarg value.
         """
         return DefineMiddleware(self.middleware_class, config=self)

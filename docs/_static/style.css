@@ -1,0 +1,34 @@
+.hidden {
+	display: none
+}
+
+#version-select:hover ul {
+	display: block;
+}
+
+#version-select ul {
+	list-style-type: none;
+	padding-left: .5rem;
+}
+
+#version-select ul a {
+	width: 100%;
+	display: inline-block;
+	padding: .25rem;
+	color: var(--color-sidebar-link-text)
+}
+
+#version-select ul a:hover {
+	background-color: var(--color-background-hover);
+}
+
+#version-select {
+	padding: var(--sidebar-item-spacing-vertical) var(--sidebar-item-spacing-horizontal);
+	border-bottom: 1px solid var(--color-sidebar-background-border);
+	font-size: smaller;
+}
+
+
+.article-container p {
+	text-align: justify;
+}

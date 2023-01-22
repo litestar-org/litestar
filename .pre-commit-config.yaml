@@ -26,6 +26,7 @@ repos:
     rev: 5.11.4
     hooks:
       - id: isort
+        exclude: "docs"
   - repo: https://github.com/psf/black
     rev: 22.12.0
     hooks:
@@ -51,38 +52,11 @@ repos:
       - id: bandit
         exclude: "test_*"
         args: ["-iii", "-ll", "-s=B308,B703"]
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.33.0
-    hooks:
-      - id: markdownlint
-        args:
-          [
-            --disable=MD013,
-            --disable=MD033,
-            --disable=MD046,
-            --disable=MD050,
-            --disable=MD052,
-            --disable=MD012,
-            --disable=MD036,
-            --disable=MD034,
-            --disable=MD038,
-          ]
-  - repo: https://github.com/PyCQA/docformatter
-    rev: v1.5.1
-    hooks:
-      - id: docformatter
-        args:
-          [
-            --in-place,
-            --close-quotes-on-newline,
-            --wrap-descriptions=120,
-            --wrap-summaries=120,
-          ]
   - repo: https://github.com/pycqa/pydocstyle
     rev: 6.2.3
     hooks:
       - id: pydocstyle
-        exclude: "test*|examples*"
+        exclude: "test*|examples*|tools"
         additional_dependencies:
           - pydocstyle[toml]
   - repo: https://github.com/PyCQA/flake8
@@ -105,16 +79,17 @@ repos:
             "flake8-use-fstring",
             "flake8-use-pathlib",
           ]
+        exclude: "docs"
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.16.4
     hooks:
       - id: slotscheck
-        exclude: "test_*"
+        exclude: "test_*|docs"
   - repo: https://github.com/pycqa/pylint
     rev: "v2.16.0b0"
     hooks:
       - id: pylint
-        exclude: "tests|examples|test_apps"
+        exclude: "tests|examples|test_apps|docs|tools"
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
@@ -147,7 +122,7 @@ repos:
     rev: "v0.991"
     hooks:
       - id: mypy
-        exclude: "test_apps"
+        exclude: "test_apps|docs|tools"
         additional_dependencies:
           [
             aiomcache,
@@ -183,10 +158,10 @@ repos:
             jsbeautifier,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.289
+    rev: v1.1.290
     hooks:
       - id: pyright
-        exclude: "test_apps|tools"
+        exclude: "test_apps|tools|docs"
         additional_dependencies:
           [
             aiomcache,
@@ -226,3 +201,11 @@ repos:
             uvicorn,
             jsbeautifier,
           ]
+  - repo: local
+    hooks:
+      - id: sphinx-lint
+        name: sphinx-lint
+        language: python
+        entry: sphinx-lint
+        additional_dependencies: [sphinx-lint]
+        types: [rst]

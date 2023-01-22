@@ -193,7 +193,7 @@ def update_schema_with_field_info(schema: Schema, field_info: FieldInfo) -> Sche
 
 
 class GenericPydanticSchema(OpenAPI310PydanticSchema):
-    """Special `Schema` class to indicate a reference from pydantic 'GenericClass' instances."""
+    """Special ``Schema`` class to indicate a reference from pydantic ``GenericClass`` instances."""
 
     schema_class: Any
 
@@ -237,7 +237,7 @@ def get_schema_for_generic_type(field: "ModelField", plugins: List["PluginProtoc
         ImproperlyConfiguredException: if generic type is not supported.
 
     Args:
-        field: Pydantic 'ModelField' instance.
+        field: Pydantic ``ModelField`` instance.
         plugins: A list of plugins.
 
     Returns:

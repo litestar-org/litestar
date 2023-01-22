@@ -28,7 +28,7 @@ def test_get_session_backend() -> None:
 
 
 def test_delete_session_no_backend(runner: "CliRunner", monkeypatch: "MonkeyPatch") -> None:
-    monkeypatch.setenv("STARLITE_APP", "examples.hello_world:app")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.hello_world:app")
     result = runner.invoke(cli_command, "sessions delete foo")
 
     assert result.exit_code == 1
@@ -36,7 +36,7 @@ def test_delete_session_no_backend(runner: "CliRunner", monkeypatch: "MonkeyPatc
 
 
 def test_delete_session_cookie_backend(runner: "CliRunner", monkeypatch: "MonkeyPatch") -> None:
-    monkeypatch.setenv("STARLITE_APP", "examples.middleware.session.cookie_backend:app")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.cookie_backend:app")
 
     result = runner.invoke(cli_command, "sessions delete foo")
 
@@ -47,7 +47,7 @@ def test_delete_session_cookie_backend(runner: "CliRunner", monkeypatch: "Monkey
 def test_delete_session(
     runner: "CliRunner", monkeypatch: "MonkeyPatch", mocker: "MockerFixture", mock_confirm_ask: "MagicMock"
 ) -> None:
-    monkeypatch.setenv("STARLITE_APP", "examples.middleware.session.memory_backend:app")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.memory_backend:app")
     mock_delete = mocker.patch("starlite.middleware.session.memory_backend.MemoryBackend.delete")
 
     result = runner.invoke(cli_command, ["sessions", "delete", "foo"])
@@ -58,7 +58,7 @@ def test_delete_session(
 
 
 def test_clear_sessions_no_backend(runner: "CliRunner", monkeypatch: "MonkeyPatch") -> None:
-    monkeypatch.setenv("STARLITE_APP", "examples.hello_world:app")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.hello_world:app")
     result = runner.invoke(cli_command, "sessions clear")
 
     assert result.exit_code == 1
@@ -66,7 +66,7 @@ def test_clear_sessions_no_backend(runner: "CliRunner", monkeypatch: "MonkeyPatc
 
 
 def test_clear_sessions_cookie_backend(runner: "CliRunner", monkeypatch: "MonkeyPatch") -> None:
-    monkeypatch.setenv("STARLITE_APP", "examples.middleware.session.cookie_backend:app")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.cookie_backend:app")
 
     result = runner.invoke(cli_command, "sessions clear")
 
@@ -77,7 +77,7 @@ def test_clear_sessions_cookie_backend(runner: "CliRunner", monkeypatch: "Monkey
 def test_clear_sessions(
     runner: "CliRunner", monkeypatch: "MonkeyPatch", mocker: "MockerFixture", mock_confirm_ask: "MagicMock"
 ) -> None:
-    monkeypatch.setenv("STARLITE_APP", "examples.middleware.session.memory_backend:app")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.memory_backend:app")
     mock_delete = mocker.patch("starlite.middleware.session.memory_backend.MemoryBackend.delete_all")
 
     result = runner.invoke(cli_command, ["sessions", "clear"])

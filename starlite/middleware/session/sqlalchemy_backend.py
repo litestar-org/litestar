@@ -60,7 +60,7 @@ def create_session_model(base: Type[Any], table_name: str = "session") -> Type[S
         table_name: Alternative table name
 
     Returns:
-        A mapped model subclassing `base` and `SessionModelMixin`
+        A mapped model subclassing ``base`` and ``SessionModelMixin``
     """
 
     class Model(base, SessionModelMixin):  # type: ignore[valid-type,misc]
@@ -71,14 +71,14 @@ def create_session_model(base: Type[Any], table_name: str = "session") -> Type[S
 
 
 def register_session_model(base: Union[registry, Any], model: Type[SessionModelT]) -> Type[SessionModelT]:
-    """Map and register a pre-existing model subclassing `SessionModelMixin` with a declarative base or registry.
+    """Map and register a pre-existing model subclassing :class:`SessionModelMixin` with a declarative base or registry.
 
     Args:
-        base: Either a `orm.registry` or `DeclarativeBase`
+        base: Either a :class:`sqlalchemy.orm.registry` or ``DeclarativeBase``
         model: SQLAlchemy model to register
 
     Returns:
-        A mapped model subclassing `SessionModelMixin`, and registered in `registry`
+        A mapped model subclassing :class:`SessionModelMixin`, and registered in ``registry``
     """
     registry_ = base.registry if not isinstance(base, registry) else base
     return cast("Type[SessionModelT]", registry_.map_declaratively(model))
@@ -88,17 +88,18 @@ class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchem
     """Session backend to store data in a database with SQLAlchemy. Works with both sync and async engines.
 
     Notes:
-        - Requires `sqlalchemy` which needs to be installed separately, and a configured
-        [SQLAlchemyPlugin][starlite.plugins.sql_alchemy.SQLAlchemyPlugin].
+        - Requires ``sqlalchemy`` which needs to be installed separately, and a configured
+          :class:`SQLAlchemyPlugin <starlite.plugins.sql_alchemy.SQLAlchemyPlugin>`.
+
     """
 
     __slots__ = ("_model", "_session_maker")
 
     def __init__(self, config: "SQLAlchemyBackendConfig") -> None:
-        """Initialize `BaseSQLAlchemyBackend`.
+        """Initialize ``BaseSQLAlchemyBackend``.
 
         Args:
-            config: An instance of `SQLAlchemyBackendConfig`
+            config: An instance of :class:`SQLAlchemyBackendConfig`
         """
         super().__init__(config=config)
         self._model = config.model
@@ -126,13 +127,13 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         return result.one_or_none()
 
     async def get(self, session_id: str) -> Optional[bytes]:
-        """Retrieve data associated with `session_id`.
+        """Retrieve data associated with ``session_id``.
 
         Args:
             session_id: The session-ID
 
         Returns:
-            The session data, if existing, otherwise `None`.
+            The session data, if existing, otherwise ``None``.
         """
         async with self._create_sa_session() as sa_session:
             session_obj = await self._get_session_obj(sa_session=sa_session, session_id=session_id)
@@ -146,10 +147,10 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
         return None
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` under the `session_id` for later retrieval.
+        """Store ``data`` under the ``session_id`` for later retrieval.
 
-        If there is already data associated with `session_id`, replace
-        it with `data` and reset its expiry time
+        If there is already data associated with ``session_id``, replace
+        it with ``data`` and reset its expiry time
 
         Args:
             session_id: The session-ID.
@@ -169,7 +170,7 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
             await sa_session.commit()
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`. Fails silently if no such session-ID exists.
+        """Delete the data associated with ``session_id``. Fails silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID
@@ -222,13 +223,13 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         return None
 
     async def get(self, session_id: str) -> Optional[bytes]:
-        """Retrieve data associated with `session_id`.
+        """Retrieve data associated with ``session_id``.
 
         Args:
             session_id: The session-ID
 
         Returns:
-            The session data, if existing, otherwise `None`.
+            The session data, if existing, otherwise ``None``.
         """
         return await run_sync(self._get_sync, session_id)
 
@@ -244,10 +245,10 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         sa_session.commit()
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` under the `session_id` for later retrieval.
+        """Store ``data`` under the ``session_id`` for later retrieval.
 
-        If there is already data associated with `session_id`, replace
-        it with `data` and reset its expiry time
+        If there is already data associated with ``session_id``, replace
+        it with ``data`` and reset its expiry time
 
         Args:
             session_id: The session-ID
@@ -264,7 +265,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
         sa_session.commit()
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`. Fails silently if no such session-ID exists.
+        """Delete the data associated with ``session_id``. Fails silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID
@@ -303,7 +304,7 @@ class SQLAlchemyBackend(BaseSQLAlchemyBackend[SASession]):
 
 
 class SQLAlchemyBackendConfig(ServerSideSessionConfig):
-    """Configuration for `SQLAlchemyBackend` and `AsyncSQLAlchemyBackend`"""
+    """Configuration for :class:`SQLAlchemyBackend` and :class:`AsyncSQLAlchemyBackend`"""
 
     model: Type[SessionModelMixin]
     plugin: SQLAlchemyPlugin
@@ -317,8 +318,8 @@ class SQLAlchemyBackendConfig(ServerSideSessionConfig):
 
     @property
     def _backend_class(self) -> Type[Union[SQLAlchemyBackend, AsyncSQLAlchemyBackend]]:  # type: ignore[override]
-        """Return either `SQLAlchemyBackend` or `AsyncSQLAlchemyBackend`, depending on the engine type configured in the
-        `SQLAlchemyPlugin`
+        """Return either  :class:`SQLAlchemyBackend` or `:class:`AsyncSQLAlchemyBackend`, depending on the engine type
+        configured in the :attr:`SQLAlchemyPlugin instance <SQLAlchemyBackendConfig.plugin>`.
         """
         if cast("SQLAlchemyPluginConfig", self.plugin._config).use_async_engine:
             return AsyncSQLAlchemyBackend

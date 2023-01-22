@@ -25,7 +25,7 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
             key: name of cached value.
 
         Returns:
-            Cached value if existing else `None`.
+            Cached value if existing else ``None``.
         """
 
     @overload  # type: ignore[misc]
@@ -37,7 +37,7 @@ class CacheBackendProtocol(Protocol):  # pragma: no cover
         """Set a value in cache for a given key for a duration determined by expiration.
 
         Args:
-            key: key to cache `value` under.
+            key: key to cache ``value`` under.
             value: the value to be cached.
             expiration: expiration of cached value in seconds.
 
@@ -79,10 +79,10 @@ class Cache:
     def __init__(
         self, backend: CacheBackendProtocol, default_expiration: int, cache_key_builder: "CacheKeyBuilder"
     ) -> None:
-        """Initialize `Cache`.
+        """Initialize ``Cache``.
 
         Args:
-            backend: A class instance fulfilling the Starlite [CacheBackendProtocol][starlite.cache.base.CacheBackendProtocol].
+            backend: A class instance fulfilling the Starlite :class:`CacheBackendProtocol`.
             default_expiration: Default value (in seconds) for cache expiration.
             cache_key_builder: A function that receives a request object and returns a unique cache key.
         """
@@ -92,13 +92,13 @@ class Cache:
         self.lock = Lock()
 
     async def get(self, key: str) -> Any:
-        """Proxy 'self.backend.get'.
+        """Proxy :meth:`CacheBackendProtocol.get`.
 
         Args:
             key: name of cached value.
 
         Returns:
-            Cached value if existing else `None`.
+            Cached value if existing else ``None``.
         """
         if is_async_callable(self.backend.get):  # pyright: ignore
             return await self.backend.get(key)
@@ -107,10 +107,10 @@ class Cache:
             return self.backend.get(key)
 
     async def set(self, key: str, value: Any, expiration: Optional[int] = None) -> Any:
-        """Proxy 'self.backend.set'.
+        """Proxy :meth:`CacheBackendProtocol.set`.
 
         Args:
-            key: key to cache `value` under.
+            key: key to cache ``value`` under.
             value: the value to be cached.
             expiration: expiration of cached value in seconds.
 
@@ -128,7 +128,7 @@ class Cache:
             return self.backend.set(key, value, expiration or self.default_expiration)
 
     async def delete(self, key: str) -> Any:
-        """Proxy 'self.backend.delete'.
+        """Proxy :meth:`CacheBackendProtocol.delete`.
 
         Args:
             key: key to be deleted from the cache.
@@ -149,8 +149,8 @@ class Cache:
         """Construct a unique cache key from the request instance.
 
         Args:
-            request: A [Request][starlite.connection.Request] instance.
-            cache_key_builder: An optional [CacheKeyBuilder][starlite.types.CacheKeyBuilder] function.
+            request: A :class:`Request <starlite.connection.Request>` instance.
+            cache_key_builder: An optional :class:`CacheKeyBuilder <starlite.types.CacheKeyBuilder>` function.
 
         Returns:
             A unique cache key string.

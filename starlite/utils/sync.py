@@ -24,14 +24,14 @@ T = TypeVar("T")
 
 
 def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[T]]]:
-    """Extend `asyncio.iscoroutinefunction()` to additionally detect async `partial` objects and class instances with
-    `async def __call__()` defined.
+    """Extend :func:`asyncio.iscoroutinefunction` to additionally detect async :func:`functools.partial` objects and
+    class instances with ``async def __call__()`` defined.
 
     Args:
         value: Any
 
     Returns:
-        Bool determining if type of `value` is an awaitable.
+        Bool determining if type of ``value`` is an awaitable.
     """
     while isinstance(value, partial):
         value = value.func  # type: ignore[unreachable]
@@ -70,7 +70,7 @@ class AsyncCallable(Generic[P, T]):
 
 
 def as_async_callable_list(value: Union[Callable, List[Callable]]) -> List[AsyncCallable]:
-    """Wrap callables in `AsyncCallable`s.
+    """Wrap callables in ``AsyncCallable`` s.
 
     Args:
         value: A callable or list of callables.
@@ -86,7 +86,7 @@ def as_async_callable_list(value: Union[Callable, List[Callable]]) -> List[Async
 def async_partial(fn: Callable) -> Callable:
     """Wrap a given sync function making it async.
 
-    In difference to the 'asyncio.run_sync' function, it allows for passing kwargs.
+    In difference to the :func:`asyncio.run_sync` function, it allows for passing kwargs.
 
     Args:
         fn: A sync callable to wrap.

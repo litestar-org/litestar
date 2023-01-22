@@ -28,39 +28,40 @@ class ImmutableState(Mapping[str, Any]):
     def __init__(
         self, state: Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]], deep_copy: bool = True
     ) -> None:
-        """Initialize an `ImmutableState` instance.
+        """Initialize an ``ImmutableState`` instance.
 
         Args:
              state: An object to initialize the state from. Can be a dict, an instance of 'ImmutableState', or a tuple of key value paris.
              deep_copy: Whether to 'deepcopy' the passed in state.
 
         Examples:
-            ```python
-            from starlite import ImmutableState
+            .. code-block: python
 
-            state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
-            state = ImmutableState(state_dict)
+                from starlite import ImmutableState
 
-            # state implements the Mapping type:
-            assert len(state) == 3
-            assert "first" in state
-            assert not "fourth" in state
-            assert state["first"] == 1
-            assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
+                state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
+                state = ImmutableState(state_dict)
 
-            # state implements __bool__
-            assert state  # state is true when it has values.
-            assert not State()  # state is empty when it has no values.
+                # state implements the Mapping type:
+                assert len(state) == 3
+                assert "first" in state
+                assert not "fourth" in state
+                assert state["first"] == 1
+                assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
 
-            # it has a 'dict' method to retrieve a shallow copy of the underlying dict
-            inner_dict = state.dict()
-            assert inner_dict == state_dict
+                # state implements __bool__
+                assert state  # state is true when it has values.
+                assert not State()  # state is empty when it has no values.
 
-            # you can also retrieve a mutable State by calling 'mutable_copy'
-            mutable_state = state.mutable_copy()
-            del state["first"]
-            assert "first" not in state
-            ```
+                # it has a 'dict' method to retrieve a shallow copy of the underlying dict
+                inner_dict = state.dict()
+                assert inner_dict == state_dict
+
+                # you can also retrieve a mutable State by calling 'mutable_copy'
+                mutable_state = state.mutable_copy()
+                del state["first"]
+                assert "first" not in state
+
         """
 
         if isinstance(state, ImmutableState):
@@ -133,7 +134,7 @@ class ImmutableState(Mapping[str, Any]):
         """Return a mutable copy of the state object.
 
         Returns:
-            A `State`
+            A ``State``
         """
         return State(self._state)
 
@@ -183,51 +184,52 @@ class State(ImmutableState, MutableMapping[str, Any]):
         state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
         deep_copy: bool = False,
     ) -> None:
-        """Initialize a `State` instance with an optional value.
+        """Initialize a ``State`` instance with an optional value.
 
         Args:
              state: An object to initialize the state from. Can be a dict, an instance of 'ImmutableState', or a tuple of key value paris.
              deep_copy: Whether to 'deepcopy' the passed in state.
 
         Examples:
-        ```python
-        from starlite import State
+        .. code-block: python
 
-        state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
-        state = State(state_dict)
+            from starlite import State
 
-        # state can be accessed using '.' notation
-        assert state.fourth == 4
-        del state.fourth
+            state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
+            state = State(state_dict)
 
-        # state implements the Mapping type:
-        assert len(state) == 3
-        assert "first" in state
-        assert not "fourth" in state
-        assert state["first"] == 1
-        assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
+            # state can be accessed using '.' notation
+            assert state.fourth == 4
+            del state.fourth
 
-        state["fourth"] = 4
-        assert "fourth" in state
-        del state["fourth"]
+            # state implements the Mapping type:
+            assert len(state) == 3
+            assert "first" in state
+            assert not "fourth" in state
+            assert state["first"] == 1
+            assert [(k, v) for k, v in state.items()] == [("first", 1), ("second", 2), ("third", 3)]
 
-        # state implements __bool__
-        assert state  # state is true when it has values.
-        assert not State()  # state is empty when it has no values.
+            state["fourth"] = 4
+            assert "fourth" in state
+            del state["fourth"]
 
-        # it has shallow copy
-        copied_state = state.copy()
-        del copied_state.first
-        assert state.first
+            # state implements __bool__
+            assert state  # state is true when it has values.
+            assert not State()  # state is empty when it has no values.
 
-        # it has a 'dict' method to retrieve a shallow copy of the underlying dict
-        inner_dict = state.dict()
-        assert inner_dict == state_dict
+            # it has shallow copy
+            copied_state = state.copy()
+            del copied_state.first
+            assert state.first
 
-        # you can get an immutable copy of the state by calling 'immutable_immutable_copy'
-        immutable_copy = state.immutable_copy()
-        del immutable_copy.first  #  raises AttributeError
-        ```
+            # it has a 'dict' method to retrieve a shallow copy of the underlying dict
+            inner_dict = state.dict()
+            assert inner_dict == state_dict
+
+            # you can get an immutable copy of the state by calling 'immutable_immutable_copy'
+            immutable_copy = state.immutable_copy()
+            del immutable_copy.first  #  raises AttributeError
+
         """
 
         super().__init__(state if state is not None else {}, deep_copy=deep_copy)
@@ -300,7 +302,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
         """Return a shallow copy of the state object.
 
         Returns:
-            A `State`
+            A ``State``
         """
         return self.__class__(self.dict())
 
@@ -308,6 +310,6 @@ class State(ImmutableState, MutableMapping[str, Any]):
         """Return a shallow copy of the state object, setting it to be frozen.
 
         Returns:
-            A `State`
+            A ``State``
         """
         return ImmutableState(self)

@@ -31,44 +31,45 @@ class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
     __slots__ = ()
 
     def on_app_init(self, app: "Starlite") -> None:
-        """Receive the Starlite application instance before `init` is finalized and allow the plugin to update various
+        """Receive the Starlite application instance before ``init`` is finalized and allow the plugin to update various
         attributes.
 
         Examples:
-            ```python
-            from starlite import PluginProtocol, Starlite, get
+            .. code-block: python
+
+                from starlite import PluginProtocol, Starlite, get
 
 
-            @get("/my-path")
-            def my_route_handler() -> dict[str, str]:
-                return {"hello": "world"}
+                @get("/my-path")
+                def my_route_handler() -> dict[str, str]:
+                    return {"hello": "world"}
 
 
-            class MyPlugin(PluginProtocol[Any]):
-                def on_app_init(self, app: Starlite) -> None:
-                    # update app attributes
+                class MyPlugin(PluginProtocol[Any]):
+                    def on_app_init(self, app: Starlite) -> None:
+                        # update app attributes
 
-                    app.after_request = ...
-                    app.after_response = ...
-                    app.before_request = ...
-                    app.dependencies.update({...})
-                    app.exception_handlers.update({...})
-                    app.guards.extend(...)
-                    app.middleware.extend(...)
-                    app.on_shutdown.extend(...)
-                    app.on_startup.extend(...)
-                    app.parameters.update({...})
-                    app.response_class = ...
-                    app.response_cookies.extend(...)
-                    app.response_headers.update(...)
-                    app.tags.extend(...)
+                        app.after_request = ...
+                        app.after_response = ...
+                        app.before_request = ...
+                        app.dependencies.update({...})
+                        app.exception_handlers.update({...})
+                        app.guards.extend(...)
+                        app.middleware.extend(...)
+                        app.on_shutdown.extend(...)
+                        app.on_startup.extend(...)
+                        app.parameters.update({...})
+                        app.response_class = ...
+                        app.response_cookies.extend(...)
+                        app.response_headers.update(...)
+                        app.tags.extend(...)
 
-                    # register a route handler
-                    app.register(my_route_handler)
-            ```
+                        # register a route handler
+                        app.register(my_route_handler)
+
 
         Args:
-            app: The [Starlite][starlite.app.Starlite] instance.
+            app: The :class:`Starlite <starlite.app.Starlite>` instance.
 
         Returns:
             None
@@ -100,10 +101,10 @@ class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
         raise NotImplementedError()
 
     def from_pydantic_model_instance(self, model_class: Type[ModelT], pydantic_model_instance: "BaseModel") -> ModelT:
-        """Given an instance of a pydantic model created using a plugin's 'to_pydantic_model_class', return an instance
+        """Given an instance of a pydantic model created using a plugin's ``to_pydantic_model_class``, return an instance
         of the class from which that pydantic model has been created.
 
-        This class is passed in as the 'model_class' kwarg.
+        This class is passed in as the ``model_class`` kwarg.
 
         Args:
             model_class: A model class supported by the plugin.
@@ -149,7 +150,7 @@ def get_plugin_for_value(value: Any, plugins: List[PluginProtocol]) -> Optional[
         plugins: A list of plugins
 
     Returns:
-        A plugin supporting the given value, or 'None'.
+        A plugin supporting the given value, or ``None``.
     """
     if plugins:
         if value and isinstance(value, (list, tuple)):

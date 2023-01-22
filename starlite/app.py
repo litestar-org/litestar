@@ -90,12 +90,12 @@ if TYPE_CHECKING:
     from starlite.types.callable_types import AnyCallable, GetLogger
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
-"""The default OpenAPI config used if not configuration is explicitly passed to the [Starlite][starlite.app.Starlite]
-instance constructor.
+"""The default OpenAPI config used if not configuration is explicitly passed to the :class:`Starlite
+<starlite.app.Starlite>` instance constructor.
 """
 DEFAULT_CACHE_CONFIG = CacheConfig()
-"""The default cache config used if not configuration is explicitly passed to the [Starlite][starlite.app.Starlite]
-instance constructor.
+"""The default cache config used if not configuration is explicitly passed to the :class:`Starlite
+<starlite.app.Starlite>` instance constructor.
 """
 
 
@@ -112,17 +112,17 @@ class HandlerIndex(TypedDict):
     identifier: str
     """Unique identifier of the handler.
 
-    Either equal to the 'name' attribute or the __str__ value of the handler.
+    Either equal to the 'name' attribute or the ``__str__`` value of the handler.
     """
 
 
 class Starlite(Router):
     """The Starlite application.
 
-    `Starlite` is the root level of the app - it has the base path of "/" and all root level
+    ``Starlite`` is the root level of the app - it has the base path of "/" and all root level
     Controllers, Routers and Route Handlers should be registered on it.
 
-    Inherits from the [Router][starlite.router.Router] class
+    Inherits from the :class:`Router <starlite.router.Router>` class
     """
 
     __slots__ = (
@@ -201,81 +201,81 @@ class Starlite(Router):
         type_encoders: Optional["TypeEncodersMap"] = None,
         websocket_class: Optional[Type["WebSocket"]] = None,
     ) -> None:
-        """Initialize a `Starlite` application.
+        """Initialize a ``Starlite`` application.
 
         Args:
-            after_exception: An application level [exception hook handler][starlite.types.AfterExceptionHookHandler]
+            after_exception: An application level :class:`exception hook handler <starlite.types.AfterExceptionHookHandler>`
                 or list thereof.This hook is called after an exception occurs. In difference to exception handlers,
                 it is not meant to return a response - only to process the exception (e.g. log it, send it to Sentry etc.).
             after_request: A sync or async function executed after the route handler function returned and the response
                 object has been resolved. Receives the response object.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                [Request][starlite.connection.Request] object and should not return any values.
-            after_shutdown: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+                :class:`Request <starlite.connection.Request>` object and should not return any values.
+            after_shutdown: An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or
                 list thereof. This hook is called during the ASGI shutdown, after all callables in the 'on_shutdown'
                 list have been called.
-            after_startup: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+            after_startup: An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or
                 list thereof. This hook is called during the ASGI startup, after all callables in the 'on_startup'
                 list have been called.
             allowed_hosts: A list of allowed hosts - enables the builtin allowed hosts middleware.
             before_request: A sync or async function called immediately before calling the route handler.
-                Receives the [Request][starlite.connection.Request] instance and any non-`None` return value is
+                Receives the :class:`Request <starlite.connection.Request>` instance and any non-``None`` return value is
                 used for the response, bypassing the route handler.
-            before_send: An application level [before send hook handler][starlite.types.BeforeMessageSendHookHandler] or
+            before_send: An application level :class:`before send hook handler <starlite.types.BeforeMessageSendHookHandler>` or
                 list thereof. This hook is called when the ASGI send function is called.
-            before_shutdown: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+            before_shutdown: An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or
                 list thereof. This hook is called during the ASGI shutdown, before any callables in the 'on_shutdown'
                 list have been called.
-            before_startup: An application level [life-span hook handler][starlite.types.LifeSpanHookHandler] or
+            before_startup: An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or
                 list thereof. This hook is called during the ASGI startup, before any callables in the 'on_startup'
                 list have been called.
             cache_config: Configures caching behavior of the application.
-            cache_control: A `cache-control` header of type
-                [CacheControlHeader][starlite.datastructures.CacheControlHeader] to add to route handlers of this app.
+            cache_control: A ``cache-control`` header of type
+                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` to add to route handlers of this app.
                 Can be overridden by route handlers.
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
                 defined Compression middleware.
             cors_config: If set this enables the builtin CORS middleware.
             csrf_config: If set this enables the builtin CSRF middleware.
-            debug: If `True`, app errors rendered as HTML with a stack trace.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
-            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this app.
+            debug: If ``True``, app errors rendered as HTML with a stack trace.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <datastructures.ETag>` to add to route handlers of this app.
                 Can be overridden by route handlers.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
             initial_state: An object from which to initialize the app state.
-            logging_config: A subclass of [BaseLoggingConfig][starlite.config.logging.BaseLoggingConfig].
-            middleware: A list of [Middleware][starlite.types.Middleware].
-            on_app_init: A sequence of [OnAppInitHandler][starlite.types.OnAppInitHandler] instances. Handlers receive
-                an instance of [AppConfig][starlite.config.app.AppConfig] that will have been initially populated with
-                the parameters passed to [Starlite][starlite.app.Starlite], and must return an instance of same. If more
+            logging_config: A subclass of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>`.
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+            on_app_init: A sequence of :class:`OnAppInitHandler <starlite.types.OnAppInitHandler>` instances. Handlers receive
+                an instance of :class:`AppConfig <starlite.config.app.AppConfig>` that will have been initially populated with
+                the parameters passed to :class:`Starlite <starlite.app.Starlite>`, and must return an instance of same. If more
                 than one handler is registered they are called in the order they are provided.
-            on_shutdown: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
+            on_shutdown: A list of :class:`LifeSpanHandler <starlite.types.LifeSpanHandler>` called during
                 application shutdown.
-            on_startup: A list of [LifeSpanHandler][starlite.types.LifeSpanHandler] called during
+            on_startup: A list of :class:`LifeSpanHandler <starlite.types.LifeSpanHandler>` called during
                 application startup.
-            openapi_config: Defaults to [DEFAULT_OPENAPI_CONFIG][starlite.app.DEFAULT_OPENAPI_CONFIG]
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever you
-                have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
-            parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all
+            openapi_config: Defaults to :attr:`DEFAULT_OPENAPI_CONFIG`
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or wherever you
+                have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+            parameters: A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all
                 application paths.
             plugins: List of plugins.
-            request_class: An optional subclass of [Request][starlite.connection.request.Request] to use for
+            request_class: An optional subclass of :class:`Request <starlite.connection.request.Request>` to use for
                 http connections.
             response_class: A custom subclass of [starlite.response.Response] to be used as the app's default response.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
+            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
             route_handlers: A required list of route handlers, which can include instances of
-                [Router][starlite.router.Router], subclasses of [Controller][starlite.controller.Controller] or
+                :class:`Router <starlite.router.Router>`, subclasses of :class:`Controller <starlite.controller.Controller>` or
                 any function decorated by the route handler decorators.
             security: A list of dictionaries that will be added to the schema of all route handlers in the application.
-                See [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for details.
-            static_files_config: An instance or list of [StaticFilesConfig][starlite.config.StaticFilesConfig]
+                See :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for details.
+            static_files_config: An instance or list of :class:`StaticFilesConfig <starlite.config.StaticFilesConfig>`
             tags: A list of string tags that will be appended to the schema of all route handlers under the application.
-            template_config: An instance of [TemplateConfig][starlite.config.TemplateConfig]
+            template_config: An instance of :class:`TemplateConfig <starlite.config.TemplateConfig>`
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            websocket_class: An optional subclass of [WebSocket][starlite.connection.websocket.WebSocket] to use for
+            websocket_class: An optional subclass of :class:`WebSocket <starlite.connection.websocket.WebSocket>` to use for
                 websocket connections.
         """
         self.openapi_schema: Optional["OpenAPI"] = None
@@ -426,8 +426,8 @@ class Starlite(Router):
         This method can be used to dynamically add endpoints to an application.
 
         Args:
-            value: an instance of [Router][starlite.router.Router], a subclass of
-                [Controller][starlite.controller.Controller] or any function decorated by the route handler decorators.
+            value: an instance of :class:`Router <starlite.router.Router>`, a subclass of
+                :class:`Controller <starlite.controller.Controller>` or any function decorated by the route handler decorators.
             add_to_openapi_schema: Whether to add the registered route to the OpenAPI Schema. This affects only HTTP route
                 handlers.
 
@@ -470,26 +470,27 @@ class Starlite(Router):
         list of paths sorted lexically.
 
         Examples:
-            ```python
-            from starlite import Starlite, get
+            .. code-block: python
+
+                from starlite import Starlite, get
 
 
-            @get("/", name="my-handler")
-            def handler() -> None:
-                pass
+                @get("/", name="my-handler")
+                def handler() -> None:
+                    pass
 
 
-            app = Starlite(route_handlers=[handler])
+                app = Starlite(route_handlers=[handler])
 
-            handler_index = app.get_handler_index_by_name("my-handler")
+                handler_index = app.get_handler_index_by_name("my-handler")
 
-            # { "paths": ["/"], "handler" ... }
-            ```
+                # { "paths": ["/"], "handler" ... }
+
         Args:
             name: A route handler unique name.
 
         Returns:
-            A [HandlerIndex][starlite.app.HandlerIndex] instance or None.
+            A :class:`HandlerIndex <starlite.app.HandlerIndex>` instance or None.
         """
         handler = self.asgi_router.route_handler_index.get(name)
         if not handler:
@@ -506,27 +507,29 @@ class Starlite(Router):
         parameters.
 
         Examples:
-            ```python
-            from starlite import Starlite, get
+            .. code-block: python
+
+                from starlite import Starlite, get
 
 
-            @get("/group/{group_id:int}/user/{user_id:int}", name="get_membership_details")
-            def get_membership_details(group_id: int, user_id: int) -> None:
-                pass
+                @get("/group/{group_id:int}/user/{user_id:int}", name="get_membership_details")
+                def get_membership_details(group_id: int, user_id: int) -> None:
+                    pass
 
 
-            app = Starlite(route_handlers=[get_membership_details])
+                app = Starlite(route_handlers=[get_membership_details])
 
-            path = app.route_reverse("get_membership_details", user_id=100, group_id=10)
+                path = app.route_reverse("get_membership_details", user_id=100, group_id=10)
 
-            # /group/10/user/100
-            ```
+                # /group/10/user/100
+
         Args:
             name: A route handler unique name.
             **path_parameters: Actual values for path parameters in the route.
 
         Raises:
-            NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing in **path_parameters or have wrong type.
+            NoRouteMatchFoundException: If route with 'name' does not exist, path parameters are missing in
+                ``**path_parameters or have wrong type``.
 
         Returns:
             A fully formatted url path.
@@ -570,17 +573,18 @@ class Starlite(Router):
         """Receives a static files handler name, an asset file path and returns resolved url path to the asset.
 
         Examples:
-            ```python
-            from starlite import Starlite, StaticFilesConfig
+            .. code-block: python
 
-            app = Starlite(
-                static_files_config=StaticFilesConfig(directories=["css"], path="/static/css")
-            )
+                from starlite import Starlite, StaticFilesConfig
 
-            path = app.url_for_static_asset("css", "main.css")
+                app = Starlite(
+                    static_files_config=StaticFilesConfig(directories=["css"], path="/static/css")
+                )
 
-            # /static/css/main.css
-            ```
+                path = app.url_for_static_asset("css", "main.css")
+
+                # /static/css/main.css
+
         Args:
             name: A static handler unique name.
             file_path: a string containing path to an asset.
@@ -632,7 +636,7 @@ class Starlite(Router):
     def _set_runtime_callables(route_handler: "BaseRouteHandler") -> None:
         """Optimize the route_handler.fn and any provider.dependency callables for runtime by doing the following:
 
-        1. ensure that the `self` argument is preserved by binding it using partial.
+        1. ensure that the ``self`` argument is preserved by binding it using partial.
         2. ensure sync functions are wrapped in AsyncCallable for sync_to_thread handlers.
 
         Args:

@@ -47,11 +47,11 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
             content: A sync or async iterator or iterable.
             status_code: An HTTP status code.
             media_type: A value for the response 'Content-Type' header.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
+            cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances to be set under the response 'Set-Cookie' header.
             encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
         """

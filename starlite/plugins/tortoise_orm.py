@@ -86,10 +86,10 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         return isinstance(value, (Model, ModelMeta))
 
     def from_pydantic_model_instance(self, model_class: Type[Model], pydantic_model_instance: "BaseModel") -> Model:
-        """Given an instance of a pydantic model created using the plugin's 'to_pydantic_model_class', return an
+        """Given an instance of a pydantic model created using the plugin's ``to_pydantic_model_class``, return an
         instance of the class from which that pydantic model has been created.
 
-        This class is passed in as the 'model_class' kwarg.
+        This class is passed in as the ``model_class`` kwarg.
         """
         return model_class().update_from_dict(pydantic_model_instance.dict())
 

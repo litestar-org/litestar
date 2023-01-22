@@ -37,7 +37,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
     __slots__ = ("aesgcm", "cookie_re")
 
     def __init__(self, config: "CookieBackendConfig") -> None:
-        """Initialize `CookieBackend`.
+        """Initialize ``CookieBackend``.
 
         Args:
             config: SessionCookieConfig instance.
@@ -56,10 +56,10 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
 
         Notes:
             - The returned list is composed of a chunks of a single base64 encoded
-            string that is encrypted using AES-CGM.
+              string that is encrypted using AES-CGM.
 
         Returns:
-            List of encoded bytes string of a maximum length equal to the 'CHUNK_SIZE' constant.
+            List of encoded bytes string of a maximum length equal to the ``CHUNK_SIZE`` constant.
         """
         serialized = self.serlialize_data(data, scope)
         associated_data = encode_json({"expires_at": round(time.time()) + self.config.max_age})
@@ -112,9 +112,10 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
     async def store_in_message(
         self, scope_session: "ScopeSession", message: "Message", connection: "ASGIConnection"
     ) -> None:
-        """Store data from `scope_session` in `Message` in the form of cookies. If the contents of `scope_session` are
-        too large to fit a single cookie, it will be split across several cookies, following the naming scheme of
-        `<cookie key>-<n>`. If the session is empty or shrinks, cookies will be cleared by setting their value to `null`
+        """Store data from ``scope_session`` in ``Message`` in the form of cookies. If the contents of ``scope_session``
+        are too large to fit a single cookie, it will be split across several cookies, following the naming scheme of
+        ``<cookie key>-<n>``. If the session is empty or shrinks, cookies will be cleared by setting their value to
+        ``"null"``
 
         Args:
             scope_session: Current session to store
@@ -180,7 +181,7 @@ class CookieBackendConfig(BaseBackendConfig):
 
     @validator("secret", always=True)
     def validate_secret(cls, value: SecretBytes) -> SecretBytes:  # pylint: disable=no-self-argument
-        """Ensure that the 'secret' value is 128, 192 or 256 bits.
+        """Ensure that the ``secret`` value is 128, 192 or 256 bits.
 
         Args:
             value: A bytes string.

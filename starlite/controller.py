@@ -54,53 +54,53 @@ class Controller:
     )
 
     after_request: Optional["AfterRequestHookHandler"]
-    """A sync or async function executed before a [Request][starlite.connection.Request] is passed to any route handler.
+    """A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed to any route handler.
 
     If this function returns a value, the request will not reach the route handler, and instead this value will be used.
     """
     after_response: Optional["AfterResponseHookHandler"]
     """A sync or async function called after the response has been awaited.
 
-    It receives the [Request][starlite.connection.Request] instance and should not return any values.
+    It receives the :class:`Request <starlite.connection.Request>` instance and should not return any values.
     """
     before_request: Optional["BeforeRequestHookHandler"]
     """A sync or async function called immediately before calling the route handler.
 
-    It receives the [Request][starlite.connection.Request] instance and any non-`None` return value is used for the
+    It receives the :class:`Request <starlite.connection.Request>` instance and any non-``None`` return value is used for the
     response, bypassing the route handler.
     """
     cache_control: Optional["CacheControlHeader"]
-    """A [CacheControlHeader][starlite.datastructures.CacheControlHeader] header to add to route handlers of this
+    """A :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` header to add to route handlers of this
     controller.
 
     Can be overridden by route handlers.
     """
     dependencies: Optional["Dependencies"]
     """
-        dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+        dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
     """
     etag: Optional["ETag"]
-    """An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this controller.
+    """An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` to add to route handlers of this controller.
 
     Can be overridden by route handlers.
     """
     exception_handlers: Optional["ExceptionHandlersMap"]
     """A dictionary that maps handler functions to status codes and/or exception types."""
     guards: Optional[List["Guard"]]
-    """A list of [Guard][starlite.types.Guard] callables."""
+    """A list of :class:`Guard <starlite.types.Guard>` callables."""
     middleware: Optional[List["Middleware"]]
-    """A list of [Middleware][starlite.types.Middleware]."""
+    """A list of :class:`Middleware <starlite.types.Middleware>`."""
     opt: Optional[Dict[str, Any]]
-    """A string key dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or wherever
-    you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+    """A string key dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or wherever
+    you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
     """
     owner: "Router"
-    """The [Router][starlite.router.Router] or [Starlite][starlite.app.Starlite] app that owns the controller.
+    """The :class:`Router <starlite.router.Router>` or :class:`Starlite <starlite.app.Starlite>` app that owns the controller.
 
     This value is set internally by Starlite and it should not be set when subclassing the controller.
     """
     parameters: Optional["ParametersMap"]
-    """A mapping of [Parameter][starlite.params.Parameter] definitions available to all application paths."""
+    """A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all application paths."""
     path: str
     """A path fragment for the controller.
 
@@ -113,7 +113,7 @@ class Controller:
     response_cookies: Optional["ResponseCookies"]
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
     response_headers: Optional["ResponseHeadersMap"]
-    """A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader] instances."""
+    """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
     tags: Optional[List[str]]
     """A list of string tags that will be appended to the schema of all route handlers under the controller."""
     security: Optional[List["SecurityRequirement"]]

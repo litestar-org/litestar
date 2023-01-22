@@ -41,10 +41,10 @@ class CSRFMiddleware(MiddlewareProtocol):
     scopes: "Scopes" = {ScopeType.HTTP}
 
     def __init__(self, app: "ASGIApp", config: "CSRFConfig") -> None:
-        """Initialize `CSRFMiddleware`.
+        """Initialize ``CSRFMiddleware``.
 
         Args:
-            app: The 'next' ASGI app to call.
+            app: The ``next`` ASGI app to call.
             config: The CSRFConfig instance.
         """
         self.app = app
@@ -93,7 +93,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             raise PermissionDeniedException("CSRF token verification failed")
 
     def create_send_wrapper(self, send: "Send", token: str, csrf_cookie: Optional[str]) -> "Send":
-        """Wrap `send` to handle CSRF validation.
+        """Wrap ``send`` to handle CSRF validation.
 
         Args:
             token: The CSRF token.
@@ -108,7 +108,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             """Send function that wraps the original send to inject a cookie.
 
             Args:
-                message: An ASGI 'Message'
+                message: An ASGI ``Message``
 
             Returns:
                 None
