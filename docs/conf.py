@@ -3,7 +3,7 @@ import importlib.metadata
 project = "Starlite"
 copyright = "2023, Starlite-API"
 author = "Starlite-API"
-release = importlib.metadata.version("starlite")
+release = importlib.metadata.version("starlite").rsplit(".", 1)[0]
 
 extensions = [
     "sphinx.ext.intersphinx",
@@ -52,10 +52,7 @@ auto_pytabs_max_version = (3, 11)
 
 autosectionlabel_prefix_document = True
 
-suppress_warnings = [
-    "autosectionlabel.*",
-]
-
+suppress_warnings = ["autosectionlabel.*"]
 
 html_theme = "furo"
 html_static_path = ["_static"]
