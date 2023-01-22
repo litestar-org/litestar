@@ -3755,7 +3755,7 @@ brotli = ["brotli"]
 cli = ["click", "rich", "jsbeautifier"]
 cryptography = ["cryptography"]
 full = ["aiomcache", "brotli", "click", "cryptography", "jinja2", "opentelemetry-instrumentation-asgi", "picologging", "python-jose", "redis", "rich", "structlog"]
-jijna = ["jinja2"]
+jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
 memcached = ["aiomcache"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
@@ -3768,4 +3768,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "91cd1cce60e56b3ed1aea612f508d07550c637879ed1b3e7581bd5dee6ad19cc"
+content-hash = "9cefcf2e0c062f2d87fe3443351a4b81227ee6f2e8eaaf43bfd69a4fd001c977"

@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.50.1
+------
+
+- fix typo in jinja extra
+
+
 1.50.0
 ------
 
