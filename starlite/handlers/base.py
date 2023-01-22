@@ -155,7 +155,7 @@ class BaseRouteHandler(Generic[T]):
             parameter_kwargs: "ParametersMap" = {}
 
             for layer in self.ownership_layers:
-                parameter_kwargs.update(getattr(layer, "parameters", None) or {})
+                parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
 
             self._resolved_layered_parameters = {
                 key: SignatureField.create(

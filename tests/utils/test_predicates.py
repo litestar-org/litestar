@@ -20,10 +20,9 @@ from typing import (
 
 import pytest
 
-from starlite import Response, get
+from starlite import CursorPagination, Response, get
 from starlite.utils import is_any, is_class_and_subclass, is_optional_union, is_union
 from starlite.utils.predicates import (
-    T,
     is_generic,
     is_mapping,
     is_non_string_iterable,
@@ -123,7 +122,7 @@ def test_is_non_string_sequence(value: Any, expected: bool) -> None:
 
 @pytest.mark.parametrize(
     "value, expected",
-    ((T, True), (dict, False)),
+    ((CursorPagination[str, str], True), (dict, False)),
 )
 def test_is_generic(value: Any, expected: bool) -> None:
     assert is_generic(value) is expected

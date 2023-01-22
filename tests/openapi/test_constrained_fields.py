@@ -14,7 +14,6 @@ from starlite.openapi.schema import (
     create_string_constrained_field_schema,
 )
 from starlite.signature.models import SignatureField
-from starlite.utils.model import create_parsed_model_field
 from tests.openapi.utils import (
     constrained_collection,
     constrained_dates,
@@ -39,7 +38,7 @@ def test_create_collection_constrained_field_schema_sub_fields() -> None:
     for pydantic_fn in (conlist, conset):
         schema = create_collection_constrained_field_schema(
             field_type=pydantic_fn(field_type, min_items=1, max_items=10),  # type: ignore
-            children=SignatureField.from_model_field(create_parsed_model_field(field_type)).children,
+            children=SignatureField.create(field_type=field_type).children,
             plugins=[],
         )
         assert schema.type == OpenAPIType.ARRAY

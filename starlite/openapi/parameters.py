@@ -6,14 +6,15 @@ from starlite.constants import RESERVED_KWARGS
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.schema import create_schema
-from starlite.params import DependencyKwarg
+from starlite.params import DependencyKwarg, ParameterKwarg
 from starlite.signature.models import SignatureField
-from starlite.types import Dependencies, Empty
+from starlite.types import Empty
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.schema import Schema
 
     from starlite.handlers import BaseRouteHandler
+    from starlite.types import Dependencies
     from starlite.types.internal_types import PathParameterDefinition
 
 
@@ -87,8 +88,7 @@ def create_parameter(
 ) -> Parameter:
     """Create an OpenAPI Parameter instance."""
     schema = None
-    is_required = signature_field.is_required
-    extra = signature_field.extra
+    kwargs_model = signature_field.kwarg_model if isinstance(signature_field.kwarg_model, ParameterKwarg) else None
 
     if any(path_param.name == parameter_name for path_param in path_parameters):
         param_in = ParamType.PATH
@@ -100,17 +100,18 @@ def create_parameter(
             generate_examples=generate_examples,
         )
 
-    elif extra.get(ParamType.HEADER):
-        parameter_name = extra[ParamType.HEADER]
+    elif kwargs_model and kwargs_model.header:
+        parameter_name = kwargs_model.header
         param_in = ParamType.HEADER
         is_required = signature_field.is_required
-    elif extra.get(ParamType.COOKIE):
-        parameter_name = extra[ParamType.COOKIE]
+    elif kwargs_model and kwargs_model.cookie:
+        parameter_name = kwargs_model.cookie
         param_in = ParamType.COOKIE
         is_required = signature_field.is_required
     else:
+        is_required = signature_field.is_required
         param_in = ParamType.QUERY
-        parameter_name = extra.get(ParamType.QUERY) or parameter_name
+        parameter_name = kwargs_model.query if kwargs_model and kwargs_model.query else parameter_name
 
     if not schema:
         schema = create_schema(field=signature_field, generate_examples=generate_examples, plugins=[])
@@ -165,26 +166,19 @@ def get_layered_parameter(
     layer_field = layered_parameters[field_name]
 
     field = signature_field if signature_field.is_parameter_field else layer_field
+    default_value = signature_field.default_value if not signature_field.is_empty else layer_field.default_value
+    field_type = signature_field.field_type if signature_field is not Empty else layer_field.field_type  # type: ignore
 
-    default_value = (
-        signature_field.default_value
-        if signature_field.default_value not in {Empty, Ellipsis}
-        else layer_field.default_value
-    )
-
-    parameter_name = (
-        field.extra.get(ParamType.QUERY)
-        or field.extra.get(ParamType.HEADER)
-        or field.extra.get(ParamType.COOKIE)
-        or field_name
-    )
+    parameter_name = field_name
+    if isinstance(field.kwarg_model, ParameterKwarg):
+        parameter_name = field.kwarg_model.query or field.kwarg_model.header or field.kwarg_model.cookie or field_name
 
     return create_parameter(
         signature_field=SignatureField.create(
             default_value=default_value,
             kwarg_model=field.kwarg_model,
             name=field_name,
-            field_type=field.field_type,
+            field_type=field_type,
             extra=field.extra,
             children=field.children,
         ),
@@ -206,9 +200,17 @@ def create_parameter_for_handler(
 
     layered_parameters = route_handler.resolve_layered_parameters()
 
-    for field_name, signature_field in filter(
-        lambda items: items[0] not in RESERVED_KWARGS and items[0] not in layered_parameters, handler_fields.items()
-    ):
+    unique_handler_fields = tuple(
+        (k, v) for k, v in handler_fields.items() if k not in RESERVED_KWARGS and k not in layered_parameters
+    )
+    unique_layered_fields = tuple(
+        (k, v) for k, v in layered_parameters.items() if k not in RESERVED_KWARGS and k not in handler_fields
+    )
+    intersection_fields = tuple(
+        (k, v) for k, v in handler_fields.items() if k not in RESERVED_KWARGS and k in layered_parameters
+    )
+
+    for field_name, signature_field in unique_handler_fields:
         if isinstance(signature_field.kwarg_model, DependencyKwarg) and field_name not in dependencies:
             # never document explicit dependencies
             continue
@@ -223,9 +225,7 @@ def create_parameter_for_handler(
         ):
             parameters.add(parameter)
 
-    for field_name, signature_field in filter(
-        lambda items: items[0] not in RESERVED_KWARGS and items[0] not in handler_fields, layered_parameters.items()
-    ):
+    for field_name, signature_field in unique_layered_fields:
         parameters.add(
             create_parameter(
                 signature_field=signature_field,
@@ -234,9 +234,8 @@ def create_parameter_for_handler(
                 generate_examples=generate_examples,
             )
         )
-    for field_name, signature_field in filter(
-        lambda items: items[0] not in RESERVED_KWARGS and items[0] in layered_parameters, handler_fields.items()
-    ):
+
+    for field_name, signature_field in intersection_fields:
         parameters.add(
             get_layered_parameter(
                 field_name=field_name,

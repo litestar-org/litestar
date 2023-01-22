@@ -3,8 +3,8 @@ from typing import Generic, TypeVar
 from unittest.mock import MagicMock
 
 import pytest
-from pydantic import BaseConfig, BaseModel
-from pydantic.fields import FieldInfo, ModelField
+from pydantic import BaseModel
+from pydantic_openapi_schema.v3_1_0 import ExternalDocumentation
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
@@ -13,27 +13,23 @@ from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi import schema
-from starlite.openapi.constants import (
-    EXTRA_TO_OPENAPI_PROPERTY_MAP,
-    KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
-)
+from starlite.openapi.constants import KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP
 from starlite.openapi.schema import (
     get_schema_for_field_type,
     update_schema_with_signature_field,
 )
+from starlite.params import ParameterKwarg
 from starlite.signature.models import SignatureField
 from starlite.testing import create_test_client
 from tests import TypedDictPerson
 
 
-def test_update_schema_with_field_info() -> None:
+def test_update_schema_with_signaature_field() -> None:
     test_str = "abc"
-    extra = {
-        "examples": [Example(value=1)],
-        "external_docs": "https://example.com/docs",
-        "content_encoding": "utf-8",
-    }
-    field_info = FieldInfo(
+    kwarg_model = ParameterKwarg(
+        examples=[Example(value=1)],
+        external_docs=ExternalDocumentation(url="https://example.com/docs"),  # type: ignore
+        content_encoding="utf-8",
         default=test_str,
         title=test_str,
         description=test_str,
@@ -48,20 +44,16 @@ def test_update_schema_with_field_info() -> None:
         min_length=1,
         max_length=1,
         regex="^[a-z]$",
-        **extra,
     )
+    signature_field = SignatureField.create(field_type=str, kwarg_model=kwarg_model)
     schema = Schema()
     update_schema_with_signature_field(
         schema=schema,
-        signature_field=SignatureField.from_model_field(
-            ModelField(field_info=field_info, name="x", type_=str, class_validators=None, model_config=BaseConfig)
-        ),
+        signature_field=signature_field,
     )
-    assert schema.const == field_info.default
-    for pydantic_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
-        assert getattr(schema, schema_key) == getattr(field_info, pydantic_key)
-    for extra_key, schema_key in EXTRA_TO_OPENAPI_PROPERTY_MAP.items():
-        assert getattr(schema, schema_key) == field_info.extra[extra_key]
+    assert schema.const == test_str
+    for signature_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
+        assert getattr(schema, schema_key) == getattr(kwarg_model, signature_key)
 
 
 def test_dependency_schema_generation() -> None:
@@ -93,8 +85,8 @@ def test_dependency_schema_generation() -> None:
         dependencies={"top_level": Provide(top_dependency)},
         openapi_config=DEFAULT_OPENAPI_CONFIG,
     ) as client:
-        handler = client.app.openapi_schema.paths["/test/{path_param}"]  # type: ignore
-        data = {param.name: {"in": param.param_in, "required": param.required} for param in handler.get.parameters}  # type: ignore
+        handler = client.app.openapi_schema.paths["/test/{path_param}"]
+        data = {param.name: {"in": param.param_in, "required": param.required} for param in handler.get.parameters}
         assert data == {
             "path_param": {"in": ParamType.PATH, "required": True},
             "header_param": {"in": ParamType.HEADER, "required": False},

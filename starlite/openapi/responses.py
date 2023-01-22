@@ -23,12 +23,7 @@ from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
 from starlite.response import Response as StarliteResponse
 from starlite.signature.models import SignatureField
-from starlite.utils import (
-    create_parsed_model_field,
-    get_enum_string_value,
-    get_name,
-    is_class_and_subclass,
-)
+from starlite.utils import get_enum_string_value, get_name, is_class_and_subclass
 
 if TYPE_CHECKING:
 
@@ -79,7 +74,7 @@ def create_success_response(
             return_annotation = get_args(signature.return_annotation)[0] or Any
 
         schema = create_schema(
-            field=SignatureField.from_model_field(create_parsed_model_field(return_annotation)),
+            field=SignatureField.create(field_type=return_annotation),
             generate_examples=generate_examples,
             plugins=plugins,
         )
@@ -142,12 +137,12 @@ def create_success_response(
         header = Header()
         for attribute_name, attribute_value in value.dict(exclude_none=True).items():
             if attribute_name == "value":
-
                 header.param_schema = create_schema(
-                    field=SignatureField.from_model_field(create_parsed_model_field(type(attribute_value))),
+                    field=SignatureField.create(field_type=type(attribute_value)),
                     generate_examples=False,
                     plugins=plugins,
                 )
+
             elif attribute_name != "documentation_only":
                 setattr(header, attribute_name, attribute_value)
         response.headers[key] = header
@@ -206,7 +201,7 @@ def create_additional_responses(
     for status_code, additional_response in route_handler.responses.items():
 
         schema = create_schema(
-            field=SignatureField.from_model_field(create_parsed_model_field(additional_response.model)),
+            field=SignatureField.create(field_type=additional_response.model),
             generate_examples=additional_response.generate_examples,
             plugins=plugins,
         )

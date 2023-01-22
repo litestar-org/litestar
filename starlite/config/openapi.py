@@ -92,7 +92,7 @@ class OpenAPIConfig(BaseModel):
         if isinstance(self.components, list):
             merged_components = Components()
             for components in self.components:
-                for key in components.__fields__.keys():
+                for key in components.__fields__:
                     value = getattr(components, key, None)
                     if value:
                         merged_value_dict = getattr(merged_components, key, {}) or {}

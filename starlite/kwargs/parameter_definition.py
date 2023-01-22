@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, NamedTuple, Set
 
 from starlite.enums import ParamType
-from starlite.types import Empty
+from starlite.params import ParameterKwarg
 
 if TYPE_CHECKING:
     from starlite.signature.models import SignatureField
@@ -23,8 +23,7 @@ def create_parameter_definition(
     field_name: str,
     path_parameters: Set[str],
 ) -> ParameterDefinition:
-    """Create a ParameterDefinition for the given pydantic FieldInfo instance and inserts it into the correct parameter
-    set.
+    """Create a ParameterDefinition for the given SignatureField.
 
     Args:
         signature_field: SignatureField instance.
@@ -34,23 +33,20 @@ def create_parameter_definition(
     Returns:
         A ParameterDefinition tuple.
     """
-    extra = signature_field.extra
-    is_required = (signature_field.is_parameter_field and signature_field.is_required) or (
-        signature_field.default_value is None and not signature_field.is_optional
-    )
-    default_value = signature_field.default_value if signature_field.default_value is not Empty else None
+    default_value = signature_field.default_value if not signature_field.is_empty else None
+    kwargs_model = signature_field.kwarg_model if isinstance(signature_field.kwarg_model, ParameterKwarg) else None
 
-    field_alias = extra.get(ParamType.QUERY) or field_name
+    field_alias = kwargs_model.query if kwargs_model and kwargs_model.query else field_name
     param_type = ParamType.QUERY
 
     if field_name in path_parameters:
         field_alias = field_name
         param_type = ParamType.PATH
-    elif extra.get(ParamType.HEADER):
-        field_alias = extra[ParamType.HEADER]
+    elif kwargs_model and kwargs_model.header:
+        field_alias = kwargs_model.header
         param_type = ParamType.HEADER
-    elif extra.get(ParamType.COOKIE):
-        field_alias = extra[ParamType.COOKIE]
+    elif kwargs_model and kwargs_model.cookie:
+        field_alias = kwargs_model.cookie
         param_type = ParamType.COOKIE
 
     return ParameterDefinition(
@@ -58,7 +54,8 @@ def create_parameter_definition(
         field_name=field_name,
         field_alias=field_alias,
         default_value=default_value,
-        is_required=is_required,
+        is_required=signature_field.is_required
+        and (default_value is None and not (signature_field.is_optional or signature_field.is_any)),
         is_sequence=signature_field.is_sequence,
     )
 

@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from enum import Enum, EnumMeta
 from re import Pattern
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, Hashable, List, Optional, Tuple, Type, Union
 
 from pydantic import (
     BaseModel,
@@ -22,7 +22,9 @@ from pydantic_factories.utils import is_pydantic_model
 from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
+from typing_extensions import get_origin
 
+from starlite.constants import UNDEFINED_SENTINELS
 from starlite.datastructures.pagination import (
     ClassicPagination,
     CursorPagination,
@@ -31,7 +33,6 @@ from starlite.datastructures.pagination import (
 from starlite.datastructures.upload_file import UploadFile
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.constants import (
-    EXTRA_TO_OPENAPI_PROPERTY_MAP,
     KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     TYPE_MAP,
 )
@@ -185,20 +186,18 @@ def update_schema_with_signature_field(schema: "Schema", signature_field: "Signa
     if (
         signature_field.kwarg_model
         and signature_field.is_const
-        and signature_field.default_value not in {None, ..., Empty}
+        and not signature_field.is_empty
         and schema.const is None
     ):
         schema.const = signature_field.default_value
+
     if signature_field.kwarg_model:
         for kwarg_model_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
-            value = getattr(signature_field.kwarg_model, kwarg_model_key)
-            if value not in {None, ..., Empty}:
+            if (value := getattr(signature_field.kwarg_model, kwarg_model_key, Empty)) and (
+                not isinstance(value, Hashable) or value not in UNDEFINED_SENTINELS
+            ):
                 setattr(schema, schema_key, value)
-    for extra_key, schema_key in EXTRA_TO_OPENAPI_PROPERTY_MAP.items():
-        if extra_key in signature_field.extra:
-            value = signature_field.extra[extra_key]
-            if value not in (None, ..., Empty):
-                setattr(schema, schema_key, value)
+
     return schema
 
 
@@ -210,25 +209,30 @@ class GenericPydanticSchema(OpenAPI310PydanticSchema):
 
 def get_schema_for_field_type(field: "SignatureField", plugins: List["PluginProtocol"]) -> "Schema":
     """Get or create a Schema object for the given field type."""
-    field_type = field.field_type
-    if field_type in TYPE_MAP:
-        return TYPE_MAP[field_type].copy()
-    if is_pydantic_model(field_type):
-        return OpenAPI310PydanticSchema(schema_class=field_type)
-    if is_dataclass_class_or_instance(field_type):
-        return OpenAPI310PydanticSchema(schema_class=convert_dataclass_to_model(field_type))
-    if is_typed_dict(field_type):
-        return OpenAPI310PydanticSchema(schema_class=convert_typeddict_to_model(field_type))
-    if isinstance(field_type, (EnumMeta, Enum)):
-        enum_values: List[Union[str, int]] = [v.value for v in field_type]  # type: ignore
+    if field.field_type in TYPE_MAP:
+        return TYPE_MAP[field.field_type].copy()
+
+    if is_pydantic_model(field.field_type):
+        return OpenAPI310PydanticSchema(schema_class=field.field_type)
+
+    if is_dataclass_class_or_instance(field.field_type):
+        return OpenAPI310PydanticSchema(schema_class=convert_dataclass_to_model(field.field_type))
+
+    if is_typed_dict(field.field_type):
+        return OpenAPI310PydanticSchema(schema_class=convert_typeddict_to_model(field.field_type))
+
+    if isinstance(field.field_type, EnumMeta):
+        enum_values: List[Union[str, int]] = [v.value for v in field.field_type]  # type: ignore
         openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
         return Schema(type=openapi_type, enum=enum_values)
-    if any(plugin.is_plugin_supported_type(field_type) for plugin in plugins):
-        plugin = [plugin for plugin in plugins if plugin.is_plugin_supported_type(field_type)][0]
+
+    if any(plugin.is_plugin_supported_type(field.field_type) for plugin in plugins):
+        plugin = [plugin for plugin in plugins if plugin.is_plugin_supported_type(field.field_type)][0]
         return OpenAPI310PydanticSchema(
-            schema_class=plugin.to_pydantic_model_class(field_type, parameter_name=field.name)
+            schema_class=plugin.to_pydantic_model_class(field.field_type, parameter_name=field.name)
         )
-    if field_type is UploadFile:
+
+    if field.field_type is UploadFile:
         # the following is a hack -https://www.openapis.org/blog/2021/02/16/migrating-from-openapi-3-0-to-3-1-0
         # the format for OA 3.1 is type + contentMediaType, for 3.0.* is type + format, we do both.
         return Schema(  # type: ignore
@@ -236,11 +240,12 @@ def get_schema_for_field_type(field: "SignatureField", plugins: List["PluginProt
             format="binary",
             contentMediaType="application/octet-stream",
         )
-    # this is a failsafe to ensure we always return a value
-    return Schema()  # pragma: no cover
+
+    # for Any, Empty etc. we return an empty Schema.
+    return Schema()
 
 
-def get_schema_for_generic_type(field: "SignatureField", plugins: List["PluginProtocol"]) -> "Schema":
+def get_schema_for_generic_type(field: "SignatureField", plugins: List["PluginProtocol"], origin: Any) -> "Schema":
     """Handle generic types.
 
     Raises:
@@ -253,9 +258,8 @@ def get_schema_for_generic_type(field: "SignatureField", plugins: List["PluginPr
     Returns:
         A schema.
     """
-    field_type = field.field_type
 
-    if field_type is ClassicPagination:
+    if origin is ClassicPagination:
         return Schema(
             type=OpenAPIType.OBJECT,
             properties={
@@ -273,7 +277,7 @@ def get_schema_for_generic_type(field: "SignatureField", plugins: List["PluginPr
             },
         )
 
-    if field_type is OffsetPagination:
+    if origin is OffsetPagination:
         return Schema(
             type=OpenAPIType.OBJECT,
             properties={
@@ -291,7 +295,7 @@ def get_schema_for_generic_type(field: "SignatureField", plugins: List["PluginPr
             },
         )
 
-    if field_type is CursorPagination:
+    if origin is CursorPagination:
         cursor_schema = create_schema(field=field.children[0], generate_examples=False, plugins=plugins)  # type: ignore[index]
         cursor_schema.description = "Unique ID, designating the last identifier in the given data set. This value can be used to request the 'next' batch of records."
 
@@ -310,7 +314,8 @@ def get_schema_for_generic_type(field: "SignatureField", plugins: List["PluginPr
                 "results_per_page": Schema(type=OpenAPIType.INTEGER, description="Maximal number of items to send."),
             },
         )
-    raise ImproperlyConfiguredException(f"cannot generate OpenAPI schema for generic type {field_type}")
+
+    raise ImproperlyConfiguredException(f"cannot generate OpenAPI schema for generic type {origin}")
 
 
 def create_examples_for_field(field: "SignatureField") -> List["Example"]:
@@ -341,6 +346,7 @@ def create_schema(
                 *(non_optional_schema.oneOf or [non_optional_schema]),
             ]
         )
+
     elif field.is_union:
         schema = Schema(
             oneOf=[
@@ -348,12 +354,14 @@ def create_schema(
                 for sub_field in field.children or []
             ]
         )
+
     elif ModelFactory.is_constrained_field(field.field_type):
         # constrained fields are those created using the pydantic functions constr, conint, conlist etc.
         # or subclasses of the Constrained* pydantic classes by other means
         schema = create_constrained_field_schema(
             field_type=field.field_type, children=list(field.children or ()), plugins=plugins
         )
+
     elif field.children and not field.is_generic:
         openapi_type = get_openapi_type_for_complex_type(field)
         schema = Schema(type=openapi_type)
@@ -370,8 +378,8 @@ def create_schema(
                 schema.items = Schema(oneOf=items)  # type: ignore[arg-type] # pragma: no cover
             else:
                 schema.items = items[0]
-    elif field.is_generic:
-        schema = get_schema_for_generic_type(field=field, plugins=plugins)
+    elif field.is_generic and (origin := get_origin(field.field_type)):
+        schema = get_schema_for_generic_type(field=field, plugins=plugins, origin=origin)
     else:
         # value is not a complex typing - hence we can try and get the value schema directly
         schema = get_schema_for_field_type(field=field, plugins=plugins)

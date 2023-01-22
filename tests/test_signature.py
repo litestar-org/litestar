@@ -71,12 +71,12 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     assert not fields["a"].is_optional
     assert fields["b"].field_type is str
     assert not fields["b"].is_optional
-    assert fields["c"].field_type is bytes
+    assert fields["c"].field_type is Optional[bytes]
     assert fields["c"].is_optional
     assert fields["c"].default_value is None
     assert fields["d"].field_type is bytes
     assert fields["d"].default_value == b"123"
-    assert fields["e"].field_type is dict
+    assert fields["e"].field_type is Optional[dict]
     assert fields["e"].is_optional
     assert fields["e"].default_value is None
 

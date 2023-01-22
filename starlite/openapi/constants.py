@@ -179,9 +179,6 @@ KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
     "regex": "pattern",
     "title": "title",
     "description": "description",
-}
-
-EXTRA_TO_OPENAPI_PROPERTY_MAP: Dict[str, str] = {
     "examples": "examples",
     "external_docs": "externalDocs",
     "content_encoding": "contentEncoding",

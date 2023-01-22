@@ -2,9 +2,16 @@ from typing import TYPE_CHECKING, List, Optional, cast
 
 import pytest
 
-from starlite import Controller, Dependency, ImproperlyConfiguredException
-from starlite import Parameter as StarliteParameter
-from starlite import Provide, Router, Starlite, get
+from starlite import (
+    Controller,
+    Dependency,
+    ImproperlyConfiguredException,
+    Parameter,
+    Provide,
+    Router,
+    Starlite,
+    get,
+)
 from starlite.enums import ParamType
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameter_for_handler
@@ -193,8 +200,8 @@ def test_layered_parameters() -> None:
     class MyController(Controller):
         path = "/controller"
         parameters = {
-            "controller1": StarliteParameter(lt=100),
-            "controller2": StarliteParameter(str, query="controller3"),
+            "controller1": Parameter(lt=100),
+            "controller2": Parameter(str, query="controller3"),
         }
 
         @get("/{local:int}")
@@ -206,7 +213,7 @@ def test_layered_parameters() -> None:
             router2: float,
             app1: str,
             app2: List[str],
-            controller2: float = StarliteParameter(ge=5.0),
+            controller2: float = Parameter(float, ge=5.0),
         ) -> dict:
             return {}
 
@@ -214,8 +221,8 @@ def test_layered_parameters() -> None:
         path="/router",
         route_handlers=[MyController],
         parameters={
-            "router1": StarliteParameter(str, regex="^[a-zA-Z]$"),
-            "router2": StarliteParameter(float, multiple_of=5.0, header="router3"),
+            "router1": Parameter(str, regex="^[a-zA-Z]$"),
+            "router2": Parameter(float, multiple_of=5.0, header="router3"),
         },
     )
 
@@ -223,9 +230,9 @@ def test_layered_parameters() -> None:
         app=Starlite(
             route_handlers=[router],
             parameters={
-                "app1": StarliteParameter(str, cookie="app4"),
-                "app2": StarliteParameter(List[str], min_items=2),
-                "app3": StarliteParameter(bool, required=False),
+                "app1": Parameter(str, cookie="app4"),
+                "app2": Parameter(List[str], min_items=2),
+                "app3": Parameter(bool, required=False),
             },
         ),
         path="/router/controller/{local}",

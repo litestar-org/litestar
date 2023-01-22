@@ -1,12 +1,14 @@
 from dataclasses import asdict, dataclass, field
-from typing import Any, Hashable, List, Optional, Union
-
-from pydantic import validate_arguments
-from pydantic_openapi_schema.v3_1_0.example import Example
-from pydantic_openapi_schema.v3_1_0.external_documentation import ExternalDocumentation
+from typing import TYPE_CHECKING, Any, Hashable, List, Optional, Union
 
 from starlite.enums import RequestEncodingType
 from starlite.types import Empty
+
+if TYPE_CHECKING:
+    from pydantic_openapi_schema.v3_1_0.example import Example
+    from pydantic_openapi_schema.v3_1_0.external_documentation import (
+        ExternalDocumentation,
+    )
 
 
 @dataclass(frozen=True)
@@ -21,16 +23,16 @@ class ParameterKwarg:
     """The cookie parameter key - required for cookie parameters."""
     query: Optional[str] = field(kw_only=True, default=None)
     """The query parameter key for this parameter."""
-    examples: Optional[List[Example]] = field(kw_only=True, default=None)
+    examples: Optional[List["Example"]] = field(kw_only=True, default=None)
     """A list of Example models."""
-    external_docs: Optional[ExternalDocumentation] = field(kw_only=True, default=None)
+    external_docs: Optional["ExternalDocumentation"] = field(kw_only=True, default=None)
     """A url pointing at external documentation for the given parameter."""
     content_encoding: Optional[str] = field(kw_only=True, default=None)
     """The content encoding of the value.
 
     Applicable on to string values. See OpenAPI 3.1 for details.
     """
-    required: bool = field(kw_only=True, default=True)
+    required: Optional[bool] = field(kw_only=True, default=None)
     """A boolean flag dictating whether this parameter is required.
 
     If set to False, None values will be allowed. Defaults to True.
@@ -110,17 +112,16 @@ class ParameterKwarg:
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
 
 
-@validate_arguments(config={"arbitrary_types_allowed": True})
 def Parameter(
     value_type: Any = Empty,
     *,
     header: Optional[str] = None,
     cookie: Optional[str] = None,
     query: Optional[str] = None,
-    examples: Optional[List[Example]] = None,
-    external_docs: Optional[ExternalDocumentation] = None,
+    examples: Optional[List["Example"]] = None,
+    external_docs: Optional["ExternalDocumentation"] = None,
     content_encoding: Optional[str] = None,
-    required: bool = True,
+    required: Optional[bool] = None,
     default: Any = Empty,
     title: Optional[str] = None,
     description: Optional[str] = None,
@@ -209,11 +210,11 @@ def Parameter(
 class BodyKwarg:
     """Data container representing a request body."""
 
-    media_type: Union[str, RequestEncodingType] = field(kw_only=True, default=RequestEncodingType.JSON)
+    media_type: Union[str, "RequestEncodingType"] = field(kw_only=True, default=RequestEncodingType.JSON)
     """Media-Type of the body."""
-    examples: Optional[List[Example]] = field(kw_only=True, default=None)
+    examples: Optional[List["Example"]] = field(kw_only=True, default=None)
     """A list of Example models."""
-    external_docs: Optional[ExternalDocumentation] = field(kw_only=True, default=None)
+    external_docs: Optional["ExternalDocumentation"] = field(kw_only=True, default=None)
     """A url pointing at external documentation for the given parameter."""
     content_encoding: Optional[str] = field(kw_only=True, default=None)
     """The content encoding of the value.
@@ -295,12 +296,11 @@ class BodyKwarg:
         return sum(hash(v) for v in asdict(self) if isinstance(v, Hashable))
 
 
-@validate_arguments(config={"arbitrary_types_allowed": True})
 def Body(
     *,
-    media_type: Union[str, RequestEncodingType] = RequestEncodingType.JSON,
-    examples: Optional[List[Example]] = None,
-    external_docs: Optional[ExternalDocumentation] = None,
+    media_type: Union[str, "RequestEncodingType"] = RequestEncodingType.JSON,
+    examples: Optional[List["Example"]] = None,
+    external_docs: Optional["ExternalDocumentation"] = None,
     content_encoding: Optional[str] = None,
     default: Any = Empty,
     title: Optional[str] = None,

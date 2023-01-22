@@ -10,6 +10,7 @@ from typing import (
     Deque,
     Dict,
     FrozenSet,
+    Generic,
     Iterable,
     List,
     Mapping,
@@ -80,16 +81,16 @@ def is_class_and_subclass(value: Any, t_type: Type[T]) -> TypeGuard[Type[T]]:
         return False
 
 
-def is_generic(annotation: Any) -> "TypeGuard[TypeVar]":
-    """Given a type annotation determine if the annotation is a mapping type.
+def is_generic(annotation: Any) -> bool:
+    """Given a type annotation determine if the annotation is a generic class.
 
     Args:
     annotation: A type.
 
     Returns:
-        A typeguard determining whether the type can be cast as [`TypeVar`][typing.TypeVar].
+        True if the annotation is a subclass of [`Generic`][typing.Generic] otherwise False.
     """
-    return isinstance(annotation, TypeVar)
+    return is_class_and_subclass(annotation, Generic)  # type: ignore
 
 
 def is_mapping(annotation: Any) -> "TypeGuard[Mapping[Any, Any]]":

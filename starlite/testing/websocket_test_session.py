@@ -169,6 +169,7 @@ class WebSocketTestSession:
         message = cast("WebSocketSendMessage", self.send_queue.get())
         if isinstance(message, BaseException):
             raise message
+
         if message["type"] == "websocket.close":
             raise WebSocketDisconnect(
                 detail=cast("str", message.get("reason", "")),

@@ -3,10 +3,11 @@ from dataclasses import dataclass
 from typing import Any, ClassVar, Dict, Optional, Set, Tuple, Union
 
 from pydantic import BaseConfig, BaseModel, ValidationError
-from pydantic.fields import ModelField, Undefined
+from pydantic.fields import ModelField
 from typing_extensions import get_args, get_origin
 
 from starlite.connection import ASGIConnection, Request
+from starlite.constants import UNDEFINED_SENTINELS
 from starlite.enums import ScopeType
 from starlite.exceptions import InternalServerException, ValidationException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
@@ -23,7 +24,11 @@ from starlite.utils.predicates import (
 
 @dataclass(unsafe_hash=True, frozen=True)
 class SignatureField:
-    """Abstraction replacing both the pydantic and msgspec equivalent data structures."""
+    """Abstraction representing a model field. This class is meant to replace equivalent datastructures in other
+    libraries.
+
+    - for example, in pydantic and msgspec.
+    """
 
     __slots__ = (
         "children",
@@ -112,8 +117,11 @@ class SignatureField:
 
     @property
     def is_required(self) -> bool:
-        """Check if the field is marked as a required parameter."""
-        return bool(self.kwarg_model and getattr(self.kwarg_model, "required", False))
+        """Check if the field should be marked as a required parameter."""
+        if isinstance(self.kwarg_model, ParameterKwarg) and self.kwarg_model.required is not None:
+            return self.kwarg_model.required
+
+        return not (self.is_optional or self.is_any) and (self.is_empty or self.default_value is None)
 
     @classmethod
     def create(
@@ -138,14 +146,16 @@ class SignatureField:
         Returns:
             SignatureField instance.
         """
+        if kwarg_model and default_value is Empty:
+            default_value = kwarg_model.default
 
         if not children and get_origin(field_type) and (type_args := get_args(field_type)):
             children = tuple(SignatureField.create(arg) for arg in type_args)
 
         return SignatureField(
             name=name,
-            field_type=field_type,
-            default_value=default_value,
+            field_type=field_type if field_type is not Empty else Any,
+            default_value=default_value if default_value not in UNDEFINED_SENTINELS else Empty,
             children=children,
             kwarg_model=kwarg_model,
             extra=extra or {},
@@ -167,11 +177,15 @@ class SignatureField:
             else None
         )
         default_value = (
-            model_field.field_info.default if model_field.field_info.default not in {Undefined, Ellipsis} else Empty
+            model_field.field_info.default if model_field.field_info.default not in UNDEFINED_SENTINELS else Empty
         )
 
-        kwarg_model: Optional[Union[ParameterKwarg, DependencyKwarg, BodyKwarg]] = None
-        if isinstance(default_value, (ParameterKwarg, DependencyKwarg, BodyKwarg)):
+        kwarg_model: Optional[Union[ParameterKwarg, DependencyKwarg, BodyKwarg]] = model_field.field_info.extra.pop(
+            "kwargs_model", None
+        )
+        if kwarg_model:
+            default_value = kwarg_model.default
+        elif isinstance(default_value, (ParameterKwarg, DependencyKwarg, BodyKwarg)):
             kwarg_model = default_value
             default_value = default_value.default
 
@@ -179,7 +193,7 @@ class SignatureField:
             children=children,
             default_value=default_value,
             extra=model_field.field_info.extra or {},
-            field_type=model_field.annotation,
+            field_type=model_field.annotation if model_field.annotation is not Empty else Any,
             kwarg_model=kwarg_model,
             name=model_field.name,
         )
