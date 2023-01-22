@@ -1,0 +1,1191 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Routing" href="routing.html" /><link rel="prev" title="Usage" href="index.html" />
+
+    <link rel="shortcut icon" href="../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>The Starlite App - Starlite 1.49 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-content: #f2830d;
+  --color-brand-primary: #f2830d;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-sidebar-background: #1d2433;
+  --color-background-primary: #0c101a;
+  --color-brand-content: #ffae57;
+  --color-brand-primary: #ffae57;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-sidebar-background: #1d2433;
+  --color-background-primary: #0c101a;
+  --color-brand-content: #ffae57;
+  --color-brand-primary: #ffae57;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Starlite 1.49 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/starlite-logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/starlite-logo-transparent.svg" alt="Dark Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">The Starlite App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="routing.html">Routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="route-handlers.html">Route handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request-data.html">Request data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/guards.html">Guards</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/sqlalchemy.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dto.html">Data Transfer Objects (DTOs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="templating.html">Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/jwt.html">JWT Security Backends</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html">CLI</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/app.html">starlite.app</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/cache/index.html">starlite.cache</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/cache/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/cache/memcached_cache_backend.html">memcached_cache_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/cache/redis_cache_backend.html">redis_cache_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/cache/simple_cache_backend.html">simple_cache_backend</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/router.html">starlite.router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">starlite.controller</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/cookie.html">cookie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/headers.html">headers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/multi_dicts.html">multi_dicts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/pagination.html">pagination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/provide.html">provide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/response_containers.html">response_containers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/response_header.html">response_header</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/state.html">state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/upload_file.html">upload_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/url.html">url</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/dto.html">starlite.dto</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/exceptions/base_exceptions.html">base_exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/exceptions/http_exceptions.html">http_exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">starlite.enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/config.html">starlite.config</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/connection/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/connection/request.html">request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/connection/websocket.html">websocket</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">starlite.contrib</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jwt.html">jwt</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/handlers/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/handlers/asgi.html">asgi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/handlers/http.html">http</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/handlers/websocket.html">websocket</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/cors.html">cors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/cookie_backend.html">cookie_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/file_backend.html">file_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/memcached_backend.html">memcached_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/memory_backend.html">memory_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/redis_backend.html">redis_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/sqlalchemy_backend.html">sqlalchemy_backend</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/params.html">starlite.params</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/piccolo_orm.html">piccolo_orm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sql_alchemy.html">sql_alchemy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/tortoise_orm.html">tortoise_orm</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/response.html">starlite.response</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">starlite.security</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/security/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/template.html">starlite.template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">starlite.testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/types.html">starlite.types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/utils/predicates.html">predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/utils/sync.html">sync</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/utils/scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/utils/exception.html">exception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/utils/extractors.html">extractors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/utils/serialization.html">serialization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/usage/the-starlite-app.rst" title="Edit this page">
+    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+    </svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="the-starlite-app">
+<h1>The Starlite App<a class="headerlink" href="#the-starlite-app" title="Permalink to this heading">#</a></h1>
+<section id="application-object">
+<h2>Application object<a class="headerlink" href="#application-object" title="Permalink to this heading">#</a></h2>
+<p>At the root of every Starlite application is an instance of the <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a>
+class. Typically, this code will be placed in a file called <code class="docutils literal notranslate"><span class="pre">main.py</span></code> at the project’s root directory.</p>
+<p>Creating an app is straightforward – the only required arg is a list
+of <a class="reference internal" href="../reference/controller.html#starlite.controller.Controller" title="starlite.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controllers</span></code></a>, <a class="reference internal" href="../reference/router.html#starlite.router.Router" title="starlite.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Routers</span></code></a>
+or <a class="reference internal" href="../reference/handlers/base.html#starlite.handlers.base.BaseRouteHandler" title="starlite.handlers.base.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Route</span> <span class="pre">handlers</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="admonition">
+<p class="admonition-title">Run it</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
+<span class="o">{</span><span class="s2">&quot;hello&quot;</span>:<span class="s2">&quot;world&quot;</span><span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<p>The app instance is the root level of the app - it has the base path of <code class="docutils literal notranslate"><span class="pre">/</span></code> and all root level Controllers, Routers
+and Route Handlers should be registered on it.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>To learn more about registering routes, check out this chapter in the documentation:
+<a class="reference internal" href="routing.html#registering-routes"><span class="std std-ref">Registering Routes</span></a></p>
+</div>
+</section>
+<section id="startup-and-shutdown">
+<h2>Startup and Shutdown<a class="headerlink" href="#startup-and-shutdown" title="Permalink to this heading">#</a></h2>
+<p>You can pass a list of callables - either sync or async functions, methods or class instances - to the <code class="docutils literal notranslate"><span class="pre">on_startup</span></code>
+/ <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> kwargs of the <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> instance. Those will be called in
+order, once the ASGI server (uvicorn, daphne etc.) emits the respective event.</p>
+<div class="mermaid">
+            flowchart LR
+    Startup[ASGI-Event: lifespan.startup] --&gt; before_startup --&gt; on_startup --&gt; after_startup
+    Shutdown[ASGI-Event: lifespan.shutdown] --&gt; before_shutdown --&gt; on_shutdown --&gt; after_shutdown
+        </div><p>A classic use case for this is database connectivity. Often, we want to establish a database connection on application
+startup, and then close it gracefully upon shutdown.</p>
+<p>For example, lets create a database connection using the async engine from
+<a class="reference external" href="https://docs.sqlalchemy.org/en/latest/orm/extensions/asyncio.html">SQLAlchemy</a>. We create two functions, one to get or
+establish the connection, and another to close it, and then pass them to the Starlite constructor:</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Startup and Shutdown</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span>
+
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseSettings</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncEngine</span><span class="p">,</span> <span class="n">create_async_engine</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">State</span>
+
+
+<span class="k">class</span> <span class="nc">AppSettings</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
+    <span class="n">DATABASE_URI</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db&quot;</span>
+
+
+<span class="n">settings</span> <span class="o">=</span> <span class="n">AppSettings</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">get_db_connection</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncEngine</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the db engine.</span>
+
+<span class="sd">    If it doesn&#39;t exist, creates it and saves it in on the application state object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">DATABASE_URI</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AsyncEngine&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">close_db_connection</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Closes the db connection stored in the application State object.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AsyncEngine&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">get_db_connection</span><span class="p">],</span> <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">close_db_connection</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="using-application-state">
+<h2>Using Application State<a class="headerlink" href="#using-application-state" title="Permalink to this heading">#</a></h2>
+<p>As seen in the examples for the <a class="reference external" href="#before-after-startup">on_startup</a> / <a class="reference external" href="#before-after-shutdown">on_shutdown</a>,
+callables passed to these hooks can receive an optional kwarg called <code class="docutils literal notranslate"><span class="pre">state</span></code>, which is the application’s state object.
+The advantage of using application <code class="docutils literal notranslate"><span class="pre">state</span></code>, is that it can be accessed during multiple stages of the connection, and
+it can be injected into dependencies and route handlers.</p>
+<p>The Application State is an instance of the <code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code> datastructure, and it is accessible
+via the
+<a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">app.state</span></code></a> attribute. As such it can be accessed wherever the app instance is accessible.</p>
+<p>It’s important to understand in this context that the application instance is injected into the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> mapping for
+each connection (i.e. request or websocket connection) as <code class="docutils literal notranslate"><span class="pre">scope[&quot;app&quot;].state</span></code>. This makes the application accessible
+wherever the scope mapping is available, e.g. in middleware, on <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> and
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Websocket</span></code> instances (accessible as <code class="docutils literal notranslate"><span class="pre">request.app</span></code> / <code class="docutils literal notranslate"><span class="pre">socket.app</span></code>) and many other
+places.</p>
+<p>Therefore, state offers an easy way to share contextual data between disparate parts of the application, as seen below:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Provide</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">State</span><span class="p">,</span> <span class="n">get</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">set_state_on_startup</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Startup and shutdown hooks can receive `State` as a keyword arg.&quot;&quot;&quot;</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;abc123&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">middleware_factory</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="s2">&quot;ASGIApp&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASGIApp&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A middleware can access application state via `scope`.&quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">my_middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">state</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in middleware: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">my_middleware</span>
+
+
+<span class="k">def</span> <span class="nf">my_dependency</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dependencies can receive state via injection.&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in dependency: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dep&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">my_dependency</span><span class="p">)},</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">middleware_factory</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">dep</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=unused-argument</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handlers can receive state via injection.&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in handler from `State`: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in handler from `Request`: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">set_state_on_startup</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<section id="initializing-application-state">
+<h3>Initializing Application State<a class="headerlink" href="#initializing-application-state" title="Permalink to this heading">#</a></h3>
+<p>You can pass an object from which the application state will be instantiated using the <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> kwarg of the
+Starlite constructor:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">State</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">initial_state</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <cite>initial_state</cite> can be a dictionary, an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableState</span></code>
+or <code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code>, or a list of tuples containing key/value pairs.</p>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Any value passed to <cite>initial_state</cite> will be deep copied - to prevent mutation from outside the application context.</p>
+</div>
+</section>
+<section id="injecting-application-state-into-route-handlers-and-dependencies">
+<h3>Injecting Application State into Route Handlers and Dependencies<a class="headerlink" href="#injecting-application-state-into-route-handlers-and-dependencies" title="Permalink to this heading">#</a></h3>
+<p>As seen in the above example, Starlite offers an easy way to inject state into route handlers and dependencies - simply
+by specifying <code class="docutils literal notranslate"><span class="pre">state</span></code> as a kwarg to the handler function. I.e., you can simply do this in handler function or dependency
+to access the application state:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">State</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>When using this pattern you can specify the class to use for the state object. This type is not merely for type
+checkers, rather Starlite will instantiate a new state instance based on the type you set there. This allows users to
+use custom classes for State, e.g.:</p>
+<p>While this is very powerful, it might encourage users to follow anti-patterns: it’s important to emphasize that using
+state can lead to code that’s hard to reason about and bugs that are difficult to understand, due to changes in
+different ASGI contexts. As such, this pattern should be used only when it is the best choice and in a limited fashion.
+To discourage its use, Starlite also offers a builtin <code class="docutils literal notranslate"><span class="pre">ImmutableState</span></code> class. You can use this class to type state and
+ensure that no mutation of state is allowed:</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Using Custom State</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">ImmutableState</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">ImmutableState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># raises AttributeError</span>
+    <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="static-files">
+<h2>Static Files<a class="headerlink" href="#static-files" title="Permalink to this heading">#</a></h2>
+<p>Static files are served by the app from predefined locations. To configure static file serving, either pass an
+instance of <a class="reference internal" href="../reference/config.html#starlite.config.StaticFilesConfig" title="starlite.config.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> or a list
+thereof to the <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span> <span class="pre">constructor</span></code></a> using the <code class="docutils literal notranslate"><span class="pre">static_files_config</span></code> kwarg.</p>
+<p>For example, lets say our Starlite app is going to serve <strong>regular files</strong> from the <code class="docutils literal notranslate"><span class="pre">my_app/static</span></code> folder and <strong>html
+documents</strong> from the <code class="docutils literal notranslate"><span class="pre">my_app/html</span></code> folder, and we would like to serve the <strong>static files</strong> on the <code class="docutils literal notranslate"><span class="pre">/files</span></code> path,
+and the <strong>html files</strong> on the <code class="docutils literal notranslate"><span class="pre">/html</span></code> path:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">StaticFilesConfig</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+    <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;static&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/files&quot;</span><span class="p">),</span>
+        <span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;html&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/html&quot;</span><span class="p">,</span> <span class="n">html_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Matching is done based on filename, for example, assume we have a request that is trying to retrieve the path
+<code class="docutils literal notranslate"><span class="pre">/files/file.txt</span></code>, the <strong>directory for the base path</strong> <code class="docutils literal notranslate"><span class="pre">/files</span></code> <strong>will be searched</strong> for the file <code class="docutils literal notranslate"><span class="pre">file.txt</span></code>. If it is
+found, the file will be sent, otherwise a <strong>404 response</strong> will be sent.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">html_mode</span></code> is enabled and no specific file is requested, the application will fall back to serving <code class="docutils literal notranslate"><span class="pre">index.html</span></code>. If
+no file is found the application will look for a <code class="docutils literal notranslate"><span class="pre">404.html</span></code> file in order to render a response, otherwise a 404
+<code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundException</span></code> will be returned.</p>
+<p>You can provide a <code class="docutils literal notranslate"><span class="pre">name</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code> to identify the given config and generate links to files in
+folders belonging to that config. <code class="docutils literal notranslate"><span class="pre">name</span></code> should be a unique string across all static configs and
+<a class="reference external" href="usage/route-handlers:RouteHandlerIndexing">route handlers</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">StaticFilesConfig</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+    <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">StaticFilesConfig</span><span class="p">(</span>
+            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;static&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some_folder/static/path&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;static&quot;</span>
+        <span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">url_path</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">url_for_static_asset</span><span class="p">(</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="s2">&quot;file.pdf&quot;</span><span class="p">)</span>
+<span class="c1"># /some_folder/static/path/file.pdf</span>
+</pre></div>
+</div>
+<section id="sending-files-as-attachments">
+<h3>Sending files as attachments<a class="headerlink" href="#sending-files-as-attachments" title="Permalink to this heading">#</a></h3>
+<p>By default, files are sent “inline”, meaning they will have a <code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">inline</span></code> header.
+To send them as attachments, use the <code class="docutils literal notranslate"><span class="pre">send_as_attachment=True</span></code> flag, which will add a
+<code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">attachment</span></code> header:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">StaticFilesConfig</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+    <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">StaticFilesConfig</span><span class="p">(</span>
+            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;static&quot;</span><span class="p">],</span>
+            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some_folder/static/path&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span>
+            <span class="n">send_as_attachment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="file-system-support-and-cloud-files">
+<h3>File System support and Cloud Files<a class="headerlink" href="#file-system-support-and-cloud-files" title="Permalink to this heading">#</a></h3>
+<p>The <a class="reference internal" href="../reference/config.html#starlite.config.StaticFilesConfig" title="starlite.config.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> class accepts a value called <code class="docutils literal notranslate"><span class="pre">file_system</span></code>,
+which can be any class adhering to the Starlite <a class="reference internal" href="../reference/types.html#starlite.types.FileSystemProtocol" title="starlite.types.FileSystemProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileSystemProtocol</span></code></a>.</p>
+<p>This protocol is similar to the file systems defined by <a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a>,
+which cover all major cloud providers and a wide range of other use cases (e.g. HTTP based file service, <code class="docutils literal notranslate"><span class="pre">ftp</span></code> etc.).</p>
+<p>In order to use any file system, simply use <a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a> or one of
+the libraries based upon it, or provide a custom implementation adhering to the
+<a class="reference internal" href="../reference/types.html#starlite.types.FileSystemProtocol" title="starlite.types.FileSystemProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileSystemProtocol</span></code></a>.</p>
+</section>
+</section>
+<section id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Permalink to this heading">#</a></h2>
+<p>Starlite has builtin pydantic based logging configuration that allows users to easily define logging:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">LoggingConfig</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_router_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;inside a request&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="n">logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
+    <span class="n">loggers</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;my_app&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_router_handler</span><span class="p">],</span> <span class="n">logging_config</span><span class="o">=</span><span class="n">logging_config</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Starlite configures a non-blocking <cite>QueueListenerHandler</cite> which
+is keyed as <cite>queue_listener</cite> in the logging configuration. The above example is using this handler,
+which is optimal for async applications. Make sure to use it in your own loggers as in the above example.</p>
+</div>
+<section id="using-picologging">
+<h3>Using Picologging<a class="headerlink" href="#using-picologging" title="Permalink to this heading">#</a></h3>
+<p><a class="reference external" href="https://github.com/microsoft/picologging">Picologging</a> is a high performance logging library that is developed by
+Microsoft. Starlite will default to using this library automatically if its installed - requiring zero configuration on
+the part of the user. That is, if <code class="docutils literal notranslate"><span class="pre">picologging</span></code> is present the previous example will work with it automatically.</p>
+</section>
+<section id="using-structlog">
+<h3>Using StructLog<a class="headerlink" href="#using-structlog" title="Permalink to this heading">#</a></h3>
+<p><a class="reference external" href="https://www.structlog.org/en/stable/">StructLog</a> is a powerful structured-logging library. Starlite ships with a dedicated
+logging config for using it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">StructLoggingConfig</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_router_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;inside a request&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="n">logging_config</span> <span class="o">=</span> <span class="n">StructLoggingConfig</span><span class="p">()</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_router_handler</span><span class="p">],</span> <span class="n">logging_config</span><span class="o">=</span><span class="n">logging_config</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="subclass-logging-configs">
+<h3>Subclass Logging Configs<a class="headerlink" href="#subclass-logging-configs" title="Permalink to this heading">#</a></h3>
+<p>You can easily create you own <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code> class by subclassing
+<a class="reference internal" href="../reference/config.html#starlite.config.BaseLoggingConfig" title="starlite.config.logging.BaseLoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoggingConfig</span></code></a> and
+implementing the <code class="docutils literal notranslate"><span class="pre">configure</span></code> method.</p>
+</section>
+</section>
+<section id="application-hooks">
+<h2>Application Hooks<a class="headerlink" href="#application-hooks" title="Permalink to this heading">#</a></h2>
+<p>Starlite includes several application level hooks that allow users to run their own sync or async callables. While you
+are free to use these hooks as you see fit, the design intention behind them is to allow for easy instrumentation for
+observability (monitoring, tracing, logging etc.).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All application hook kwargs detailed below receive either a single callable or a list of callables.
+If a list is provided, it is called in the order it is given.</p>
+</div>
+<section id="before-after-startup">
+<h3>Before / After Startup<a class="headerlink" href="#before-after-startup" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">before_startup</span></code> and <code class="docutils literal notranslate"><span class="pre">after_startup</span></code> hooks take a <a class="reference internal" href="../reference/types.html#starlite.types.LifeSpanHookHandler" title="starlite.types.LifeSpanHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that
+receives the Starlite application as an argument and run during the ASGI startup event. The callable is invoked
+respectively before or after the list of callables defined in the <code class="docutils literal notranslate"><span class="pre">on_startup</span></code> list of callables.</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Before and After Startup Hooks</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">startup_callable</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function called during &#39;on_startup&#39;.&quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">before_startup_handler</span><span class="p">(</span><span class="n">app_instance</span><span class="p">:</span> <span class="n">Starlite</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function called before &#39;on_startup&#39;.&quot;&quot;&quot;</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">app_instance</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;startup sequence begin at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+
+
+<span class="k">def</span> <span class="nf">after_startup_handler</span><span class="p">(</span><span class="n">app_instance</span><span class="p">:</span> <span class="n">Starlite</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function called after &#39;on_startup&#39;.&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;startup sequence ended at: </span><span class="si">%s</span><span class="s2">, time elapsed: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">-</span> <span class="n">app_instance</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+    <span class="p">[],</span>
+    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">startup_callable</span><span class="p">],</span>
+    <span class="n">before_startup</span><span class="o">=</span><span class="n">before_startup_handler</span><span class="p">,</span>
+    <span class="n">after_startup</span><span class="o">=</span><span class="n">after_startup_handler</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="before-after-shutdown">
+<h3>Before / After Shutdown<a class="headerlink" href="#before-after-shutdown" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">before_shutdown</span></code> and <code class="docutils literal notranslate"><span class="pre">after_shutdown</span></code> are basically identical, with the difference being that the
+<a class="reference internal" href="../reference/types.html#starlite.types.LifeSpanHookHandler" title="starlite.types.LifeSpanHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">callable</span> <span class="pre">they</span> <span class="pre">receive</span></code></a> in callable is invoked respectively before or after the
+list of callables defined in the <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> list of callables.</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Before and After Shutdown Hooks</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown_callable</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function called during &#39;on_shutdown&#39;.&quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">before_shutdown_handler</span><span class="p">(</span><span class="n">app_instance</span><span class="p">:</span> <span class="n">Starlite</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function called before &#39;on_shutdown&#39;.&quot;&quot;&quot;</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+    <span class="n">app_instance</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;shutdown sequence begin at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">start_time</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+
+
+<span class="k">def</span> <span class="nf">after_shutdown_handler</span><span class="p">(</span><span class="n">app_instance</span><span class="p">:</span> <span class="n">Starlite</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function called after &#39;on_shutdown&#39;.&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;shutdown sequence ended at: </span><span class="si">%s</span><span class="s2">, time elapsed: </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">-</span> <span class="n">app_instance</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+    <span class="p">[],</span>
+    <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">shutdown_callable</span><span class="p">],</span>
+    <span class="n">before_shutdown</span><span class="o">=</span><span class="n">before_shutdown_handler</span><span class="p">,</span>
+    <span class="n">after_shutdown</span><span class="o">=</span><span class="n">after_shutdown_handler</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="after-exception">
+<h3>After Exception<a class="headerlink" href="#after-exception" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">after_exception</span></code> hook takes a <a class="reference internal" href="../reference/types.html#starlite.types.AfterExceptionHookHandler" title="starlite.types.AfterExceptionHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called with
+three arguments: the <code class="docutils literal notranslate"><span class="pre">exception</span></code> that occurred, the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> of the request or websocket connection and the
+application <code class="docutils literal notranslate"><span class="pre">state</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_400_BAD_REQUEST</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
+    <span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">Scope</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Route handler that raises an exception.&quot;&quot;&quot;</span>
+    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">&quot;bad request&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="s2">&quot;State&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hook function that will be invoked after each exception.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;error_count&quot;</span><span class="p">):</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">error_count</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">error_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;an exception of type </span><span class="si">%s</span><span class="s2"> has occurred for requested path </span><span class="si">%s</span><span class="s2"> and the application error count is </span><span class="si">%d</span><span class="s2">.&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">error_count</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">my_handler</span><span class="p">],</span> <span class="n">after_exception</span><span class="o">=</span><span class="n">after_exception_handler</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>This hook is not meant to handle exceptions - it just receives them to allow for side effects.
+To handle exceptions you should define <a class="reference internal" href="exceptions.html#exception-handling"><span class="std std-ref">exception handlers</span></a>.</p>
+</div>
+</section>
+<section id="before-send">
+<h3>Before Send<a class="headerlink" href="#before-send" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">before_send</span></code> hook takes a <a class="reference internal" href="../reference/types.html#starlite.types.BeforeMessageSendHookHandler" title="starlite.types.BeforeMessageSendHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called when
+an ASGI message is sent. The hook receives the message instance and the application state.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
+    <span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">Message</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Example Handler function.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="s2">&quot;State&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The function will be called on each ASGI message.</span>
+
+<span class="sd">    We therefore ensure it runs only on the message start event.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;My Header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">message</span>
+
+
+<span class="k">def</span> <span class="nf">on_startup</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="s2">&quot;State&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A function that will populate the app state before any requests are received.&quot;&quot;&quot;</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;value injected during send&quot;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">before_send</span><span class="o">=</span><span class="n">before_send_hook_handler</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
+    <span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">Message</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Example Handler function.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">}</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="s2">&quot;State&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The function will be called on each ASGI message.</span>
+
+<span class="sd">    We therefore ensure it runs only on the message start event.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;My Header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">message</span>
+
+
+<span class="k">def</span> <span class="nf">on_startup</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="s2">&quot;State&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A function that will populate the app state before any requests are received.&quot;&quot;&quot;</span>
+    <span class="n">state</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;value injected during send&quot;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">before_send</span><span class="o">=</span><span class="n">before_send_hook_handler</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="application-init">
+<h3>Application Init<a class="headerlink" href="#application-init" title="Permalink to this heading">#</a></h3>
+<p>Starlite includes a hook for intercepting the arguments passed to the <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span> <span class="pre">constructor</span></code></a>,
+before they are used to instantiate the application.</p>
+<p>Handlers can be passed to the <code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> parameter on construction of the application, and in turn, each will receive
+an instance of <a class="reference internal" href="../reference/config.html#starlite.config.AppConfig" title="starlite.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> and must return an instance of same.</p>
+<p>This hook is useful for applying common configuration between applications, and for use by developers who may wish to
+develop third-party application configuration systems.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>on_app_init</cite> handlers cannot be <cite>async def</cite> functions, as they are called within <cite>Starlite.__init__()</cite>, outside of
+an async context.</p>
+</div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">starlite.config</span> <span class="kn">import</span> <span class="n">AppConfig</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">close_db_connection</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Closes the database connection on application shutdown.&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">receive_app_config</span><span class="p">(</span><span class="n">app_config</span><span class="p">:</span> <span class="s2">&quot;AppConfig&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AppConfig&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Receives parameters from the application.</span>
+
+<span class="sd">    In reality, this would be a library of boilerplate that is carried from one application to another, or a third-party</span>
+<span class="sd">    developed application configuration tool.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">app_config</span><span class="o">.</span><span class="n">on_shutdown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">close_db_connection</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">app_config</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([],</span> <span class="n">on_app_init</span><span class="o">=</span><span class="p">[</span><span class="n">receive_app_config</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="layered-architecture">
+<h2>Layered architecture<a class="headerlink" href="#layered-architecture" title="Permalink to this heading">#</a></h2>
+<p>Starlite has a layered architecture compromising of (generally speaking) 4 layers:</p>
+<ol class="arabic simple">
+<li><p>The application object</p></li>
+<li><p>Routers</p></li>
+<li><p>Controllers</p></li>
+<li><p>Handlers</p></li>
+</ol>
+<p>There are many parameters that can be defined on every layer, in which case the parameter
+defined on the layer <strong>closest to the handler</strong> takes precedence. This allows for maximum
+flexibility and simplicity when configuring complex applications and enables transparent
+overriding of parameters.</p>
+<p>Parameters that support layering are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="lifecycle-hooks.html#after-request"><span class="std std-ref">after_request</span></a></p></li>
+<li><p><a class="reference internal" href="lifecycle-hooks.html#after-response"><span class="std std-ref">after_response</span></a></p></li>
+<li><p><a class="reference internal" href="lifecycle-hooks.html#before-request"><span class="std std-ref">before_request</span></a></p></li>
+<li><p><a class="reference internal" href="responses.html#cache-control"><span class="std std-ref">cache_control</span></a></p></li>
+<li><p><a class="reference internal" href="dependency-injection.html"><span class="doc">dependencies</span></a></p></li>
+<li><p><a class="reference internal" href="responses.html#etag"><span class="std std-ref">etag</span></a></p></li>
+<li><p><a class="reference internal" href="exceptions.html"><span class="doc">exception_handlers</span></a></p></li>
+<li><p><a class="reference internal" href="security/guards.html"><span class="doc">guards</span></a></p></li>
+<li><p><a class="reference internal" href="middleware/index.html"><span class="doc">middleware</span></a></p></li>
+<li><p><a class="reference internal" href="route-handlers.html#handler-opts"><span class="std std-ref">opt</span></a></p></li>
+<li><p><a class="reference internal" href="responses.html#custom-responses"><span class="std std-ref">response_class</span></a></p></li>
+<li><p><a class="reference internal" href="responses.html#response-cookies"><span class="std std-ref">response_cookies</span></a></p></li>
+<li><p><a class="reference internal" href="responses.html#response-headers"><span class="std std-ref">response_headers</span></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">security</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type_encoders</span></code></p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="routing.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Routing</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Usage</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, Starlite-API
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/starlite-api/starlite" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              <a class="muted-link " href="https://discord.gg/xsySNKSUcW" aria-label="Discord">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z">
+                    </path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">The Starlite App</a><ul>
+<li><a class="reference internal" href="#application-object">Application object</a></li>
+<li><a class="reference internal" href="#startup-and-shutdown">Startup and Shutdown</a></li>
+<li><a class="reference internal" href="#using-application-state">Using Application State</a><ul>
+<li><a class="reference internal" href="#initializing-application-state">Initializing Application State</a></li>
+<li><a class="reference internal" href="#injecting-application-state-into-route-handlers-and-dependencies">Injecting Application State into Route Handlers and Dependencies</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#static-files">Static Files</a><ul>
+<li><a class="reference internal" href="#sending-files-as-attachments">Sending files as attachments</a></li>
+<li><a class="reference internal" href="#file-system-support-and-cloud-files">File System support and Cloud Files</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#logging">Logging</a><ul>
+<li><a class="reference internal" href="#using-picologging">Using Picologging</a></li>
+<li><a class="reference internal" href="#using-structlog">Using StructLog</a></li>
+<li><a class="reference internal" href="#subclass-logging-configs">Subclass Logging Configs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#application-hooks">Application Hooks</a><ul>
+<li><a class="reference internal" href="#before-after-startup">Before / After Startup</a></li>
+<li><a class="reference internal" href="#before-after-shutdown">Before / After Shutdown</a></li>
+<li><a class="reference internal" href="#after-exception">After Exception</a></li>
+<li><a class="reference internal" href="#before-send">Before Send</a></li>
+<li><a class="reference internal" href="#application-init">Application Init</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#layered-architecture">Layered architecture</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script src="../_static/js/version_select.js"></script>
+    </body>
+</html>

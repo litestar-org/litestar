@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="From Flask" href="flask.html" /><link rel="prev" title="CLI" href="../usage/cli.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="API reference" href="../reference/index.html" /><link rel="prev" title="From Flask" href="flask.html" />
 
     <link rel="shortcut icon" href="../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Migrating to Starlite - Starlite 1.49 documentation</title>
+        <title>From Starlette / FastAPI - Starlite 1.49 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -212,9 +212,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../usage/cli.html">CLI</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Migrating to Starlite</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Migrating to Starlite</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="flask.html">From Flask</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fastapi.html">From Starlette / FastAPI</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">From Starlette / FastAPI</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -342,7 +342,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/migration/index.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/migration/fastapi.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -358,25 +358,260 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="migrating-to-starlite">
-<h1>Migrating to Starlite<a class="headerlink" href="#migrating-to-starlite" title="Permalink to this heading">#</a></h1>
-<p>Migrating from <a class="reference external" href="https://www.starlette.io/">Starlette</a> or
-<a class="reference external" href="https://fastapi.tiangolo.com/">FastAPI</a> to Starlite is straightforward, as they are both
-ASGI frameworks and as such build on the same fundamental principles. The following sections
-can help to navigate a migration from either framework by introducing Starlite-equivalents
-to common functionalities.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="flask.html">From Flask</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fastapi.html">From Starlette / FastAPI</a></li>
-</ul>
+          <section id="from-starlette-fastapi">
+<h1>From Starlette / FastAPI<a class="headerlink" href="#from-starlette-fastapi" title="Permalink to this heading">#</a></h1>
+<section id="routing-decorators">
+<h2>Routing Decorators<a class="headerlink" href="#routing-decorators" title="Permalink to this heading">#</a></h2>
+<p>Starlite does not include any decorator as part of the <code class="docutils literal notranslate"><span class="pre">Router</span></code> or <code class="docutils literal notranslate"><span class="pre">Starlite</span></code> instances.
+Instead, all routes are declared using <a class="reference internal" href="../usage/route-handlers.html"><span class="doc">route handlers</span></a>, either as standalone functions or
+controller methods. The handler can then be registered on an application or router instance.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="fastapi" for="sd-tab-item-0">
+FastAPI</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="o">...</span>
+</pre></div>
 </div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="starlette" for="sd-tab-item-1">
+Starlette</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlette.applications</span> <span class="kn">import</span> <span class="n">Starlette</span>
+<span class="kn">from</span> <span class="nn">starlette.routing</span> <span class="kn">import</span> <span class="n">Route</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="n">routes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">index</span><span class="p">)]</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlette</span><span class="p">(</span><span class="n">routes</span><span class="o">=</span><span class="n">routes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-2">
+Starlite</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="o">...</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">get</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>To learn more about registering routes, check out this chapter
+in the documentation: <a class="reference internal" href="../usage/routing.html#registering-routes"><span class="std std-ref">registering routes</span></a></p>
+</div>
+</section>
+<section id="routers-and-routes">
+<h2>Routers and Routes<a class="headerlink" href="#routers-and-routes" title="Permalink to this heading">#</a></h2>
+<p>There are a few key differences between Starlite’s and Starlette’s <code class="docutils literal notranslate"><span class="pre">Router</span></code> class:</p>
+<ol class="arabic simple">
+<li><p>The Starlite version is not an ASGI app</p></li>
+<li><p>The Starlite version does not include decorators: Use <a class="reference internal" href="../usage/route-handlers.html"><span class="doc">route handlers</span></a>.</p></li>
+<li><p>The Starlite version does not support lifecycle hooks: Those have to be handled on the application layer. See <a class="reference internal" href="../usage/lifecycle-hooks.html"><span class="doc">lifecycle hooks</span></a></p></li>
+</ol>
+<p>If you are using Starlette’s <code class="docutils literal notranslate"><span class="pre">Route</span></code>s, you will need to replace these with <a class="reference internal" href="../usage/route-handlers.html"><span class="doc">route handlers</span></a>.</p>
+</section>
+<section id="host-based-routing">
+<h2>Host based routing<a class="headerlink" href="#host-based-routing" title="Permalink to this heading">#</a></h2>
+<p>Host based routing class is intentionally unsupported. If your application relies on <code class="docutils literal notranslate"><span class="pre">Host</span></code> you will have to separate
+the logic into different services and handle this part of request dispatching with a proxy server like <a class="reference external" href="https://www.nginx.com/">nginx</a>
+or <a class="reference external" href="https://traefik.io/">traefik</a>.</p>
+</section>
+<section id="dependency-injection">
+<h2>Dependency Injection<a class="headerlink" href="#dependency-injection" title="Permalink to this heading">#</a></h2>
+<p>The Starlite dependency injection system is different from the one used by FastAPI. You can read about it in
+the <a class="reference internal" href="../usage/dependency-injection.html"><span class="doc">dependency injection</span></a> section of the documentation.</p>
+<p>In FastAPI you declare dependencies either as a list of functions passed to the <code class="docutils literal notranslate"><span class="pre">Router</span></code> or <code class="docutils literal notranslate"><span class="pre">FastAPI</span></code> instances, or as a
+default function argument value wrapped in an instance of the <code class="docutils literal notranslate"><span class="pre">Depends</span></code> class.</p>
+<p>In Starlite <strong>dependencies are always declared using a dictionary</strong> with a string key and the value wrapped in an
+instance of the <code class="docutils literal notranslate"><span class="pre">Provide</span></code> class. This also allows to transparently override dependencies on every level of the application,
+and to easily access dependencies from higher levels.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="fastapi" for="sd-tab-item-3">
+FastAPI</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">APIRouter</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">route_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">nested_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">router_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">app_dependency</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">nested_dependency</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">router_dependency</span><span class="p">)])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">(</span><span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">nested_dependency</span><span class="p">)])</span>
+<span class="n">app</span><span class="o">.</span><span class="n">include_router</span><span class="p">(</span><span class="n">router</span><span class="p">)</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span>
+    <span class="n">val_route</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">route_dependency</span><span class="p">),</span>
+    <span class="n">val_router</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">router_dependency</span><span class="p">),</span>
+    <span class="n">val_nested</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">nested_dependency</span><span class="p">),</span>
+    <span class="n">val_app</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">app_dependency</span><span class="p">),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-4">
+Starlite</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">Provide</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Router</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">route_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">nested_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">router_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">app_dependency</span><span class="p">(</span><span class="n">nested</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;val_route&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">route_dependency</span><span class="p">)})</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span>
+    <span class="n">val_route</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">val_router</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">val_nested</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val_app</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="n">router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;val_router&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">router_dependency</span><span class="p">)})</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span>
+    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;val_app&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">app_dependency</span><span class="p">),</span>
+        <span class="s2">&quot;val_nested&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">nested_dependency</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>To learn more about dependency injection, check out this chapter
+in the documentation: <a class="reference external" href="usage/6-dependency-injection/0-dependency-injection-intro/">Dependency injection</a></p>
+</div>
+<section id="authentication">
+<h3>Authentication<a class="headerlink" href="#authentication" title="Permalink to this heading">#</a></h3>
+<p>FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Starlite, but the
+preferred way of handling this is extending <a class="reference internal" href="../usage/security/abstract-authentication-middleware.html"><span class="doc">AbstractAuthenticationMiddleware</span></a>.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="fastapi" for="sd-tab-item-5">
+FastAPI</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">Request</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">authenticate</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">authenticate</span><span class="p">)])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-6" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-6">
+Starlite</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">BaseRouteHandler</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">authenticate</span><span class="p">(</span>
+    <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">BaseRouteHandler</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">authenticate</span><span class="p">])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>To learn more about security and authentication, check out this chapter in the
+documentation: <a class="reference external" href="usage/8-security/0-intro/">Security</a></p>
+</div>
+</section>
+<section id="dependency-overrides">
+<h3>Dependency overrides<a class="headerlink" href="#dependency-overrides" title="Permalink to this heading">#</a></h3>
+<p>While FastAPI includes a mechanism to override dependencies on an existing application object,
+Starlite promotes architecular solutions to the issue this is aimed to solve. Therefore, overriding
+dependencies in Starlite is strictly supported at definition time, i.e. when you’re defining
+handlers, controllers, routers and applications. Dependency overrides are fundamentally
+the same idea as mocking and should be approached with the same caution and used sparingly
+instead of being the default.</p>
+<p>To achieve the same effect there are three general approaches:</p>
+<ol class="arabic simple">
+<li><p>Structuring the application with different environments in mind. This could mean for example
+connecting to a different database depending on the environment, which in turn is set via
+and env-variable. This is sufficient and most cases and designing your application around this
+principle is a general good practice since it facilitates configurability and integration-testing
+capabilities</p></li>
+<li><p>Isolating tests for unit testing and using <code class="docutils literal notranslate"><span class="pre">create_test_client</span></code></p></li>
+<li><p>Resort to mocking if none of the above approaches can be made to work</p></li>
+</ol>
+</section>
+</section>
+<section id="middleware">
+<h2>Middleware<a class="headerlink" href="#middleware" title="Permalink to this heading">#</a></h2>
+<p>Pure ASGI middleware is fully compatible, and can be used with any ASGI framework. Middlewares
+that make use of FastAPI/Starlette specific middleware features such as
+Starlette’s <a class="reference external" href="https://www.starlette.io/middleware/#basehttpmiddleware">BaseHTTPMiddleware</a> are not compatible,
+but can be easily replaced by making use of <a class="reference external" href="usage/7-middleware/2-creating-middleware/2-using-abstract-middleware/">AbstractMiddleware</a></p>
+</section>
 </section>
 
         </article>
@@ -384,23 +619,23 @@ to common functionalities.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="flask.html">
+          <a class="next-page" href="../reference/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">From Flask</div>
+                <div class="title">API reference</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../usage/cli.html">
+          <a class="prev-page" href="flask.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">CLI</div>
+                <div class="title">From Flask</div>
                 
               </div>
             </a>
@@ -435,8 +670,35 @@ to common functionalities.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">From Starlette / FastAPI</a><ul>
+<li><a class="reference internal" href="#routing-decorators">Routing Decorators</a></li>
+<li><a class="reference internal" href="#routers-and-routes">Routers and Routes</a></li>
+<li><a class="reference internal" href="#host-based-routing">Host based routing</a></li>
+<li><a class="reference internal" href="#dependency-injection">Dependency Injection</a><ul>
+<li><a class="reference internal" href="#authentication">Authentication</a></li>
+<li><a class="reference internal" href="#dependency-overrides">Dependency overrides</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#middleware">Middleware</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="From Flask" href="flask.html" /><link rel="prev" title="CLI" href="../usage/cli.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Migrating to Starlite" href="../migration/index.html" /><link rel="prev" title="JWT Security Backends" href="contrib/jwt.html" />
 
     <link rel="shortcut icon" href="../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Migrating to Starlite - Starlite 1.49 documentation</title>
+        <title>CLI - Starlite 1.49 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -171,50 +171,50 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../usage/the-starlite-app.html">The Starlite App</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/routing.html">Routing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/route-handlers.html">Route handlers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/parameters.html">Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/request-data.html">Request data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/responses.html">Responses</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/dependency-injection.html">Dependency Injection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/using-middleware.html">Using Middleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="the-starlite-app.html">The Starlite App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="routing.html">Routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="route-handlers.html">Route handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parameters.html">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="request-data.html">Request data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="middleware/creating-middleware.html">Creating Middleware</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/security/security-backends.html">Security Backends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/security/guards.html">Guards</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/sqlalchemy.html">SQLAlchemy Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/sqlalchemy.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/dto.html">Data Transfer Objects (DTOs)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/openapi.html">OpenAPI integration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/caching.html">Caching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/exceptions.html">Exceptions and exception handling</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/contrib/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dto.html">Data Transfer Objects (DTOs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="templating.html">Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/jwt.html">JWT Security Backends</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/cli.html">CLI</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">CLI</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Migrating to Starlite</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="flask.html">From Flask</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fastapi.html">From Starlette / FastAPI</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -342,7 +342,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/migration/index.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/usage/cli.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -358,25 +358,238 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="migrating-to-starlite">
-<h1>Migrating to Starlite<a class="headerlink" href="#migrating-to-starlite" title="Permalink to this heading">#</a></h1>
-<p>Migrating from <a class="reference external" href="https://www.starlette.io/">Starlette</a> or
-<a class="reference external" href="https://fastapi.tiangolo.com/">FastAPI</a> to Starlite is straightforward, as they are both
-ASGI frameworks and as such build on the same fundamental principles. The following sections
-can help to navigate a migration from either framework by introducing Starlite-equivalents
-to common functionalities.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="flask.html">From Flask</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fastapi.html">From Starlette / FastAPI</a></li>
-</ul>
+          <section id="cli">
+<h1>CLI<a class="headerlink" href="#cli" title="Permalink to this heading">#</a></h1>
+<p>Starlite optionally provides a simple command line interface, for running and managing
+Starlite applications, powered by <a class="reference external" href="https://click.palletsprojects.com/">click</a> and
+<a class="reference external" href="https://rich.readthedocs.io">rich</a>.</p>
+<section id="enabling-the-cli">
+<h2>Enabling the CLI<a class="headerlink" href="#enabling-the-cli" title="Permalink to this heading">#</a></h2>
+<p>Dependencies for the CLI are not included by default, to keep the packages needed to install
+Starlite to a minimum. To enable the CLI, Starlite has to be installed with the <code class="docutils literal notranslate"><span class="pre">cli</span></code> or <code class="docutils literal notranslate"><span class="pre">standard</span></code>
+extra:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>cli<span class="o">]</span>
+</pre></div>
 </div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>standard<span class="o">]</span>
+</pre></div>
+</div>
+<p>After installing any of these two, the <code class="docutils literal notranslate"><span class="pre">starlite</span></code> command will be available as the entrypoint
+to the CLI.</p>
+</section>
+<section id="autodiscovery">
+<h2>Autodiscovery<a class="headerlink" href="#autodiscovery" title="Permalink to this heading">#</a></h2>
+<p>Starlite will automatically discover Starlite applications and application factories in
+certain places:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">app.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asgi.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">app/__init__.py</span></code></p></li>
+</ol>
+<p>If any of these files contains an instance of the <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> class, a function named
+<code class="docutils literal notranslate"><span class="pre">create_app</span></code>, or a function annotated as returning a <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> instance, the CLI will pick it up.</p>
+</section>
+<section id="commands">
+<h2>Commands<a class="headerlink" href="#commands" title="Permalink to this heading">#</a></h2>
+<section id="starlite">
+<h3>Starlite<a class="headerlink" href="#starlite" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">starlite</span></code> command is the main entrypoint to the CLI. If the <code class="docutils literal notranslate"><span class="pre">--app</span></code> flag is not passed,
+the app will be automatically discovered as described in <a class="reference external" href="autodiscovery">the section above</a></p>
+<section id="options">
+<h4>Options<a class="headerlink" href="#options" title="Permalink to this heading">#</a></h4>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Flag</p></th>
+<th class="head"><p>Environment variable</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--app</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">STARLITE_APP</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;modulename&gt;.&lt;submodule&gt;:&lt;app</span> <span class="pre">instance&gt;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="run">
+<h3>Run<a class="headerlink" href="#run" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">run</span></code> command runs a Starlite application using <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>run
+</pre></div>
+</div>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>This feature is intended for development purposes only and should not be used to
+deploy production applications</p>
+</div>
+<section id="cli-run-options">
+<span id="id1"></span><h4>Options<a class="headerlink" href="#cli-run-options" title="Permalink to this heading">#</a></h4>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head" colspan="4"><p>Flag                  | Environment variable      | Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-r</span></code>, <code class="docutils literal notranslate"><span class="pre">--reload</span></code></p></td>
+<td colspan="3"><p><code class="docutils literal notranslate"><span class="pre">STARLITE_RELOAD</span></code>       |  Reload the application when files in its directory are changed</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-p</span></code>, <code class="docutils literal notranslate"><span class="pre">--port</span></code></p></td>
+<td colspan="2"><p><code class="docutils literal notranslate"><span class="pre">STARLITE_PORT</span></code></p></td>
+<td><p>Bind the the server to this port [default: 8000]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--host</span></code></p></td>
+<td colspan="2"><p><code class="docutils literal notranslate"><span class="pre">STARLITE_PORT</span></code></p></td>
+<td><p>Bind the server to this host [default: 127.0.0.1]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--debug</span></code></p></td>
+<td colspan="2"><p><code class="docutils literal notranslate"><span class="pre">STARLITE_DEBUG</span></code></p></td>
+<td><p>Run the application in debug mode</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--debug</span></code></p></td>
+<td colspan="2"><p><code class="docutils literal notranslate"><span class="pre">STARLITE_DEBUG</span></code></p></td>
+<td><p>Run the application in debug mode</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="info">
+<h3>Info<a class="headerlink" href="#info" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">info</span></code> command displays useful information about the selected application and its configuration</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>info
+</pre></div>
+</div>
+<img alt="starlite info" src="../_images/starlite_info.png" />
+</section>
+<section id="routes">
+<h3>Routes<a class="headerlink" href="#routes" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">routes</span></code> command displays a tree view of the routing table</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>routes
+</pre></div>
+</div>
+<img alt="starlite info" src="../_images/starlite_routes.png" />
+</section>
+<section id="sessions">
+<h3>Sessions<a class="headerlink" href="#sessions" title="Permalink to this heading">#</a></h3>
+<p>This command and its subcommands provide management utilities for
+<a class="reference internal" href="middleware/builtin-middleware.html#server-side-sessions"><span class="std std-ref">server-side session backends</span></a>.</p>
+<section id="delete">
+<h4>Delete<a class="headerlink" href="#delete" title="Permalink to this heading">#</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">delete</span></code> subcommand deletes a specific session from the backend.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>sessions<span class="w"> </span>delete<span class="w"> </span>cc3debc7-1ab6-4dc8-a220-91934a473717
+</pre></div>
+</div>
+</section>
+<section id="clear">
+<h4>Clear<a class="headerlink" href="#clear" title="Permalink to this heading">#</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">clear</span></code> subcommand clears all sessions from the backend.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>sessions<span class="w"> </span>clear
+</pre></div>
+</div>
+</section>
+</section>
+<section id="openapi">
+<h3>OpenAPI<a class="headerlink" href="#openapi" title="Permalink to this heading">#</a></h3>
+<p>This command provides utilities to generate OpenAPI schema and TypeScript types.</p>
+<section id="schema">
+<h4>Schema<a class="headerlink" href="#schema" title="Permalink to this heading">#</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">schema</span></code> subcommand generates OpenAPI specs from the Starlite application, serializing these as either JSON or YAML.
+The serialization format depends on the filename, which is by default <code class="docutils literal notranslate"><span class="pre">openapi_schema.json</span></code>. You can specify a different
+filename using the <code class="docutils literal notranslate"><span class="pre">--output</span></code> flag. For example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>openapi<span class="w"> </span>schema<span class="w"> </span>--output<span class="w"> </span>my-specs.yaml
+</pre></div>
+</div>
+</section>
+<section id="typescript">
+<h4>TypeScript<a class="headerlink" href="#typescript" title="Permalink to this heading">#</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">typescript</span></code> subcommand generates TypeScript definitions from the Starlite application’s OpenAPI specs.  For example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>openapi<span class="w"> </span>typescript
+</pre></div>
+</div>
+<p>By default, this command will output a file called <code class="docutils literal notranslate"><span class="pre">api-specs.ts</span></code>. You can change this using the <code class="docutils literal notranslate"><span class="pre">--output</span></code> option:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>openapi<span class="w"> </span>typescript<span class="w"> </span>--output<span class="w"> </span>my-types.ts
+</pre></div>
+</div>
+<p>You can also specify the top level TypeScript namespace that will be created, which by default will be called API:</p>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="k">export</span><span class="w"> </span><span class="nx">namespace</span><span class="w"> </span><span class="nx">API</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To do this use the <code class="docutils literal notranslate"><span class="pre">--namespace</span></code> option:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>openapi<span class="w"> </span>typescript<span class="w"> </span>--namespace<span class="w"> </span>MyNamespace
+</pre></div>
+</div>
+<p>Which will result in:</p>
+<div class="highlight-typescript notranslate"><div class="highlight"><pre><span></span><span class="k">export</span><span class="w"> </span><span class="nx">namespace</span><span class="w"> </span><span class="nx">MyNamespace</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="extending-the-cli">
+<h2>Extending the CLI<a class="headerlink" href="#extending-the-cli" title="Permalink to this heading">#</a></h2>
+<p>Starlite’s CLI is built with <a class="reference external" href="https://click.palletsprojects.com/">click</a>, and can be easily extended.
+All that’s needed to add subcommands under the <code class="docutils literal notranslate"><span class="pre">starlite</span></code> command is adding an
+<a class="reference external" href="https://packaging.python.org/en/latest/specifications/entry-points/">entry point</a>, pointing
+to a <code class="xref py py-class docutils literal notranslate"><span class="pre">click.Command</span></code> or <code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code>, under the
+<code class="docutils literal notranslate"><span class="pre">starlite.commands</span></code> group.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+setup.py</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">setuptools</span> <span class="kn">import</span> <span class="n">setup</span>
+
+<span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;my-starlite-plugin&quot;</span><span class="p">,</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">entry_points</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;starlite.commands&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;my_command=my_starlite_plugin.cli:main&quot;</span><span class="p">],</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+poetry</label><div class="sd-tab-content docutils">
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[tool.poetry.plugins.&quot;starlite.commands&quot;]</span>
+<span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;my_starlite_plugin.cli:main&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="accessing-the-app-instance">
+<h3>Accessing the app instance<a class="headerlink" href="#accessing-the-app-instance" title="Permalink to this heading">#</a></h3>
+<p>When extending the Starlite CLI, you most likely need access to the loaded <code class="docutils literal notranslate"><span class="pre">Starlite</span></code> instance.
+This can be achieved by adding the special <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter to your CLI functions. This will cause
+<code class="docutils literal notranslate"><span class="pre">Starlite</span></code> instance to be injected into the function whenever it is being called from a click-context.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">click</span>
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
+
+
+<span class="nd">@click</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">my_command</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Starlite</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
         </article>
@@ -384,23 +597,23 @@ to common functionalities.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="flask.html">
+          <a class="next-page" href="../migration/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">From Flask</div>
+                <div class="title">Migrating to Starlite</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../usage/cli.html">
+          <a class="prev-page" href="contrib/jwt.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">CLI</div>
+                <div class="title">JWT Security Backends</div>
                 
               </div>
             </a>
@@ -435,8 +648,55 @@ to common functionalities.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">CLI</a><ul>
+<li><a class="reference internal" href="#enabling-the-cli">Enabling the CLI</a></li>
+<li><a class="reference internal" href="#autodiscovery">Autodiscovery</a></li>
+<li><a class="reference internal" href="#commands">Commands</a><ul>
+<li><a class="reference internal" href="#starlite">Starlite</a><ul>
+<li><a class="reference internal" href="#options">Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#run">Run</a><ul>
+<li><a class="reference internal" href="#cli-run-options">Options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#info">Info</a></li>
+<li><a class="reference internal" href="#routes">Routes</a></li>
+<li><a class="reference internal" href="#sessions">Sessions</a><ul>
+<li><a class="reference internal" href="#delete">Delete</a></li>
+<li><a class="reference internal" href="#clear">Clear</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#openapi">OpenAPI</a><ul>
+<li><a class="reference internal" href="#schema">Schema</a></li>
+<li><a class="reference internal" href="#typescript">TypeScript</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extending-the-cli">Extending the CLI</a><ul>
+<li><a class="reference internal" href="#accessing-the-app-instance">Accessing the app instance</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
