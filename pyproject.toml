@@ -120,26 +120,28 @@ auto-pytabs = {extras = ["mkdocs"], version = ">=0.1.1"}
 brotli = ["brotli"]
 cli = ["click", "rich", "jsbeautifier"]
 cryptography = ["cryptography"]
+jina = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
 memcached = ["aiomcache"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
-standard = ["click", "jinja", "picologging", "rich", "jsbeautifier"]
+standard = ["click", "jinja2", "jsbeautifier", "picologging", "rich",]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
 full = [
-    "brotli",
-    "cryptography",
     "aiomcache",
+    "brotli",
+    "click",
+    "cryptography",
+    "jinja2",
     "opentelemetry-instrumentation-asgi",
     "picologging",
-    "redis",
-    "structlog",
     "python-jose",
+    "redis",
+    "rich",
+    "structlog",
     "tortoise-orm",
-    "click",
-    "rich"
 ]
 
 [tool.poetry.scripts]
