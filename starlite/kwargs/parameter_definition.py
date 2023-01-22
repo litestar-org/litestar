@@ -35,7 +35,9 @@ def create_parameter_definition(
         A ParameterDefinition tuple.
     """
     extra = signature_field.extra
-    is_required = not signature_field.is_optional
+    is_required = (signature_field.is_parameter_field and signature_field.is_required) or (
+        signature_field.default_value is None and not signature_field.is_optional
+    )
     default_value = signature_field.default_value if signature_field.default_value is not Empty else None
 
     field_alias = extra.get(ParamType.QUERY) or field_name
@@ -56,7 +58,7 @@ def create_parameter_definition(
         field_name=field_name,
         field_alias=field_alias,
         default_value=default_value,
-        is_required=is_required and (default_value is None and not signature_field.is_optional),
+        is_required=is_required,
         is_sequence=signature_field.is_sequence,
     )
 

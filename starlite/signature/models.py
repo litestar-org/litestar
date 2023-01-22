@@ -4,6 +4,7 @@ from typing import Any, ClassVar, Dict, Optional, Set, Tuple, Union
 
 from pydantic import BaseConfig, BaseModel, ValidationError
 from pydantic.fields import ModelField, Undefined
+from typing_extensions import get_args, get_origin
 
 from starlite.connection import ASGIConnection, Request
 from starlite.enums import ScopeType
@@ -137,6 +138,10 @@ class SignatureField:
         Returns:
             SignatureField instance.
         """
+
+        if not children and get_origin(field_type) and (type_args := get_args(field_type)):
+            children = tuple(SignatureField.create(arg) for arg in type_args)
+
         return SignatureField(
             name=name,
             field_type=field_type,
@@ -174,7 +179,7 @@ class SignatureField:
             children=children,
             default_value=default_value,
             extra=model_field.field_info.extra or {},
-            field_type=model_field.outer_type_,
+            field_type=model_field.annotation,
             kwarg_model=kwarg_model,
             name=model_field.name,
         )

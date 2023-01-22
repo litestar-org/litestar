@@ -212,6 +212,7 @@ def create_parameter_for_handler(
         if isinstance(signature_field.kwarg_model, DependencyKwarg) and field_name not in dependencies:
             # never document explicit dependencies
             continue
+
         for parameter in get_recursive_handler_parameters(
             field_name=field_name,
             signature_field=signature_field,

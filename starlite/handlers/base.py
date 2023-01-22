@@ -170,23 +170,26 @@ class BaseRouteHandler(Generic[T]):
         """Return all guards in the handlers scope, starting from highest to current layer."""
         if self._resolved_guards is Empty:
             self._resolved_guards = []
+
             for layer in self.ownership_layers:
                 self._resolved_guards.extend(layer.guards or [])
+
             self._resolved_guards = cast("List[Guard]", [AsyncCallable(guard) for guard in self._resolved_guards])
+
         return self._resolved_guards  # type:ignore
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
-        if not self.signature_model:
-            raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
         if self._resolved_dependencies is Empty:
             self._resolved_dependencies = {}
+
             for layer in self.ownership_layers:
                 for key, value in (layer.dependencies or {}).items():
                     self._validate_dependency_is_unique(
                         dependencies=self._resolved_dependencies, key=key, provider=value
                     )
                     self._resolved_dependencies[key] = value
+
         return cast("Dict[str, Provide]", self._resolved_dependencies)
 
     def resolve_middleware(self) -> List["Middleware"]:
