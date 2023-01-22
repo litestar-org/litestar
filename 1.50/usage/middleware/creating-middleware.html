@@ -1,0 +1,859 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Security" href="../security/index.html" /><link rel="prev" title="Built-in middleware" href="builtin-middleware.html" />
+
+    <link rel="shortcut icon" href="../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+        <title>Creating Middleware - Starlite 1.50 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  --color-brand-content: #f2830d;
+  --color-brand-primary: #f2830d;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-sidebar-background: #1d2433;
+  --color-background-primary: #0c101a;
+  --color-brand-content: #ffae57;
+  --color-brand-primary: #ffae57;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  --color-sidebar-background: #1d2433;
+  --color-background-primary: #0c101a;
+  --color-brand-content: #ffae57;
+  --color-brand-primary: #ffae57;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">Starlite 1.50 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../_static/starlite-logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../_static/starlite-logo-transparent.svg" alt="Dark Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../the-starlite-app.html">The Starlite App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../routing.html">Routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../route-handlers.html">Route handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../parameters.html">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../request-data.html">Request data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Middleware</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../security/guards.html">Guards</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../testing.html">Testing</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/sqlalchemy.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../dto.html">Data Transfer Objects (DTOs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../openapi.html">OpenAPI integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../templating.html">Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/jwt.html">JWT Security Backends</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../cli.html">CLI</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/app.html">starlite.app</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/cache/index.html">starlite.cache</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/cache/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/cache/memcached_cache_backend.html">memcached_cache_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/cache/redis_cache_backend.html">redis_cache_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/cache/simple_cache_backend.html">simple_cache_backend</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">starlite.router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">starlite.controller</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/cookie.html">cookie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/headers.html">headers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/multi_dicts.html">multi_dicts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/pagination.html">pagination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/provide.html">provide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/response_containers.html">response_containers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/response_header.html">response_header</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/state.html">state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/upload_file.html">upload_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/url.html">url</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/dto.html">starlite.dto</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/exceptions/base_exceptions.html">base_exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/exceptions/http_exceptions.html">http_exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/enums.html">starlite.enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/config.html">starlite.config</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/connection/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/connection/request.html">request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/connection/websocket.html">websocket</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/contrib/index.html">starlite.contrib</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/contrib/jwt.html">jwt</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/asgi.html">asgi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/http.html">http</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/websocket.html">websocket</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/cors.html">cors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" role="switch" type="checkbox"/><label for="toctree-checkbox-15"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/cookie_backend.html">cookie_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/file_backend.html">file_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/memcached_backend.html">memcached_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/memory_backend.html">memory_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/redis_backend.html">redis_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/middleware/session/sqlalchemy_backend.html">sqlalchemy_backend</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">starlite.params</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/piccolo_orm.html">piccolo_orm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sql_alchemy.html">sql_alchemy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/tortoise_orm.html">tortoise_orm</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/response.html">starlite.response</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/security/index.html">starlite.security</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/template.html">starlite.template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/testing.html">starlite.testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/types.html">starlite.types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/predicates.html">predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/sync.html">sync</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/exception.html">exception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/extractors.html">extractors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/serialization.html">serialization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/usage/middleware/creating-middleware.rst" title="Edit this page">
+    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
+      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
+    </svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="creating-middleware">
+<h1>Creating Middleware<a class="headerlink" href="#creating-middleware" title="Permalink to this heading">#</a></h1>
+<p>As mentioned in <a class="reference internal" href="using-middleware.html"><span class="doc">using middleware</span></a>, a middleware in Starlite
+is <strong>any callable</strong> that takes a kwarg called <code class="docutils literal notranslate"><span class="pre">app</span></code>, which is the next ASGI handler, i.e. an
+<a class="reference internal" href="../../reference/types.html#starlite.types.ASGIApp" title="starlite.types.ASGIApp"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIApp</span></code></a>, and returns an <code class="docutils literal notranslate"><span class="pre">ASGIApp</span></code>.</p>
+<p>The example previously given was using a factory function, i.e.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="k">def</span> <span class="nf">middleware_factory</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">my_middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># do something here</span>
+        <span class="o">...</span>
+        <span class="k">await</span> <span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">my_middleware</span>
+</pre></div>
+</div>
+<p>While using functions is a perfectly viable approach, you can also use classes to do the same. See the next sections on
+two base classes you can use for this purpose - the <a class="reference internal" href="../../reference/middleware/base.html#starlite.middleware.base.MiddlewareProtocol" title="starlite.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a> ,
+which gives a bare-bones type, or the <a class="reference internal" href="../../reference/middleware/base.html#starlite.middleware.base.AbstractMiddleware" title="starlite.middleware.base.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a> that offers a
+base class with some built in functionality.</p>
+<section id="using-middlewareprotocol">
+<h2>Using MiddlewareProtocol<a class="headerlink" href="#using-middlewareprotocol" title="Permalink to this heading">#</a></h2>
+<p>The <a class="reference internal" href="../../reference/middleware/base.html#starlite.middleware.base.MiddlewareProtocol" title="starlite.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a> class is a
+<a class="reference external" href="https://peps.python.org/pep-0544/">PEP 544 Protocol</a> that specifies the minimal implementation of a middleware as
+follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="k">class</span> <span class="nc">MiddlewareProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="o">...</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method receives and sets “app”. <em>It’s important to understand</em> that app is not an instance of Starlite in
+this case, but rather the next middleware in the stack, which is also an ASGI app.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">__call__</span></code> method makes this class into a <code class="docutils literal notranslate"><span class="pre">callable</span></code>, i.e. once instantiated this class acts like a function, that
+has the signature of an ASGI app: The three parameters, <code class="docutils literal notranslate"><span class="pre">scope,</span> <span class="pre">receive,</span> <span class="pre">send</span></code> are specified
+by <a class="reference external" href="https://asgi.readthedocs.io/en/latest/index.html">the ASGI specification</a>, and their values originate with the ASGI
+server (e.g. <em>uvicorn</em>) used to run Starlite.</p>
+<p>To use this protocol as a basis, simply subclass it - as you would any other class, and implement the two methods it
+specifies:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">starlite.middleware.base</span> <span class="kn">import</span> <span class="n">MiddlewareProtocol</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MyRequestLoggingMiddleware</span><span class="p">(</span><span class="n">MiddlewareProtocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> - </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Although <code class="docutils literal notranslate"><span class="pre">scope</span></code> is used to create an instance of request by passing it to the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> constructor, which makes it simpler to access because it does some parsing
+for you already, the actual source of truth remains <code class="docutils literal notranslate"><span class="pre">scope</span></code> - not the request. If you need to modify the data of
+the request you must modify the scope object, not any ephemeral request objects created as in the above.</p>
+</div>
+<section id="responding-using-the-middlewareprotocol">
+<h3>Responding using the MiddlewareProtocol<a class="headerlink" href="#responding-using-the-middlewareprotocol" title="Permalink to this heading">#</a></h3>
+<p>Once a middleware finishes doing whatever its doing, it should pass <code class="docutils literal notranslate"><span class="pre">scope</span></code>, <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> to an ASGI app
+and await it. This is what’s happening in the above example with: <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">self.app(scope,</span> <span class="pre">receive,</span> <span class="pre">send)</span></code>. Let’s
+explore another example - redirecting the request to a different url from a middleware:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+
+<span class="kn">from</span> <span class="nn">starlite.response</span> <span class="kn">import</span> <span class="n">RedirectResponse</span>
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">starlite.middleware.base</span> <span class="kn">import</span> <span class="n">MiddlewareProtocol</span>
+
+
+<span class="k">class</span> <span class="nc">RedirectMiddleware</span><span class="p">(</span><span class="n">MiddlewareProtocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">Request</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">RedirectResponse</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As you can see in the above, given some condition (request.session being None) we create a
+<a class="reference internal" href="../../reference/response.html#starlite.response.RedirectResponse" title="starlite.response.RedirectResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedirectResponse</span></code></a> and then await it. Otherwise, we await <code class="docutils literal notranslate"><span class="pre">self.app</span></code></p>
+</section>
+<section id="modifying-asgi-requests-and-responses-using-the-middlewareprotocol">
+<h3>Modifying ASGI Requests and Responses using the MiddlewareProtocol<a class="headerlink" href="#modifying-asgi-requests-and-responses-using-the-middlewareprotocol" title="Permalink to this heading">#</a></h3>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you’d like to modify a <a class="reference internal" href="../../reference/response.html#starlite.response.Response" title="starlite.response.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> object after it was created for a route
+handler function but before the actual response message is transmitted, the correct place to do this is using the
+special life-cycle hook called <a class="reference internal" href="../lifecycle-hooks.html#after-request"><span class="std std-ref">after_request</span></a>. The instructions in this section are for how to
+modify the ASGI response message itself, which is a step further in the response process.</p>
+</div>
+<p>Using the <a class="reference internal" href="../../reference/middleware/base.html#starlite.middleware.base.MiddlewareProtocol" title="starlite.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a> you can intercept and modifying both the
+incoming and outgoing data in a request / response cycle by “wrapping” that respective <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> ASGI
+functions.</p>
+<p>To demonstrate this, lets say we want to append a header with a timestamp to all outgoing responses. We could achieve
+this by doing the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+<span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+<span class="kn">from</span> <span class="nn">starlite.middleware.base</span> <span class="kn">import</span> <span class="n">MiddlewareProtocol</span>
+<span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span>
+
+
+<span class="k">class</span> <span class="nc">ProcessTimeHeader</span><span class="p">(</span><span class="n">MiddlewareProtocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+                    <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+                    <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+                    <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="inheriting-abstractmiddleware">
+<h2>Inheriting AbstractMiddleware<a class="headerlink" href="#inheriting-abstractmiddleware" title="Permalink to this heading">#</a></h2>
+<p>Starlite offers an <a class="reference internal" href="../../reference/middleware/base.html#starlite.middleware.base.AbstractMiddleware" title="starlite.middleware.base.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a> class that can be extended to
+create middleware:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">AbstractMiddleware</span><span class="p">,</span> <span class="n">ScopeType</span>
+<span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
+    <span class="n">scopes</span> <span class="o">=</span> <span class="p">{</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">}</span>
+    <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;first_path&quot;</span><span class="p">,</span> <span class="s2">&quot;second_path&quot;</span><span class="p">]</span>
+    <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_from_middleware&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+                <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+                <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The three class variables defined in the above example <code class="docutils literal notranslate"><span class="pre">scopes</span></code>, <code class="docutils literal notranslate"><span class="pre">exclude</span></code> and <code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code> can be used to
+fine-tune for which routes and request types the middleware is called:</p>
+<ul class="simple">
+<li><p>The scopes variable is a set that can include either or both <code class="docutils literal notranslate"><span class="pre">ScopeType.HTTP</span></code> and <code class="docutils literal notranslate"><span class="pre">ScopeType.WEBSOCKET</span></code> , with the default being both.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude</span></code> accepts either a single string or list of strings that are compiled into a regex against which the request’s <code class="docutils literal notranslate"><span class="pre">path</span></code> is checked.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude_opt_key</span></code> is the key to use for in a route handler’s <code class="docutils literal notranslate"><span class="pre">opt</span></code> dict for a boolean, whether to omit from the middleware.</p></li>
+</ul>
+<p>Thus, in the following example, the middleware will only run against the route handler called <code class="docutils literal notranslate"><span class="pre">not_excluded_handler</span></code>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">AbstractMiddleware</span><span class="p">,</span> <span class="n">ScopeType</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">websocket</span>
+<span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">WebSocket</span>
+    <span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
+    <span class="n">scopes</span> <span class="o">=</span> <span class="p">{</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">}</span>
+    <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;first_path&quot;</span><span class="p">,</span> <span class="s2">&quot;second_path&quot;</span><span class="p">]</span>
+    <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_from_middleware&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span>
+        <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span>
+        <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+                <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+                <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
+
+
+<span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/my-websocket&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="s2">&quot;WebSocket&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Websocket handler - is excluded because the middleware scopes includes &#39;ScopeType.HTTP&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;hello websocket&quot;</span><span class="p">})</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/first_path&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">first_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to regex pattern matching &quot;first_path&quot;.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;first&quot;</span><span class="p">}</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/second_path&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">second_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to regex pattern matching &quot;second_path&quot;.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;second&quot;</span><span class="p">}</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/third_path&quot;</span><span class="p">,</span> <span class="n">exclude_from_middleware</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">third_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to the opt key &#39;exclude_from_middleware&#39; matching the middleware &#39;exclude_opt_key&#39;.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;second&quot;</span><span class="p">}</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/greet&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">not_excluded_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This handler is not excluded, and thus the middleware will execute on every incoming request to it.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">websocket_handler</span><span class="p">,</span>
+        <span class="n">first_handler</span><span class="p">,</span>
+        <span class="n">second_handler</span><span class="p">,</span>
+        <span class="n">third_handler</span><span class="p">,</span>
+        <span class="n">not_excluded_handler</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">MyMiddleware</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">AbstractMiddleware</span><span class="p">,</span> <span class="n">ScopeType</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">websocket</span>
+<span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">WebSocket</span>
+    <span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+
+
+<span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
+    <span class="n">scopes</span> <span class="o">=</span> <span class="p">{</span><span class="n">ScopeType</span><span class="o">.</span><span class="n">HTTP</span><span class="p">}</span>
+    <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;first_path&quot;</span><span class="p">,</span> <span class="s2">&quot;second_path&quot;</span><span class="p">]</span>
+    <span class="n">exclude_opt_key</span> <span class="o">=</span> <span class="s2">&quot;exclude_from_middleware&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span>
+        <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span>
+        <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">send_wrapper</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="s2">&quot;Message&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
+                <span class="n">process_time</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+                <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+                <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;X-Process-Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">process_time</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send_wrapper</span><span class="p">)</span>
+
+
+<span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/my-websocket&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="s2">&quot;WebSocket&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Websocket handler - is excluded because the middleware scopes includes &#39;ScopeType.HTTP&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="s2">&quot;hello websocket&quot;</span><span class="p">})</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/first_path&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">first_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to regex pattern matching &quot;first_path&quot;.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;first&quot;</span><span class="p">}</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/second_path&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">second_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to regex pattern matching &quot;second_path&quot;.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;second&quot;</span><span class="p">}</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/third_path&quot;</span><span class="p">,</span> <span class="n">exclude_from_middleware</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">third_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler is excluded due to the opt key &#39;exclude_from_middleware&#39; matching the middleware &#39;exclude_opt_key&#39;.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;second&quot;</span><span class="p">}</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/greet&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">not_excluded_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;This handler is not excluded, and thus the middleware will execute on every incoming request to it.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">websocket_handler</span><span class="p">,</span>
+        <span class="n">first_handler</span><span class="p">,</span>
+        <span class="n">second_handler</span><span class="p">,</span>
+        <span class="n">third_handler</span><span class="p">,</span>
+        <span class="n">not_excluded_handler</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">MyMiddleware</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="using-definemiddleware-to-pass-arguments">
+<h2>Using DefineMiddleware to pass arguments<a class="headerlink" href="#using-definemiddleware-to-pass-arguments" title="Permalink to this heading">#</a></h2>
+<p>Starlite offers a simple way to pass positional arguments (<code class="docutils literal notranslate"><span class="pre">*args</span></code>) and key-word arguments (<code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>) to middleware
+using the <a class="reference internal" href="../../reference/middleware/base.html#starlite.middleware.base.DefineMiddleware" title="starlite.middleware.base.DefineMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefineMiddleware</span></code></a> class. Let’s extend
+the factory function used in the examples above to take some args and kwargs and then use <code class="docutils literal notranslate"><span class="pre">DefineMiddleware</span></code> to pass
+these values to our middleware:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span>
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">DefineMiddleware</span>
+
+
+<span class="k">def</span> <span class="nf">middleware_factory</span><span class="p">(</span><span class="n">my_arg</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">my_kwarg</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">my_middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># here we can use my_arg and my_kwarg for some purpose</span>
+        <span class="o">...</span>
+        <span class="k">await</span> <span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">my_middleware</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">DefineMiddleware</span><span class="p">(</span><span class="n">middleware_factory</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">my_kwarg</span><span class="o">=</span><span class="s2">&quot;abc&quot;</span><span class="p">)],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">DefineMiddleware</span></code> is a simple container - it takes a middleware callable as a first parameter, and then any
+positional arguments, followed by key word arguments. The middleware callable will be called with these values as well
+as the kwarg <code class="docutils literal notranslate"><span class="pre">app</span></code> as mentioned above.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../security/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Security</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="builtin-middleware.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Built-in middleware</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023, Starlite-API
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/starlite-api/starlite" aria-label="GitHub">
+                <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path>
+                </svg>
+            </a>
+              <a class="muted-link " href="https://discord.gg/xsySNKSUcW" aria-label="Discord">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z">
+                    </path>
+                </svg>
+            </a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Creating Middleware</a><ul>
+<li><a class="reference internal" href="#using-middlewareprotocol">Using MiddlewareProtocol</a><ul>
+<li><a class="reference internal" href="#responding-using-the-middlewareprotocol">Responding using the MiddlewareProtocol</a></li>
+<li><a class="reference internal" href="#modifying-asgi-requests-and-responses-using-the-middlewareprotocol">Modifying ASGI Requests and Responses using the MiddlewareProtocol</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#inheriting-abstractmiddleware">Inheriting AbstractMiddleware</a></li>
+<li><a class="reference internal" href="#using-definemiddleware-to-pass-arguments">Using DefineMiddleware to pass arguments</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/scripts/furo.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script src="../../_static/js/version_select.js"></script>
+    </body>
+</html>
