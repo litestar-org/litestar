@@ -51,7 +51,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore 
         session_config: Optional["BaseBackendConfig"] = None,
         cookies: Optional["CookieTypes"] = None,
     ):
-        """An Async client implementation providing a context manager for testing applications asynchronusly.
+        """An Async client implementation providing a context manager for testing applications asynchronously.
 
         Args:
             app: The instance of :class:`Starlite <starlite.app.Starlite>` under test.

@@ -80,7 +80,7 @@ class BaseRoute(ABC):
         """Initialize the route.
 
         Args:
-            handler_names: Names of the associated handlers
+            handler_names: Names of the associated handler functions
             path: Base path of the route
             scope_type: Type of the ASGI scope
             methods: Supported methods

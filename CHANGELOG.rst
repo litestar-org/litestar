@@ -457,7 +457,7 @@ Changelog
 ------
 
 -  add ``url_for`` method similar to Starlette’s.
--  fix ``AsyncCallabled`` to ensure wrapped methods remain unbound.
+-  fix ``AsyncCallable`` to ensure wrapped methods remain unbound.
 
 
 

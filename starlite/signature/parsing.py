@@ -97,6 +97,7 @@ def get_type_annotation_from_plugin(
     Args:
         parameter:  ParsedSignatureParameter
         plugin: PluginProtocol
+        field_plugin_mappings: A dictionary mapping fields for plugin mappings.
 
     Returns:
         A pydantic model to be used as a type

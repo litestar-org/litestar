@@ -107,7 +107,7 @@ def is_mapping(annotation: Any) -> "TypeGuard[Mapping[Any, Any]]":
 
 
 def is_non_string_iterable(annotation: Any) -> "TypeGuard[Iterable[Any]]":
-    """Given a type annotation determine if the annotation is a iterable.
+    """Given a type annotation determine if the annotation is an iterable.
 
     Args:
     annotation: A type.

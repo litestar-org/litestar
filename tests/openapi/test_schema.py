@@ -24,7 +24,7 @@ from starlite.testing import create_test_client
 from tests import TypedDictPerson
 
 
-def test_update_schema_with_signaature_field() -> None:
+def test_update_schema_with_signature_field() -> None:
     test_str = "abc"
     kwarg_model = ParameterKwarg(
         examples=[Example(value=1)],

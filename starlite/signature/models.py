@@ -97,7 +97,7 @@ class SignatureField:
 
     @property
     def is_generic(self) -> bool:
-        """Check if the field type is a Generic TypeVar."""
+        """Check if the field type is a custom class extending Generic."""
         return is_generic(self.field_type)
 
     @property

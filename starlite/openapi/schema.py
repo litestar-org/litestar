@@ -254,6 +254,7 @@ def get_schema_for_generic_type(field: "SignatureField", plugins: List["PluginPr
     Args:
         field: Pydantic '"SignatureField"' instance.
         plugins: A list of plugins.
+        origin: The type origin.
 
     Returns:
         A schema.

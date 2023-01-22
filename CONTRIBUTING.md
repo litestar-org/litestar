@@ -86,7 +86,7 @@ Please follow the next guidelines when adding a new example:
 
 #### Automatically execute examples
 
-Our docs include an mkdocs hook that can automatically run requests against example apps
+Our docs include a mkdocs hook that can automatically run requests against example apps
 and include their result in the documentation page when its being built. This only requires 2 steps:
 
 1. Create an example file with an `app` object in it, which is an instance of `Starlite`
