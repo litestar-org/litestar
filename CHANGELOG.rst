@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.50.0
+------
+
+- fix expected OpenAPI components in ``test_merged_components_correct``
+- fix missing / wrong dependencies for Jinja2 extra
+- add msgspec typed decoding
+- add async test client
+- prioritize plugins when creating DTOs
+
 1.49.0
 -------
 
