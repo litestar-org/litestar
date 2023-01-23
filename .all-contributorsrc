@@ -698,7 +698,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/45884264?v=4",
       "profile": "https://scriptr.dev/",
       "contributions": [
-        "doc"
+        "doc",
+        "code",
+        "test"
       ]
     },
     {
