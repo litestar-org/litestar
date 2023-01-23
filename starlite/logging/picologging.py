@@ -16,13 +16,13 @@ class QueueListenerHandler(QueueHandler):
     """Configure queue listener and handler to support non-blocking logging configuration."""
 
     def __init__(self, handlers: Optional[List[Any]] = None) -> None:
-        """Initialize `QueueListenerHandler`.
+        """Initialize ``QueueListenerHandler``.
 
         Args:
             handlers: Optional 'ConvertingList'
 
         Notes:
-            - Requires `picologging` to be installed.
+            - Requires ``picologging`` to be installed.
         """
         super().__init__(Queue(-1))
         if handlers:

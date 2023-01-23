@@ -95,7 +95,7 @@ class KwargsModel:
         sequence_query_parameter_names: Set[str],
         is_data_optional: bool,
     ) -> None:
-        """Initialize `KwargsModel`.
+        """Initialize ``KwargsModel``.
 
         Args:
             expected_cookie_params: Any expected cookie parameter kwargs
@@ -288,7 +288,7 @@ class KwargsModel:
         during the application bootstrap process.
 
         Args:
-            signature_model: A [SignatureModel][starlite.signature.SignatureModel] subclass.
+            signature_model: A :class:`SignatureModel <starlite.signature.SignatureModel>` subclass.
             dependencies: A string keyed dictionary mapping dependency providers.
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
@@ -377,7 +377,8 @@ class KwargsModel:
         sync.
 
         Args:
-            connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
+            connection: An instance of :class:`Request <starlite.connection.Request>` or
+                :class:`WebSocket <starlite.connection.WebSocket>`.
 
         Returns:
             A string keyed dictionary of kwargs expected by the handler function and its dependencies.
@@ -395,7 +396,8 @@ class KwargsModel:
         """Resolve all dependencies into the kwargs, recursively.
 
         Args:
-            connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
+            connection: An instance of :class:`Request <starlite.connection.Request>` or
+                :class:`WebSocket <starlite.connection.WebSocket>`.
             kwargs: Kwargs to pass to dependencies.
         """
         cleanup_group = DependencyCleanupGroup()

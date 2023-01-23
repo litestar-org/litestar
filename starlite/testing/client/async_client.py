@@ -54,7 +54,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore 
         """An Async client implementation providing a context manager for testing applications asynchronusly.
 
         Args:
-            app: The instance of [Starlite][starlite.app.Starlite] under test.
+            app: The instance of :class:`Starlite <starlite.app.Starlite>` under test.
             base_url: URL scheme and domain for test request paths, e.g. 'http://testserver'.
             raise_server_exceptions: Flag for the underlying test client to raise server exceptions instead of
                 wrapping them in an HTTP response.
@@ -477,26 +477,27 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore 
             A dictionary containing session data.
 
         Examples:
-            ```python
-            from starlite import Starlite, post
-            from starlite.middleware.session.memory_backend import MemoryBackendConfig
+            .. code-block: python
 
-            session_config = MemoryBackendConfig()
+                from starlite import Starlite, post
+                from starlite.middleware.session.memory_backend import MemoryBackendConfig
 
-
-            @post(path="/test")
-            def set_session_data(request: Request) -> None:
-                request.session["foo"] == "bar"
+                session_config = MemoryBackendConfig()
 
 
-            app = Starlite(
-                route_handlers=[set_session_data], middleware=[session_config.middleware]
-            )
+                @post(path="/test")
+                def set_session_data(request: Request) -> None:
+                    request.session["foo"] == "bar"
 
-            async with AsyncTestClient(app=app, session_config=session_config) as client:
-                await client.post("/test")
-                assert await client.get_session_data() == {"foo": "bar"}
-            ```
+
+                app = Starlite(
+                    route_handlers=[set_session_data], middleware=[session_config.middleware]
+                )
+
+                async with AsyncTestClient(app=app, session_config=session_config) as client:
+                    await client.post("/test")
+                    assert await client.get_session_data() == {"foo": "bar"}
+
         """
         return await super()._get_session_data()
 
@@ -510,25 +511,26 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore 
             None
 
         Examples:
-            ```python
-            from starlite import Starlite, get
-            from starlite.middleware.session.memory_backend import MemoryBackendConfig
+            .. code-block: python
 
-            session_config = MemoryBackendConfig()
+                from starlite import Starlite, get
+                from starlite.middleware.session.memory_backend import MemoryBackendConfig
 
-
-            @get(path="/test")
-            def get_session_data(request: Request) -> Dict[str, Any]:
-                return request.session
+                session_config = MemoryBackendConfig()
 
 
-            app = Starlite(
-                route_handlers=[get_session_data], middleware=[session_config.middleware]
-            )
+                @get(path="/test")
+                def get_session_data(request: Request) -> Dict[str, Any]:
+                    return request.session
 
-            async with AsyncTestClient(app=app, session_config=session_config) as client:
-                await client.set_session_data({"foo": "bar"})
-                assert await client.get("/test").json() == {"foo": "bar"}
-            ```
+
+                app = Starlite(
+                    route_handlers=[get_session_data], middleware=[session_config.middleware]
+                )
+
+                async with AsyncTestClient(app=app, session_config=session_config) as client:
+                    await client.set_session_data({"foo": "bar"})
+                    assert await client.get("/test").json() == {"foo": "bar"}
+
         """
         return await super()._set_session_data(data)

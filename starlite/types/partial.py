@@ -40,14 +40,14 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 SupportedTypes: "TypeAlias" = "Union[DataclassClass, Type[BaseModel], TypedDictClass]"
-"""Types that are supported by [`Partial`][starlite.types.partial.Partial]"""
+"""Types that are supported by :class:`Partial <starlite.types.partial.Partial>`"""
 
 
 class Partial(Generic[T]):
     """Type generation for PATCH routes.
 
     Partial is a special typing helper that takes a generic T, which must be a
-    [`TypedDict`][typing.TypedDict], dataclass or pydantic model class, and
+    :class:`TypedDict <typing.TypedDict>`, dataclass or pydantic model class, and
     returns to static type checkers a version of this T in which all fields -
     and nested fields - are optional.
     """
@@ -55,14 +55,14 @@ class Partial(Generic[T]):
     _models: Dict[SupportedTypes, SupportedTypes] = {}
 
     def __class_getitem__(cls, item: Type[T]) -> Type[T]:
-        """Take a pydantic model class, [`TypedDict`][typing.TypedDict] or a dataclass and return an all optional
+        """Take a pydantic model class, :class:`TypedDict <typing.TypedDict>` or a dataclass and return an all optional
         version of that class.
 
         Args:
-            item: A pydantic model, [`TypedDict`][typing.TypedDict] or dataclass class.
+            item: A pydantic model, :class:`TypedDict <typing.TypedDict>` or dataclass class.
 
         Returns:
-            A pydantic model, [`TypedDict`][typing.TypedDict], or dataclass.
+            A pydantic model, :class:`TypedDict <typing.TypedDict>`, or dataclass.
         """
         if item not in cls._models:
             if is_class_and_subclass(item, BaseModel):
@@ -119,10 +119,10 @@ class Partial(Generic[T]):
 
     @classmethod
     def _create_partial_typeddict(cls, item: "TypedDictClass") -> None:
-        """Receives a typeddict class and creates a new type with all attributes `Optional`.
+        """Receives a typeddict class and creates a new type with all attributes ``Optional``.
 
         Args:
-            item: A [`TypedDict`][typing.TypeDict] class.
+            item: A :class:`TypedDict <typing.TypeDict>` class.
         """
         type_hints: Dict[str, Any] = {}
         for key_name, value_type in get_type_hints(item).items():

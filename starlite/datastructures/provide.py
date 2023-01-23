@@ -46,7 +46,7 @@ class Provide:
         use_cache: bool = False,
         sync_to_thread: bool = False,
     ) -> None:
-        """Initialize `Provide`
+        """Initialize ``Provide``
 
         Args:
             dependency: Callable to inject, can be a function, method or class.
@@ -88,16 +88,16 @@ class Provide:
 class DependencyCleanupGroup:
     """Wrapper for generator based dependencies.
 
-    Simplify cleanup by wrapping `next`/`anext` calls and providing facilities to `throw` / `athrow` into all generators
-    consecutively. An instance of this class can be used as a contextmanager, which will automatically throw any
-    exceptions into its generators. All exceptions caught in this manner will be re-raised after they have been thrown
-    in the generators.
+    Simplify cleanup by wrapping :func:`next` / :func:`anext` calls and providing facilities to
+    :meth:`throw <generator.throw>` / :meth:`athrow <agen.athrow>` into all generators consecutively. An instance of
+    this class can be used as a contextmanager, which will automatically throw any exceptions into its generators. All
+    exceptions caught in this manner will be re-raised after they have been thrown in the generators.
     """
 
     __slots__ = ("_generators", "_closed")
 
     def __init__(self, generators: Optional[List["AnyGenerator"]] = None) -> None:
-        """Initialize `DependencyCleanupGroup`.
+        """Initialize ``DependencyCleanupGroup``.
 
         Args:
             generators: An optional list of generators to be called at cleanup

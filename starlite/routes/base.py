@@ -108,7 +108,7 @@ class BaseRoute(ABC):
         raise NotImplementedError("Route subclasses must implement handle which serves as the ASGI app entry point")
 
     def create_handler_kwargs_model(self, route_handler: "BaseRouteHandler") -> KwargsModel:
-        """Create a `KwargsModel` for a given route handler."""
+        """Create a ``KwargsModel`` for a given route handler."""
         dependencies = route_handler.resolve_dependencies()
         signature_model = get_signature_model(route_handler)
 

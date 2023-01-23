@@ -95,11 +95,11 @@ class FileSystemProtocol(Protocol):
         """Return a file-like object from the filesystem.
 
         Notes:
-            - The return value must function correctly in a context `with` block.
+            - The return value must function correctly in a context ``with`` block.
 
         Args:
             file: Path to the target file.
-            mode: Mode, similar to the built `open`.
+            mode: Mode, similar to the built ``open``.
             buffering: Buffer size.
         """
         ...
