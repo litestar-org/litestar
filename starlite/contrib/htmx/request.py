@@ -46,6 +46,7 @@ class HtmxDetails:
             split = urlsplit(url)
             if split.scheme == self.request.scope["scheme"] and split.netloc == self.request.headers.get("host"):
                 return urlunsplit(split._replace(scheme="", netloc=""))
+            return None
         return url
 
     @cached_property
