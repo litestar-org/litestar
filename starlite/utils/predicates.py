@@ -61,13 +61,13 @@ def _get_origin(annotation: Any) -> Any:
 
 
 def is_class_and_subclass(value: Any, t_type: Type[T]) -> TypeGuard[Type[T]]:
-    """Return `True` if `value` is a `class` and is a subtype of `t_type`.
+    """Return ``True`` if ``value`` is a ``class`` and is a subtype of ``t_type``.
 
     See https://github.com/starlite-api/starlite/issues/367
 
     Args:
-        value: The value to check if is class and subclass of `t_type`.
-        t_type: Type used for `issubclass()` check of `value`
+        value: The value to check if is class and subclass of ``t_type``.
+        t_type: Type used for :func:`issubclass` check of ``value``
 
     Returns:
         bool
@@ -88,7 +88,7 @@ def is_generic(annotation: Any) -> bool:
     annotation: A type.
 
     Returns:
-        True if the annotation is a subclass of [`Generic`][typing.Generic] otherwise False.
+        True if the annotation is a subclass of :data:`Generic <typing.Generic>` otherwise ``False``.
     """
     return is_class_and_subclass(annotation, Generic)  # type: ignore
 
@@ -100,7 +100,7 @@ def is_mapping(annotation: Any) -> "TypeGuard[Mapping[Any, Any]]":
     annotation: A type.
 
     Returns:
-        A typeguard determining whether the type can be cast as [`Mapping`][typing.Mapping].
+        A typeguard determining whether the type can be cast as :class:`Mapping <typing.Mapping>`.
     """
     _type = _get_origin(annotation) or annotation
     return isclass(_type) and issubclass(_type, (dict, defaultdict, DefaultDict, Mapping))
@@ -113,7 +113,7 @@ def is_non_string_iterable(annotation: Any) -> "TypeGuard[Iterable[Any]]":
     annotation: A type.
 
     Returns:
-        A typeguard determining whether the type can be cast as [`Iterable`][typing.Iterable] that is not a string.
+        A typeguard determining whether the type can be cast as :class:`Iterable <typing.Iterable>` that is not a string.
     """
     origin = _get_origin(annotation)
     if not origin and not isclass(annotation):
@@ -134,7 +134,7 @@ def is_non_string_sequence(annotation: Any) -> "TypeGuard[Sequence[Any]]":
     annotation: A type.
 
     Returns:
-        A typeguard determining whether the type can be cast as [`Sequence`][typing.Sequence] that is not a string.
+        A typeguard determining whether the type can be cast as :class`Sequence <typing.Sequence>` that is not a string.
     """
     origin = _get_origin(annotation)
     if not origin and not isclass(annotation):
@@ -167,7 +167,7 @@ def is_any(annotation: Any) -> "TypeGuard[Any]":
         annotation: A type.
 
     Returns:
-        A typeguard determining whether the type is [`Any`][typing.Any].
+        A typeguard determining whether the type is :data:`Any <typing.Any>`.
     """
     return (
         annotation is Any
@@ -183,7 +183,7 @@ def is_union(annotation: Any) -> "TypeGuard[Union[Any, Any]]":
         annotation: A type.
 
     Returns:
-        A typeguard determining whether the type is [`Union`][typing.Union] with a None value.
+        A typeguard determining whether the type is :data:`Union typing.Union>`.
     """
     return _get_origin(annotation) in UNION_TYPES
 
@@ -195,43 +195,45 @@ def is_optional_union(annotation: Any) -> "TypeGuard[Union[Any, None]]":
         annotation: A type.
 
     Returns:
-        A typeguard determining whether the type is [`Union`][typing.Union] with a None value or [`Optional`][typing.Optional] which is equivalent.
+        A typeguard determining whether the type is :data:`Union typing.Union>` with a
+            None value or :data:`Optional <typing.Optional>` which is equivalent.
     """
     origin = _get_origin(annotation)
     return origin is Optional or (get_origin(annotation) in UNION_TYPES and NoneType in get_args(annotation))
 
 
 def is_dataclass_class(value: Any) -> "TypeGuard[DataclassClass]":
-    """Wrap `is_dataclass()` in a `TypeGuard`, narrowing to type only, not instance.
+    """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`, narrowing to type only, not
+        instance.
 
     Args:
-        value: tested to determine if type of `dataclass`.
+        value: tested to determine if type of :class:`dataclasses.dataclass`.
 
     Returns:
-        `True` if `value` is a `dataclass` type.
+        ``True`` if ``value`` is a ``dataclass`` type.
     """
     return is_dataclass(value) and isinstance(value, type)
 
 
 def is_dataclass_class_or_instance(value: Any) -> "TypeGuard[DataclassClassOrInstance]":
-    """Wrap `is_dataclass()` in a `TypeGuard`.
+    """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`.
 
     Args:
-        value: tested to determine if instance or type of `dataclass`.
+        value: tested to determine if instance or type of :class:`dataclasses.dataclass`.
 
     Returns:
-        `True` if instance or type of `dataclass`.
+        ``True`` if instance or type of ``dataclass``.
     """
     return is_dataclass(value)
 
 
 def is_typed_dict(value: Any) -> "TypeGuard[TypedDictClass]":
-    """Wrap `is_typed_dict()` in a `TypeGuard`.
+    """Wrap :func:`typing.is_typeddict` in a :data:`typing.TypeGuard`.
 
     Args:
-        value: tested to determine if instance or type of `dataclass`.
+        value: tested to determine if instance or type of :class:`typing.TypedDict`.
 
     Returns:
-        `True` if instance or type of `dataclass`.
+        ``True`` if instance or type of ``TypedDict``.
     """
     return is_typeddict(value)
