@@ -1,9 +1,13 @@
+from sys import version_info
+
+import pytest
 from pydantic import BaseModel, Field
 from pydantic_openapi_schema.v3_1_0 import Components, Example, Header
 
 from starlite import OpenAPIConfig, Starlite, get
 
 
+@pytest.mark.skipif(version_info < (3, 10), reason="pydantic serialization differences in lower python versions")
 def test_merged_components_correct() -> None:
     components_one = Components(headers={"one": Header()})
     components_two = Components(headers={"two": Header()})
@@ -21,7 +25,6 @@ def test_merged_components_correct() -> None:
                 "required": False,
                 "deprecated": False,
                 "allowEmptyValue": False,
-                "explode": False,
                 "allowReserved": False,
             },
             "two": {
@@ -30,7 +33,6 @@ def test_merged_components_correct() -> None:
                 "required": False,
                 "deprecated": False,
                 "allowEmptyValue": False,
-                "explode": False,
                 "allowReserved": False,
             },
         },

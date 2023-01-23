@@ -1,11 +1,11 @@
-from typing import Optional, Type
+from typing import Dict, Optional, Union
 from uuid import uuid4
 
 import pytest
 from pydantic import UUID4
-from pydantic.fields import FieldInfo
 
 from starlite import Parameter, get
+from starlite.params import ParameterKwarg
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 
@@ -23,7 +23,9 @@ from starlite.testing import create_test_client
         (Optional[int], {}, Parameter(header="special-header", ge=100, le=120, required=False), False),
     ],
 )
-def test_header_params(t_type: Type, param_dict: dict, param: FieldInfo, should_raise: bool) -> None:
+def test_header_params(
+    t_type: Optional[Union[str, int]], param_dict: Dict[str, str], param: ParameterKwarg, should_raise: bool
+) -> None:
     test_path = "/test"
 
     @get(path=test_path)

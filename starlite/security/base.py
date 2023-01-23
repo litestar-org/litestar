@@ -44,7 +44,8 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
     authentication_middleware_class: Type[AbstractAuthenticationMiddleware]
     """The authentication middleware class to use.
 
-    Must inherit from [AbstractAuthenticationMiddleware][starlite.middleware.authentication.AbstractAuthenticationMiddleware]
+    Must inherit from
+    :class:`AbstractAuthenticationMiddleware <starlite.middleware.authentication.AbstractAuthenticationMiddleware>`
     """
     guards: Optional[Iterable[Guard]] = None
     """An iterable of guards to call for requests, providing authorization functionalities."""
@@ -53,19 +54,21 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
     exclude_opt_key: str = "exclude_from_auth"
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
     scopes: Optional[Scopes] = None
-    """ASGI scopes processed by the authentication middleware, if None both 'http' and 'websocket' will be processed."""
+    """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
+    processed."""
     route_handlers: Optional[Iterable[ControllerRouterHandler]] = None
     """An optional iterable of route handlers to register."""
     dependencies: Optional[Dict[str, Provide]] = None
     """An optional dictionary of dependency providers."""
     retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Optional[Any]]]
-    """Callable that receives the 'auth' value from the authentication middleware and returns a 'user' value.
+    """Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.
 
     Notes:
-    - User and Auth can be any arbitrary values specified by the security backend.
-    - The User and Auth values will be set by the middleware as `scope["user"]` and `scope["auth"]` respectively.
-        Once provided, they can access via the `connection.user` and `connection.auth` properties.
-    - The callable can be sync or async. If it is sync, it will be wrapped to support async.
+        - User and Auth can be any arbitrary values specified by the security backend.
+        - The User and Auth values will be set by the middleware as ``scope["user"]`` and ``scope["auth"]`` respectively.
+          Once provided, they can access via the ``connection.user`` and ``connection.auth`` properties.
+        - The callable can be sync or async. If it is sync, it will be wrapped to support async.
+
     """
 
     def on_app_init(self, app_config: "AppConfig") -> "AppConfig":
@@ -73,10 +76,10 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
         level.
 
         Args:
-            app_config: An instance of [AppConfig][starlite.config.AppConfig]
+            app_config: An instance of :class:`AppConfig <starlite.config.AppConfig>`
 
         Returns:
-            The [AppConfig][starlite.config.AppConfig].
+            The :class:`AppConfig <starlite.config.AppConfig>`.
         """
         app_config.middleware = [self.middleware, *app_config.middleware]
 
@@ -125,7 +128,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
         """Create OpenAPI documentation for the JWT auth schema used.
 
         Returns:
-            An [Components][pydantic_openapi_schema.v3_1_0.components.Components] instance.
+            An :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` instance.
         """
         raise NotImplementedError
 
@@ -134,21 +137,21 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
     def security_requirement(self) -> "SecurityRequirement":  # pragma: no cover
         """Return OpenAPI 3.1.
 
-        [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] for the auth
+        :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
         backend.
 
         Returns:
-            An OpenAPI 3.1 [SecurityRequirement][pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement] dictionary.
+            An OpenAPI 3.1 :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
         """
         raise NotImplementedError
 
     @property
     @abstractmethod
     def middleware(self) -> "DefineMiddleware":  # pragma: no cover
-        """Create an instance of the config's 'authentication_middleware_class' attribute and any required kwargs,
-        wrapping it in Starlite's `DefineMiddleware`.
+        """Create an instance of the config's ``authentication_middleware_class`` attribute and any required kwargs,
+        wrapping it in Starlite's ``DefineMiddleware``.
 
         Returns:
-            An instance of [DefineMiddleware][starlite.middleware.base.DefineMiddleware].
+            An instance of :class:`DefineMiddleware <starlite.middleware.base.DefineMiddleware>`.
         """
         raise NotImplementedError

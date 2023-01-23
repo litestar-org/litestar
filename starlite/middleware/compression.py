@@ -34,7 +34,7 @@ class CompressionFacade:
     compressor: Union["GzipFile", "Compressor"]  # pyright: ignore
 
     def __init__(self, buffer: BytesIO, compression_encoding: CompressionEncoding, config: "CompressionConfig") -> None:
-        """Initialize `CompressionFacade`.
+        """Initialize ``CompressionFacade``.
 
         Args:
             buffer: A bytes IO buffer to write the compressed data into.
@@ -49,18 +49,18 @@ class CompressionFacade:
                 from brotli import MODE_FONT, MODE_GENERIC, MODE_TEXT, Compressor
             except ImportError as e:
                 raise MissingDependencyException("brotli is not installed") from e
-            else:
-                modes: Dict[Literal["generic", "text", "font"], int] = {
-                    "text": int(MODE_TEXT),
-                    "font": int(MODE_FONT),
-                    "generic": int(MODE_GENERIC),
-                }
-                self.compressor = Compressor(
-                    quality=config.brotli_quality,
-                    mode=modes[config.brotli_mode],
-                    lgwin=config.brotli_lgwin,
-                    lgblock=config.brotli_lgblock,
-                )
+
+            modes: Dict[Literal["generic", "text", "font"], int] = {
+                "text": int(MODE_TEXT),
+                "font": int(MODE_FONT),
+                "generic": int(MODE_GENERIC),
+            }
+            self.compressor = Compressor(
+                quality=config.brotli_quality,
+                mode=modes[config.brotli_mode],
+                lgwin=config.brotli_lgwin,
+                lgblock=config.brotli_lgblock,
+            )
         else:
             self.compressor = GzipFile(mode="wb", fileobj=buffer, compresslevel=config.gzip_compress_level)
 
@@ -98,10 +98,10 @@ class CompressionMiddleware(AbstractMiddleware):
     """
 
     def __init__(self, app: "ASGIApp", config: "CompressionConfig") -> None:
-        """Initialize `CompressionMiddleware`
+        """Initialize ``CompressionMiddleware``
 
         Args:
-            app: The 'next' ASGI app to call.
+            app: The ``next`` ASGI app to call.
             config: An instance of CompressionConfig.
         """
         super().__init__(
@@ -152,7 +152,7 @@ class CompressionMiddleware(AbstractMiddleware):
         compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP],
         scope: "Scope",
     ) -> "Send":
-        """Wrap `send` to handle brotli compression.
+        """Wrap ``send`` to handle brotli compression.
 
         Args:
             send: The ASGI send function.

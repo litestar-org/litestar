@@ -109,7 +109,7 @@ def create_exception_html(exc: BaseException, line_limit: int) -> str:
     frames = getinnerframes(exc.__traceback__, line_limit) if exc.__traceback__ else []
     result = []
     for idx, frame in enumerate(reversed(frames)):
-        result.append(create_frame_html(frame=frame, collapsed=(idx > 0)))
+        result.append(create_frame_html(frame=frame, collapsed=idx > 0))
 
     return "".join(result)
 
@@ -119,7 +119,7 @@ def create_html_response_content(exc: Exception, request: "Request", line_limit:
 
     Args:
         exc: An Exception instance to render debug response from.
-        request: A [Request][starlite.connection.Request] instance.
+        request: A :class:`Request <starlite.connection.Request>` instance.
         line_limit: Number of lines of code context to return, which are centered around the executed line.
 
     Returns:
@@ -165,7 +165,7 @@ def create_debug_response(request: "Request", exc: Exception) -> Response:
     """Create debug response either in plain text or HTML depending on client capabilities.
 
     Args:
-        request: A [Request][starlite.connection.Request] instance.
+        request: A :class:`Request <starlite.connection.Request>` instance.
         exc: An Exception instance to render debug response from.
 
     Returns:

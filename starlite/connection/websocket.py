@@ -55,7 +55,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
     """The ASGI send function."""
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
-        """Initialize `WebSocket`.
+        """Initialize ``WebSocket``.
 
         Args:
             scope: The ASGI connection scope.
@@ -66,7 +66,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         self.connection_state: Literal["init", "connect", "receive", "disconnect"] = "init"
 
     def receive_wrapper(self, receive: "Receive") -> "Receive":
-        """Wrap 'receive' to set 'self.connection_state' and validate events.
+        """Wrap ``receive`` to set 'self.connection_state' and validate events.
 
         Args:
             receive: The ASGI receive function.
@@ -90,7 +90,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         return wrapped_receive
 
     def send_wrapper(self, send: "Send") -> "Send":
-        """Wrap `send` to ensure that state is not disconnected.
+        """Wrap ``send`` to ensure that state is not disconnected.
 
         Args:
             send: The ASGI send function.
@@ -152,25 +152,11 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
 
     @overload
     async def receive_data(self, mode: Literal["text"]) -> str:
-        """Overload of receive_data.
-
-        Args:
-            mode: Literal value 'text'
-
-        Returns:
-            A string.
-        """
+        ...
 
     @overload
     async def receive_data(self, mode: Literal["binary"]) -> bytes:
-        """Overload of receive_data.
-
-        Args:
-            mode: Literal value 'binary'
-
-        Returns:
-            A byte-string.
-        """
+        ...
 
     async def receive_data(self, mode: Literal["binary", "text"]) -> Union[str, bytes]:
         """Receive an 'websocket.receive' event and returns the data stored on it.
@@ -213,7 +199,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
         """Receive data and loads it into JSON using orson.
 
         Args:
-            mode: Either 'text' or 'binary'.
+            mode: Either ``text`` or ``binary``.
 
         Returns:
             An arbitrary value
@@ -245,16 +231,14 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
 
     @overload
     async def send_text(self, data: bytes, encoding: str = "utf-8") -> None:
-        """Overload."""
         ...
 
     @overload
     async def send_text(self, data: str) -> None:
-        """Overload."""
         ...
 
     async def send_text(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
-        """Send data using the 'text' key of the send event.
+        """Send data using the ``text`` key of the send event.
 
         Args:
             data: Data to send
@@ -267,16 +251,14 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
 
     @overload
     async def send_bytes(self, data: bytes) -> None:
-        """Overload."""
         ...
 
     @overload
     async def send_bytes(self, data: str, encoding: str = "utf-8") -> None:
-        """Overload."""
         ...
 
     async def send_bytes(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
-        """Send data using the 'bytes' key of the send event.
+        """Send data using the ``bytes`` key of the send event.
 
         Args:
             data: Data to send
@@ -298,7 +280,7 @@ class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", Use
 
         Args:
             data: A value to serialize.
-            mode: Either 'text' or 'binary'.
+            mode: Either ``text`` or ``binary``.
             encoding: Encoding to use for binary data.
             serializer: A serializer function.
 

@@ -40,16 +40,16 @@ def get_starlite_scope_state(scope: "Scope", key: str, default: Any = Empty) -> 
         If called with a default value, this method behaves like to `dict.set_default()`, both setting the key in the
         namespace to the default value, and returning it.
 
-        If called without a default value, the method behaves like `dict.get()`, returning `None` if the key does not
+        If called without a default value, the method behaves like `dict.get()`, returning ``None`` if the key does not
         exist.
 
     Args:
         scope: The connection scope.
         key: Key to get from internal namespace in scope state.
-        default: Value set in internal namespace and returned if `key` doesn't exist.
+        default: Value set in internal namespace and returned if ``key`` doesn't exist.
 
     Returns:
-        Value mapped to `key` in internal connection scope namespace.
+        Value mapped to ``key`` in internal connection scope namespace.
     """
     namespace = scope["state"].setdefault(SCOPE_STATE_NAMESPACE, {})
     if default is Empty:

@@ -22,12 +22,8 @@ from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
 from starlite.response import Response as StarliteResponse
-from starlite.utils import (
-    create_parsed_model_field,
-    get_enum_string_value,
-    get_name,
-    is_class_and_subclass,
-)
+from starlite.signature.models import SignatureField
+from starlite.utils import get_enum_string_value, get_name, is_class_and_subclass
 
 if TYPE_CHECKING:
 
@@ -68,6 +64,7 @@ def create_success_response(
         or default_descriptions.get(signature.return_annotation)
         or HTTPStatus(route_handler.status_code).description
     )
+
     if signature.return_annotation not in {signature.empty, None, Redirect, File, Stream}:
         return_annotation = signature.return_annotation
         if signature.return_annotation is Template:
@@ -75,8 +72,12 @@ def create_success_response(
             route_handler.media_type = get_enum_string_value(MediaType.HTML)
         elif is_class_and_subclass(get_origin(signature.return_annotation), StarliteResponse):
             return_annotation = get_args(signature.return_annotation)[0] or Any
-        as_parsed_model_field = create_parsed_model_field(return_annotation)
-        schema = create_schema(field=as_parsed_model_field, generate_examples=generate_examples, plugins=plugins)
+
+        schema = create_schema(
+            field=SignatureField.create(field_type=return_annotation),
+            generate_examples=generate_examples,
+            plugins=plugins,
+        )
         schema.contentEncoding = route_handler.content_encoding
         schema.contentMediaType = route_handler.content_media_type
         response = Response(
@@ -87,6 +88,7 @@ def create_success_response(
             },
             description=description,
         )
+
     elif signature.return_annotation is Redirect:
         response = Response(
             content=None,
@@ -97,6 +99,7 @@ def create_success_response(
                 )
             },
         )
+
     elif signature.return_annotation in (File, Stream):
         response = Response(
             content={
@@ -120,29 +123,37 @@ def create_success_response(
                 "etag": Header(param_schema=Schema(type=OpenAPIType.STRING), description="Entity tag"),
             },
         )
+
     else:
         response = Response(
             content=None,
             description=description,
         )
+
     if response.headers is None:
         response.headers = {}
+
     for key, value in route_handler.resolve_response_headers().items():
         header = Header()
         for attribute_name, attribute_value in value.dict(exclude_none=True).items():
             if attribute_name == "value":
-                model_field = create_parsed_model_field(type(attribute_value))
-                header.param_schema = create_schema(field=model_field, generate_examples=False, plugins=plugins)
+                header.param_schema = create_schema(
+                    field=SignatureField.create(field_type=type(attribute_value)),
+                    generate_examples=False,
+                    plugins=plugins,
+                )
+
             elif attribute_name != "documentation_only":
                 setattr(header, attribute_name, attribute_value)
         response.headers[key] = header
-    cookies = route_handler.resolve_response_cookies()
-    if cookies:
+
+    if cookies := route_handler.resolve_response_cookies():
         response.headers["Set-Cookie"] = Header(
             param_schema=Schema(
                 allOf=[create_cookie_schema(cookie=cookie) for cookie in sorted(cookies, key=attrgetter("key"))]
             )
         )
+
     return response
 
 
@@ -188,9 +199,11 @@ def create_additional_responses(
         return
 
     for status_code, additional_response in route_handler.responses.items():
-        model_field = create_parsed_model_field(additional_response.model)
+
         schema = create_schema(
-            field=model_field, generate_examples=additional_response.generate_examples, plugins=plugins
+            field=SignatureField.create(field_type=additional_response.model),
+            generate_examples=additional_response.generate_examples,
+            plugins=plugins,
         )
         yield str(status_code), Response(
             description=additional_response.description,
@@ -205,6 +218,7 @@ def create_responses(
     plugins: List["PluginProtocol"],
 ) -> Optional["Responses"]:
     """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
+
     responses: "Responses" = {
         str(route_handler.status_code): create_success_response(
             route_handler=route_handler,
@@ -212,6 +226,7 @@ def create_responses(
             plugins=plugins,
         ),
     }
+
     exceptions = route_handler.raises or []
     if raises_validation_error and ValidationException not in exceptions:
         exceptions.append(ValidationException)

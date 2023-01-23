@@ -15,8 +15,7 @@ from starlite import (
     post,
     websocket,
 )
-from starlite.constants import RESERVED_KWARGS
-from starlite.signature import SKIP_VALIDATION_NAMES
+from starlite.constants import RESERVED_KWARGS, SKIP_VALIDATION_NAMES
 
 
 def my_dependency() -> int:

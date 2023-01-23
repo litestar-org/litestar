@@ -56,7 +56,7 @@ jobs:
         run: poetry run pytest
       - name: Test with Coverage
         if: matrix.python-version == '3.11'
-        run: poetry run pytest examples tests --cov=starlite --cov-report=xml
+        run: poetry run pytest docs/examples tests --cov=starlite --cov-report=xml
       - uses: actions/upload-artifact@v3
         if: matrix.python-version == '3.11'
         with:

@@ -1,0 +1,91 @@
+from typing import Any, List
+
+import pytest
+from pydantic_openapi_schema.v3_1_0 import Schema
+
+from starlite.openapi.enums import OpenAPIType
+from starlite.openapi.typescript_converter.schema_parsing import parse_schema
+from starlite.openapi.typescript_converter.types import TypeScriptIntersection
+
+object_schema_1 = Schema(
+    type=OpenAPIType.OBJECT,
+    properties={
+        "first_1": Schema(
+            type=OpenAPIType.STRING,
+        ),
+        "second_1": Schema(type=[OpenAPIType.NUMBER, OpenAPIType.NULL]),
+    },
+    required=["first_1"],
+)
+
+object_schema_2 = Schema(
+    type=OpenAPIType.OBJECT,
+    properties={
+        "first_2": Schema(
+            type=OpenAPIType.BOOLEAN,
+        ),
+        "second_2": Schema(
+            type=OpenAPIType.INTEGER,
+        ),
+    },
+    required=["first_2"],
+)
+
+string_schema = Schema(type=[OpenAPIType.STRING])
+number_schema = Schema(type=[OpenAPIType.NUMBER])
+nullable_integer_schema = Schema(type=[OpenAPIType.INTEGER, OpenAPIType.NULL])
+array_schema = Schema(type=OpenAPIType.ARRAY, items=Schema(oneOf=[object_schema_1, object_schema_2]))
+
+
+def test_parse_schema_handle_all_of() -> None:
+    result = parse_schema(Schema(allOf=[object_schema_1, object_schema_2]))
+    assert isinstance(result, TypeScriptIntersection)
+    assert (
+        result.write()
+        == "{\n\tfirst_1: string;\n\tsecond_1?: null | number;\n} & {\n\tfirst_2: boolean;\n\tsecond_2?: number;\n}"
+    )
+
+
+def test_parse_schema_handle_one_of() -> None:
+    result = parse_schema(
+        Schema(oneOf=[object_schema_1, object_schema_2, number_schema, string_schema, nullable_integer_schema])
+    )
+    assert (
+        result.write() == "null | number | number | string | {\n"
+        "\tfirst_1: string;\n"
+        "\tsecond_1?: null | number;\n"
+        "} | {\n"
+        "\tfirst_2: boolean;\n"
+        "\tsecond_2?: number;\n"
+        "}"
+    )
+
+
+def test_parse_schema_handle_array() -> None:
+    result = parse_schema(array_schema)
+    assert (
+        result.write()
+        == "({\n\tfirst_1: string;\n\tsecond_1?: null | number;\n} | {\n\tfirst_2: boolean;\n\tsecond_2?: number;\n})[]"
+    )
+
+
+def test_parse_schema_handle_object() -> None:
+    result = parse_schema(object_schema_1)
+    assert result.write() == "{\n\tfirst_1: string;\n\tsecond_1?: null | number;\n}"
+
+
+@pytest.mark.parametrize(
+    "schema_type, enum, expected",
+    (
+        (OpenAPIType.STRING, ["a", "b", "c"], '"a" | "b" | "c"'),
+        (OpenAPIType.NUMBER, [1, 2, 3], "1 | 2 | 3"),
+        (
+            [OpenAPIType.NULL, OpenAPIType.BOOLEAN, OpenAPIType.STRING],
+            [None, True, False, "moishe"],
+            '"moishe" | false | null | true',
+        ),
+    ),
+)
+def test_parse_schema_handle_enum(schema_type: Any, enum: List[Any], expected: str) -> None:
+    result = parse_schema(Schema(type=schema_type, enum=enum))
+    assert result.write() == expected

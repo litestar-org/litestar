@@ -37,12 +37,12 @@ class HTTPException(StarLiteException):
         headers: Optional[Dict[str, str]] = None,
         extra: Optional[Union[Dict[str, Any], List[Any]]] = None,
     ) -> None:
-        """Initialize `HTTPException`.
+        """Initialize ``HTTPException``.
 
-        Set `detail` and `args` if not provided.
+        Set ``detail`` and ``args`` if not provided.
 
         Args:
-            *args: if `detail` kwarg not provided, first arg should be error detail.
+            *args: if ``detail`` kwarg not provided, first arg should be error detail.
             detail: Exception details or message. Will default to args[0] if not provided.
             status_code: Exception HTTP status code.
             headers: Headers to set on the response.
@@ -128,10 +128,10 @@ class TemplateNotFoundException(InternalServerException):
     """Referenced template could not be found."""
 
     def __init__(self, *args: Any, template_name: str) -> None:
-        """Initialize `TemplateNotFoundException`.
+        """Initialize ``TemplateNotFoundException``.
 
         Args:
-            *args (Any): Passed through to `super().__init__()` - should not include `detail`.
+            *args (Any): Passed through to ``super().__init__()`` - should not include ``detail``.
             template_name (str): Name of template that could not be found.
         """
         super().__init__(*args, detail=f"Template {template_name} not found.")

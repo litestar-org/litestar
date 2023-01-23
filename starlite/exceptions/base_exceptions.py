@@ -7,10 +7,10 @@ class StarLiteException(Exception):
     detail: str
 
     def __init__(self, *args: Any, detail: str = "") -> None:
-        """Initialize `StarLiteException`.
+        """Initialize ``StarLiteException``.
 
         Args:
-            *args (Any): args are cast to `str` before passing to `Exception.__init__()`
+            *args (Any): args are cast to ``str`` before passing to `Exception.__init__()`
             detail (str, optional): detail of the exception.
         """
         self.detail = detail

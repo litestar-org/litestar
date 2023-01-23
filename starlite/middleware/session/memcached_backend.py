@@ -12,13 +12,14 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
     __slots__ = ("memcached",)
 
     def __init__(self, config: "MemcachedBackendConfig") -> None:
-        """Initialize `MemcachedBackend`
+        """Initialize ``MemcachedBackend``
 
         Args:
-            config: A `MemcachedBackendConfig` instance
+            config: A ``MemcachedBackendConfig`` instance
 
         Notes:
-            - Requires `aiomcache`. Install with `pip install starlite[memcached]`
+            - Requires ``aiomcache``. Install with ``pip install starlite[memcached]``
+
         """
         super().__init__(config=config)
         self.memcached = config.memcached
@@ -27,19 +28,19 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         return f"{self.config.key_prefix}:{session_id}".encode()
 
     async def get(self, session_id: str) -> Optional[bytes]:
-        """Retrieve data associated with `session_id` from memcached.
+        """Retrieve data associated with ``session_id`` from memcached.
 
         Args:
             session_id: The session-ID
 
         Returns:
-            The session data, if existing, otherwise `None`.
+            The session data, if existing, otherwise ``None``.
         """
         return await self.memcached.get(key=self._id_to_storage_key(session_id))
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` in memcached under `<prefix>:<session_id>`. If there is already data associated with
-        `session_id`, replace it with `data` and reset its expiry time.
+        """Store ``data`` in memcached under ``<prefix>:<session_id>``. If there is already data associated with
+        ``session_id``, replace it with ``data`` and reset its expiry time.
 
         Args:
             session_id: The session-ID
@@ -51,7 +52,7 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
         await self.memcached.set(key=self._id_to_storage_key(session_id), value=data, exptime=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id`. Fail silently if no such session-ID exists.
+        """Delete the data associated with ``session_id``. Fail silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID
@@ -75,7 +76,8 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
             This has poor performance since memcached does not offer utilities to
             properly scan or match keys by prefix.
 
-        !!! important "Deprecated since 1.43.0"
+        .. deprecated:: 1.43.0
+
             This method is deprecated since 1.43.0. If you need this functionality,
             consider using the redis backend instead.
         """
@@ -95,11 +97,11 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
 
 
 class MemcachedBackendConfig(ServerSideSessionConfig):
-    """Configuration for `MemcachedBackend`"""
+    """Configuration for ``MemcachedBackend``"""
 
     _backend_class: Type[MemcachedBackend] = MemcachedBackend
 
     memcached: MemcacheClient
-    """An `aiomcache.Client` instance."""
+    """An ``aiomcache.Client`` instance."""
     key_prefix: str = "STARLITE_SESSION"
-    """Prefix to store data under after the schema of `<prefix>:<session-ID>`"""
+    """Prefix to store data under after the schema of ``<prefix>:<session-ID>``"""

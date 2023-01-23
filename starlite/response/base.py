@@ -87,11 +87,11 @@ class Response(Generic[T]):
             content: A value for the response body that will be rendered into bytes string.
             status_code: An HTTP status code.
             media_type: A value for the response 'Content-Type' header.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under
+            cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances to be set under
                 the response 'Set-Cookie' header.
             encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
@@ -129,13 +129,13 @@ class Response(Generic[T]):
     @deprecated(
         "1.48.0",
         pending=True,
-        info="Set `type_encoders` on a higher layer "
-        "instead or pass `type_encoders` to the `Response` instance directly",
+        info="Set ``type_encoders`` on a higher layer "
+        "instead or pass ``type_encoders`` to the ``Response`` instance directly",
     )
     def serializer(cls, value: Any) -> Any:  # pragma: no cover
         """Transform non-natively supported types into supported types.
 
-        Should raise `TypeError` if a type cannot be transformed into a supported type
+        Should raise ``TypeError`` if a type cannot be transformed into a supported type
         """
         return default_serializer(value, cls.type_encoders)
 
@@ -143,11 +143,11 @@ class Response(Generic[T]):
     def get_serializer(cls, type_encoders: Optional["TypeEncodersMap"] = None) -> "Serializer":
         """Get the serializer for this response class.
 
-        If `Response.serializer` is not overridden in a subclass, use `default_serializer` and pass `type_encoders` to
+        If `Response.serializer` is not overridden in a subclass, use ``default_serializer`` and pass ``type_encoders`` to
         it.
         """
-        # check if `serializer` has been overridden. This is temporary workaround to
-        # support the deprecated `serializer` until its removal
+        # check if ``serializer`` has been overridden. This is temporary workaround to
+        # support the deprecated ``serializer`` until its removal
         for klass in cls.__mro__:
             if klass is Response:
                 continue
@@ -191,11 +191,11 @@ class Response(Generic[T]):
         httponly: bool = False,
         samesite: Literal["lax", "strict", "none"] = "lax",
     ) -> None:
-        """Set a cookie on the response. If passed a [Cookie][starlite.Cookie] instance, keyword arguments will be
+        """Set a cookie on the response. If passed a :class:`Cookie <starlite.Cookie>` instance, keyword arguments will be
         ignored.
 
         Args:
-            key: Key for the cookie or a [Cookie][starlite.Cookie] instance.
+            key: Key for the cookie or a :class:`Cookie <starlite.Cookie>` instance.
             value: Value for the cookie, if none given defaults to empty string.
             max_age: Maximal age of the cookie before its invalidated.
             expires: Expiration date as unix MS timestamp.
@@ -203,7 +203,7 @@ class Response(Generic[T]):
             domain: Domain for which the cookie is valid.
             secure: Https is required for the cookie.
             httponly: Forbids javascript to access the cookie via 'Document.cookie'.
-            samesite: Controls whether a cookie is sent with cross-site requests. Defaults to 'lax'.
+            samesite: Controls whether a cookie is sent with cross-site requests. Defaults to ``lax``.
 
         Returns:
             None.
@@ -294,7 +294,7 @@ class Response(Generic[T]):
 
         Returns:
             The content length of the body (e.g. for use in a "Content-Length" header).
-            If the response does not have a body, this value is `None`
+            If the response does not have a body, this value is ``None``
         """
         if self.status_allows_body:
             return len(self.body)
@@ -368,7 +368,7 @@ class Response(Generic[T]):
         await send(event)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-        """ASGI callable of the `Response`.
+        """ASGI callable of the ``Response``.
 
         Args:
             scope: The ASGI connection scope.

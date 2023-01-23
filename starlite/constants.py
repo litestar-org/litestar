@@ -1,10 +1,12 @@
+from inspect import Signature
+
+from msgspec.inspect import UNSET
+from pydantic.fields import Undefined
+
+from starlite.types import Empty
+
 DEFAULT_ALLOWED_CORS_HEADERS = {"Accept", "Accept-Language", "Content-Language", "Content-Type"}
 DEFAULT_CHUNK_SIZE = 1024 * 128  # 128KB
-EXTRA_KEY_IS_DEPENDENCY = "is_dependency"
-EXTRA_KEY_IS_PARAMETER = "is_parameter"
-EXTRA_KEY_REQUIRED = "required"
-EXTRA_KEY_SKIP_VALIDATION = "skip_validation"
-EXTRA_KEY_VALUE_TYPE = "value_type"
 HTTP_RESPONSE_BODY = "http.response.body"
 HTTP_RESPONSE_START = "http.response.start"
 ONE_MEGABYTE = 1024 * 1024
@@ -13,3 +15,5 @@ RESERVED_KWARGS = {"state", "headers", "cookies", "request", "socket", "data", "
 SCOPE_STATE_DEPENDENCY_CACHE = "dependency_cache"
 SCOPE_STATE_NAMESPACE = "__starlite__"
 SCOPE_STATE_RESPONSE_COMPRESSED = "response_compressed"
+UNDEFINED_SENTINELS = {Undefined, Signature.empty, UNSET, Empty, Ellipsis}
+SKIP_VALIDATION_NAMES = {"request", "socket", "scope", "receive", "send"}
