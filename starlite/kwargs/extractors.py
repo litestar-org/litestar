@@ -301,9 +301,9 @@ def create_multipart_extractor(
             )
         )
 
-        if signature_field.is_sequence:
+        if signature_field.is_non_string_sequence:
             return list(form_values.values())
-        if signature_field.is_singleton and signature_field.field_type is UploadFile and form_values:
+        if signature_field.is_simple_type and signature_field.field_type is UploadFile and form_values:
             return [v for v in form_values.values() if isinstance(v, UploadFile)][0]
 
         return form_values if form_values or not is_data_optional else None

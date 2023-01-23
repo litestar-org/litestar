@@ -39,9 +39,7 @@ class ParsedSignatureParameter(NamedTuple):
     optional: bool
 
     @classmethod
-    def create_from_parameter(
-        cls, fn_name: str, parameter_name: str, parameter: Parameter
-    ) -> "ParsedSignatureParameter":
+    def from_parameter(cls, fn_name: str, parameter_name: str, parameter: Parameter) -> "ParsedSignatureParameter":
         """Initialize ParsedSignatureParameter.
 
         Args:
@@ -132,7 +130,7 @@ def parse_fn_signature(
     dependency_names: Set[str] = set()
 
     for parameter in (
-        ParsedSignatureParameter.create_from_parameter(parameter=parameter, parameter_name=name, fn_name=fn_name)
+        ParsedSignatureParameter.from_parameter(parameter=parameter, parameter_name=name, fn_name=fn_name)
         for name, parameter in signature.parameters.items()
         if name not in ("self", "cls")
     ):

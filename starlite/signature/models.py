@@ -74,12 +74,12 @@ class SignatureField:
         return is_mapping(self.field_type)
 
     @property
-    def is_iterable(self) -> bool:
+    def is_non_string_iterable(self) -> bool:
         """Check if the field type is an Iterable."""
         return is_non_string_iterable(self.field_type)
 
     @property
-    def is_sequence(self) -> bool:
+    def is_non_string_sequence(self) -> bool:
         """Check if the field type is a non-string Sequence."""
         return is_non_string_sequence(self.field_type)
 
@@ -99,9 +99,11 @@ class SignatureField:
         return is_generic(self.field_type)
 
     @property
-    def is_singleton(self) -> bool:
+    def is_simple_type(self) -> bool:
         """Check if the field type is a singleton value (e.g. int, str etc.)."""
-        return not (self.is_generic or self.is_optional or self.is_union or self.is_mapping or self.is_iterable)
+        return not (
+            self.is_generic or self.is_optional or self.is_union or self.is_mapping or self.is_non_string_iterable
+        )
 
     @property
     def is_parameter_field(self) -> bool:

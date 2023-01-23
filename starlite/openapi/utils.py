@@ -23,7 +23,7 @@ def get_openapi_type_for_complex_type(field: "SignatureField") -> "OpenAPIType":
     """
     if field.is_mapping:
         return OpenAPIType.OBJECT
-    if field.is_sequence or field.is_iterable:
+    if field.is_non_string_sequence or field.is_non_string_iterable:
         return OpenAPIType.ARRAY
 
     raise ImproperlyConfiguredException(  # pragma: no cover
