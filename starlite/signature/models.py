@@ -135,7 +135,7 @@ class SignatureField:
 
         Args:
             field_type: The type of the kwarg.
-            name:  Field name.
+            name: Field name.
             default_value: A default value.
             children: A mapping of subtypes, if any.
             kwarg_model: Kwarg Parameter.
