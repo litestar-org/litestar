@@ -56,7 +56,7 @@ controller methods. The handler can then be registered on an application or rout
                ...
 
 
-           app = Starlite([get])
+           app = Starlite([index])
 
 
 ..  seealso::
