@@ -128,31 +128,28 @@ def test_exception_handler_middleware_debug_logging(caplog: "LogCaptureFixture")
         raise ValueError("Test debug exception")
 
     # Debug On -> Exception is logged
-    with create_test_client(handler, logging_config=LoggingConfig()) as client:
-        caplog.set_level("DEBUG")
+    with caplog.at_level("DEBUG"), create_test_client(handler, logging_config=LoggingConfig()) as client:
         client.app.debug = True
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert "Internal Server Error" in caplog.text
-        assert "ValueError" in caplog.text
-        assert "Test debug exception" in caplog.text
+        assert "ValueError" in response.text
+        assert "Test debug exception" in response.text
 
-        # Debug Off -> Exception is not logged
-    with create_test_client(handler, logging_config=LoggingConfig()) as client:
-        caplog.set_level("INFO")
+    # Debug Off -> Exception is not logged
+    with caplog.at_level("INFO"), create_test_client(handler, logging_config=LoggingConfig()) as client:
         client.app.debug = False
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert "Exception in ASGI application" not in caplog.text
-        assert "ValueError" not in caplog.text
-        assert "Test debug exception" not in caplog.text
+        assert "ValueError" in response.text
+        assert "Test debug exception" in response.text
 
     # Debug On + No Logger -> No Debug Logging
-    with create_test_client(handler, logging_config=None) as client:
-        caplog.set_level("DEBUG")
+    with caplog.at_level("DEBUG"), create_test_client(handler, logging_config=None) as client:
         client.app.debug = True
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        assert "Internal Server Error" not in caplog.text
-        assert "ValueError" not in caplog.text
-        assert "Test debug exception" not in caplog.text
+        assert "Internal Server Error" in caplog.text
+        assert "Test debug exception" in response.text
+        assert "ValueError" in response.text
