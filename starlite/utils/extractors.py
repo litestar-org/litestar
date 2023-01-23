@@ -64,9 +64,7 @@ class ExtractedRequestData(TypedDict, total=False):
 
 
 class ConnectionDataExtractor:
-    """Utility class to extract data from an.
-
-    :class:`ASGIConnection <starlite.connection.ASGIConnection>`,
+    """Utility class to extract data from an :class:`ASGIConnection <starlite.connection.ASGIConnection>`,
     :class:`Request <starlite.connection.Request>` or :class:`WebSocket <starlite.connection.WebSocket>` instance.
     """
 

@@ -26,8 +26,8 @@ from starlite.utils import (
     convert_dataclass_to_model,
     convert_typeddict_to_model,
     is_async_callable,
-    is_dataclass_class_or_instance_typeguard,
-    is_typeddict_typeguard,
+    is_dataclass_class_or_instance,
+    is_typed_dict,
 )
 
 if TYPE_CHECKING:
@@ -262,9 +262,9 @@ class DTOFactory:
         if issubclass(source, BaseModel):
             source.update_forward_refs()
             fields = source.__fields__
-        elif is_dataclass_class_or_instance_typeguard(source):
+        elif is_dataclass_class_or_instance(source):
             fields = convert_dataclass_to_model(source).__fields__
-        elif is_typeddict_typeguard(source):
+        elif is_typed_dict(source):
             fields = convert_typeddict_to_model(source).__fields__
 
         if fields:
