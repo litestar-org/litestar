@@ -150,7 +150,7 @@ This is equivalent to:
 ## Testing multiple python versions
 
 Since the library needs to be compatible with older versions of python as well, it can be useful to run tests locally
-against different python versions. To achieve this you can use the `tox` config that is included by doing the following.
+against different python versions. To achieve this you can use the following.
 
 1. Install [pyenv](https://github.com/pyenv/pyenv).
 2. Install required python versions via pyenv, e.g., `$ pyenv install 3.x.x` for each required version.
@@ -159,22 +159,6 @@ against different python versions. To achieve this you can use the `tox` config 
 5. Remove any existing poetry environment: `$ poetry env remove python`
 6. Tell poetry to use system python: `$ poetry env use system`
 7. Install the dependencies `$ poetry install`
-
-### Tox Commands
-
-- Run: `$ poetry run tox`
-- Force recreate tox environments: `$ poetry run tox -r`
-- Run specific tox environment: `$ poetry run tox -e py37`
-- Run all pre-commit checks: `$ poetry run tox -e all-checks`
-  - Run on specific files/directories: `$ poetry run tox -e all-checks starlite/cache/**`
-- Run pylint from pre-commit: `$ poetry run tox -e lint`
-  - Run on specific files/directories: `$ poetry run tox -e lint starlite/cache/**`
-- Run formatting pre-commit hooks: `$ poetry run tox -e fmt`
-- Run type-check from pre-commit: `$ poetry run tox -e typecheck`
-- Build docs locally: `$ poetry run tox -e docs`
-
-Note that these commands may be quite slow to run the first time as environments are created and dependencies installed,
-but subsequent runs should be much faster.
 
 ### Checking test coverage
 
