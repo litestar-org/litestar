@@ -24,10 +24,8 @@ from starlite.utils.predicates import (
 
 @dataclass(unsafe_hash=True, frozen=True)
 class SignatureField:
-    """Abstraction representing a model field. This class is meant to replace equivalent datastructures in other
-    libraries.
-
-    - for example, in pydantic and msgspec.
+    """Abstraction representing a model field. This class is meant to replace equivalent datastructures from, other
+    libraries, for example, pydantic or msgspec.
     """
 
     __slots__ = (
