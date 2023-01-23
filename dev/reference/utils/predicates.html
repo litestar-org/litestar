@@ -370,6 +370,7 @@
 <dt class="sig sig-object py" id="starlite.utils.predicates.is_class_and_subclass">
 <span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_class_and_subclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_class_and_subclass" title="Permalink to this definition">#</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">value</span></code> is a <code class="docutils literal notranslate"><span class="pre">class</span></code> and is a subtype of <code class="docutils literal notranslate"><span class="pre">t_type</span></code>.</p>
+<p>See <a class="reference external" href="https://github.com/starlite-api/starlite/issues/367">https://github.com/starlite-api/starlite/issues/367</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -384,23 +385,114 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="starlite.utils.predicates.is_optional_union">
-<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_optional_union</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#starlite.utils.predicates.is_optional_union" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="starlite.utils.predicates.is_generic">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_generic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#starlite.utils.predicates.is_generic" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a type annotation determine if the annotation is a generic class.</p>
+<p>Args:
+annotation: A type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the annotation is a subclass of <code class="xref py py-data docutils literal notranslate"><span class="pre">Generic</span></code> otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.utils.predicates.is_mapping">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_mapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a type annotation determine if the annotation is a mapping type.</p>
+<p>Args:
+annotation: A type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A typeguard determining whether the type can be cast as <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.utils.predicates.is_non_string_iterable">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_non_string_iterable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.11)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_non_string_iterable" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a type annotation determine if the annotation is an iterable.</p>
+<p>Args:
+annotation: A type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A typeguard determining whether the type can be cast as <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a> that is not a string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.utils.predicates.is_non_string_sequence">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_non_string_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_non_string_sequence" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a type annotation determine if the annotation is a sequence.</p>
+<p>Args:
+annotation: A type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>class`Sequence &lt;typing.Sequence&gt;` that is not a string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>A typeguard determining whether the type can be cast as</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.utils.predicates.is_any">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_any</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_any" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a type annotation determine if the annotation is Any.</p>
+<blockquote>
+<div><p>Args:
+annotation: A type.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A typeguard determining whether the type is <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.utils.predicates.is_union">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_union</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_union" title="Permalink to this definition">#</a></dt>
 <dd><p>Given a type annotation determine if the annotation infers an optional union.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>annotation</strong> – A type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True for a union, False otherwise.</p>
+<dd class="field-even"><p>A typeguard determining whether the type is <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span> <span class="pre">typing.Union&gt;</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="starlite.utils.predicates.is_dataclass_class_typeguard">
-<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_dataclass_class_typeguard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TypeGuard</span><span class="p"><span class="pre">[</span></span><span class="pre">DataclassClass</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_dataclass_class_typeguard" title="Permalink to this definition">#</a></dt>
-<dd><p>Wrap <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.is_dataclass" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses.is_dataclass()</span></code></a> in a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">typing.TypeGuard</span></code></a>, narrowing to type only, not instance.</p>
+<dt class="sig sig-object py" id="starlite.utils.predicates.is_optional_union">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_optional_union</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_optional_union" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a type annotation determine if the annotation infers an optional union.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>annotation</strong> – A type.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A typeguard determining whether the type is <code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span> <span class="pre">typing.Union&gt;</span></code> with a</dt><dd><p>None value or <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a> which is equivalent.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.utils.predicates.is_dataclass_class">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_dataclass_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TypeGuard</span><span class="p"><span class="pre">[</span></span><span class="pre">DataclassClass</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_dataclass_class" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Wrap <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.is_dataclass" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_dataclass</span></code></a> in a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">typing.TypeGuard</span></code></a>, narrowing to type only, not</dt><dd><p>instance.</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>value</strong> – tested to determine if type of <code class="xref py py-class docutils literal notranslate"><span class="pre">dataclasses.dataclass</span></code>.</p>
@@ -412,12 +504,12 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="starlite.utils.predicates.is_dataclass_class_or_instance_typeguard">
-<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_dataclass_class_or_instance_typeguard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TypeGuard</span><span class="p"><span class="pre">[</span></span><span class="pre">DataclassClassOrInstance</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_dataclass_class_or_instance_typeguard" title="Permalink to this definition">#</a></dt>
-<dd><p>Wrap <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.is_dataclass" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">dataclasses.is_dataclass()</span></code></a> in a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">typing.TypeGuard</span></code></a>.</p>
+<dt class="sig sig-object py" id="starlite.utils.predicates.is_dataclass_class_or_instance">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_dataclass_class_or_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TypeGuard</span><span class="p"><span class="pre">[</span></span><span class="pre">DataclassClassOrInstance</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_dataclass_class_or_instance" title="Permalink to this definition">#</a></dt>
+<dd><p>Wrap <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html#dataclasses.is_dataclass" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_dataclass</span></code></a> in a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">typing.TypeGuard</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> – tested to determine if instance or type of <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>.</p>
+<dd class="field-odd"><p><strong>value</strong> – tested to determine if instance or type of <code class="xref py py-class docutils literal notranslate"><span class="pre">dataclasses.dataclass</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if instance or type of <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>.</p>
@@ -426,15 +518,15 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="starlite.utils.predicates.is_typeddict_typeguard">
-<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_typeddict_typeguard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TypeGuard</span><span class="p"><span class="pre">[</span></span><span class="pre">TypedDictClass</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_typeddict_typeguard" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="starlite.utils.predicates.is_typed_dict">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.predicates.</span></span><span class="sig-name descname"><span class="pre">is_typed_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TypeGuard</span><span class="p"><span class="pre">[</span></span><span class="pre">TypedDictClass</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.predicates.is_typed_dict" title="Permalink to this definition">#</a></dt>
 <dd><p>Wrap <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.is_typeddict" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">typing.is_typeddict()</span></code></a> in a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><code class="xref py py-data docutils literal notranslate"><span class="pre">typing.TypeGuard</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> – tested to determine if instance or type of <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>.</p>
+<dd class="field-odd"><p><strong>value</strong> – tested to determine if instance or type of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.TypedDict</span></code></a>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if instance or type of <code class="docutils literal notranslate"><span class="pre">dataclass</span></code>.</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if instance or type of <code class="docutils literal notranslate"><span class="pre">TypedDict</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -511,10 +603,16 @@
             <ul>
 <li><a class="reference internal" href="#">predicates</a><ul>
 <li><a class="reference internal" href="#starlite.utils.predicates.is_class_and_subclass"><code class="docutils literal notranslate"><span class="pre">is_class_and_subclass()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.predicates.is_generic"><code class="docutils literal notranslate"><span class="pre">is_generic()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.predicates.is_mapping"><code class="docutils literal notranslate"><span class="pre">is_mapping()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.predicates.is_non_string_iterable"><code class="docutils literal notranslate"><span class="pre">is_non_string_iterable()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.predicates.is_non_string_sequence"><code class="docutils literal notranslate"><span class="pre">is_non_string_sequence()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.predicates.is_any"><code class="docutils literal notranslate"><span class="pre">is_any()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.predicates.is_union"><code class="docutils literal notranslate"><span class="pre">is_union()</span></code></a></li>
 <li><a class="reference internal" href="#starlite.utils.predicates.is_optional_union"><code class="docutils literal notranslate"><span class="pre">is_optional_union()</span></code></a></li>
-<li><a class="reference internal" href="#starlite.utils.predicates.is_dataclass_class_typeguard"><code class="docutils literal notranslate"><span class="pre">is_dataclass_class_typeguard()</span></code></a></li>
-<li><a class="reference internal" href="#starlite.utils.predicates.is_dataclass_class_or_instance_typeguard"><code class="docutils literal notranslate"><span class="pre">is_dataclass_class_or_instance_typeguard()</span></code></a></li>
-<li><a class="reference internal" href="#starlite.utils.predicates.is_typeddict_typeguard"><code class="docutils literal notranslate"><span class="pre">is_typeddict_typeguard()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.predicates.is_dataclass_class"><code class="docutils literal notranslate"><span class="pre">is_dataclass_class()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.predicates.is_dataclass_class_or_instance"><code class="docutils literal notranslate"><span class="pre">is_dataclass_class_or_instance()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.predicates.is_typed_dict"><code class="docutils literal notranslate"><span class="pre">is_typed_dict()</span></code></a></li>
 </ul>
 </li>
 </ul>
