@@ -675,7 +675,7 @@ class Starlite(Router):
                 dependency_name_set=route_handler.dependency_name_set,
             )
 
-        for provider in list(route_handler.resolve_dependencies().values()):
+        for provider in route_handler.resolve_dependencies().values():
             if not getattr(provider, "signature_model", None):
                 provider.signature_model = create_signature_model(
                     fn=provider.dependency.value,

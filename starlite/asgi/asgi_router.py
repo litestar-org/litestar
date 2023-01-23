@@ -53,7 +53,7 @@ class ASGIRouter:
     )
 
     def __init__(self, app: "Starlite") -> None:
-        """Initialize `ASGIRouter`.
+        """Initialize ``ASGIRouter``.
 
         Args:
             app: The Starlite app instance
@@ -194,10 +194,11 @@ class ASGIRouter:
         await send(shutdown_event)
 
     async def startup(self) -> None:
-        """Run any [LifeSpanHandlers][starlite.types.LifeSpanHandler] defined in the application's `.on_startup` list.
+        """Run any :class:`LifeSpanHandlers <starlite.types.LifeSpanHandler>` defined in the application's
+        ``.on_startup`` list.
 
-        Calls the `before_startup` hook and `after_startup` hook handlers respectively before and after calling in the
-        lifespan handlers.
+        Calls the ``before_startup`` hook and ``after_startup`` hook handlers respectively before and after calling in
+        the lifespan handlers.
         """
         for hook in self.app.before_startup:
             await hook(self.app)
@@ -209,10 +210,11 @@ class ASGIRouter:
             await hook(self.app)
 
     async def shutdown(self) -> None:
-        """Run any [LifeSpanHandlers][starlite.types.LifeSpanHandler] defined in the application's `.on_shutdown` list.
+        """Run any :class:`LifeSpanHandlers <starlite.types.LifeSpanHandler>` defined in the application's
+        ``.on_shutdown`` list.
 
-        Calls the `before_shutdown` hook and `after_shutdown` hook handlers respectively before and after calling in the
-        lifespan handlers.
+        Calls the ``before_shutdown`` hook and ``after_shutdown`` hook handlers respectively before and after calling in
+        the lifespan handlers.
         """
         for hook in self.app.before_shutdown:
             await hook(self.app)

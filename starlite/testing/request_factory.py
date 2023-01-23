@@ -45,7 +45,7 @@ class RequestFactory:
         """Initialize ``RequestFactory``
 
         Args:
-             app: An instance of :class:`Starlite <starlite.app.Starlite>` to set as `request.scope["app"]`.
+             app: An instance of :class:`Starlite <starlite.app.Starlite>` to set as ``request.scope["app"]``.
              server: The server's domain.
              port: The server's port.
              root_path: Root path for the server.

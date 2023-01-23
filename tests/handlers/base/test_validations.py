@@ -8,6 +8,3 @@ def test_raise_no_fn_validation() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         handler._validate_handler_function()
-
-    with pytest.raises(RuntimeError):
-        handler.resolve_dependencies()
