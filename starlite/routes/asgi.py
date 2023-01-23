@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class ASGIRoute(BaseRoute):
-    """An ASGI route, handling a single `ASGIRouteHandler`"""
+    """An ASGI route, handling a single ``ASGIRouteHandler``"""
 
     __slots__ = ("route_handler",)
 
@@ -25,7 +25,7 @@ class ASGIRoute(BaseRoute):
 
         Args:
             path: The path for the route.
-            route_handler: An instance of [ASGIRouteHandler][starlite.handlers.asgi.ASGIRouteHandler].
+            route_handler: An instance of :ref:`ASGIRouteHandler <starlite.handlers.asgi.ASGIRouteHandler>`.
         """
         self.route_handler = route_handler
         super().__init__(
