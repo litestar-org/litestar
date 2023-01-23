@@ -431,7 +431,7 @@ Here are some usage examples:
 
 
 .. literalinclude:: /examples/datastructures/headers/etag_parsing.py
-   :caption: Parsing ETag heaers
+   :caption: Parsing ETag headers
    :language: python
 
 

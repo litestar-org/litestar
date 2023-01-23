@@ -80,7 +80,7 @@ class BaseRoute(ABC):
         """Initialize the route.
 
         Args:
-            handler_names: Names of the associated handlers
+            handler_names: Names of the associated handler functions
             path: Base path of the route
             scope_type: Type of the ASGI scope
             methods: Supported methods
@@ -108,9 +108,7 @@ class BaseRoute(ABC):
         raise NotImplementedError("Route subclasses must implement handle which serves as the ASGI app entry point")
 
     def create_handler_kwargs_model(self, route_handler: "BaseRouteHandler") -> KwargsModel:
-        """Create a ``KwargsModel`` for a given route handler."""
-        dependencies = route_handler.resolve_dependencies()
-        signature_model = get_signature_model(route_handler)
+        """Create a `KwargsModel` for a given route handler."""
 
         path_parameters = set()
         for param in self.path_parameters:
@@ -119,8 +117,8 @@ class BaseRoute(ABC):
             path_parameters.add(param.name)
 
         return KwargsModel.create_for_signature_model(
-            signature_model=signature_model,
-            dependencies=dependencies,
+            signature_model=get_signature_model(route_handler),
+            dependencies=route_handler.resolve_dependencies(),
             path_parameters=path_parameters,
             layered_parameters=route_handler.resolve_layered_parameters(),
         )

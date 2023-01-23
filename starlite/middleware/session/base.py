@@ -273,7 +273,7 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
 
         If the session is empty, a null-cookie will be set. Otherwise, the serialised
         data will be stored using :meth:`set <ServerSideBackend.set>`, under the current session-id. If no session-ID
-        exists, a new ID will be generated using :meth:`generate_session_id <erverSideBackend.generate_session_id>`.
+        exists, a new ID will be generated using :meth:`generate_session_id <ServerSideBackend.generate_session_id>`.
 
         Args:
             scope_session: Current session to store

@@ -18,7 +18,7 @@ repos:
       - id: pyupgrade
         args: ["--py38-plus"]
   - repo: https://github.com/hadialqattan/pycln
-    rev: v2.1.2
+    rev: v2.1.3
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
@@ -38,7 +38,7 @@ repos:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter"
   - repo: https://github.com/asottile/blacken-docs
-    rev: v1.12.1
+    rev: 1.13.0
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -53,7 +53,7 @@ repos:
         exclude: "test_*"
         args: ["-iii", "-ll", "-s=B308,B703"]
   - repo: https://github.com/pycqa/pydocstyle
-    rev: 6.2.3
+    rev: 6.3.0
     hooks:
       - id: pydocstyle
         exclude: "test*|examples*|tools"
@@ -86,7 +86,7 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.16.0b0"
+    rev: "v2.16.0b1"
     hooks:
       - id: pylint
         exclude: "tests|examples|test_apps|docs|tools"
