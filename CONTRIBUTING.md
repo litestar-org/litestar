@@ -11,7 +11,7 @@ To contribute code changes or update the documentation, please follow these step
 5. Create a pull request to the main repository with an explanation of your changes. The PR should detail the
    contribution and link to any related issues - if existing.
 
-## Code contribution guidelines
+## Code Contribution Guidelines
 
 1. If you are adding or modifying existing code, please make sure to test everything you are doing. 100% test coverage
    is mandatory and tests should be well written.
@@ -29,11 +29,11 @@ To contribute code changes or update the documentation, please follow these step
 4. Add or modify examples in the Docs related to the new functionality implemented. Please
    follow the guidelines in [Adding examples](#adding-examples)
 
-## Project documentation
+## Project Documentation
 
 The documentation is located under the `/docs` folder
 
-### Docs theme and appearance
+### Docs Theme and Appearance
 
 We welcome contributions that enhance / improve the appearance and usability of the docs, as well as any images, icons
 etc.
@@ -42,7 +42,7 @@ We use the excellent [Furo](https://pradyunsg.me/furo/quickstart/) theme, which 
 of options out of the box. If you wish to contribute to the docs style / setup, or static site generation, you should
 consult the theme docs as a first step.
 
-### Running the docs locally
+### Running the Docs Locally
 
 To run or build the docs locally, you need to first install the required dependencies:
 
@@ -50,7 +50,7 @@ To run or build the docs locally, you need to first install the required depende
 
 Then you can serve the documentation with `make docs-serve`, or build them with `make docs`
 
-### Writing and editing docs
+### Writing and Editing Docs
 
 We welcome contributions that enhance / improve the content of the docs. Feel free to add examples, clarify text,
 restructure the docs etc. But make sure to follow these emphases:
@@ -63,7 +63,7 @@ restructure the docs etc. But make sure to follow these emphases:
   when referencing external libraries
 - provide diagrams using [mermaidjs](https://mermaid.js.org/) where applicable and possible.
 
-#### Adding examples
+#### Adding Examples
 
 The examples from the Docs are located in their own modules inside the
 `/docs/examples/` folder. This makes it easier to test them alongside the rest of the
@@ -84,7 +84,7 @@ Please follow the next guidelines when adding a new example:
     :language: python
 ```
 
-#### Automatically execute examples
+#### Automatically Execute Examples
 
 Our docs include a Sphinx extension that can automatically run requests against example apps
 and include their result in the documentation page when its being built. This only requires 2 steps:
@@ -147,7 +147,7 @@ This is equivalent to:
         {"hello": "world"}
 </pre>
 
-## Testing multiple python versions
+## Testing Multiple Python Versions
 
 Since the library needs to be compatible with older versions of python as well, it can be useful to run tests locally
 against different python versions. To achieve this you can use the `tox` config that is included by doing the following.
@@ -176,14 +176,16 @@ against different python versions. To achieve this you can use the `tox` config 
 Note that these commands may be quite slow to run the first time as environments are created and dependencies installed,
 but subsequent runs should be much faster.
 
-### Checking test coverage
+### Checking Test Coverage
 
 You can check the unit test coverage by running: `$ poetry run pytest tests examples --cov=starlite --cov=examples`
 
 Coverage should be 100% for any code you touch. Note that coverage will also be reported on your PR by the `SonarCloud`
 tool.
 
-## Release workflow (Maintainers only)
+---
+
+## Release Workflow (Maintainers Only)
 
 1. Update CHANGELOG.md
 2. Increment the version in pyproject.toml.
