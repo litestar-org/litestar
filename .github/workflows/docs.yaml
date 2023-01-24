@@ -8,17 +8,7 @@ on:
   release:
     types: [published]
 jobs:
-  vale:
-    name: Check for Errors in the Prose
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: errate-ai/vale-action@v2.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   docs:
-    needs: vale
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' || github.event.workflow_run.conclusion == 'success' }}
     steps:
