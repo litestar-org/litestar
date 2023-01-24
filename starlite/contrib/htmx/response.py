@@ -81,7 +81,7 @@ class TriggerEvent(Response):
     """Trigger Client side event"""
 
     def __init__(
-        self, content: T, name: str, after: EventAfterType, params: Dict[str, Any] | None = None, **kwargs: Any
+        self, content: T, name: str, after: EventAfterType, params: "Dict[str, Any] | None" = None, **kwargs: Any
     ) -> None:
         """Initialize"""
         params = params if params else {}
