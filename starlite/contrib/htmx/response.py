@@ -103,9 +103,9 @@ class HXLocation(Response):
     def __init__(
         self,
         redirect_to: str,
-        source: str | None = None,
-        event: str | None = None,
-        target: str | None = None,
+        source: "str | None" = None,
+        event: "str | None" = None,
+        target: "str | None" = None,
         swap: Literal[
             "innerHTML",
             "outerHTML",
@@ -117,8 +117,8 @@ class HXLocation(Response):
             "none",
             None,
         ] = None,
-        headers: Dict[str, Any] | None = None,
-        values: Dict[str, str] | None = None,
+        headers: "Dict[str, Any] | None" = None,
+        values: "Dict[str, str] | None" = None,
         **kwargs: Any,
     ) -> None:
         """Initialize"""
@@ -128,7 +128,7 @@ class HXLocation(Response):
             headers={"Location": quote(redirect_to, safe="/#%[]=:;$&()+,!?*@'~")},
             **kwargs,
         )
-        spec: dict[str, Any] = {}
+        spec: Dict[str, Any] = {}
         if self.headers:
             spec["path"] = self.headers.get("Location")
             del self.headers["Location"]
