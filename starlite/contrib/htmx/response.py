@@ -1,5 +1,5 @@
 import json
-from typing import Any, Literal, TypeVar
+from typing import Any, Dict, Literal, TypeVar
 from urllib.parse import quote
 
 from starlite import Response, Template
@@ -25,7 +25,7 @@ class HXStopPolling(Response):
 class ClientRedirect(Response):
     """HTMX Response class to support client side redirect."""
 
-    def __init__(self, url: str, **kwargs: Any) -> None:
+    def __init__(self, url: str) -> None:
         """Set status code to 200 (required by HTMX),
         and pass redirect url
         """
@@ -33,7 +33,6 @@ class ClientRedirect(Response):
             content=None,
             status_code=HTTP_200_OK,
             headers={"HX-Redirect": quote(url, safe="/#%[]=:;$&()+,!?*@'~"), "Location": ""},
-            **kwargs,
         )
         del self.headers["Location"]
 
@@ -41,9 +40,9 @@ class ClientRedirect(Response):
 class ClientRefresh(Response):
     """Class to support HTMX client page refresh"""
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self) -> None:
         """Set Status code to 200 and set headers."""
-        super().__init__(content=None, status_code=HTTP_200_OK, headers={"HX-Refresh": "true"}, **kwargs)
+        super().__init__(content=None, status_code=HTTP_200_OK, headers={"HX-Refresh": "true"})
 
 
 class PushUrl(Response):
@@ -82,7 +81,7 @@ class TriggerEvent(Response):
     """Trigger Client side event"""
 
     def __init__(
-        self, content: T, name: str, after: EventAfterType, params: dict[str, Any] | None = None, **kwargs: Any
+        self, content: T, name: str, after: EventAfterType, params: Dict[str, Any] | None = None, **kwargs: Any
     ) -> None:
         """Initialize"""
         params = params if params else {}
@@ -118,8 +117,8 @@ class HXLocation(Response):
             "none",
             None,
         ] = None,
-        headers: dict[str, Any] | None = None,
-        values: dict[str, str] | None = None,
+        headers: Dict[str, Any] | None = None,
+        values: Dict[str, str] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize"""
