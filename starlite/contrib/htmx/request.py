@@ -1,6 +1,6 @@
 import json
 from functools import cached_property
-from typing import Any
+from typing import Any, Optional
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 from starlite import Request
@@ -15,7 +15,7 @@ class HtmxDetails:
         """Initialize Class"""
         self.request = request
 
-    def _get_header_value(self, name: str) -> Any:
+    def _get_header_value(self, name: str) -> Optional[str]:
         """Parse request header
         Checks for uri encoded header and unquotes it in readable format.
         """
@@ -24,22 +24,22 @@ class HtmxDetails:
             return unquote(value)
         return value
 
-    def __bool__(self) -> Any:
+    def __bool__(self) -> bool:
         """Allow to check whether request is sent by a HTMX client."""
         return self._get_header_value("hx-request") == "true"
 
     @cached_property
-    def boosted(self) -> Any:
+    def boosted(self) -> bool:
         """Allow to check whether request is boosted."""
         return self._get_header_value("hx-boosted") == "true"
 
     @cached_property
-    def current_url(self) -> Any:
+    def current_url(self) -> Optional[str]:
         """Current url value sent by HTMX client. Helps in tracking navigation history."""
         return self._get_header_value("hx-current-url")
 
     @cached_property
-    def current_url_abs_path(self) -> Any:
+    def current_url_abs_path(self) -> Optional[str]:
         """Current url abs path value, to get query and path parameter sent by HTMX client."""
         url = self.current_url
         if url is not None:
@@ -50,12 +50,12 @@ class HtmxDetails:
         return url
 
     @cached_property
-    def history_restore_request(self) -> Any:
+    def history_restore_request(self) -> bool:
         """If True then, request is for history restoration after a miss in the local history cache"""
         return self._get_header_value("hx-history-restore-request") == "true"
 
     @cached_property
-    def prompt(self) -> Any:
+    def prompt(self) -> Optional[str]:
         """User Response to prompt.
         <button hx-delete="/account" hx-prompt="Enter your account name to confirm deletion">
             Delete My Account
@@ -64,22 +64,22 @@ class HtmxDetails:
         return self._get_header_value("hx-prompt")
 
     @cached_property
-    def target(self) -> Any:
+    def target(self) -> Optional[str]:
         """The id of the target element if it exists"""
         return self._get_header_value("hx-target")
 
     @cached_property
-    def trigger(self) -> Any:
+    def trigger(self) -> Optional[str]:
         """The id of the triggered element if it exists"""
         return self._get_header_value("hx-trigger")
 
     @cached_property
-    def trigger_name(self) -> Any:
+    def trigger_name(self) -> Optional[str]:
         """The name of the triggered element if it exists"""
         return self._get_header_value("hx-trigger-name")
 
     @cached_property
-    def triggering_event(self) -> Any:
+    def triggering_event(self) -> Optional[str]:
         """The name of the triggered event.
         'event-header' extension adds the Triggering-Event header to requests.
         """
