@@ -209,3 +209,7 @@ repos:
         entry: sphinx-lint
         additional_dependencies: [sphinx-lint]
         types: [rst]
+  - repo: https://github.com/Jarmos-san/vale-precommit
+    rev: v0.1.0
+    hooks:
+      - id: vale-system
