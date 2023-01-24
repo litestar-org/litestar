@@ -1,0 +1,240 @@
+import json
+from pathlib import Path
+from typing import Any
+
+import pytest
+
+from starlite import MediaType, TemplateConfig, create_test_client, get
+from starlite.contrib.htmx.request import HTMXRequest
+from starlite.contrib.htmx.response import (
+    ClientRedirect,
+    ClientRefresh,
+    HTMXTemplate,
+    HXLocation,
+    HXStopPolling,
+    PushUrl,
+    Reswap,
+    Retarget,
+    TriggerEvent,
+)
+from starlite.contrib.jinja import JinjaTemplateEngine
+from starlite.contrib.mako import MakoTemplateEngine
+from starlite.status_codes import HTTP_200_OK
+
+
+async def test_hx_stop_polling_response() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> HXStopPolling:
+        return HXStopPolling()
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == 286
+
+
+async def test_client_redirect_response() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> ClientRedirect:
+        return ClientRedirect(url="https://example.com")
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get("hx-redirect") == "https://example.com"
+        assert response.headers.get("location") is None
+
+
+async def test_client_refresh_response() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> ClientRefresh:
+        return ClientRefresh()
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["hx-refresh"] == "true"
+
+
+async def test_push_url_false_response() -> None:
+    @get("/", media_type=MediaType.TEXT)
+    def handler(request: HTMXRequest) -> PushUrl:
+        return PushUrl(content="Success!")
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == '"Success!"'
+        assert response.headers["hx-push-url"] == "false"
+
+
+async def test_push_url_response() -> None:
+    @get("/", media_type=MediaType.TEXT)
+    def handler(request: HTMXRequest) -> PushUrl:
+        return PushUrl(content="Success!", url="/index.html")
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == '"Success!"'
+        assert response.headers["hx-push-url"] == "/index.html"
+
+
+async def test_reswap_response() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> Reswap:
+        return Reswap(content="Success!", method="beforebegin")
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == '"Success!"'
+        assert response.headers["hx-reswap"] == "beforebegin"
+
+
+async def test_retarget_response() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> Retarget:
+        return Retarget(content="Success!", target="#element")
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == '"Success!"'
+        assert response.headers["hx-retarget"] == "#element"
+
+
+async def test_trigger_event_response_success() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> TriggerEvent:
+        return TriggerEvent(
+            content="Success!", name="alert", after="receive", params={"warning": "Confirm your choice!"}
+        )
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == '"Success!"'
+        assert response.headers["hx-trigger"] == '{"alert": {"warning": "Confirm your choice!"}}'
+
+
+async def test_trigger_event_response_no_params() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> TriggerEvent:
+        return TriggerEvent(content="Success!", name="alert", after="receive")
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == '"Success!"'
+        assert response.headers["hx-trigger"] == '{"alert": {}}'
+
+
+async def test_trigger_event_response_after_settle() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> TriggerEvent:
+        return TriggerEvent(
+            content="Success!", name="alert", after="settle", params={"warning": "Confirm your choice!"}
+        )
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == '"Success!"'
+        assert response.headers["hx-trigger-after-settle"] == '{"alert": {"warning": "Confirm your choice!"}}'
+
+
+async def test_trigger_event_response_after_swap() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> TriggerEvent:
+        return TriggerEvent(content="Success!", name="alert", after="swap", params={"warning": "Confirm your choice!"})
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == '"Success!"'
+        assert response.headers["hx-trigger-after-swap"] == '{"alert": {"warning": "Confirm your choice!"}}'
+
+
+async def test_trigger_event_response_invalid_after() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> TriggerEvent:
+        return TriggerEvent(
+            content="Success!", name="alert", after="invalid", params={"warning": "Confirm your choice!"}  # type: ignore
+        )
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        detail = response.json()
+        assert detail["status_code"] == 500
+        assert (
+            detail["detail"]
+            == "ValueError(\"Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.\")"
+        )
+
+
+async def test_hx_location_response_success() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> HXLocation:
+        return HXLocation(redirect_to="/contact-us")
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        spec = json.loads(response.headers["hx-location"])
+        assert response.status_code == HTTP_200_OK
+        assert "Location" not in response.headers
+        assert spec == {"path": "/contact-us"}
+
+
+async def test_hx_location_response_with_all_parameters() -> None:
+    @get("/")
+    def handler(request: HTMXRequest) -> HXLocation:
+        return HXLocation(
+            redirect_to="/contact-us",
+            source="#button",
+            event="click",
+            target="#content",
+            swap="innerHTML",
+            headers={"attribute": "value"},
+            values={"action": "true"},
+        )
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        spec = json.loads(response.headers["hx-location"])
+        assert response.status_code == HTTP_200_OK
+        assert "Location" not in response.headers
+        assert spec == {
+            "path": "/contact-us",
+            "source": "#button",
+            "event": "click",
+            "target": "#content",
+            "swap": "innerHTML",
+            "headers": {"attribute": "value"},
+            "values": {"action": "true"},
+        }
+
+
+@pytest.mark.parametrize(
+    "engine, template, expected",
+    (
+        (JinjaTemplateEngine, 'path: {{ request.scope["path"] }}', "path: /"),
+        (MakoTemplateEngine, 'path: ${request.scope["path"]}', "path: /"),
+    ),
+)
+def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str, template_dir: Path) -> None:
+    Path(template_dir / "abc.html").write_text(template)
+
+    @get(path="/", media_type=MediaType.HTML)
+    def handler() -> HTMXTemplate:
+        return HTMXTemplate(name="abc.html", context={"request": {"scope": {"path": "nope"}}}, push="/about")
+
+    with create_test_client(
+        route_handlers=[handler],
+        template_config=TemplateConfig(
+            directory=template_dir,
+            engine=engine,
+        ),
+    ) as client:
+        response = client.get("/")
+        assert response.text == expected
+        assert response.headers.get("hx-push-url") == "/about"
