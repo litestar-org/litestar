@@ -279,6 +279,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<!-- vale off -->
+
 <table>
   <tbody>
     <tr>
@@ -386,6 +388,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tbody>
 </table>
 
+<!-- vale on -->
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 
