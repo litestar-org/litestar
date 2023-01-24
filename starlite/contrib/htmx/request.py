@@ -1,9 +1,12 @@
 import json
 from functools import cached_property
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Optional
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 from starlite import Request
+
+if TYPE_CHECKING:
+    from starlite.types import Receive, Scope, Send
 
 
 class HtmxDetails:
@@ -97,7 +100,7 @@ class HTMXRequest(Request):
 
     __slots__ = ("htmx",)
 
-    def __init__(self, *args: Any, **kwargs: Any):
+    def __init__(self, scope: "Scope", receive: "Receive", send: "Send"):
         """Initialize Request"""
-        super().__init__(*args, **kwargs)
+        super().__init__(scope=scope, receive=receive, send=send)
         self.htmx = HtmxDetails(self)
