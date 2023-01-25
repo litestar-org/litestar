@@ -209,7 +209,10 @@ repos:
         entry: sphinx-lint
         additional_dependencies: [sphinx-lint]
         types: [rst]
-  - repo: https://github.com/Jarmos-san/vale-precommit
-    rev: v0.1.0
-    hooks:
-      - id: vale-system
+  # FIXME: Uncomment this hook after, "pre-commit" supports mirroring Golang
+  # projects. See this issue thread for more info:
+  # https://github.com/pre-commit/pre-commit-mirror-maker/issues/164
+  # - repo: https://github.com/Jarmos-san/vale-precommit
+  #   rev: v0.1.0
+  #   hooks:
+  #     - id: vale-system
