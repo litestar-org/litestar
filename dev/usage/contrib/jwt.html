@@ -788,7 +788,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">get</span><span class="p">,</span>
     <span class="n">post</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">starlite.contrib.jwt</span> <span class="kn">import</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.jwt</span> <span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
@@ -827,8 +827,22 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># Given an instance of &#39;OAuth2PasswordBearerAuth&#39; we can create a login handler function:</span>
 <span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">OAuth2Login</span><span class="p">]:</span>
     <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+    <span class="c1"># if we do not define a response body, the login process will return a standard OAuth2 login response.  Note the `Response[OAuth2Login]` return type.</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">oauth2_auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+    <span class="c1"># you can do whatever you want to update the response instance here</span>
+    <span class="c1"># e.g. response.set_cookie(...)</span>
+
+    <span class="k">return</span> <span class="n">response</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login_custom&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">login_custom_response_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+    <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+
+    <span class="c1"># If you&#39;d like to define a custom response body, use the `response_body` parameter.  Note the `Response[User]` return type.</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">oauth2_auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">response_body</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 
     <span class="c1"># you can do whatever you want to update the response instance here</span>
@@ -884,7 +898,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
     <span class="n">get</span><span class="p">,</span>
     <span class="n">post</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">starlite.contrib.jwt</span> <span class="kn">import</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.jwt</span> <span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
@@ -923,8 +937,22 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 
 <span class="c1"># Given an instance of &#39;OAuth2PasswordBearerAuth&#39; we can create a login handler function:</span>
 <span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">OAuth2Login</span><span class="p">]:</span>
     <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+    <span class="c1"># if we do not define a response body, the login process will return a standard OAuth2 login response.  Note the `Response[OAuth2Login]` return type.</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">oauth2_auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+
+    <span class="c1"># you can do whatever you want to update the response instance here</span>
+    <span class="c1"># e.g. response.set_cookie(...)</span>
+
+    <span class="k">return</span> <span class="n">response</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login_custom&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">login_custom_response_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
+    <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">data</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
+
+    <span class="c1"># If you&#39;d like to define a custom response body, use the `response_body` parameter.  Note the `Response[User]` return type.</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">oauth2_auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">response_body</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
 
     <span class="c1"># you can do whatever you want to update the response instance here</span>

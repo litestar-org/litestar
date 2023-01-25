@@ -737,6 +737,31 @@ token from the DB.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="starlite.contrib.jwt.OAuth2Login">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.contrib.jwt.</span></span><span class="sig-name descname"><span class="pre">OAuth2Login</span></span><a class="headerlink" href="#starlite.contrib.jwt.OAuth2Login" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>OAuth2 Login DTO</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.contrib.jwt.OAuth2Login.access_token">
+<span class="sig-name descname"><span class="pre">access_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.contrib.jwt.OAuth2Login.access_token" title="Permalink to this definition">#</a></dt>
+<dd><p>Valid JWT access token</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.contrib.jwt.OAuth2Login.refresh_token">
+<span class="sig-name descname"><span class="pre">refresh_token</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.jwt.OAuth2Login.refresh_token" title="Permalink to this definition">#</a></dt>
+<dd><p>Optional valid refresh token JWT</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.contrib.jwt.OAuth2Login.expires_in">
+<span class="sig-name descname"><span class="pre">expires_in</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.jwt.OAuth2Login.expires_in" title="Permalink to this definition">#</a></dt>
+<dd><p>Expiration time of the token in seconds.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="starlite.contrib.jwt.OAuth2PasswordBearerAuth">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.contrib.jwt.</span></span><span class="sig-name descname"><span class="pre">OAuth2PasswordBearerAuth</span></span><a class="headerlink" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">UserType</span></code>], <a class="reference internal" href="#starlite.contrib.jwt.JWTCookieAuth" title="starlite.contrib.jwt.jwt_auth.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">UserType</span></code>]</p>
@@ -781,6 +806,29 @@ support for passing JWT tokens <code class="docutils literal notranslate"><span 
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">Components</span></code> instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.contrib.jwt.OAuth2PasswordBearerAuth.login">
+<span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_media_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../enums.html#starlite.enums.MediaType" title="starlite.enums.MediaType"><span class="pre">MediaType</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MediaType.JSON</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_status_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">201</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_expiration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.11)"><span class="pre">timedelta</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_issuer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_audience</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_unique_jwt_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../response.html#starlite.response.Response" title="starlite.response.base.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.login" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a response with a JWT header. Calls the ‘JWTAuth.store_token_handler’ to persist the token <code class="docutils literal notranslate"><span class="pre">sub</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>identifier</strong> – Unique identifier of the token subject. Usually this is a user ID or equivalent kind of value.</p></li>
+<li><p><strong>response_body</strong> – An optional response body to send.</p></li>
+<li><p><strong>response_media_type</strong> – An optional ‘Content-Type’. Defaults to ‘application/json’.</p></li>
+<li><p><strong>response_status_code</strong> – An optional status code for the response. Defaults to ‘201 Created’.</p></li>
+<li><p><strong>token_expiration</strong> – An optional timedelta for the token expiration.</p></li>
+<li><p><strong>token_issuer</strong> – An optional value of the token <code class="docutils literal notranslate"><span class="pre">iss</span></code> field.</p></li>
+<li><p><strong>token_audience</strong> – An optional value for the token <code class="docutils literal notranslate"><span class="pre">aud</span></code> field.</p></li>
+<li><p><strong>token_unique_jwt_id</strong> – An optional value for the token <code class="docutils literal notranslate"><span class="pre">jti</span></code> field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <a class="reference internal" href="../response.html#starlite.response.Response" title="starlite.response.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1016,12 +1064,19 @@ support for passing JWT tokens <code class="docutils literal notranslate"><span 
 <li><a class="reference internal" href="#starlite.contrib.jwt.JWTCookieAuthenticationMiddleware.authenticate_request"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuthenticationMiddleware.authenticate_request()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2Login"><code class="docutils literal notranslate"><span class="pre">OAuth2Login</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2Login.access_token"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.access_token</span></code></a></li>
+<li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2Login.refresh_token"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.refresh_token</span></code></a></li>
+<li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2Login.expires_in"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.expires_in</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth</span></code></a><ul>
 <li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.token_url"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.token_url</span></code></a></li>
 <li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.oauth_scopes"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.oauth_scopes</span></code></a></li>
 <li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.description"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.description</span></code></a></li>
 <li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.oauth_flow"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.oauth_flow</span></code></a></li>
 <li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.openapi_components"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.openapi_components</span></code></a></li>
+<li><a class="reference internal" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.login"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.login()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#starlite.contrib.jwt.Token"><code class="docutils literal notranslate"><span class="pre">Token</span></code></a><ul>
