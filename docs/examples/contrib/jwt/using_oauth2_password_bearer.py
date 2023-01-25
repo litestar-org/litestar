@@ -13,7 +13,7 @@ from starlite import (
     get,
     post,
 )
-from starlite.contrib.jwt import OAuth2PasswordBearerAuth, Token
+from starlite.contrib.jwt import OAuth2Login, OAuth2PasswordBearerAuth, Token
 
 
 # Let's assume we have a User model that is a pydantic model.
@@ -52,8 +52,22 @@ oauth2_auth = OAuth2PasswordBearerAuth[User](
 
 # Given an instance of 'OAuth2PasswordBearerAuth' we can create a login handler function:
 @post("/login")
-async def login_handler(request: "Request[Any, Any]", data: User) -> Response[User]:
+async def login_handler(request: "Request[Any, Any]", data: User) -> Response[OAuth2Login]:
     await request.cache.set(str(data.id), data.dict())
+    # if we do not define a response body, the login process will return a standard OAuth2 login response.  Note the `Response[OAuth2Login]` return type.
+    response = oauth2_auth.login(identifier=str(data.id))
+
+    # you can do whatever you want to update the response instance here
+    # e.g. response.set_cookie(...)
+
+    return response
+
+
+@post("/login_custom")
+async def login_custom_response_handler(request: "Request[Any, Any]", data: User) -> Response[User]:
+    await request.cache.set(str(data.id), data.dict())
+
+    # If you'd like to define a custom response body, use the `response_body` parameter.  Note the `Response[User]` return type.
     response = oauth2_auth.login(identifier=str(data.id), response_body=data)
 
     # you can do whatever you want to update the response instance here
