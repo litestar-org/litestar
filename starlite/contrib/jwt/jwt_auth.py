@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Generic, Literal, Optional, Type, Union
 
+from pydantic import BaseConfig, BaseModel, Extra
 from pydantic_openapi_schema.v3_1_0 import (
     Components,
     OAuthFlow,
@@ -305,6 +306,21 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
         )
 
 
+class OAuth2Login(BaseModel):
+    """OAuth2 Login DTO"""
+
+    class Config(BaseConfig):
+        extra = Extra.allow
+
+    access_token: str
+    """Valid JWT access token"""
+    refresh_token: str | None = None
+    """Optional valid refresh token JWT"""
+    expires_in: int | None = None
+    """Expiration time of the token in seconds. """
+    token_type: str
+
+
 class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
     """OAUTH2 Schema for Password Bearer Authentication.
 
@@ -390,11 +406,13 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
             token_unique_jwt_id=token_unique_jwt_id,
         )
         expires_in = int((datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)).timestamp())
-        oauth2_token_response = {
-            "access_token": encoded_token,
-            "expires_in": expires_in,
-            "token_type": "bearer",
-        }
+        oauth2_token_response = OAuth2Login.parse_obj(
+            {
+                "access_token": encoded_token,
+                "expires_in": expires_in,
+                "token_type": "bearer",
+            }
+        )
         cookie = Cookie(
             key=self.key,
             path=self.path,
