@@ -354,3 +354,60 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
                 )
             }
         )
+
+    def login(
+        self,
+        identifier: str,
+        *,
+        response_body: Optional[Any] = None,
+        response_media_type: Union[str, MediaType] = MediaType.JSON,
+        response_status_code: int = HTTP_201_CREATED,
+        token_expiration: Optional[timedelta] = None,
+        token_issuer: Optional[str] = None,
+        token_audience: Optional[str] = None,
+        token_unique_jwt_id: Optional[str] = None,
+    ) -> Response[Any]:
+        """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
+
+        Args:
+            identifier: Unique identifier of the token subject. Usually this is a user ID or equivalent kind of value.
+            response_body: An optional response body to send.
+            response_media_type: An optional 'Content-Type'. Defaults to 'application/json'.
+            response_status_code: An optional status code for the response. Defaults to '201 Created'.
+            token_expiration: An optional timedelta for the token expiration.
+            token_issuer: An optional value of the token ``iss`` field.
+            token_audience: An optional value for the token ``aud`` field.
+            token_unique_jwt_id: An optional value for the token ``jti`` field.
+
+        Returns:
+            A :class:`Response <starlite.response.Response>` instance.
+        """
+        encoded_token = self.create_token(
+            identifier=identifier,
+            token_expiration=token_expiration,
+            token_issuer=token_issuer,
+            token_audience=token_audience,
+            token_unique_jwt_id=token_unique_jwt_id,
+        )
+        expires_in = int((datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)).timestamp())
+        oauth2_token_response = {
+            "access_token": encoded_token,
+            "expires_in": expires_in,
+            "token_type": "bearer",
+        }
+        cookie = Cookie(
+            key=self.key,
+            path=self.path,
+            httponly=True,
+            value=self.format_auth_header(encoded_token),
+            expires=expires_in,
+            secure=self.secure,
+            samesite=self.samesite,
+        )
+        return Response(
+            content=response_body or oauth2_token_response,
+            headers={self.auth_header: self.format_auth_header(encoded_token)},
+            cookies=[cookie],
+            media_type=response_media_type,
+            status_code=response_status_code,
+        )
