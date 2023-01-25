@@ -64,10 +64,8 @@ class ExtractedRequestData(TypedDict, total=False):
 
 
 class ConnectionDataExtractor:
-    """Utility class to extract data from an.
-
-    [ASGIConnection][starlite.connection.ASGIConnection],
-    [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket] instance.
+    """Utility class to extract data from an :class:`ASGIConnection <starlite.connection.ASGIConnection>`,
+    :class:`Request <starlite.connection.Request>` or :class:`WebSocket <starlite.connection.WebSocket>` instance.
     """
 
     __slots__ = (
@@ -96,7 +94,7 @@ class ConnectionDataExtractor:
         parse_body: bool = False,
         parse_query: bool = False,
     ):
-        """Initialize `ConnectionDataExtractor`
+        """Initialize ``ConnectionDataExtractor``
 
         Args:
             extract_body: Whether to extract body, (for requests only).
@@ -145,7 +143,7 @@ class ConnectionDataExtractor:
         """Extract data from the connection, returning a dictionary of values.
 
         Notes:
-            - The value for 'body' - if present - is an unresolved Coroutine and as such should be awaited by the receiver.
+            - The value for ``body`` - if present - is an unresolved Coroutine and as such should be awaited by the receiver.
 
         Args:
             connection: An ASGI connection or its subclasses.
@@ -162,10 +160,10 @@ class ConnectionDataExtractor:
 
     @staticmethod
     def extract_scheme(connection: "ASGIConnection[Any, Any, Any, Any]") -> str:
-        """Extract the scheme from an `ASGIConnection`
+        """Extract the scheme from an ``ASGIConnection``
 
         Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
+            connection: An :class:`ASGIConnection <starlite.connection.ASGIConnection>` instance.
 
         Returns:
             The connection's scope["scheme"] value
@@ -174,10 +172,10 @@ class ConnectionDataExtractor:
 
     @staticmethod
     def extract_client(connection: "ASGIConnection[Any, Any, Any, Any]") -> Tuple[str, int]:
-        """Extract the client from an `ASGIConnection`
+        """Extract the client from an ``ASGIConnection``
 
         Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
+            connection: An :class:`ASGIConnection <starlite.connection.ASGIConnection>` instance.
 
         Returns:
             The connection's scope["client"] value or a default value.
@@ -186,10 +184,10 @@ class ConnectionDataExtractor:
 
     @staticmethod
     def extract_path(connection: "ASGIConnection[Any, Any, Any, Any]") -> str:
-        """Extract the path from an `ASGIConnection`
+        """Extract the path from an ``ASGIConnection``
 
         Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
+            connection: An :class:`ASGIConnection <starlite.connection.ASGIConnection>` instance.
 
         Returns:
             The connection's scope["path"] value
@@ -197,10 +195,10 @@ class ConnectionDataExtractor:
         return connection.scope["path"]
 
     def extract_headers(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> Dict[str, str]:
-        """Extract headers from an `ASGIConnection`
+        """Extract headers from an ``ASGIConnection``
 
         Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
+            connection: An :class:`ASGIConnection <starlite.connection.ASGIConnection>` instance.
 
         Returns:
             A dictionary with the connection's headers.
@@ -209,10 +207,10 @@ class ConnectionDataExtractor:
         return obfuscate(headers, self.obfuscate_headers) if self.obfuscate_headers else headers
 
     def extract_cookies(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> Dict[str, str]:
-        """Extract cookies from an `ASGIConnection`
+        """Extract cookies from an ``ASGIConnection``
 
         Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
+            connection: An :class:`ASGIConnection <starlite.connection.ASGIConnection>` instance.
 
         Returns:
             A dictionary with the connection's cookies.
@@ -220,10 +218,10 @@ class ConnectionDataExtractor:
         return obfuscate(connection.cookies, self.obfuscate_cookies) if self.obfuscate_cookies else connection.cookies
 
     def extract_query(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> Any:
-        """Extract query from an `ASGIConnection`
+        """Extract query from an ``ASGIConnection``
 
         Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
+            connection: An :class:`ASGIConnection <starlite.connection.ASGIConnection>` instance.
 
         Returns:
             Either a dictionary with the connection's parsed query string or the raw query byte-string.
@@ -232,10 +230,10 @@ class ConnectionDataExtractor:
 
     @staticmethod
     def extract_path_params(connection: "ASGIConnection[Any, Any, Any, Any]") -> Dict[str, Any]:
-        """Extract the path parameters from an `ASGIConnection`
+        """Extract the path parameters from an ``ASGIConnection``
 
         Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
+            connection: An :class:`ASGIConnection <starlite.connection.ASGIConnection>` instance.
 
         Returns:
             A dictionary with the connection's path parameters.
@@ -244,10 +242,10 @@ class ConnectionDataExtractor:
 
     @staticmethod
     def extract_method(request: "Request[Any, Any, Any]") -> "Method":
-        """Extract the method from an `ASGIConnection`
+        """Extract the method from an ``ASGIConnection``
 
         Args:
-            request: A [Request][starlite.connection.Request] instance.
+            request: A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             The request's scope["method"] value.
@@ -256,10 +254,10 @@ class ConnectionDataExtractor:
 
     @staticmethod
     def extract_content_type(request: "Request[Any, Any, Any]") -> Tuple[str, Dict[str, str]]:
-        """Extract the content-type from an `ASGIConnection`
+        """Extract the content-type from an ``ASGIConnection``
 
         Args:
-            request: A [Request][starlite.connection.Request] instance.
+            request: A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             A tuple containing the request's parsed 'Content-Type' header.
@@ -267,10 +265,10 @@ class ConnectionDataExtractor:
         return request.content_type
 
     async def extract_body(self, request: "Request[Any, Any, Any]") -> Any:
-        """Extract the body from an `ASGIConnection`
+        """Extract the body from an ``ASGIConnection``
 
         Args:
-            request: A [Request][starlite.connection.Request] instance.
+            request: A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             Either the parsed request body or the raw byte-string.
@@ -300,7 +298,7 @@ class ExtractedResponseData(TypedDict, total=False):
 
 
 class ResponseDataExtractor:
-    """Utility class to extract data from a `Message`"""
+    """Utility class to extract data from a ``Message``"""
 
     __slots__ = ("extractors", "parse_headers", "obfuscate_headers", "obfuscate_cookies")
 
@@ -313,7 +311,7 @@ class ResponseDataExtractor:
         obfuscate_cookies: Optional[Set[str]] = None,
         obfuscate_headers: Optional[Set[str]] = None,
     ):
-        """Initialize `ResponseDataExtractor` with options.
+        """Initialize ``ResponseDataExtractor`` with options.
 
         Args:
             extract_body: Whether to extract the body.
@@ -342,8 +340,8 @@ class ResponseDataExtractor:
 
         Args:
             messages: A tuple containing
-                [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent]
-                and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
+                :class:`HTTPResponseStartEvent <starlite.types.asgi_types.HTTPResponseStartEvent>`
+                and :class:`HTTPResponseBodyEvent <starlite.types.asgi_types.HTTPResponseBodyEvent>`.
 
         Returns:
             A string keyed dictionary of extracted values.
@@ -352,12 +350,12 @@ class ResponseDataExtractor:
 
     @staticmethod
     def extract_response_body(messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> bytes:
-        """Extract the response body from a `Message`
+        """Extract the response body from a ``Message``
 
         Args:
             messages: A tuple containing
-                [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent]
-                and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
+                :class:`HTTPResponseStartEvent <starlite.types.asgi_types.HTTPResponseStartEvent>`
+                and :class:`HTTPResponseBodyEvent <starlite.types.asgi_types.HTTPResponseBodyEvent>`.
 
         Returns:
             The Response's body as a byte-string.
@@ -366,12 +364,12 @@ class ResponseDataExtractor:
 
     @staticmethod
     def extract_status_code(messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> int:
-        """Extract a status code from a `Message`
+        """Extract a status code from a ``Message``
 
         Args:
             messages: A tuple containing
-                [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent]
-                and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
+                :class:`HTTPResponseStartEvent <starlite.types.asgi_types.HTTPResponseStartEvent>`
+                and :class:`HTTPResponseBodyEvent <starlite.types.asgi_types.HTTPResponseBodyEvent>`.
 
         Returns:
             The Response's status-code.
@@ -379,12 +377,12 @@ class ResponseDataExtractor:
         return messages[0]["status"]
 
     def extract_headers(self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> Dict[str, str]:
-        """Extract headers from a `Message`
+        """Extract headers from a ``Message``
 
         Args:
             messages: A tuple containing
-                [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent]
-                and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
+                :class:`HTTPResponseStartEvent <starlite.types.asgi_types.HTTPResponseStartEvent>`
+                and :class:`HTTPResponseBodyEvent <starlite.types.asgi_types.HTTPResponseBodyEvent>`.
 
         Returns:
             The Response's headers dict.
@@ -403,12 +401,12 @@ class ResponseDataExtractor:
         )
 
     def extract_cookies(self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> Dict[str, str]:
-        """Extract cookies from a `Message`
+        """Extract cookies from a ``Message``
 
         Args:
             messages: A tuple containing
-                [HTTPResponseStartEvent][starlite.types.asgi_types.HTTPResponseStartEvent]
-                and [HTTPResponseBodyEvent][starlite.types.asgi_types.HTTPResponseBodyEvent].
+                :class:`HTTPResponseStartEvent <starlite.types.asgi_types.HTTPResponseStartEvent>`
+                and :class:`HTTPResponseBodyEvent <starlite.types.asgi_types.HTTPResponseBodyEvent>`.
 
         Returns:
             The Response's cookies dict.

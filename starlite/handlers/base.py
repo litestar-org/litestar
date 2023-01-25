@@ -13,12 +13,11 @@ from typing import (
     cast,
 )
 
-from pydantic import BaseConfig, Extra, validate_arguments
-from pydantic.fields import ModelField, Undefined
+from pydantic import validate_arguments
 
-from starlite.constants import EXTRA_KEY_REQUIRED, EXTRA_KEY_VALUE_TYPE
 from starlite.datastructures.provide import Provide
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.signature.models import SignatureField
 from starlite.types import (
     Dependencies,
     Empty,
@@ -42,12 +41,6 @@ if TYPE_CHECKING:
     from starlite.types import AnyCallable
 
 T = TypeVar("T", bound="BaseRouteHandler")
-
-
-class ParameterConfig(BaseConfig):
-    """Base config for `ModelField`"""
-
-    extra = Extra.allow
 
 
 class BaseRouteHandler(Generic[T]):
@@ -89,22 +82,22 @@ class BaseRouteHandler(Generic[T]):
         opt: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize `HTTPRouteHandler`.
+        """Initialize ``HTTPRouteHandler``.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
-            middleware: A list of [Middleware][starlite.types.Middleware].
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
-        self._resolved_dependencies: Union[Dict[str, Provide], EmptyType] = Empty
+        self._resolved_dependencies: Union[Dict[str, "Provide"], "EmptyType"] = Empty
         self._resolved_guards: Union[List[Guard], EmptyType] = Empty
-        self._resolved_layered_parameters: Union[Dict[str, "ModelField"], EmptyType] = Empty
+        self._resolved_layered_parameters: Union[Dict[str, "SignatureField"], "EmptyType"] = Empty
         self.dependencies = dependencies
         self.exception_handlers = exception_handlers
         self.guards = guards
@@ -156,52 +149,47 @@ class BaseRouteHandler(Generic[T]):
 
         return list(reversed(layers))
 
-    def resolve_layered_parameters(self) -> Dict[str, "ModelField"]:
-        """Return all parameters declared above the handler, transforming them into pydantic ModelField instances."""
+    def resolve_layered_parameters(self) -> Dict[str, "SignatureField"]:
+        """Return all parameters declared above the handler."""
         if self._resolved_layered_parameters is Empty:
-            self._resolved_layered_parameters = {}
-            parameters: ParametersMap = {}
-            for layer in self.ownership_layers:
-                parameters.update(getattr(layer, "parameters", None) or {})
+            parameter_kwargs: "ParametersMap" = {}
 
-            for key, parameter in parameters.items():
-                is_required = parameter.extra[EXTRA_KEY_REQUIRED]
-                value_type = parameter.extra[EXTRA_KEY_VALUE_TYPE]
-                if value_type is Undefined:
-                    value_type = Any
-                default_value = parameter.default if parameter.default is not Undefined else ...
-                self._resolved_layered_parameters[key] = ModelField(
-                    name=key,
-                    type_=value_type,
-                    field_info=parameter,
-                    default=default_value,
-                    model_config=ParameterConfig,
-                    class_validators=None,
-                    required=is_required,
+            for layer in self.ownership_layers:
+                parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
+
+            self._resolved_layered_parameters = {
+                key: SignatureField.create(
+                    name=key, field_type=parameter.value_type, default_value=parameter.default, kwarg_model=parameter
                 )
-        return cast("Dict[str, ModelField]", self._resolved_layered_parameters)
+                for key, parameter in parameter_kwargs.items()
+            }
+
+        return cast("Dict[str, SignatureField]", self._resolved_layered_parameters)
 
     def resolve_guards(self) -> List[Guard]:
         """Return all guards in the handlers scope, starting from highest to current layer."""
         if self._resolved_guards is Empty:
             self._resolved_guards = []
+
             for layer in self.ownership_layers:
                 self._resolved_guards.extend(layer.guards or [])
+
             self._resolved_guards = cast("List[Guard]", [AsyncCallable(guard) for guard in self._resolved_guards])
+
         return self._resolved_guards  # type:ignore
 
     def resolve_dependencies(self) -> Dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
-        if not self.signature_model:
-            raise RuntimeError("resolve_dependencies cannot be called before a signature model has been generated")
         if self._resolved_dependencies is Empty:
             self._resolved_dependencies = {}
+
             for layer in self.ownership_layers:
                 for key, value in (layer.dependencies or {}).items():
                     self._validate_dependency_is_unique(
                         dependencies=self._resolved_dependencies, key=key, provider=value
                     )
                     self._resolved_dependencies[key] = value
+
         return cast("Dict[str, Provide]", self._resolved_dependencies)
 
     def resolve_middleware(self) -> List["Middleware"]:

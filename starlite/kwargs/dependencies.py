@@ -1,7 +1,7 @@
 from inspect import isasyncgen, isgenerator
 from typing import TYPE_CHECKING, Any, Dict, List, Set
 
-from starlite.signature import get_signature_model
+from starlite.signature.utils import get_signature_model
 from starlite.utils.compat import async_next
 
 if TYPE_CHECKING:
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class Dependency:
-    """Dependency graph of a given combination of `Route` + `RouteHandler`"""
+    """Dependency graph of a given combination of ``Route`` + ``RouteHandler``"""
 
     __slots__ = ("key", "provide", "dependencies")
 
@@ -40,21 +40,22 @@ async def resolve_dependency(
     kwargs: Dict[str, Any],
     cleanup_group: "DependencyCleanupGroup",
 ) -> None:
-    """Resolve a given instance of [Dependency][starlite.kwargs.Dependency].
+    """Resolve a given instance of :class:`Dependency <starlite.kwargs.Dependency>`.
 
     All required sub dependencies must already
     be resolved into the kwargs. The result of the dependency will be stored in the kwargs.
 
     Args:
-        dependency: An instance of [Dependency][starlite.kwargs.Dependency]
-        connection: An instance of [Request][starlite.connection.Request] or [WebSocket][starlite.connection.WebSocket].
+        dependency: An instance of :class:`Dependency <starlite.kwargs.Dependency>`
+        connection: An instance of :class:`Request <starlite.connection.Request>` or
+            :class:`WebSocket <starlite.connection.WebSocket>`.
         kwargs: Any kwargs to pass to the dependency, the result will be stored here as well.
-        cleanup_group: DependencyCleanupGroup to which generators returned by `dependency` will be added
+        cleanup_group: DependencyCleanupGroup to which generators returned by ``dependency`` will be added
     """
     signature_model = get_signature_model(dependency.provide)
     dependency_kwargs = (
         signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
-        if signature_model.__fields__
+        if signature_model.fields()
         else {}
     )
     value = await dependency.provide(**dependency_kwargs)
@@ -73,7 +74,7 @@ def create_dependency_batches(expected_dependencies: Set["Dependency"]) -> List[
     """Calculate batches for all dependencies, recursively.
 
     Args:
-        expected_dependencies: A set of all direct [Dependencies][starlite.kwargs.Dependency].
+        expected_dependencies: A set of all direct :class:`Dependencies <starlite.kwargs.Dependency>`.
 
     Returns:
         A list of batches.

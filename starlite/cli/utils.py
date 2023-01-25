@@ -77,7 +77,7 @@ class StarliteEnv:
     def from_env(cls, app_path: Optional[str]) -> "StarliteEnv":
         """Load environment variables.
 
-        If `python-dotenv` is installed, use it to populate environment first
+        If ``python-dotenv`` is installed, use it to populate environment first
         """
         cwd = Path().cwd()
         cwd_str_path = str(cwd)
@@ -120,10 +120,10 @@ class LoadedApp:
 
 
 class StarliteGroup(Group):
-    """`click.Group` subclass that automatically injects `app` and `env` kwargs into commands that request it.
+    """:class:`click.Group` subclass that automatically injects ``app`` and ``env` kwargs into commands that request it.
 
-    Use this as the `cls` for `click.Group` if you're extending the internal CLI with a group. For `command`s added
-    directly to the root group this is not needed.
+    Use this as the ``cls`` for :class:`click.Group` if you're extending the internal CLI with a group. For ``command``s
+    added directly to the root group this is not needed.
     """
 
     def __init__(
@@ -132,14 +132,14 @@ class StarliteGroup(Group):
         commands: Optional[Union[Dict[str, Command], Sequence[Command]]] = None,
         **attrs: Any,
     ):
-        """Init `StarliteGroup`"""
+        """Init ``StarliteGroup``"""
         self.group_class = StarliteGroup
         super().__init__(name=name, commands=commands, **attrs)
 
     def add_command(self, cmd: Command, name: Optional[str] = None) -> None:
         """Add command.
 
-        If necessary, inject `app` and `env` kwargs
+        If necessary, inject ``app`` and ``env`` kwargs
         """
         if cmd.callback:
             cmd.callback = _inject_args(cmd.callback)
@@ -149,7 +149,7 @@ class StarliteGroup(Group):
         # For some reason, even when copying the overloads + signature from click 1:1, mypy goes haywire
         """Add a function as a command.
 
-        If necessary, inject `app` and `env` kwargs
+        If necessary, inject ``app`` and ``env`` kwargs
         """
 
         def decorator(f: "AnyCallable") -> Command:
@@ -160,9 +160,9 @@ class StarliteGroup(Group):
 
 
 class StarliteExtensionGroup(StarliteGroup):
-    """`StarliteGroup` subclass that will load Starlite-CLI extensions from the `starlite.commands` entry_point.
+    """``StarliteGroup`` subclass that will load Starlite-CLI extensions from the `starlite.commands` entry_point.
 
-    This group class should not be used on any group besides the root `starlite_group`.
+    This group class should not be used on any group besides the root ``starlite_group``.
     """
 
     def __init__(
@@ -171,7 +171,7 @@ class StarliteExtensionGroup(StarliteGroup):
         commands: Optional[Union[Dict[str, Command], Sequence[Command]]] = None,
         **attrs: Any,
     ):
-        """Init `StarliteExtensionGroup`"""
+        """Init ``StarliteExtensionGroup``"""
         super().__init__(name=name, commands=commands, **attrs)
 
         for entry_point in entry_points(group="starlite.commands"):
@@ -181,7 +181,7 @@ class StarliteExtensionGroup(StarliteGroup):
 
 
 def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
-    """Inject the app instance into a `Command`"""
+    """Inject the app instance into a ``Command``"""
     params = inspect.signature(func).parameters
 
     @wraps(func)
@@ -266,7 +266,7 @@ def _autodiscover_app(app_path: Optional[str], cwd: Path) -> LoadedApp:
 
 
 def _format_is_enabled(value: Any) -> str:
-    """Return a coloured string `"Enabled" if `value` is truthy, else "Disabled"."""
+    """Return a coloured string `"Enabled" if ``value`` is truthy, else "Disabled"."""
     if value:
         return "[green]Enabled[/]"
     return "[red]Disabled[/]"

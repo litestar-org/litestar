@@ -108,40 +108,43 @@ class Router:
         tags: Optional[List[str]] = None,
         type_encoders: Optional["TypeEncodersMap"] = None,
     ) -> None:
-        """Initialize a `Router`.
+        """Initialize a ``Router``.
 
         Args:
-            after_request: A sync or async function executed before a [Request][starlite.connection.Request] is passed
-                to any route handler. If this function returns a value, the request will not reach the route handler,
-                and instead this value will be used.
+            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is
+                passed to any route handler. If this function returns a value, the request will not reach the route
+                handler, and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                [Request][starlite.connection.Request] object and should not return any values.
+                :class:`Request <starlite.connection.Request>` object and should not return any values.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request` instance and any non-`None` return value is used for the response,
-                bypassing the route handler.
-            cache_control: A `cache-control` header of type
-                [CacheControlHeader][starlite.datastructures.CacheControlHeader] to add to route handlers of this
-                router. Can be overridden by route handlers.
-            dependencies: A string keyed dictionary of dependency [Provider][starlite.datastructures.Provide] instances.
-            etag: An `etag` header of type [ETag][starlite.datastructures.ETag] to add to route handlers of this router.
-                Can be overridden by route handlers.
+                the :class:`starlite.connection.Request` instance and any non-``None`` return value is used for the
+                response, bypassing the route handler.
+            cache_control: A ``cache-control`` header of type
+                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` to add to route handlers of
+                this router. Can be overridden by route handlers.
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>`
+                instances.
+            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` to add to route handlers of
+                this router. Can be overridden by route handlers.
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
-            middleware: A list of [Middleware][starlite.types.Middleware].
-            opt: A string keyed dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
-            parameters: A mapping of [Parameter][starlite.params.Parameter] definitions available to all
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>`
+                or wherever you have access to :class:`Request <starlite.connection.request.Request>` or
+                :class:`ASGI Scope <starlite.types.Scope>`.
+            parameters: A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all
                 application paths.
             path: A path fragment that is prefixed to all route handlers, controllers and other routers associated
                 with the router instance.
             response_class: A custom subclass of [starlite.response.Response] to be used as the default for all route
                 handlers, controllers and other routers associated with the router instance.
             response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed dictionary mapping [ResponseHeader][starlite.datastructures.ResponseHeader]
-                instances.
+            response_headers: A string keyed dictionary mapping
+                :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances.
             route_handlers: A required list of route handlers, which can include instances of
-                [Router][starlite.router.Router], subclasses of [Controller][starlite.controller.Controller] or any
-                function decorated by the route handler decorators.
+                :class:`Router <starlite.router.Router>`, subclasses of
+                :class:`Controller <starlite.controller.Controller>` or any function decorated by the route handler
+                decorators.
             security: A list of dictionaries that will be added to the schema of all route handlers under the router.
             tags: A list of string tags that will be appended to the schema of all route handlers under the router.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
@@ -176,9 +179,9 @@ class Router:
         """Register a Controller, Route instance or RouteHandler on the router.
 
         Args:
-            value: a subclass or instance of Controller, an instance of `Router` or a function/method that has been
-                decorated by any of the routing decorators, e.g. [get][starlite.handlers.http.get],
-                [post][starlite.handlers.http.post].
+            value: a subclass or instance of Controller, an instance of ``Router`` or a function/method that has been
+                decorated by any of the routing decorators, e.g. :class:`get <starlite.handlers.http.get>`,
+                :class:`post <starlite.handlers.http.post>`.
 
         Returns:
             Collection of handlers added to the router.
@@ -231,7 +234,7 @@ class Router:
 
     @property
     def route_handler_method_map(self) -> Dict[str, RouteHandlerMapItem]:
-        """Map route paths to [RouteHandlerMapItem][starlite.types.internal_typ es.RouteHandlerMapItem]
+        """Map route paths to :class:`RouteHandlerMapItem <starlite.types.internal_typ es.RouteHandlerMapItem>`
 
         Returns:
              A dictionary mapping paths to route handlers

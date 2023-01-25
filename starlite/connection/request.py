@@ -44,7 +44,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
     """The ASGI send function."""
 
     def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
-        """Initialize `Request`.
+        """Initialize ``Request``.
 
         Args:
             scope: The ASGI connection scope.
@@ -64,7 +64,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """Return the request method.
 
         Returns:
-            The request [Method][starlite.types.Method]
+            The request :class:`Method <starlite.types.Method>`
         """
         return self.scope["method"]
 

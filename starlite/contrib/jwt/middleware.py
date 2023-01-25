@@ -38,10 +38,10 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         Args:
             algorithm: JWT hashing algorithm to use.
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
-            auth_header: Request header key from which to retrieve the token. E.g. 'Authorization' or 'X-Api-Key'.
+            auth_header: Request header key from which to retrieve the token. E.g. ``Authorization`` or 'X-Api-Key'.
             exclude: A pattern or list of patterns to skip.
             exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
-            retrieve_user_handler: A function that receives an instance of 'Token' and returns a user, which can be
+            retrieve_user_handler: A function that receives an instance of ``Token`` and returns a user, which can be
                 any arbitrary value.
             scopes: ASGI scopes processed by the authentication middleware.
             token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to
@@ -64,7 +64,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             AuthenticationResult
 
         Raises:
-            [NotAuthorizedException][starlite.exceptions.NotAuthorizedException]: If token is invalid or user is not found.
+            :class:`NotAuthorizedException <starlite.exceptions.NotAuthorizedException>`: If token is invalid or user is not found.
         """
         auth_header = connection.headers.get(self.auth_header)
         if not auth_header:
@@ -82,7 +82,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             connection: An ASGI connection instance.
 
         Raises:
-            [NotAuthorizedException][starlite.exceptions.NotAuthorizedException]: If token is invalid or user is not found.
+            :class:`NotAuthorizedException <starlite.exceptions.NotAuthorizedException>`: If token is invalid or user is not found.
 
         Returns:
             AuthenticationResult: _description_
@@ -122,11 +122,11 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         Args:
             algorithm: JWT hashing algorithm to use.
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
-            auth_cookie_key: Cookie name from which to retrieve the token. E.g. 'token' or 'accessToken'.
-            auth_header: Request header key from which to retrieve the token. E.g. 'Authorization' or 'X-Api-Key'.
+            auth_cookie_key: Cookie name from which to retrieve the token. E.g. ``token`` or ``accessToken``.
+            auth_header: Request header key from which to retrieve the token. E.g. ``Authorization`` or 'X-Api-Key'.
             exclude: A pattern or list of patterns to skip.
             exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
-            retrieve_user_handler: A function that receives an instance of 'Token' and returns a user, which can be
+            retrieve_user_handler: A function that receives an instance of ``Token`` and returns a user, which can be
                 any arbitrary value.
             scopes: ASGI scopes processed by the authentication middleware.
             token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to
@@ -155,7 +155,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             AuthenticationResult
 
         Raises:
-            [NotAuthorizedException][starlite.exceptions.NotAuthorizedException]: If token is invalid or user is not found.
+            :class:`NotAuthorizedException <starlite.exceptions.NotAuthorizedException>`: If token is invalid or user is not found.
         """
         auth_header = connection.headers.get(self.auth_header) or connection.cookies.get(self.auth_cookie_key)
         if not auth_header:

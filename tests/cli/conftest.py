@@ -60,7 +60,7 @@ def create_app_file(
     ) -> Path:
         base = tmp_project_dir
         if directory:
-            base = base / directory
+            base /= directory
             base.mkdir()
 
         tmp_app_file = base / file

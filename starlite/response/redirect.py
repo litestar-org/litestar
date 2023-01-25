@@ -33,11 +33,11 @@ class RedirectResponse(Response[Any]):
             status_code: An HTTP status code. The status code should be one of 301, 302, 303, 307 or 308,
                 otherwise an exception will be raised. .
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
+            cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances to be set under the response 'Set-Cookie' header.
             encoding: The encoding to be used for the response headers.
 
         Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If status code is not a redirect status code.
+            :class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>`: If status code is not a redirect status code.
         """
         if status_code not in REDIRECT_STATUS_CODES:
             raise ImproperlyConfiguredException(

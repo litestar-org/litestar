@@ -1,3 +1,0 @@
-# Protocols
-
-::: starlite.types.Logger

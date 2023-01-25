@@ -17,9 +17,9 @@ def test_openapi_yaml() -> None:
         response = client.get("/schema/openapi.yaml")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"] == OpenAPIMediaType.OPENAPI_YAML.value
-        assert yaml.safe_load(response.content) == construct_open_api_with_schema_class(client.app.openapi_schema).dict(
-            by_alias=True, exclude_none=True
-        )
+        assert yaml.unsafe_load(response.content) == construct_open_api_with_schema_class(
+            client.app.openapi_schema
+        ).dict(by_alias=True, exclude_none=True)
 
 
 def test_openapi_json() -> None:

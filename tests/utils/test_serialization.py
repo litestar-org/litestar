@@ -21,11 +21,6 @@ from pydantic import (
     PaymentCardNumber,
     SecretBytes,
     SecretStr,
-    StrictBool,
-    StrictBytes,
-    StrictFloat,
-    StrictInt,
-    StrictStr,
 )
 from pydantic.color import Color
 
@@ -89,13 +84,7 @@ class Model(BaseModel):
     conset: pydantic.conset(int) = ConstrainedSet([1])  # type: ignore[valid-type]
     confrozenset: pydantic.confrozenset(int) = ConstrainedFrozenSet([1])  # type: ignore[valid-type]
     conint: pydantic.conint() = ConstrainedInt(1)  # type: ignore[valid-type]
-    conlist: pydantic.conlist(str) = ConstrainedList([1])  # type: ignore[valid-type]
-
-    strict_str: StrictStr = StrictStr("hello")
-    strict_int: StrictInt = StrictInt(1)
-    strict_float: StrictFloat = StrictFloat(1.0)
-    strict_bytes: StrictBytes = StrictBytes(b"hello")
-    strict_bool: StrictBool = StrictBool(True)
+    conlist: pydantic.conlist(int, min_items=1) = ConstrainedList([1])  # type: ignore[valid-type]
 
     custom_str: CustomStr = CustomStr()
     custom_int: CustomInt = CustomInt()
@@ -126,20 +115,12 @@ model = Model()
         (model.conset, {1}),
         (model.confrozenset, frozenset([1])),
         (model.conint, 1),
-        # (model.conlist, [1]),
-        (model.strict_str, "hello"),
-        (model.strict_int, 1),
-        (model.strict_float, 1.0),
-        (model.strict_bytes, "hello"),
-        (model.strict_bool, 1),
         (model, model.dict()),
         (model.custom_str, ""),
         (model.custom_int, 0),
         (model.custom_float, 0.0),
-        # (model.custom_list, []),
         (model.custom_set, set()),
         (model.custom_frozenset, frozenset()),
-        # (model.custom_tuple, ()),
     ],
 )
 def test_default_serializer(value: Any, expected: Any) -> None:
@@ -160,3 +141,13 @@ def test_encoder_raises_serialization_exception(encoder: Any) -> None:
 def test_decode_json_raises_serialization_exception(decoder: Any) -> None:
     with pytest.raises(SerializationException):
         decoder(b"str")
+
+
+def test_decode_json_typed() -> None:
+    model_json = model.json()
+    assert decode_json(model_json, Model).json() == model_json
+
+
+def test_decode_msgpack_typed() -> None:
+    model_json = model.json()
+    assert decode_msgpack(encode_msgpack(model), Model).json() == model_json

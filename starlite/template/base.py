@@ -25,7 +25,7 @@ class TemplateContext(TypedDict):
 
 
 def url_for(context: TemplateContext, route_name: str, **path_parameters: Any) -> str:
-    """Wrap [route_reverse][starlite.app.route_reverse] to be used in templates.
+    """Wrap :func:`route_reverse <starlite.app.route_reverse>` to be used in templates.
 
     Args:
         context: The template context.
@@ -33,7 +33,7 @@ def url_for(context: TemplateContext, route_name: str, **path_parameters: Any) -
         **path_parameters: Actual values for path parameters in the route.
 
     Raises:
-        NoRouteMatchFoundException: If 'route_name' does not exist, path parameters are missing in **path_parameters or have wrong type.
+        NoRouteMatchFoundException: If ``route_name`` does not exist, path parameters are missing in **path_parameters or have wrong type.
 
     Returns:
         A fully formatted url path.
@@ -45,21 +45,21 @@ def csrf_token(context: TemplateContext) -> str:
     """Set a CSRF token on the template.
 
     Notes:
-        - to use this function make sure to pass an instance of [CSRFConfig][starlite.config.csrf_config.CSRFConfig] to
-        the [Starlite][starlite.app.Starlite] constructor.
+        - to use this function make sure to pass an instance of :ref:`CSRFConfig <starlite.config.csrf_config.CSRFConfig>` to
+        the :class:`Starlite <starlite.app.Starlite>` constructor.
 
     Args:
         context: The template context.
 
 
     Returns:
-        A CSRF token if the app level `csrf_config` is set, otherwise an empty string.
+        A CSRF token if the app level ``csrf_config`` is set, otherwise an empty string.
     """
     return context["request"].scope.get("_csrf_token", "")  # type: ignore
 
 
 def url_for_static_asset(context: TemplateContext, name: str, file_path: str) -> str:
-    """Wrap [url_for_static_asset][starlite.app.url_for_static_asset] to be used in templates.
+    """Wrap :meth:`url_for_static_asset <starlite.app.url_for_static_asset>` to be used in templates.
 
     Args:
         context: The template context object.
@@ -67,7 +67,7 @@ def url_for_static_asset(context: TemplateContext, name: str, file_path: str) ->
         file_path: a string containing path to an asset.
 
     Raises:
-        NoRouteMatchFoundException: If static files handler with 'name' does not exist.
+        NoRouteMatchFoundException: If static files handler with ``name`` does not exist.
 
     Returns:
         A url path to the asset.
@@ -76,7 +76,7 @@ def url_for_static_asset(context: TemplateContext, name: str, file_path: str) ->
 
 
 class TemplateProtocol(Protocol):  # pragma: no cover
-    """Protocol Defining a 'Template'.
+    """Protocol Defining a ``Template``.
 
     Template is a class that has a render method which renders the template into a string.
     """
@@ -118,7 +118,7 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
             Template instance
 
         Raises:
-            [TemplateNotFoundException][starlite.exceptions.TemplateNotFoundException]: if no template is found.
+            :class:`TemplateNotFoundException <starlite.exceptions.TemplateNotFoundException>`: if no template is found.
         """
         ...
 

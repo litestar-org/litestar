@@ -28,7 +28,7 @@ def default_cache_key_builder(request: "Request[Any, Any, Any]") -> str:
 class CacheConfig(BaseModel):
     """Configuration for response caching.
 
-    To enable response caching, pass an instance of this class to the [Starlite][starlite.app.Starlite] constructor
+    To enable response caching, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor
     using the 'cache_config' key.
     """
 
@@ -36,23 +36,23 @@ class CacheConfig(BaseModel):
         arbitrary_types_allowed = True
 
     backend: Optional[CacheBackendProtocol] = None
-    """Instance conforming to [CacheBackendProtocol][starlite.cache.CacheBackendProtocol], default.
+    """Instance conforming to :class:`CacheBackendProtocol <starlite.cache.CacheBackendProtocol>`, default.
 
-    [SimpleCacheBackend()][starlite.cache.SimpleCacheBackend]
+    :class:`SimpleCacheBackend() <starlite.cache.SimpleCacheBackend>`
     """
     expiration: int = 60
     """Default cache expiration in seconds."""
     cache_key_builder: CacheKeyBuilder = default_cache_key_builder
-    """[CacheKeyBuilder][starlite.types.CacheKeyBuilder],
+    """:class:`CacheKeyBuilder <starlite.types.CacheKeyBuilder>`,
 
-    [default_cache_key_builder][starlite.config.cache.default_cache_key_builder] if not provided
+    :func:`default_cache_key_builder <starlite.config.cache.default_cache_key_builder>` if not provided
     """
 
     def to_cache(self) -> Cache:
         """Create a cache wrapper from the config.
 
         Returns:
-            An instance of [Cache][starlite.cache.base.Cache]
+            An instance of :class:`Cache <starlite.cache.base.Cache>`
         """
         return Cache(
             backend=self.backend or SimpleCacheBackend(),

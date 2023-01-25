@@ -53,10 +53,10 @@ class LoggingMiddleware(AbstractMiddleware):
     logger: "Logger"
 
     def __init__(self, app: "ASGIApp", config: "LoggingMiddlewareConfig") -> None:
-        """Initialize `LoggingMiddleware`.
+        """Initialize ``LoggingMiddleware``.
 
         Args:
-            app: The 'next' ASGI app to call.
+            app: The ``next`` ASGI app to call.
             config: An instance of LoggingMiddlewareConfig.
         """
         super().__init__(
@@ -164,7 +164,7 @@ class LoggingMiddleware(AbstractMiddleware):
         """Create a dictionary of values for the message.
 
         Args:
-            request: A [Request][starlite.connection.Request] instance.
+            request: A :class:`Request <starlite.connection.Request>` instance.
 
         Returns:
             An dict.
@@ -209,7 +209,7 @@ class LoggingMiddleware(AbstractMiddleware):
         return data
 
     def create_send_wrapper(self, scope: "Scope", send: "Send") -> "Send":
-        """Create a `send` wrapper, which handles logging response data.
+        """Create a ``send`` wrapper, which handles logging response data.
 
         Args:
             scope: The ASGI connection scope.
@@ -231,7 +231,7 @@ class LoggingMiddleware(AbstractMiddleware):
 
 
 class LoggingMiddlewareConfig(BaseModel):
-    """Configuration for `LoggingMiddleware`"""
+    """Configuration for ``LoggingMiddleware``"""
 
     exclude: Optional[Union[str, List[str]]] = None
     """List of paths to exclude from logging."""
@@ -239,9 +239,7 @@ class LoggingMiddlewareConfig(BaseModel):
     """An identifier to use on routes to disable logging for a particular route."""
     include_compressed_body: bool = False
     """Include body of compressed response in middleware. If `"body"` not set in.
-
-    [`response_log_fields`][starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields] this config value
-    is ignored.
+    :attr:`response_log_fields <LoggingMiddlewareConfig.response_log_fields>` this config value is ignored.
     """
     logger_name: str = "starlite"
     """Name of the logger to retrieve using `app.get_logger("<name>")`."""
@@ -311,28 +309,29 @@ class LoggingMiddlewareConfig(BaseModel):
         """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
-            ```python
-            from starlite import Starlite, Request, LoggingConfig, get
-            from starlite.middleware.logging import LoggingMiddlewareConfig
+            .. code-block: python
 
-            logging_config = LoggingConfig()
+                from starlite import Starlite, Request, LoggingConfig, get
+                from starlite.middleware.logging import LoggingMiddlewareConfig
 
-            logging_middleware_config = LoggingMiddlewareConfig()
+                logging_config = LoggingConfig()
 
-
-            @get("/")
-            def my_handler(request: Request) -> None:
-                ...
+                logging_middleware_config = LoggingMiddlewareConfig()
 
 
-            app = Starlite(
-                route_handlers=[my_handler],
-                logging_config=logging_config,
-                middleware=[logging_middleware_config.middleware],
-            )
-            ```
+                @get("/")
+                def my_handler(request: Request) -> None:
+                    ...
+
+
+                app = Starlite(
+                    route_handlers=[my_handler],
+                    logging_config=logging_config,
+                    middleware=[logging_middleware_config.middleware],
+                )
+
 
         Returns:
-            An instance of DefineMiddleware including 'self' as the config kwarg value.
+            An instance of DefineMiddleware including ``self`` as the config kwarg value.
         """
         return DefineMiddleware(self.middleware_class, config=self)

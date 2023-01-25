@@ -101,8 +101,8 @@ def test_custom_middleware_processing(middleware: Any) -> None:
         )
         if isinstance(middleware_instance, (MiddlewareProtocolRequestLoggingMiddleware, MiddlewareWithArgsAndKwargs)):
             assert middleware_instance.kwarg == "123Jeronimo"
-        if isinstance(middleware, DefineMiddleware) and isinstance(middleware_instance, MiddlewareWithArgsAndKwargs):  # type: ignore[unreachable]
-            assert middleware_instance.arg == 1  # type: ignore
+        if isinstance(middleware, DefineMiddleware) and isinstance(middleware_instance, MiddlewareWithArgsAndKwargs):
+            assert middleware_instance.arg == 1
 
 
 class JSONRequest(BaseModel):

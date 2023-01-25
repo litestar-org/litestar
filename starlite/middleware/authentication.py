@@ -29,7 +29,7 @@ class AuthenticationResult(BaseModel):
 
 class AbstractAuthenticationMiddleware(ABC):
     """Abstract AuthenticationMiddleware that allows users to create their own AuthenticationMiddleware by extending it
-    and overriding the 'authenticate_request' method.
+    and overriding :meth:`AbstractAuthenticationMiddleware.authenticate_request`.
     """
 
     def __init__(
@@ -39,7 +39,7 @@ class AbstractAuthenticationMiddleware(ABC):
         exclude_from_auth_key: str = "exclude_from_auth",
         scopes: Optional["Scopes"] = None,
     ) -> None:
-        """Initialize `AbstractAuthenticationMiddleware`.
+        """Initialize ``AbstractAuthenticationMiddleware``.
 
         Args:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
@@ -76,18 +76,18 @@ class AbstractAuthenticationMiddleware(ABC):
 
     @abstractmethod
     async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:  # pragma: no cover
-        """Receive the http connection and return an `AuthenticationResult`.
+        """Receive the http connection and return an :class:`AuthenticationResult`.
 
         Notes:
             - This method must be overridden by subclasses.
 
         Args:
-            connection: An [ASGIConnection][starlite.connection.ASGIConnection] instance.
+            connection: An :class:`ASGIConnection <starlite.connection.ASGIConnection>` instance.
 
         Raises:
             NotAuthorizedException | PermissionDeniedException: if authentication fails.
 
         Returns:
-            An instance of [AuthenticationResult][starlite.middleware.authentication.AuthenticationResult].
+            An instance of :class:`AuthenticationResult <starlite.middleware.authentication.AuthenticationResult>`.
         """
         raise NotImplementedError("authenticate_request must be overridden by subclasses")

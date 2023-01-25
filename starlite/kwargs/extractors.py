@@ -15,8 +15,6 @@ from typing import (
     cast,
 )
 
-from pydantic.fields import SHAPE_LIST, SHAPE_SINGLETON
-
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
@@ -32,6 +30,7 @@ if TYPE_CHECKING:
     from starlite.connection import ASGIConnection, Request
     from starlite.kwargs import KwargsModel
     from starlite.kwargs.parameter_definition import ParameterDefinition
+    from starlite.signature.models import SignatureField
 
 
 def create_connection_value_extractor(
@@ -279,13 +278,12 @@ async def msgpack_extractor(connection: "Request[Any, Any, Any]") -> Any:
 
 
 def create_multipart_extractor(
-    field_shape: int, field_type: Any, is_data_optional: bool
+    signature_field: "SignatureField", is_data_optional: bool
 ) -> Callable[["ASGIConnection[Any, Any, Any, Any]"], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
     Args:
-        field_shape: The pydantic field shape.
-        field_type: A type for the field.
+        signature_field: A SignatureField instance.
         is_data_optional: Boolean dictating whether the field is optional.
 
     Returns:
@@ -303,9 +301,9 @@ def create_multipart_extractor(
             )
         )
 
-        if field_shape is SHAPE_LIST:
+        if signature_field.is_non_string_sequence:
             return list(form_values.values())
-        if field_shape is SHAPE_SINGLETON and field_type is UploadFile and form_values:
+        if signature_field.is_simple_type and signature_field.field_type is UploadFile and form_values:
             return [v for v in form_values.values() if isinstance(v, UploadFile)][0]
 
         return form_values if form_values or not is_data_optional else None
@@ -351,12 +349,11 @@ def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, An
     """
 
     if kwargs_model.expected_form_data:
-        media_type, model_field = kwargs_model.expected_form_data
+        media_type, signature_field = kwargs_model.expected_form_data
 
         if media_type == RequestEncodingType.MULTI_PART:
             data_extractor = create_multipart_extractor(
-                field_shape=model_field.shape,
-                field_type=model_field.type_,
+                signature_field=signature_field,
                 is_data_optional=kwargs_model.is_data_optional,
             )
         else:

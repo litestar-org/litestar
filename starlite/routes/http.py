@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 class HTTPRoute(BaseRoute):
-    """An HTTP route, capable of handling multiple `HTTPRouteHandler`s."""
+    """An HTTP route, capable of handling multiple ``HTTPRouteHandler``s."""
 
     __slots__ = (
         "route_handler_map",
@@ -37,11 +37,11 @@ class HTTPRoute(BaseRoute):
         path: str,
         route_handlers: List["HTTPRouteHandler"],
     ) -> None:
-        """Initialize `HTTPRoute`.
+        """Initialize ``HTTPRoute``.
 
         Args:
             path: The path for the route.
-            route_handlers: A list of [HTTPRouteHandler][starlite.handlers.http.HTTPRouteHandler].
+            route_handlers: A list of :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>`.
         """
         methods = list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
         if "OPTIONS" not in methods:
@@ -89,7 +89,7 @@ class HTTPRoute(BaseRoute):
             await self._cleanup_temporary_files(form_data=cast("Dict[str, Any]", form_data))
 
     def create_handler_map(self) -> None:
-        """Parse the `router_handlers` of this route and return a mapping of
+        """Parse the ``router_handlers`` of this route and return a mapping of
         http- methods and route handlers.
         """
         for route_handler in self.route_handlers:
@@ -145,7 +145,7 @@ class HTTPRoute(BaseRoute):
         self, scope: "Scope", request: Request, parameter_model: "KwargsModel", route_handler: "HTTPRouteHandler"
     ) -> "ASGIApp":
         """Call the before request handlers, retrieve any data required for the route handler, and call the route
-        handler's `to_response` method.
+        handler's ``to_response`` method.
 
         This is wrapped in a try except block - and if an exception is raised,
         it tries to pass it to an appropriate exception handler - if defined.
@@ -181,7 +181,7 @@ class HTTPRoute(BaseRoute):
     async def _get_response_data(
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
     ) -> Tuple[Any, Optional["DependencyCleanupGroup"]]:
-        """Determine what kwargs are required for the given route handler's `fn` and calls it."""
+        """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
         parsed_kwargs: Dict[str, Any] = {}
         cleanup_group: Optional["DependencyCleanupGroup"] = None
 
@@ -224,8 +224,8 @@ class HTTPRoute(BaseRoute):
         """Retrieve and un-pickle the cached response, if existing.
 
         Args:
-            request: The [Request][starlite.connection.Request] instance
-            route_handler: The [HTTPRouteHandler][starlite.handlers.http.HTTPRouteHandler] instance
+            request: The :class:`Request <starlite.connection.Request>` instance
+            route_handler: The :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>` instance
 
         Returns:
             A cached response instance, if existing.

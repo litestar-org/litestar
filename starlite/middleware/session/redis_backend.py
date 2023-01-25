@@ -11,10 +11,11 @@ class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
     __slots__ = ("redis",)
 
     def __init__(self, config: "RedisBackendConfig") -> None:
-        """Initialize `RedisBackend`.
+        """Initialize ``RedisBackend``.
 
         Notes:
-            - Requires `redis`. Install with `pip install starlite[redis]`
+            - Requires ``redis``. Install with ``pip install starlite[redis]``
+
         """
         super().__init__(config=config)
         self.redis = config.redis
@@ -23,22 +24,22 @@ class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
         return f"{self.config.key_prefix}:{session_id}"
 
     async def get(self, session_id: str) -> Union[bytes, str, None]:
-        """Load data associated with `session_id` from redis.
+        """Load data associated with ``session_id`` from redis.
 
         Args:
             session_id: The session-ID
 
         Returns:
-            The session data, if existing, otherwise `None`.
+            The session data, if existing, otherwise ``None``.
         """
 
         return await self.redis.get(self._id_to_storage_key(session_id))
 
     async def set(self, session_id: str, data: bytes) -> None:
-        """Store `data` in redis under `<prefix>:<session_id>`
+        """Store ``data`` in redis under ``<prefix>:<session_id>``
 
-        If there is already data associated with `session_id`, replace
-        it with `data` and reset its expiry time
+        If there is already data associated with ``session_id``, replace
+        it with ``data`` and reset its expiry time
 
         Args:
             session_id: The session-ID
@@ -50,7 +51,7 @@ class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
         await self.redis.set(self._id_to_storage_key(session_id), data, ex=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
-        """Delete the data associated with `session_id` from redis. Fail silently if no such session-ID exists.
+        """Delete the data associated with ``session_id`` from redis. Fail silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID
@@ -75,11 +76,11 @@ class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
 
 
 class RedisBackendConfig(ServerSideSessionConfig):
-    """Configuration for `RedisBackend`"""
+    """Configuration for ``RedisBackend``"""
 
     _backend_class: Type[RedisBackend] = RedisBackend
 
     redis: Redis
-    """`redis.asyncio.Redis` instance."""
+    """``redis.asyncio.Redis`` instance."""
     key_prefix: str = "STARLITE_SESSION"
-    """Prefix to store data under after the schema of `<prefix>:<session-ID>`"""
+    """Prefix to store data under after the schema of ``<prefix>:<session-ID>``"""

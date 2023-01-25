@@ -35,7 +35,7 @@ class RedisCacheBackend(CacheBackendProtocol):
     """Redis-based cache backend."""
 
     def __init__(self, config: RedisCacheBackendConfig):
-        """Initialize `RedisCacheBackend`
+        """Initialize ``RedisCacheBackend``
 
         Args:
             config: required configuration to connect to Redis.
@@ -58,7 +58,7 @@ class RedisCacheBackend(CacheBackendProtocol):
             key: name of cached value.
 
         Returns:
-            Cached value if existing else `None`.
+            Cached value if existing else ``None``.
         """
 
         return await self._redis.get(key)
@@ -67,7 +67,7 @@ class RedisCacheBackend(CacheBackendProtocol):
         """Set a value in cache for a given key for a duration determined by expiration.
 
         Args:
-            key: key to cache `value` under.
+            key: key to cache ``value`` under.
             value: the value to be cached.
             expiration: expiration of cached value in seconds.
 

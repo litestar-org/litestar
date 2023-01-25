@@ -32,7 +32,7 @@ from starlite.response import (
     StreamingResponse,
     TemplateResponse,
 )
-from starlite.signature import SignatureModelFactory
+from starlite.signature import create_signature_model
 from starlite.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from starlite.testing import RequestFactory, create_test_client
 from tests import Person, PersonFactory
@@ -100,7 +100,7 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         return data
 
     person_instance = PersonFactory.build()
-    test_function.signature_model = SignatureModelFactory(test_function.fn.value, [], set()).create_signature_model()  #
+    test_function.signature_model = create_signature_model(test_function.fn.value, [], set())
 
     response = await test_function.to_response(
         data=test_function.fn.value(data=person_instance),
@@ -117,7 +117,7 @@ async def test_to_response_returning_starlite_response() -> None:
         return Response(media_type=MediaType.TEXT, content="ok")
 
     with create_test_client(test_function) as client:
-        http_route: HTTPRoute = client.app.routes[0]  # type: ignore
+        http_route: HTTPRoute = client.app.routes[0]
         route_handler = http_route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
@@ -142,7 +142,7 @@ async def test_to_response_returning_starlette_response(
         return expected_response
 
     with create_test_client(test_function) as client:
-        http_route: HTTPRoute = client.app.routes[0]  # type: ignore
+        http_route: HTTPRoute = client.app.routes[0]
         route_handler = http_route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
@@ -170,7 +170,7 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
         )
 
     with create_test_client(test_function) as client:
-        route: HTTPRoute = client.app.routes[0]  # type: ignore
+        route: HTTPRoute = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
@@ -230,7 +230,7 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         )
 
     with create_test_client(test_function) as client:
-        route: HTTPRoute = client.app.routes[0]  # type: ignore
+        route: HTTPRoute = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
@@ -284,7 +284,7 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
             )
 
         with create_test_client(test_function) as client:
-            route: HTTPRoute = client.app.routes[0]  # type: ignore
+            route: HTTPRoute = client.app.routes[0]
             route_handler = route.route_handlers[0]
             response = await route_handler.to_response(
                 data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
@@ -321,7 +321,7 @@ async def func_to_response_template_response(anyio_backend: str) -> None:
         )
 
     with create_test_client(test_function) as client:
-        route: HTTPRoute = client.app.routes[0]  # type: ignore
+        route: HTTPRoute = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()

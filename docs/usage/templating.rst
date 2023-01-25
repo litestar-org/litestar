@@ -1,0 +1,304 @@
+Templates
+=========
+
+Starlite has built-in support for both the `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
+and `Mako <https://www.makotemplates.org/>`_ template engines, as well as abstractions to
+make use of any template engine you wish.
+
+Template engines
+----------------
+
+To stay lightweight, a Starlite installation does not include the *Jinja* or *Mako*
+libraries themselves. Before you can start using them, you have to install it via the
+respective extra:
+
+
+* ``pip install starlite[jinja]`` for Jinja2
+* ``pip install starlite[mako]`` for Mako
+
+.. tip::
+
+    *Jinja* is included in the ``standard`` extra. If you installed Starlite using
+    ``starlite[standard]``, you do not need to explicitly add the ``jinja`` extra.
+
+
+Registering a template engine
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To register one of the built-in template engines you simply need to pass it to the Starlite constructor:
+
+.. tab-set::
+
+    .. tab-item:: Jinja
+        :sync: jinja
+
+        .. literalinclude:: /examples/templating/template_engine_jinja.py
+            :language: python
+
+    .. tab-item:: Mako
+        :sync: mako
+
+        .. literalinclude:: /examples/templating/template_engine_mako.py
+            :language: python
+
+.. note::
+
+    The ``directory`` parameter passed to :class:`TemplateConfig <starlite.config.template.TemplateConfig>`
+    can be either a directory or list of directories to use for loading templates.
+
+
+Defining a custom template engine
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you wish to use another templating engine, you can easily do so by implementing
+:class:`TemplateEngineProtocol <starlite.template.TemplateEngineProtocol>`. This class accepts a generic
+argument which should be the template class, and it specifies two methods:
+
+.. code-block:: python
+
+   from typing import Protocol, Union, List
+   from pydantic import DirectoryPath
+
+   # the template class of the respective library
+   from some_lib import SomeTemplate
+
+
+   class TemplateEngineProtocol(Protocol[SomeTemplate]):
+       def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
+           """Builds a template engine."""
+           ...
+
+       def get_template(self, template_name: str) -> SomeTemplate:
+           """Loads the template with template_name and returns it."""
+           ...
+
+Once you have your custom engine you can register it as you would the built-in engines.
+
+Accessing the template engine instance
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you need to access the template engine instance, you can do so via the
+:class:`TemplateConfig.engine <starlite.config.template.TemplateConfig>` attribute:
+
+.. tab-set::
+
+    .. tab-item:: Jinja
+        :sync: jinja
+
+        .. literalinclude:: /examples/templating/engine_instance_jinja.py
+            :language: python
+
+    .. tab-item:: mako
+        :sync: mako
+
+        .. literalinclude:: /examples/templating/engine_instance_mako.py
+            :language: python
+
+Template responses
+------------------
+
+Once you have a template engine registered you can return :class:`Templates <starlite.Template>` from
+your route handlers:
+
+.. tab-set::
+
+    .. tab-item:: Jinja
+        :sync: jinja
+
+        .. literalinclude:: /examples/templating/returning_templates_jinja.py
+            :language: python
+
+    .. tab-item:: mako
+        :sync: mako
+
+        .. literalinclude:: /examples/templating/returning_templates_mako.py
+            :language: python
+
+
+* ``name`` is the name of the template file within on of the specified directories. If
+  no file with that name is found, a :class:`TemplateNotFoundException <starlite.exceptions.TemplateNotFoundException>`
+  exception will be raised.
+* ``context`` is a dictionary containing arbitrary data that will be passed to the template
+  engine's ``render`` method. For Jinja and Mako, this data will be available in the `template context <#template-context>`_
+
+Template context
+----------------
+
+Both `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_ and `Mako <https://www.makotemplates.org/>`_ support passing a context
+object to the template as well as defining callables that will be available inside the template.
+
+Accessing the request instance
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The current :class:`Request <starlite.connection.request.Request>` is available within the
+template context under ``request``, which also provides access to the :doc:`app instance </usage/the-starlite-app>`.
+
+Accessing ``app.state.key`` for example would look like this:
+<strong>check_context_key: </strong>{{ check_context_key() }}
+
+.. tab-set::
+
+    .. tab-item:: Jinja
+        :sync: jinja
+
+        .. code-block:: html
+
+           <html>
+               <body>
+                   <div>
+                       <span>My state value: {{request.app.state.some_key}}</span>
+                   </div>
+               </body>
+           </html>
+
+
+    .. tab-item:: mako
+        :sync: mako
+
+        .. code-block:: html
+
+           html
+           <html>
+               <body>
+                   <div>
+                       <span>My state value: ${request.app.state.some_key}</span>
+                   </div>
+               </body>
+           </html>
+
+
+
+Adding CSRF inputs
+^^^^^^^^^^^^^^^^^^
+
+If you want to add a hidden ``<input>`` tag containing a
+`CSRF token <https://developer.mozilla.org/en-US/docs/Web/Security/Types_of_attacks#cross-site_request_forgery_csrf>`_,
+you first need to configure :ref:`CSRF protection <usage/middleware/builtin-middleware:csrf>`.
+With that in place, you can now insert the CSRF input field inside an HTML form:
+
+.. tab-set::
+
+    .. tab-item:: Jinja
+        :sync: jinja
+
+        .. code-block:: html
+
+           <html>
+               <body>
+                   <div>
+                       <form action="https://myserverurl.com/some-endpoint" method="post">
+                           {{ csrf_input }}
+                           <label for="fname">First name:</label><br>
+                           <input type="text" id="fname" name="fname">
+                           <label for="lname">Last name:</label><br>
+                           <input type="text" id="lname" name="lname">
+                       </form>
+                   </div>
+               </body>
+           </html>
+
+    .. tab-item:: mako
+        :sync: mako
+
+        .. code-block:: html
+
+           <html>
+               <body>
+                   <div>
+                       <form action="https://myserverurl.com/some-endpoint" method="post">
+                           ${csrf_input}
+                           <label for="fname">First name:</label><br>
+                           <input type="text" id="fname" name="fname">
+                           <label for="lname">Last name:</label><br>
+                           <input type="text" id="lname" name="lname">
+                       </form>
+                   </div>
+               </body>
+           </html>
+
+
+
+The input holds a CSRF token as its value and is hidden so users cannot see or interact with it. The token is sent
+back to the server when the form is submitted, and is checked by the CSRF middleware.
+
+Passing template context
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Passing context to the template is very simple - its one of the kwargs expected by the :class:`Template <starlite.response.TemplateResponse>`
+container, so simply pass a string keyed dictionary of values:
+
+.. code-block:: python
+
+   from starlite import Template, get
+
+
+   @get(path="/info")
+   def info() -> Template:
+       return Template(name="info.html", context={"numbers": "1234567890"})
+
+
+Template callables
+------------------
+
+Both `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_ and `Mako <https://www.makotemplates.org/>`_ allow users to define custom
+callables that are ran inside the template. Starlite builds on this and offers some functions out of the box.
+
+Built-in callables
+^^^^^^^^^^^^^^^^^^
+
+``url_for``
+    To access urls for route handlers you can use the ``url_for`` function. Its signature and behaviour
+    matches :meth:`route_reverse <starlite.app.Starlite.route_reverse>` behaviour. More details about route handler indexing
+    can be found :ref:`here <usage/route-handlers:route handler indexing>`.
+
+``csrf_token``
+    This function returns the request's unique :ref:`CSRF token <usage/middleware/builtin-middleware:csrf>` You can use this
+    if you wish to insert the ``csrf_token`` into non-HTML based templates, or insert it into HTML templates not using a hidden input field but
+    by some other means, for example inside a special ``<meta>`` tag.
+
+``url_for_static_asset``
+    URLs for static files can be created using the ``url_for_static_asset`` function. It's signature and behaviour are identical to
+    :meth:`app.url_for_static_asset <starlite.app.Starlite.url_for_static_asset>`.
+
+
+Registering template callables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The  :class:`TemplateEngineProtocol <starlite.template.base.TemplateEngineProtocol>` specifies the method
+``register_template_callable`` that allows defining a custom callable on a template engine. This method is implemented
+for the two built in engines, and it can be used to register callables that will be injected into the template. The callable
+should expect one argument - the context dictionary. It can be any callable - a function, method or class that defines
+the call method. For example:
+
+.. tab-set::
+
+    .. tab-item:: Jinja
+        :sync: jinja
+
+        .. literalinclude:: /examples/templating/template_functions_jinja.py
+            :caption: template_functions.py
+            :language: python
+
+        .. literalinclude:: /examples/templating/templates/index.html.jinja2
+            :language: html
+            :caption: templates/index.html.jinja2
+
+    .. tab-item:: Mako
+        :sync: mako
+
+        .. literalinclude:: /examples/templating/template_functions_mako.py
+            :caption: template_functions.py
+            :language: python
+
+        .. literalinclude:: /examples/templating/templates/index.html.mako
+            :language: html
+            :caption: templates/index.html.mako
+
+
+Run the example with ``uvicorn template_functions:app`` , visit  http://127.0.0.1:8000, and
+you'll see
+
+
+.. image:: /images/examples/template_engine_callable.png
+   :target: /images/examples/template_engine_callable.png
+   :alt: Template engine callable example

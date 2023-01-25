@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 class WebSocketRoute(BaseRoute):
-    """A websocket route, handling a single `WebsocketRouteHandler`"""
+    """A websocket route, handling a single ``WebsocketRouteHandler``"""
 
     __slots__ = (
         "route_handler",
@@ -30,7 +30,7 @@ class WebSocketRoute(BaseRoute):
 
         Args:
             path: The path for the route.
-            route_handler: An instance of [WebsocketRouteHandler][starlite.handlers.websocket.WebsocketRouteHandler].
+            route_handler: An instance of :class:`WebsocketRouteHandler <starlite.handlers.websocket.WebsocketRouteHandler>`.
         """
         self.route_handler = route_handler
         self.handler_parameter_model: Optional["KwargsModel"] = None

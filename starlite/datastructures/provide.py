@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 
 class Provide:
-    """A wrapper class for dependency injection."""
+    """Wrapper class for dependency injection"""
 
     __slots__ = (
         "dependency",
@@ -46,7 +46,7 @@ class Provide:
         use_cache: bool = False,
         sync_to_thread: bool = False,
     ) -> None:
-        """Initialize `Provide`
+        """Initialize ``Provide``
 
         Args:
             dependency: Callable to inject, can be a function, method or class.
@@ -60,7 +60,7 @@ class Provide:
         self.has_sync_callable = not is_async_callable(self.dependency.value)
 
     async def __call__(self, **kwargs: Any) -> Any:
-        """Proxy a call to 'self.proxy'."""
+        """Proxy a call to ``self.proxy``."""
 
         if self.use_cache and self.value is not Empty:
             return self.value
@@ -88,16 +88,16 @@ class Provide:
 class DependencyCleanupGroup:
     """Wrapper for generator based dependencies.
 
-    Simplify cleanup by wrapping `next`/`anext` calls and providing facilities to `throw` / `athrow` into all generators
-    consecutively. An instance of this class can be used as a contextmanager, which will automatically throw any
-    exceptions into its generators. All exceptions caught in this manner will be re-raised after they have been thrown
-    in the generators.
+    Simplify cleanup by wrapping :func:`next` / :func:`anext` calls and providing facilities to
+    :meth:`throw <generator.throw>` / :meth:`athrow <agen.athrow>` into all generators consecutively. An instance of
+    this class can be used as a contextmanager, which will automatically throw any exceptions into its generators. All
+    exceptions caught in this manner will be re-raised after they have been thrown in the generators.
     """
 
     __slots__ = ("_generators", "_closed")
 
     def __init__(self, generators: Optional[List["AnyGenerator"]] = None) -> None:
-        """Initialize `DependencyCleanupGroup`.
+        """Initialize ``DependencyCleanupGroup``.
 
         Args:
             generators: An optional list of generators to be called at cleanup
@@ -133,9 +133,9 @@ class DependencyCleanupGroup:
         return AsyncCallable(wrapped)
 
     async def cleanup(self) -> None:
-        """Execute cleanup by calling `next` / `anext` on all generators.
+        """Execute cleanup by calling :func:`next` / :func:`anext` on all generators.
 
-        If there are multiple generators to be called, they will be executed in a `TaskGroup`.
+        If there are multiple generators to be called, they will be executed in a :class:`anyio.TaskGroup`.
 
         Returns:
             None

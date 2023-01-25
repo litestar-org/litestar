@@ -5,7 +5,6 @@
 .mypy_cache/
 .pytest_cache/
 .scannerwork/
-.tox/
 .venv/
 .vscode/
 __pycache__/
@@ -26,3 +25,5 @@ target/
 .python-version
 coverage.*
 setup.py
+/docs/_build/
+/.auto_pytabs_cache/

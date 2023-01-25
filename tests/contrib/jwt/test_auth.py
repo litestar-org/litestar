@@ -311,10 +311,35 @@ def test_jwt_auth_openapi() -> None:
     }
 
 
-def test_oauth2_password_bearer_auth_openapi() -> None:
+async def test_oauth2_password_bearer_auth_openapi(
+    mock_db: "SimpleCacheBackend",
+) -> None:
+    user = UserFactory.build()
+
+    await mock_db.set(str(user.id), user, 120)
+
+    async def retrieve_user_handler(token: Token, connection: Any) -> Any:
+        assert connection
+        return await mock_db.get(token.sub)
+
     jwt_auth = OAuth2PasswordBearerAuth(
-        token_url="/login", token_secret="abc123", retrieve_user_handler=lambda _: None  # type: ignore
+        token_url="/login", token_secret="abc123", retrieve_user_handler=retrieve_user_handler  # type: ignore
     )
+
+    @get("/login")
+    def login_handler() -> Response["User"]:
+        return jwt_auth.login(identifier=str(user.id))
+
+    @get("/login_custom")
+    def login_custom_handler() -> Response["User"]:
+        return jwt_auth.login(identifier=str(user.id), response_body=user)
+
+    with create_test_client(route_handlers=[login_custom_handler, login_handler]) as client:
+        response = client.get("/login")
+        response_custom = client.get("/login_custom")
+        assert "access_token" in response.content.decode()
+        assert response.content != response_custom.content
+
     assert jwt_auth.openapi_components.dict(exclude_none=True) == {
         "securitySchemes": {
             "BearerToken": {

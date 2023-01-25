@@ -8,7 +8,7 @@ from starlite.types import Method
 class CSRFConfig(BaseModel):
     """Configuration for CSRF (Cross Site Request Forgery) protection.
 
-    To enable CSRF protection, pass an instance of this class to the [Starlite][starlite.app.Starlite] constructor using
+    To enable CSRF protection, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor using
     the 'csrf_config' key.
     """
 
@@ -21,11 +21,11 @@ class CSRFConfig(BaseModel):
     header_name: str = "x-csrftoken"
     """The header that will be expected in each request."""
     cookie_secure: bool = False
-    """A boolean value indicating whether to set the `Secure` attribute on the cookie."""
+    """A boolean value indicating whether to set the ``Secure`` attribute on the cookie."""
     cookie_httponly: bool = False
-    """A boolean value indicating whether to set the `HttpOnly` attribute on the cookie."""
+    """A boolean value indicating whether to set the ``HttpOnly`` attribute on the cookie."""
     cookie_samesite: Literal["lax", "strict", "none"] = "lax"
-    """The value to set in the `SameSite` attribute of the cookie."""
+    """The value to set in the ``SameSite`` attribute of the cookie."""
     cookie_domain: Optional[str] = None
     """Specifies which hosts can receive the cookie."""
     safe_methods: Set[Method] = {"GET", "HEAD"}

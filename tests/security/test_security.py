@@ -147,7 +147,7 @@ def test_abstract_security_config_setting_openapi_components(
         if openapi_config is not None:
             assert client.app.openapi_config
             assert client.app.openapi_config.components
-            assert client.app.openapi_config.components.dict(exclude_none=True) == expected  # type: ignore
+            assert client.app.openapi_config.components.dict(exclude_none=True) == expected
         else:
             assert not client.app.openapi_config
 

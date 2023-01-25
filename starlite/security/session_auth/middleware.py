@@ -83,7 +83,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
             exclude: A pattern or list of patterns to skip in the authentication middleware.
             exclude_opt_key: An identifier to use on routes to disable authentication and authorization checks for a particular route.
             scopes: ASGI scopes processed by the authentication middleware.
-            retrieve_user_handler: Callable that receives the 'session' value from the authentication middleware and returns a 'user' value.
+            retrieve_user_handler: Callable that receives the ``session`` value from the authentication middleware and returns a ``user`` value.
         """
         super().__init__(app=app, exclude=exclude, exclude_from_auth_key=exclude_opt_key, scopes=scopes)
         self.retrieve_user_handler = retrieve_user_handler
@@ -92,14 +92,14 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         """Authenticate an incoming connection.
 
         Args:
-            connection: A Starlette 'HTTPConnection' instance.
+            connection: A Starlette ``HTTPConnection`` instance.
 
         Raises:
-            [NotAuthorizedException][starlite.exceptions.NotAuthorizedException]: if session data is empty or user
+            :class:`NotAuthorizedException <starlite.exceptions.NotAuthorizedException>`: if session data is empty or user
                 is not found.
 
         Returns:
-            [AuthenticationResult][starlite.middleware.authentication.AuthenticationResult]
+            :class:`AuthenticationResult <starlite.middleware.authentication.AuthenticationResult>`
         """
         if not connection.session or connection.session is Empty:  # type: ignore
             # the assignment of 'Empty' forces the session middleware to clear session data.
