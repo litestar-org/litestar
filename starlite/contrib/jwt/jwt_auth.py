@@ -314,9 +314,9 @@ class OAuth2Login(BaseModel):
 
     access_token: str
     """Valid JWT access token"""
-    refresh_token: str | None = None
+    refresh_token: Optional[str] = None
     """Optional valid refresh token JWT"""
-    expires_in: int | None = None
+    expires_in: Optional[int] = None
     """Expiration time of the token in seconds. """
     token_type: str
 
