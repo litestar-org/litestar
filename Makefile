@@ -1,4 +1,4 @@
-.PHONY: docs
+.PHONY: docs docs-lint
 
 docs-clean:
 	rm -rf docs/_build
@@ -8,6 +8,9 @@ docs-serve:
 
 docs: docs-clean
 	sphinx-build -M html docs docs/_build/ -E -a -j auto --keep-going
+
+docs-lint:
+	@vale README.md docs
 
 test-examples:
 	pytest docs/examples
