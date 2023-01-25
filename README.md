@@ -42,7 +42,7 @@ Check out the [documentation 📚](https://starlite-api.github.io/starlite/).
 pip install starlite
 ```
 
-## Quick Start
+## Quick start
 
 ```python
 from starlite import Starlite, get
@@ -57,7 +57,7 @@ def hello_world() -> dict[str, str]:
 app = Starlite(route_handlers=[hello_world])
 ```
 
-## Core Features
+## Core features
 
 - [Class based controllers](#class-based-controllers)
 - [Dependency Injection](#dependency-injection)
@@ -68,9 +68,9 @@ app = Starlite(route_handlers=[hello_world])
 - [Life Cycle Hooks](#request-life-cycle-hooks)
 - [Route Guards based Authorization](#route-guards)
 - Layered Parameter declaration
-- SQLAlchemy Support (via plugin)
-- Piccolo ORM Support (via plugin)
-- Tortoise ORM Support (via plugin)
+- SQLAlchemy plugin support
+- Piccolo ORM plugin support
+- Tortoise ORM plugin support
 - Extended testing support
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Redoc](https://github.com/Redocly/redoc)
@@ -78,41 +78,39 @@ app = Starlite(route_handlers=[hello_world])
   - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - Support for dataclasses and `TypedDict`
 - [Trio](https://trio.readthedocs.io/en/stable/) support (built-in, via [AnyIO](https://anyio.readthedocs.io/))
-- Ultra-fast json serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
+- Ultra-fast JSON serialization and deserialization using [msgspec](https://github.com/jcrist/msgspec)
 
-## Example Applications
+## Example applications
 
 - [starlite-pg-redis-docker](https://github.com/starlite-api/starlite-pg-redis-docker): In addition to Starlite, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Starlite projects, this application is open to contributions, big and small.
 - [starlite-hello-world](https://github.com/starlite-api/starlite-hello-world): A bare-minimum application setup. Great
-  for testing and POC work.
+  for testing and Proof-Of-Concept (POC) work.
 
 ## The name `Starlite` and relation to `Starlette`
 
-Starlite was originally built using the [Starlette ASGI toolkit](https://www.starlette.io/). The name `Starlite` was
-meant to show this relation. But, over time Starlite grew in capabilities and complexity, and eventually we no longer needed
-to depend on Starlette. From version `1.39.0` onward `starlette` was removed as a dependency of Starlite, and the name now carries
-this piece of history with it.
+Starlite was originally built using the [Starlette ASGI toolkit](https://www.starlette.io/). The name `Starlite` initially showed this relation. But, over time Starlite grew in capabilities and complexity, and eventually Starlette was no longer needed
+as a dependency. From version `1.39.0` onward Starlite no longer depends on `starlette` and the name now carries this piece of history with it.
 
 ## Performance
 
-Starlite is fast. It is on par with, or significantly faster than comparable ASGI frameworks.
+Starlite is fast. It's on par with, or significantly faster than comparable ASGI frameworks.
 
 You can see and run the benchmarks [here](https://github.com/starlite-api/api-performance-tests),
-or read more about it [here](https://starlite-api.github.io/starlite/latest/benchmarks) in our documentation.
+or read more about it [here](https://starlite-api.github.io/starlite/latest/benchmarks) in the documentation.
 
-### JSON Benchmarks
+### JSON benchmarks
 
 ![JSON benchmarks](docs/images/benchmarks/rps_json.svg)
 
-### Plaintext Benchmarks
+### Plain Text benchmarks
 
-![Plaintext benchmarks](docs/images/benchmarks/rps_plaintext.svg)
+![Plain Text benchmarks](docs/images/benchmarks/rps_plaintext.svg)
 
 ## Features
 
-### Class Based Controllers
+### Class-based controllers
 
 While supporting function based route handlers, Starlite also supports and promotes python OOP using class based
 controllers:
@@ -163,23 +161,22 @@ class UserController(Controller):
         ...
 ```
 
-### Data Parsing, Type Hints and Pydantic
+### Data parsing, Type Hints and Pydantic
 
 One key difference between Starlite and Starlette/FastAPI is in parsing of form data and query parameters- Starlite
 supports mixed form data and has faster and better query parameter parsing.
 
-Starlite is rigorously typed, and it enforces typing. For example, if you forget to type a return value for a route
-handler, an exception will be raised. The reason for this is that Starlite uses typing data to generate OpenAPI specs,
+Starlite is rigorously typed, and it enforces typing. For example, you'll stumble across an exception if you forget to type a return value for a route
+handler. The reason for this is that Starlite uses typing data to generate OpenAPI specs,
 as well as to validate and parse data. Thus typing is absolutely essential to the framework.
 
 Furthermore, Starlite allows extending its support using plugins.
 
-### Plugin System, ORM support and DTOs
+### Plugin system, ORM support and DTOs
 
 Starlite has a plugin system that allows the user to extend serialization/deserialization, OpenAPI generation and other
 features. It ships with a builtin plugin for SQL Alchemy, which allows the user to use SQLAlchemy declarative classes
-"natively", i.e. as type parameters that will be serialized/deserialized and to return them as values from route
-handlers.
+natively, to serialize/deserialize the type parameters and return them as values from the route handlers.
 
 Starlite also supports the programmatic creation of DTOs with a `DTOFactory` class, which also supports the use of
 plugins.
@@ -187,20 +184,20 @@ plugins.
 ### OpenAPI
 
 Starlite has custom logic to generate OpenAPI 3.1.0 schema, the latest version. The schema generated by Starlite is
-significantly more complete and more correct than those generated by FastAPI, and they include optional generation of
+significantly more comprehensive than those generated by FastAPI, and they include optional generation of
 examples using the `pydantic-factories` library.
 
-#### ReDoc, Swagger-UI and Stoplight Elements API Documentation
+#### Redoc, Swagger-UI and Stoplight Elements API documentation
 
 Starlite serves the documentation from the generated OpenAPI schema with:
 
-- [ReDoc](https://redoc.ly/)
+- [Redoc](https://redoc.ly/)
 - [Swagger-UI](https://swagger.io/tools/swagger-ui/)
 - [Stoplight Elements](https://github.com/stoplightio/elements)
 
 All these are available and enabled by default.
 
-### Dependency Injection
+### Dependency injection
 
 Starlite has a simple but powerful DI system inspired by pytest. You can define named dependencies - sync or async - at
 different levels of the application, and then selective use or overwrite them.
@@ -231,7 +228,7 @@ Starlite supports typical ASGI middleware and ships with middlewares to handle t
 - GZip and Brotli compression
 - Client- and server-side sessions
 
-### Route Guards
+### Route guards
 
 Starlite has an authorization mechanism called `guards`, which allows the user to define guard functions at different
 level of the application (app, router, controller etc.) and validate the request before hitting the route handler
@@ -261,25 +258,25 @@ async def index() -> None:
 app = Starlite([index])
 ```
 
-### Request Life Cycle Hooks
+### Request life cycle hooks
 
-Starlite supports request life cycle hooks, similarly to Flask - i.e. `before_request` and `after_request`
+Starlite supports request life cycle hooks, similarly to Flask, that's `before_request` and `after_request`
 
 ## Contributing
 
-Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
-or [join our Matrix](https://matrix.to/#/#starlitespace:matrix.org) space
+Starlite is open to contributions big and small. You can always [join the discord](https://discord.gg/X3FJqy8d2j) server
+or [join the Matrix](https://matrix.to/#/#starlitespace:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
 see [the contribution guide](CONTRIBUTING.md).
 
 ## Contributors ✨
 
+<!-- vale off -->
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
-<!-- vale off -->
 
 <table>
   <tbody>
@@ -388,7 +385,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tbody>
 </table>
 
-<!-- vale on -->
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 
@@ -396,3 +392,4 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
 Contributions of any kind welcome!
+<!-- vale on -->
