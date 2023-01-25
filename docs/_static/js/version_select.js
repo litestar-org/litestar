@@ -29,39 +29,72 @@ const createSelectedVersionEl = (currentVersion, latestVersion) => {
     return container
 }
 
-const makeVersionSelect = () => {
+
+const addVersionBanner = ({selectedVersion, latestVersion}) => {
+    if (selectedVersion === latestVersion) {
+        return
+    }
+    const page = document.querySelector(".page")
+    if (!page) {
+        return
+    }
+
+    const container = document.createElement("div")
+    container.id = "version-warning"
+    const versionAdjective = selectedVersion === "dev" ? "a preview" : "an older"
+
+    const versionText = document.createElement("span")
+    versionText.textContent = `You are viewing the documentation for ${versionAdjective} version of Starlite.`
+
+    const latestLink = document.createElement("a")
+    latestLink.href = baseURL + "latest"
+    latestLink.textContent = "Click here to get to the latest version"
+
+    container.appendChild(versionText)
+    container.appendChild(latestLink)
+
+    page.parentElement.insertBefore(container, page)
+}
+
+const addVersionSelect = ({versions, selectedVersion, latestVersion}) => {
+    const searchBoxElement = document.getElementById("searchbox")
+    const selectContainer = document.createElement("div")
+
+    selectContainer.id = "version-select"
+
+    const selectedVersionElement = createSelectedVersionEl(selectedVersion, latestVersion)
+    selectContainer.appendChild(selectedVersionElement)
+
+    const listElement = document.createElement("ul")
+    listElement.classList.add("hidden")
+    listElement.addEventListener("click", () => container.classList.toggle("hidden"))
+    versions.forEach(version => {
+        const listItem = document.createElement("li")
+        const link = document.createElement("a")
+        link.textContent = version.version === latestVersion ? version.title + " (latest)" : version.title
+        link.href = baseURL + version.version
+        listItem.appendChild(link)
+        listElement.appendChild(listItem)
+
+    })
+    selectContainer.appendChild(listElement)
+    searchBoxElement.after(selectContainer)
+}
+
+const setupVersionUtils = () => {
     const selectedVersion = getSelectedVersion()
     if (selectedVersion === null) {
         return
     }
 
     loadVersions().then(versions => {
-        const searchBoxElement = document.getElementById("searchbox")
-        const selectContainer = document.createElement("div")
-
-        selectContainer.id = "version-select"
-
         const latestVersion = versions[0]["version"]
-        const selectedVersionElement = createSelectedVersionEl(selectedVersion, latestVersion)
-        selectContainer.appendChild(selectedVersionElement)
+        const versionSpec = {versions, selectedVersion, latestVersion}
 
-        const listElement = document.createElement("ul")
-        listElement.classList.add("hidden")
-        listElement.addEventListener("click", () => container.classList.toggle("hidden"))
-        versions.forEach(version => {
-            const listItem = document.createElement("li")
-            const link = document.createElement("a")
-            link.textContent = version.version === latestVersion ? version.title + " (latest)" : version.title
-            link.href = baseURL + version.version
-            listItem.appendChild(link)
-            listElement.appendChild(listItem)
-
-        })
-        selectContainer.appendChild(listElement)
-
-        searchBoxElement.after(selectContainer)
+        addVersionSelect(versionSpec)
+        addVersionBanner(versionSpec)
     })
 }
 
 
-window.addEventListener("DOMContentLoaded", makeVersionSelect)
+window.addEventListener("DOMContentLoaded", setupVersionUtils)
