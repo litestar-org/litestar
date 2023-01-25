@@ -29,7 +29,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
       - name: Deploy to GH-Pages (preview)
-        if:  ${{ github.event_name != 'release' }}
+        if: ${{ github.event_name != 'release' }}
         run: python tools/publish_docs.py --version dev --push
       - name: Deploy to GH-Pages (release)
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
