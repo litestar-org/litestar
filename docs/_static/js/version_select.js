@@ -23,7 +23,7 @@ const createSelectedVersionEl = (currentVersion, latestVersion) => {
     container.textContent = "Version: "
 
     const versionEl = document.createElement("span")
-    versionEl.textContent = currentVersion === "latest" ? latestVersion : currentVersion
+    versionEl.textContent = currentVersion === "latest" ? `${latestVersion} (latest)` : currentVersion
     container.appendChild(versionEl)
 
     return container
