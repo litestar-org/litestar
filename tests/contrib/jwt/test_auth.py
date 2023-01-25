@@ -323,7 +323,7 @@ async def test_oauth2_password_bearer_auth_openapi(
         return await mock_db.get(token.sub)
 
     jwt_auth = OAuth2PasswordBearerAuth(
-        token_url="/login", token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+        token_url="/login", token_secret="abc123", retrieve_user_handler=retrieve_user_handler  # type: ignore
     )
 
     @get("/login")
