@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class StaticFilesConfig(BaseModel):
     """Configuration for static file service.
 
-    To enable static files, pass an instance of this class to the [Starlite][starlite.app.Starlite] constructor using
+    To enable static files, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor using
     the 'static_files_config' key.
     """
 
@@ -42,14 +42,14 @@ class StaticFilesConfig(BaseModel):
 
     Notes:
         - A file_system is a class that adheres to the
-            [FileSystemProtocol][starlite.types.FileSystemProtocol].
+            :class:`FileSystemProtocol <starlite.types.FileSystemProtocol>`.
         - You can use any of the file systems exported from the
             [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
     """
     opt: Optional[Dict[str, Any]] = None
     """A string key dictionary of arbitrary values that will be added to the static files handler."""
     guards: Optional[List[Guard]] = None
-    """A list of [Guard][starlite.types.Guard] callables."""
+    """A list of :class:`Guard <starlite.types.Guard>` callables."""
     exception_handlers: Optional[ExceptionHandlersMap] = None
     """A dictionary that maps handler functions to status codes and/or exception types."""
     send_as_attachment: bool = False
@@ -89,7 +89,7 @@ class StaticFilesConfig(BaseModel):
         """Return an ASGI app serving static files based on the config.
 
         Returns:
-            [StaticFiles][starlite.static_files.StaticFiles]
+            :class:`StaticFiles <starlite.static_files.StaticFiles>`
         """
         static_files = StaticFiles(
             is_html_mode=self.html_mode,

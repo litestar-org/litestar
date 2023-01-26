@@ -103,10 +103,10 @@ class FileResponse(StreamingResponse):
         stat_result: Optional["stat_result_type"] = None,
         status_code: int = HTTP_200_OK,
     ) -> None:
-        """Initialize `FileResponse`
+        """Initialize ``FileResponse``
 
         Notes:
-            - This class extends the [StreamingResponse][starlite.response.StreamingResponse] class.
+            - This class extends the :class:`StreamingResponse <starlite.response.StreamingResponse>` class.
 
         Args:
             path: A file path in one of the supported formats.
@@ -114,23 +114,23 @@ class FileResponse(StreamingResponse):
             media_type: A value for the response 'Content-Type' header. If not provided, the value will be either
                 derived from the filename if provided and supported by the stdlib, or will default to
                 'application/octet-stream'.
-            background: A [BackgroundTask][starlite.datastructures.BackgroundTask] instance or
-                [BackgroundTasks][starlite.datastructures.BackgroundTasks] to execute after the response is finished.
+            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
+                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of [Cookie][starlite.datastructures.Cookie] instances to be set under the response 'Set-Cookie' header.
+            cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances to be set under the response 'Set-Cookie' header.
             encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
             filename: An optional filename to set in the header.
             stat_result: An optional result of calling 'os.stat'. If not provided, this will be done by the response
                 constructor.
             chunk_size: The chunk sizes to use when streaming the file. Defaults to 1MB.
-            content_disposition_type: The type of the 'Content-Disposition'. Either 'inline' or 'attachment'.
-            etag: An optional [ETag][starlite.datastructures.ETag] instance.
+            content_disposition_type: The type of the 'Content-Disposition'. Either ``inline`` or ``attachment``.
+            etag: An optional :class:`ETag <starlite.datastructures.ETag>` instance.
                 If not provided, an etag will be automatically generated.
-            file_system: An implementation of the [`FileSystemProtocol][starlite.types.FileSystemProtocol]. If provided
+            file_system: An implementation of the :class:`FileSystemProtocol <starlite.types.FileSystemProtocol>`. If provided
                 it will be used to load the file.
-            file_info: The output of calling `file_system.info(..)`, equivalent to providing a `stat_result`.
+            file_info: The output of calling ``file_system.info(..)``, equivalent to providing a ``stat_result``.
         """
         if not media_type:
             mimetype, _ = guess_type(filename) if filename else (None, None)

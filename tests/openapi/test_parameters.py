@@ -2,12 +2,20 @@ from typing import TYPE_CHECKING, List, Optional, cast
 
 import pytest
 
-from starlite import Controller, Dependency, ImproperlyConfiguredException
-from starlite import Parameter as StarliteParameter
-from starlite import Provide, Router, Starlite, get
+from starlite import (
+    Controller,
+    Dependency,
+    ImproperlyConfiguredException,
+    Parameter,
+    Provide,
+    Router,
+    Starlite,
+    get,
+)
 from starlite.enums import ParamType
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameter_for_handler
+from starlite.openapi.typescript_converter.schema_parsing import is_schema_value
 from starlite.signature import create_signature_model
 from starlite.utils import find_index
 from tests.openapi.utils import PersonController
@@ -41,44 +49,55 @@ def test_create_parameters() -> None:
 
     assert service_id.name == "service_id"
     assert service_id.param_in == ParamType.PATH
-    assert service_id.param_schema.type == OpenAPIType.INTEGER  # type: ignore
+    assert is_schema_value(service_id.param_schema)
+    assert service_id.param_schema.type == OpenAPIType.INTEGER
     assert service_id.required
-    assert service_id.param_schema.examples  # type: ignore
+    assert service_id.param_schema.examples
 
     assert page.param_in == ParamType.QUERY
     assert page.name == "page"
-    assert page.param_schema.type == OpenAPIType.INTEGER  # type: ignore
+    assert is_schema_value(page.param_schema)
+    assert page.param_schema.type == OpenAPIType.INTEGER
     assert page.required
-    assert page.param_schema.examples  # type: ignore
+    assert page.param_schema.examples
 
     assert page_size.param_in == ParamType.QUERY
     assert page_size.name == "pageSize"
-    assert page_size.param_schema.type == OpenAPIType.INTEGER  # type: ignore
+    assert is_schema_value(page_size.param_schema)
+    assert page_size.param_schema.type == OpenAPIType.INTEGER
     assert page_size.required
     assert page_size.description == "Page Size Description"
-    assert page_size.param_schema.examples[0].value == 1  # type: ignore
+    assert page_size.param_schema.examples
+    assert page_size.param_schema.examples[0].value == 1
 
     assert name.param_in == ParamType.QUERY
     assert name.name == "name"
-    assert len(name.param_schema.oneOf) == 3  # type: ignore
+    assert is_schema_value(name.param_schema)
+    assert name.param_schema.oneOf
+    assert len(name.param_schema.oneOf) == 3
     assert not name.required
-    assert name.param_schema.examples  # type: ignore
+    assert name.param_schema.examples
 
     assert from_date.param_in == ParamType.QUERY
     assert from_date.name == "from_date"
-    assert len(from_date.param_schema.oneOf) == 4  # type: ignore
+    assert is_schema_value(from_date.param_schema)
+    assert from_date.param_schema.oneOf
+    assert len(from_date.param_schema.oneOf) == 4
     assert not from_date.required
-    assert from_date.param_schema.examples  # type: ignore
+    assert from_date.param_schema.examples
 
     assert to_date.param_in == ParamType.QUERY
     assert to_date.name == "to_date"
-    assert len(to_date.param_schema.oneOf) == 4  # type: ignore
+    assert is_schema_value(to_date.param_schema)
+    assert to_date.param_schema.oneOf
+    assert len(to_date.param_schema.oneOf) == 4
     assert not to_date.required
-    assert to_date.param_schema.examples  # type: ignore
+    assert to_date.param_schema.examples
 
     assert gender.param_in == ParamType.QUERY
     assert gender.name == "gender"
-    assert gender.param_schema.dict(exclude_none=True) == {  # type: ignore
+    assert is_schema_value(gender.param_schema)
+    assert gender.param_schema.dict(exclude_none=True) == {
         "oneOf": [
             {"type": "null"},
             {"type": "string", "enum": ["M", "F", "O", "A"]},
@@ -89,14 +108,16 @@ def test_create_parameters() -> None:
     assert not gender.required
 
     assert secret_header.param_in == ParamType.HEADER
-    assert secret_header.param_schema.type == OpenAPIType.STRING  # type: ignore
+    assert is_schema_value(secret_header.param_schema)
+    assert secret_header.param_schema.type == OpenAPIType.STRING
     assert secret_header.required
-    assert secret_header.param_schema.examples  # type: ignore
+    assert secret_header.param_schema.examples
 
     assert cookie_value.param_in == ParamType.COOKIE
-    assert cookie_value.param_schema.type == OpenAPIType.INTEGER  # type: ignore
+    assert is_schema_value(cookie_value.param_schema)
+    assert cookie_value.param_schema.type == OpenAPIType.INTEGER
     assert cookie_value.required
-    assert cookie_value.param_schema.examples  # type: ignore
+    assert cookie_value.param_schema.examples
 
 
 def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
@@ -179,8 +200,8 @@ def test_layered_parameters() -> None:
     class MyController(Controller):
         path = "/controller"
         parameters = {
-            "controller1": StarliteParameter(lt=100),
-            "controller2": StarliteParameter(str, query="controller3"),
+            "controller1": Parameter(lt=100),
+            "controller2": Parameter(str, query="controller3"),
         }
 
         @get("/{local:int}")
@@ -192,7 +213,7 @@ def test_layered_parameters() -> None:
             router2: float,
             app1: str,
             app2: List[str],
-            controller2: float = StarliteParameter(ge=5.0),
+            controller2: float = Parameter(float, ge=5.0),
         ) -> dict:
             return {}
 
@@ -200,8 +221,8 @@ def test_layered_parameters() -> None:
         path="/router",
         route_handlers=[MyController],
         parameters={
-            "router1": StarliteParameter(str, regex="^[a-zA-Z]$"),
-            "router2": StarliteParameter(float, multiple_of=5.0, header="router3"),
+            "router1": Parameter(str, regex="^[a-zA-Z]$"),
+            "router2": Parameter(float, multiple_of=5.0, header="router3"),
         },
     )
 
@@ -209,9 +230,9 @@ def test_layered_parameters() -> None:
         app=Starlite(
             route_handlers=[router],
             parameters={
-                "app1": StarliteParameter(str, cookie="app4"),
-                "app2": StarliteParameter(List[str], min_items=2),
-                "app3": StarliteParameter(bool, required=False),
+                "app1": Parameter(str, cookie="app4"),
+                "app2": Parameter(List[str], min_items=2),
+                "app3": Parameter(bool, required=False),
             },
         ),
         path="/router/controller/{local}",

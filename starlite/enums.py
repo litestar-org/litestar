@@ -14,7 +14,7 @@ class HttpMethod(str, Enum):
 
 
 class MediaType(str, Enum):
-    """An Enum for 'Content-Type' header values."""
+    """An Enum for ``Content-Type`` header values."""
 
     JSON = "application/json"
     MESSAGEPACK = "application/x-msgpack"
@@ -25,14 +25,14 @@ class MediaType(str, Enum):
 
 
 class OpenAPIMediaType(str, Enum):
-    """An Enum for OpenAPI specific response 'Content-Type' header values."""
+    """An Enum for OpenAPI specific response ``Content-Type`` header values."""
 
     OPENAPI_YAML = "application/vnd.oai.openapi"
     OPENAPI_JSON = "application/vnd.oai.openapi+json"
 
 
 class RequestEncodingType(str, Enum):
-    """An Enum for request 'Content-Type' header values designating encoding formats."""
+    """An Enum for request ``Content-Type`` header values designating encoding formats."""
 
     JSON = "application/json"
     MESSAGEPACK = "application/x-msgpack"
@@ -44,7 +44,7 @@ class ScopeType(str, Enum):
     """An Enum for the 'http' key stored under Scope.
 
     Notes:
-        - 'asgi' is used by Starlite internally and is not part of the specification.
+        - ``asgi`` is used by Starlite internally and is not part of the specification.
     """
 
     HTTP = "http"

@@ -18,16 +18,12 @@ To contribute code changes or update the documentation, please follow these step
 2. All functions and methods should be documented with a doc string. The project uses the
    [Google style docstring](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html). If you come
    across a function or method that doesn't conform to this standard, please update it as you go.
-3. If adding a new public interface to the library API ensure interface is included in the reference documentation and
+3. If adding a new public interface to the library API ensure the interface is included in the reference documentation and
    public members are listed, e.g.:
 
-   ```text
-   ::: starlite.config.CacheConfig
-       options:
-           members:
-               - backend
-               - expiration
-               - cache_key_builder
+   ```rst
+   .. class:: starlite.config.CacheConfig
+       :members:
    ```
 
 4. Add or modify examples in the Docs related to the new functionality implemented. Please
@@ -35,14 +31,14 @@ To contribute code changes or update the documentation, please follow these step
 
 ## Project Documentation
 
-The documentation is located under the `/doc` folder, with the `mkdocs.yml` file in the project root.
+The documentation is located under the `/docs` folder
 
 ### Docs Theme and Appearance
 
 We welcome contributions that enhance / improve the appearance and usability of the docs, as well as any images, icons
 etc.
 
-We use the excellent [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) theme, which comes with a lot
+We use the excellent [Furo](https://pradyunsg.me/furo/quickstart/) theme, which comes with a lot
 of options out of the box. If you wish to contribute to the docs style / setup, or static site generation, you should
 consult the theme docs as a first step.
 
@@ -52,7 +48,7 @@ To run or build the docs locally, you need to first install the required depende
 
 `poetry install --with docs`
 
-Then you can serve the documentation with `mkdocs serve`, or build them with `mkdocs build`
+Then you can serve the documentation with `make docs-serve`, or build them with `make docs`
 
 ### Writing and Editing Docs
 
@@ -63,32 +59,34 @@ restructure the docs etc. But make sure to follow these emphases:
 - the docs should be written in good idiomatic english.
 - examples should be simple and clear.
 - provide links where applicable.
-- provide diagrams where applicable and possible.
+- use [intersphinx](https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html) wherever possible
+  when referencing external libraries
+- provide diagrams using [mermaidjs](https://mermaid.js.org/) where applicable and possible.
 
-#### Adding examples
+#### Adding Examples
 
 The examples from the Docs are located in their own modules inside the
-`examples/` folder. This makes it easier to test them alongside the rest of the
+`/docs/examples/` folder. This makes it easier to test them alongside the rest of the
 test suite, ensuring they do not become stale as Starlite evolves.
 
 Please follow the next guidelines when adding a new example:
 
-- Add the example in the corresponding module directory in `examples/` or create
+- Add the example in the corresponding module directory in `/docs/examples/` or create
   a new one if necessary
-- Create a suite for the module in `examples/tests` that tests the facets of the
+- Create a suite for the module in `/docs/examples/tests` that tests the facets of the
   example that it demonstrates
-- Reference the example in the Markdown file with an external reference code
+- Reference the example in the rst file with an external reference code
   block, e.g.
 
-````md
-```py title="Tests a Thing"
---8<-- "examples/test_thing.py"
+```rst
+.. literalinclude:: /examples/test_thing.py
+    :caption: test_thing.py
+    :language: python
 ```
-````
 
-#### Automatically execute examples
+#### Automatically Execute Examples
 
-Our docs include an mkdocs hook that can automatically run requests against example apps
+Our docs include a Sphinx extension that can automatically run requests against example apps
 and include their result in the documentation page when its being built. This only requires 2 steps:
 
 1. Create an example file with an `app` object in it, which is an instance of `Starlite`
@@ -122,47 +120,34 @@ app = Starlite(route_handlers=[hello_world])
 # run: /
 ```
 
-This will produce the following markdown:
+This is equivalent to:
 
 <pre>
-```python
-from typing import Dict
+.. code-block:: python
 
-from starlite import Starlite, get
+    from typing import Dict
 
-
-@get("/")
-def hello_world() -> Dict[str, str]:
-    """Handler function that returns a greeting dictionary."""
-    return {"hello": "world"}
+    from starlite import Starlite, get
 
 
-app = Starlite(route_handlers=[hello_world])
-```
+    @get("/")
+    def hello_world() -> Dict[str, str]:
+        """Handler function that returns a greeting dictionary."""
+        return {"hello": "world"}
 
-!!! example
-    ```shell
-    > curl http://127.0.0.1:8000/
-    {"hello": "world"}
-    ```
+
+    app = Starlite(route_handlers=[hello_world])
+
+
+.. admonition:: Run it
+
+    .. code-block:: bash
+
+        > curl http://127.0.0.1:8000/
+        {"hello": "world"}
 </pre>
 
-#### Cleaning up examples
-
-If you want to contribute to the ongoing effort of #343, you can use the `tools/doc_examples.py`
-script to help you find and extract examples from the markdown files.
-
-To find examples that need to be extracted invoke it:
-
-`python tools/doc_examples.py check`
-
-And then extract examples with `python tools/doc_examples.py extract /docs/path/to/file.md <destination folder>`
-
-This will extract the inline examples from `/docs/path/to/file.md` into separate `.py`
-files within `examples/<destination folder>`. Additionally, it will generate a test
-scaffold, located in `examples/tests/<destination folder>`.
-
-## Testing multiple python versions
+## Testing Multiple Python Versions
 
 Since the library needs to be compatible with older versions of python as well, it can be useful to run tests locally
 against different python versions. To achieve this you can use the `tox` config that is included by doing the following.
@@ -191,16 +176,18 @@ against different python versions. To achieve this you can use the `tox` config 
 Note that these commands may be quite slow to run the first time as environments are created and dependencies installed,
 but subsequent runs should be much faster.
 
-### Checking test coverage
+### Checking Test Coverage
 
 You can check the unit test coverage by running: `$ poetry run pytest tests examples --cov=starlite --cov=examples`
 
 Coverage should be 100% for any code you touch. Note that coverage will also be reported on your PR by the `SonarCloud`
 tool.
 
-## Release workflow (Maintainers only)
+---
 
-1. Update changelog.md
+## Release Workflow (Maintainers Only)
+
+1. Update CHANGELOG.md
 2. Increment the version in pyproject.toml.
 3. Commit and push.
 4. In GitHub go to the releases tab

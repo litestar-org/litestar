@@ -4,36 +4,32 @@ from unittest.mock import MagicMock
 
 import pytest
 from pydantic import BaseModel
-from pydantic.fields import FieldInfo
+from pydantic_openapi_schema.v3_1_0 import ExternalDocumentation
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
 from starlite import Controller, MediaType, Parameter, Provide, Starlite, get
 from starlite.app import DEFAULT_OPENAPI_CONFIG
-from starlite.constants import EXTRA_KEY_REQUIRED
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi import schema
-from starlite.openapi.constants import (
-    EXTRA_TO_OPENAPI_PROPERTY_MAP,
-    PYDANTIC_TO_OPENAPI_PROPERTY_MAP,
-)
+from starlite.openapi.constants import KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP
 from starlite.openapi.schema import (
     get_schema_for_field_type,
-    update_schema_with_field_info,
+    update_schema_with_signature_field,
 )
+from starlite.params import ParameterKwarg
+from starlite.signature.models import SignatureField
 from starlite.testing import create_test_client
 from tests import TypedDictPerson
 
 
-def test_update_schema_with_field_info() -> None:
+def test_update_schema_with_signature_field() -> None:
     test_str = "abc"
-    extra = {
-        "examples": [Example(value=1)],
-        "external_docs": "https://example.com/docs",
-        "content_encoding": "utf-8",
-    }
-    field_info = FieldInfo(
+    kwarg_model = ParameterKwarg(
+        examples=[Example(value=1)],
+        external_docs=ExternalDocumentation(url="https://example.com/docs"),  # type: ignore
+        content_encoding="utf-8",
         default=test_str,
         title=test_str,
         description=test_str,
@@ -48,15 +44,16 @@ def test_update_schema_with_field_info() -> None:
         min_length=1,
         max_length=1,
         regex="^[a-z]$",
-        **extra,
     )
+    signature_field = SignatureField.create(field_type=str, kwarg_model=kwarg_model)
     schema = Schema()
-    update_schema_with_field_info(schema=schema, field_info=field_info)
-    assert schema.const == field_info.default
-    for pydantic_key, schema_key in PYDANTIC_TO_OPENAPI_PROPERTY_MAP.items():
-        assert getattr(schema, schema_key) == getattr(field_info, pydantic_key)
-    for extra_key, schema_key in EXTRA_TO_OPENAPI_PROPERTY_MAP.items():
-        assert getattr(schema, schema_key) == field_info.extra[extra_key]
+    update_schema_with_signature_field(
+        schema=schema,
+        signature_field=signature_field,
+    )
+    assert schema.const == test_str
+    for signature_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
+        assert getattr(schema, schema_key) == getattr(kwarg_model, signature_key)
 
 
 def test_dependency_schema_generation() -> None:
@@ -89,14 +86,12 @@ def test_dependency_schema_generation() -> None:
         openapi_config=DEFAULT_OPENAPI_CONFIG,
     ) as client:
         handler = client.app.openapi_schema.paths["/test/{path_param}"]
-        data = {
-            param.name: {"in": param.param_in, EXTRA_KEY_REQUIRED: param.required} for param in handler.get.parameters
-        }
+        data = {param.name: {"in": param.param_in, "required": param.required} for param in handler.get.parameters}
         assert data == {
-            "path_param": {"in": ParamType.PATH, EXTRA_KEY_REQUIRED: True},
-            "header_param": {"in": ParamType.HEADER, EXTRA_KEY_REQUIRED: False},
-            "query_param": {"in": ParamType.QUERY, EXTRA_KEY_REQUIRED: True},
-            "handler_param": {"in": ParamType.QUERY, EXTRA_KEY_REQUIRED: True},
+            "path_param": {"in": ParamType.PATH, "required": True},
+            "header_param": {"in": ParamType.HEADER, "required": False},
+            "query_param": {"in": ParamType.QUERY, "required": True},
+            "handler_param": {"in": ParamType.QUERY, "required": True},
         }
 
 
@@ -124,7 +119,7 @@ def test_get_schema_for_field_type_typeddict(monkeypatch: pytest.MonkeyPatch) ->
     class M(BaseModel):
         data: TypedDictPerson
 
-    get_schema_for_field_type(M.__fields__["data"], [])
+    get_schema_for_field_type(SignatureField.from_model_field(M.__fields__["data"]), [])
     convert_typeddict_to_model_mock.assert_called_once_with(TypedDictPerson)
     openapi_310_pydantic_schema_mock.assert_called_once_with(schema_class=return_value_mock)
 
@@ -137,5 +132,5 @@ def test_get_schema_for_field_type_enum() -> None:
     class M(BaseModel):
         opt: Opts
 
-    schema = get_schema_for_field_type(M.__fields__["opt"], [])
+    schema = get_schema_for_field_type(SignatureField.from_model_field(M.__fields__["opt"]), [])
     assert schema.enum == ["opt1", "opt2"]

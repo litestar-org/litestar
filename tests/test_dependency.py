@@ -3,32 +3,27 @@ from typing import Any, Dict, List, Optional
 import pytest
 
 from starlite import Controller, Dependency, Provide, Starlite, get
-from starlite.constants import EXTRA_KEY_IS_DEPENDENCY
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 
 
-def test_is_dependency_inserted_into_field_extra() -> None:
-    assert Dependency().extra[EXTRA_KEY_IS_DEPENDENCY] is True
-
-
 @pytest.mark.parametrize(
-    "field_info, exp",
+    "dependency, expected",
     [
         (Dependency(), None),
         (Dependency(default=None), None),
         (Dependency(default=13), 13),
     ],
 )
-def test_dependency_defaults(field_info: Any, exp: Optional[int]) -> None:
+def test_dependency_defaults(dependency: Any, expected: Optional[int]) -> None:
     @get("/")
-    def handler(value: Optional[int] = field_info) -> Dict[str, Optional[int]]:
+    def handler(value: Optional[int] = dependency) -> Dict[str, Optional[int]]:
         return {"value": value}
 
     with create_test_client(route_handlers=[handler]) as client:
         resp = client.get("/")
-        assert resp.json() == {"value": exp}
+        assert resp.json() == {"value": expected}
 
 
 def test_non_optional_with_default() -> None:
@@ -127,7 +122,6 @@ def test_nested_sequence_dependency() -> None:
     with create_test_client(
         route_handlers=[get_obj, get_seq],
         dependencies={"obj": Provide(provides_obj)},
-        openapi_config=None,
     ) as client:
         seq = ["a", "b", "c"]
         resp = client.get("/seq", params={"seq": seq})

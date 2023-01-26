@@ -46,25 +46,25 @@ class BaseLocalFileSystem(FileSystemProtocol):
 
         Args:
             file: Path to the target file.
-            mode: Mode, similar to the built `open`.
+            mode: Mode, similar to the built ``open``.
             buffering: Buffer size.
         """
         return await open_file(file=file, mode=mode, buffering=buffering)  # type: ignore
 
 
 class FileSystemAdapter:
-    """Wrapper around a `FileSystemProtocol`, normalising its interface."""
+    """Wrapper around a ``FileSystemProtocol``, normalising its interface."""
 
     def __init__(self, file_system: "FileSystemProtocol"):
-        """Initialize an adapter from a given `file_system`
+        """Initialize an adapter from a given ``file_system``
 
         Args:
-            file_system: A filesystem class adhering to the [FileSystemProtocol][starlite.types.FileSystemProtocol]
+            file_system: A filesystem class adhering to the :class:`FileSystemProtocol <starlite.types.FileSystemProtocol>`
         """
         self.file_system = file_system
 
     async def info(self, path: "PathType") -> "FileInfo":
-        """Proxies the call to the underlying FS Spec's 'info' method, ensuring it's done in an async fashion and with
+        """Proxies the call to the underlying FS Spec's ``info`` method, ensuring it's done in an async fashion and with
         strong typing.
 
         Args:
@@ -96,11 +96,11 @@ class FileSystemAdapter:
         """Return a file-like object from the filesystem.
 
         Notes:
-            - The return value must function correctly in a context `with` block.
+            - The return value must function correctly in a context ``with`` block.
 
         Args:
             file: Path to the target file.
-            mode: Mode, similar to the built `open`.
+            mode: Mode, similar to the built ``open``.
             buffering: Buffer size.
         """
         try:
@@ -121,11 +121,11 @@ class FileSystemAdapter:
 
     @staticmethod
     async def parse_stat_result(path: "PathType", result: "stat_result") -> "FileInfo":
-        """Convert a `stat_result` instance into a `FileInfo`.
+        """Convert a ``stat_result`` instance into a ``FileInfo``.
 
         Args:
-            path: The file path for which the [stat_result][os.stat_result] is provided.
-            result: The [stat_result][os.stat_result] instance.
+            path: The file path for which the :func:`stat_result <os.stat_result>` is provided.
+            result: The :func:`stat_result <os.stat_result>` instance.
 
         Returns:
             A dictionary of file info.

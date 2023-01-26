@@ -9,7 +9,7 @@ from starlite.utils import is_class_and_subclass
 
 
 def get_session_backend(app: Starlite) -> ServerSideBackend:
-    """Get the session backend used by a `Starlite` app."""
+    """Get the session backend used by a ``Starlite`` app."""
     for middleware in app.middleware:
         if isinstance(middleware, DefineMiddleware):
             if not is_class_and_subclass(middleware.middleware, SessionMiddleware):

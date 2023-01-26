@@ -67,18 +67,18 @@ def test_create_function_signature_model_parameter_parsing() -> None:
 
     model = create_signature_model(my_fn.fn.value, [], set())
     fields = model.fields()
-    assert fields["a"].type_ == int
-    assert fields["a"].required
-    assert fields["b"].type_ == str
-    assert fields["b"].required
-    assert fields["c"].type_ == bytes
-    assert fields["c"].allow_none
-    assert fields["c"].default is None
-    assert fields["d"].type_ == bytes
-    assert fields["d"].default == b"123"
-    assert fields["e"].type_ == dict
-    assert fields["e"].allow_none
-    assert fields["e"].default is None
+    assert fields["a"].field_type is int
+    assert not fields["a"].is_optional
+    assert fields["b"].field_type is str
+    assert not fields["b"].is_optional
+    assert fields["c"].field_type is Optional[bytes]
+    assert fields["c"].is_optional
+    assert fields["c"].default_value is None
+    assert fields["d"].field_type is bytes
+    assert fields["d"].default_value == b"123"
+    assert fields["e"].field_type is Optional[dict]
+    assert fields["e"].is_optional
+    assert fields["e"].default_value is None
 
 
 def test_create_signature_validation() -> None:

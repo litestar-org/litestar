@@ -33,14 +33,14 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         is_static: bool = False,
         **kwargs: Any,
     ) -> None:
-        """Initialize `ASGIRouteHandler`.
+        """Initialize ``ASGIRouteHandler``.
 
         Args:
             exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of [Guard][starlite.types.Guard] callables.
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
             name: A string identifying the route handler.
-            opt: A string key dictionary of arbitrary values that can be accessed in [Guards][starlite.types.Guard] or
-                wherever you have access to [Request][starlite.connection.request.Request] or [ASGI Scope][starlite.types.Scope].
+            opt: A string key dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
             is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path accept
                 any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path `/some-path/`

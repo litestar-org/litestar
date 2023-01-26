@@ -21,9 +21,9 @@ app = Starlite(route_handlers=[health_check])
 We would then test it using the test client like so:
 
 === "Test Client"
-    ```python title="tests/test_health_check.py"
-    from starlite.status_codes import HTTP_200_OK
-    from starlite.testing import TestClient
+```python title="tests/test_health_check.py"
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import TestClient
 
     from my_app.main import app
 
@@ -34,10 +34,11 @@ We would then test it using the test client like so:
             assert response.status_code == HTTP_200_OK
             assert response.text == "healthy"
     ```
+
 === "Async Test Client"
-    ```python title="tests/test_health_check_async.py"
-    from starlite.status_codes import HTTP_200_OK
-    from starlite.testing import AsyncTestClient
+```python title="tests/test_health_check_async.py"
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import AsyncTestClient
 
     from my_app.main import app
 
@@ -48,11 +49,12 @@ We would then test it using the test client like so:
             assert response.status_code == HTTP_200_OK
             assert response.text == "healthy"
     ```
+
 Since we would probably need to use the client in multiple places, it's better to make it into a pytest fixture:
 
 === "Test Client"
-    ```python title="tests/conftest.py"
-    import pytest
+```python title="tests/conftest.py"
+import pytest
 
     from starlite.testing import TestClient
 
@@ -65,8 +67,8 @@ Since we would probably need to use the client in multiple places, it's better t
     ```
 
 === "Async Test Client"
-    ```python title="tests/conftest_async.py"
-    import pytest
+```python title="tests/conftest_async.py"
+import pytest
 
     from starlite.testing import AsyncTestClient
 
@@ -77,13 +79,13 @@ Since we would probably need to use the client in multiple places, it's better t
     def test_client() -> AsyncTestClient:
         return AsyncTestClient(app=app)
     ```
+
 We would then be able to rewrite our test like so:
 
 === "Test Client"
-    ```python title="tests/test_health_check.py"
-    from starlite.status_codes import HTTP_200_OK
-    from starlite.testing import TestClient
-
+```python title="tests/test_health_check.py"
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import TestClient
 
     def test_health_check(test_client: TestClient):
         with test_client as client:
@@ -91,11 +93,11 @@ We would then be able to rewrite our test like so:
             assert response.status_code == HTTP_200_OK
             assert response.text == "healthy"
     ```
-=== "Async Test Client"
-    ```python title="tests/test_health_check_async.py"
-    from starlite.status_codes import HTTP_200_OK
-    from starlite.testing import AsyncTestClient
 
+=== "Async Test Client"
+```python title="tests/test_health_check_async.py"
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import AsyncTestClient
 
     def test_health_check(test_client: AsyncTestClient):
         async with test_client as client:
@@ -107,9 +109,9 @@ We would then be able to rewrite our test like so:
 ## Using sessions
 
 === "Test Client"
-    If you are using [**Session Middleware**](./7-middleware/3-builtin-middlewares/5-session-middleware/) for session persistence
-    across requests, then you might want to inject or inspect session data outside a request. For this, `TestClient` provides
-    two methods:
+If you are using [**Session Middleware**](./7-middleware/3-builtin-middlewares/5-session-middleware/) for session persistence
+across requests, then you might want to inject or inspect session data outside a request. For this, `TestClient` provides
+two methods:
 
     - [set_session_data][starlite.testing.client.sync_client.TestClient.set_session_data]
     - [get_session_data][starlite.testing.client.sync_client.TestClient.get_session_data]
@@ -132,9 +134,9 @@ We would then be able to rewrite our test like so:
     ```
 
 === "Async Test Client"
-    If you are using [**Session Middleware**](./7-middleware/3-builtin-middlewares/5-session-middleware/) for session persistence
-    across requests, then you might want to inject or inspect session data outside a request. For this, `AsyncTestClient` provides
-    two methods:
+If you are using [**Session Middleware**](./7-middleware/3-builtin-middlewares/5-session-middleware/) for session persistence
+across requests, then you might want to inject or inspect session data outside a request. For this, `AsyncTestClient` provides
+two methods:
 
     - [set_session_data][starlite.testing.client.async_client.AsyncTestClient.set_session_data]
     - [get_session_data][starlite.testing.client.async_client.AsyncTestClient.get_session_data]

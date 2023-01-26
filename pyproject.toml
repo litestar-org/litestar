@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.49.0"
+version = "1.50.1"
 description = "Performant, light and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
@@ -98,7 +98,6 @@ sqlalchemy = "*"
 starlette = "*"
 structlog = "*"
 tortoise-orm = ">=0.17.0"
-tox = "*"
 trio = "*"
 uvicorn = "*"
 hypercorn = "^0.14.3"
@@ -108,40 +107,46 @@ daphne = "^4.0.0"
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = "*"
-mkdocs-material = "^9.0.1"
-mkdocstrings = {extras = ["python"], version = "^0.19.1"}
 black = "^22.12.0"
 httpx = "^0.23.2"
 uvicorn = "^0.20.0"
-mike = "^1.1.2"
-auto-pytabs = {extras = ["mkdocs"], version = ">=0.1.1"}
+furo = "^2022.12.7"
+sphinx-autobuild = "^2021.3.14"
+sphinx-design = "^0.3.0"
+sphinx = "^5.3.0"
+myst-parser = "^0.18.1"
+sphinx-toolbox = "^3.2.0"
+sphinx-copybutton = "^0.5.1"
+sphinxcontrib-mermaid = "^0.7.1"
+auto-pytabs = {extras = ["sphinx"], version = ">=0.1.1"}
 
 
 [tool.poetry.extras]
 brotli = ["brotli"]
 cli = ["click", "rich", "jsbeautifier"]
 cryptography = ["cryptography"]
+jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
 memcached = ["aiomcache"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
-standard = ["click", "jinja", "picologging", "rich", "jsbeautifier"]
+standard = ["click", "jinja2", "jsbeautifier", "picologging", "rich",]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
 full = [
-    "brotli",
-    "cryptography",
     "aiomcache",
+    "brotli",
+    "click",
+    "cryptography",
+    "jinja2",
     "opentelemetry-instrumentation-asgi",
     "picologging",
-    "redis",
-    "structlog",
     "python-jose",
+    "redis",
+    "rich",
+    "structlog",
     "tortoise-orm",
-    "click",
-    "rich"
 ]
 
 [tool.poetry.scripts]

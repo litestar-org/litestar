@@ -18,8 +18,8 @@ class CORSMiddleware(AbstractMiddleware):
         """Middleware that adds CORS validation to the application.
 
         Args:
-            app: The 'next' ASGI app to call.
-            config: An instance of [CORSConfig][starlite.config.cors.CORSConfig]
+            app: The ``next`` ASGI app to call.
+            config: An instance of :class:`CORSConfig <starlite.config.cors.CORSConfig>`
         """
         super().__init__(app=app, scopes={ScopeType.HTTP})
         self.config = config
@@ -45,11 +45,11 @@ class CORSMiddleware(AbstractMiddleware):
             await self.app(scope, receive, self.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers))
 
     def send_wrapper(self, send: "Send", origin: str, has_cookie: bool) -> "Send":
-        """Wrap `send` to ensure that state is not disconnected.
+        """Wrap ``send`` to ensure that state is not disconnected.
 
         Args:
             has_cookie: Boolean flag dictating if the connection has a cookie set.
-            origin: The value of the 'Origin' header.
+            origin: The value of the ``Origin`` header.
             send: The ASGI send function.
 
         Returns:

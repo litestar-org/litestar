@@ -66,10 +66,10 @@ class OpenTelemetryConfig(BaseModel):
     """Key to use when checking whether a list of excluded urls is passed via ENV.
 
     OpenTelemetry supports excluding urls by passing an env in the format '{exclude_urls_env_key}_EXCLUDED_URLS'. With
-    the default being 'STARLITE_EXCLUDED_URLS'.
+    the default being ``STARLITE_EXCLUDED_URLS``.
     """
     scopes: Optional[Scopes] = None
-    """ASGI scopes processed by the middleware, if None both 'http' and 'websocket' will be processed."""
+    """ASGI scopes processed by the middleware, if None both ``http`` and ``websocket`` will be processed."""
     middleware_class: Type[OpenTelemetryInstrumentationMiddleware] = OpenTelemetryInstrumentationMiddleware
     """The middleware class to use.
 
@@ -79,13 +79,13 @@ class OpenTelemetryConfig(BaseModel):
 
     @property
     def middleware(self) -> DefineMiddleware:
-        """Create an instance of [DefineMiddleware][starlite.middleware.base.DefineMiddleware] that wraps with.
+        """Create an instance of :class:`DefineMiddleware <starlite.middleware.base.DefineMiddleware>` that wraps with.
 
         [OpenTelemetry
         InstrumentationMiddleware][starlite.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware] or a subclass
         of this middleware.
 
         Returns:
-            An instance of `DefineMiddleware`.
+            An instance of ``DefineMiddleware``.
         """
         return DefineMiddleware(self.middleware_class, config=self)

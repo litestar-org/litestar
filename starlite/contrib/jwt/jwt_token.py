@@ -51,7 +51,7 @@ class Token(BaseModel):
 
     @validator("exp", always=True)
     def validate_exp(cls, value: datetime) -> datetime:  # pylint: disable=no-self-argument
-        """Ensure that 'exp' value is a future datetime.
+        """Ensure that ``exp`` value is a future datetime.
 
         Args:
             value: A datetime instance.
@@ -70,7 +70,7 @@ class Token(BaseModel):
 
     @validator("iat", always=True)
     def validate_iat(cls, value: datetime) -> datetime:  # pylint: disable=no-self-argument
-        """Ensure that 'iat' value is a past or current datetime.
+        """Ensure that ``iat`` value is a past or current datetime.
 
         Args:
             value: A datetime instance.
@@ -99,7 +99,7 @@ class Token(BaseModel):
             A decoded Token instance.
 
         Raises:
-            [NotAuthorizedException][starlite.exceptions.NotAuthorizedException]: If token is invalid.
+            :class:`NotAuthorizedException <starlite.exceptions.NotAuthorizedException>`: If token is invalid.
         """
         try:
             payload = jwt.decode(token=encoded_token, key=secret, algorithms=[algorithm], options={"verify_aud": False})
@@ -118,7 +118,7 @@ class Token(BaseModel):
             An encoded token string.
 
         Raises:
-            [ImproperlyConfiguredException][starlite.exceptions.ImproperlyConfiguredException]: If encoding fails.
+            :class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>`: If encoding fails.
         """
         try:
             return cast("str", jwt.encode(claims=self.dict(exclude_none=True), key=secret, algorithm=algorithm))
