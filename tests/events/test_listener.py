@@ -6,8 +6,7 @@ from starlite import Request, Starlite, get
 from starlite.events.listener import listener
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
-from starlite.testing.create_test_client import create_async_test_client
+from starlite.testing import create_test_client, create_async_test_client
 
 
 def test_event_listener_works_for_sync_callable() -> None:
@@ -69,6 +68,27 @@ async def test_multiple_event_listeners() -> None:
         route_handlers=[route_handler], listeners=[sync_event_handler, async_event_handler]
     ) as client:
         response = await client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert received_events == 2
+
+
+async def test_multiple_event_ids() -> None:
+    received_events: int = 0
+
+    @listener(["test_event_1", "test_event_2"])
+    def event_handler() -> None:
+        nonlocal received_events
+        received_events += 1
+
+    @get("/{event_id:int}")
+    async def route_handler(request: Request[Any, Any], event_id: int) -> None:
+        await request.app.emit(f"test_event_{event_id}")
+
+    async with create_async_test_client(route_handlers=[route_handler], listeners=[event_handler]) as client:
+        response = await client.get("/1")
+        assert response.status_code == HTTP_200_OK
+        assert received_events == 1
+        response = await client.get("/2")
         assert response.status_code == HTTP_200_OK
         assert received_events == 2
 

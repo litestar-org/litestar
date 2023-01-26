@@ -377,7 +377,8 @@ class Starlite(Router):
         self.listeners = defaultdict(list)
 
         for listener in config.listeners or []:
-            self.listeners[listener.event_id].append(listener.fn)
+            for event_id in listener.event_ids:
+                self.listeners[event_id].append(listener.fn)
 
         for plugin in self.plugins:
             plugin.on_app_init(app=self)

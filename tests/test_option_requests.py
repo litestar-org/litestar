@@ -110,7 +110,7 @@ def test_cors_options_request_allow_credentials_header(origin: str, allow_creden
     with create_test_client(
         handler, cors_config=CORSConfig(allow_origins=["http://testserver.local"], allow_credentials=allow_credentials)
     ) as client:
-        response = client.options("/", headers={"Origin": origin} if origin else {})  # type: ignore
+        response = client.options("/", headers={"Origin": origin} if origin else {})
         assert response.status_code == HTTP_204_NO_CONTENT
 
         if origin and allow_credentials:

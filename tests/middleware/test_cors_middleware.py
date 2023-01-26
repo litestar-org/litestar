@@ -57,7 +57,7 @@ def test_cors_simple_response(
     )
 
     with create_test_client(handler, cors_config=cors_config) as client:
-        response = client.get("/", headers={"Origin": origin} if origin else {})  # type: ignore
+        response = client.get("/", headers={"Origin": origin} if origin else {})
         assert response.status_code == HTTP_200_OK
         assert response.json() == {"hello": "world"}
         assert cors_config.expose_headers == expose_headers
