@@ -1,4 +1,4 @@
-import inspect
+from inspect import isasyncgen, isclass
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -57,7 +57,7 @@ class Provide:
         self.dependency = Ref["AnyCallable"](dependency)
         self.use_cache = use_cache
         self.value: Any = Empty
-        self.has_sync_callable = inspect.isclass(self.dependency.value) or not is_async_callable(self.dependency.value)
+        self.has_sync_callable = isclass(self.dependency.value) or not is_async_callable(self.dependency.value)
 
     async def __call__(self, **kwargs: Any) -> Any:
         """Proxy a call to ``self.proxy``."""
@@ -120,7 +120,7 @@ class DependencyCleanupGroup:
 
     @staticmethod
     def _wrap_next(generator: "AnyGenerator") -> Callable[[], Coroutine[None, None, None]]:
-        if inspect.isasyncgen(generator):
+        if isasyncgen(generator):
 
             async def wrapped_async() -> None:
                 await async_next(generator, None)  # type: ignore[arg-type]
@@ -179,7 +179,7 @@ class DependencyCleanupGroup:
         """
         for gen in self._generators:
             try:
-                if inspect.isasyncgen(gen):
+                if isasyncgen(gen):
                     await gen.athrow(exc)
                 else:
                     gen.throw(exc)  # type: ignore[union-attr]

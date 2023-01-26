@@ -783,7 +783,7 @@ the :class:`AbstractSyncOffsetPaginator <starlite.datastructures.pagination.Abst
 Offset Pagination With SQLAlchemy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-When retrieving paginated data from the database by using sqlalchemy, the paginator instance requires sqlalchemy session
+When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
 instance to make queries. This can be achieved with :ref:`dependency injection <usage/dependency-injection:dependency
 kwargs>`
 
