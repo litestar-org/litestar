@@ -1,7 +1,7 @@
 Open Telemetry Instrumentation
 ==============================
 
-Starlite includes optional OpenTelemetry instrumentation that is exported from ``starlite.contrib.opentelemtry``. To use
+Starlite includes optional OpenTelemetry instrumentation that is exported from ``starlite.contrib.opentelemetry``. To use
 this package, you should first install the required dependencies:
 
 .. code-block:: bash

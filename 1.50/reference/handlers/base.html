@@ -367,13 +367,6 @@
           <section id="module-starlite.handlers.base">
 <span id="base"></span><h1>base<a class="headerlink" href="#module-starlite.handlers.base" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="starlite.handlers.base.ParameterConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.handlers.base.</span></span><span class="sig-name descname"><span class="pre">ParameterConfig</span></span><a class="headerlink" href="#starlite.handlers.base.ParameterConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConfig</span></code></p>
-<p>Base config for <code class="docutils literal notranslate"><span class="pre">ModelField</span></code></p>
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="starlite.handlers.base.BaseRouteHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.handlers.base.</span></span><span class="sig-name descname"><span class="pre">BaseRouteHandler</span></span><a class="headerlink" href="#starlite.handlers.base.BaseRouteHandler" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
@@ -429,8 +422,8 @@ wherever you have access to <a class="reference internal" href="../connection/re
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.handlers.base.BaseRouteHandler.resolve_layered_parameters">
-<span class="sig-name descname"><span class="pre">resolve_layered_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ModelField</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.handlers.base.BaseRouteHandler.resolve_layered_parameters" title="Permalink to this definition">#</a></dt>
-<dd><p>Return all parameters declared above the handler, transforming them into pydantic ModelField instances.</p>
+<span class="sig-name descname"><span class="pre">resolve_layered_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">SignatureField</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.handlers.base.BaseRouteHandler.resolve_layered_parameters" title="Permalink to this definition">#</a></dt>
+<dd><p>Return all parameters declared above the handler.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -557,7 +550,6 @@ precedence.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">base</a><ul>
-<li><a class="reference internal" href="#starlite.handlers.base.ParameterConfig"><code class="docutils literal notranslate"><span class="pre">ParameterConfig</span></code></a></li>
 <li><a class="reference internal" href="#starlite.handlers.base.BaseRouteHandler"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler</span></code></a><ul>
 <li><a class="reference internal" href="#starlite.handlers.base.BaseRouteHandler.__init__"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.__init__()</span></code></a></li>
 <li><a class="reference internal" href="#starlite.handlers.base.BaseRouteHandler.handler_name"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.handler_name</span></code></a></li>

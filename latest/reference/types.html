@@ -1000,20 +1000,20 @@
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <p>Type generation for PATCH routes.</p>
 <p>Partial is a special typing helper that takes a generic T, which must be a
-[<cite>TypedDict</cite>][typing.TypedDict], dataclass or pydantic model class, and
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>, dataclass or pydantic model class, and
 returns to static type checkers a version of this T in which all fields -
 and nested fields - are optional.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.types.Partial.__class_getitem__">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__class_getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.types.Partial.__class_getitem__" title="Permalink to this definition">#</a></dt>
-<dd><p>Take a pydantic model class, [<cite>TypedDict</cite>][typing.TypedDict] or a dataclass and return an all optional
+<dd><p>Take a pydantic model class, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a> or a dataclass and return an all optional
 version of that class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>item</strong> – A pydantic model, [<cite>TypedDict</cite>][typing.TypedDict] or dataclass class.</p>
+<dd class="field-odd"><p><strong>item</strong> – A pydantic model, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a> or dataclass class.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pydantic model, [<cite>TypedDict</cite>][typing.TypedDict], or dataclass.</p>
+<dd class="field-even"><p>A pydantic model, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>, or dataclass.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1140,14 +1140,14 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
 <div class="admonition-notes admonition">
 <p class="admonition-title">Notes</p>
 <ul class="simple">
-<li><p>The return value must function correctly in a context <cite>with</cite> block.</p></li>
+<li><p>The return value must function correctly in a context <code class="docutils literal notranslate"><span class="pre">with</span></code> block.</p></li>
 </ul>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file</strong> – Path to the target file.</p></li>
-<li><p><strong>mode</strong> – Mode, similar to the built <cite>open</cite>.</p></li>
+<li><p><strong>mode</strong> – Mode, similar to the built <code class="docutils literal notranslate"><span class="pre">open</span></code>.</p></li>
 <li><p><strong>buffering</strong> – Buffer size.</p></li>
 </ul>
 </dd>

@@ -212,7 +212,7 @@ This controller exposes the following endpoints:
     Serves the docs using `Swagger-UI <https://swagger.io/docs/open-source-tools/swagger-ui>`_.
 
 ``/schema/elements``
-    Srves the docs using `Stoplight Elements <https://github.com/stoplightio/elements>`_.
+    Serves the docs using `Stoplight Elements <https://github.com/stoplightio/elements>`_.
 
 Additionally, the root ``/schema/`` path is accessible, serving the site that is configured as the default in
 the :class:`OpenAPIConfig <starlite.config.OpenAPIConfig>`.
