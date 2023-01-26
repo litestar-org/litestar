@@ -780,6 +780,20 @@ If you require async logic, you can implement
 the :class:`AbstractAsyncOffsetPaginator <starlite.datastructures.pagination.AbstractAsyncOffsetPaginator>` instead of
 the :class:`AbstractSyncOffsetPaginator <starlite.datastructures.pagination.AbstractSyncOffsetPaginator>`.
 
+Offset Pagination With SQLAlchemy
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
+instance to make queries. This can be achieved with :ref:`dependency injection <usage/dependency-injection:dependency
+kwargs>`
+
+.. literalinclude:: /examples/datastructures/pagination/using_offset_pagination_with_sqlalchemy.py
+    :caption: Offset Pagination With SQLAlchemy
+    :language: python
+
+
+See :ref:`SQLAlchemy plugin <usage/plugins/sqlalchemy:SQLAlchemy Plugin>` for sqlalchemy integration.
+
 Cursor Pagination
 +++++++++++++++++
 
