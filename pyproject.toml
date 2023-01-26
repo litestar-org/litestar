@@ -101,6 +101,8 @@ tortoise-orm = ">=0.17.0"
 tox = "*"
 trio = "*"
 uvicorn = "*"
+hypercorn = "^0.14.3"
+daphne = "^4.0.0"
 
 [tool.poetry.group.docs]
 optional = true

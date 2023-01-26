@@ -66,3 +66,11 @@ class CompressionEncoding(str, Enum):
 
     GZIP = "gzip"
     BROTLI = "br"
+
+
+class ServerEnum(str, Enum):
+    """An Enum for supported servers of `starlite run` command."""
+
+    UVICORN = "uvicorn"
+    HYPERCORN = "hypercorn"
+    DAPHNE = "daphne"
