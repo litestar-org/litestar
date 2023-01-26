@@ -1,6 +1,6 @@
 import json
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 from starlite import Request
@@ -82,7 +82,7 @@ class HtmxDetails:
         return self._get_header_value("hx-trigger-name")
 
     @cached_property
-    def triggering_event(self) -> Optional[str]:
+    def triggering_event(self) -> Any:
         """The name of the triggered event.
         'event-header' extension adds the Triggering-Event header to requests.
         """
