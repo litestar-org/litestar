@@ -150,6 +150,6 @@ def test_exception_handler_middleware_debug_logging(caplog: "LogCaptureFixture")
         client.app.debug = True
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        assert "Internal Server Error" in caplog.text
+        assert "Internal Server Error" not in caplog.text
         assert "Test debug exception" in response.text
         assert "ValueError" in response.text
