@@ -13,7 +13,11 @@
       "contributions": [
         "maintenance",
         "code",
-        "doc"
+        "doc",
+        "tests",
+        "ideas",
+        "examples",
+        "bug"
       ]
     },
     {
@@ -24,7 +28,11 @@
       "contributions": [
         "maintenance",
         "code",
-        "doc"
+        "doc",
+        "tests",
+        "ideas",
+        "examples",
+        "bug"
       ]
     },
     {
@@ -226,9 +234,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/204685?v=4",
       "profile": "https://github.com/cofin",
       "contributions": [
+        "maintenance",
         "code",
         "doc",
-        "maintenance"
+        "tests",
+        "ideas",
+        "examples",
+        "bug"
       ]
     },
     {
@@ -430,8 +442,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/153191?v=4",
       "profile": "https://github.com/jtraub",
       "contributions": [
+        "maintenance",
+        "code",
         "doc",
-        "code"
+        "tests",
+        "ideas",
+        "examples",
+        "bug"
       ]
     },
     {
@@ -467,8 +484,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/25355197?v=4",
       "profile": "https://github.com/provinzkraut",
       "contributions": [
-        "test",
-        "code"
+        "maintenance",
+        "code",
+        "doc",
+        "tests",
+        "ideas",
+        "examples",
+        "bug"
       ]
     },
     {
