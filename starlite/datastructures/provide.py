@@ -1,4 +1,4 @@
-from inspect import isasyncgen
+from inspect import isasyncgen, isclass
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -57,7 +57,7 @@ class Provide:
         self.dependency = Ref["AnyCallable"](dependency)
         self.use_cache = use_cache
         self.value: Any = Empty
-        self.has_sync_callable = not is_async_callable(self.dependency.value)
+        self.has_sync_callable = isclass(self.dependency.value) or not is_async_callable(self.dependency.value)
 
     async def __call__(self, **kwargs: Any) -> Any:
         """Proxy a call to ``self.proxy``."""
