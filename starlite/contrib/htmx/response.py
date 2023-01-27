@@ -1,9 +1,9 @@
+import json
 from typing import Any, Dict, Literal, Optional, TypeVar
 from urllib.parse import quote
 
 from starlite import Response, Template
 from starlite.status_codes import HTTP_200_OK
-from starlite.utils import encode_json
 
 EventAfterType = Literal["receive", "settle", "swap"]
 
@@ -48,10 +48,10 @@ class ClientRefresh(Response):
 class PushUrl(Response):
     """Class to push new url into the history stack"""
 
-    def __init__(self, content: Response[T], push: str = "", **kwargs: Any) -> None:
+    def __init__(self, content: Response[T], url: str = "", **kwargs: Any) -> None:
         """Initialize"""
-        push_url = push if push else "false"
-        super().__init__(content=content, status_code=HTTP_200_OK, headers={"HX-Push-Url": push_url}, **kwargs)
+        push = "false" if url == "" else url
+        super().__init__(content=content, status_code=HTTP_200_OK, headers={"HX-Push-Url": push}, **kwargs)
 
 
 class Reswap(Response):
@@ -98,7 +98,7 @@ class TriggerEvent(Response):
             header = "HX-Trigger-After-Swap"
         else:
             raise ValueError("Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.")
-        headers = {header: encode_json({name: params})}
+        headers = {header: json.dumps({name: params})}
         super().__init__(content=content, headers=headers, **kwargs)
 
 
@@ -142,7 +142,7 @@ class HXLocation(Response):
             spec["headers"] = headers
         if values is not None:
             spec["values"] = values
-        self.headers["HX-Location"] = encode_json(spec)
+        self.headers["HX-Location"] = json.dumps(spec)
 
 
 class HTMXTemplate(Template):

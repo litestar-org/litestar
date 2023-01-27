@@ -1,10 +1,9 @@
+import json
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Optional
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 from starlite import Request
-from starlite.exceptions import SerializationException
-from starlite.utils import decode_json
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
@@ -90,8 +89,8 @@ class HtmxDetails:
         value = self._get_header_value("triggering-event")
         if value is not None:
             try:
-                value = decode_json(value)
-            except SerializationException:
+                value = json.loads(value)
+            except json.JSONDecodeError:
                 value = None
         return value
 
