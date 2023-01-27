@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, List, Optional
 
 import pytest
 from pydantic import BaseModel
@@ -184,7 +184,7 @@ app = Starlite(route_handlers=[hello_world], openapi_config=None)
 @pytest.mark.parametrize(("query", "exp"), [("?a=1&a=2&a=3", [1, 2, 3]), ("", None)])
 def test_parse_optional_sequence_from_connection_kwargs(query: str, exp: Any) -> None:
     @get("/")
-    def test(a: Optional[list[int]] = Parameter(query="a", default=None, required=False)) -> Optional[list[int]]:
+    def test(a: Optional[List[int]] = Parameter(query="a", default=None, required=False)) -> Optional[List[int]]:
         return a
 
     with create_test_client(route_handlers=[test]) as client:
