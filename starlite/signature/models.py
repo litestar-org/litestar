@@ -84,8 +84,8 @@ class SignatureField:
         """Check if the field type is a non-string Sequence."""
         field_type = self.field_type
         if self.is_optional:
-            args = [tp for tp in get_args(self.field_type) if tp is not NoneType]
-            field_type = Union[*args]  # pyright: ignore
+            args = tuple(tp for tp in get_args(self.field_type) if tp is not NoneType)
+            field_type = Union[args]  # pyright: ignore
         return is_non_string_sequence(field_type)
 
     @property
