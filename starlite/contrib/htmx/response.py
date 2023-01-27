@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, Literal, TypeVar
+from typing import Any, Dict, Literal, Optional, TypeVar
 from urllib.parse import quote
 
 from starlite import Response, Template
@@ -48,7 +48,7 @@ class ClientRefresh(Response):
 class PushUrl(Response):
     """Class to push new url into the history stack"""
 
-    def __init__(self, content: T, url: str = "", **kwargs: Any) -> None:
+    def __init__(self, content: Response[T], url: str = "", **kwargs: Any) -> None:
         """Initialize"""
         push = "false" if url == "" else url
         super().__init__(content=content, status_code=HTTP_200_OK, headers={"HX-Push-Url": push}, **kwargs)
@@ -59,7 +59,7 @@ class Reswap(Response):
 
     def __init__(
         self,
-        content: T,
+        content: Response[T],
         method: Literal[
             "innerHTML", "outerHTML", "beforebegin", "afterbegin", "beforeend", "afterend", "delete", "none"
         ],
@@ -72,7 +72,7 @@ class Reswap(Response):
 class Retarget(Response):
     """Class to target different element on the page"""
 
-    def __init__(self, content: T, target: str, **kwargs: Any) -> None:
+    def __init__(self, content: Response[T], target: str, **kwargs: Any) -> None:
         """Initialize"""
         super().__init__(content=content, headers={"HX-Retarget": target}, **kwargs)
 
@@ -81,7 +81,12 @@ class TriggerEvent(Response):
     """Trigger Client side event"""
 
     def __init__(
-        self, content: T, name: str, after: EventAfterType, params: "Dict[str, Any] | None" = None, **kwargs: Any
+        self,
+        content: Response[T],
+        name: str,
+        after: EventAfterType,
+        params: "Dict[str, Any] | None" = None,
+        **kwargs: Any,
     ) -> None:
         """Initialize"""
         params = params if params else {}
@@ -103,22 +108,14 @@ class HXLocation(Response):
     def __init__(
         self,
         redirect_to: str,
-        source: "str | None" = None,
-        event: "str | None" = None,
-        target: "str | None" = None,
-        swap: Literal[
-            "innerHTML",
-            "outerHTML",
-            "beforebegin",
-            "afterbegin",
-            "beforeend",
-            "afterend",
-            "delete",
-            "none",
-            None,
+        source: Optional[str] = None,
+        event: Optional[str] = None,
+        target: Optional[str] = None,
+        swap: Optional[
+            Literal["innerHTML", "outerHTML", "beforebegin", "afterbegin", "beforeend", "afterend", "delete", "none"]
         ] = None,
-        headers: "Dict[str, Any] | None" = None,
-        values: "Dict[str, str] | None" = None,
+        headers: Optional[Dict[str, Any]] = None,
+        values: Optional[Dict[str, str]] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize"""
