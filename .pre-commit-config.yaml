@@ -36,7 +36,7 @@ repos:
     rev: v2.2.2
     hooks:
       - id: codespell
-        exclude: ^(tests/openapi/typescript_converter/test_converter/|.github/styles/)
+        exclude: "tests/openapi/typescript_converter/test_converter/"
   - repo: https://github.com/asottile/blacken-docs
     rev: 1.13.0
     hooks:
@@ -45,7 +45,7 @@ repos:
     rev: "v3.0.0-alpha.4"
     hooks:
       - id: prettier
-        exclude: ^(docs/|.github/styles/)
+        exclude: docs
   - repo: https://github.com/pycqa/bandit
     rev: 1.7.4
     hooks:
