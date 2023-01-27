@@ -1,12 +1,27 @@
 import re
 from collections import deque
-from typing import Any, Deque, Iterable, Iterator, List, Sequence, Tuple, Type, TypeVar
+from typing import (
+    Any,
+    Deque,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from typing_extensions import TypeGuard, get_args
 
+from starlite.types.builtin_types import NoneType
 from starlite.utils.predicates import is_class_and_subclass
 
 T = TypeVar("T")
+UnionT = TypeVar("UnionT", bound="Union")
 
 tuple_types_regex = re.compile(
     "^"
@@ -35,3 +50,16 @@ def annotation_is_iterable_of_type(
     ):
         return args[0] is type_value or isinstance(args[0], type_value) or is_class_and_subclass(args[0], type_value)
     return False
+
+
+def make_non_optional_union(annotation: Optional[UnionT]) -> UnionT:
+    """Make a :data:`Union <typing.Union>` type that excludes ``NoneType``.
+
+    Args:
+        annotation: A type annotation.
+
+    Returns:
+        The union with all original members, except ``NoneType``.
+    """
+    args = tuple(tp for tp in get_args(annotation) if tp is not NoneType)
+    return cast("UnionT", Union[args])  # pyright: ignore
