@@ -61,7 +61,8 @@ We would then test it using the test client like so:
             from my_app.main import app
 
 
-            def test_health_check():
+            @pytest.mark.asyncio
+            async def test_health_check():
                 async with AsyncTestClient(app=app) as client:
                     response = await client.get("/health-check")
                     assert response.status_code == HTTP_200_OK
@@ -105,7 +106,7 @@ Since we would probably need to use the client in multiple places, it's better t
 
 
             @pytest.fixture(scope="function")
-            def test_client() -> AsyncTestClient:
+            async def test_client() -> AsyncTestClient:
                 return AsyncTestClient(app=app)
 
 
@@ -139,7 +140,8 @@ We would then be able to rewrite our test like so:
             from starlite.testing import AsyncTestClient
 
 
-            def test_health_check(test_client: AsyncTestClient):
+            @pytest.mark.asyncio
+            async def test_health_check(test_client: AsyncTestClient):
                 async with test_client as client:
                     response = await client.get("/health-check")
                     assert response.status_code == HTTP_200_OK
