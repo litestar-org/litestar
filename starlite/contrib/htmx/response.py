@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, Literal, Optional, TypeVar
+from typing import Any, Dict, Generic, Literal, Optional, TypeVar
 from urllib.parse import quote
 
 from starlite import Response, Template
@@ -45,21 +45,21 @@ class ClientRefresh(Response):
         super().__init__(content=None, status_code=HTTP_200_OK, headers={"HX-Refresh": "true"})
 
 
-class PushUrl(Response):
+class PushUrl(Generic[T], Response[T]):
     """Class to push new url into the history stack"""
 
-    def __init__(self, content: Response[T], url: str = "", **kwargs: Any) -> None:
+    def __init__(self, content: T, url: str = "", **kwargs: Any) -> None:
         """Initialize"""
         push = "false" if url == "" else url
         super().__init__(content=content, status_code=HTTP_200_OK, headers={"HX-Push-Url": push}, **kwargs)
 
 
-class Reswap(Response):
+class Reswap(Generic[T], Response[T]):
     """Class to specify how the response will be swapped."""
 
     def __init__(
         self,
-        content: Response[T],
+        content: T,
         method: Literal[
             "innerHTML", "outerHTML", "beforebegin", "afterbegin", "beforeend", "afterend", "delete", "none"
         ],
@@ -69,20 +69,20 @@ class Reswap(Response):
         super().__init__(content=content, headers={"HX-Reswap": method}, **kwargs)
 
 
-class Retarget(Response):
+class Retarget(Generic[T], Response[T]):
     """Class to target different element on the page"""
 
-    def __init__(self, content: Response[T], target: str, **kwargs: Any) -> None:
+    def __init__(self, content: T, target: str, **kwargs: Any) -> None:
         """Initialize"""
         super().__init__(content=content, headers={"HX-Retarget": target}, **kwargs)
 
 
-class TriggerEvent(Response):
+class TriggerEvent(Generic[T], Response[T]):
     """Trigger Client side event"""
 
     def __init__(
         self,
-        content: Response[T],
+        content: T,
         name: str,
         after: EventAfterType,
         params: "Dict[str, Any] | None" = None,
