@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING, Any, Optional
 import pytest
 from pydantic import BaseModel
 
-from starlite import Provide, get
+from starlite import Parameter, Provide, get
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.params import Dependency
 from starlite.signature import create_signature_model
-from starlite.status_codes import HTTP_204_NO_CONTENT
+from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from tests.plugins.test_base import AModel, APlugin
 
@@ -179,3 +179,16 @@ app = Starlite(route_handlers=[hello_world], openapi_config=None)
         resp = client.get("/")
         assert resp.status_code == 200
         assert resp.json() == {"hello": "world"}
+
+
+@pytest.mark.parametrize(("query", "exp"), [("?a=1&a=2&a=3", [1, 2, 3]), ("", None)])
+def test_parse_optional_sequence_from_connection_kwargs(query: str, exp: Any) -> None:
+    @get("/")
+    def test(a: Optional[list[int]] = Parameter(query="a", default=None, required=False)) -> Optional[list[int]]:
+        return a
+
+    with create_test_client(route_handlers=[test]) as client:
+        resp = client.get(f"/{query}")
+
+    assert resp.status_code == HTTP_200_OK
+    assert resp.json() == exp
