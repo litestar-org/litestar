@@ -68,9 +68,9 @@ app = Starlite(route_handlers=[hello_world])
 - [Life Cycle Hooks](#request-life-cycle-hooks)
 - [Route Guards based Authorization](#route-guards)
 - Layered Parameter declaration
-- SQLAlchemy plugin support
-- Piccolo ORM plugin support
-- Tortoise ORM plugin support
+- SQLAlchemy support (via plugin)
+- Piccolo ORM support (via plugin)
+- Tortoise ORM support (via plugin)
 - Extended testing support
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Redoc](https://github.com/Redocly/redoc)
@@ -86,7 +86,7 @@ app = Starlite(route_handlers=[hello_world])
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Starlite projects, this application is open to contributions, big and small.
 - [starlite-hello-world](https://github.com/starlite-api/starlite-hello-world): A bare-minimum application setup. Great
-  for testing and Proof-Of-Concept (POC) work.
+  for testing and POC (Proof of Concept) work.
 
 ## The name `Starlite` and relation to `Starlette`
 
@@ -166,8 +166,8 @@ class UserController(Controller):
 One key difference between Starlite and Starlette/FastAPI is in parsing of form data and query parameters- Starlite
 supports mixed form data and has faster and better query parameter parsing.
 
-Starlite is rigorously typed, and it enforces typing. For example, you'll stumble across an exception if you forget to type a return value for a route
-handler. The reason for this is that Starlite uses typing data to generate OpenAPI specs,
+Starlite is rigorously typed, and it enforces typing. For example, if you forget to type a return value for a route
+handler, an exception will be raised. The reason for this is that Starlite uses typing data to generate OpenAPI specs,
 as well as to validate and parse data. Thus typing is absolutely essential to the framework.
 
 Furthermore, Starlite allows extending its support using plugins.
