@@ -1,16 +1,15 @@
 from typing import Any, Dict, Optional
 from uuid import uuid4
 
-from starlette.status import (
+from starlite import ASGIConnection, Request, Starlite, delete, get, post
+from starlite.middleware.session.memory_backend import MemoryBackendConfig
+from starlite.security.session_auth import SessionAuth
+from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
     HTTP_401_UNAUTHORIZED,
 )
-
-from starlite import ASGIConnection, Request, Starlite, delete, get, post
-from starlite.middleware.session.memory_backend import MemoryBackendConfig
-from starlite.security.session_auth import SessionAuth
 from starlite.testing import create_test_client
 from tests import User, UserFactory
 

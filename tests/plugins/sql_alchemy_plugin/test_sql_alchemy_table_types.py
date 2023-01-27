@@ -174,7 +174,7 @@ class DeclarativeModel(SQLAlchemyBase):
     postgresql_CIDR_column: str = Column(postgresql.CIDR)
     postgresql_DATERANGE_column = Column(postgresql.DATERANGE)
     postgresql_DOUBLE_PRECISION_column = Column(postgresql.DOUBLE_PRECISION)
-    postgresql_ENUM_column = Column(postgresql.ENUM(Species))
+    postgresql_ENUM_column = Column(postgresql.ENUM(Species, name="pg_enum"))
     postgresql_HSTORE_column = Column(postgresql.HSTORE)
     postgresql_INET_column: str = Column(postgresql.INET)
     postgresql_INT4RANGE_column = Column(postgresql.INT4RANGE)

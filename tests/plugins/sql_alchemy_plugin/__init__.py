@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Any, List
 
 from sqlalchemy import JSON, Column, Enum, Float, ForeignKey, Integer, String, Table
 from sqlalchemy.dialects import mysql, postgresql, sqlite
-from sqlalchemy.orm import as_declarative, declared_attr, registry, relationship
+from sqlalchemy.orm import Mapped, as_declarative, declared_attr, registry, relationship
 
 from tests import Species
 
@@ -42,42 +42,42 @@ activities_table = Table(
 
 
 class Pet(SQLAlchemyBase):
-    id = Column(Integer, primary_key=True)
-    species = Column(Enum(Species))
-    name = Column(String)
-    age = Column(Float)
-    owner_id = Column(Integer, ForeignKey("user.id"))
-    owner: "User" = relationship("User", back_populates="pets", uselist=False)
+    id: Mapped[int] = Column(Integer, primary_key=True)
+    species: Mapped[Species] = Column(Enum(Species))
+    name: Mapped[str] = Column(String)
+    age: Mapped[float] = Column(Float)
+    owner_id: Mapped[int] = Column(Integer, ForeignKey("user.id"))
+    owner: Mapped["User"] = relationship("User", back_populates="pets", uselist=False)
 
 
 class WildAnimal(SQLAlchemyBase):
-    id = Column(Integer, primary_key=True)
-    sa_json = Column(JSON, default={})
-    my_json = Column(mysql.JSON, default=[])
-    pg_json = Column(postgresql.JSON, default={})
-    pg_jsonb = Column(postgresql.JSONB, default=[])
-    sl_json = Column(sqlite.JSON, default={})
+    id: Mapped[int] = Column(Integer, primary_key=True)
+    sa_json: Mapped[Any] = Column(JSON, default={})
+    my_json: Mapped[Any] = Column(mysql.JSON, default=[])
+    pg_json: Mapped[Any] = Column(postgresql.JSON, default={})
+    pg_jsonb: Mapped[Any] = Column(postgresql.JSONB, default=[])
+    sl_json: Mapped[Any] = Column(sqlite.JSON, default={})
 
 
 class Company(SQLAlchemyBase):
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    worth = Column(Float)
+    id: Mapped[int] = Column(Integer, primary_key=True)
+    name: Mapped[str] = Column(String)
+    worth: Mapped[float] = Column(Float)
 
 
 class User(SQLAlchemyBase):
-    id = Column(Integer, primary_key=True)
-    name = Column(String, default="moishe")
-    pets: List[Pet] = relationship("Pet", back_populates="owner", uselist=True)
-    friends: List["User"] = relationship(
+    id: Mapped[int] = Column(Integer, primary_key=True)
+    name: Mapped[str] = Column(String, default="moishe")
+    pets: Mapped[List[Pet]] = relationship("Pet", back_populates="owner", uselist=True)
+    friends: Mapped[List["User"]] = relationship(
         "User",
         secondary=friendship_table,
         primaryjoin=id == friendship_table.c.friend_a_id,
         secondaryjoin=id == friendship_table.c.friend_b_id,
         uselist=True,
     )
-    company_id = Column(Integer, ForeignKey("company.id"))
-    company: Company = relationship("Company")
+    company_id: Mapped[int] = Column(Integer, ForeignKey("company.id"))
+    company: Mapped[Company] = relationship("Company")
 
 
 @dataclass
