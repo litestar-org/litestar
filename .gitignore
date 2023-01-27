@@ -27,3 +27,5 @@ coverage.*
 setup.py
 /docs/_build/
 /.auto_pytabs_cache/
+.vale/styles/*
+!.vale/styles/Vocab/
