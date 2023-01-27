@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Sequence
 
 import pytest
 from pydantic import BaseModel
@@ -192,3 +192,23 @@ def test_parse_optional_sequence_from_connection_kwargs(query: str, exp: Any) ->
 
     assert resp.status_code == HTTP_200_OK
     assert resp.json() == exp
+
+
+def test_signature_field_is_non_string_iterable() -> None:
+    def fn(a: Iterable[int], b: Optional[Iterable[int]]) -> None:
+        pass
+
+    model = create_signature_model(fn, plugins=[], dependency_name_set=set())
+
+    assert model.signature_fields["a"].is_non_string_iterable
+    assert model.signature_fields["b"].is_non_string_iterable
+
+
+def test_signature_field_is_non_string_sequence() -> None:
+    def fn(a: Sequence[int], b: Optional[Sequence[int]]) -> None:
+        pass
+
+    model = create_signature_model(fn, plugins=[], dependency_name_set=set())
+
+    assert model.signature_fields["a"].is_non_string_sequence
+    assert model.signature_fields["b"].is_non_string_sequence
