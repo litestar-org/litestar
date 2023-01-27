@@ -13,6 +13,7 @@ from starlite.exceptions import InternalServerException, ValidationException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.plugins import PluginMapping
 from starlite.types import Empty
+from starlite.types.builtin_types import NoneType
 from starlite.utils import is_any, is_optional_union, is_union
 from starlite.utils.predicates import (
     is_generic,
@@ -81,7 +82,11 @@ class SignatureField:
     @property
     def is_non_string_sequence(self) -> bool:
         """Check if the field type is a non-string Sequence."""
-        return is_non_string_sequence(self.field_type)
+        field_type = self.field_type
+        if self.is_optional:
+            args = [tp for tp in get_args(self.field_type) if tp is not NoneType]
+            field_type = Union[*args]  # pyright: ignore
+        return is_non_string_sequence(field_type)
 
     @property
     def is_any(self) -> bool:
