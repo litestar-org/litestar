@@ -53,13 +53,13 @@ def annotation_is_iterable_of_type(
 
 
 def make_non_optional_union(annotation: Optional[UnionT]) -> UnionT:
-    """Make a `Union` type that excludes `NoneType`.
+    """Make a :data:`Union <typing.Union>` type that excludes ``NoneType``.
 
     Args:
         annotation: A type annotation.
 
     Returns:
-        The union with all original members, except `NoneType`.
+        The union with all original members, except ``NoneType``.
     """
     args = tuple(tp for tp in get_args(annotation) if tp is not NoneType)
     return cast("UnionT", Union[args])  # pyright: ignore

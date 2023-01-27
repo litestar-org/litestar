@@ -75,7 +75,12 @@ class SignatureField:
 
     @property
     def is_non_string_iterable(self) -> bool:
-        """Check if the field type is an Iterable."""
+        """Check if the field type is an Iterable.
+
+        If ``self.field_type`` is an optional union, only the non-optional members of the union are evaluated.
+
+        See: https://github.com/starlite-api/starlite/issues/1106
+        """
         field_type = self.field_type
         if self.is_optional:
             field_type = make_non_optional_union(field_type)
@@ -83,7 +88,12 @@ class SignatureField:
 
     @property
     def is_non_string_sequence(self) -> bool:
-        """Check if the field type is a non-string Sequence."""
+        """Check if the field type is a non-string Sequence.
+
+        If ``self.field_type`` is an optional union, only the non-optional members of the union are evaluated.
+
+        See: https://github.com/starlite-api/starlite/issues/1106
+        """
         field_type = self.field_type
         if self.is_optional:
             field_type = make_non_optional_union(field_type)
