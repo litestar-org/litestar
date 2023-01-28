@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from typing import Any
 
@@ -24,7 +23,7 @@ from starlite.status_codes import HTTP_200_OK
 
 async def test_hx_stop_polling_response() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> HXStopPolling:
+    def handler() -> HXStopPolling:
         return HXStopPolling()
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -34,8 +33,8 @@ async def test_hx_stop_polling_response() -> None:
 
 async def test_client_redirect_response() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> ClientRedirect:
-        return ClientRedirect(url="https://example.com")
+    def handler() -> ClientRedirect:
+        return ClientRedirect(redirect_to="https://example.com")
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
@@ -46,7 +45,7 @@ async def test_client_redirect_response() -> None:
 
 async def test_client_refresh_response() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> ClientRefresh:
+    def handler() -> ClientRefresh:
         return ClientRefresh()
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -57,7 +56,7 @@ async def test_client_refresh_response() -> None:
 
 async def test_push_url_false_response() -> None:
     @get("/", media_type=MediaType.TEXT)
-    def handler(request: HTMXRequest) -> PushUrl:
+    def handler() -> PushUrl:
         return PushUrl(content="Success!")
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -69,8 +68,8 @@ async def test_push_url_false_response() -> None:
 
 async def test_push_url_response() -> None:
     @get("/", media_type=MediaType.TEXT)
-    def handler(request: HTMXRequest) -> PushUrl:
-        return PushUrl(content="Success!", url="/index.html")
+    def handler() -> PushUrl:
+        return PushUrl(content="Success!", push="/index.html")
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
@@ -81,7 +80,7 @@ async def test_push_url_response() -> None:
 
 async def test_reswap_response() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> Reswap:
+    def handler() -> Reswap:
         return Reswap(content="Success!", method="beforebegin")
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -93,7 +92,7 @@ async def test_reswap_response() -> None:
 
 async def test_retarget_response() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> Retarget:
+    def handler() -> Retarget:
         return Retarget(content="Success!", target="#element")
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -105,7 +104,7 @@ async def test_retarget_response() -> None:
 
 async def test_trigger_event_response_success() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> TriggerEvent:
+    def handler() -> TriggerEvent:
         return TriggerEvent(
             content="Success!", name="alert", after="receive", params={"warning": "Confirm your choice!"}
         )
@@ -119,7 +118,7 @@ async def test_trigger_event_response_success() -> None:
 
 async def test_trigger_event_response_no_params() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> TriggerEvent:
+    def handler() -> TriggerEvent:
         return TriggerEvent(content="Success!", name="alert", after="receive")
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -131,7 +130,7 @@ async def test_trigger_event_response_no_params() -> None:
 
 async def test_trigger_event_response_after_settle() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> TriggerEvent:
+    def handler() -> TriggerEvent:
         return TriggerEvent(
             content="Success!", name="alert", after="settle", params={"warning": "Confirm your choice!"}
         )
@@ -145,7 +144,7 @@ async def test_trigger_event_response_after_settle() -> None:
 
 async def test_trigger_event_response_after_swap() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> TriggerEvent:
+    def handler() -> TriggerEvent:
         return TriggerEvent(content="Success!", name="alert", after="swap", params={"warning": "Confirm your choice!"})
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
@@ -157,7 +156,7 @@ async def test_trigger_event_response_after_swap() -> None:
 
 async def test_trigger_event_response_invalid_after() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> TriggerEvent:
+    def handler() -> TriggerEvent:
         return TriggerEvent(
             content="Success!", name="alert", after="invalid", params={"warning": "Confirm your choice!"}  # type: ignore
         )
@@ -174,20 +173,20 @@ async def test_trigger_event_response_invalid_after() -> None:
 
 async def test_hx_location_response_success() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> HXLocation:
+    def handler() -> HXLocation:
         return HXLocation(redirect_to="/contact-us")
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
-        spec = json.loads(response.headers["hx-location"])
+        spec = response.headers["hx-location"]
         assert response.status_code == HTTP_200_OK
         assert "Location" not in response.headers
-        assert spec == {"path": "/contact-us"}
+        assert spec == '{"path": "/contact-us"}'
 
 
 async def test_hx_location_response_with_all_parameters() -> None:
     @get("/")
-    def handler(request: HTMXRequest) -> HXLocation:
+    def handler() -> HXLocation:
         return HXLocation(
             redirect_to="/contact-us",
             source="#button",
@@ -200,25 +199,20 @@ async def test_hx_location_response_with_all_parameters() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
-        spec = json.loads(response.headers["hx-location"])
+        spec = response.headers["hx-location"]
         assert response.status_code == HTTP_200_OK
         assert "Location" not in response.headers
-        assert spec == {
-            "path": "/contact-us",
-            "source": "#button",
-            "event": "click",
-            "target": "#content",
-            "swap": "innerHTML",
-            "headers": {"attribute": "value"},
-            "values": {"action": "true"},
-        }
+        assert (
+            spec
+            == '{"path": "/contact-us", "source": "#button", "event": "click", "target": "#content", "swap": "innerHTML", "headers": {"attribute": "value"}, "values": {"action": "true"}}'
+        )
 
 
 @pytest.mark.parametrize(
     "engine, template, expected",
     (
-        (JinjaTemplateEngine, 'path: {{ request.scope["path"] }}', "path: /"),
-        (MakoTemplateEngine, 'path: ${request.scope["path"]}', "path: /"),
+        (JinjaTemplateEngine, "path: {{ request.scope['path'] }}", "path: /"),
+        (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
     ),
 )
 def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str, template_dir: Path) -> None:

@@ -25,14 +25,14 @@ class HXStopPolling(Response):
 class ClientRedirect(Response):
     """HTMX Response class to support client side redirect."""
 
-    def __init__(self, url: str) -> None:
+    def __init__(self, redirect_to: str) -> None:
         """Set status code to 200 (required by HTMX),
         and pass redirect url
         """
         super().__init__(
             content=None,
             status_code=HTTP_200_OK,
-            headers={"HX-Redirect": quote(url, safe="/#%[]=:;$&()+,!?*@'~"), "Location": ""},
+            headers={"HX-Redirect": quote(redirect_to, safe="/#%[]=:;$&()+,!?*@'~"), "Location": ""},
         )
         del self.headers["Location"]
 
@@ -48,10 +48,10 @@ class ClientRefresh(Response):
 class PushUrl(Generic[T], Response[T]):
     """Class to push new url into the history stack"""
 
-    def __init__(self, content: T, url: str = "", **kwargs: Any) -> None:
+    def __init__(self, content: T, push: Optional[str] = None, **kwargs: Any) -> None:
         """Initialize"""
-        push = "false" if url == "" else url
-        super().__init__(content=content, status_code=HTTP_200_OK, headers={"HX-Push-Url": push}, **kwargs)
+        push_url = push if push else "false"
+        super().__init__(content=content, status_code=HTTP_200_OK, headers={"HX-Push-Url": push_url}, **kwargs)
 
 
 class Reswap(Generic[T], Response[T]):
@@ -148,7 +148,7 @@ class HXLocation(Response):
 class HTMXTemplate(Template):
     """Send Template or Partial Template and push url to browser history stack"""
 
-    def __init__(self, push: str = "", **kwargs: Any) -> None:
+    def __init__(self, push: Optional[str] = None, **kwargs: Any) -> None:
         """Initialize class"""
-        url = push if push != "" else "false"
+        url = push if push else "false"
         super().__init__(headers={"HX-Push-Url": url}, **kwargs)
