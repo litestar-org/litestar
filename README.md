@@ -106,7 +106,7 @@ or read more about it [here](https://starlite-api.github.io/starlite/latest/benc
 
 ### Plain Text benchmarks
 
-![Plain Text benchmarks](docs/images/benchmarks/rps_plaintext.svg)
+![Plain-Text benchmarks](docs/images/benchmarks/rps_plaintext.svg)
 
 ## Features
 
@@ -175,8 +175,8 @@ Furthermore, Starlite allows extending its support using plugins.
 ### Plugin system, ORM support and DTOs
 
 Starlite has a plugin system that allows the user to extend serialization/deserialization, OpenAPI generation and other
-features. It ships with a builtin plugin for SQL Alchemy, which allows the user to use SQLAlchemy declarative classes
-natively, to serialize/deserialize the type parameters and return them as values from the route handlers.
+features. It ships with a builtin plugin for SQL Alchemy, which allows using SQLAlchemy declarative models similarly to
+dataclasses of pydantic models.
 
 Starlite also supports the programmatic creation of DTOs with a `DTOFactory` class, which also supports the use of
 plugins.
