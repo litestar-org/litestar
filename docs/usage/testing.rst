@@ -61,7 +61,6 @@ We would then test it using the test client like so:
             from my_app.main import app
 
 
-            @pytest.mark.asyncio
             async def test_health_check():
                 async with AsyncTestClient(app=app) as client:
                     response = await client.get("/health-check")
@@ -140,7 +139,6 @@ We would then be able to rewrite our test like so:
             from starlite.testing import AsyncTestClient
 
 
-            @pytest.mark.asyncio
             async def test_health_check(test_client: AsyncTestClient):
                 async with test_client as client:
                     response = await client.get("/health-check")
