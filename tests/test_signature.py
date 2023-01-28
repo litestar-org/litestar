@@ -1,14 +1,14 @@
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Sequence
 
 import pytest
 from pydantic import BaseModel
 
-from starlite import Provide, get
+from starlite import Parameter, Provide, get
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.params import Dependency
 from starlite.signature import create_signature_model
-from starlite.status_codes import HTTP_204_NO_CONTENT
+from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from tests.plugins.test_base import AModel, APlugin
 
@@ -179,3 +179,36 @@ app = Starlite(route_handlers=[hello_world], openapi_config=None)
         resp = client.get("/")
         assert resp.status_code == 200
         assert resp.json() == {"hello": "world"}
+
+
+@pytest.mark.parametrize(("query", "exp"), [("?a=1&a=2&a=3", [1, 2, 3]), ("", None)])
+def test_parse_optional_sequence_from_connection_kwargs(query: str, exp: Any) -> None:
+    @get("/")
+    def test(a: Optional[List[int]] = Parameter(query="a", default=None, required=False)) -> Optional[List[int]]:
+        return a
+
+    with create_test_client(route_handlers=[test]) as client:
+        resp = client.get(f"/{query}")
+
+    assert resp.status_code == HTTP_200_OK
+    assert resp.json() == exp
+
+
+def test_signature_field_is_non_string_iterable() -> None:
+    def fn(a: Iterable[int], b: Optional[Iterable[int]]) -> None:
+        pass
+
+    model = create_signature_model(fn, plugins=[], dependency_name_set=set())
+
+    assert model.signature_fields["a"].is_non_string_iterable
+    assert model.signature_fields["b"].is_non_string_iterable
+
+
+def test_signature_field_is_non_string_sequence() -> None:
+    def fn(a: Sequence[int], b: Optional[Sequence[int]]) -> None:
+        pass
+
+    model = create_signature_model(fn, plugins=[], dependency_name_set=set())
+
+    assert model.signature_fields["a"].is_non_string_sequence
+    assert model.signature_fields["b"].is_non_string_sequence
