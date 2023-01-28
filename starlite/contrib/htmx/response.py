@@ -3,13 +3,13 @@ from typing import Any, Dict, Generic, Literal, Optional, TypeVar
 from urllib.parse import quote
 
 from starlite import Response, Template
+from starlite.contrib.htmx.utils import HTMX_STOP_POLLING, HX
 from starlite.status_codes import HTTP_200_OK
 
 EventAfterType = Literal["receive", "settle", "swap"]
 
 # HTMX defined HTTP status code.
 # Response carrying this status code will ask client to stop Polling.
-HTMX_STOP_POLLING = 286
 T = TypeVar("T")
 
 
@@ -32,7 +32,7 @@ class ClientRedirect(Response):
         super().__init__(
             content=None,
             status_code=HTTP_200_OK,
-            headers={"HX-Redirect": quote(redirect_to, safe="/#%[]=:;$&()+,!?*@'~"), "Location": ""},
+            headers={HX.REDIRECT: quote(redirect_to, safe="/#%[]=:;$&()+,!?*@'~"), "Location": ""},
         )
         del self.headers["Location"]
 
@@ -42,7 +42,7 @@ class ClientRefresh(Response):
 
     def __init__(self) -> None:
         """Set Status code to 200 and set headers."""
-        super().__init__(content=None, status_code=HTTP_200_OK, headers={"HX-Refresh": "true"})
+        super().__init__(content=None, status_code=HTTP_200_OK, headers={HX.REFRESH: "true"})
 
 
 class PushUrl(Generic[T], Response[T]):
@@ -51,7 +51,7 @@ class PushUrl(Generic[T], Response[T]):
     def __init__(self, content: T, push: Optional[str] = None, **kwargs: Any) -> None:
         """Initialize"""
         push_url = push if push else "false"
-        super().__init__(content=content, status_code=HTTP_200_OK, headers={"HX-Push-Url": push_url}, **kwargs)
+        super().__init__(content=content, status_code=HTTP_200_OK, headers={HX.PUSH_URL: push_url}, **kwargs)
 
 
 class Reswap(Generic[T], Response[T]):
@@ -66,7 +66,7 @@ class Reswap(Generic[T], Response[T]):
         **kwargs: Any,
     ) -> None:
         """Initialize"""
-        super().__init__(content=content, headers={"HX-Reswap": method}, **kwargs)
+        super().__init__(content=content, headers={HX.RE_SWAP: method}, **kwargs)
 
 
 class Retarget(Generic[T], Response[T]):
@@ -74,7 +74,7 @@ class Retarget(Generic[T], Response[T]):
 
     def __init__(self, content: T, target: str, **kwargs: Any) -> None:
         """Initialize"""
-        super().__init__(content=content, headers={"HX-Retarget": target}, **kwargs)
+        super().__init__(content=content, headers={HX.RE_TARGET: target}, **kwargs)
 
 
 class TriggerEvent(Generic[T], Response[T]):
@@ -89,13 +89,14 @@ class TriggerEvent(Generic[T], Response[T]):
         **kwargs: Any,
     ) -> None:
         """Initialize"""
+        header: str
         params = params if params else {}
         if after == "receive":
-            header = "HX-Trigger"
+            header = HX.TRIGGER_EVENT.value
         elif after == "settle":
-            header = "HX-Trigger-After-Settle"
+            header = HX.TRIGGER_AFTER_SETTLE.value
         elif after == "swap":
-            header = "HX-Trigger-After-Swap"
+            header = HX.TRIGGER_AFTER_SWAP.value
         else:
             raise ValueError("Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.")
         headers = {header: json.dumps({name: params})}
@@ -142,7 +143,7 @@ class HXLocation(Response):
             spec["headers"] = headers
         if values is not None:
             spec["values"] = values
-        self.headers["HX-Location"] = json.dumps(spec)
+        self.headers[HX.LOCATION] = json.dumps(spec)
 
 
 class HTMXTemplate(Template):
@@ -151,4 +152,4 @@ class HTMXTemplate(Template):
     def __init__(self, push: Optional[str] = None, **kwargs: Any) -> None:
         """Initialize class"""
         url = push if push else "false"
-        super().__init__(headers={"HX-Push-Url": url}, **kwargs)
+        super().__init__(headers={HX.PUSH_URL: url}, **kwargs)

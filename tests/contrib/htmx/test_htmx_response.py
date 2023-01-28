@@ -16,6 +16,7 @@ from starlite.contrib.htmx.response import (
     Retarget,
     TriggerEvent,
 )
+from starlite.contrib.htmx.utils import HX
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
 from starlite.status_codes import HTTP_200_OK
@@ -39,7 +40,7 @@ async def test_client_redirect_response() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.headers.get("hx-redirect") == "https://example.com"
+        assert response.headers.get(HX.REDIRECT) == "https://example.com"
         assert response.headers.get("location") is None
 
 
@@ -51,7 +52,7 @@ async def test_client_refresh_response() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.headers["hx-refresh"] == "true"
+        assert response.headers[HX.REFRESH] == "true"
 
 
 async def test_push_url_false_response() -> None:
@@ -63,7 +64,7 @@ async def test_push_url_false_response() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers["hx-push-url"] == "false"
+        assert response.headers[HX.PUSH_URL] == "false"
 
 
 async def test_push_url_response() -> None:
@@ -75,7 +76,7 @@ async def test_push_url_response() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers["hx-push-url"] == "/index.html"
+        assert response.headers[HX.PUSH_URL] == "/index.html"
 
 
 async def test_reswap_response() -> None:
@@ -87,7 +88,7 @@ async def test_reswap_response() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers["hx-reswap"] == "beforebegin"
+        assert response.headers[HX.RE_SWAP] == "beforebegin"
 
 
 async def test_retarget_response() -> None:
@@ -99,7 +100,7 @@ async def test_retarget_response() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers["hx-retarget"] == "#element"
+        assert response.headers[HX.RE_TARGET] == "#element"
 
 
 async def test_trigger_event_response_success() -> None:
@@ -113,7 +114,7 @@ async def test_trigger_event_response_success() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers["hx-trigger"] == '{"alert": {"warning": "Confirm your choice!"}}'
+        assert response.headers[HX.TRIGGER_EVENT] == '{"alert": {"warning": "Confirm your choice!"}}'
 
 
 async def test_trigger_event_response_no_params() -> None:
@@ -125,7 +126,7 @@ async def test_trigger_event_response_no_params() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers["hx-trigger"] == '{"alert": {}}'
+        assert response.headers[HX.TRIGGER_EVENT] == '{"alert": {}}'
 
 
 async def test_trigger_event_response_after_settle() -> None:
@@ -139,7 +140,7 @@ async def test_trigger_event_response_after_settle() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers["hx-trigger-after-settle"] == '{"alert": {"warning": "Confirm your choice!"}}'
+        assert response.headers[HX.TRIGGER_AFTER_SETTLE] == '{"alert": {"warning": "Confirm your choice!"}}'
 
 
 async def test_trigger_event_response_after_swap() -> None:
@@ -151,7 +152,7 @@ async def test_trigger_event_response_after_swap() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers["hx-trigger-after-swap"] == '{"alert": {"warning": "Confirm your choice!"}}'
+        assert response.headers[HX.TRIGGER_AFTER_SWAP] == '{"alert": {"warning": "Confirm your choice!"}}'
 
 
 async def test_trigger_event_response_invalid_after() -> None:
@@ -178,7 +179,7 @@ async def test_hx_location_response_success() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
-        spec = response.headers["hx-location"]
+        spec = response.headers[HX.LOCATION]
         assert response.status_code == HTTP_200_OK
         assert "Location" not in response.headers
         assert spec == '{"path": "/contact-us"}'
@@ -199,7 +200,7 @@ async def test_hx_location_response_with_all_parameters() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
-        spec = response.headers["hx-location"]
+        spec = response.headers[HX.LOCATION]
         assert response.status_code == HTTP_200_OK
         assert "Location" not in response.headers
         assert (
@@ -231,4 +232,4 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
     ) as client:
         response = client.get("/")
         assert response.text == expected
-        assert response.headers.get("hx-push-url") == "/about"
+        assert response.headers.get(HX.PUSH_URL) == "/about"
