@@ -1,4 +1,4 @@
-from typing import Any, Dict, Generic, Literal, Optional, TypeVar
+from typing import Any, Dict, Generic, Literal, Optional, TypeVar, Union
 from urllib.parse import quote
 
 from starlite import Response, Template
@@ -6,7 +6,8 @@ from starlite.contrib.htmx.utils import HTMX_STOP_POLLING, HX
 from starlite.status_codes import HTTP_200_OK
 from starlite.utils import encode_json
 
-EventAfterType = Literal["receive", "settle", "swap"]
+EventAfterType = Literal["receive", "settle", "swap", None]
+PushUrlType = Union[str, Literal[False]]
 ReSwapMethod = Literal[
     "innerHTML", "outerHTML", "beforebegin", "afterbegin", "beforeend", "afterend", "delete", "none", None
 ]
@@ -50,7 +51,7 @@ class ClientRefresh(Response):
 class PushUrl(Generic[T], Response[T]):
     """Class to push new url into the history stack"""
 
-    def __init__(self, content: T, push: Optional[str] = None, **kwargs: Any) -> None:
+    def __init__(self, content: T, push: Optional[PushUrlType] = None, **kwargs: Any) -> None:
         """Initialize"""
         push_url = push if push else "false"
         super().__init__(content=content, status_code=HTTP_200_OK, headers={HX.PUSH_URL: push_url}, **kwargs)
@@ -147,7 +148,36 @@ class HXLocation(Response):
 class HTMXTemplate(Template):
     """Send Template or Partial Template and push url to browser history stack"""
 
-    def __init__(self, push: Optional[str] = None, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        push: Optional[PushUrlType] = None,
+        re_swap: ReSwapMethod = None,
+        re_target: Optional[str] = None,
+        trigger_event: Optional[str] = None,
+        params: "Dict[str, Any] | None" = None,
+        after: Optional[EventAfterType] = None,
+        **kwargs: Any,
+    ) -> None:
         """Initialize class"""
-        url = push if push else "false"
-        super().__init__(headers={HX.PUSH_URL: url}, **kwargs)
+        header: Dict[str, Any] = {}
+        if push is not None:
+            url = push if push else "false"
+            header.update({HX.PUSH_URL: url})
+        if re_swap:
+            header.update({HX.RE_SWAP: re_swap})
+        if re_target:
+            header.update({HX.RE_TARGET: re_target})
+        if trigger_event:
+            params = params if params else {}
+            key: str
+            if after == "receive":
+                key = HX.TRIGGER_EVENT.value
+            elif after == "settle":
+                key = HX.TRIGGER_AFTER_SETTLE.value
+            elif after == "swap":
+                key = HX.TRIGGER_AFTER_SWAP.value
+            else:
+                raise ValueError("Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.")
+            header.update({key: encode_json({trigger_event: params}).decode()})
+
+        super().__init__(headers=header, **kwargs)

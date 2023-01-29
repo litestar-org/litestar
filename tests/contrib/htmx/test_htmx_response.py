@@ -221,7 +221,16 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
 
     @get(path="/", media_type=MediaType.HTML)
     def handler() -> HTMXTemplate:
-        return HTMXTemplate(name="abc.html", context={"request": {"scope": {"path": "nope"}}}, push="/about")
+        return HTMXTemplate(
+            name="abc.html",
+            context={"request": {"scope": {"path": "nope"}}},
+            push="/about",
+            re_swap="beforebegin",
+            re_target="#new-target-id",
+            trigger_event="showMessage",
+            params={"alert": "Confirm your Choice."},
+            after="receive",
+        )
 
     with create_test_client(
         route_handlers=[handler],
@@ -233,3 +242,114 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
         response = client.get("/")
         assert response.text == expected
         assert response.headers.get(HX.PUSH_URL) == "/about"
+        assert response.headers.get(HX.RE_SWAP) == "beforebegin"
+        assert response.headers.get(HX.RE_TARGET) == "#new-target-id"
+        assert response.headers.get(HX.TRIGGER_EVENT) == '{"showMessage":{"alert":"Confirm your Choice."}}'
+
+
+@pytest.mark.parametrize(
+    "engine, template, expected",
+    (
+        (JinjaTemplateEngine, "path: {{ request.scope['path'] }}", "path: /"),
+        (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
+    ),
+)
+def test_HTMXTemplate_response_no_params(engine: Any, template: str, expected: str, template_dir: Path) -> None:
+    Path(template_dir / "abc.html").write_text(template)
+
+    @get(path="/", media_type=MediaType.HTML)
+    def handler() -> HTMXTemplate:
+        return HTMXTemplate(
+            name="abc.html",
+            context={"request": {"scope": {"path": "nope"}}},
+        )
+
+    with create_test_client(
+        route_handlers=[handler],
+        template_config=TemplateConfig(
+            directory=template_dir,
+            engine=engine,
+        ),
+    ) as client:
+        response = client.get("/")
+        assert response.text == expected
+        assert response.headers.get(HX.PUSH_URL) is None
+        assert response.headers.get(HX.RE_SWAP) is None
+        assert response.headers.get(HX.RE_TARGET) is None
+        assert response.headers.get(HX.TRIGGER_EVENT) is None
+
+
+@pytest.mark.parametrize(
+    "engine, template, expected",
+    (
+        (JinjaTemplateEngine, "path: {{ request.scope['path'] }}", "path: /"),
+        (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
+    ),
+)
+def test_HTMXTemplate_response_push_url_set_to_false(
+    engine: Any, template: str, expected: str, template_dir: Path
+) -> None:
+    Path(template_dir / "abc.html").write_text(template)
+
+    @get(path="/", media_type=MediaType.HTML)
+    def handler() -> HTMXTemplate:
+        return HTMXTemplate(
+            name="abc.html",
+            context={"request": {"scope": {"path": "nope"}}},
+            push=False,
+        )
+
+    with create_test_client(
+        route_handlers=[handler],
+        template_config=TemplateConfig(
+            directory=template_dir,
+            engine=engine,
+        ),
+    ) as client:
+        response = client.get("/")
+        assert response.text == expected
+        assert response.headers.get(HX.PUSH_URL) == "false"
+        assert response.headers.get(HX.RE_SWAP) is None
+        assert response.headers.get(HX.RE_TARGET) is None
+        assert response.headers.get(HX.TRIGGER_EVENT) is None
+
+
+@pytest.mark.parametrize(
+    "engine, template, expected",
+    (
+        (JinjaTemplateEngine, "path: {{ request.scope['path'] }}", "path: /"),
+        (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
+    ),
+)
+def test_HTMXTemplate_response_bad_trigger_params(
+    engine: Any, template: str, expected: str, template_dir: Path
+) -> None:
+    Path(template_dir / "abc.html").write_text(template)
+
+    @get(path="/", media_type=MediaType.HTML)
+    def handler() -> HTMXTemplate:
+        return HTMXTemplate(
+            name="abc.html",
+            context={"request": {"scope": {"path": "nope"}}},
+            trigger_event="showMessage",
+            params={"alert": "Confirm your Choice."},
+            after="begin",  # type: ignore
+        )
+
+    with create_test_client(
+        route_handlers=[handler],
+        template_config=TemplateConfig(
+            directory=template_dir,
+            engine=engine,
+        ),
+    ) as client:
+        response = client.get("/")
+        error = response.json()
+        assert (
+            error["detail"]
+            == "ValueError(\"Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.\")"
+        )
+        assert response.headers.get(HX.PUSH_URL) is None
+        assert response.headers.get(HX.RE_SWAP) is None
+        assert response.headers.get(HX.RE_TARGET) is None
+        assert response.headers.get(HX.TRIGGER_EVENT) is None
