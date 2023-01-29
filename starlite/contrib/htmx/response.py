@@ -1,13 +1,15 @@
-import json
 from typing import Any, Dict, Generic, Literal, Optional, TypeVar
 from urllib.parse import quote
 
 from starlite import Response, Template
 from starlite.contrib.htmx.utils import HTMX_STOP_POLLING, HX
 from starlite.status_codes import HTTP_200_OK
+from starlite.utils import encode_json
 
 EventAfterType = Literal["receive", "settle", "swap"]
-
+ReSwapMethod = Literal[
+    "innerHTML", "outerHTML", "beforebegin", "afterbegin", "beforeend", "afterend", "delete", "none", None
+]
 # HTMX defined HTTP status code.
 # Response carrying this status code will ask client to stop Polling.
 T = TypeVar("T")
@@ -60,9 +62,7 @@ class Reswap(Generic[T], Response[T]):
     def __init__(
         self,
         content: T,
-        method: Literal[
-            "innerHTML", "outerHTML", "beforebegin", "afterbegin", "beforeend", "afterend", "delete", "none"
-        ],
+        method: ReSwapMethod,
         **kwargs: Any,
     ) -> None:
         """Initialize"""
@@ -99,7 +99,7 @@ class TriggerEvent(Generic[T], Response[T]):
             header = HX.TRIGGER_AFTER_SWAP.value
         else:
             raise ValueError("Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.")
-        headers = {header: json.dumps({name: params})}
+        headers = {header: encode_json({name: params}).decode()}
         super().__init__(content=content, headers=headers, **kwargs)
 
 
@@ -112,9 +112,7 @@ class HXLocation(Response):
         source: Optional[str] = None,
         event: Optional[str] = None,
         target: Optional[str] = None,
-        swap: Optional[
-            Literal["innerHTML", "outerHTML", "beforebegin", "afterbegin", "beforeend", "afterend", "delete", "none"]
-        ] = None,
+        swap: ReSwapMethod = None,
         headers: Optional[Dict[str, Any]] = None,
         values: Optional[Dict[str, str]] = None,
         **kwargs: Any,
@@ -143,7 +141,7 @@ class HXLocation(Response):
             spec["headers"] = headers
         if values is not None:
             spec["values"] = values
-        self.headers[HX.LOCATION] = json.dumps(spec)
+        self.headers[HX.LOCATION] = encode_json(spec).decode()
 
 
 class HTMXTemplate(Template):

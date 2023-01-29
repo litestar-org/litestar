@@ -114,7 +114,7 @@ async def test_trigger_event_response_success() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.TRIGGER_EVENT] == '{"alert": {"warning": "Confirm your choice!"}}'
+        assert response.headers[HX.TRIGGER_EVENT] == '{"alert":{"warning":"Confirm your choice!"}}'
 
 
 async def test_trigger_event_response_no_params() -> None:
@@ -126,7 +126,7 @@ async def test_trigger_event_response_no_params() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.TRIGGER_EVENT] == '{"alert": {}}'
+        assert response.headers[HX.TRIGGER_EVENT] == '{"alert":{}}'
 
 
 async def test_trigger_event_response_after_settle() -> None:
@@ -140,7 +140,7 @@ async def test_trigger_event_response_after_settle() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.TRIGGER_AFTER_SETTLE] == '{"alert": {"warning": "Confirm your choice!"}}'
+        assert response.headers[HX.TRIGGER_AFTER_SETTLE] == '{"alert":{"warning":"Confirm your choice!"}}'
 
 
 async def test_trigger_event_response_after_swap() -> None:
@@ -152,7 +152,7 @@ async def test_trigger_event_response_after_swap() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.TRIGGER_AFTER_SWAP] == '{"alert": {"warning": "Confirm your choice!"}}'
+        assert response.headers[HX.TRIGGER_AFTER_SWAP] == '{"alert":{"warning":"Confirm your choice!"}}'
 
 
 async def test_trigger_event_response_invalid_after() -> None:
@@ -182,7 +182,7 @@ async def test_hx_location_response_success() -> None:
         spec = response.headers[HX.LOCATION]
         assert response.status_code == HTTP_200_OK
         assert "Location" not in response.headers
-        assert spec == '{"path": "/contact-us"}'
+        assert spec == '{"path":"/contact-us"}'
 
 
 async def test_hx_location_response_with_all_parameters() -> None:
@@ -205,7 +205,7 @@ async def test_hx_location_response_with_all_parameters() -> None:
         assert "Location" not in response.headers
         assert (
             spec
-            == '{"path": "/contact-us", "source": "#button", "event": "click", "target": "#content", "swap": "innerHTML", "headers": {"attribute": "value"}, "values": {"action": "true"}}'
+            == '{"path":"/contact-us","source":"#button","event":"click","target":"#content","swap":"innerHTML","headers":{"attribute":"value"},"values":{"action":"true"}}'
         )
 
 
