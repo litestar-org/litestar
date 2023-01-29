@@ -6,11 +6,11 @@ from pydantic import BaseModel
 from pydantic_factories import ModelFactory
 
 from starlite import DTOFactory, post
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
-from tests.plugins.sql_alchemy_plugin import Pet, WildAnimal
+from tests.plugins.sqlalchemy_plugin import Pet, WildAnimal
 
 
 @pytest.mark.parametrize(

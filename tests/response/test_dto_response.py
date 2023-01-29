@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, declarative_base
 
 from starlite import DTOFactory, HTTPException, create_test_client, get, post
-from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
+from starlite.plugins.sqlalchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from tests import Person, PersonFactory
 
@@ -124,7 +124,7 @@ def test_dto_response_with_the_sqla_plugin() -> None:
     async def get_users(async_session: AsyncSession) -> List[ReadUserDTO]:  # type: ignore
         """Get all users."""
         result = await async_session.scalars(select(User))
-        return result.all()
+        return result.all()  # pyright: ignore
 
     with create_test_client(
         route_handlers=[create_user, get_user, get_users],

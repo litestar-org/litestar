@@ -3,9 +3,9 @@ from typing import Any, Optional
 import pytest
 
 from starlite import DTOFactory
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
-from tests.plugins.sql_alchemy_plugin import Activity, Pet
+from tests.plugins.sqlalchemy_plugin import Activity, Pet
 
 
 @pytest.mark.parametrize(

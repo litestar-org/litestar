@@ -3,8 +3,8 @@ from typing import Any
 from pydantic import BaseModel
 from typing_extensions import get_args
 
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
-from tests.plugins.sql_alchemy_plugin import Company, Pet, User
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
+from tests.plugins.sqlalchemy_plugin import Company, Pet, User
 
 
 def test_relationship() -> None:

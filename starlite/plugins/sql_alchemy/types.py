@@ -1,49 +1,21 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Optional,
-    Protocol,
-    Type,
-    Union,
-    runtime_checkable,
+from starlite.utils.deprecation import warn_deprecation
+
+from ..sqlalchemy.types import (
+    SessionMakerInstanceProtocol,
+    SessionMakerTypeProtocol,
+    SQLAlchemyBinaryType,
 )
 
-if TYPE_CHECKING:
-    from sqlalchemy.engine import Connection, Engine
-    from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
-    from sqlalchemy.orm import Session
-    from sqlalchemy.types import BINARY, VARBINARY, LargeBinary
+__all__ = (
+    "SQLAlchemyBinaryType",
+    "SessionMakerInstanceProtocol",
+    "SessionMakerTypeProtocol",
+)
 
-
-SQLAlchemyBinaryType = Union["BINARY", "VARBINARY", "LargeBinary"]
-
-
-@runtime_checkable
-class SessionMakerTypeProtocol(Protocol):
-    """Protocol for a sessionmaker."""
-
-    def __init__(
-        self,
-        bind: "Optional[Union[AsyncEngine, Engine, Connection]]",
-        class_: "Union[Type[AsyncSession], Type[Session]]",
-        autoflush: bool,
-        expire_on_commit: bool,
-        info: Dict[Any, Any],
-        **kwargs: Any,
-    ) -> None:
-        """Initialize the sessionmaker."""
-        ...
-
-    def __call__(self) -> "Union[Session, AsyncSession]":
-        """Return a session instance."""
-        ...
-
-
-@runtime_checkable
-class SessionMakerInstanceProtocol(Protocol):
-    """Protocol for a sessionmaker instance."""
-
-    def __call__(self) -> "Union[Session, AsyncSession]":
-        """Return a session instance."""
-        ...
+warn_deprecation(
+    version="v1.51.0",
+    deprecated_name="starlite.plugins.sql_alchemy.types",
+    removal_in="v2.0.0",
+    alternative="starlite.plugins.sqlalchemy.types",
+    kind="import",
+)

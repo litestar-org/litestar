@@ -53,7 +53,7 @@ from starlite.middleware.session.sqlalchemy_backend import (
     SQLAlchemyBackendConfig,
     create_session_model,
 )
-from starlite.plugins.sql_alchemy import (
+from starlite.plugins.sqlalchemy import (
     SQLAlchemyConfig,
     SQLAlchemyEngineConfig,
     SQLAlchemyPlugin,

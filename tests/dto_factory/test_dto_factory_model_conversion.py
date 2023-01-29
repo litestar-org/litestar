@@ -8,10 +8,10 @@ from pydantic_factories import ModelFactory
 from typing_extensions import is_typeddict
 
 from starlite import DTOFactory, ImproperlyConfiguredException
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
 from starlite.plugins.tortoise_orm import TortoiseORMPlugin
 from tests import Person, Species, TypedDictPerson, VanillaDataClassPerson
-from tests.plugins.sql_alchemy_plugin import Pet
+from tests.plugins.sqlalchemy_plugin import Pet
 from tests.plugins.tortoise_orm import Tournament
 
 

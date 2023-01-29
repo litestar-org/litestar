@@ -6,7 +6,7 @@ from starlite.middleware.session.sqlalchemy_backend import (
     SessionModelMixin,
     SQLAlchemyBackendConfig,
 )
-from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
+from starlite.plugins.sqlalchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 
 Base = declarative_base()
 

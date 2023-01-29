@@ -12,13 +12,13 @@ from sqlalchemy.orm import Session as SASession
 from sqlalchemy.orm import declarative_mixin, registry
 
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
 
 if TYPE_CHECKING:
     from sqlalchemy.sql import Select
     from sqlalchemy.sql.elements import BooleanClauseList
 
-    from starlite.plugins.sql_alchemy import SQLAlchemyConfig as SQLAlchemyPluginConfig
+    from starlite.plugins.sqlalchemy import SQLAlchemyConfig as SQLAlchemyPluginConfig
 
 
 AnySASession = Union[SASession, AsyncSASession]
@@ -89,7 +89,7 @@ class BaseSQLAlchemyBackend(Generic[AnySASessionT], ServerSideBackend["SQLAlchem
 
     Notes:
         - Requires ``sqlalchemy`` which needs to be installed separately, and a configured
-          :class:`SQLAlchemyPlugin <starlite.plugins.sql_alchemy.SQLAlchemyPlugin>`.
+          :class:`SQLAlchemyPlugin <starlite.plugins.sqlalchemy.SQLAlchemyPlugin>`.
 
     """
 

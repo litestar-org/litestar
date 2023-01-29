@@ -2,7 +2,7 @@ from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import Mapped, declarative_base
 
 from starlite import DTOFactory
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
 
 dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 

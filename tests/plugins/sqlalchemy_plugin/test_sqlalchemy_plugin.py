@@ -5,7 +5,7 @@ from sqlalchemy import Column, Integer
 from sqlalchemy.orm import Mapper, as_declarative, declarative_base
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
 
 DeclBase = declarative_base()
 

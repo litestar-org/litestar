@@ -1,6 +1,6 @@
 from starlite import DTOFactory, Starlite, get, post
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
-from tests.plugins.sql_alchemy_plugin import User
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
+from tests.plugins.sqlalchemy_plugin import User
 
 
 def test_dto_openapi_generation() -> None:

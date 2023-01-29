@@ -55,9 +55,9 @@ from sqlalchemy.sql.functions import now
 from sqlalchemy.sql.sqltypes import TupleType
 
 from starlite import ImproperlyConfiguredException
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
 from tests import Species
-from tests.plugins.sql_alchemy_plugin import SQLAlchemyBase
+from tests.plugins.sqlalchemy_plugin import SQLAlchemyBase
 
 plugin = SQLAlchemyPlugin()
 
@@ -204,12 +204,12 @@ imperative_model = Table(
 )
 
 
-def test_sql_alchemy_plugin_model_class_parsing() -> None:
+def test_sqlalchemy_plugin_model_class_parsing() -> None:
     result = plugin.to_pydantic_model_class(model_class=DeclarativeModel)
     assert issubclass(result, BaseModel)
 
 
-def test_sql_alchemy_plugin_validation() -> None:
+def test_sqlalchemy_plugin_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         plugin.to_pydantic_model_class(model_class=imperative_model)
 

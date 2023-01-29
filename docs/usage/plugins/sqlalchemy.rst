@@ -2,7 +2,7 @@ SQLAlchemy Plugin
 =================
 
 Starlite comes with built-in support for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ via
-the :class:`SQLAlchemyPlugin <starlite.plugins.sql_alchemy.SQLAlchemyPlugin>`.
+the :class:`SQLAlchemyPlugin <starlite.plugins.sqlalchemy.SQLAlchemyPlugin>`.
 
 Features
 --------
@@ -23,7 +23,7 @@ Features
 
 .. attention::
 
-    The :class:`SQLAlchemyPlugin <starlite.plugins.sql_alchemy.SQLAlchemyPlugin>` supports only
+    The :class:`SQLAlchemyPlugin <starlite.plugins.sqlalchemy.SQLAlchemyPlugin>` supports only
     `mapped classes <https://docs.sqlalchemy.org/en/14/tutorial/metadata.html#declaring-mapped-classes>`_.
     `Tables <https://docs.sqlalchemy.org/en/14/tutorial/metadata.html#setting-up-metadata-with-table-objects>`_ are
     currently not supported since they are not easy to convert to pydantic models.
@@ -152,4 +152,4 @@ For to-many relationships or those that contain circular references you need to 
 Configuration
 -------------
 
-You can configure the Plugin using the :class:`SQLAlchemyConfig <starlite.plugins.sql_alchemy.SQLAlchemyConfig>` object.
+You can configure the Plugin using the :class:`SQLAlchemyConfig <starlite.plugins.sqlalchemy.SQLAlchemyConfig>` object.

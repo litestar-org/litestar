@@ -6,5 +6,5 @@ starlite.plugins
 
     base
     piccolo_orm
-    sql_alchemy
+    sqlalchemy
     tortoise_orm

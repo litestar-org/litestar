@@ -1,6 +1,6 @@
 from starlite import Starlite, get, post
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
-from tests.plugins.sql_alchemy_plugin import User
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
+from tests.plugins.sqlalchemy_plugin import User
 
 
 @get(path="/user")
@@ -13,7 +13,7 @@ def create_user(data: User) -> User:
     return data
 
 
-def test_sql_alchemy_models_openapi_generation() -> None:
+def test_sqlalchemy_models_openapi_generation() -> None:
     app = Starlite(route_handlers=[get_user, create_user], plugins=[SQLAlchemyPlugin()])
     assert len(app.openapi_schema.paths) == 1  # type: ignore
     assert (

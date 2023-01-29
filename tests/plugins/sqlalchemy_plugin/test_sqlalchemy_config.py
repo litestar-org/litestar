@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session, sessionmaker
 
 from starlite import LoggingConfig, Starlite, get
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
-from starlite.plugins.sql_alchemy.config import (
+from starlite.plugins.sqlalchemy import SQLAlchemyPlugin
+from starlite.plugins.sqlalchemy.config import (
     SESSION_SCOPE_KEY,
     SESSION_TERMINUS_ASGI_EVENTS,
     SQLAlchemyConfig,
