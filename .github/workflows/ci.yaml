@@ -14,6 +14,12 @@ jobs:
           python-version: "3.11"
       - name: Install Pre-Commit
         run: python -m pip install pre-commit && pre-commit install
+        # INFO: This step is necessary for Vale to work properly in CI.
+      - name: Install & Setup Vale
+        run: |
+          wget https://github.com/errata-ai/vale/releases/download/v2.15.4/vale_2.15.4_Linux_64-bit.tar.gz && \
+          mkdir bin && tar -xvzf vale_2.15.4_Linux_64-bit.tar.gz -C bin && \
+          export PATH=./bin:"PATH" && vale sync
       - name: Load cached Pre-Commit Dependencies
         id: cached-poetry-dependencies
         uses: actions/cache@v3
