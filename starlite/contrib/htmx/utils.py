@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 HTMX_STOP_POLLING = 286
 
 
-class HX(str, Enum):
+class HTMXHeaders(str, Enum):
     """An Enum for HTMX Headers"""
 
     REDIRECT = "HX-Redirect"
@@ -46,9 +46,9 @@ def get_trigger_event_headers(trigger_event: "TriggerEventType") -> Dict[str, An
     """Return headers for trigger event response."""
     params = trigger_event["params"] or {}
     after_params: Dict[EventAfterType, str] = {
-        "receive": HX.TRIGGER_EVENT.value,
-        "settle": HX.TRIGGER_AFTER_SETTLE.value,
-        "swap": HX.TRIGGER_AFTER_SWAP.value,
+        "receive": HTMXHeaders.TRIGGER_EVENT.value,
+        "settle": HTMXHeaders.TRIGGER_AFTER_SETTLE.value,
+        "swap": HTMXHeaders.TRIGGER_AFTER_SWAP.value,
     }
     trigger_header = after_params.get(trigger_event["after"])
     if trigger_header is None:
@@ -59,17 +59,17 @@ def get_trigger_event_headers(trigger_event: "TriggerEventType") -> Dict[str, An
 
 def get_redirect_header(url: str) -> Dict[str, Any]:
     """Return headers for redirect response."""
-    return {HX.REDIRECT.value: quote(url, safe="/#%[]=:;$&()+,!?*@'~"), "Location": ""}
+    return {HTMXHeaders.REDIRECT.value: quote(url, safe="/#%[]=:;$&()+,!?*@'~"), "Location": ""}
 
 
 def get_push_url_header(url: str) -> Dict[str, Any]:
     """Return headers for push url to browser history response."""
-    return {HX.PUSH_URL.value: url if url else "false"}
+    return {HTMXHeaders.PUSH_URL.value: url if url else "false"}
 
 
 def get_replace_url_header(url: str) -> Dict[str, Any]:
     """Return headers for replace url in browser tab response."""
-    return {HX.REPLACE_URL: url if url else "false"}
+    return {HTMXHeaders.REPLACE_URL: url if url else "false"}
 
 
 def get_refresh_header(refresh: bool) -> Dict[str, Any]:
@@ -77,17 +77,17 @@ def get_refresh_header(refresh: bool) -> Dict[str, Any]:
     value = ""
     if refresh:
         value = "true"
-    return {HX.REFRESH.value: value}
+    return {HTMXHeaders.REFRESH.value: value}
 
 
 def get_reswap_header(method: "ReSwapMethod") -> Dict[str, Any]:
     """Return headers for change swap method response."""
-    return {HX.RE_SWAP.value: method}
+    return {HTMXHeaders.RE_SWAP.value: method}
 
 
 def get_retarget_header(target: str) -> Dict[str, Any]:
     """Return headers for change target element response."""
-    return {HX.RE_TARGET.value: target}
+    return {HTMXHeaders.RE_TARGET.value: target}
 
 
 def get_location_headers(location: "LocationType") -> Dict[str, Any]:
@@ -98,7 +98,7 @@ def get_location_headers(location: "LocationType") -> Dict[str, Any]:
             spec[key] = value
     if not spec:
         raise ValueError("redirect_to is required parameter.")
-    return {HX.LOCATION.value: encode_json(spec).decode()}
+    return {HTMXHeaders.LOCATION.value: encode_json(spec).decode()}
 
 
 def get_headers(hx_headers: "HtmxHeaderType") -> Dict[str, Any]:

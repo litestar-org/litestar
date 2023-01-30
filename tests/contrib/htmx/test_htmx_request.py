@@ -1,6 +1,6 @@
 from starlite import MediaType, Response, get
 from starlite.contrib.htmx.request import HTMXRequest
-from starlite.contrib.htmx.utils import HX
+from starlite.contrib.htmx.utils import HTMXHeaders
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing.create_test_client import create_test_client
 
@@ -32,7 +32,7 @@ async def test_bool_false() -> None:
         return Response(content=bool(request.htmx))
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.REQUEST.value: "false"})
+        response = client.get("/", headers={HTMXHeaders.REQUEST.value: "false"})
         assert response.text == "false"
 
 
@@ -42,7 +42,7 @@ async def test_bool_true() -> None:
         return Response(content=bool(request.htmx))
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.REQUEST.value: "true"})
+        response = client.get("/", headers={HTMXHeaders.REQUEST.value: "true"})
         assert response.text == "true"
 
 
@@ -62,7 +62,7 @@ async def test_boosted_set() -> None:
         return Response(content=request.htmx.boosted)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.BOOSTED.value: "true"})
+        response = client.get("/", headers={HTMXHeaders.BOOSTED.value: "true"})
         assert response.text == "true"
 
 
@@ -84,7 +84,7 @@ def test_current_url_set() -> None:
         return Response(content=request.htmx.current_url)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.CURRENT_URL.value: "https://example.com"})
+        response = client.get("/", headers={HTMXHeaders.CURRENT_URL.value: "https://example.com"})
         assert response.text == '"https://example.com"'
 
 
@@ -98,8 +98,8 @@ def test_current_url_set_url_encoded() -> None:
         response = client.get(
             "/",
             headers={
-                HX.CURRENT_URL.value: "https%3A%2F%2Fexample.com%2F%3F",
-                HX.CURRENT_URL.value + "-URI-AutoEncoded": "true",
+                HTMXHeaders.CURRENT_URL.value: "https%3A%2F%2Fexample.com%2F%3F",
+                HTMXHeaders.CURRENT_URL.value + "-URI-AutoEncoded": "true",
             },
         )
         assert response.text == '"https://example.com/?"'
@@ -123,7 +123,9 @@ def test_current_url_abs_path_set() -> None:
         return Response(content=request.htmx.current_url_abs_path)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.CURRENT_URL.value: "http://testserver.local/duck/?quack=true#h2"})
+        response = client.get(
+            "/", headers={HTMXHeaders.CURRENT_URL.value: "http://testserver.local/duck/?quack=true#h2"}
+        )
         assert response.text == '"/duck/?quack=true#h2"'
 
 
@@ -134,7 +136,7 @@ def test_current_url_abs_path_set_other_domain() -> None:
         return Response(content=request.htmx.current_url_abs_path)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.CURRENT_URL.value: "http://example.com/duck/?quack=true#h2"})
+        response = client.get("/", headers={HTMXHeaders.CURRENT_URL.value: "http://example.com/duck/?quack=true#h2"})
         assert response.text == "null"
 
 
@@ -145,7 +147,7 @@ def test_history_restore_request_false() -> None:
         return Response(content=request.htmx.history_restore_request)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.HISTORY_RESTORE_REQUEST.value: "false"})
+        response = client.get("/", headers={HTMXHeaders.HISTORY_RESTORE_REQUEST.value: "false"})
         assert response.text == "false"
 
 
@@ -156,7 +158,7 @@ def test_history_restore_request_true() -> None:
         return Response(content=request.htmx.history_restore_request)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.HISTORY_RESTORE_REQUEST.value: "true"})
+        response = client.get("/", headers={HTMXHeaders.HISTORY_RESTORE_REQUEST.value: "true"})
         assert response.text == "true"
 
 
@@ -178,7 +180,7 @@ def test_prompt_set() -> None:
         return Response(content=request.htmx.prompt)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.PROMPT.value: "Yes"})
+        response = client.get("/", headers={HTMXHeaders.PROMPT.value: "Yes"})
         assert response.text == '"Yes"'
 
 
@@ -200,7 +202,7 @@ def test_target_set() -> None:
         return Response(content=request.htmx.target)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.TARGET.value: "#element"})
+        response = client.get("/", headers={HTMXHeaders.TARGET.value: "#element"})
         assert response.text == '"#element"'
 
 
@@ -222,7 +224,7 @@ def test_trigger_set() -> None:
         return Response(content=request.htmx.trigger)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.TRIGGER_ID.value: "#element"})
+        response = client.get("/", headers={HTMXHeaders.TRIGGER_ID.value: "#element"})
         assert response.text == '"#element"'
 
 
@@ -244,7 +246,7 @@ def test_trigger_name_set() -> None:
         return Response(content=request.htmx.trigger_name)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.TRIGGER_NAME.value: "name_of_element"})
+        response = client.get("/", headers={HTMXHeaders.TRIGGER_NAME.value: "name_of_element"})
         assert response.text == '"name_of_element"'
 
 
@@ -266,7 +268,7 @@ def test_triggering_event_bad_json() -> None:
         return Response(content=request.htmx.triggering_event)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
-        response = client.get("/", headers={HX.TRIGGERING_EVENT.value: "{"})
+        response = client.get("/", headers={HTMXHeaders.TRIGGERING_EVENT.value: "{"})
         assert response.text == "null"
 
 
@@ -280,8 +282,8 @@ def test_triggering_event_good_json() -> None:
         response = client.get(
             "/",
             headers={
-                HX.TRIGGERING_EVENT.value: "%7B%22target%22%3A%20null%7D",
-                HX.TRIGGERING_EVENT.value + "-uri-autoencoded": "true",
+                HTMXHeaders.TRIGGERING_EVENT.value: "%7B%22target%22%3A%20null%7D",
+                HTMXHeaders.TRIGGERING_EVENT.value + "-uri-autoencoded": "true",
             },
         )
         assert response.text == '{"target":null}'

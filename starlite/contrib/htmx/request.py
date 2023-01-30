@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 from starlite import Request
-from starlite.contrib.htmx.utils import HX
+from starlite.contrib.htmx.utils import HTMXHeaders
 from starlite.exceptions import SerializationException
 from starlite.utils import decode_json
 
@@ -31,17 +31,17 @@ class HtmxDetails:
 
     def __bool__(self) -> bool:
         """Allow to check whether request is sent by a HTMX client."""
-        return self._get_header_value(HX.REQUEST) == "true"
+        return self._get_header_value(HTMXHeaders.REQUEST) == "true"
 
     @cached_property
     def boosted(self) -> bool:
         """Allow to check whether request is boosted."""
-        return self._get_header_value(HX.BOOSTED) == "true"
+        return self._get_header_value(HTMXHeaders.BOOSTED) == "true"
 
     @cached_property
     def current_url(self) -> Optional[str]:
         """Current url value sent by HTMX client. Helps in tracking navigation history."""
-        return self._get_header_value(HX.CURRENT_URL)
+        return self._get_header_value(HTMXHeaders.CURRENT_URL)
 
     @cached_property
     def current_url_abs_path(self) -> Optional[str]:
@@ -57,7 +57,7 @@ class HtmxDetails:
     @cached_property
     def history_restore_request(self) -> bool:
         """If True then, request is for history restoration after a miss in the local history cache"""
-        return self._get_header_value(HX.HISTORY_RESTORE_REQUEST) == "true"
+        return self._get_header_value(HTMXHeaders.HISTORY_RESTORE_REQUEST) == "true"
 
     @cached_property
     def prompt(self) -> Optional[str]:
@@ -66,29 +66,29 @@ class HtmxDetails:
             Delete My Account
         </button>
         """
-        return self._get_header_value(HX.PROMPT)
+        return self._get_header_value(HTMXHeaders.PROMPT)
 
     @cached_property
     def target(self) -> Optional[str]:
         """The id of the target element if it exists"""
-        return self._get_header_value(HX.TARGET)
+        return self._get_header_value(HTMXHeaders.TARGET)
 
     @cached_property
     def trigger(self) -> Optional[str]:
         """The id of the triggered element if it exists"""
-        return self._get_header_value(HX.TRIGGER_ID)
+        return self._get_header_value(HTMXHeaders.TRIGGER_ID)
 
     @cached_property
     def trigger_name(self) -> Optional[str]:
         """The name of the triggered element if it exists"""
-        return self._get_header_value(HX.TRIGGER_NAME)
+        return self._get_header_value(HTMXHeaders.TRIGGER_NAME)
 
     @cached_property
     def triggering_event(self) -> Any:
         """The name of the triggered event.
         'event-header' extension adds the Triggering-Event header to requests.
         """
-        value = self._get_header_value(HX.TRIGGERING_EVENT)
+        value = self._get_header_value(HTMXHeaders.TRIGGERING_EVENT)
         if value is not None:
             try:
                 value = decode_json(value)
