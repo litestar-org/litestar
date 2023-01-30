@@ -1,16 +1,18 @@
-from typing import Any, Dict, Generic, Literal, Optional, TypeVar, Union
+from typing import Any, Dict, Generic, Optional, TypeVar
 from urllib.parse import quote
 
 from starlite import Response, Template
-from starlite.contrib.htmx.utils import HTMX_STOP_POLLING, HX
+from starlite.contrib.htmx.types import (
+    EventAfterType,
+    HtmxHeaderType,
+    LocationType,
+    PushUrlType,
+    ReSwapMethod,
+    TriggerEventType,
+)
+from starlite.contrib.htmx.utils import HTMX_STOP_POLLING, get_headers
 from starlite.status_codes import HTTP_200_OK
-from starlite.utils import encode_json
 
-EventAfterType = Literal["receive", "settle", "swap", None]
-PushUrlType = Union[str, Literal[False]]
-ReSwapMethod = Literal[
-    "innerHTML", "outerHTML", "beforebegin", "afterbegin", "beforeend", "afterend", "delete", "none", None
-]
 # HTMX defined HTTP status code.
 # Response carrying this status code will ask client to stop Polling.
 T = TypeVar("T")
@@ -35,7 +37,7 @@ class ClientRedirect(Response):
         super().__init__(
             content=None,
             status_code=HTTP_200_OK,
-            headers={HX.REDIRECT: quote(redirect_to, safe="/#%[]=:;$&()+,!?*@'~"), "Location": ""},
+            headers=get_headers(hx_headers=HtmxHeaderType(redirect=redirect_to)),
         )
         del self.headers["Location"]
 
@@ -45,16 +47,24 @@ class ClientRefresh(Response):
 
     def __init__(self) -> None:
         """Set Status code to 200 and set headers."""
-        super().__init__(content=None, status_code=HTTP_200_OK, headers={HX.REFRESH: "true"})
+        super().__init__(
+            content=None, status_code=HTTP_200_OK, headers=get_headers(hx_headers=HtmxHeaderType(refresh=True))
+        )
 
 
 class PushUrl(Generic[T], Response[T]):
     """Class to push new url into the history stack"""
 
-    def __init__(self, content: T, push: Optional[PushUrlType] = None, **kwargs: Any) -> None:
+    def __init__(self, content: T, push_url: Optional[PushUrlType] = None, **kwargs: Any) -> None:
         """Initialize"""
-        push_url = push if push else "false"
-        super().__init__(content=content, status_code=HTTP_200_OK, headers={HX.PUSH_URL: push_url}, **kwargs)
+        if push_url is None:
+            raise ValueError("Enter url to push to the Browser History.")
+        super().__init__(
+            content=content,
+            status_code=HTTP_200_OK,
+            headers=get_headers(hx_headers=HtmxHeaderType(push_url=push_url)),
+            **kwargs,
+        )
 
 
 class Reswap(Generic[T], Response[T]):
@@ -67,7 +77,7 @@ class Reswap(Generic[T], Response[T]):
         **kwargs: Any,
     ) -> None:
         """Initialize"""
-        super().__init__(content=content, headers={HX.RE_SWAP: method}, **kwargs)
+        super().__init__(content=content, headers=get_headers(hx_headers=HtmxHeaderType(re_swap=method)), **kwargs)
 
 
 class Retarget(Generic[T], Response[T]):
@@ -75,7 +85,7 @@ class Retarget(Generic[T], Response[T]):
 
     def __init__(self, content: T, target: str, **kwargs: Any) -> None:
         """Initialize"""
-        super().__init__(content=content, headers={HX.RE_TARGET: target}, **kwargs)
+        super().__init__(content=content, headers=get_headers(hx_headers=HtmxHeaderType(re_target=target)), **kwargs)
 
 
 class TriggerEvent(Generic[T], Response[T]):
@@ -86,21 +96,15 @@ class TriggerEvent(Generic[T], Response[T]):
         content: T,
         name: str,
         after: EventAfterType,
-        params: "Dict[str, Any] | None" = None,
+        params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize"""
-        header: str
-        params = params if params else {}
-        if after == "receive":
-            header = HX.TRIGGER_EVENT.value
-        elif after == "settle":
-            header = HX.TRIGGER_AFTER_SETTLE.value
-        elif after == "swap":
-            header = HX.TRIGGER_AFTER_SWAP.value
-        else:
-            raise ValueError("Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.")
-        headers = {header: encode_json({name: params}).decode()}
+        event = TriggerEventType(name=name, params=params, after=after)
+        # if params:
+        #     event['params'] = params
+
+        headers = get_headers(hx_headers=HtmxHeaderType(trigger_event=event))
         super().__init__(content=content, headers=headers, **kwargs)
 
 
@@ -114,7 +118,7 @@ class HXLocation(Response):
         event: Optional[str] = None,
         target: Optional[str] = None,
         swap: ReSwapMethod = None,
-        headers: Optional[Dict[str, Any]] = None,
+        hx_headers: Optional[Dict[str, Any]] = None,
         values: Optional[Dict[str, str]] = None,
         **kwargs: Any,
     ) -> None:
@@ -125,24 +129,21 @@ class HXLocation(Response):
             headers={"Location": quote(redirect_to, safe="/#%[]=:;$&()+,!?*@'~")},
             **kwargs,
         )
-        spec: Dict[str, Any] = {}
-        if self.headers:
-            spec["path"] = self.headers.get("Location")
-            del self.headers["Location"]
-
-        if source is not None:
-            spec["source"] = source
-        if event is not None:
-            spec["event"] = event
-        if target is not None:
-            spec["target"] = target
-        if swap is not None:
-            spec["swap"] = swap
-        if headers is not None:
-            spec["headers"] = headers
-        if values is not None:
-            spec["values"] = values
-        self.headers[HX.LOCATION] = encode_json(spec).decode()
+        spec: Dict[str, Any] = get_headers(
+            hx_headers=HtmxHeaderType(
+                location=LocationType(
+                    path=str(self.headers.get("Location")),
+                    source=source,
+                    event=event,
+                    target=target,
+                    swap=swap,
+                    values=values,
+                    hx_headers=hx_headers,
+                )
+            )
+        )
+        del self.headers["Location"]
+        self.headers.update(spec)
 
 
 class HTMXTemplate(Template):
@@ -150,34 +151,17 @@ class HTMXTemplate(Template):
 
     def __init__(
         self,
-        push: Optional[PushUrlType] = None,
+        push_url: Optional[PushUrlType] = None,
         re_swap: ReSwapMethod = None,
         re_target: Optional[str] = None,
         trigger_event: Optional[str] = None,
-        params: "Dict[str, Any] | None" = None,
+        params: Optional[Dict[str, Any]] = None,
         after: Optional[EventAfterType] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize class"""
-        header: Dict[str, Any] = {}
-        if push is not None:
-            url = push if push else "false"
-            header.update({HX.PUSH_URL: url})
-        if re_swap:
-            header.update({HX.RE_SWAP: re_swap})
-        if re_target:
-            header.update({HX.RE_TARGET: re_target})
-        if trigger_event:
-            params = params if params else {}
-            key: str
-            if after == "receive":
-                key = HX.TRIGGER_EVENT.value
-            elif after == "settle":
-                key = HX.TRIGGER_AFTER_SETTLE.value
-            elif after == "swap":
-                key = HX.TRIGGER_AFTER_SWAP.value
-            else:
-                raise ValueError("Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.")
-            header.update({key: encode_json({trigger_event: params}).decode()})
-
-        super().__init__(headers=header, **kwargs)
+        event = TriggerEventType(name=str(trigger_event), params=params, after=after) if trigger_event else None
+        hx_headers: Dict[str, Any] = get_headers(
+            hx_headers=HtmxHeaderType(push_url=push_url, re_swap=re_swap, re_target=re_target, trigger_event=event)
+        )
+        super().__init__(headers=hx_headers, **kwargs)

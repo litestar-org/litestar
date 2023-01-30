@@ -55,22 +55,22 @@ async def test_client_refresh_response() -> None:
         assert response.headers[HX.REFRESH] == "true"
 
 
-async def test_push_url_false_response() -> None:
+async def test_push_url_no_url_response() -> None:
     @get("/", media_type=MediaType.TEXT)
     def handler() -> PushUrl:
         return PushUrl(content="Success!")
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
-        assert response.status_code == HTTP_200_OK
-        assert response.text == '"Success!"'
-        assert response.headers[HX.PUSH_URL] == "false"
+        assert response.is_error
+        assert response.status_code == 500
+        assert response.json()["detail"] == "ValueError('Enter url to push to the Browser History.')"
 
 
 async def test_push_url_response() -> None:
     @get("/", media_type=MediaType.TEXT)
     def handler() -> PushUrl:
-        return PushUrl(content="Success!", push="/index.html")
+        return PushUrl(content="Success!", push_url="/index.html")
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
@@ -124,6 +124,7 @@ async def test_trigger_event_response_no_params() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
+
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
         assert response.headers[HX.TRIGGER_EVENT] == '{"alert":{}}'
@@ -194,7 +195,7 @@ async def test_hx_location_response_with_all_parameters() -> None:
             event="click",
             target="#content",
             swap="innerHTML",
-            headers={"attribute": "value"},
+            hx_headers={"attribute": "value"},
             values={"action": "true"},
         )
 
@@ -205,7 +206,7 @@ async def test_hx_location_response_with_all_parameters() -> None:
         assert "Location" not in response.headers
         assert (
             spec
-            == '{"path":"/contact-us","source":"#button","event":"click","target":"#content","swap":"innerHTML","headers":{"attribute":"value"},"values":{"action":"true"}}'
+            == '{"path":"/contact-us","source":"#button","event":"click","target":"#content","swap":"innerHTML","values":{"action":"true"},"hx_headers":{"attribute":"value"}}'
         )
 
 
@@ -224,7 +225,7 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
         return HTMXTemplate(
             name="abc.html",
             context={"request": {"scope": {"path": "nope"}}},
-            push="/about",
+            push_url="/about",
             re_swap="beforebegin",
             re_target="#new-target-id",
             trigger_event="showMessage",
@@ -296,7 +297,7 @@ def test_HTMXTemplate_response_push_url_set_to_false(
         return HTMXTemplate(
             name="abc.html",
             context={"request": {"scope": {"path": "nope"}}},
-            push=False,
+            push_url=False,
         )
 
     with create_test_client(
