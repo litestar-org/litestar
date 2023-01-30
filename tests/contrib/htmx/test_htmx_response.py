@@ -17,7 +17,7 @@ from starlite.contrib.htmx.response import (
     Retarget,
     TriggerEvent,
 )
-from starlite.contrib.htmx.utils import HX
+from starlite.contrib.htmx.utils import HTMXHeaders
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
 from starlite.status_codes import HTTP_200_OK
@@ -41,7 +41,7 @@ async def test_client_redirect_response() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.headers.get(HX.REDIRECT) == "https://example.com"
+        assert response.headers.get(HTMXHeaders.REDIRECT) == "https://example.com"
         assert response.headers.get("location") is None
 
 
@@ -53,7 +53,7 @@ async def test_client_refresh_response() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.headers[HX.REFRESH] == "true"
+        assert response.headers[HTMXHeaders.REFRESH] == "true"
 
 
 async def test_push_url_false_response() -> None:
@@ -64,7 +64,7 @@ async def test_push_url_false_response() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.headers[HX.PUSH_URL] == "false"
+        assert response.headers[HTMXHeaders.PUSH_URL] == "false"
 
 
 async def test_push_url_response() -> None:
@@ -76,7 +76,7 @@ async def test_push_url_response() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.PUSH_URL] == "/index.html"
+        assert response.headers[HTMXHeaders.PUSH_URL] == "/index.html"
 
 
 async def test_replace_url_false_response() -> None:
@@ -87,7 +87,7 @@ async def test_replace_url_false_response() -> None:
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        assert response.headers[HX.REPLACE_URL] == "false"
+        assert response.headers[HTMXHeaders.REPLACE_URL] == "false"
 
 
 async def test_replace_url_response() -> None:
@@ -99,7 +99,7 @@ async def test_replace_url_response() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.REPLACE_URL] == "/index.html"
+        assert response.headers[HTMXHeaders.REPLACE_URL] == "/index.html"
 
 
 async def test_reswap_response() -> None:
@@ -111,7 +111,7 @@ async def test_reswap_response() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.RE_SWAP] == "beforebegin"
+        assert response.headers[HTMXHeaders.RE_SWAP] == "beforebegin"
 
 
 async def test_retarget_response() -> None:
@@ -123,7 +123,7 @@ async def test_retarget_response() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.RE_TARGET] == "#element"
+        assert response.headers[HTMXHeaders.RE_TARGET] == "#element"
 
 
 async def test_trigger_event_response_success() -> None:
@@ -137,7 +137,7 @@ async def test_trigger_event_response_success() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.TRIGGER_EVENT] == '{"alert":{"warning":"Confirm your choice!"}}'
+        assert response.headers[HTMXHeaders.TRIGGER_EVENT] == '{"alert":{"warning":"Confirm your choice!"}}'
 
 
 async def test_trigger_event_response_no_params() -> None:
@@ -150,7 +150,7 @@ async def test_trigger_event_response_no_params() -> None:
 
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.TRIGGER_EVENT] == '{"alert":{}}'
+        assert response.headers[HTMXHeaders.TRIGGER_EVENT] == '{"alert":{}}'
 
 
 async def test_trigger_event_response_after_settle() -> None:
@@ -164,7 +164,7 @@ async def test_trigger_event_response_after_settle() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.TRIGGER_AFTER_SETTLE] == '{"alert":{"warning":"Confirm your choice!"}}'
+        assert response.headers[HTMXHeaders.TRIGGER_AFTER_SETTLE] == '{"alert":{"warning":"Confirm your choice!"}}'
 
 
 async def test_trigger_event_response_after_swap() -> None:
@@ -176,7 +176,7 @@ async def test_trigger_event_response_after_swap() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
-        assert response.headers[HX.TRIGGER_AFTER_SWAP] == '{"alert":{"warning":"Confirm your choice!"}}'
+        assert response.headers[HTMXHeaders.TRIGGER_AFTER_SWAP] == '{"alert":{"warning":"Confirm your choice!"}}'
 
 
 async def test_trigger_event_response_invalid_after() -> None:
@@ -203,7 +203,7 @@ async def test_hx_location_response_success() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
-        spec = response.headers[HX.LOCATION]
+        spec = response.headers[HTMXHeaders.LOCATION]
         assert response.status_code == HTTP_200_OK
         assert "Location" not in response.headers
         assert spec == '{"path":"/contact-us"}'
@@ -224,7 +224,7 @@ async def test_hx_location_response_with_all_parameters() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
-        spec = response.headers[HX.LOCATION]
+        spec = response.headers[HTMXHeaders.LOCATION]
         assert response.status_code == HTTP_200_OK
         assert "Location" not in response.headers
         assert (
@@ -265,10 +265,10 @@ def test_HTMXTemplate_response_success(engine: Any, template: str, expected: str
     ) as client:
         response = client.get("/")
         assert response.text == expected
-        assert response.headers.get(HX.PUSH_URL) == "/about"
-        assert response.headers.get(HX.RE_SWAP) == "beforebegin"
-        assert response.headers.get(HX.RE_TARGET) == "#new-target-id"
-        assert response.headers.get(HX.TRIGGER_EVENT) == '{"showMessage":{"alert":"Confirm your Choice."}}'
+        assert response.headers.get(HTMXHeaders.PUSH_URL) == "/about"
+        assert response.headers.get(HTMXHeaders.RE_SWAP) == "beforebegin"
+        assert response.headers.get(HTMXHeaders.RE_TARGET) == "#new-target-id"
+        assert response.headers.get(HTMXHeaders.TRIGGER_EVENT) == '{"showMessage":{"alert":"Confirm your Choice."}}'
 
 
 @pytest.mark.parametrize(
@@ -297,10 +297,10 @@ def test_HTMXTemplate_response_no_params(engine: Any, template: str, expected: s
     ) as client:
         response = client.get("/")
         assert response.text == expected
-        assert response.headers.get(HX.PUSH_URL) is None
-        assert response.headers.get(HX.RE_SWAP) is None
-        assert response.headers.get(HX.RE_TARGET) is None
-        assert response.headers.get(HX.TRIGGER_EVENT) is None
+        assert response.headers.get(HTMXHeaders.PUSH_URL) is None
+        assert response.headers.get(HTMXHeaders.RE_SWAP) is None
+        assert response.headers.get(HTMXHeaders.RE_TARGET) is None
+        assert response.headers.get(HTMXHeaders.TRIGGER_EVENT) is None
 
 
 @pytest.mark.parametrize(
@@ -332,10 +332,10 @@ def test_HTMXTemplate_response_push_url_set_to_false(
     ) as client:
         response = client.get("/")
         assert response.text == expected
-        assert response.headers.get(HX.PUSH_URL) == "false"
-        assert response.headers.get(HX.RE_SWAP) is None
-        assert response.headers.get(HX.RE_TARGET) is None
-        assert response.headers.get(HX.TRIGGER_EVENT) is None
+        assert response.headers.get(HTMXHeaders.PUSH_URL) == "false"
+        assert response.headers.get(HTMXHeaders.RE_SWAP) is None
+        assert response.headers.get(HTMXHeaders.RE_TARGET) is None
+        assert response.headers.get(HTMXHeaders.TRIGGER_EVENT) is None
 
 
 @pytest.mark.parametrize(
@@ -373,7 +373,7 @@ def test_HTMXTemplate_response_bad_trigger_params(
             error["detail"]
             == "ValueError(\"Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.\")"
         )
-        assert response.headers.get(HX.PUSH_URL) is None
-        assert response.headers.get(HX.RE_SWAP) is None
-        assert response.headers.get(HX.RE_TARGET) is None
-        assert response.headers.get(HX.TRIGGER_EVENT) is None
+        assert response.headers.get(HTMXHeaders.PUSH_URL) is None
+        assert response.headers.get(HTMXHeaders.RE_SWAP) is None
+        assert response.headers.get(HTMXHeaders.RE_TARGET) is None
+        assert response.headers.get(HTMXHeaders.TRIGGER_EVENT) is None
