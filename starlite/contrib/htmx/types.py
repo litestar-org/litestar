@@ -38,6 +38,7 @@ class HtmxHeaderType(TypedDict, total=False):
     redirect: Optional[str]
     refresh: bool
     push_url: Optional[PushUrlType]
+    replace_url: Optional[PushUrlType]
     re_swap: Optional[ReSwapMethod]
     re_target: Optional[str]
     trigger_event: Optional[TriggerEventType]

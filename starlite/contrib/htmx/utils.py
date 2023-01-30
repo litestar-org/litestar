@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Dict, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict
 from urllib.parse import quote
 
 from starlite.utils import encode_json
@@ -22,6 +22,7 @@ class HX(str, Enum):
     REDIRECT = "HX-Redirect"
     REFRESH = "HX-Refresh"
     PUSH_URL = "HX-Push-Url"
+    REPLACE_URL = "HX-Replace-Url"
     RE_SWAP = "HX-Reswap"
     RE_TARGET = "HX-Retarget"
     LOCATION = "HX-Location"
@@ -66,6 +67,11 @@ def get_push_url_header(url: str) -> Dict[str, Any]:
     return {HX.PUSH_URL.value: url if url else "false"}
 
 
+def get_replace_url_header(url: str) -> Dict[str, Any]:
+    """Return headers for replace url in browser tab response."""
+    return {HX.REPLACE_URL: url if url else "false"}
+
+
 def get_refresh_header(refresh: bool) -> Dict[str, Any]:
     """Return headers for client refresh response."""
     value = ""
@@ -95,7 +101,7 @@ def get_location_headers(location: "LocationType") -> Dict[str, Any]:
     return {HX.LOCATION.value: encode_json(spec).decode()}
 
 
-def get_headers(hx_headers: "HtmxHeaderType", replace_url: Optional[str] = None) -> Dict[str, Any]:
+def get_headers(hx_headers: "HtmxHeaderType") -> Dict[str, Any]:
     """Return headers for HTMX responses."""
     if not hx_headers:
         raise ValueError("Value for hx_headers cannot be None.")
@@ -103,21 +109,19 @@ def get_headers(hx_headers: "HtmxHeaderType", replace_url: Optional[str] = None)
         "redirect": get_redirect_header,
         "refresh": get_refresh_header,
         "push_url": get_push_url_header,
+        "replace_url": get_replace_url_header,
         "re_swap": get_reswap_header,
         "re_target": get_retarget_header,
         "trigger_event": get_trigger_event_headers,
         "location": get_location_headers,
     }
 
-    if replace_url:
-        return {"HX-Replace-Url": replace_url}
-
     header: Dict[str, Any] = {}
     response: Dict[str, Any]
     key: str
     value: Any
     for key, value in hx_headers.items():
-        if key in ["redirect", "refresh", "location"]:
+        if key in ["redirect", "refresh", "location", "replace_url"]:
             response = htmx_headers_dict[key](value)
             return response
         if value is not None:

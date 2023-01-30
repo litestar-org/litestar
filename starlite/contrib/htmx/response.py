@@ -55,14 +55,25 @@ class ClientRefresh(Response):
 class PushUrl(Generic[T], Response[T]):
     """Class to push new url into the history stack"""
 
-    def __init__(self, content: T, push_url: Optional[PushUrlType] = None, **kwargs: Any) -> None:
+    def __init__(self, content: T, push_url: PushUrlType, **kwargs: Any) -> None:
         """Initialize"""
-        if push_url is None:
-            raise ValueError("Enter url to push to the Browser History.")
         super().__init__(
             content=content,
             status_code=HTTP_200_OK,
             headers=get_headers(hx_headers=HtmxHeaderType(push_url=push_url)),
+            **kwargs,
+        )
+
+
+class ReplaceUrl(Generic[T], Response[T]):
+    """Class to replace url in the Browser Tab"""
+
+    def __init__(self, content: T, replace_url: PushUrlType, **kwargs: Any) -> None:
+        """Initialize"""
+        super().__init__(
+            content=content,
+            status_code=HTTP_200_OK,
+            headers=get_headers(hx_headers=HtmxHeaderType(replace_url=replace_url)),
             **kwargs,
         )
 

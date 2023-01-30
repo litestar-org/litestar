@@ -12,6 +12,7 @@ from starlite.contrib.htmx.response import (
     HXLocation,
     HXStopPolling,
     PushUrl,
+    ReplaceUrl,
     Reswap,
     Retarget,
     TriggerEvent,
@@ -55,16 +56,15 @@ async def test_client_refresh_response() -> None:
         assert response.headers[HX.REFRESH] == "true"
 
 
-async def test_push_url_no_url_response() -> None:
+async def test_push_url_false_response() -> None:
     @get("/", media_type=MediaType.TEXT)
     def handler() -> PushUrl:
-        return PushUrl(content="Success!")
+        return PushUrl(content="Success!", push_url=False)
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
-        assert response.is_error
-        assert response.status_code == 500
-        assert response.json()["detail"] == "ValueError('Enter url to push to the Browser History.')"
+        assert response.status_code == HTTP_200_OK
+        assert response.headers[HX.PUSH_URL] == "false"
 
 
 async def test_push_url_response() -> None:
@@ -77,6 +77,29 @@ async def test_push_url_response() -> None:
         assert response.status_code == HTTP_200_OK
         assert response.text == '"Success!"'
         assert response.headers[HX.PUSH_URL] == "/index.html"
+
+
+async def test_replace_url_false_response() -> None:
+    @get("/", media_type=MediaType.TEXT)
+    def handler() -> ReplaceUrl:
+        return ReplaceUrl(content="Success!", replace_url=False)
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers[HX.REPLACE_URL] == "false"
+
+
+async def test_replace_url_response() -> None:
+    @get("/", media_type=MediaType.TEXT)
+    def handler() -> ReplaceUrl:
+        return ReplaceUrl(content="Success!", replace_url="/index.html")
+
+    with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == '"Success!"'
+        assert response.headers[HX.REPLACE_URL] == "/index.html"
 
 
 async def test_reswap_response() -> None:
