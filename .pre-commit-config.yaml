@@ -122,6 +122,10 @@ repos:
     rev: "v0.991"
     hooks:
       - id: mypy
+        alias: mypy-sqla-1x
+        name: mypy-sqla-1x
+        args:
+          ["--config-file=mypy-sqla-1x.ini", "--cache-dir=.mypy_cache_sqla_1x"]
         exclude: "test_apps|docs|tools"
         additional_dependencies:
           [
@@ -131,6 +135,8 @@ repos:
             fast-query-parsers,
             fsspec,
             httpx,
+            hypothesis,
+            mongomock_motor,
             msgspec,
             multidict,
             opentelemetry-instrumentation-asgi,
@@ -145,12 +151,55 @@ repos:
             python-dotenv,
             python-jose,
             rich,
-            sqlalchemy,
+            sqlalchemy<2.0,
+            sqlalchemy2-stubs,
             starlette,
             structlog,
             tortoise-orm,
             types-beautifulsoup4,
             types-freezegun,
+            types-python-jose,
+            types-pyyaml,
+            types-redis,
+            uvicorn,
+            jsbeautifier,
+          ]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "v0.991"
+    hooks:
+      - id: mypy
+        exclude: "test_apps|docs|tools"
+        additional_dependencies:
+          [
+            aiomcache,
+            beanie,
+            click,
+            fast-query-parsers,
+            fsspec,
+            httpx,
+            hypothesis,
+            mongomock_motor,
+            msgspec,
+            multidict,
+            opentelemetry-instrumentation-asgi,
+            opentelemetry-sdk,
+            piccolo,
+            picologging,
+            pydantic,
+            pydantic_factories,
+            pydantic_openapi_schema,
+            pytest,
+            pytest-mock,
+            python-dotenv,
+            python-jose,
+            rich,
+            sqlalchemy>=2.0,
+            starlette,
+            structlog,
+            tortoise-orm,
+            types-beautifulsoup4,
+            types-freezegun,
+            types-python-jose,
             types-pyyaml,
             types-redis,
             uvicorn,
