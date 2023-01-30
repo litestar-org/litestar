@@ -23,7 +23,7 @@ repos:
       - id: pycln
         args: [--config=pyproject.toml]
   - repo: https://github.com/pycqa/isort
-    rev: 5.11.4
+    rev: 5.12.0
     hooks:
       - id: isort
         exclude: "docs"
@@ -158,7 +158,7 @@ repos:
             jsbeautifier,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.290
+    rev: v1.1.291
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs"
@@ -209,10 +209,7 @@ repos:
         entry: sphinx-lint
         additional_dependencies: [sphinx-lint]
         types: [rst]
-  # FIXME: Uncomment this hook after, "pre-commit" supports mirroring Golang
-  # projects. See this issue thread for more info:
-  # https://github.com/pre-commit/pre-commit-mirror-maker/issues/164
-  # - repo: https://github.com/Jarmos-san/vale-precommit
-  #   rev: v0.1.0
-  #   hooks:
-  #     - id: vale-system
+  - repo: https://github.com/errata-ai/vale
+    rev: "16d3a7f"
+    hooks:
+      - id: vale
