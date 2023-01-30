@@ -13,13 +13,27 @@ from . import after_request_handler, slow_handler
 @pytest.mark.parametrize("sync_to_thread", (True, False))
 def test_default_cache_response(sync_to_thread: bool) -> None:
     with create_test_client(
-        route_handlers=[get("/cached", sync_to_thread=sync_to_thread, cache=True)(slow_handler)],
+        route_handlers=[
+            get(
+                "/cached",
+                sync_to_thread=sync_to_thread,
+                cache=True,
+                type_encoders={
+                    int: str
+                },  # test pickling issues. see https://github.com/starlite-api/starlite/issues/1096
+            )(slow_handler)
+        ],
         after_request=after_request_handler,
     ) as client:
         first_response = client.get("/cached")
+        assert first_response.status_code == 200
+
         first_response_identifier = first_response.headers["unique-identifier"]
         assert first_response_identifier
+
         second_response = client.get("/cached")
+
+        assert second_response.status_code == 200
         assert second_response.headers["unique-identifier"] == first_response_identifier
         assert first_response.json() == second_response.json()
 
