@@ -12,7 +12,7 @@ parser.add_argument("--push", action="store_true")
 parser.add_argument("--latest", action="store_true")
 
 
-def update_versions_file(version: str) -> None:
+def add_to_versions_file(version: str, latest: bool) -> None:
     versions_file = Path("versions.json")
     versions = []
     if versions_file.exists():
@@ -24,6 +24,11 @@ def update_versions_file(version: str) -> None:
     else:
         versions.insert(0, new_version_spec)
 
+    if latest:
+        for version in versions:
+            version["aliases"] = []
+        versions[0]["aliases"] = ["latest"]
+
     versions_file.write_text(json.dumps(versions))
 
 
@@ -32,7 +37,7 @@ def make_version(version: str, push: bool, latest: bool) -> None:
 
     subprocess.run(["git", "checkout", "gh-pages"], check=True)
 
-    update_versions_file(version)
+    add_to_versions_file(version, latest)
 
     docs_src_path = Path("docs/_build/html")
     docs_dest_path = Path(version)
