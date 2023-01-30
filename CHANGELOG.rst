@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.50.2
+------
+
+- return valid OAuth2 response body by default
+- correctly handle async-callable classes as dependencies
+- fix ``type_encoders`` pickle bug when using response caching
+
 1.50.1
 ------
 

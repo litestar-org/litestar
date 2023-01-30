@@ -43,17 +43,38 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
+
+def _enc_base_model(model: BaseModel) -> Any:
+    return model.dict()
+
+
+def _enc_byte_size(bytes_: ByteSize) -> int:
+    return bytes_.real
+
+
+def _enc_constrained_bytes(bytes_: ConstrainedBytes) -> str:
+    return bytes_.decode("utf-8")
+
+
+def _enc_constrained_date(date: ConstrainedDate) -> str:
+    return date.isoformat()
+
+
+def _enc_pattern(pattern: Pattern) -> Any:
+    return pattern.pattern
+
+
 DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
     Path: str,
     PurePath: str,
     # pydantic specific types
-    BaseModel: lambda m: m.dict(),
-    ByteSize: lambda b: b.real,
+    BaseModel: _enc_base_model,
+    ByteSize: _enc_byte_size,
     NameEmail: str,
     Color: str,
     SecretField: str,
-    ConstrainedBytes: lambda b: b.decode("utf-8"),
-    ConstrainedDate: lambda d: d.isoformat(),
+    ConstrainedBytes: _enc_constrained_bytes,
+    ConstrainedDate: _enc_constrained_date,
     IPv4Address: str,
     IPv4Interface: str,
     IPv4Network: str,
@@ -64,7 +85,7 @@ DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
     deque: list,
     Decimal: decimal_encoder,
     StrictBool: int,
-    Pattern: lambda o: o.pattern,
+    Pattern: _enc_pattern,
     # support subclasses of stdlib types, If no previous type matched, these will be
     # the last type in the mro, so we use this to (attempt to) convert a subclass into
     # its base class. # see https://github.com/jcrist/msgspec/issues/248
