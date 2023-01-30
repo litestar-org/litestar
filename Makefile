@@ -9,9 +9,6 @@ docs-serve:
 docs: docs-clean
 	sphinx-build -M html docs docs/_build/ -E -a -j auto --keep-going
 
-docs-lint:
-	@vale *.md docs/**/*.rst
-
 test-examples:
 	pytest docs/examples
 
