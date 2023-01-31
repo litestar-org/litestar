@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, PropertyMock
 
 import pytest
 
+from starlite import LoggingConfig
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.config.app import AppConfig
 from starlite.router import Router
@@ -99,3 +100,24 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # this ensures that each of the properties of the `AppConfig` object have been accessed within `Starlite.__init__()`
     for mock in property_mocks:
         mock.assert_called()
+
+
+def test_app_debug_create_logger() -> None:
+    app = Starlite([], debug=True)
+
+    assert app.logging_config
+    assert app.logging_config.loggers["starlite"]["level"] == "DEBUG"  # type: ignore[attr-defined]
+
+
+def test_app_debug_explicitly_disable_logging() -> None:
+    app = Starlite([], debug=True, logging_config=None)
+
+    assert not app.logging_config
+
+
+def test_app_debug_update_logging_config() -> None:
+    logging_config = LoggingConfig()
+    app = Starlite([], debug=True, logging_config=logging_config)
+
+    assert app.logging_config is logging_config
+    assert app.logging_config.loggers["starlite"]["level"] == "DEBUG"  # type: ignore[attr-defined]

@@ -174,6 +174,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
             value["starlite"] = {
                 "level": "INFO",
                 "handlers": ["queue_listener"],
+                "propagate": False,
             }
         return value
 
