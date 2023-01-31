@@ -41,7 +41,7 @@ const createSelectedVersionEl = ({selectedVersion, latestVersion}) => {
 
 
 const addVersionBanner = ({selectedVersion, latestVersion}) => {
-    if (selectedVersion === latestVersion) {
+    if (selectedVersion === latestVersion || selectedVersion === "latest") {
         return
     }
     const page = document.querySelector(".page")
