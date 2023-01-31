@@ -92,7 +92,7 @@ def test_dto_response_with_the_sqla_plugin() -> None:
 
     async def on_shutdown() -> None:
         async with sqlalchemy_config.engine.begin() as conn:  # type: ignore
-            conn.run_sync(Base.metadata.drop_all)  # pyright: ignore
+            await conn.run_sync(Base.metadata.drop_all)  # pyright: ignore
 
     @post(path="/users")
     async def create_user(
