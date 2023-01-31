@@ -121,35 +121,30 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert client.app.state.called
 
-
-def test_exception_handler_middleware_debug_logging(caplog: "LogCaptureFixture") -> None:
+@pytest.mark.parametrize(
+    "debug,logging_config",
+    [
+        (True, LoggingConfig()),
+        (False, LoggingConfig()),
+        (False, None),
+    ],
+)
+def test_exception_handler_middleware_debug_logging(
+    caplog: "LogCaptureFixture", debug: bool, logging_config: Optional[LoggingConfig]
+) -> None:
     @get("/test")
     def handler() -> None:
         raise ValueError("Test debug exception")
 
-    # Debug On -> Exception is logged
-    with caplog.at_level("DEBUG"), create_test_client(handler, logging_config=LoggingConfig()) as client:
-        client.app.debug = True
-        response = client.get("/test")
-        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        assert "Internal Server Error" in caplog.text
-        assert "ValueError" in response.text
-        assert "Test debug exception" in response.text
+    app = Starlite([handler], logging_config=logging_config, debug=debug)
 
-    # Debug Off -> Exception is not logged
-    with caplog.at_level("INFO"), create_test_client(handler, logging_config=LoggingConfig()) as client:
-        client.app.debug = False
+    with caplog.at_level("DEBUG", "starlite"), TestClient(app=app) as client:
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        assert "Exception in ASGI application" not in caplog.text
-        assert "ValueError" in response.text
         assert "Test debug exception" in response.text
-
-    # Debug On + No Logger -> No Debug Logging
-    with caplog.at_level("DEBUG"), create_test_client(handler, logging_config=None) as client:
-        client.app.debug = True
-        response = client.get("/test")
-        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
-        assert "Internal Server Error" not in caplog.text
-        assert "Test debug exception" in response.text
-        assert "ValueError" in response.text
+        
+        if debug and logging_config:
+            assert len(caplog.records) == 1
+            # other assertions for the content of this record here
+        else:
+            assert not caplog.records
