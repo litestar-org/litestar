@@ -201,7 +201,7 @@ async def test_jwt_cookie_auth(
         response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(encoded_token)})
         assert response.status_code == HTTP_200_OK
 
-        client.cookies = {auth_cookie: jwt_auth.format_auth_header(encoded_token)}
+        client.cookies = {auth_cookie: jwt_auth.format_auth_header(encoded_token)}  # type: ignore[assignment]
         response = client.get(
             "/my-endpoint",
         )
@@ -219,11 +219,11 @@ async def test_jwt_cookie_auth(
         response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(uuid4().hex)})
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
-        client.cookies = {auth_cookie: jwt_auth.format_auth_header(uuid4().hex)}
+        client.cookies = {auth_cookie: jwt_auth.format_auth_header(uuid4().hex)}  # type: ignore[assignment]
         response = client.get("/my-endpoint")
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
-        client.cookies = {auth_cookie: uuid4().hex}
+        client.cookies = {auth_cookie: uuid4().hex}  # type: ignore[assignment]
         response = client.get("/my-endpoint")
         assert response.status_code == HTTP_401_UNAUTHORIZED
         fake_token = Token(
@@ -238,7 +238,7 @@ async def test_jwt_cookie_auth(
         response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(fake_token)})
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
-        client.cookies = {auth_cookie: jwt_auth.format_auth_header(fake_token)}
+        client.cookies = {auth_cookie: jwt_auth.format_auth_header(fake_token)}  # type: ignore[assignment]
         response = client.get("/my-endpoint")
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
