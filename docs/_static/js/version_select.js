@@ -17,13 +17,23 @@ const getSelectedVersion = () => {
 }
 
 
-const createSelectedVersionEl = (currentVersion, latestVersion) => {
+const getLatestVersion = (versions) => {
+    for (const version of versions) {
+        if (version["aliases"].includes("latest")) {
+            return version["version"]
+        }
+    }
+    return "latest"
+}
+
+
+const createSelectedVersionEl = ({selectedVersion, latestVersion}) => {
     const container = document.createElement("div")
     container.id = "selected-version"
     container.textContent = "Version: "
 
     const versionEl = document.createElement("span")
-    versionEl.textContent = currentVersion === "latest" ? `${latestVersion} (latest)` : currentVersion
+    versionEl.textContent = selectedVersion === latestVersion ? `${latestVersion} (latest)` : selectedVersion
     container.appendChild(versionEl)
 
     return container
@@ -31,7 +41,7 @@ const createSelectedVersionEl = (currentVersion, latestVersion) => {
 
 
 const addVersionBanner = ({selectedVersion, latestVersion}) => {
-    if (selectedVersion === latestVersion) {
+    if (selectedVersion === latestVersion || selectedVersion === "latest") {
         return
     }
     const page = document.querySelector(".page")
@@ -62,7 +72,7 @@ const addVersionSelect = ({versions, selectedVersion, latestVersion}) => {
 
     selectContainer.id = "version-select"
 
-    const selectedVersionElement = createSelectedVersionEl(selectedVersion, latestVersion)
+    const selectedVersionElement = createSelectedVersionEl({selectedVersion, latestVersion})
     selectContainer.appendChild(selectedVersionElement)
 
     const listElement = document.createElement("ul")
@@ -81,20 +91,18 @@ const addVersionSelect = ({versions, selectedVersion, latestVersion}) => {
     searchBoxElement.after(selectContainer)
 }
 
-const setupVersionUtils = () => {
+
+window.addEventListener("DOMContentLoaded", () => {
     const selectedVersion = getSelectedVersion()
     if (selectedVersion === null) {
         return
     }
 
     loadVersions().then(versions => {
-        const latestVersion = versions[0]["version"]
+        const latestVersion = getLatestVersion(versions)
         const versionSpec = {versions, selectedVersion, latestVersion}
 
         addVersionSelect(versionSpec)
         addVersionBanner(versionSpec)
     })
-}
-
-
-window.addEventListener("DOMContentLoaded", setupVersionUtils)
+})

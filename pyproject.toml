@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "1.50.1"
+version = "1.50.2"
 description = "Performant, light and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
@@ -94,7 +94,7 @@ python-dotenv = "*"
 python-jose = "*"
 redis = "*"
 rich = "*"
-sqlalchemy = "*"
+sqlalchemy = "<2.0.0"
 starlette = "*"
 structlog = "*"
 tortoise-orm = ">=0.17.0"

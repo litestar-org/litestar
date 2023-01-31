@@ -13,7 +13,7 @@ from starlite.exceptions import InternalServerException, ValidationException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.plugins import PluginMapping
 from starlite.types import Empty
-from starlite.utils import is_any, is_optional_union, is_union
+from starlite.utils import is_any, is_optional_union, is_union, make_non_optional_union
 from starlite.utils.predicates import (
     is_generic,
     is_mapping,
@@ -75,13 +75,29 @@ class SignatureField:
 
     @property
     def is_non_string_iterable(self) -> bool:
-        """Check if the field type is an Iterable."""
-        return is_non_string_iterable(self.field_type)
+        """Check if the field type is an Iterable.
+
+        If ``self.field_type`` is an optional union, only the non-optional members of the union are evaluated.
+
+        See: https://github.com/starlite-api/starlite/issues/1106
+        """
+        field_type = self.field_type
+        if self.is_optional:
+            field_type = make_non_optional_union(field_type)
+        return is_non_string_iterable(field_type)
 
     @property
     def is_non_string_sequence(self) -> bool:
-        """Check if the field type is a non-string Sequence."""
-        return is_non_string_sequence(self.field_type)
+        """Check if the field type is a non-string Sequence.
+
+        If ``self.field_type`` is an optional union, only the non-optional members of the union are evaluated.
+
+        See: https://github.com/starlite-api/starlite/issues/1106
+        """
+        field_type = self.field_type
+        if self.is_optional:
+            field_type = make_non_optional_union(field_type)
+        return is_non_string_sequence(field_type)
 
     @property
     def is_any(self) -> bool:
