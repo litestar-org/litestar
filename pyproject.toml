@@ -222,6 +222,9 @@ exclude_lines = [
 [tool.pytest.ini_options]
 addopts = "--ignore=examples"
 asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
+]
 
 [tool.pycln]
 all = true

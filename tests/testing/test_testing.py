@@ -16,7 +16,7 @@ from starlite import (
 )
 from starlite.datastructures import Cookie, MultiDict
 from starlite.enums import ParamType
-from starlite.middleware.session import SessionCookieConfig
+from starlite.middleware.session.cookie_backend import CookieBackendConfig
 from starlite.testing import RequestFactory, TestClient
 from starlite.testing.create_test_client import create_test_client
 from tests import Pet, PetFactory
@@ -27,7 +27,6 @@ if TYPE_CHECKING:
         BaseBackendConfig,
         ServerSideSessionConfig,
     )
-    from starlite.middleware.session.cookie_backend import CookieBackendConfig
     from starlite.types import AnyIOBackend
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
@@ -237,7 +236,7 @@ def test_test_client(enable_session: bool, session_data: Dict[str, str], test_cl
         assert state.value == 1
         assert request.session == session_data
 
-    session_config = SessionCookieConfig(secret=SecretBytes(os.urandom(16)))
+    session_config = CookieBackendConfig(secret=SecretBytes(os.urandom(16)))
     app = Starlite(route_handlers=[test_handler], on_startup=[start_up_handler], middleware=[session_config.middleware])
 
     with TestClient(
