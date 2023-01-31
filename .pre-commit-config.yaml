@@ -23,7 +23,7 @@ repos:
       - id: pycln
         args: [--config=pyproject.toml]
   - repo: https://github.com/pycqa/isort
-    rev: 5.11.4
+    rev: 5.12.0
     hooks:
       - id: isort
         exclude: "docs"
@@ -111,7 +111,7 @@ repos:
             pyyaml,
             redis,
             rich,
-            sqlalchemy,
+            sqlalchemy<2.0.0,
             starlette,
             structlog,
             tortoise_orm,
@@ -145,7 +145,7 @@ repos:
             python-dotenv,
             python-jose,
             rich,
-            sqlalchemy,
+            sqlalchemy<2.0.0,
             sqlalchemy2-stubs,
             starlette,
             structlog,
@@ -158,7 +158,7 @@ repos:
             jsbeautifier,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.290
+    rev: v1.1.291
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs"
@@ -194,7 +194,7 @@ repos:
             pyyaml,
             redis,
             rich,
-            sqlalchemy,
+            sqlalchemy<2.0.0,
             sqlalchemy2-stubs,
             starlette,
             structlog,

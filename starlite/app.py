@@ -20,7 +20,7 @@ from typing_extensions import TypedDict
 from starlite.asgi import ASGIRouter
 from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
 from starlite.config import AllowedHostsConfig, AppConfig, CacheConfig, OpenAPIConfig
-from starlite.config.logging import get_logger_placeholder
+from starlite.config.logging import LoggingConfig, get_logger_placeholder
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import ImmutableState, State
 from starlite.exceptions import (
@@ -33,6 +33,7 @@ from starlite.openapi.path_item import create_path_item
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import create_signature_model
+from starlite.types import Empty
 from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import (
     as_async_callable_list,
@@ -65,6 +66,7 @@ if TYPE_CHECKING:
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
         ControllerRouterHandler,
+        EmptyType,
         ExceptionHandlersMap,
         Guard,
         LifeSpanHandler,
@@ -181,7 +183,7 @@ class Starlite(Router):
         exception_handlers: Optional["ExceptionHandlersMap"] = None,
         guards: Optional[List["Guard"]] = None,
         initial_state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
-        logging_config: Optional["BaseLoggingConfig"] = None,
+        logging_config: Union["BaseLoggingConfig", "EmptyType", None] = Empty,
         middleware: Optional[List["Middleware"]] = None,
         on_app_init: Optional[List["OnAppInitHandler"]] = None,
         on_shutdown: Optional[List["LifeSpanHandler"]] = None,
@@ -306,7 +308,7 @@ class Starlite(Router):
             etag=etag,
             exception_handlers=exception_handlers or {},
             guards=guards or [],
-            logging_config=logging_config,
+            logging_config=logging_config if logging_config is not Empty else LoggingConfig() if debug else None,  # type: ignore[arg-type]
             middleware=middleware or [],
             on_shutdown=on_shutdown or [],
             on_startup=on_startup or [],
@@ -378,6 +380,9 @@ class Starlite(Router):
 
         for route_handler in config.route_handlers:
             self.register(route_handler)
+
+        if self.debug and isinstance(self.logging_config, LoggingConfig):
+            self.logging_config.loggers["starlite"]["level"] = "DEBUG"
 
         if self.logging_config:
             self.get_logger = self.logging_config.configure()

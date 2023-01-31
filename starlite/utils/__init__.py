@@ -44,7 +44,7 @@ from .sync import (
     async_partial,
     is_async_callable,
 )
-from .types import annotation_is_iterable_of_type
+from .types import annotation_is_iterable_of_type, make_non_optional_union
 
 __all__ = (
     "AsyncCallable",
@@ -84,6 +84,7 @@ __all__ = (
     "is_union",
     "is_mapping",
     "join_paths",
+    "make_non_optional_union",
     "normalize_path",
     "obfuscate",
     "set_starlite_scope_state",

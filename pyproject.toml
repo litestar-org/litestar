@@ -94,7 +94,7 @@ python-dotenv = "*"
 python-jose = "*"
 redis = "*"
 rich = "*"
-sqlalchemy = "*"
+sqlalchemy = "<2.0.0"
 starlette = "*"
 structlog = "*"
 tortoise-orm = ">=0.17.0"
@@ -222,6 +222,9 @@ exclude_lines = [
 [tool.pytest.ini_options]
 addopts = "--ignore=examples"
 asyncio_mode = "auto"
+filterwarnings = [
+    "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
+]
 
 [tool.pycln]
 all = true
