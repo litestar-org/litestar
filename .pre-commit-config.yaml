@@ -210,6 +210,10 @@ repos:
         additional_dependencies: [sphinx-lint]
         types: [rst]
   - repo: https://github.com/errata-ai/vale
-    rev: "16d3a7f"
+    rev: 16d3a7f
     hooks:
+      - id: vale
+        name: vale-sync
+        pass_filenames: false
+        args: [sync]
       - id: vale
