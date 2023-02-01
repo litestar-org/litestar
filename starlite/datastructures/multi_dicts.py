@@ -17,7 +17,6 @@ from multidict import MultiDict as BaseMultiDict
 from multidict import MultiDictProxy, MultiMapping
 
 from starlite.datastructures.upload_file import UploadFile
-from starlite.utils import deprecated
 
 T = TypeVar("T")
 
@@ -46,18 +45,6 @@ class MultiMixin(Generic[T], MultiMapping[T], ABC):
         for key in set(self):
             for value in self.getall(key):
                 yield key, value
-
-    @deprecated("1.36.0", alternative="FormMultiDict.getall")
-    def getlist(self, key: str) -> List[T]:
-        """Get all values.
-
-        Args:
-            key: The key
-
-        Returns:
-            A list of values
-        """
-        return super().getall(key, [])
 
 
 class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):

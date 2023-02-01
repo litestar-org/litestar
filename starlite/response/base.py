@@ -22,7 +22,6 @@ from starlite.status_codes import (
     HTTP_204_NO_CONTENT,
     HTTP_304_NOT_MODIFIED,
 )
-from starlite.utils import deprecated
 from starlite.utils.helpers import get_enum_string_value
 from starlite.utils.serialization import (
     DEFAULT_TYPE_ENCODERS,
@@ -126,33 +125,8 @@ class Response(Generic[T]):
         self.raw_headers: List[Tuple[bytes, bytes]] = []
 
     @classmethod
-    @deprecated(
-        "1.48.0",
-        pending=True,
-        info="Set ``type_encoders`` on a higher layer "
-        "instead or pass ``type_encoders`` to the ``Response`` instance directly",
-    )
-    def serializer(cls, value: Any) -> Any:  # pragma: no cover
-        """Transform non-natively supported types into supported types.
-
-        Should raise ``TypeError`` if a type cannot be transformed into a supported type
-        """
-        return default_serializer(value, cls.type_encoders)
-
-    @classmethod
     def get_serializer(cls, type_encoders: Optional["TypeEncodersMap"] = None) -> "Serializer":
-        """Get the serializer for this response class.
-
-        If `Response.serializer` is not overridden in a subclass, use ``default_serializer`` and pass ``type_encoders`` to
-        it.
-        """
-        # check if ``serializer`` has been overridden. This is temporary workaround to
-        # support the deprecated ``serializer`` until its removal
-        for klass in cls.__mro__:
-            if klass is Response:
-                continue
-            if "serializer" in klass.__dict__:
-                return cls.serializer
+        """Get the serializer for this response class."""
 
         type_encoders = {**(cls.type_encoders or {}), **(type_encoders or {})}
         if type_encoders:
