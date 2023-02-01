@@ -32,6 +32,7 @@ def app_config_object() -> AppConfig:
         dependencies={},
         exception_handlers={},
         guards=[],
+        initial_state={},
         logging_config=None,
         middleware=[],
         on_shutdown=[],
@@ -121,3 +122,14 @@ def test_app_debug_update_logging_config() -> None:
 
     assert app.logging_config is logging_config
     assert app.logging_config.loggers["starlite"]["level"] == "DEBUG"  # type: ignore[attr-defined]
+
+
+def test_set_initial_state() -> None:
+    def set_initial_state_in_hook(app_config: AppConfig) -> AppConfig:
+        assert isinstance(app_config.initial_state, dict)
+        app_config.initial_state["c"] = "D"  # pyright:ignore
+        app_config.initial_state["e"] = "f"  # pyright:ignore
+        return app_config
+
+    app = Starlite(route_handlers=[], initial_state={"a": "b", "c": "d"}, on_app_init=[set_initial_state_in_hook])
+    assert app.state._state == {"a": "b", "c": "D", "e": "f"}
