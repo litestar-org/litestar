@@ -1,22 +1,12 @@
 import json
-import os
 from typing import TYPE_CHECKING, Any, Callable, Dict, Union, cast
 
 import pytest
-from pydantic import BaseModel, SecretBytes
+from pydantic import BaseModel
 
-from starlite import (
-    HttpMethod,
-    Request,
-    RequestEncodingType,
-    Starlite,
-    State,
-    get,
-    post,
-)
+from starlite import HttpMethod, Request, RequestEncodingType, Starlite, get, post
 from starlite.datastructures import Cookie, MultiDict
 from starlite.enums import ParamType
-from starlite.middleware.session.cookie_backend import CookieBackendConfig
 from starlite.testing import RequestFactory, TestClient
 from starlite.testing.create_test_client import create_test_client
 from tests import Pet, PetFactory
@@ -26,6 +16,7 @@ if TYPE_CHECKING:
         BaseBackendConfig,
         ServerSideSessionConfig,
     )
+    from starlite.middleware.session.cookie_backend import CookieBackendConfig
     from starlite.types import AnyIOBackend
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
@@ -223,33 +214,6 @@ async def test_request_factory_post_put_patch(factory: Callable, method: HttpMet
     assert request.headers.get("header1") == "value1"
     body = await request.body()
     assert json.loads(body) == pet.dict()
-
-
-@pytest.mark.parametrize("enable_session, session_data", [(True, {"user": "test-user"}), (False, {})])
-def test_test_client(enable_session: bool, session_data: Dict[str, str], test_client_backend: "AnyIOBackend") -> None:
-    def start_up_handler(state: State) -> None:
-        state.value = 1
-
-    @get(path="/test")
-    def test_handler(state: State, request: Request) -> None:
-        assert state.value == 1
-        assert request.session == session_data
-
-    session_config = CookieBackendConfig(secret=SecretBytes(os.urandom(16)))
-    app = Starlite(route_handlers=[test_handler], on_startup=[start_up_handler], middleware=[session_config.middleware])
-
-    with TestClient(
-        app=app,
-        session_config=session_config if enable_session else None,
-        backend=test_client_backend,
-    ) as client, pytest.deprecated_call():
-        cookies = client.create_session_cookies(session_data=session_data)
-        for key, value in cookies.items():
-            client.cookies.set(key, value, domain=client.base_url.host)
-        client.get("/test")
-        session = client.get_session_from_cookies()
-        assert session == session_data
-        assert app.state.value == 1
 
 
 @pytest.mark.parametrize("with_domain", [False, True])

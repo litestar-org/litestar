@@ -1,9 +1,8 @@
-from typing import Dict, Optional, Type
+from typing import Optional, Type
 
 from aiomcache import Client as MemcacheClient
 
 from starlite.middleware.session.base import ServerSideBackend, ServerSideSessionConfig
-from starlite.utils.deprecation import deprecated
 
 
 class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
@@ -61,39 +60,6 @@ class MemcachedBackend(ServerSideBackend["MemcachedBackendConfig"]):
             None
         """
         await self.memcached.delete(self._id_to_storage_key(session_id))
-
-    @deprecated(
-        "1.43.0",
-        info="This functionality is not natively supported by memcached. Use the redis backend instead if you require it.",
-    )
-    async def delete_all(self) -> None:  # pragma: no cover
-        """Delete all data stored within this backend.
-
-        Returns:
-            None
-
-        Notes:
-            This has poor performance since memcached does not offer utilities to
-            properly scan or match keys by prefix.
-
-        .. deprecated:: 1.43.0
-
-            This method is deprecated since 1.43.0. If you need this functionality,
-            consider using the redis backend instead.
-        """
-        stats: Dict[bytes, Optional[bytes]] = await self.memcached.stats(b"items")
-        for key, raw_val in stats.items():
-            if not raw_val:
-                continue
-            _, slab, field = key.split(b":")
-            val = int(raw_val)
-            if field != b"number" or val == 0:
-                continue
-            item_request: Dict[bytes, Optional[bytes]] = await self.memcached.stats(  # type: ignore[call-arg]
-                b"cachedump", slab, str(val + 10).encode()  # pyright: ignore
-            )
-            for keys in item_request:
-                await self.memcached.delete(keys)
 
 
 class MemcachedBackendConfig(ServerSideSessionConfig):

@@ -30,7 +30,7 @@ def fake_http_send_message(headers: MutableScopeHeaders) -> HTTPResponseStartEve
     return HTTPResponseStartEvent(type="http.response.start", status=200, headers=headers.headers)
 
 
-def fake_asgi_connection(app: ASGIApp, cookies: Dict[str, str]) -> ASGIConnection[Any, Any, Any]:
+def fake_asgi_connection(app: ASGIApp, cookies: Dict[str, str]) -> ASGIConnection[Any, Any, Any, Any]:
     scope = {
         "type": "http",
         "path": "/",
@@ -49,7 +49,7 @@ def fake_asgi_connection(app: ASGIApp, cookies: Dict[str, str]) -> ASGIConnectio
         "route_handler": None,
         "_cookies": cookies,
     }
-    return ASGIConnection[Any, Any, Any](
+    return ASGIConnection[Any, Any, Any, Any](
         scope=scope,  # type: ignore[arg-type]
     )
 

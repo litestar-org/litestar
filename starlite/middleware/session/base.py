@@ -249,13 +249,13 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             None
         """
 
-    @abstractmethod
     async def delete_all(self) -> None:
         """Delete all session data stored within this backend.
 
         Returns:
             None
         """
+        raise NotImplementedError()
 
     def generate_session_id(self) -> str:
         """Generate a new session-ID, with
