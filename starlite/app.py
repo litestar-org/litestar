@@ -1,18 +1,7 @@
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
 
 from pydantic_openapi_schema import construct_open_api_with_schema_class
 from typing_extensions import TypedDict
@@ -22,7 +11,7 @@ from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
 from starlite.config import AllowedHostsConfig, AppConfig, CacheConfig, OpenAPIConfig
 from starlite.config.logging import LoggingConfig, get_logger_placeholder
 from starlite.connection import Request, WebSocket
-from starlite.datastructures.state import ImmutableState, State
+from starlite.datastructures.state import State
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     NoRouteMatchFoundException,
@@ -90,6 +79,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from starlite.types.callable_types import AnyCallable, GetLogger
+    from starlite.types.composite_types import InitialStateType
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """The default OpenAPI config used if not configuration is explicitly passed to the :class:`Starlite
@@ -182,7 +172,7 @@ class Starlite(Router):
         etag: Optional["ETag"] = None,
         exception_handlers: Optional["ExceptionHandlersMap"] = None,
         guards: Optional[List["Guard"]] = None,
-        initial_state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
+        initial_state: Optional["InitialStateType"] = None,
         logging_config: Union["BaseLoggingConfig", "EmptyType", None] = Empty,
         middleware: Optional[List["Middleware"]] = None,
         on_app_init: Optional[List["OnAppInitHandler"]] = None,
@@ -284,7 +274,6 @@ class Starlite(Router):
         self.get_logger: "GetLogger" = get_logger_placeholder
         self.logger: Optional["Logger"] = None
         self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
-        self.state = State(initial_state, deep_copy=True) if initial_state else State()
         self.asgi_router = ASGIRouter(app=self)
 
         config = AppConfig(
@@ -308,6 +297,7 @@ class Starlite(Router):
             etag=etag,
             exception_handlers=exception_handlers or {},
             guards=guards or [],
+            initial_state=initial_state or {},
             logging_config=logging_config if logging_config is not Empty else LoggingConfig() if debug else None,  # type: ignore[arg-type]
             middleware=middleware or [],
             on_shutdown=on_shutdown or [],
@@ -349,6 +339,7 @@ class Starlite(Router):
         self.openapi_config = config.openapi_config
         self.plugins = config.plugins
         self.request_class = config.request_class or Request
+        self.state = State(config.initial_state, deep_copy=True)
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket
