@@ -279,7 +279,7 @@ async def msgpack_extractor(connection: "Request[Any, Any, Any]") -> Any:
 
 def create_multipart_extractor(
     signature_field: "SignatureField", is_data_optional: bool
-) -> Callable[["ASGIConnection[Any, Any, Any]"], Coroutine[Any, Any, Any]]:
+) -> Callable[["ASGIConnection[Any, Any, Any, Any]"], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
     Args:
