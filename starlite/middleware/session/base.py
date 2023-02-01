@@ -89,9 +89,9 @@ class BaseBackendConfig(BaseModel):
                 from os import urandom
 
                 from starlite import Starlite, Request, get
-                from starlite.middleware.session import SessionCookieConfig
+                from starlite.middleware.sessions.cookie_backend import CookieBackendConfig
 
-                session_config = SessionCookieConfig(secret=urandom(16))
+                session_config = CookieBackendConfig(secret=urandom(16))
 
 
                 @get("/")

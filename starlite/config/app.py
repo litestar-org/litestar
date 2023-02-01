@@ -25,6 +25,7 @@ from starlite.types import (
     SingleOrList,
     TypeEncodersMap,
 )
+from starlite.types.composite_types import InitialStateType
 
 from . import AllowedHostsConfig
 from .cache import CacheConfig
@@ -126,6 +127,8 @@ class AppConfig(BaseModel):
     """A dictionary that maps handler functions to status codes and/or exception types."""
     guards: List[Guard]
     """A list of :class:`Guard <starlite.types.Guard>` callables."""
+    initial_state: InitialStateType
+    """An object from which to initialize the app state."""
     logging_config: Optional[BaseLoggingConfig]
     """An instance of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>` subclass."""
     middleware: List[Middleware]
