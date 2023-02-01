@@ -116,34 +116,18 @@ We would then be able to rewrite our test like so:
     .. tab-item:: Sync
         :sync: sync
 
-        .. code-block:: python
+        .. literalinclude:: /examples/testing/test_health_check_sync.py
             :caption: tests/test_health_check.py
+            :language: python
 
-            from starlite.status_codes import HTTP_200_OK
-            from starlite.testing import TestClient
-
-
-            def test_health_check(test_client: TestClient):
-                with test_client as client:
-                    response = client.get("/health-check")
-                    assert response.status_code == HTTP_200_OK
-                    assert response.text == "healthy"
 
     .. tab-item:: Async
         :sync: async
 
-        .. code-block:: python
+        .. literalinclude:: /examples/testing/test_health_check_async.py
             :caption: tests/test_health_check.py
+            :language: python
 
-            from starlite.status_codes import HTTP_200_OK
-            from starlite.testing import AsyncTestClient
-
-
-            async def test_health_check(test_client: AsyncTestClient):
-                async with test_client as client:
-                    response = await client.get("/health-check")
-                    assert response.status_code == HTTP_200_OK
-                    assert response.text == "healthy"
 
 Using sessions
 ++++++++++++++
@@ -167,24 +151,24 @@ across requests, then you might want to inject or inspect session data outside a
     .. tab-item:: Sync
         :sync: sync
 
-        .. literalinclude:: /examples/testing/set_session_data.py
+        .. literalinclude:: /examples/testing/test_set_session_data.py
             :caption: Setting session data
             :language: python
 
 
-        .. literalinclude:: /examples/testing/get_session_data.py
+        .. literalinclude:: /examples/testing/test_get_session_data.py
             :caption: Getting session data
             :language: python
 
     .. tab-item:: Async
         :sync: async
 
-        .. literalinclude:: /examples/testing/set_session_data_async.py
+        .. literalinclude:: /examples/testing/test_set_session_data_async.py
             :caption: Setting session data
             :language: python
 
 
-        .. literalinclude:: /examples/testing/get_session_data_async.py
+        .. literalinclude:: /examples/testing/test_get_session_data_async.py
             :caption: Getting session data
             :language: python
 
