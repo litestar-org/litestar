@@ -167,24 +167,24 @@ across requests, then you might want to inject or inspect session data outside a
     .. tab-item:: Sync
         :sync: sync
 
-        .. literalinclude:: /examples/testing/set_session_data.py
+        .. literalinclude:: /examples/testing/test_set_session_data.py
             :caption: Setting session data
             :language: python
 
 
-        .. literalinclude:: /examples/testing/get_session_data.py
+        .. literalinclude:: /examples/testing/test_get_session_data.py
             :caption: Getting session data
             :language: python
 
     .. tab-item:: Async
         :sync: async
 
-        .. literalinclude:: /examples/testing/set_session_data_async.py
+        .. literalinclude:: /examples/testing/test_set_session_data_async.py
             :caption: Setting session data
             :language: python
 
 
-        .. literalinclude:: /examples/testing/get_session_data_async.py
+        .. literalinclude:: /examples/testing/test_get_session_data_async.py
             :caption: Getting session data
             :language: python
 
