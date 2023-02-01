@@ -12,11 +12,11 @@ from starlite.testing.create_test_client import create_test_client
 from tests import Pet, PetFactory
 
 if TYPE_CHECKING:
-    from starlite.middleware.session.cookie_backend import CookieBackendConfig
     from starlite.middleware.session.base import (
         BaseBackendConfig,
         ServerSideSessionConfig,
     )
+    from starlite.middleware.session.cookie_backend import CookieBackendConfig
     from starlite.types import AnyIOBackend
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
