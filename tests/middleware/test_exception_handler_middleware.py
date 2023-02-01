@@ -1,9 +1,18 @@
 import json
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
+import pytest
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from starlite import HTTPException, LoggingConfig, Request, Response, Starlite, get
+from starlite import (
+    HTTPException,
+    LoggingConfig,
+    Request,
+    Response,
+    Starlite,
+    TestClient,
+    get,
+)
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
@@ -121,6 +130,7 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert client.app.state.called
 
+
 @pytest.mark.parametrize(
     "debug,logging_config",
     [
@@ -142,7 +152,7 @@ def test_exception_handler_middleware_debug_logging(
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert "Test debug exception" in response.text
-        
+
         if debug and logging_config:
             assert len(caplog.records) == 1
             # other assertions for the content of this record here
