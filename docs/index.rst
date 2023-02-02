@@ -147,25 +147,15 @@ To **run your application**, use an ASGI server such as `uvicorn <https://www.uv
    uvicorn my_app.main:app --reload
 
 
-Example Applications
---------------------
-
-
-* `starlite-pg-redis-docker <https://github.com/starlite-api/starlite-pg-redis-docker>`_ : In addition to Starlite, this
-  demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
-  Starlite projects, this application is open to contributions, big and small.
-* `starlite-hello-world <https://github.com/starlite-api/starlite-hello-world>`_: A bare-minimum application setup. Great
-  for testing and POC work.
-
-About Starlite
---------------
+Philosophy
+----------
 
 - Starlite is a community-driven project. This means not a single author,
   but rather a core team of maintainers is leading the project, supported by a community
   of contributors. Starlite currently has 5 maintainers and is being very actively developed.
 - Starlite draws inspiration from `NestJS <https://nestjs.com/>`_ - a contemporary TypeScript framework - which places
   opinions and patterns at its core.
-- While still allowing for **function-based endpoints**\ , Starlite seeks to build on Python's powerful and versatile
+- While still allowing for **function-based endpoints**, Starlite seeks to build on Python's powerful and versatile
   OOP, by placing **class-based controllers** at its core.
 - Starlite is **not** a microframework. Unlike frameworks such as FastAPI, Starlette or Flask, Starlite includes a lot
   of functionalities out of the box needed for a typical modern web application, such as ORM integration,
@@ -173,9 +163,8 @@ About Starlite
   Django" (for example, it will never feature its own ORM), but its scope is not micro either.
 
 
-Comparison with other frameworks
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+Feature comparison with similar frameworks
+------------------------------------------
 
 +-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
 |                             | Starlite                           | FastAPI             | Starlette        | Sanic               | Quart               |
@@ -212,33 +201,38 @@ Comparison with other frameworks
 +-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
 
 
+Example Applications
+--------------------
 
-Project Governance
-^^^^^^^^^^^^^^^^^^
 
-From its inception, Starlite was envisaged as a community driven project. We encourage users to become involved with the
-project - feel free to open issues, chime in on discussions, review pull requests and of course - contribute code.
-
-The project is led by a group of maintainers. You can see the list of maintainers in the ``pyproject.toml`` file.
-Additionally, substantial contributors are invited to be members of the ``starlite-api`` organization. Our aim is to
-increase the number of maintainers and have at least 5 active maintainers - this will ensure the long term stability and
-growth of Starlite in the long run. Contributors who show commitment, contribute great code and show a willingness to
-become maintainers will be invited to do so. So really feel free to contribute and propose yourself as a maintainer once
-you contribute substantially.
-
-Contribution Guide
-^^^^^^^^^^^^^^^^^^
-
-Any and all contributions and involvement with the project is welcome. The easiest way to begin contributing
-is to check out the open issues - and reach out on our discord server or Matrix space.
+* `starlite-pg-redis-docker <https://github.com/starlite-api/starlite-pg-redis-docker>`_ : In addition to Starlite, this
+  demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
+  Starlite projects, this application is open to contributions, big and small.
+* `starlite-hello-world <https://github.com/starlite-api/starlite-hello-world>`_: A bare-minimum application setup. Great
+  for testing and POC work.
 
 
 .. toctree::
+    :caption: Documentation
     :maxdepth: 2
     :hidden:
 
     usage/index
-    migration/index
     reference/index
+    migration/index
+
+
+.. toctree::
+    :caption: About starlite
+    :hidden:
+
+    contribution-guide
+    organization
+    starlite-versions
+
+.. toctree::
+    :caption: More
+    :hidden:
+
     benchmarks
     changelog
