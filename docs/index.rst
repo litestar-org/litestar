@@ -228,7 +228,7 @@ Example Applications
 
     contribution-guide
     organization
-    starlite-versions
+    starlite-releases
 
 .. toctree::
     :caption: More
