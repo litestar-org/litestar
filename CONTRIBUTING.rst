@@ -42,9 +42,10 @@ Guidelines for writing code
 
   * When requiring complex types, use a `type alias <https://docs.python.org/3/library/typing.html#type-aliases>`_.
     Check ``starlite/types`` if a type alias for your use case already exists
-  * If something cannot be typed correctly due to a limitation of the type checkers, you may use ``typing.cast`` to
-    rectify the situation. However, you should only use as a last resort if you've exhausted all other options of
-    ``type narrowing <https://mypy.readthedocs.io/en/stable/type_narrowing.html>`_, such as
+  * If something cannot be typed correctly due to a limitation of the type checkers, you may use
+    `typing.cast <https://docs.python.org/3/library/typing.html#typing.cast>`_ to rectify the situation. However, you
+    should only use as a last resort if you've exhausted all other options of
+    `type narrowing <https://mypy.readthedocs.io/en/stable/type_narrowing.html>`_, such as
     `isinstance() <https://docs.python.org/3/library/functions.html#isinstance>`_ checks and
     `type guards <https://docs.python.org/3/library/typing.html#typing.TypeGuard>`_
   * You may use ``type: ignore`` if you ensured that a line is correct, but mypy / pyright has issues with it. Don't use
@@ -201,14 +202,14 @@ Creating a new release
 ----------------------
 
 1. Increment the version in ``pyproject.toml`` according to the
-  `versioning schema <https://starlite-api.github.io/starlite/latest/starlite-versions.html#version-numbering>`_
+   `versioning scheme <https://starlite-api.github.io/starlite/latest/starlite-versions.html#version-numbering>`_
 2. `Draft a new release <https://github.com/starlite-api/starlite/releases/new>`_ on GitHub
 
-  1. Use ``vMAJOR.MINOR.PATCH`` (e.g. ``v1.2.3``) as both the tag and release title
-  2. Fill in the release description. You can use the "Generate release notes" function to get a draft for this
+   * Use ``vMAJOR.MINOR.PATCH`` (e.g. ``v1.2.3``) as both the tag and release title
+   * Fill in the release description. You can use the "Generate release notes" function to get a draft for this
 
-2. Update ``CHANGELOG.rst`` by adding a new section, with the version number as a heading. Include the contents of the
+3. Update ``CHANGELOG.rst`` by adding a new section, with the version number as a heading. Include the contents of the
    release notes as they relate to changes in code
-3. Commit your changes and push to ``main``
-4. Publish the release
-5. Check that the "publish" `action <https://github.com/starlite-api/starlite/actions>`_ has run successfully
+4. Commit your changes and push to ``main``
+5. Publish the release
+6. Check that the "publish" `action <https://github.com/starlite-api/starlite/actions>`_ has run successfully
