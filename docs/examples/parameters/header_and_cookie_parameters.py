@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
-from starlite import NotAuthorizedException, Parameter, Starlite, get
+from starlite import Parameter, Starlite, get
+from starlite.exceptions import NotAuthorizedException
 
 USER_DB = {
     1: {

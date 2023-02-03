@@ -5,7 +5,6 @@ import pytest
 from starlite import (
     Controller,
     HTTPRouteHandler,
-    ImproperlyConfiguredException,
     Router,
     Starlite,
     asgi,
@@ -17,6 +16,7 @@ from starlite import (
     websocket,
 )
 from starlite.config.static_files import StaticFilesConfig
+from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
     from pathlib import Path

@@ -1,12 +1,9 @@
 from typing import TYPE_CHECKING, Awaitable, List, Optional, Union
 
-from starlite import (
-    AbstractAuthenticationMiddleware,
-    AuthenticationResult,
-    NotAuthorizedException,
-)
+from starlite import AbstractAuthenticationMiddleware, AuthenticationResult
 from starlite.connection import ASGIConnection
 from starlite.contrib.jwt.jwt_token import Token
+from starlite.exceptions import NotAuthorizedException
 
 if TYPE_CHECKING:
     from typing import Any

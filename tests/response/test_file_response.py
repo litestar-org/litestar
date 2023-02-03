@@ -5,8 +5,9 @@ from typing import Any
 
 import pytest
 
-from starlite import ImproperlyConfiguredException, create_test_client, get
+from starlite import create_test_client, get
 from starlite.connection import empty_send
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import FileResponse
 from starlite.response.file import async_file_iterator
 from starlite.status_codes import HTTP_200_OK

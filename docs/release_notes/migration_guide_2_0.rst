@@ -76,3 +76,31 @@ Changed module paths
 +----------------------------------------------------+------------------------------------------------------------------+
 | ``starlite.Template``                              | ``starlite.response_containers.Template``                        |
 +----------------------------------------------------+------------------------------------------------------------------+
+| **Exceptions**                                                                                                        |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.HTTPException``                         | ``starlite.exceptions.HTTPException``                            |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.ImproperlyConfiguredException``         | ``starlite.exceptions.ImproperlyConfiguredException``            |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.InternalServerException``               | ``starlite.exceptions.InternalServerException``                  |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.MissingDependencyException``            | ``starlite.exceptions.MissingDependencyException``               |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.NoRouteMatchFoundException``            | ``starlite.exceptions.NoRouteMatchFoundException``               |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.NotAuthorizedException``                | ``starlite.exceptions.NotAuthorizedException``                   |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.NotFoundException``                     | ``starlite.exceptions.NotFoundException``                        |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.PermissionDeniedException``             | ``starlite.exceptions.PermissionDeniedException``                |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.ServiceUnavailableException``           | ``starlite.exceptions.ServiceUnavailableException``              |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.StarliteException``                     | ``starlite.exceptions.StarliteException``                        |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.TooManyRequestsException``              | ``starlite.exceptions.TooManyRequestsException``                 |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.ValidationException``                   | ``starlite.exceptions.ValidationException``                      |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.WebSocketException``                    | ``starlite.exceptions.WebSocketException``                       |
++----------------------------------------------------+------------------------------------------------------------------+

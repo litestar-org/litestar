@@ -1,7 +1,8 @@
 import pytest
 
-from starlite import ImproperlyConfiguredException, Starlite, get
+from starlite import Starlite, get
 from starlite.app import DEFAULT_OPENAPI_CONFIG
+from starlite.exceptions import ImproperlyConfiguredException
 
 
 def test_registering_openapi_docs_without_openapi_config_raises() -> None:

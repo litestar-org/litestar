@@ -2,15 +2,8 @@ from typing import Any
 
 import pytest
 
-from starlite import (
-    Controller,
-    ImproperlyConfiguredException,
-    Starlite,
-    WebSocket,
-    create_test_client,
-    get,
-    websocket,
-)
+from starlite import Controller, Starlite, WebSocket, create_test_client, get, websocket
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK
 
 

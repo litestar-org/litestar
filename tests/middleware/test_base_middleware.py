@@ -5,11 +5,11 @@ from starlite import (
     DefineMiddleware,
     MediaType,
     Response,
-    ValidationException,
     asgi,
     get,
 )
 from starlite.datastructures.headers import MutableScopeHeaders
+from starlite.exceptions import ValidationException
 from starlite.status_codes import HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 

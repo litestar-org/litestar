@@ -5,7 +5,6 @@ from pydantic import BaseModel, EmailStr, SecretStr
 
 from starlite import (
     ASGIConnection,
-    NotAuthorizedException,
     Request,
     Starlite,
     get,
@@ -14,6 +13,7 @@ from starlite import (
 from starlite.config.openapi import OpenAPIConfig
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
 from starlite.security.session_auth import SessionAuth
+from starlite.exceptions import NotAuthorizedException
 
 
 # Let's assume we have a User model that is a pydantic model.

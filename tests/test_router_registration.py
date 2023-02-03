@@ -3,7 +3,6 @@ import pytest
 from starlite import (
     Controller,
     HttpMethod,
-    ImproperlyConfiguredException,
     Router,
     Starlite,
     WebSocket,
@@ -14,6 +13,7 @@ from starlite import (
 )
 from starlite import route as route_decorator
 from starlite import websocket
+from starlite.exceptions import ImproperlyConfiguredException
 
 
 class MyController(Controller):

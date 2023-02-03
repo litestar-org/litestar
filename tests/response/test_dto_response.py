@@ -6,7 +6,8 @@ from sqlalchemy import Column, Integer, String, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, declarative_base
 
-from starlite import DTOFactory, HTTPException, create_test_client, get, post
+from starlite import DTOFactory, create_test_client, get, post
+from starlite.exceptions import HTTPException
 from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from tests import Person, PersonFactory

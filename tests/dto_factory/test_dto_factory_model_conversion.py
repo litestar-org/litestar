@@ -7,7 +7,8 @@ import pytest
 from pydantic_factories import ModelFactory
 from typing_extensions import is_typeddict
 
-from starlite import DTOFactory, ImproperlyConfiguredException
+from starlite import DTOFactory
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.plugins.tortoise_orm import TortoiseORMPlugin
 from tests import Person, Species, TypedDictPerson, VanillaDataClassPerson
