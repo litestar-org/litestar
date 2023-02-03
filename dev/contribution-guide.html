@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Changelog" href="changelog.html" /><link rel="prev" title="Starlite releases" href="starlite-releases.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Organization" href="organization.html" /><link rel="prev" title="From Starlette / FastAPI" href="migration/fastapi.html" />
 
     <link rel="shortcut icon" href="_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Benchmarks - Starlite 1.50 documentation</title>
+        <title>Contribution guide - Starlite 1.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -323,14 +323,14 @@
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">About starlite</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="contribution-guide.html">Contribution guide</a></li>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Contribution guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="organization.html">Organization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="starlite-releases.html">Starlite releases</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More</span></p>
-<ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Benchmarks</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
@@ -352,7 +352,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/benchmarks.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/contribution-guide.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -374,102 +374,181 @@
           </label>
         </div>
         <article role="main">
-          <section id="benchmarks">
-<h1>Benchmarks<a class="headerlink" href="#benchmarks" title="Permalink to this heading">#</a></h1>
-<section id="methodology">
-<h2>Methodology<a class="headerlink" href="#methodology" title="Permalink to this heading">#</a></h2>
+          <section id="contribution-guide">
+<h1>Contribution guide<a class="headerlink" href="#contribution-guide" title="Permalink to this heading">#</a></h1>
+<section id="setting-up-the-environment">
+<h2>Setting up the environment<a class="headerlink" href="#setting-up-the-environment" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Install <a class="reference external" href="https://python-poetry.org/">poetry</a></p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code> to create a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a> and install
+the dependencies</p></li>
+<li><p>If you’re working on the documentation and need to build it locally, install the extra dependencies with <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span> <span class="pre">--with</span> <span class="pre">docs</span></code></p></li>
+<li><p>Install <a class="reference external" href="https://pre-commit.com/">pre-commit</a></p></li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">install</span></code> to install pre-commit hooks</p></li>
+</ol>
+</section>
+<section id="code-contributions">
+<h2>Code contributions<a class="headerlink" href="#code-contributions" title="Permalink to this heading">#</a></h2>
+<section id="workflow">
+<h3>Workflow<a class="headerlink" href="#workflow" title="Permalink to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://github.com/starlite-api/starlite/fork">Fork</a> the <a class="reference external" href="https://github.com/starlite-api/starlite">Starlite repository</a></p></li>
+<li><p>Clone your fork locally with git</p></li>
+<li><p><a class="reference external" href="#setting-up-the-environment">Set up the environment</a></p></li>
+<li><p>Make your changes</p></li>
+<li><p>(Optional) Run <code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">run</span> <span class="pre">--all-files</span></code> to run linters and formatters. This step is optional and will be executed
+automatically by git before you make a commit, but you may want to run it manually in order to apply fixes</p></li>
+<li><p>Commit your changes to git</p></li>
+<li><p>Push the changes to your fork</p></li>
+<li><p>Open a <a class="reference external" href="https://docs.github.com/en/pull-requests">pull request</a>. Give the pull request a descriptive title
+indicating what it changes. If it has a corresponding open issue, the issue number should be included in the title as
+well. For example a pull request that fixes issue <code class="docutils literal notranslate"><span class="pre">Bug:</span> <span class="pre">Increased</span> <span class="pre">stack</span> <span class="pre">size</span> <span class="pre">making</span> <span class="pre">it</span> <span class="pre">impossible</span> <span class="pre">to</span> <span class="pre">find</span> <span class="pre">needle</span> <span class="pre">#100</span></code>
+could be titled <code class="docutils literal notranslate"><span class="pre">Fix</span> <span class="pre">#100</span> <span class="pre">-</span> <span class="pre">Make</span> <span class="pre">needles</span> <span class="pre">easier</span> <span class="pre">to</span> <span class="pre">find</span> <span class="pre">by</span> <span class="pre">applying</span> <span class="pre">fire</span> <span class="pre">to</span> <span class="pre">haystack</span></code></p></li>
+<li><p>Add yourself as a contributor using the <a class="reference external" href="https://allcontributors.org/docs/en/bot/usage">all-contributors bot</a></p></li>
+</ol>
+</section>
+</section>
+<section id="guidelines-for-writing-code">
+<h2>Guidelines for writing code<a class="headerlink" href="#guidelines-for-writing-code" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p>Benchmarking is done using the <a class="reference external" href="https://github.com/codesenberg/bombardier">bomardier</a> benchmarking tool.</p></li>
-<li><p>Benchmarks are run on a dedicated machine, with a base Debian 11 installation.</p></li>
-<li><p>Each framework is contained within its own docker container, running on a dedicated CPU core (using the <code class="docutils literal notranslate"><span class="pre">cset</span> <span class="pre">shield</span></code> command and the <code class="docutils literal notranslate"><span class="pre">--cpuset-cpus</span></code> option for docker)</p></li>
-<li><p>Tests for the frameworks are written to make them as comparable as possible while completing the same tasks (you can see them <a class="reference external" href="https://github.com/starlite-api/api-performance-tests/tree/main/frameworks">here</a>)</p></li>
-<li><p>Each application is run using <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a> with <strong>one worker</strong> and <a class="reference external" href="https://uvloop.readthedocs.io/">uvloop</a></p></li>
-<li><p>Test data has been randomly generated and is being imported from a shared module</p></li>
+<li><p>Code should be <a class="reference external" href="https://peps.python.org/pep-0020/">Pythonic and zen</a></p></li>
+<li><p>All code should be fully <a class="reference external" href="https://peps.python.org/pep-0484/">typed</a>. This is enforced via
+<a class="reference external" href="https://mypy.readthedocs.io/en/stable/">mypy</a> and <a class="reference external" href="https://github.com/microsoft/pyright">pyright</a></p>
+<ul>
+<li><p>When requiring complex types, use a <a class="reference external" href="https://docs.python.org/3/library/typing.html#type-aliases">type alias</a>.
+Check <code class="docutils literal notranslate"><span class="pre">starlite/types</span></code> if a type alias for your use case already exists</p></li>
+<li><p>If something cannot be typed correctly due to a limitation of the type checkers, you may use
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.cast">typing.cast</a> to rectify the situation. However, you
+should only use as a last resort if you’ve exhausted all other options of
+<a class="reference external" href="https://mypy.readthedocs.io/en/stable/type_narrowing.html">type narrowing</a>, such as
+<a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance">isinstance()</a> checks and
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard">type guards</a></p></li>
+<li><p>You may use <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore</span></code> if you ensured that a line is correct, but mypy / pyright has issues with it. Don’t use
+blank <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore</span></code> though, and instead supply the specific error code, e.g. <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore[attr-defined]</span></code></p></li>
+</ul>
+</li>
+<li><p>If you are adding or modifying existing code, ensure that it’s fully tested. 100% test coverage is mandatory, and will
+be checked on the PR using <a class="reference external" href="https://www.sonarsource.com/products/sonarcloud/">SonarCloud</a></p></li>
+<li><p>All functions, methods, classes and attributes should be documented with a docstring. We use the
+<a class="reference external" href="https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html">Google docstring style</a>. If you come
+across a function or method that doesn’t conform to this standard, please update it as you go</p></li>
+<li><p>When adding a new public interface, it has to be  included in the reference documentation located in
+<code class="docutils literal notranslate"><span class="pre">docs/reference</span></code>. If applicable, add or modify examples in the docs related to the new functionality implemented,
+following the guidelines established in <a class="reference internal" href="#adding-examples">Adding examples</a></p></li>
+</ul>
+<section id="writing-and-running-tests">
+<h3>Writing and running tests<a class="headerlink" href="#writing-and-running-tests" title="Permalink to this heading">#</a></h3>
+<p>Tests are contained within the <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory, and follow the same directory structure as the <code class="docutils literal notranslate"><span class="pre">starlite</span></code> module.
+If you are adding a test case, it should be located within the correct submodule of <code class="docutils literal notranslate"><span class="pre">tests</span></code>. E.g. tests for
+<code class="docutils literal notranslate"><span class="pre">starlite/utils./sync.py</span></code> reside in <code class="docutils literal notranslate"><span class="pre">tests/utils/test_sync.py</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> includes several commands for running tests:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code> to run tests located in <code class="docutils literal notranslate"><span class="pre">tests</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test-examples</span></code> to run tests located in <code class="docutils literal notranslate"><span class="pre">docs/examples/tests</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test-all</span></code> to run all tests</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">coverage</span></code> to run tests with coverage and generate an html report</p></li>
 </ul>
 </section>
-<section id="results">
-<h2>Results<a class="headerlink" href="#results" title="Permalink to this heading">#</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If a result is missing for a specific framework that means either</p>
+</section>
+<section id="project-documentation">
+<h2>Project documentation<a class="headerlink" href="#project-documentation" title="Permalink to this heading">#</a></h2>
+<p>The documentation is located in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory and is <a class="reference external" href="https://docutils.sourceforge.io/rst.html">ReST</a> and
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a>. If you’re unfamiliar with any of those,
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">ReStructuredText primer</a> and
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/quickstart.html">Sphinx quickstart</a> are recommended reads.</p>
+<section id="docs-theme-and-appearance">
+<h3>Docs theme and appearance<a class="headerlink" href="#docs-theme-and-appearance" title="Permalink to this heading">#</a></h3>
+<p>We welcome contributions that enhance / improve the appearance and usability of the docs. We use the excellent
+<a class="reference external" href="https://pradyunsg.me/furo/quickstart/">Furo</a> theme, which comes with a lot of options out of the box. If you wish to
+contribute to the docs style / setup, or static site generation, you should consult the theme docs as a first step.</p>
+</section>
+<section id="running-the-docs-locally">
+<h3>Running the docs locally<a class="headerlink" href="#running-the-docs-locally" title="Permalink to this heading">#</a></h3>
+<p>To run or build the docs locally, you need to first install the required dependencies:</p>
+<p><code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span> <span class="pre">--with</span> <span class="pre">docs</span></code></p>
+<p>Then you can serve the documentation with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docs-serve</span></code>, or build them with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docs</span></code></p>
+</section>
+<section id="writing-and-editing-docs">
+<h3>Writing and editing docs<a class="headerlink" href="#writing-and-editing-docs" title="Permalink to this heading">#</a></h3>
+<p>We welcome contributions that enhance / improve the content of the docs. Feel free to add examples, clarify text,
+restructure the docs etc., but make sure to follow these guidelines:</p>
 <ul class="simple">
-<li><p>It does not support this functionality (this will be mentioned in the test description)</p></li>
-<li><p>More than 0.1% of responses were dropped / erroneous</p></li>
+<li><p>Write text in idiomatic english, using simple language</p></li>
+<li><p>Keep examples simple and self contained</p></li>
+<li><p>Provide links where applicable</p></li>
+<li><p>Use <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html">intersphinx</a> wherever possible when
+referencing external libraries</p></li>
+<li><p>Provide diagrams using <a class="reference external" href="https://mermaid.js.org/">mermaidjs</a> where applicable and possible</p></li>
 </ul>
+<section id="adding-examples">
+<h4>Adding examples<a class="headerlink" href="#adding-examples" title="Permalink to this heading">#</a></h4>
+<p>The examples from the docs are located in their own modules inside the <code class="docutils literal notranslate"><span class="pre">/docs/examples</span></code> folder. This makes it easier
+to test them alongside the rest of the test suite, ensuring they do not become stale as Starlite evolves.</p>
+<p>Please follow the next guidelines when adding a new example:</p>
+<ul class="simple">
+<li><p>Add the example in the corresponding module directory in <code class="docutils literal notranslate"><span class="pre">/docs/examples</span></code> or create a new one if necessary</p></li>
+<li><p>Create a suite for the module in <code class="docutils literal notranslate"><span class="pre">/docs/examples/tests</span></code> that tests the aspects of the example that it demonstrates</p></li>
+<li><p>Reference the example in the rst file with an external reference code block, e.g.</p></li>
+</ul>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">literalinclude</span><span class="p">::</span> /examples/test_thing.py
+  <span class="nc">:caption:</span> test_thing.py
+  <span class="nc">:language:</span> python
+</pre></div>
 </div>
-<section id="json">
-<h3>JSON<a class="headerlink" href="#json" title="Permalink to this heading">#</a></h3>
-<p>Serializing a dictionary into JSON</p>
-<figure class="align-default" id="id1">
-<img alt="RPS JSON" src="_images/rps_json.svg" /><figcaption>
-<p><span class="caption-text">RPS JSON</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
 </section>
-<section id="files">
-<h3>Files<a class="headerlink" href="#files" title="Permalink to this heading">#</a></h3>
-<figure class="align-default" id="id2">
-<img alt="RPS files" src="_images/rps_files.svg" /><figcaption>
-<p><span class="caption-text">RPS files</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
+<section id="automatically-execute-examples">
+<h4>Automatically execute examples<a class="headerlink" href="#automatically-execute-examples" title="Permalink to this heading">#</a></h4>
+<p>Our docs include a Sphinx extension that can automatically run requests against example apps
+and include their result in the documentation page when its being built. This only requires 2 steps:</p>
+<ol class="arabic simple">
+<li><p>Create an example file with an <code class="docutils literal notranslate"><span class="pre">app</span></code> object in it, which is an instance of <code class="docutils literal notranslate"><span class="pre">Starlite</span></code></p></li>
+<li><p>Add a comment in the form of <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">run:</span> <span class="pre">/hello</span></code> to the example file</p></li>
+</ol>
+<p>When building the docs (or serving them locally), a process serving the <code class="docutils literal notranslate"><span class="pre">app</span></code> instance
+will be launched, and the requests specified in the comments will be run against it. The
+comments will be stripped from the result, and the output of the <code class="docutils literal notranslate"><span class="pre">curl</span></code> invocation inserted
+after the example code-block.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">run:</span></code> syntax is nothing special; Everything after the colon will be passed to
+the <code class="docutils literal notranslate"><span class="pre">curl</span></code> command that’s being invoked. The URL is built automatically, so the
+specified path can just be a path relative to the app.</p>
+<p>In practice, this looks like the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+
+<span class="c1"># run: /</span>
+</pre></div>
+</div>
+<p>This is equivalent to:</p>
 </section>
-<section id="path-and-query-parameter-handling">
-<h3>Path and query parameter handling<a class="headerlink" href="#path-and-query-parameter-handling" title="Permalink to this heading">#</a></h3>
-<p><em>All responses return “No Content”</em></p>
+</section>
+</section>
+<section id="creating-a-new-release">
+<h2>Creating a new release<a class="headerlink" href="#creating-a-new-release" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Increment the version in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> according to the
+<a class="reference external" href="https://starlite-api.github.io/starlite/latest/starlite-versions.html#version-numbering">versioning scheme</a></p></li>
+<li><p><a class="reference external" href="https://github.com/starlite-api/starlite/releases/new">Draft a new release</a> on GitHub</p>
 <ul class="simple">
-<li><p>No params: No path parameters</p></li>
-<li><p>Path params: Single path parameter, coerced into an integer</p></li>
-<li><p>Query params: Single query parameter, coerced into an integer</p></li>
-<li><p>Mixed params: A path and a query parameters, coerced into integers</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">vMAJOR.MINOR.PATCH</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">v1.2.3</span></code>) as both the tag and release title</p></li>
+<li><p>Fill in the release description. You can use the “Generate release notes” function to get a draft for this</p></li>
 </ul>
-<figure class="align-default" id="id3">
-<img alt="RPS path and query parameters" src="_images/rps_params.svg" /><figcaption>
-<p><span class="caption-text">RPS path and query parameters</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</section>
-<section id="dependency-injection">
-<h3>Dependency injection<a class="headerlink" href="#dependency-injection" title="Permalink to this heading">#</a></h3>
-<p><em>(not supported by</em> <code class="docutils literal notranslate"><span class="pre">Starlette</span></code> <em>)</em></p>
-<ul class="simple">
-<li><p>Resolving 3 nested synchronous dependencies</p></li>
-<li><p>Resolving 3 nested asynchronous dependencies (only supported by <code class="docutils literal notranslate"><span class="pre">Starlite</span></code> and <code class="docutils literal notranslate"><span class="pre">FastAPI</span></code>)</p></li>
-<li><p>Resolving 3 nested synchronous, and 3 nested asynchronous dependencies (only supported by <code class="docutils literal notranslate"><span class="pre">Starlite</span></code> and <code class="docutils literal notranslate"><span class="pre">FastAPI</span></code>)</p></li>
-</ul>
-<figure class="align-default" id="id4">
-<img alt="RPS Dependency injection" src="_images/rps_dependency-injection.svg" /><figcaption>
-<p><span class="caption-text">RPS Dependency injection</span><a class="headerlink" href="#id4" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</section>
-<section id="modifying-responses">
-<h3>Modifying responses<a class="headerlink" href="#modifying-responses" title="Permalink to this heading">#</a></h3>
-<p><em>All responses return “No Content”</em></p>
-<figure class="align-default" id="id5">
-<img alt="RPS dynamic responses" src="_images/rps_dynamic-response.svg" /><figcaption>
-<p><span class="caption-text">RPS dynamic responses</span><a class="headerlink" href="#id5" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</section>
-<section id="plaintext">
-<h3>Plaintext<a class="headerlink" href="#plaintext" title="Permalink to this heading">#</a></h3>
-<figure class="align-default" id="id6">
-<img alt="RPS Plaintext" src="_images/rps_plaintext.svg" /><figcaption>
-<p><span class="caption-text">RPS Plaintext</span><a class="headerlink" href="#id6" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</section>
-</section>
-<section id="interpreting-the-results">
-<h2>Interpreting the results<a class="headerlink" href="#interpreting-the-results" title="Permalink to this heading">#</a></h2>
-<p>An interpretation of these results should be approached with caution, as is the case for nearly all benchmarks.
-A high score in a test does not necessarily translate to high performance of <strong>your</strong> application in <strong>your</strong> use case.
-For almost any test you can probably write an app that performs better or worse at a comparable task <strong>in your scenario</strong>.</p>
-<p>While trying to design the tests in a way that simulate somewhat realistic scenarios, they can never give an exact
-representation of how a real world application, where, aside from the workload, many other factors come into play.
-These tests were mainly written to be used internally for starlite development, to help us locate the source of some
-performance regression we were experiencing.</p>
+</li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">CHANGELOG.rst</span></code> by adding a new section, with the version number as a heading. Include the contents of the
+release notes as they relate to changes in code</p></li>
+<li><p>Commit your changes and push to <code class="docutils literal notranslate"><span class="pre">main</span></code></p></li>
+<li><p>Publish the release</p></li>
+<li><p>Check that the “publish” <a class="reference external" href="https://github.com/starlite-api/starlite/actions">action</a> has run successfully</p></li>
+</ol>
 </section>
 </section>
 
@@ -478,23 +557,23 @@ performance regression we were experiencing.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="changelog.html">
+          <a class="next-page" href="organization.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Changelog</div>
+                <div class="title">Organization</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="starlite-releases.html">
+          <a class="prev-page" href="migration/fastapi.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Starlite releases</div>
+                <div class="title">From Starlette / FastAPI</div>
                 
               </div>
             </a>
@@ -541,18 +620,27 @@ performance regression we were experiencing.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Benchmarks</a><ul>
-<li><a class="reference internal" href="#methodology">Methodology</a></li>
-<li><a class="reference internal" href="#results">Results</a><ul>
-<li><a class="reference internal" href="#json">JSON</a></li>
-<li><a class="reference internal" href="#files">Files</a></li>
-<li><a class="reference internal" href="#path-and-query-parameter-handling">Path and query parameter handling</a></li>
-<li><a class="reference internal" href="#dependency-injection">Dependency injection</a></li>
-<li><a class="reference internal" href="#modifying-responses">Modifying responses</a></li>
-<li><a class="reference internal" href="#plaintext">Plaintext</a></li>
+<li><a class="reference internal" href="#">Contribution guide</a><ul>
+<li><a class="reference internal" href="#setting-up-the-environment">Setting up the environment</a></li>
+<li><a class="reference internal" href="#code-contributions">Code contributions</a><ul>
+<li><a class="reference internal" href="#workflow">Workflow</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#interpreting-the-results">Interpreting the results</a></li>
+<li><a class="reference internal" href="#guidelines-for-writing-code">Guidelines for writing code</a><ul>
+<li><a class="reference internal" href="#writing-and-running-tests">Writing and running tests</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#project-documentation">Project documentation</a><ul>
+<li><a class="reference internal" href="#docs-theme-and-appearance">Docs theme and appearance</a></li>
+<li><a class="reference internal" href="#running-the-docs-locally">Running the docs locally</a></li>
+<li><a class="reference internal" href="#writing-and-editing-docs">Writing and editing docs</a><ul>
+<li><a class="reference internal" href="#adding-examples">Adding examples</a></li>
+<li><a class="reference internal" href="#automatically-execute-examples">Automatically execute examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#creating-a-new-release">Creating a new release</a></li>
 </ul>
 </li>
 </ul>

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Changelog" href="changelog.html" /><link rel="prev" title="Starlite releases" href="starlite-releases.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Benchmarks" href="benchmarks.html" /><link rel="prev" title="Organization" href="organization.html" />
 
     <link rel="shortcut icon" href="_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Benchmarks - Starlite 1.50 documentation</title>
+        <title>Starlite releases - Starlite 1.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -323,14 +323,14 @@
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">About starlite</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="contribution-guide.html">Contribution guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="organization.html">Organization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="starlite-releases.html">Starlite releases</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Starlite releases</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">More</span></p>
-<ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Benchmarks</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
@@ -352,7 +352,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/benchmarks.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/starlite-releases.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -374,102 +374,50 @@
           </label>
         </div>
         <article role="main">
-          <section id="benchmarks">
-<h1>Benchmarks<a class="headerlink" href="#benchmarks" title="Permalink to this heading">#</a></h1>
-<section id="methodology">
-<h2>Methodology<a class="headerlink" href="#methodology" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Benchmarking is done using the <a class="reference external" href="https://github.com/codesenberg/bombardier">bomardier</a> benchmarking tool.</p></li>
-<li><p>Benchmarks are run on a dedicated machine, with a base Debian 11 installation.</p></li>
-<li><p>Each framework is contained within its own docker container, running on a dedicated CPU core (using the <code class="docutils literal notranslate"><span class="pre">cset</span> <span class="pre">shield</span></code> command and the <code class="docutils literal notranslate"><span class="pre">--cpuset-cpus</span></code> option for docker)</p></li>
-<li><p>Tests for the frameworks are written to make them as comparable as possible while completing the same tasks (you can see them <a class="reference external" href="https://github.com/starlite-api/api-performance-tests/tree/main/frameworks">here</a>)</p></li>
-<li><p>Each application is run using <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a> with <strong>one worker</strong> and <a class="reference external" href="https://uvloop.readthedocs.io/">uvloop</a></p></li>
-<li><p>Test data has been randomly generated and is being imported from a shared module</p></li>
-</ul>
+          <section id="starlite-releases">
+<h1>Starlite releases<a class="headerlink" href="#starlite-releases" title="Permalink to this heading">#</a></h1>
+<section id="version-numbering">
+<h2>Version numbering<a class="headerlink" href="#version-numbering" title="Permalink to this heading">#</a></h2>
+<p>Starlite follows the <a class="reference external" href="https://semver.org/">Semantic Versioning</a> standard, using the
+<code class="docutils literal notranslate"><span class="pre">&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;</span></code> schema, increasing the version numbers as follows:</p>
+<dl class="simple">
+<dt>Major</dt><dd><p>Backwards incompatible changes have been made</p>
+</dd>
+<dt>Minor</dt><dd><p>Functionality was added, in a backwards compatible manner</p>
+</dd>
+<dt>Patch</dt><dd><p>Bugfixes were applied, in a backwards compatible manner</p>
+</dd>
+</dl>
 </section>
-<section id="results">
-<h2>Results<a class="headerlink" href="#results" title="Permalink to this heading">#</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If a result is missing for a specific framework that means either</p>
-<ul class="simple">
-<li><p>It does not support this functionality (this will be mentioned in the test description)</p></li>
-<li><p>More than 0.1% of responses were dropped / erroneous</p></li>
-</ul>
-</div>
-<section id="json">
-<h3>JSON<a class="headerlink" href="#json" title="Permalink to this heading">#</a></h3>
-<p>Serializing a dictionary into JSON</p>
-<figure class="align-default" id="id1">
-<img alt="RPS JSON" src="_images/rps_json.svg" /><figcaption>
-<p><span class="caption-text">RPS JSON</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
+<section id="release-schedule">
+<h2>Release schedule<a class="headerlink" href="#release-schedule" title="Permalink to this heading">#</a></h2>
+<p>Starlite follows a non-strict release schedule, targeting about 6 months between major,
+and 4 weeks between minor versions. For major releases, this is to be interpreted as a
+lower bound, meaning it may take longer for a particular major version to be released,
+but it won’t be less than 6 months after the last major release.</p>
 </section>
-<section id="files">
-<h3>Files<a class="headerlink" href="#files" title="Permalink to this heading">#</a></h3>
-<figure class="align-default" id="id2">
-<img alt="RPS files" src="_images/rps_files.svg" /><figcaption>
-<p><span class="caption-text">RPS files</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
+<section id="about-major-versions">
+<h2>About major versions<a class="headerlink" href="#about-major-versions" title="Permalink to this heading">#</a></h2>
+<p>Starlite’s major releases are <em>generally backwards compatible</em> and usually won’t include
+major breaking changes. They can be seen as maintenance releases that offer the
+opportunity to make some backwards incompatible changes.</p>
+<p>Due to the frequency of major releases, Starlite evolves gradually over time and there
+won’t be sweeping changes that require a complete rewrite of an application or major
+migration efforts when upgrading to a new major version.</p>
 </section>
-<section id="path-and-query-parameter-handling">
-<h3>Path and query parameter handling<a class="headerlink" href="#path-and-query-parameter-handling" title="Permalink to this heading">#</a></h3>
-<p><em>All responses return “No Content”</em></p>
-<ul class="simple">
-<li><p>No params: No path parameters</p></li>
-<li><p>Path params: Single path parameter, coerced into an integer</p></li>
-<li><p>Query params: Single query parameter, coerced into an integer</p></li>
-<li><p>Mixed params: A path and a query parameters, coerced into integers</p></li>
-</ul>
-<figure class="align-default" id="id3">
-<img alt="RPS path and query parameters" src="_images/rps_params.svg" /><figcaption>
-<p><span class="caption-text">RPS path and query parameters</span><a class="headerlink" href="#id3" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
+<section id="lts-releases-and-support">
+<h2>LTS releases and support<a class="headerlink" href="#lts-releases-and-support" title="Permalink to this heading">#</a></h2>
+<p>The last released minor version becomes the current <em>LTS release</em> once a new major
+version is released. These LTS releases will receive <strong>patch</strong> releases for security and
+other critical bugfixes <em>at least until the next major release</em>.</p>
 </section>
-<section id="dependency-injection">
-<h3>Dependency injection<a class="headerlink" href="#dependency-injection" title="Permalink to this heading">#</a></h3>
-<p><em>(not supported by</em> <code class="docutils literal notranslate"><span class="pre">Starlette</span></code> <em>)</em></p>
-<ul class="simple">
-<li><p>Resolving 3 nested synchronous dependencies</p></li>
-<li><p>Resolving 3 nested asynchronous dependencies (only supported by <code class="docutils literal notranslate"><span class="pre">Starlite</span></code> and <code class="docutils literal notranslate"><span class="pre">FastAPI</span></code>)</p></li>
-<li><p>Resolving 3 nested synchronous, and 3 nested asynchronous dependencies (only supported by <code class="docutils literal notranslate"><span class="pre">Starlite</span></code> and <code class="docutils literal notranslate"><span class="pre">FastAPI</span></code>)</p></li>
-</ul>
-<figure class="align-default" id="id4">
-<img alt="RPS Dependency injection" src="_images/rps_dependency-injection.svg" /><figcaption>
-<p><span class="caption-text">RPS Dependency injection</span><a class="headerlink" href="#id4" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</section>
-<section id="modifying-responses">
-<h3>Modifying responses<a class="headerlink" href="#modifying-responses" title="Permalink to this heading">#</a></h3>
-<p><em>All responses return “No Content”</em></p>
-<figure class="align-default" id="id5">
-<img alt="RPS dynamic responses" src="_images/rps_dynamic-response.svg" /><figcaption>
-<p><span class="caption-text">RPS dynamic responses</span><a class="headerlink" href="#id5" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</section>
-<section id="plaintext">
-<h3>Plaintext<a class="headerlink" href="#plaintext" title="Permalink to this heading">#</a></h3>
-<figure class="align-default" id="id6">
-<img alt="RPS Plaintext" src="_images/rps_plaintext.svg" /><figcaption>
-<p><span class="caption-text">RPS Plaintext</span><a class="headerlink" href="#id6" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-</section>
-</section>
-<section id="interpreting-the-results">
-<h2>Interpreting the results<a class="headerlink" href="#interpreting-the-results" title="Permalink to this heading">#</a></h2>
-<p>An interpretation of these results should be approached with caution, as is the case for nearly all benchmarks.
-A high score in a test does not necessarily translate to high performance of <strong>your</strong> application in <strong>your</strong> use case.
-For almost any test you can probably write an app that performs better or worse at a comparable task <strong>in your scenario</strong>.</p>
-<p>While trying to design the tests in a way that simulate somewhat realistic scenarios, they can never give an exact
-representation of how a real world application, where, aside from the workload, many other factors come into play.
-These tests were mainly written to be used internally for starlite development, to help us locate the source of some
-performance regression we were experiencing.</p>
+<section id="deprecation-policy">
+<h2>Deprecation policy<a class="headerlink" href="#deprecation-policy" title="Permalink to this heading">#</a></h2>
+<p>If a feature of Starlite is to be removed, a deprecation warning will be added in a
+<strong>minor</strong> release. Deprecated features will still be supported throughout every release
+of the respective <em>major</em> release. In practice this means that if a deprecation warning
+is added in <code class="docutils literal notranslate"><span class="pre">1.x</span></code>, the feature will continue to work for every <code class="docutils literal notranslate"><span class="pre">1.</span></code> release, and be
+removed in the <code class="docutils literal notranslate"><span class="pre">2.0</span></code> release.</p>
 </section>
 </section>
 
@@ -478,23 +426,23 @@ performance regression we were experiencing.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="changelog.html">
+          <a class="next-page" href="benchmarks.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Changelog</div>
+                <div class="title">Benchmarks</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="starlite-releases.html">
+          <a class="prev-page" href="organization.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Starlite releases</div>
+                <div class="title">Organization</div>
                 
               </div>
             </a>
@@ -541,18 +489,12 @@ performance regression we were experiencing.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Benchmarks</a><ul>
-<li><a class="reference internal" href="#methodology">Methodology</a></li>
-<li><a class="reference internal" href="#results">Results</a><ul>
-<li><a class="reference internal" href="#json">JSON</a></li>
-<li><a class="reference internal" href="#files">Files</a></li>
-<li><a class="reference internal" href="#path-and-query-parameter-handling">Path and query parameter handling</a></li>
-<li><a class="reference internal" href="#dependency-injection">Dependency injection</a></li>
-<li><a class="reference internal" href="#modifying-responses">Modifying responses</a></li>
-<li><a class="reference internal" href="#plaintext">Plaintext</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#interpreting-the-results">Interpreting the results</a></li>
+<li><a class="reference internal" href="#">Starlite releases</a><ul>
+<li><a class="reference internal" href="#version-numbering">Version numbering</a></li>
+<li><a class="reference internal" href="#release-schedule">Release schedule</a></li>
+<li><a class="reference internal" href="#about-major-versions">About major versions</a></li>
+<li><a class="reference internal" href="#lts-releases-and-support">LTS releases and support</a></li>
+<li><a class="reference internal" href="#deprecation-policy">Deprecation policy</a></li>
 </ul>
 </li>
 </ul>
