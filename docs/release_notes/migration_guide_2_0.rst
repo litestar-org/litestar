@@ -2,45 +2,65 @@ Migrating to Starlite 2.0
 =========================
 
 
-Changed import paths
+Changed module paths
 ---------------------
 
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``1.50``                                     | ``2.x``                                                                |
-+==============================================+========================================================================+
+| ``1.50``                                           | ``2.x``                                                          |
++====================================================+==================================================================+
 | **Datastructures**                                                                                                    |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite.datastructures import UploadFile`` | ``from starlite.upload_file import UploadFile``                  |
+| ``starlite.datastructures.UploadFile``             | ``starlite.upload_file.UploadFile``                              |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import BackgroundTask``            | ``from starlite.background_tasks import BackgroundTask``         |
+| ``starlite.BackgroundTask``                        | ``starlite.background_tasks.BackgroundTask``                     |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import BackgroundTasks``           | ``from starlite.background_tasks import BackgroundTasks``        |
+| ``starlite.BackgroundTasks``                       | ``starlite.background_tasks.BackgroundTasks``                    |
 +----------------------------------------------------+------------------------------------------------------------------+
 | **Configuration**                                                                                                     |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import AllowedHostsConfig``        | ``from starlite.config.allowed_hosts import AllowedHostsConfig`` |
+| ``starlite.AllowedHostsConfig``                    | ``starlite.config.allowed_hosts.AllowedHostsConfig``             |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import BaseLoggingConfig``         | ``from starlite.config.logging import BaseLoggingConfig``        |
+| ``starlite.BaseLoggingConfig``                     | ``starlite.config.logging.BaseLoggingConfig``                    |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import CacheConfig``               | ``from starlite.config.cache import CacheConfig``                |
+| ``starlite.CacheConfig``                           | ``starlite.config.cache.CacheConfig``                            |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import CompressionConfig``         | ``from starlite.config.compression import CompressionConfig``    |
+| ``starlite.CompressionConfig``                     | ``starlite.config.compression.CompressionConfig``                |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import CORSConfig``                | ``from starlite.config.cors import CORSConfig``                  |
+| ``starlite.CORSConfig``                            | ``starlite.config.cors.CORSConfig``                              |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import CSRFConfig``                | ``from starlite.config.csrf import CSRFConfig``                  |
+| ``starlite.CSRFConfig``                            | ``starlite.config.csrf.CSRFConfig``                              |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import LoggingConfig``             | ``from starlite.config.logging import LoggingConfig``            |
+| ``starlite.LoggingConfig``                         | ``starlite.config.logging.LoggingConfig``                        |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import StructLoggingConfig``       | ``from starlite.config.logging import StructLoggingConfig``      |
+| ``starlite.StructLoggingConfig``                   | ``starlite.config.logging.StructLoggingConfig``                  |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import OpenAPIConfig``             | ``from starlite.config.openapi import OpenAPIConfig``            |
+| ``starlite.OpenAPIConfig``                         | ``starlite.config.openapi.OpenAPIConfig``                        |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import StaticFilesConfig``         | ``from starlite.config.static_files import StaticFilesConfig``   |
+| ``starlite.StaticFilesConfig``                     | ``starlite.config.static_files.StaticFilesConfig``               |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite import TemplateConfig``            | ``from starlite.config.templates import TemplateConfig``         |
+| ``starlite.TemplateConfig``                        | ``starlite.config.templates.TemplateConfig``                     |
 +----------------------------------------------------+------------------------------------------------------------------+
 | **Provide**                                                                                                           |
 +----------------------------------------------------+------------------------------------------------------------------+
-| ``from starlite.datastructures import Provide``    | ``from starlite.provide import Provide``                         |
+| ``starlite.datastructures.Provide``                | ``starlite.provide.Provide``                                     |
++----------------------------------------------------+------------------------------------------------------------------+
+| **Pagination**                                                                                                        |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.AbstractAsyncClassicPaginator``         | ``starlite.utils.pagination.AbstractAsyncClassicPaginator``      |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.AbstractAsyncCursorPaginator``          | ``starlite.utils.pagination.AbstractAsyncCursorPaginator``       |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.AbstractAsyncOffsetPaginator``          | ``starlite.utils.pagination.AbstractAsyncOffsetPaginator``       |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.AbstractSyncClassicPaginator``          | ``starlite.utils.pagination.AbstractSyncClassicPaginator``       |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.AbstractSyncCursorPaginator``           | ``starlite.utils.pagination.AbstractSyncCursorPaginator``        |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.AbstractSyncOffsetPaginator``           | ``starlite.utils.pagination.AbstractSyncOffsetPaginator``        |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.ClassicPagination``                     | ``starlite.utils.pagination.ClassicPagination``                  |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.CursorPagination``                      | ``starlite.utils.pagination.CursorPagination``                   |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.OffsetPagination``                      | ``starlite.utils.pagination.OffsetPagination``                   |
 +----------------------------------------------------+------------------------------------------------------------------+

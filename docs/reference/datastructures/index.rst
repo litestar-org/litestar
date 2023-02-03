@@ -7,7 +7,6 @@ starlite.datastructures
    cookie
    headers
    multi_dicts
-   pagination
    response_containers
    response_header
    state
