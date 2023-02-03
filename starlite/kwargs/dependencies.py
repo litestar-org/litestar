@@ -6,7 +6,7 @@ from starlite.utils.compat import async_next
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
-    from starlite.datastructures.provide import DependencyCleanupGroup, Provide
+    from starlite.provide import DependencyCleanupGroup, Provide
 
 
 class Dependency:

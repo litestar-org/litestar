@@ -15,8 +15,8 @@ from typing import (
 
 from pydantic import validate_arguments
 
-from starlite.datastructures.provide import Provide
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.provide import Provide
 from starlite.signature.models import SignatureField
 from starlite.types import (
     Dependencies,

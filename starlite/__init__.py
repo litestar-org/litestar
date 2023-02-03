@@ -15,7 +15,6 @@ from starlite.datastructures import (
     FormMultiDict,
     ImmutableState,
     OffsetPagination,
-    Provide,
     Redirect,
     ResponseContainer,
     ResponseHeader,
@@ -73,6 +72,7 @@ from starlite.openapi.controller import OpenAPIController
 from starlite.openapi.datastructures import ResponseSpec
 from starlite.params import Body, Dependency, Parameter
 from starlite.plugins import PluginProtocol
+from starlite.provide import Provide
 from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute

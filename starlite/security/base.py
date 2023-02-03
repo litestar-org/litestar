@@ -17,8 +17,8 @@ from pydantic import BaseConfig, validator
 from pydantic.generics import GenericModel
 
 from starlite.connection import ASGIConnection
-from starlite.datastructures import Provide
 from starlite.middleware.authentication import AbstractAuthenticationMiddleware
+from starlite.provide import Provide
 from starlite.types import ControllerRouterHandler, Guard, Scopes, SyncOrAsyncUnion
 from starlite.utils.sync import AsyncCallable
 

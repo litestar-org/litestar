@@ -22,6 +22,7 @@ API reference
     openapi
     params
     plugins/index
+    provide
     response
     router
     security/index

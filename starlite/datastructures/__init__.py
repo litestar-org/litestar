@@ -21,7 +21,6 @@ from starlite.datastructures.pagination import (
     CursorPagination,
     OffsetPagination,
 )
-from starlite.datastructures.provide import Provide
 from starlite.datastructures.response_containers import (
     File,
     Redirect,
@@ -55,7 +54,6 @@ __all__ = (
     "MultiDict",
     "MutableScopeHeaders",
     "OffsetPagination",
-    "Provide",
     "Redirect",
     "ResponseContainer",
     "ResponseHeader",

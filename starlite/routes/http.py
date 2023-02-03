@@ -18,8 +18,8 @@ from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 
 if TYPE_CHECKING:
-    from starlite.datastructures.provide import DependencyCleanupGroup
     from starlite.kwargs import KwargsModel
+    from starlite.provide import DependencyCleanupGroup
     from starlite.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
 
