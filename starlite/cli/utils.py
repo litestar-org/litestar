@@ -24,7 +24,8 @@ from rich.console import Console
 from rich.table import Table
 from typing_extensions import Concatenate, ParamSpec
 
-from starlite import DefineMiddleware, Starlite
+from starlite import Starlite
+from starlite.middleware import DefineMiddleware
 from starlite.utils import get_name
 
 if sys.version_info >= (3, 10):

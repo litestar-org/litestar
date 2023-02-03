@@ -26,13 +26,6 @@ from starlite.handlers import (
     route,
     websocket,
 )
-from starlite.middleware import (
-    AbstractAuthenticationMiddleware,
-    AbstractMiddleware,
-    AuthenticationResult,
-    DefineMiddleware,
-    MiddlewareProtocol,
-)
 from starlite.params import Body, Dependency, Parameter
 from starlite.plugins import PluginProtocol
 from starlite.provide import Provide
@@ -47,16 +40,12 @@ __all__ = (
     "ASGIConnection",
     "ASGIRoute",
     "ASGIRouteHandler",
-    "AbstractAuthenticationMiddleware",
-    "AbstractMiddleware",
     "AbstractSecurityConfig",
-    "AuthenticationResult",
     "BaseRoute",
     "BaseRouteHandler",
     "Body",
     "Controller",
     "Cookie",
-    "DefineMiddleware",
     "Dependency",
     "FormMultiDict",
     "HTTPRoute",
@@ -64,7 +53,6 @@ __all__ = (
     "HttpMethod",
     "ImmutableState",
     "MediaType",
-    "MiddlewareProtocol",
     "OpenAPIMediaType",
     "Parameter",
     "Partial",
