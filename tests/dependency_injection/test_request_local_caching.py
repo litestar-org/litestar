@@ -1,5 +1,6 @@
-from starlite import Provide, create_test_client, get
+from starlite import Provide, get
 from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 
 def test_caching_per_request() -> None:

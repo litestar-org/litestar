@@ -104,3 +104,8 @@ Changed module paths
 +----------------------------------------------------+------------------------------------------------------------------+
 | ``starlite.WebSocketException``                    | ``starlite.exceptions.WebSocketException``                       |
 +----------------------------------------------------+------------------------------------------------------------------+
+| **Testing**                                                                                                           |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.TestClient``                            | ``starlite.testing.TestClient``                                  |
+| ``starlite.AsyncTestClient``                       | ``starlite.testing.AsyncTestClient``                             |
+| ``starlite.create_test_client``                    | ``starlite.testing.create_test_client``                          |

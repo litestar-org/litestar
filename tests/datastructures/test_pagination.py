@@ -3,9 +3,10 @@ from typing import Any, List, Optional, Tuple
 
 import pytest
 
-from starlite import create_test_client, get
+from starlite import get
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 from starlite.utils.pagination import (
     AbstractAsyncClassicPaginator,
     AbstractAsyncCursorPaginator,

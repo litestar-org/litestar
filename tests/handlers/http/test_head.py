@@ -2,11 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from starlite import HttpMethod, create_test_client, head
+from starlite import HttpMethod, head
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import FileResponse
 from starlite.response_containers import File
 from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 
 def test_head_decorator() -> None:

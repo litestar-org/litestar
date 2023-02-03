@@ -8,11 +8,11 @@ import pytest
 from fsspec.implementations.local import LocalFileSystem
 from pydantic import ValidationError
 
-from starlite import create_test_client, get
+from starlite import get
 from starlite.datastructures import ETag
 from starlite.response_containers import File
 from starlite.status_codes import HTTP_200_OK
-from starlite.testing import RequestFactory
+from starlite.testing import RequestFactory, create_test_client
 from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
