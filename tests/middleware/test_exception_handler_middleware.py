@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
     from starlite.datastructures import State
     from starlite.types import Scope
+    from starlite.types.callable_types import GetLogger
 
 
 async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
@@ -140,7 +141,7 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
     ],
 )
 def test_exception_handler_middleware_debug_logging(
-    caplog: "LogCaptureFixture", debug: bool, logging_config: Optional[LoggingConfig]
+    get_logger: "GetLogger", caplog: "LogCaptureFixture", debug: bool, logging_config: Optional[LoggingConfig]
 ) -> None:
     @get("/test")
     def handler() -> None:
@@ -149,6 +150,7 @@ def test_exception_handler_middleware_debug_logging(
     app = Starlite([handler], logging_config=logging_config, debug=debug)
 
     with caplog.at_level("DEBUG", "starlite"), TestClient(app=app) as client:
+        client.app.logger = get_logger("starlite")
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert "Test debug exception" in response.text
