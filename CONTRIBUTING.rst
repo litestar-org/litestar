@@ -6,7 +6,7 @@ Setting up the environment
 
 1. Install `poetry <https://python-poetry.org/>`_
 2. Run ``poetry install`` to create a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ and install
-   the dependencies with
+   the dependencies
 3. If you're working on the documentation and need to build it locally, install the extra dependencies with ``poetry install --with docs``
 4. Install `pre-commit <https://pre-commit.com/>`_
 5. Run ``pre-commit install`` to install pre-commit hooks
@@ -146,7 +146,7 @@ comments will be stripped from the result, and the output of the ``curl`` invoca
 after the example code-block.
 
 The ``# run:`` syntax is nothing special; Everything after the colon will be passed to
-the ``curl`` command that's being invoked. The URL is being built automatically, so the
+the ``curl`` command that's being invoked. The URL is built automatically, so the
 specified path can just be a path relative to the app.
 
 In practice, this looks like the following:
