@@ -32,7 +32,6 @@ from starlite.provide import Provide
 from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
-from starlite.security import AbstractSecurityConfig
 from starlite.types.partial import Partial
 from starlite.upload_file import UploadFile
 
@@ -40,7 +39,6 @@ __all__ = (
     "ASGIConnection",
     "ASGIRoute",
     "ASGIRouteHandler",
-    "AbstractSecurityConfig",
     "BaseRoute",
     "BaseRouteHandler",
     "Body",
