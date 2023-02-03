@@ -16,3 +16,7 @@ test:
 	pytest tests
 
 test-all: test test-examples
+
+coverage:
+	pytest tests --cov=starlite
+	coverage html
