@@ -17,7 +17,6 @@ from starlite.types import Empty
 from starlite.utils.serialization import decode_json, decode_msgpack
 
 if TYPE_CHECKING:
-
     from starlite.handlers.http import HTTPRouteHandler  # noqa: F401
     from starlite.types.asgi_types import HTTPScope, Method, Receive, Scope, Send
 

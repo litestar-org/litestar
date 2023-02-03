@@ -6,7 +6,6 @@ from pydantic import BaseModel, EmailStr
 
 from starlite import (
     ASGIConnection,
-    OpenAPIConfig,
     Request,
     Response,
     Starlite,
@@ -14,6 +13,7 @@ from starlite import (
     post,
 )
 from starlite.contrib.jwt import JWTCookieAuth, Token
+from starlite.config.openapi import OpenAPIConfig
 
 
 # Let's assume we have a User model that is a pydantic model.

@@ -13,7 +13,6 @@ from starlite.testing import create_test_client
 from tests import User, UserFactory
 
 if TYPE_CHECKING:
-
     from starlite.cache import SimpleCacheBackend
 
 

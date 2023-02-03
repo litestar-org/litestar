@@ -4,9 +4,9 @@ from unittest.mock import MagicMock, PropertyMock
 
 import pytest
 
-from starlite import LoggingConfig
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.config.app import AppConfig
+from starlite.config.logging import LoggingConfig
 from starlite.router import Router
 
 

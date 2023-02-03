@@ -4,7 +4,8 @@ import pytest
 from hypothesis import given
 from hypothesis.strategies import permutations
 
-from starlite import CORSConfig, create_test_client, get, route
+from starlite import create_test_client, get, route
+from starlite.config.cors import CORSConfig
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 
 if TYPE_CHECKING:

@@ -148,7 +148,6 @@ class LoggingMiddleware(AbstractMiddleware):
         """
         message = values.pop("message")
         if self.is_struct_logger:
-
             self.logger.info(message, **values)
         else:
             self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))

@@ -100,7 +100,6 @@ def test_run_command_with_autodiscover_app_factory(
     patch_autodiscovery_paths: Callable[[List[str]], None],
     create_app_file: CreateAppFileFixture,
 ) -> None:
-
     patch_autodiscovery_paths([file_name])
     path = create_app_file(file_name, content=file_content)
     result = runner.invoke(cli_command, "run")
@@ -122,7 +121,6 @@ def test_run_command_with_app_factory(
     mock_uvicorn_run: MagicMock,
     create_app_file: CreateAppFileFixture,
 ) -> None:
-
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
     app_path = f"{path.stem}:create_app"
     result = runner.invoke(cli_command, ["--app", app_path, "run"])

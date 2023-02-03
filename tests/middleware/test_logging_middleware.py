@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING, Dict
 import pytest
 from structlog.testing import capture_logs
 
-from starlite import Cookie, LoggingConfig, Response, StructLoggingConfig, get, post
+from starlite import Cookie, Response, get, post
 from starlite.config.compression import CompressionConfig
-from starlite.config.logging import default_handlers
+from starlite.config.logging import LoggingConfig, StructLoggingConfig, default_handlers
 from starlite.middleware import LoggingMiddlewareConfig
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client

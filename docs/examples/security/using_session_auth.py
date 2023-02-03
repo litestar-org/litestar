@@ -6,12 +6,12 @@ from pydantic import BaseModel, EmailStr, SecretStr
 from starlite import (
     ASGIConnection,
     NotAuthorizedException,
-    OpenAPIConfig,
     Request,
     Starlite,
     get,
     post,
 )
+from starlite.config.openapi import OpenAPIConfig
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
 from starlite.security.session_auth import SessionAuth
 

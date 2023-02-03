@@ -4,7 +4,9 @@ from typing import Any
 
 import pytest
 
-from starlite import CSRFConfig, MediaType, Template, TemplateConfig, get
+from starlite import MediaType, Template, get
+from starlite.config.csrf import CSRFConfig
+from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
 from starlite.testing import create_test_client

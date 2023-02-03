@@ -3,7 +3,8 @@ from typing import Any, Dict, List, Optional, cast
 from hypothesis import given, settings
 from hypothesis.strategies import booleans, lists, none, one_of, sampled_from
 
-from starlite import CORSConfig, create_test_client, get
+from starlite import create_test_client, get
+from starlite.config.cors import CORSConfig
 from starlite.middleware import CORSMiddleware
 from starlite.status_codes import HTTP_200_OK
 

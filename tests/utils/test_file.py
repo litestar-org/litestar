@@ -9,7 +9,6 @@ from starlite import InternalServerException, NotAuthorizedException
 from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
 
 if TYPE_CHECKING:
-
     from starlite.types import FileSystemProtocol
 
 

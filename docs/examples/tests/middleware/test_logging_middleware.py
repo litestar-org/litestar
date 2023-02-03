@@ -8,8 +8,8 @@ if TYPE_CHECKING:
     from starlite.types.callable_types import GetLogger
 
 from examples.middleware.logging_middleware import app
-from starlite import LoggingConfig, TestClient
-from starlite.config.logging import default_handlers
+from starlite import TestClient
+from starlite.config.logging import default_handlers, LoggingConfig
 
 
 @pytest.fixture

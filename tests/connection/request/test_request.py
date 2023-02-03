@@ -9,7 +9,8 @@ from unittest.mock import patch
 
 import pytest
 
-from starlite import InternalServerException, MediaType, StaticFilesConfig, get
+from starlite import InternalServerException, MediaType, get
+from starlite.config.static_files import StaticFilesConfig
 from starlite.connection import Request, empty_send
 from starlite.datastructures import Address
 from starlite.exceptions import SerializationException
@@ -351,7 +352,6 @@ def test_request_state() -> None:
 
 def test_request_cookies() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-
         request = Request[Any, Any, Any](scope, receive)
         mycookie = request.cookies.get("mycookie")
         if mycookie:

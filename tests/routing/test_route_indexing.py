@@ -8,7 +8,6 @@ from starlite import (
     ImproperlyConfiguredException,
     Router,
     Starlite,
-    StaticFilesConfig,
     asgi,
     delete,
     get,
@@ -17,6 +16,7 @@ from starlite import (
     put,
     websocket,
 )
+from starlite.config.static_files import StaticFilesConfig
 
 if TYPE_CHECKING:
     from pathlib import Path

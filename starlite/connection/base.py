@@ -9,7 +9,6 @@ from starlite.parsers import parse_cookie_string, parse_headers, parse_query_str
 from starlite.types.empty import Empty
 
 if TYPE_CHECKING:
-
     from typing import NoReturn
 
     from pydantic import BaseModel
