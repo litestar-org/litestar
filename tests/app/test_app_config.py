@@ -1,12 +1,13 @@
 import inspect
-from typing import List
-from unittest.mock import MagicMock, PropertyMock
+from typing import List, Tuple
+from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.config.app import AppConfig
 from starlite.config.logging import LoggingConfig
+from starlite.events.emitter import SimpleEventEmitter
 from starlite.router import Router
 
 
@@ -30,6 +31,8 @@ def app_config_object() -> AppConfig:
         csrf_config=None,
         debug=False,
         dependencies={},
+        etag=None,
+        event_emitter_backend=SimpleEventEmitter,
         exception_handlers={},
         guards=[],
         initial_state={},
@@ -42,6 +45,7 @@ def app_config_object() -> AppConfig:
         opt={},
         parameters={},
         plugins=[],
+        request_class=None,
         response_class=None,
         response_cookies=[],
         response_headers={},
@@ -50,9 +54,7 @@ def app_config_object() -> AppConfig:
         static_files_config=[],
         tags=[],
         template_config=None,
-        request_class=None,
         websocket_class=None,
-        etag=None,
     )
 
 
@@ -79,16 +81,18 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
 
     # replace each field on the `AppConfig` object with a `PropertyMock`, this allows us to assert that the properties
     # have been accessed during app instantiation.
-    property_mocks: List[PropertyMock] = []
+    property_mocks: List[Tuple[str, Mock]] = []
     for name in AppConfig.__fields__:
         if name == "cache_config":
             property_mock = PropertyMock(return_value=DEFAULT_CACHE_CONFIG)
+        if name in ["event_emitter_backend", "cache_config"]:
+            property_mock = PropertyMock(return_value=Mock())
         else:
             # default iterable return value allows the mock properties that need to be iterated over in
             # `Starlite.__init__()` to not blow up, for other properties it shouldn't matter what the value is for the
             # sake of this test.
             property_mock = PropertyMock(return_value=[])
-        property_mocks.append(property_mock)
+        property_mocks.append((name, property_mock))
         monkeypatch.setattr(type(app_config_object), name, property_mock, raising=False)
 
     # Things that we don't actually need to call for this test
@@ -100,8 +104,8 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     Starlite(route_handlers=[], on_app_init=[MagicMock(return_value=app_config_object)])
 
     # this ensures that each of the properties of the `AppConfig` object have been accessed within `Starlite.__init__()`
-    for mock in property_mocks:
-        mock.assert_called()
+    for name, mock in property_mocks:
+        assert mock.called, f"expected {name} to be called"
 
 
 def test_app_debug_create_logger() -> None:

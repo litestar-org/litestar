@@ -29,6 +29,7 @@ from starlite.types import (
 )
 from starlite.types.composite_types import InitialStateType
 
+from ..events.emitter import BaseEventEmitterBackend
 from . import AllowedHostsConfig
 from .cache import CacheConfig
 from .compression import CompressionConfig
@@ -125,6 +126,8 @@ class AppConfig(BaseModel):
 
     Can be overridden by route handlers.
     """
+    event_emitter_backend: Type[BaseEventEmitterBackend]
+    """A subclass of :class:`BaseEventEmitterBackend <starlite.events.emitter.BaseEventEmitterBackend>`."""
     exception_handlers: ExceptionHandlersMap
     """A dictionary that maps handler functions to status codes and/or exception types."""
     guards: List[Guard]

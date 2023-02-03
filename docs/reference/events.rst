@@ -3,4 +3,4 @@ starlite.events
 
 
 .. automodule:: starlite.events
-    :members: EventListener, listener
+    :members: BaseEventEmitterBackend, SimpleEventEmitter, EventListener, listener

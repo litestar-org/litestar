@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 class EventListener:
     """Decorator for event listeners"""
 
-    __slots__ = ("event_ids", "fn")
+    __slots__ = ("event_ids", "fn", "listener_id")
 
     fn: "AsyncCallable[Any, Any]"
 

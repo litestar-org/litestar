@@ -81,7 +81,7 @@ async def test_multiple_event_ids() -> None:
         received_events += 1
 
     @get("/{event_id:int}")
-    async def route_handler(request: Request[Any, Any], event_id: int) -> None:
+    async def route_handler(request: Request[Any, Any, Any], event_id: int) -> None:
         await request.app.emit(f"test_event_{event_id}")
 
     async with create_async_test_client(route_handlers=[route_handler], listeners=[event_handler]) as client:
