@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, List, Mapping, Optional
 
 import pytest
 from hypothesis import given
@@ -110,7 +110,8 @@ def test_cors_options_request_allow_credentials_header(origin: str, allow_creden
     with create_test_client(
         handler, cors_config=CORSConfig(allow_origins=["http://testserver.local"], allow_credentials=allow_credentials)
     ) as client:
-        response = client.options("/", headers={"Origin": origin} if origin else {})
+        headers: Mapping[str, str] = {"Origin": origin} if origin else {}
+        response = client.options("/", headers=headers)
         assert response.status_code == HTTP_204_NO_CONTENT
 
         if origin and allow_credentials:
