@@ -33,8 +33,6 @@ from starlite.middleware import (
     DefineMiddleware,
     MiddlewareProtocol,
 )
-from starlite.openapi.controller import OpenAPIController
-from starlite.openapi.datastructures import ResponseSpec
 from starlite.params import Body, Dependency, Parameter
 from starlite.plugins import PluginProtocol
 from starlite.provide import Provide
@@ -67,7 +65,6 @@ __all__ = (
     "ImmutableState",
     "MediaType",
     "MiddlewareProtocol",
-    "OpenAPIController",
     "OpenAPIMediaType",
     "Parameter",
     "Partial",
@@ -77,7 +74,6 @@ __all__ = (
     "RequestEncodingType",
     "Response",
     "ResponseHeader",
-    "ResponseSpec",
     "Router",
     "ScopeType",
     "Starlite",
