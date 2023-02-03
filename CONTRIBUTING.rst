@@ -20,7 +20,7 @@ Workflow
 
 1. `Fork <https://github.com/starlite-api/starlite/fork>`_ the `Starlite repository <https://github.com/starlite-api/starlite>`_
 2. Clone your fork locally with git
-3. `Set up the environment <Setting up the environment>`_
+3. `Set up the environment <#setting-up-the-environment>`_
 4. Make your changes
 5. (Optional) Run ``pre-commit run --all-files`` to run linters and formatters. This step is optional and will be executed
    automatically by git before you make a commit, but you may want to run it manually in order to apply fixes

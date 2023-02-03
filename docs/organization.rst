@@ -2,7 +2,7 @@ Organization
 ============
 
 Starlite is developed by a group of volunteers and outside contributors, and lead by a
-team of `maintainers <Maintainers>`_.
+team of `Maintainers`_.
 
 From its inception, Starlite was envisaged as a community driven project. We encourage
 users to become involved with the project - feel free to open issues, chime in on
