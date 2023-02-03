@@ -65,7 +65,6 @@ class CORSMiddleware(AbstractMiddleware):
                 if (self.config.is_allow_all_origins and has_cookie) or (
                     not self.config.is_allow_all_origins and self.config.is_origin_allowed(origin=origin)
                 ):
-
                     headers["Access-Control-Allow-Origin"] = origin
                     headers["Vary"] = "Origin"
 

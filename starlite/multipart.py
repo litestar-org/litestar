@@ -73,7 +73,6 @@ def parse_multipart_form(body: bytes, boundary: bytes) -> Dict[str, Any]:
     fields: DefaultDict[str, List[Any]] = defaultdict(list)
 
     if body and boundary:
-
         form_parts = body.split(boundary)
         for form_part in form_parts[1:-1]:
             file_name = None

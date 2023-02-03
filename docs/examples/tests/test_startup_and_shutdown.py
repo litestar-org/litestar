@@ -14,7 +14,6 @@ class FakeAsyncEngine:
 
 
 async def test_startup_and_shutdown_example(monkeypatch: "MonkeyPatch") -> None:
-
     monkeypatch.setattr(startup_and_shutdown, "create_async_engine", MagicMock(return_value=FakeAsyncEngine))
 
     @get("/")

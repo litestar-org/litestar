@@ -10,7 +10,6 @@ from starlite.contrib.mako import MakoTemplateEngine
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-
     from starlite.template import TemplateEngineProtocol
 
 

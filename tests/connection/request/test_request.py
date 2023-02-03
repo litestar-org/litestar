@@ -351,7 +351,6 @@ def test_request_state() -> None:
 
 def test_request_cookies() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-
         request = Request[Any, Any](scope, receive)
         mycookie = request.cookies.get("mycookie")
         if mycookie:

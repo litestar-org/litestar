@@ -44,7 +44,6 @@ else:  # pragma: no cover
     UNION_TYPES = {Union}
 
 if TYPE_CHECKING:
-
     from starlite.types.builtin_types import (
         DataclassClass,
         DataclassClassOrInstance,

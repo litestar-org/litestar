@@ -28,7 +28,7 @@ repos:
       - id: isort
         exclude: "docs"
   - repo: https://github.com/psf/black
-    rev: 22.12.0
+    rev: 23.1.0
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
@@ -86,7 +86,7 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.16.0b1"
+    rev: "v2.16.0"
     hooks:
       - id: pylint
         exclude: "tests|examples|test_apps|docs|tools"
@@ -158,7 +158,7 @@ repos:
             jsbeautifier,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.291
+    rev: v1.1.292
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs"
