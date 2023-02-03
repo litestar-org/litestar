@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, PropertyMock
 
 import pytest
 
+from starlite import LoggingConfig
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.config.app import AppConfig
 from starlite.router import Router
@@ -31,6 +32,7 @@ def app_config_object() -> AppConfig:
         dependencies={},
         exception_handlers={},
         guards=[],
+        initial_state={},
         logging_config=None,
         middleware=[],
         on_shutdown=[],
@@ -99,3 +101,35 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # this ensures that each of the properties of the `AppConfig` object have been accessed within `Starlite.__init__()`
     for mock in property_mocks:
         mock.assert_called()
+
+
+def test_app_debug_create_logger() -> None:
+    app = Starlite([], debug=True)
+
+    assert app.logging_config
+    assert app.logging_config.loggers["starlite"]["level"] == "DEBUG"  # type: ignore[attr-defined]
+
+
+def test_app_debug_explicitly_disable_logging() -> None:
+    app = Starlite([], debug=True, logging_config=None)
+
+    assert not app.logging_config
+
+
+def test_app_debug_update_logging_config() -> None:
+    logging_config = LoggingConfig()
+    app = Starlite([], debug=True, logging_config=logging_config)
+
+    assert app.logging_config is logging_config
+    assert app.logging_config.loggers["starlite"]["level"] == "DEBUG"  # type: ignore[attr-defined]
+
+
+def test_set_initial_state() -> None:
+    def set_initial_state_in_hook(app_config: AppConfig) -> AppConfig:
+        assert isinstance(app_config.initial_state, dict)
+        app_config.initial_state["c"] = "D"  # pyright:ignore
+        app_config.initial_state["e"] = "f"  # pyright:ignore
+        return app_config
+
+    app = Starlite(route_handlers=[], initial_state={"a": "b", "c": "d"}, on_app_init=[set_initial_state_in_hook])
+    assert app.state._state == {"a": "b", "c": "D", "e": "f"}

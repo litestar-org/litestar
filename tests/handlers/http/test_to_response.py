@@ -1,4 +1,5 @@
 from asyncio import sleep as async_sleep
+from inspect import iscoroutine
 from json import loads
 from pathlib import Path
 from time import sleep
@@ -237,6 +238,8 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         )
         assert isinstance(response, FileResponse)
         assert response.file_info
+        if iscoroutine(response.file_info):
+            await response.file_info
         assert response.headers["local-header"] == "123"
         assert response.headers["response-header"] == "abc"
         cookies = response.cookies

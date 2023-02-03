@@ -53,3 +53,10 @@
 		background-color: black;
 	}
 }
+
+
+table.docutils {
+	clear: left;
+	float: left;
+	margin: 0 1rem 1rem;
+}

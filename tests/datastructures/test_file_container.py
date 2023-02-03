@@ -1,4 +1,5 @@
 import os
+from inspect import iscoroutine
 from os import stat
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -98,7 +99,7 @@ async def test_file_with_symbolic_link(tmpdir: "Path") -> None:
         assert response.headers.get("content-disposition") == 'attachment; filename="alt.txt"'
 
 
-def test_file_sets_etag_correctly(tmpdir: "Path") -> None:
+async def test_file_sets_etag_correctly(tmpdir: "Path") -> None:
     request = RequestFactory().get()
 
     path = tmpdir / "file.txt"
@@ -110,6 +111,8 @@ def test_file_sets_etag_correctly(tmpdir: "Path") -> None:
     response = file_container.to_response(
         status_code=HTTP_200_OK, media_type=None, headers={}, app=request.app, request=request
     )
+    if iscoroutine(response.file_info):
+        await response.file_info
     assert response.etag == etag
 
 

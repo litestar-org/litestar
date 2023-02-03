@@ -48,6 +48,7 @@ from starlite import TestClient
 )
 def test_layered_parameters(params: Dict[str, Any], status_code: int, expected: Dict[str, Any]) -> None:
     with TestClient(app=app) as client:
+        client.cookies = params.pop("cookies")
         res = client.get("/router/controller/11", **params)
 
         assert res.status_code == status_code
