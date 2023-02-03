@@ -11,5 +11,4 @@ starlite.datastructures
    response_containers
    response_header
    state
-   upload_file
    url

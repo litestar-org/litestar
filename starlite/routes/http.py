@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from starlite.connection import Request
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.datastructures.headers import Headers
-from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, MediaType, ScopeType
 from starlite.exceptions import (
     ClientException,
@@ -16,6 +15,7 @@ from starlite.handlers.http import HTTPRouteHandler
 from starlite.response import Response
 from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from starlite.upload_file import UploadFile
 
 if TYPE_CHECKING:
     from starlite.kwargs import KwargsModel

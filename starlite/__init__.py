@@ -21,7 +21,6 @@ from starlite.datastructures import (
     State,
     Stream,
     Template,
-    UploadFile,
 )
 from starlite.dto import DTOFactory
 from starlite.enums import (
@@ -81,6 +80,7 @@ from starlite.testing.client.async_client import AsyncTestClient
 from starlite.testing.client.sync_client import TestClient
 from starlite.testing.create_test_client import create_test_client
 from starlite.types.partial import Partial
+from starlite.upload_file import UploadFile
 
 __all__ = (
     "ASGIConnection",

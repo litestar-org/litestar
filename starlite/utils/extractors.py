@@ -15,9 +15,9 @@ from typing import (
 from typing_extensions import TypedDict
 
 from starlite.connection.request import Request
-from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.parsers import parse_cookie_string
+from starlite.upload_file import UploadFile
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection

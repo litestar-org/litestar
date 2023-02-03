@@ -30,7 +30,6 @@ from starlite.datastructures.response_containers import (
 )
 from starlite.datastructures.response_header import ResponseHeader
 from starlite.datastructures.state import ImmutableState, State
-from starlite.datastructures.upload_file import UploadFile
 from starlite.datastructures.url import URL, Address, make_absolute_url
 
 __all__ = (
@@ -61,6 +60,5 @@ __all__ = (
     "Stream",
     "Template",
     "URL",
-    "UploadFile",
     "make_absolute_url",
 )
