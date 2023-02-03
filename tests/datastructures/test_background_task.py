@@ -1,6 +1,7 @@
 from typing import List
 
-from starlite import BackgroundTask, BackgroundTasks, get
+from starlite import get
+from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 

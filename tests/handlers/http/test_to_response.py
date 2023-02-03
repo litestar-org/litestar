@@ -26,7 +26,7 @@ from starlite import (
     get,
     route,
 )
-from starlite.datastructures import BackgroundTask
+from starlite.background_tasks import BackgroundTask
 from starlite.response import (
     FileResponse,
     RedirectResponse,

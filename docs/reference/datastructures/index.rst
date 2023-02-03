@@ -4,7 +4,6 @@ starlite.datastructures
 .. toctree::
    :maxdepth: 1
 
-   background_tasks
    cookie
    headers
    multi_dicts

@@ -22,6 +22,7 @@ from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 from typing_extensions import get_args
 
+from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures import (
     CacheControlHeader,
@@ -30,7 +31,6 @@ from starlite.datastructures import (
     Provide,
     ResponseHeader,
 )
-from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.response_containers import (
     File,
     Redirect,

@@ -1,4 +1,3 @@
-from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.headers import (
     CacheControlHeader,
@@ -43,8 +42,6 @@ __all__ = (
     "AbstractSyncCursorPaginator",
     "AbstractSyncOffsetPaginator",
     "Address",
-    "BackgroundTask",
-    "BackgroundTasks",
     "CacheControlHeader",
     "ClassicPagination",
     "Cookie",
