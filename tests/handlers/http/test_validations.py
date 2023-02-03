@@ -4,19 +4,10 @@ from typing import Dict
 import pytest
 from pydantic import ValidationError
 
-from starlite import (
-    File,
-    HttpMethod,
-    MediaType,
-    Redirect,
-    Response,
-    WebSocket,
-    delete,
-    get,
-    route,
-)
+from starlite import HttpMethod, MediaType, Response, WebSocket, delete, get, route
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers import HTTPRouteHandler
+from starlite.response_containers import File, Redirect
 from starlite.status_codes import (
     HTTP_100_CONTINUE,
     HTTP_200_OK,

@@ -4,10 +4,11 @@ from typing import Any, Type, Union
 
 import pytest
 
-from starlite import HTTPRouteHandler, Template, get
+from starlite import HTTPRouteHandler, get
 from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
+from starlite.response_containers import Template
 from starlite.testing import create_test_client
 
 

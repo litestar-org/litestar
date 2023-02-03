@@ -2,14 +2,9 @@ from pathlib import Path
 
 import pytest
 
-from starlite import (
-    File,
-    HttpMethod,
-    ImproperlyConfiguredException,
-    create_test_client,
-    head,
-)
+from starlite import HttpMethod, ImproperlyConfiguredException, create_test_client, head
 from starlite.response import FileResponse
+from starlite.response_containers import File
 from starlite.status_codes import HTTP_200_OK
 
 

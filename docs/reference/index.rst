@@ -24,6 +24,7 @@ API reference
     plugins/index
     provide
     response
+    response_containers
     router
     security/index
     template

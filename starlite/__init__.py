@@ -1,15 +1,7 @@
 from starlite.app import Starlite
 from starlite.connection import ASGIConnection, Request, WebSocket
 from starlite.controller import Controller
-from starlite.datastructures import (
-    File,
-    FormMultiDict,
-    Redirect,
-    ResponseContainer,
-    ResponseHeader,
-    Stream,
-    Template,
-)
+from starlite.datastructures import FormMultiDict, ResponseHeader
 from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.state import ImmutableState, State
 from starlite.dto import DTOFactory
@@ -88,7 +80,6 @@ __all__ = (
     "DTOFactory",
     "DefineMiddleware",
     "Dependency",
-    "File",
     "FormMultiDict",
     "HTTPException",
     "HTTPRoute",
@@ -110,11 +101,9 @@ __all__ = (
     "PermissionDeniedException",
     "PluginProtocol",
     "Provide",
-    "Redirect",
     "Request",
     "RequestEncodingType",
     "Response",
-    "ResponseContainer",
     "ResponseHeader",
     "ResponseSpec",
     "Router",
@@ -123,8 +112,6 @@ __all__ = (
     "StarLiteException",
     "Starlite",
     "State",
-    "Stream",
-    "Template",
     "TestClient",
     "AsyncTestClient",
     "TooManyRequestsException",
