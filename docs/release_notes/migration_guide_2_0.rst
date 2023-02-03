@@ -109,3 +109,8 @@ Changed module paths
 | ``starlite.TestClient``                            | ``starlite.testing.TestClient``                                  |
 | ``starlite.AsyncTestClient``                       | ``starlite.testing.AsyncTestClient``                             |
 | ``starlite.create_test_client``                    | ``starlite.testing.create_test_client``                          |
++----------------------------------------------------+------------------------------------------------------------------+
+| **DTO**                                                                                                               |
++----------------------------------------------------+------------------------------------------------------------------+
+| ``starlite.DTOFactory``                            | ``starlite.dto.DTOFactory``                                      |
++----------------------------------------------------+------------------------------------------------------------------+

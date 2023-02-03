@@ -4,7 +4,6 @@ from starlite.controller import Controller
 from starlite.datastructures import FormMultiDict, ResponseHeader
 from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.state import ImmutableState, State
-from starlite.dto import DTOFactory
 from starlite.enums import (
     HttpMethod,
     MediaType,
@@ -59,7 +58,6 @@ __all__ = (
     "Body",
     "Controller",
     "Cookie",
-    "DTOFactory",
     "DefineMiddleware",
     "Dependency",
     "FormMultiDict",

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from starlite import DTOFactory
+from starlite.dto import DTOFactory
 
 
 class MyClass(BaseModel):

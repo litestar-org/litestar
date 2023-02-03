@@ -1,4 +1,4 @@
-from starlite import DTOFactory
+from starlite.dto import DTOFactory
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.types.partial import Partial
 from tests import Car, Person

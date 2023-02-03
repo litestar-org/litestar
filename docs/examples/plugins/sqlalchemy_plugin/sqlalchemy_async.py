@@ -4,10 +4,11 @@ from sqlalchemy import Column, Float, Integer, String, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, declarative_base
 
-from starlite import DTOFactory, Starlite, get, post
+from starlite import Starlite, get, post
 from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 from starlite.status_codes import HTTP_404_NOT_FOUND
 from starlite.exceptions import HTTPException
+from starlite.dto import DTOFactory
 
 
 Base = declarative_base()
