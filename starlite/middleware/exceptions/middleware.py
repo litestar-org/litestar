@@ -47,7 +47,7 @@ class ExceptionHandlerMiddleware:
             await self.app(scope, receive, send)
         except Exception as e:  # pylint: disable=broad-except
             starlite_app = scope["app"]
-            if self.debug and (logger := starlite_app.logger):
+            if self.debug and (logger := starlite_app.get_logge()):
                 logger.debug("exception raised for request to route %s", scope["path"], exc_info=True)
             for hook in starlite_app.after_exception:
                 await hook(e, scope, starlite_app.state)
