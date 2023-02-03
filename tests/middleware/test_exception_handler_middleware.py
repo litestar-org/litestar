@@ -157,6 +157,8 @@ def test_exception_handler_middleware_debug_logging(
 
         if debug and logging_config:
             assert len(caplog.records) == 1
-            # other assertions for the content of this record here
+            assert caplog.records[0].levelname == "DEBUG"
+            assert "exception raised for request to route" in caplog.records[0].message
         else:
             assert not caplog.records
+            assert "exception raised for request to route" not in response.text
