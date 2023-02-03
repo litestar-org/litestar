@@ -99,7 +99,6 @@ def add_route_to_trie(
 
     else:
         for component in route.path_components:
-
             if isinstance(component, PathParameterDefinition):
                 current_node.is_path_param_node = True
                 next_node_key: Union[Type[PathParameterSentinel], str] = PathParameterSentinel

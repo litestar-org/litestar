@@ -17,7 +17,6 @@ from starlite.status_codes import WS_1001_GOING_AWAY
 from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
-
     from starlite.types import Receive, Scope, Send
 
 

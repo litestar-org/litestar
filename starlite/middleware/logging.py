@@ -148,7 +148,6 @@ class LoggingMiddleware(AbstractMiddleware):
         """
         message = values.pop("message")
         if self.is_struct_logger:
-
             self.logger.info(message, **values)
         else:
             self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))
@@ -193,11 +192,11 @@ class LoggingMiddleware(AbstractMiddleware):
         serializer = get_serializer_from_scope(scope) or default_serializer
         extracted_data = self.response_extractor(
             messages=(
-                get_starlite_scope_state(scope, HTTP_RESPONSE_START),
-                get_starlite_scope_state(scope, HTTP_RESPONSE_BODY),
+                get_starlite_scope_state(scope, HTTP_RESPONSE_START, pop=True),
+                get_starlite_scope_state(scope, HTTP_RESPONSE_BODY, pop=True),
             ),
         )
-        response_body_compressed = get_starlite_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED)
+        response_body_compressed = get_starlite_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED, default=False)
         for key in self.config.response_log_fields:
             value: Any
             value = extracted_data.get(key)

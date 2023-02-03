@@ -13,7 +13,6 @@ from starlite.status_codes import HTTP_404_NOT_FOUND
 from starlite.utils.serialization import encode_json
 
 if TYPE_CHECKING:
-
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
 MSG_OPENAPI_NOT_INITIALIZED = "Starlite has not been instantiated with OpenAPIConfig"
