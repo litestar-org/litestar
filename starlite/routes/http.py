@@ -19,7 +19,7 @@ from starlite.upload_file import UploadFile
 
 if TYPE_CHECKING:
     from starlite.kwargs import KwargsModel
-    from starlite.provide import DependencyCleanupGroup
+    from starlite.kwargs.cleanup import DependencyCleanupGroup
     from starlite.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
 

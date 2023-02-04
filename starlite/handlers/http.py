@@ -25,6 +25,7 @@ from typing_extensions import get_args
 from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures import CacheControlHeader, Cookie, ETag, ResponseHeader
+from starlite.di import Provide
 from starlite.dto import DTO
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
@@ -35,7 +36,6 @@ from starlite.exceptions import (
 from starlite.handlers.base import BaseRouteHandler
 from starlite.openapi.datastructures import ResponseSpec
 from starlite.plugins import get_plugin_for_value
-from starlite.provide import Provide
 from starlite.response import FileResponse, Response
 from starlite.response_containers import File, Redirect, ResponseContainer
 from starlite.status_codes import (

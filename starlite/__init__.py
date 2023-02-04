@@ -4,6 +4,7 @@ from starlite.controller import Controller
 from starlite.datastructures import FormMultiDict, ResponseHeader
 from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.state import ImmutableState, State
+from starlite.di import Provide
 from starlite.enums import (
     HttpMethod,
     MediaType,
@@ -28,7 +29,6 @@ from starlite.handlers import (
 )
 from starlite.params import Body, Dependency, Parameter
 from starlite.plugins import PluginProtocol
-from starlite.provide import Provide
 from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute

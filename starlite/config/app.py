@@ -5,8 +5,8 @@ from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.connection import Request, WebSocket
 from starlite.datastructures import CacheControlHeader, ETag
+from starlite.di import Provide
 from starlite.plugins.base import PluginProtocol
-from starlite.provide import Provide
 from starlite.types import (
     AfterExceptionHookHandler,
     AfterRequestHookHandler,

@@ -28,9 +28,9 @@ if TYPE_CHECKING:
     from starlite.datastructures.cookie import Cookie
     from starlite.datastructures.response_header import ResponseHeader
     from starlite.datastructures.state import ImmutableState
+    from starlite.di import Provide
     from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
     from starlite.params import ParameterKwarg
-    from starlite.provide import Provide
 else:
     BaseHTTPMiddleware = Any
     Cookie = Any

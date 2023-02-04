@@ -4,7 +4,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from starlite.provide import DependencyCleanupGroup, Provide
+from starlite.di import Provide
+from starlite.kwargs.cleanup import DependencyCleanupGroup
 from starlite.types import Empty
 from starlite.utils.compat import async_next
 
