@@ -2,8 +2,9 @@ from os import urandom
 from pathlib import Path
 from typing import Optional
 
-from starlite import Body, RequestEncodingType, UploadFile, create_test_client, post
+from starlite import Body, RequestEncodingType, UploadFile, post
 from starlite.status_codes import HTTP_201_CREATED
+from starlite.testing import create_test_client
 
 
 async def test_upload_file_methods() -> None:

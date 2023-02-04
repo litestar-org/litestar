@@ -2,8 +2,9 @@ import pytest
 from beanie import Document, Indexed, init_beanie
 from mongomock_motor import AsyncMongoMockClient
 
-from starlite import create_test_client, post
+from starlite import post
 from starlite.status_codes import HTTP_201_CREATED
+from starlite.testing import create_test_client
 
 
 async def initialize_beanie() -> None:

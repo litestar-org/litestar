@@ -1,4 +1,5 @@
-from starlite import DTOFactory, Starlite, get, post
+from starlite import Starlite, get, post
+from starlite.dto import DTOFactory
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests.plugins.sql_alchemy_plugin import User
 

@@ -16,7 +16,7 @@ from typing import (
 from multidict import MultiDict as BaseMultiDict
 from multidict import MultiDictProxy, MultiMapping
 
-from starlite.datastructures.upload_file import UploadFile
+from starlite.upload_file import UploadFile
 
 T = TypeVar("T")
 

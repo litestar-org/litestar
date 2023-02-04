@@ -2,17 +2,9 @@ from typing import TYPE_CHECKING, List, Optional, cast
 
 import pytest
 
-from starlite import (
-    Controller,
-    Dependency,
-    ImproperlyConfiguredException,
-    Parameter,
-    Provide,
-    Router,
-    Starlite,
-    get,
-)
+from starlite import Controller, Dependency, Parameter, Provide, Router, Starlite, get
 from starlite.enums import ParamType
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.parameters import create_parameter_for_handler
 from starlite.openapi.typescript_converter.schema_parsing import is_schema_value

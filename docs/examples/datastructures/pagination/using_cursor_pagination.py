@@ -3,7 +3,8 @@ from typing import List, Optional, Tuple
 from pydantic import BaseModel
 from pydantic_factories import ModelFactory
 
-from starlite import AbstractSyncCursorPaginator, CursorPagination, Starlite, get
+from starlite.utils.pagination import AbstractSyncCursorPaginator, CursorPagination
+from starlite import Starlite, get
 
 
 class Person(BaseModel):

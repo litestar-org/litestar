@@ -6,7 +6,6 @@ from pydantic.fields import FieldInfo
 from starlite import (
     Body,
     HTTPRouteHandler,
-    ImproperlyConfiguredException,
     Parameter,
     Provide,
     RequestEncodingType,
@@ -16,6 +15,7 @@ from starlite import (
     websocket,
 )
 from starlite.constants import RESERVED_KWARGS, SKIP_VALIDATION_NAMES
+from starlite.exceptions import ImproperlyConfiguredException
 
 
 def my_dependency() -> int:

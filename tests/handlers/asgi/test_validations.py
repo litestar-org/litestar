@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import ImproperlyConfiguredException, asgi
+from starlite import asgi
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:

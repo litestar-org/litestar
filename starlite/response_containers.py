@@ -23,10 +23,10 @@ from typing import (
 from pydantic import BaseConfig, FilePath, validator
 from pydantic.generics import GenericModel
 
+from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.constants import DEFAULT_CHUNK_SIZE
-from starlite.datastructures import ETag
-from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.datastructures.cookie import Cookie
+from starlite.datastructures.headers import ETag
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import (

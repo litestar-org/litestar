@@ -4,7 +4,9 @@ from pydantic import BaseModel
 from sqlalchemy import Column, ForeignKey, Integer, String, create_engine, select
 from sqlalchemy.orm import Mapped, Session, declarative_base, relationship
 
-from starlite import HTTPException, Starlite, get
+from starlite import Starlite, get
+from starlite.exceptions import HTTPException
+
 from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 from starlite.status_codes import HTTP_404_NOT_FOUND
 

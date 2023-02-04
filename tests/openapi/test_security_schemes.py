@@ -4,7 +4,8 @@ import pytest
 from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
 from pydantic_openapi_schema.v3_1_0.security_scheme import SecurityScheme
 
-from starlite import Controller, HTTPRouteHandler, OpenAPIConfig, Router, Starlite, get
+from starlite import Controller, HTTPRouteHandler, Router, Starlite, get
+from starlite.config.openapi import OpenAPIConfig
 
 
 @pytest.fixture()
