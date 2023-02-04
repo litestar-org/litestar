@@ -4,6 +4,11 @@
 
 <div align="center">
 
+[![ci](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml/badge.svg)](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml)
+[![docs](https://github.com/starlite-api/starlite/actions/workflows/docs.yaml/badge.svg)](https://github.com/starlite-api/starlite/actions/workflows/docs.yaml)
+[![pages-build-deployment](https://github.com/starlite-api/starlite/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/starlite-api/starlite/actions/workflows/pages/pages-build-deployment)
+[![publish](https://github.com/starlite-api/starlite/actions/workflows/publish.yaml/badge.svg)](https://github.com/starlite-api/starlite/actions/workflows/publish.yaml)
+
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
 
