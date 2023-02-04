@@ -18,12 +18,12 @@ from uuid import UUID
 from pydantic import BaseModel, conint, constr, create_model
 from pydantic_factories import ModelFactory
 
+from starlite.di import Provide
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
 from starlite.plugins.base import PluginProtocol
-from starlite.provide import Provide
 
 from .types import SQLAlchemyBinaryType
 

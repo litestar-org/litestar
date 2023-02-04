@@ -16,6 +16,7 @@ from anyio import create_task_group
 from starlite.constants import RESERVED_KWARGS
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.kwargs.cleanup import DependencyCleanupGroup
 from starlite.kwargs.dependencies import (
     Dependency,
     create_dependency_batches,
@@ -41,12 +42,12 @@ from starlite.kwargs.parameter_definition import (
     merge_parameter_sets,
 )
 from starlite.params import BodyKwarg, ParameterKwarg
-from starlite.provide import DependencyCleanupGroup, Provide
 from starlite.signature import SignatureModel, get_signature_model
 from starlite.signature.models import SignatureField
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
+    from starlite.di import Provide
 
 
 class KwargsModel:

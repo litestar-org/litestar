@@ -36,6 +36,7 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
+    from starlite import Provide
     from starlite.config import (
         BaseLoggingConfig,
         CompressionConfig,
@@ -47,7 +48,6 @@ if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.handlers.base import BaseRouteHandler
     from starlite.plugins.base import PluginProtocol
-    from starlite.provide import Provide
     from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
