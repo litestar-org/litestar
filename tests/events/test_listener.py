@@ -6,7 +6,7 @@ from starlite import Request, Starlite, get
 from starlite.events.listener import listener
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client, create_async_test_client
+from starlite.testing import create_async_test_client, create_test_client
 
 
 def test_event_listener_works_for_sync_callable() -> None:
