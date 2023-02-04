@@ -7,3 +7,4 @@ starlite.contrib
     jinja
     mako
     jwt
+    htmx
