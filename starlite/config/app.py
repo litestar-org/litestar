@@ -5,8 +5,9 @@ from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.connection import Request, WebSocket
 from starlite.datastructures import CacheControlHeader, ETag
-from starlite.di import Provide
+from starlite.events.listener import EventListener
 from starlite.plugins.base import PluginProtocol
+from starlite.di import Provide
 from starlite.types import (
     AfterExceptionHookHandler,
     AfterRequestHookHandler,
@@ -130,6 +131,8 @@ class AppConfig(BaseModel):
     """A list of :class:`Guard <starlite.types.Guard>` callables."""
     initial_state: InitialStateType
     """An object from which to initialize the app state."""
+    listeners: Optional[List[EventListener]]
+    """A list of :class:`EventListener <starlite.events.listener.EventListener>`."""
     logging_config: Optional[BaseLoggingConfig]
     """An instance of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>` subclass."""
     middleware: List[Middleware]

@@ -1,7 +1,10 @@
 from starlite.testing.client.async_client import AsyncTestClient
 from starlite.testing.client.base import BaseTestClient
 from starlite.testing.client.sync_client import TestClient
-from starlite.testing.create_test_client import create_test_client
+from starlite.testing.create_test_client import (
+    create_async_test_client,
+    create_test_client,
+)
 from starlite.testing.request_factory import RequestFactory
 from starlite.testing.transport import (
     ConnectionUpgradeException,
@@ -10,12 +13,13 @@ from starlite.testing.transport import (
 )
 
 __all__ = (
-    "TestClient",
-    "RequestFactory",
-    "create_test_client",
-    "TestClientTransport",
     "AsyncTestClient",
     "BaseTestClient",
     "ConnectionUpgradeException",
+    "RequestFactory",
     "SendReceiveContext",
+    "TestClient",
+    "TestClientTransport",
+    "create_async_test_client",
+    "create_test_client",
 )
