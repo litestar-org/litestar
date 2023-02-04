@@ -1,7 +1,9 @@
+from collections import defaultdict
 from copy import copy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+from typing import TYPE_CHECKING, Any, DefaultDict, Dict, List, Optional, Set, cast
 
-from starlite.handlers import BaseRouteHandler
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
 from starlite.utils import AsyncCallable, normalize_path
 from starlite.utils.helpers import unwrap_partial
 
@@ -166,4 +168,32 @@ class Controller:
             route_handler.owner = self
             route_handlers.append(route_handler)
 
+        self.validate_route_handlers(route_handlers=route_handlers)
+
         return route_handlers
+
+    def validate_route_handlers(self, route_handlers: List["BaseRouteHandler"]) -> None:
+        """Validate that the combination of path and decorator method or type are unique on the controller.
+
+        :param route_handlers: The controller's route handlers.
+        :raises: ``ImproperlyConfiguredException``
+        :return: None.
+        """
+        paths: DefaultDict[str, Set[str]] = defaultdict(set)
+
+        for route_handler in route_handlers:
+            if isinstance(route_handler, HTTPRouteHandler):
+                methods: Set[str] = cast("Set[str]", route_handler.http_methods)
+            elif isinstance(route_handler, WebsocketRouteHandler):
+                methods = {"websocket"}
+            else:
+                methods = {"asgi"}
+
+            for path in route_handler.paths:
+                if (entry := paths[path]) and (intersection := entry.intersection(methods)):
+                    raise ImproperlyConfiguredException(
+                        f"the combination of path and method must be unique in a controller - "
+                        f"the following methods {''.join(m.lower() for m in intersection)} for {type(self).__name__} "
+                        f"controller path {path} are not unique"
+                    )
+                paths[path].update(methods)
