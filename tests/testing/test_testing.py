@@ -7,8 +7,7 @@ from pydantic import BaseModel
 from starlite import HttpMethod, Request, RequestEncodingType, Starlite, get, post
 from starlite.datastructures import Cookie, MultiDict
 from starlite.enums import ParamType
-from starlite.testing import RequestFactory, TestClient
-from starlite.testing.create_test_client import create_test_client
+from starlite.testing import RequestFactory, TestClient, create_test_client
 from tests import Pet, PetFactory
 
 if TYPE_CHECKING:
