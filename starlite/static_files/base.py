@@ -8,7 +8,6 @@ from starlite.status_codes import HTTP_404_NOT_FOUND
 from starlite.utils.file import FileSystemAdapter
 
 if TYPE_CHECKING:
-
     from starlite.types import Receive, Scope, Send
     from starlite.types.composite_types import PathType
     from starlite.types.file_types import FileInfo, FileSystemProtocol

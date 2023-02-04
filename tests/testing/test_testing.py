@@ -22,7 +22,6 @@ from starlite.testing.create_test_client import create_test_client
 from tests import Pet, PetFactory
 
 if TYPE_CHECKING:
-
     from starlite.middleware.session.base import (
         BaseBackendConfig,
         ServerSideSessionConfig,
@@ -84,7 +83,7 @@ def test_request_factory_build_headers() -> None:
 
     assert len(built_headers) == len(headers.keys())
 
-    for (key, value) in built_headers:
+    for key, value in built_headers:
         decoded_key = key.decode("latin1")
         decoded_value = value.decode("latin1")
         assert decoded_key in headers
@@ -259,7 +258,6 @@ def test_test_client_set_session_data(
     session_config: "BaseBackendConfig",
     test_client_backend: "AnyIOBackend",
 ) -> None:
-
     session_data = {"foo": "bar"}
 
     if with_domain:

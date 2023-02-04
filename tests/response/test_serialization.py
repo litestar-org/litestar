@@ -61,7 +61,6 @@ def test_response_serialization_structured_types(content: Any, response_type: An
     elif isinstance(value, dict) and "path" in value:
         assert content.__class__(**value)["path"] == str(content["path"])
     elif isinstance(value, dict):
-
         assert content.__class__(**value) == content
     else:
         assert [content[0].__class__(**value[0])] == content

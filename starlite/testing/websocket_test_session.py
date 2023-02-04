@@ -9,7 +9,6 @@ from starlite.status_codes import WS_1000_NORMAL_CLOSURE
 from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
-
     from starlite.testing.client.sync_client import TestClient
     from starlite.types import (
         WebSocketConnectEvent,

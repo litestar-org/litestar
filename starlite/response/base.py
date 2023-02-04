@@ -32,7 +32,6 @@ from starlite.utils.serialization import (
 )
 
 if TYPE_CHECKING:
-
     from starlite.datastructures import BackgroundTask, BackgroundTasks
     from starlite.types import (
         HTTPResponseBodyEvent,

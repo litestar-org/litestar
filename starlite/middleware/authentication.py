@@ -11,7 +11,6 @@ from starlite.middleware.utils import (
 )
 
 if TYPE_CHECKING:
-
     from starlite.types import ASGIApp, Receive, Scope, Scopes, Send
 
 

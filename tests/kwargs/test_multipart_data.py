@@ -403,6 +403,5 @@ def test_optional_formdata() -> None:
             await data.read()
 
     with create_test_client(route_handlers=[hello_world]) as client:
-
         response = client.post("/")
         assert response.status_code == HTTP_201_CREATED
