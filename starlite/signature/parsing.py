@@ -10,6 +10,8 @@ from typing import (
     Set,
     Tuple,
     Type,
+    Union,
+    cast,
 )
 
 from pydantic import create_model
@@ -108,7 +110,7 @@ def get_type_annotation_from_plugin(
 
 
 def parse_fn_signature(
-    fn: "AnyCallable", plugins: List["PluginProtocol"], dependency_name_set: Set[str]
+    fn: Union["AnyCallable", Type], plugins: List["PluginProtocol"], dependency_name_set: Set[str]
 ) -> Tuple[List[ParsedSignatureParameter], Any, Dict[str, PluginMapping], Set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
 
@@ -161,7 +163,7 @@ def parse_fn_signature(
 
 
 def create_signature_model(
-    fn: "AnyCallable", plugins: List["PluginProtocol"], dependency_name_set: Set[str]
+    fn: Union["AnyCallable", Type], plugins: List["PluginProtocol"], dependency_name_set: Set[str]
 ) -> Type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
@@ -175,7 +177,7 @@ def create_signature_model(
         A signature model.
     """
 
-    unwrapped_fn = unwrap_partial(fn)
+    unwrapped_fn = cast("AnyCallable", unwrap_partial(fn))
     fn_name = getattr(fn, "__name__", "anonymous")
     fn_module = getattr(fn, "__module__", None)
 

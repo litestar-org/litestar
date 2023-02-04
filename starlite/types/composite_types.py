@@ -30,7 +30,8 @@ if TYPE_CHECKING:
     from starlite.datastructures.state import ImmutableState
     from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
     from starlite.params import ParameterKwarg
-    from starlite.provide import Provide
+
+    from .. import Provide
 else:
     BaseHTTPMiddleware = Any
     Cookie = Any
