@@ -270,7 +270,7 @@ Starlite supports request life cycle hooks, similarly to Flask - i.e. `before_re
 Starlite is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
 or [join our Matrix](https://matrix.to/#/#starlitespace:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
-see [the contribution guide](CONTRIBUTING.md).
+see [the contribution guide](CONTRIBUTING.rst).
 
 ## Contributors ✨
 
