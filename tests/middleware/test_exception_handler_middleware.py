@@ -118,7 +118,7 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
         assert not state.called
         state.called = True
 
-    with create_test_client(handler, after_exception=after_exception_hook_handler) as client:
+    with create_test_client(handler, after_exception=[after_exception_hook_handler]) as client:
         setattr(client.app.state, "called", False)  # noqa: B010
         assert not client.app.state.called
         response = client.get("/test")

@@ -1,5 +1,5 @@
 from inspect import Signature
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, Union
 
 from pydantic import validate_arguments
 
@@ -28,12 +28,12 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
+        path: Optional[Union[str, Sequence[str]]] = None,
         *,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
-        guards: Optional[List[Guard]] = None,
+        guards: Optional[Sequence[Guard]] = None,
         name: Optional[str] = None,
-        opt: Optional[Dict[str, Any]] = None,
+        opt: Optional[Mapping[str, Any]] = None,
         is_mount: bool = False,
         is_static: bool = False,
         type_encoders: Optional[TypeEncodersMap] = None,

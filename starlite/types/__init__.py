@@ -71,7 +71,7 @@ from .composite_types import (
 )
 from .empty import Empty, EmptyType
 from .file_types import FileInfo, FileSystemProtocol
-from .helper_types import AnyIOBackend, SingleOrList, SyncOrAsyncUnion
+from .helper_types import AnyIOBackend, SyncOrAsyncUnion
 from .internal_types import (
     ControllerRouterHandler,
     ReservedKwargs,
@@ -158,7 +158,6 @@ __all__ = (
     "Send",
     "Send",
     "Serializer",
-    "SingleOrList",
     "SyncOrAsyncUnion",
     "TypeEncodersMap",
     "WebSocketAcceptEvent",

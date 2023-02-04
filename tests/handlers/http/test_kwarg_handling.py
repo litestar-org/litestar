@@ -3,7 +3,6 @@ from typing import Any, Optional
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
-from pydantic.main import BaseModel
 
 from starlite import (
     HttpMethod,
@@ -32,7 +31,7 @@ def dummy_method() -> None:
     media_type=st.sampled_from(MediaType),
     include_in_schema=st.booleans(),
     response_class=st.one_of(st.none(), st.just(Response)),
-    response_headers=st.one_of(st.none(), st.builds(BaseModel), st.builds(dict)),
+    response_headers=st.one_of(st.none(), st.builds(dict)),
     status_code=st.one_of(st.none(), st.integers(min_value=200, max_value=204)),
     path=st.one_of(st.none(), st.text()),
 )

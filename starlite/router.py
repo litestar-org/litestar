@@ -6,7 +6,9 @@ from typing import (
     DefaultDict,
     Dict,
     List,
+    Mapping,
     Optional,
+    Sequence,
     Set,
     Union,
     cast,
@@ -94,19 +96,19 @@ class Router:
         after_response: Optional[AfterResponseHookHandler] = None,
         before_request: Optional[BeforeRequestHookHandler] = None,
         cache_control: Optional[CacheControlHeader] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
+        dependencies: Optional[Mapping[str, Provide]] = None,
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
-        guards: Optional[List[Guard]] = None,
-        middleware: Optional[List[Middleware]] = None,
-        opt: Optional[Dict[str, Any]] = None,
+        guards: Optional[Sequence[Guard]] = None,
+        middleware: Optional[Sequence[Middleware]] = None,
+        opt: Optional[Mapping[str, Any]] = None,
         parameters: Optional[ParametersMap] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
         response_headers: Optional[ResponseHeadersMap] = None,
-        route_handlers: List[ControllerRouterHandler],
-        security: Optional[List[SecurityRequirement]] = None,
-        tags: Optional[List[str]] = None,
+        route_handlers: Sequence[ControllerRouterHandler],
+        security: Optional[Sequence[SecurityRequirement]] = None,
+        tags: Optional[Sequence[str]] = None,
         type_encoders: Optional["TypeEncodersMap"] = None,
     ) -> None:
         """Initialize a ``Router``.
@@ -156,22 +158,22 @@ class Router:
         self.before_request = AsyncCallable(before_request) if before_request else None
         self.cache_control = cache_control
         self.etag = etag
-        self.dependencies = dependencies or {}
-        self.exception_handlers = exception_handlers or {}
-        self.guards = guards or []
-        self.middleware = middleware or []
-        self.opt: Dict[str, Any] = opt or {}
+        self.dependencies = dict(dependencies or {})
+        self.exception_handlers = dict(exception_handlers or {})
+        self.guards = list(guards or [])
+        self.middleware = list(middleware or [])
+        self.opt = dict(opt or {})
         self.owner: Optional["Router"] = None
-        self.parameters = parameters or {}
+        self.parameters = dict(parameters or {})
         self.path = normalize_path(path)
         self.response_class = response_class
         self.response_cookies = response_cookies or []
         self.response_headers = response_headers or {}
         self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
-        self.security = security or []
-        self.tags = tags or []
+        self.security = list(security or [])
+        self.tags = list(tags or [])
         self.registered_route_handler_ids: Set[int] = set()
-        self.type_encoders = type_encoders
+        self.type_encoders = dict(type_encoders) if type_encoders is not None else None
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)

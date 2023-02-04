@@ -5,7 +5,9 @@ from typing import (
     Dict,
     Generic,
     List,
+    Mapping,
     Optional,
+    Sequence,
     Set,
     Type,
     TypeVar,
@@ -25,7 +27,6 @@ from starlite.types import (
     ExceptionHandlersMap,
     Guard,
     Middleware,
-    ParametersMap,
     TypeEncodersMap,
 )
 from starlite.types.composite_types import MaybePartial
@@ -37,9 +38,10 @@ if TYPE_CHECKING:
 
     from starlite.connection import ASGIConnection
     from starlite.controller import Controller
+    from starlite.params import ParameterKwarg
     from starlite.router import Router
     from starlite.signature.models import SignatureModel
-    from starlite.types import AnyCallable
+    from starlite.types import AnyCallable, ExceptionHandler
 
 T = TypeVar("T", bound="BaseRouteHandler")
 
@@ -75,14 +77,14 @@ class BaseRouteHandler(Generic[T]):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
+        path: Optional[Union[str, Sequence[str]]] = None,
         *,
         dependencies: Optional[Dependencies] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
-        guards: Optional[List[Guard]] = None,
-        middleware: Optional[List[Middleware]] = None,
+        guards: Optional[Sequence[Guard]] = None,
+        middleware: Optional[Sequence[Middleware]] = None,
         name: Optional[str] = None,
-        opt: Optional[Dict[str, Any]] = None,
+        opt: Optional[Mapping[str, Any]] = None,
         type_encoders: Optional[TypeEncodersMap] = None,
         **kwargs: Any,
     ) -> None:
@@ -110,7 +112,7 @@ class BaseRouteHandler(Generic[T]):
         self.guards = guards
         self.middleware = middleware
         self.name = name
-        self.opt: Dict[str, Any] = opt or {}
+        self.opt = dict(opt or {})
         self.owner: Optional[Union["Controller", "Router"]] = None
         self.signature_model: Optional[Type["SignatureModel"]] = None
         self.paths = (
@@ -176,7 +178,7 @@ class BaseRouteHandler(Generic[T]):
     def resolve_layered_parameters(self) -> Dict[str, "SignatureField"]:
         """Return all parameters declared above the handler."""
         if self._resolved_layered_parameters is Empty:
-            parameter_kwargs: "ParametersMap" = {}
+            parameter_kwargs: Dict[str, "ParameterKwarg"] = {}
 
             for layer in self.ownership_layers:
                 parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
@@ -221,7 +223,7 @@ class BaseRouteHandler(Generic[T]):
 
         The middlewares are added from top to bottom (app -> router -> controller -> route handler) and then reversed.
         """
-        resolved_middleware = []
+        resolved_middleware: List["Middleware"] = []
         for layer in self.ownership_layers:
             resolved_middleware.extend(layer.middleware or [])
         return list(reversed(resolved_middleware))
@@ -231,7 +233,7 @@ class BaseRouteHandler(Generic[T]):
 
         This method is memoized so the computation occurs only once.
         """
-        resolved_exception_handlers = {}
+        resolved_exception_handlers: Dict[Union[int, Type[Exception]], "ExceptionHandler"] = {}
         for layer in self.ownership_layers:
             resolved_exception_handlers.update(layer.exception_handlers or {})
         return resolved_exception_handlers

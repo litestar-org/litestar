@@ -1,6 +1,6 @@
 from collections import defaultdict
 from copy import copy
-from typing import TYPE_CHECKING, Any, DefaultDict, Dict, List, Optional, Set, cast
+from typing import TYPE_CHECKING, Any, DefaultDict, Dict, List, Mapping, Optional, Sequence, Set, cast
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
@@ -88,11 +88,11 @@ class Controller:
     """
     exception_handlers: Optional["ExceptionHandlersMap"]
     """A dictionary that maps handler functions to status codes and/or exception types."""
-    guards: Optional[List["Guard"]]
+    guards: Optional[Sequence["Guard"]]
     """A list of :class:`Guard <starlite.types.Guard>` callables."""
-    middleware: Optional[List["Middleware"]]
+    middleware: Optional[Sequence["Middleware"]]
     """A list of :class:`Middleware <starlite.types.Middleware>`."""
-    opt: Optional[Dict[str, Any]]
+    opt: Optional[Mapping[str, Any]]
     """A string key dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or wherever
     you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
     """
@@ -116,9 +116,9 @@ class Controller:
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
     response_headers: Optional["ResponseHeadersMap"]
     """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
-    tags: Optional[List[str]]
+    tags: Optional[Sequence[str]]
     """A list of string tags that will be appended to the schema of all route handlers under the controller."""
-    security: Optional[List["SecurityRequirement"]]
+    security: Optional[Sequence["SecurityRequirement"]]
     """A list of dictionaries that to the schema of all route handlers under the controller."""
     type_encoders: Optional["TypeEncodersMap"]
     """A mapping of types to callables that transform them into types supported for serialization."""

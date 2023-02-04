@@ -11,7 +11,9 @@ from typing import (
     Dict,
     FrozenSet,
     List,
+    Mapping,
     Optional,
+    Sequence,
     Set,
     Type,
     Union,
@@ -124,7 +126,7 @@ async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -
 def _create_response_container_handler(
     after_request: Optional["AfterRequestHookHandler"],
     cookies: FrozenSet["Cookie"],
-    headers: Dict[str, Any],
+    headers: Mapping[str, Any],
     media_type: str,
     status_code: int,
 ) -> "AsyncAnyCallable":
@@ -229,7 +231,9 @@ def _create_data_handler(
     return handler
 
 
-def _normalize_http_method(http_methods: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]]) -> Set["Method"]:
+def _normalize_http_method(
+    http_methods: Union[HttpMethod, Method, Sequence[Union[HttpMethod, Method]]]
+) -> Set["Method"]:
     """Normalize HTTP method(s) into a set of upper-case method names.
 
     Args:
@@ -240,7 +244,10 @@ def _normalize_http_method(http_methods: Union[HttpMethod, Method, List[Union[Ht
     """
     output: Set[str] = set()
 
-    for method in http_methods if isinstance(http_methods, list) else [http_methods]:
+    if isinstance(http_methods, str):
+        http_methods = [http_methods]  # pyright: ignore
+
+    for method in http_methods:
         if isinstance(method, HttpMethod):
             output.add(method.value.upper())
         else:
@@ -311,7 +318,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
+        path: Optional[Union[str, Sequence[str]]] = None,
         *,
         after_request: Optional[AfterRequestHookHandler] = None,
         after_response: Optional[AfterResponseHookHandler] = None,
@@ -320,15 +327,15 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         cache: Union[bool, int] = False,
         cache_control: Optional[CacheControlHeader] = None,
         cache_key_builder: Optional[CacheKeyBuilder] = None,
-        dependencies: Optional[Dict[str, Provide]] = None,
+        dependencies: Optional[Mapping[str, Provide]] = None,
         etag: Optional[ETag] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
-        guards: Optional[List[Guard]] = None,
-        http_method: Union[HttpMethod, Method, List[Union[HttpMethod, Method]]],
+        guards: Optional[Sequence[Guard]] = None,
+        http_method: Union[HttpMethod, Method, Sequence[Union[HttpMethod, Method]]],
         media_type: Optional[Union[MediaType, str]] = None,
-        middleware: Optional[List[Middleware]] = None,
+        middleware: Optional[Sequence[Middleware]] = None,
         name: Optional[str] = None,
-        opt: Optional[Dict[str, Any]] = None,
+        opt: Optional[Mapping[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
         response_headers: Optional[ResponseHeadersMap] = None,
@@ -341,12 +348,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         description: Optional[str] = None,
         include_in_schema: bool = True,
         operation_id: Optional[str] = None,
-        raises: Optional[List[Type[HTTPException]]] = None,
+        raises: Optional[Sequence[Type[HTTPException]]] = None,
         response_description: Optional[str] = None,
-        responses: Optional[Dict[int, ResponseSpec]] = None,
-        security: Optional[List[SecurityRequirement]] = None,
+        responses: Optional[Mapping[int, ResponseSpec]] = None,
+        security: Optional[Sequence[SecurityRequirement]] = None,
         summary: Optional[str] = None,
-        tags: Optional[List[str]] = None,
+        tags: Optional[Sequence[str]] = None,
         type_encoders: Optional["TypeEncodersMap"] = None,
         **kwargs: Any,
     ) -> None:
@@ -496,7 +503,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         Returns:
             A dictionary mapping keys to :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances.
         """
-        resolved_response_headers = {}
+        resolved_response_headers: dict[str, "ResponseHeader"] = {}
         for layer in self.ownership_layers:
             resolved_response_headers.update(layer.response_headers or {})
             for extra_header in ("cache_control", "etag"):
