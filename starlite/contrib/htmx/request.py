@@ -17,7 +17,7 @@ class HtmxDetails:
     """
 
     def __init__(self, request: Request) -> None:
-        """Initialize Class"""
+        """Initialize HtmxDetails"""
         self.request = request
 
     def _get_header_value(self, name: str) -> Optional[str]:
@@ -56,37 +56,35 @@ class HtmxDetails:
 
     @cached_property
     def history_restore_request(self) -> bool:
-        """If True then, request is for history restoration after a miss in the local history cache"""
+        """If True then, request is for history restoration after a miss in the local history cache."""
         return self._get_header_value(HTMXHeaders.HISTORY_RESTORE_REQUEST) == "true"
 
     @cached_property
     def prompt(self) -> Optional[str]:
         """User Response to prompt.
-        <button hx-delete="/account" hx-prompt="Enter your account name to confirm deletion">
-            Delete My Account
-        </button>
+        ```<button hx-delete="/account" hx-prompt="Enter your account name to confirm deletion">Delete My Account</button>```
         """
         return self._get_header_value(HTMXHeaders.PROMPT)
 
     @cached_property
     def target(self) -> Optional[str]:
-        """The id of the target element if it exists"""
+        """The id of the target element if provided on the element."""
         return self._get_header_value(HTMXHeaders.TARGET)
 
     @cached_property
     def trigger(self) -> Optional[str]:
-        """The id of the triggered element if it exists"""
+        """The id of the triggered element if provided on the element."""
         return self._get_header_value(HTMXHeaders.TRIGGER_ID)
 
     @cached_property
     def trigger_name(self) -> Optional[str]:
-        """The name of the triggered element if it exists"""
+        """The name of the triggered element if provided on the element."""
         return self._get_header_value(HTMXHeaders.TRIGGER_NAME)
 
     @cached_property
     def triggering_event(self) -> Any:
         """The name of the triggered event.
-        'event-header' extension adds the Triggering-Event header to requests.
+        This value is added by 'event-header' extension of htmx to the Triggering-Event header to requests.
         """
         value = self._get_header_value(HTMXHeaders.TRIGGERING_EVENT)
         if value is not None:
@@ -98,7 +96,7 @@ class HtmxDetails:
 
 
 class HTMXRequest(Request):
-    """HTMX Request class to work with HTMX client"""
+    """HTMX Request class to work with HTMX client."""
 
     __slots__ = ("htmx",)
 

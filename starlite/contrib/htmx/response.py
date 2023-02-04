@@ -35,7 +35,7 @@ class ClientRedirect(Response):
 
     def __init__(self, redirect_to: str) -> None:
         """Set status code to 200 (required by HTMX),
-        and pass redirect url
+        and pass redirect url.
         """
         super().__init__(
             content=None,
@@ -46,7 +46,7 @@ class ClientRedirect(Response):
 
 
 class ClientRefresh(Response):
-    """Class to support HTMX client page refresh"""
+    """Response to support HTMX client page refresh"""
 
     def __init__(self) -> None:
         """Set Status code to 200 and set headers."""
@@ -56,10 +56,10 @@ class ClientRefresh(Response):
 
 
 class PushUrl(Generic[T], Response[T]):
-    """Class to push new url into the history stack"""
+    """Response to push new url into the history stack."""
 
     def __init__(self, content: T, push_url: PushUrlType, **kwargs: Any) -> None:
-        """Initialize"""
+        """Initialize PushUrl."""
         super().__init__(
             content=content,
             status_code=HTTP_200_OK,
@@ -69,10 +69,10 @@ class PushUrl(Generic[T], Response[T]):
 
 
 class ReplaceUrl(Generic[T], Response[T]):
-    """Class to replace url in the Browser Tab"""
+    """Response to replace url in the Browser Location bar."""
 
     def __init__(self, content: T, replace_url: PushUrlType, **kwargs: Any) -> None:
-        """Initialize"""
+        """Initialize ReplaceUrl."""
         super().__init__(
             content=content,
             status_code=HTTP_200_OK,
@@ -82,7 +82,7 @@ class ReplaceUrl(Generic[T], Response[T]):
 
 
 class Reswap(Generic[T], Response[T]):
-    """Class to specify how the response will be swapped."""
+    """Response to specify how the response will be swapped."""
 
     def __init__(
         self,
@@ -90,20 +90,20 @@ class Reswap(Generic[T], Response[T]):
         method: ReSwapMethod,
         **kwargs: Any,
     ) -> None:
-        """Initialize"""
+        """Initialize Reswap."""
         super().__init__(content=content, headers=get_headers(hx_headers=HtmxHeaderType(re_swap=method)), **kwargs)
 
 
 class Retarget(Generic[T], Response[T]):
-    """Class to target different element on the page"""
+    """Response to target different element on the page."""
 
     def __init__(self, content: T, target: str, **kwargs: Any) -> None:
-        """Initialize"""
+        """Initialize Retarget."""
         super().__init__(content=content, headers=get_headers(hx_headers=HtmxHeaderType(re_target=target)), **kwargs)
 
 
 class TriggerEvent(Generic[T], Response[T]):
-    """Trigger Client side event"""
+    """Trigger Client side event."""
 
     def __init__(
         self,
@@ -113,11 +113,8 @@ class TriggerEvent(Generic[T], Response[T]):
         params: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize"""
+        """Initialize TriggerEvent."""
         event = TriggerEventType(name=name, params=params, after=after)
-        # if params:
-        #     event['params'] = params
-
         headers = get_headers(hx_headers=HtmxHeaderType(trigger_event=event))
         super().__init__(content=content, headers=headers, **kwargs)
 
@@ -136,7 +133,9 @@ class HXLocation(Response):
         values: Optional[Dict[str, str]] = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize"""
+        """Initialize HXLocation, Set status code to 200 (required by HTMX),
+        and pass redirect url.
+        """
         super().__init__(
             content=None,
             status_code=HTTP_200_OK,
@@ -161,20 +160,21 @@ class HXLocation(Response):
 
 
 class HTMXTemplate(Template):
-    """Container type for returning Template responses."""
+    """Convenient type for returning HTMX Template responses."""
 
     push_url: Optional[PushUrlType] = None
-    """string url to push to browser history or boolean False to prevent from pushing to browser history."""
+    """This parameter accepts either a string value for url to push to browser history or
+    boolean False to prevent HTMX client from pushing a url to browser history."""
     re_swap: ReSwapMethod = None
-    """string method value to instruct HTMX which swapping method to use."""
+    """This parameter accepts either a string method value to instruct HTMX which swapping method to use."""
     re_target: Optional[str] = None
-    """string value for 'id of target element' to apply changes to."""
+    """This parameter accepts string value for 'id of target element' to apply changes to."""
     trigger_event: Optional[str] = None
-    """string value of event name to trigger."""
+    """This parameter accepts string value of event name to trigger."""
     params: Optional[Dict[str, Any]] = None
-    """dictionary of parameters if any required to trigger event."""
+    """This parameter accepts dictionary of parameters if any required with trigger event parameter."""
     after: Optional[EventAfterType] = None
-    """string value for changes to apply after 'receive', 'settle' or 'swap' event."""
+    """This parameter accepts string value for changes to apply after 'receive', 'settle' or 'swap' event."""
 
     def to_response(
         self,
@@ -184,7 +184,7 @@ class HTMXTemplate(Template):
         app: "Starlite",
         request: "Request",
     ) -> "TemplateResponse":
-        """Add HTMX headers and create TemplateResponse"""
+        """Add HTMX headers and create TemplateResponse."""
 
         if self.trigger_event:
             event = TriggerEventType(name=str(self.trigger_event), params=self.params, after=self.after)
