@@ -202,7 +202,7 @@ Creating a new release
 ----------------------
 
 1. Increment the version in ``pyproject.toml`` according to the
-   `versioning scheme <https://starlite-api.github.io/starlite/latest/starlite-versions.html#version-numbering>`_
+   `versioning scheme <https://starlite-api.github.io/starlite/latest/starlite-releases.html#version-numbering>`_
 2. `Draft a new release <https://github.com/starlite-api/starlite/releases/new>`_ on GitHub
 
    * Use ``vMAJOR.MINOR.PATCH`` (e.g. ``v1.2.3``) as both the tag and release title
