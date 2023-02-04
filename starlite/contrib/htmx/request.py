@@ -62,7 +62,7 @@ class HtmxDetails:
     @cached_property
     def prompt(self) -> Optional[str]:
         """User Response to prompt.
-        ```<button hx-delete="/account" hx-prompt="Enter your account name to confirm deletion">Delete My Account</button>```
+        |``<button hx-delete="/account" hx-prompt="Enter your account name to confirm deletion">Delete My Account</button>``
         """
         return self._get_header_value(HTMXHeaders.PROMPT)
 
