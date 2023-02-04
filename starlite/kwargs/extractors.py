@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from starlite.connection import ASGIConnection, Request
     from starlite.kwargs import KwargsModel
     from starlite.kwargs.parameter_definition import ParameterDefinition
-    from starlite.signature.models import SignatureField
+    from starlite.signature.field import SignatureField
 
 
 def create_connection_value_extractor(

@@ -7,7 +7,7 @@ from starlite.types.internal_types import PathParameterDefinition
 
 if TYPE_CHECKING:
     from starlite.handlers.http_handlers import HTTPRouteHandler
-    from starlite.signature.models import SignatureField
+    from starlite.signature.field import SignatureField
     from starlite.types import Method
 
 CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")

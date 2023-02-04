@@ -30,7 +30,7 @@ from starlite.response import (
     TemplateResponse,
 )
 from starlite.response_containers import File, Redirect, Stream, Template
-from starlite.signature import create_signature_model
+from starlite.signature.parsing import create_signature_model
 from starlite.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from starlite.testing import RequestFactory, create_test_client
 from tests import Person, PersonFactory

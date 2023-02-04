@@ -11,7 +11,7 @@ from starlite.params import BodyKwarg
 
 if TYPE_CHECKING:
     from starlite.plugins.base import OpenAPISchemaPluginProtocol
-    from starlite.signature.models import SignatureField
+    from starlite.signature.field import SignatureField
 
 
 def create_request_body(

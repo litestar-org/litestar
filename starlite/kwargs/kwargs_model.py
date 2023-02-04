@@ -1,3 +1,4 @@
+from copy import copy
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -42,12 +43,13 @@ from starlite.kwargs.parameter_definition import (
     merge_parameter_sets,
 )
 from starlite.params import BodyKwarg, ParameterKwarg
-from starlite.signature import SignatureModel, get_signature_model
-from starlite.signature.models import SignatureField
+from starlite.signature.field import SignatureField
+from starlite.signature.utils import get_signature_model
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
     from starlite.di import Provide
+    from starlite.signature.models import SignatureModel
 
 
 class KwargsModel:
@@ -289,7 +291,7 @@ class KwargsModel:
             signature_fields=signature_fields,
         )
 
-        expected_reserved_kwargs = {field_name for field_name in signature_fields if field_name in RESERVED_KWARGS}
+        expected_reserved_kwargs = copy(signature_model.expected_reserved_kwargs)
         expected_path_parameters = {p for p in param_definitions if p.param_type == ParamType.PATH}
         expected_header_parameters = {p for p in param_definitions if p.param_type == ParamType.HEADER}
         expected_cookie_parameters = {p for p in param_definitions if p.param_type == ParamType.COOKIE}

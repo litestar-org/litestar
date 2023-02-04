@@ -53,7 +53,7 @@ class RouteTrieNode:
     """Designate the node as being a mount route."""
     is_static: bool
     """Designate the node as being a static mount route."""
-    path_parameters: Dict[Union["Method", Literal["websocket"], Literal["asgi"]], Tuple["PathParameterDefinition", ...]]
+    path_parameters: Dict[Union["Method", Literal["websocket", "asgi"]], Tuple["PathParameterDefinition", ...]]
     """A list of tuples containing path parameter definitions.
 
     This is used for parsing extracted path parameter values.

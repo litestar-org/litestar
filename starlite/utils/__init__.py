@@ -7,7 +7,7 @@ from .exception import (
     get_exception_handler,
 )
 from .extractors import ConnectionDataExtractor, ResponseDataExtractor, obfuscate
-from .helpers import Ref, get_enum_string_value, get_name
+from .helpers import Ref, get_enum_string_value, get_name, unwrap_partial
 from .model import (
     convert_dataclass_to_model,
     convert_typeddict_to_model,
@@ -79,15 +79,16 @@ __all__ = (
     "is_class_and_subclass",
     "is_dataclass_class",
     "is_dataclass_class_or_instance",
+    "is_mapping",
     "is_optional_union",
     "is_typed_dict",
     "is_union",
-    "is_mapping",
     "join_paths",
     "make_non_optional_union",
     "normalize_path",
     "obfuscate",
     "set_starlite_scope_state",
     "unique",
+    "unwrap_partial",
     "warn_deprecation",
 )

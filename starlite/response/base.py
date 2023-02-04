@@ -61,7 +61,7 @@ class Response(Generic[T]):
         "status_allows_body",
         "status_code",
         "raw_headers",
-        "_enc_hook",
+        "serializer",
     )
 
     type_encoders: Optional["TypeEncodersMap"] = None
@@ -105,7 +105,7 @@ class Response(Generic[T]):
             status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED} or status_code < HTTP_200_OK
         )
         self.status_code = status_code
-        self._enc_hook = self.get_serializer(type_encoders)
+        self.serializer = self.get_serializer(type_encoders)
 
         if not self.status_allows_body or is_head_response:
             if content:
@@ -255,9 +255,9 @@ class Response(Generic[T]):
                 return content.encode(self.encoding)  # type: ignore
 
             if self.media_type == MediaType.MESSAGEPACK:
-                return encode_msgpack(content, self._enc_hook)
+                return encode_msgpack(content, self.serializer)
 
-            return encode_json(content, self._enc_hook)
+            return encode_json(content, self.serializer)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 

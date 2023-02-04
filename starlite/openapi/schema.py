@@ -32,7 +32,7 @@ from starlite.openapi.constants import (
 )
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.utils import get_openapi_type_for_complex_type
-from starlite.signature.models import SignatureField
+from starlite.signature.field import SignatureField
 from starlite.types import Empty
 from starlite.upload_file import UploadFile
 from starlite.utils import is_dataclass_class_or_instance, is_typed_dict

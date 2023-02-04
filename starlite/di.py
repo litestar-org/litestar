@@ -6,7 +6,7 @@ from starlite.types import Empty
 from starlite.utils import Ref, is_async_callable
 
 if TYPE_CHECKING:
-    from starlite.signature import SignatureModel
+    from starlite.signature.models import SignatureModel
     from starlite.types import AnyCallable
 
 

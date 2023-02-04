@@ -10,9 +10,9 @@ from pydantic import SecretStr
 from starlite import MediaType, Response
 from starlite.status_codes import HTTP_200_OK
 from tests import (
-    MsgSpecStructPerson,
     Person,
     PersonFactory,
+    PersonStructWithPydanticNestModels,
     PydanticDataClassPerson,
     VanillaDataClassPerson,
 )
@@ -37,7 +37,7 @@ class _TestEnum(enum.Enum):
         [[{"key": 123}], List[Dict[str, int]]],
         [VanillaDataClassPerson(**person.dict()), VanillaDataClassPerson],
         [PydanticDataClassPerson(**person.dict()), PydanticDataClassPerson],
-        [MsgSpecStructPerson(**person.dict()), MsgSpecStructPerson],
+        [PersonStructWithPydanticNestModels(**person.dict()), PersonStructWithPydanticNestModels],
         [{"enum": _TestEnum.A}, Dict[str, _TestEnum]],
         [{"secret": secret}, Dict[str, SecretStr]],
         [{"pure_path": pure_path}, Dict[str, PurePath]],

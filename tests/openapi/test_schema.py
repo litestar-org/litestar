@@ -19,7 +19,7 @@ from starlite.openapi.schema import (
     update_schema_with_signature_field,
 )
 from starlite.params import ParameterKwarg
-from starlite.signature.models import SignatureField
+from starlite.signature.field import SignatureField
 from starlite.testing import create_test_client
 from tests import TypedDictPerson
 

@@ -7,7 +7,7 @@ from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.schema import create_schema
 from starlite.params import DependencyKwarg, ParameterKwarg
-from starlite.signature.models import SignatureField
+from starlite.signature.field import SignatureField
 from starlite.types import Empty
 
 if TYPE_CHECKING:

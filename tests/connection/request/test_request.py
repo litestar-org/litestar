@@ -15,6 +15,7 @@ from starlite.connection import Request, empty_send
 from starlite.datastructures import Address
 from starlite.exceptions import InternalServerException, SerializationException
 from starlite.response import Response
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient, create_test_client
 from starlite.utils.serialization import encode_msgpack
 
@@ -113,7 +114,8 @@ def test_route_handler_property() -> None:
         value["handler"] = request.route_handler
 
     with create_test_client(route_handlers=[handler]) as client:
-        client.get("/")
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
         assert str(value["handler"]) == str(handler)
 
 
@@ -130,7 +132,8 @@ def test_custom_request_class() -> None:
         value["called"] = request.scope.get("called")
 
     with create_test_client(route_handlers=[handler], request_class=MyRequest) as client:
-        client.get("/")
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
         assert value["called"]
 
 

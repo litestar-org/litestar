@@ -4,7 +4,7 @@ from starlite.enums import ParamType
 from starlite.params import ParameterKwarg
 
 if TYPE_CHECKING:
-    from starlite.signature.models import SignatureField
+    from starlite.signature.field import SignatureField
 
 
 class ParameterDefinition(NamedTuple):

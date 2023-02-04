@@ -26,7 +26,7 @@ from pydantic import SecretBytes
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool
 
-from starlite.cache import SimpleCacheBackend
+from starlite.cache.simple_cache_backend import SimpleCacheBackend
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.base import (
     BaseSessionBackend,

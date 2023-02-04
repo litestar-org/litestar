@@ -13,7 +13,7 @@ from starlite.openapi.schema import (
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
-from starlite.signature.models import SignatureField
+from starlite.signature.field import SignatureField
 from tests.openapi.utils import (
     constrained_collection,
     constrained_dates,

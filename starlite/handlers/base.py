@@ -19,7 +19,7 @@ from pydantic import validate_arguments
 
 from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.signature.models import SignatureField
+from starlite.signature.field import SignatureField
 from starlite.types import (
     Dependencies,
     Empty,

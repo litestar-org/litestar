@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from starlite import Parameter, Provide, get
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.params import Dependency
-from starlite.signature import create_signature_model
+from starlite.signature.parsing import create_signature_model
 from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from starlite.types.helper_types import OptionalSequence  # noqa: TC001
