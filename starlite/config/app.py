@@ -134,7 +134,7 @@ class AppConfig(BaseModel):
     """A list of :class:`Guard <starlite.types.Guard>` callables."""
     initial_state: InitialStateType
     """An object from which to initialize the app state."""
-    listeners: Optional[List[EventListener]]
+    listeners: List[EventListener]
     """A list of :class:`EventListener <starlite.events.listener.EventListener>`."""
     logging_config: Optional[BaseLoggingConfig]
     """An instance of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>` subclass."""

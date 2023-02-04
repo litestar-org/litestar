@@ -75,7 +75,7 @@ async def test_multiple_event_listeners() -> None:
 async def test_multiple_event_ids() -> None:
     received_events: int = 0
 
-    @listener(["test_event_1", "test_event_2"])
+    @listener(*["test_event_1", "test_event_2"])
     def event_handler() -> None:
         nonlocal received_events
         received_events += 1

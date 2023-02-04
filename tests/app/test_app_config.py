@@ -36,7 +36,7 @@ def app_config_object() -> AppConfig:
         exception_handlers={},
         guards=[],
         initial_state={},
-        listeners=None,
+        listeners=[],
         logging_config=None,
         middleware=[],
         on_shutdown=[],

@@ -307,7 +307,7 @@ class Starlite(Router):
             exception_handlers=exception_handlers or {},
             guards=guards or [],
             initial_state=initial_state or {},
-            listeners=listeners,
+            listeners=listeners or [],
             logging_config=logging_config if logging_config is not Empty else LoggingConfig() if debug else None,  # type: ignore[arg-type]
             middleware=middleware or [],
             on_shutdown=on_shutdown or [],
@@ -353,7 +353,7 @@ class Starlite(Router):
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket
-        self.event_emitter = config.event_emitter_backend(listeners=config.listeners or [])
+        self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
 
         super().__init__(
             after_request=config.after_request,
