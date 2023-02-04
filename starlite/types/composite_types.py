@@ -25,19 +25,17 @@ from .asgi_types import ASGIApp
 from .callable_types import ExceptionHandler
 
 if TYPE_CHECKING:
-
-    from starlite.datastructures.cookie import Cookie  # noqa: TC004
-    from starlite.datastructures.provide import Provide  # noqa: TC004
-    from starlite.datastructures.response_header import ResponseHeader  # noqa: TC004
-    from starlite.middleware.base import (  # noqa: TC004
-        DefineMiddleware,
-        MiddlewareProtocol,
-    )
-    from starlite.params import ParameterKwarg  # noqa: TC004
+    from starlite.datastructures.cookie import Cookie
+    from starlite.datastructures.provide import Provide
+    from starlite.datastructures.response_header import ResponseHeader
+    from starlite.datastructures.state import ImmutableState
+    from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
+    from starlite.params import ParameterKwarg
 else:
     BaseHTTPMiddleware = Any
     Cookie = Any
     DefineMiddleware = Any
+    ImmutableState = Any
     MiddlewareProtocol = Any
     ParameterKwarg = Any
     Provide = Any
@@ -48,14 +46,15 @@ T = TypeVar("T")
 
 Dependencies = Dict[str, Provide]
 ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
-ParametersMap = Dict[str, ParameterKwarg]
-ResponseCookies = List[Cookie]
-ResponseHeadersMap = Dict[str, ResponseHeader]
-StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]
-PathType = Union[Path, PathLike, str]
-Scopes = Set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]
+InitialStateType = Union[ImmutableState, Dict[str, Any], Iterable[Tuple[str, Any]]]
+MaybePartial = Union[T, partial]
 Middleware = Union[
     Callable[..., ASGIApp], DefineMiddleware, Iterator[Tuple[ASGIApp, Dict[str, Any]]], Type[MiddlewareProtocol]
 ]
-MaybePartial = Union[T, partial]
+ParametersMap = Dict[str, ParameterKwarg]
+PathType = Union[Path, PathLike, str]
+ResponseCookies = List[Cookie]
+ResponseHeadersMap = Dict[str, ResponseHeader]
+Scopes = Set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]
+StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]
 TypeEncodersMap = Dict[Any, Callable[[Any], Any]]

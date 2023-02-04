@@ -13,13 +13,13 @@ from typing import (
 from starlite.types import Method
 
 if TYPE_CHECKING:
-    from starlite.app import Starlite  # noqa: TC004
-    from starlite.controller import Controller  # noqa: TC004
-    from starlite.handlers.asgi import ASGIRouteHandler  # noqa: TC004
-    from starlite.handlers.http import HTTPRouteHandler  # noqa: TC004
-    from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: TC004
-    from starlite.response import Response  # noqa: TC004
-    from starlite.router import Router  # noqa: TC004
+    from starlite.app import Starlite
+    from starlite.controller import Controller
+    from starlite.handlers.asgi import ASGIRouteHandler
+    from starlite.handlers.http import HTTPRouteHandler
+    from starlite.handlers.websocket import WebsocketRouteHandler
+    from starlite.response import Response
+    from starlite.router import Router
 else:
     Starlite = Any
     ASGIRouteHandler = Any
