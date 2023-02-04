@@ -158,7 +158,7 @@ def test_exception_handler_middleware_debug_logging(
         if debug and logging_config:
             assert len(caplog.records) == 1
             assert caplog.records[0].levelname == "DEBUG"
-            assert "exception raised for request to route" in caplog.records[0].message
+            assert "exception raised on http connection request to route /test" in caplog.records[0].message
         else:
             assert not caplog.records
-            assert "exception raised for request to route" not in response.text
+            assert "exception raised on http connection request to route /test" not in response.text
