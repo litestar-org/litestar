@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="JWT Security Backends" href="jwt.html" /><link rel="prev" title="Contrib" href="index.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="CLI" href="../cli.html" /><link rel="prev" title="JWT Security Backends" href="jwt.html" />
 
     <link rel="shortcut icon" href="../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>Open Telemetry Instrumentation - Starlite 1.51 documentation</title>
+        <title>HTMX Request Class - Starlite 1.51 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -206,9 +206,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../templating.html">Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../exceptions.html">Exceptions and exception handling</a></li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">Contrib</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="jwt.html">JWT Security Backends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="htmx.html">HTMX Request Class</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">HTMX Request Class</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../cli.html">CLI</a></li>
@@ -354,7 +354,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/usage/contrib/open-telemetry.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/usage/contrib/htmx.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -370,44 +370,175 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="open-telemetry-instrumentation">
-<h1>Open Telemetry Instrumentation<a class="headerlink" href="#open-telemetry-instrumentation" title="Permalink to this heading">#</a></h1>
-<p>Starlite includes optional OpenTelemetry instrumentation that is exported from <code class="docutils literal notranslate"><span class="pre">starlite.contrib.opentelemetry</span></code>. To use
-this package, you should first install the required dependencies:</p>
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">as separate package</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>opentelemetry-instrumentation-asgi
-</pre></div>
-</div>
-</div>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">as a Starlite extra</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>starlite<span class="o">[</span>opentelemetry<span class="o">]</span>
-</pre></div>
-</div>
-</div>
-<p>Once these requirements are satisfied, you can instrument your Starlite application by creating an instance
-of <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryConfig</span></code> and passing the middleware it creates to
-the Starlite constructor:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
-<span class="kn">from</span> <span class="nn">starlite.contrib.opentelemetry</span> <span class="kn">import</span> <span class="n">OpenTelemetryConfig</span>
+          <section id="htmx-request-class">
+<h1>HTMX Request Class<a class="headerlink" href="#htmx-request-class" title="Permalink to this heading">#</a></h1>
+<p>This class reads headers sent by htmx client and saves it in convenient properties. Also it is extended from starlite Request class so,
+whenever you are working with HTMX library you can access all htmx headers along with Starlite Request methods and properties.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.contrib.htmx.request</span> <span class="kn">import</span> <span class="n">HTMXRequest</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.htmx.response</span> <span class="kn">import</span> <span class="n">HTMXTemplate</span>
 
-<span class="n">open_telemetry_config</span> <span class="o">=</span> <span class="n">OpenTelemetryConfig</span><span class="p">()</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">open_telemetry_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_form</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">HTMXRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
+    <span class="n">htmx</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">htmx</span>  <span class="c1">#  if true will return HtmxDetails class object</span>
+    <span class="k">if</span> <span class="n">htmx</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">htmx</span><span class="o">.</span><span class="n">current_url</span><span class="p">)</span>
+    <span class="c1"># OR</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">htmx</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">htmx</span><span class="o">.</span><span class="n">current_url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">HTMXTemplate</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;partial.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">push_url</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The above example will work out of the box if you configure a global <code class="docutils literal notranslate"><span class="pre">tracer_provider</span></code> and/or <code class="docutils literal notranslate"><span class="pre">metric_provider</span></code> and an
-exporter to use these (see the
-<a class="reference external" href="https://opentelemetry.io/docs/instrumentation/python/exporters/">OpenTelemetry Exporter docs</a> for further details).</p>
-<p>You can also pass con figuration to the <code class="docutils literal notranslate"><span class="pre">OpenTelemetryConfig</span></code> telling it which providers to use. Consult
-<code class="xref py py-class docutils literal notranslate"><span class="pre">reference</span> <span class="pre">docs</span></code> regarding the configuration options you can use.</p>
+<p>Full list of headers that <a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails" title="starlite.contrib.htmx.request.HtmxDetails"><code class="xref py py-class docutils literal notranslate"><span class="pre">HtmxDetails</span></code></a> class provides.</p>
+<section id="htmx-response-classes">
+<h2>HTMX Response Classes<a class="headerlink" href="#htmx-response-classes" title="Permalink to this heading">#</a></h2>
+<section id="htmxtemplate-response-classes">
+<h3>HTMXTemplate Response Classes<a class="headerlink" href="#htmxtemplate-response-classes" title="Permalink to this heading">#</a></h3>
+<p>Most Common use-case while using HTMX is either full or partial html page. Starlite makes this easy by providing <a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.response.HTMXTemplate" title="starlite.contrib.htmx.response.HTMXTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXTemplate</span></code></a> response as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.contrib.htmx.response</span> <span class="kn">import</span> <span class="n">HTMXTemplate</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_form</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">HTMXRequest</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>  <span class="c1"># Return type is Template and not HTMXTemplate.</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">HTMXTemplate</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;partial.html&quot;</span><span class="p">,</span>
+        <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="c1"># Optional parameters</span>
+        <span class="n">push_url</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">,</span>  <span class="c1"># update browser history</span>
+        <span class="n">re_swap</span><span class="o">=</span><span class="s2">&quot;outerHTML&quot;</span><span class="p">,</span>  <span class="c1"># change swapping method</span>
+        <span class="n">re_target</span><span class="o">=</span><span class="s2">&quot;#new-target&quot;</span><span class="p">,</span>  <span class="c1"># change target element</span>
+        <span class="n">trigger_event</span><span class="o">=</span><span class="s2">&quot;showMessage&quot;</span><span class="p">,</span>  <span class="c1"># trigger event name</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alert&quot;</span><span class="p">:</span> <span class="s2">&quot;Confirm your Choice.&quot;</span><span class="p">},</span>  <span class="c1"># parameter to pass to the event</span>
+        <span class="n">after</span><span class="o">=</span><span class="s2">&quot;receive&quot;</span>  <span class="c1">#  when to trigger event,</span>
+        <span class="c1"># possible values &#39;receive&#39;, &#39;settle&#39; and &#39;swap&#39;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Return type is starlite’s Template Type and not HTMXTemplate.</p></li>
+<li><p>trigger_event, params and after parameters are linked to one another.
+If you are triggering an event then after value is required and must be one of ‘receive’, ‘settle’ or ‘swap’.</p></li>
+</ul>
+</div>
+<p>HTMX provides two types of responses, one that don’t change change DOM and one that changes DOM. Starlite supports these responses and they are as follows:</p>
+</section>
+<section id="responses-that-don-t-make-any-changes-to-dom">
+<h3>1 - Responses that don’t make any changes to DOM.<a class="headerlink" href="#responses-that-don-t-make-any-changes-to-dom" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.response.HXStopPolling" title="starlite.contrib.htmx.response.HXStopPolling"><code class="xref py py-class docutils literal notranslate"><span class="pre">HXStopPolling</span></code></a> (Instruct HTMX client to stop polling for response.)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">HXStopPolling</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">HXStopPolling</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.response.ClientRedirect" title="starlite.contrib.htmx.response.ClientRedirect"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientRedirect</span></code></a> (Client side Redirect with page reload.)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ClientRedirect</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">ClientRedirect</span><span class="p">(</span><span class="n">redirect_to</span><span class="o">=</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.response.ClientRefresh" title="starlite.contrib.htmx.response.ClientRefresh"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientRefresh</span></code></a> (Full Refresh of page on client side.)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ClientRefresh</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">ClientRefresh</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="responses-that-may-change-dom">
+<h3>2 - Responses that may change DOM.<a class="headerlink" href="#responses-that-may-change-dom" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.response.HXLocation" title="starlite.contrib.htmx.response.HXLocation"><code class="xref py py-class docutils literal notranslate"><span class="pre">HXLocation</span></code></a> (Instruct HTMX client to redirect to a new location without page reload and provides ability to change target, swapping method and send values and headers.)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/about&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">HXLocation</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">HXLocation</span><span class="p">(</span>
+        <span class="n">redirect_to</span><span class="o">=</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">,</span>
+        <span class="c1"># Optional parameters</span>
+        <span class="n">source</span><span class="p">,</span>  <span class="c1"># the source element of the request.</span>
+        <span class="n">event</span><span class="p">,</span>  <span class="c1"># an event that &quot;triggered&quot; the request.</span>
+        <span class="n">target</span><span class="o">=</span><span class="s2">&quot;#target&quot;</span><span class="p">,</span>  <span class="c1"># element id to target to.</span>
+        <span class="n">swap</span><span class="o">=</span><span class="s2">&quot;outerHTML&quot;</span><span class="p">,</span>  <span class="c1"># swapping method to use.</span>
+        <span class="n">hx_headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;attr&quot;</span><span class="p">:</span> <span class="s2">&quot;val&quot;</span><span class="p">},</span>  <span class="c1"># headers to pass to HTMX.</span>
+        <span class="n">values</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;val&quot;</span><span class="p">:</span> <span class="s2">&quot;one&quot;</span><span class="p">},</span>
+    <span class="p">)</span>  <span class="c1"># values to submit with response.</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.response.PushUrl" title="starlite.contrib.htmx.response.PushUrl"><code class="xref py py-class docutils literal notranslate"><span class="pre">PushUrl</span></code></a> (May carry a response and instruct HTMX client to push url to browser history. If value to push_url is set to boolean False it will send “false” to htmx client to prevent it from updating browser history.)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/about&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">PushUrl</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">PushUrl</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Success!&quot;</span><span class="p">,</span> <span class="n">push_url</span><span class="o">=</span><span class="s2">&quot;/about&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.response.ReplaceUrl" title="starlite.contrib.htmx.response.ReplaceUrl"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReplaceUrl</span></code></a> (May carry a response and instruct HTMX client to replace url in browser location bar. If value to replace_url is set to boolean False it will send “false” to htmx client to prevent it from updating browser location bar.)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ReplaceUrl</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">ReplaceUrl</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Success!&quot;</span><span class="p">,</span> <span class="n">replace_url</span><span class="o">=</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.response.Reswap" title="starlite.contrib.htmx.response.Reswap"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reswap</span></code></a> (May carry a response and instruct HTMX client to different swapping method.)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Reswap</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">Reswap</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Success!&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;beforebegin&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.response.Retarget" title="starlite.contrib.htmx.response.Retarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Retarget</span></code></a> (May carry a response and instruct HTMX client to change the target element.)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Retarget</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">Retarget</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Success!&quot;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;#new-target&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.response.TriggerEvent" title="starlite.contrib.htmx.response.TriggerEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">TriggerEvent</span></code></a> (May carry a response and instruct HTMX client to trigger an event.)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TriggerEvent</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">TriggerEvent</span><span class="p">(</span>
+        <span class="n">content</span><span class="o">=</span><span class="s2">&quot;Success!&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;showMessage&quot;</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;attr&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">},</span>
+        <span class="n">after</span><span class="o">=</span><span class="s2">&quot;receive&quot;</span><span class="p">,</span>  <span class="c1"># possible values &#39;receive&#39;, &#39;settle&#39; and &#39;swap&#39;</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
 </section>
 
         </article>
@@ -415,23 +546,23 @@ exporter to use these (see the
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="jwt.html">
+          <a class="next-page" href="../cli.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">JWT Security Backends</div>
+                <div class="title">CLI</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="index.html">
+          <a class="prev-page" href="jwt.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Contrib</div>
+                <div class="title">JWT Security Backends</div>
                 
               </div>
             </a>
@@ -466,8 +597,32 @@ exporter to use these (see the
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">HTMX Request Class</a><ul>
+<li><a class="reference internal" href="#htmx-response-classes">HTMX Response Classes</a><ul>
+<li><a class="reference internal" href="#htmxtemplate-response-classes">HTMXTemplate Response Classes</a></li>
+<li><a class="reference internal" href="#responses-that-don-t-make-any-changes-to-dom">1 - Responses that don’t make any changes to DOM.</a></li>
+<li><a class="reference internal" href="#responses-that-may-change-dom">2 - Responses that may change DOM.</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

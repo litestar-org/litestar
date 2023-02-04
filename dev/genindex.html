@@ -206,6 +206,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/contrib/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/contrib/htmx.html">HTMX Request Class</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usage/cli.html">CLI</a></li>
@@ -255,6 +256,7 @@
 <li class="toctree-l3"><a class="reference internal" href="reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/contrib/htmx.html">HTMX</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -376,8 +378,12 @@
 </li>
         <li><a href="reference/datastructures/provide.html#starlite.datastructures.provide.DependencyCleanupGroup.__aexit__">__aexit__() (starlite.datastructures.provide.DependencyCleanupGroup method)</a>
 </li>
-        <li><a href="reference/datastructures/state.html#starlite.datastructures.state.ImmutableState.__bool__">__bool__() (starlite.datastructures.state.ImmutableState method)</a>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.__bool__">__bool__() (starlite.contrib.htmx.request.HtmxDetails method)</a>
+
+        <ul>
+          <li><a href="reference/datastructures/state.html#starlite.datastructures.state.ImmutableState.__bool__">(starlite.datastructures.state.ImmutableState method)</a>
 </li>
+        </ul></li>
         <li><a href="reference/app.html#starlite.app.Starlite.__call__">__call__() (starlite.app.Starlite method)</a>
 
         <ul>
@@ -482,6 +488,28 @@
           <li><a href="reference/connection/request.html#starlite.connection.request.Request.__init__">(starlite.connection.request.Request method)</a>
 </li>
           <li><a href="reference/connection/websocket.html#starlite.connection.websocket.WebSocket.__init__">(starlite.connection.websocket.WebSocket method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.__init__">(starlite.contrib.htmx.request.HtmxDetails method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HTMXRequest.__init__">(starlite.contrib.htmx.request.HTMXRequest method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.ClientRedirect.__init__">(starlite.contrib.htmx.response.ClientRedirect method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.ClientRefresh.__init__">(starlite.contrib.htmx.response.ClientRefresh method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HXLocation.__init__">(starlite.contrib.htmx.response.HXLocation method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HXStopPolling.__init__">(starlite.contrib.htmx.response.HXStopPolling method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.PushUrl.__init__">(starlite.contrib.htmx.response.PushUrl method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.ReplaceUrl.__init__">(starlite.contrib.htmx.response.ReplaceUrl method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.Reswap.__init__">(starlite.contrib.htmx.response.Reswap method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.Retarget.__init__">(starlite.contrib.htmx.response.Retarget method)</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.TriggerEvent.__init__">(starlite.contrib.htmx.response.TriggerEvent method)</a>
 </li>
           <li><a href="reference/contrib/jinja.html#starlite.contrib.jinja.JinjaTemplateEngine.__init__">(starlite.contrib.jinja.JinjaTemplateEngine method)</a>
 </li>
@@ -810,6 +838,8 @@
         </ul></li>
         <li><a href="reference/datastructures/url.html#starlite.datastructures.url.Address">Address (class in starlite.datastructures.url)</a>
 </li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HTMXTemplate.after">after (starlite.contrib.htmx.response.HTMXTemplate attribute)</a>
+</li>
         <li><a href="reference/config.html#starlite.config.AppConfig.after_exception">after_exception (starlite.config.AppConfig attribute)</a>
 </li>
         <li><a href="reference/config.html#starlite.config.AppConfig.after_request">after_request (starlite.config.AppConfig attribute)</a>
@@ -972,10 +1002,10 @@
           <li><a href="reference/openapi.html#starlite.openapi.controller.OpenAPIController.before_request">(starlite.openapi.controller.OpenAPIController attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/config.html#starlite.config.AppConfig.before_send">before_send (starlite.config.AppConfig attribute)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyConfig.before_send_handler">before_send_handler (starlite.plugins.sql_alchemy.SQLAlchemyConfig attribute)</a>
 </li>
         <li><a href="reference/config.html#starlite.config.AppConfig.before_shutdown">before_shutdown (starlite.config.AppConfig attribute)</a>
@@ -991,6 +1021,8 @@
         <li><a href="reference/connection/request.html#starlite.connection.request.Request.body">body() (starlite.connection.request.Request method)</a>
 </li>
         <li><a href="reference/params.html#starlite.params.BodyKwarg">BodyKwarg (class in starlite.params)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.boosted">boosted (starlite.contrib.htmx.request.HtmxDetails property)</a>
 </li>
         <li><a href="reference/config.html#starlite.config.CompressionConfig.brotli_gzip_fallback">brotli_gzip_fallback (starlite.config.CompressionConfig attribute)</a>
 </li>
@@ -1061,6 +1093,10 @@
         <li><a href="reference/connection/base.html#starlite.connection.base.ASGIConnection.client">client (starlite.connection.base.ASGIConnection property)</a>
 </li>
         <li><a href="reference/exceptions/http_exceptions.html#starlite.exceptions.http_exceptions.ClientException">ClientException</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.ClientRedirect">ClientRedirect (class in starlite.contrib.htmx.response)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.ClientRefresh">ClientRefresh (class in starlite.contrib.htmx.response)</a>
 </li>
         <li><a href="reference/connection/websocket.html#starlite.connection.websocket.WebSocket.close">close() (starlite.connection.websocket.WebSocket method)</a>
 
@@ -1211,6 +1247,10 @@
         <li><a href="reference/middleware/csrf.html#starlite.middleware.csrf.CSRFMiddleware">CSRFMiddleware (class in starlite.middleware.csrf)</a>
 </li>
         <li><a href="reference/datastructures/pagination.html#starlite.datastructures.pagination.ClassicPagination.current_page">current_page (starlite.datastructures.pagination.ClassicPagination attribute)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.current_url">current_url (starlite.contrib.htmx.request.HtmxDetails property)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.current_url_abs_path">current_url_abs_path (starlite.contrib.htmx.request.HtmxDetails property)</a>
 </li>
         <li><a href="reference/datastructures/pagination.html#starlite.datastructures.pagination.CursorPagination.cursor">cursor (starlite.datastructures.pagination.CursorPagination attribute)</a>
 </li>
@@ -1868,17 +1908,25 @@
           <li><a href="reference/utils/exception.html#starlite.utils.exception.ExceptionResponseContent.headers">(starlite.utils.exception.ExceptionResponseContent attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.history_restore_request">history_restore_request (starlite.contrib.htmx.request.HtmxDetails property)</a>
+</li>
         <li><a href="reference/cache/memcached_cache_backend.html#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.host">host (starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig attribute)</a>
 
         <ul>
           <li><a href="reference/datastructures/url.html#starlite.datastructures.url.Address.host">(starlite.datastructures.url.Address attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/datastructures/url.html#starlite.datastructures.url.URL.hostname">hostname (starlite.datastructures.url.URL attribute)</a>
 </li>
         <li><a href="reference/config.html#starlite.config.StaticFilesConfig.html_mode">html_mode (starlite.config.StaticFilesConfig attribute)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails">HtmxDetails (class in starlite.contrib.htmx.request)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HTMXRequest">HTMXRequest (class in starlite.contrib.htmx.request)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HTMXTemplate">HTMXTemplate (class in starlite.contrib.htmx.response)</a>
 </li>
         <li><a href="reference/types.html#starlite.types.HTTPDisconnectEvent">HTTPDisconnectEvent (class in starlite.types)</a>
 </li>
@@ -1907,6 +1955,10 @@
         <li><a href="reference/types.html#starlite.types.HTTPSendMessage">HTTPSendMessage (in module starlite.types)</a>
 </li>
         <li><a href="reference/types.html#starlite.types.HTTPServerPushEvent">HTTPServerPushEvent (class in starlite.types)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HXLocation">HXLocation (class in starlite.contrib.htmx.response)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HXStopPolling">HXStopPolling (class in starlite.contrib.htmx.response)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -2292,6 +2344,10 @@
 </li>
           <li><a href="reference/connection/websocket.html#module-starlite.connection.websocket">starlite.connection.websocket</a>
 </li>
+          <li><a href="reference/contrib/htmx.html#module-starlite.contrib.htmx.request">starlite.contrib.htmx.request</a>
+</li>
+          <li><a href="reference/contrib/htmx.html#module-starlite.contrib.htmx.response">starlite.contrib.htmx.response</a>
+</li>
           <li><a href="reference/contrib/jinja.html#module-starlite.contrib.jinja">starlite.contrib.jinja</a>
 </li>
           <li><a href="reference/contrib/jwt.html#module-starlite.contrib.jwt">starlite.contrib.jwt</a>
@@ -2573,6 +2629,8 @@
           <li><a href="reference/openapi.html#starlite.openapi.controller.OpenAPIController.parameters">(starlite.openapi.controller.OpenAPIController attribute)</a>
 </li>
         </ul></li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HTMXTemplate.params">params (starlite.contrib.htmx.response.HTMXTemplate attribute)</a>
+</li>
         <li><a href="reference/enums.html#starlite.enums.ParamType">ParamType (class in starlite.enums)</a>
 </li>
         <li><a href="reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin.parse_model">parse_model() (starlite.plugins.sql_alchemy.SQLAlchemyPlugin static method)</a>
@@ -2619,10 +2677,10 @@
 </li>
         <li><a href="reference/types.html#starlite.types.PathType">PathType (in module starlite.types)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/exceptions/http_exceptions.html#starlite.exceptions.http_exceptions.PermissionDeniedException">PermissionDeniedException</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/plugins/piccolo_orm.html#starlite.plugins.piccolo_orm.PiccoloORMPlugin">PiccoloORMPlugin (class in starlite.plugins.piccolo_orm)</a>
 </li>
         <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginMapping.plugin">plugin (starlite.plugins.base.PluginMapping attribute)</a>
@@ -2663,6 +2721,8 @@
 </li>
         <li><a href="reference/config.html#starlite.config.StructLoggingConfig.processors">processors (starlite.config.StructLoggingConfig attribute)</a>
 </li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.prompt">prompt (starlite.contrib.htmx.request.HtmxDetails property)</a>
+</li>
         <li><a href="reference/config.html#starlite.config.LoggingConfig.propagate">propagate (starlite.config.LoggingConfig attribute)</a>
 </li>
         <li><a href="reference/datastructures/provide.html#starlite.datastructures.provide.Provide">Provide (class in starlite.datastructures.provide)</a>
@@ -2672,6 +2732,10 @@
         <li><a href="reference/datastructures/headers.html#starlite.datastructures.headers.CacheControlHeader.proxy_revalidate">proxy_revalidate (starlite.datastructures.headers.CacheControlHeader attribute)</a>
 </li>
         <li><a href="reference/datastructures/headers.html#starlite.datastructures.headers.CacheControlHeader.public">public (starlite.datastructures.headers.CacheControlHeader attribute)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HTMXTemplate.push_url">push_url (starlite.contrib.htmx.response.HTMXTemplate attribute)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.PushUrl">PushUrl (class in starlite.contrib.htmx.response)</a>
 </li>
         <li><a href="reference/handlers/http.html#starlite.handlers.http.put">put (class in starlite.handlers.http)</a>
 </li>
@@ -2724,6 +2788,10 @@
         <li><a href="reference/middleware/rate_limit.html#starlite.middleware.rate_limit.RateLimitConfig">RateLimitConfig (class in starlite.middleware.rate_limit)</a>
 </li>
         <li><a href="reference/middleware/rate_limit.html#starlite.middleware.rate_limit.RateLimitMiddleware">RateLimitMiddleware (class in starlite.middleware.rate_limit)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HTMXTemplate.re_swap">re_swap (starlite.contrib.htmx.response.HTMXTemplate attribute)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HTMXTemplate.re_target">re_target (starlite.contrib.htmx.response.HTMXTemplate attribute)</a>
 </li>
         <li><a href="reference/datastructures/upload_file.html#starlite.datastructures.upload_file.UploadFile.read">read() (starlite.datastructures.upload_file.UploadFile method)</a>
 </li>
@@ -2805,6 +2873,8 @@
 </li>
         <li><a href="reference/openapi.html#starlite.openapi.controller.OpenAPIController.render_swagger_ui">render_swagger_ui() (starlite.openapi.controller.OpenAPIController method)</a>
 </li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.ReplaceUrl">ReplaceUrl (class in starlite.contrib.htmx.response)</a>
+</li>
         <li><a href="reference/connection/request.html#starlite.connection.request.Request">Request (class in starlite.connection.request)</a>
 </li>
         <li><a href="reference/testing.html#starlite.testing.TestClient.request">request() (starlite.testing.TestClient method)</a>
@@ -2817,10 +2887,10 @@
 </li>
         <li><a href="reference/middleware/logging.html#starlite.middleware.logging.LoggingMiddlewareConfig.request_log_fields">request_log_fields (starlite.middleware.logging.LoggingMiddlewareConfig attribute)</a>
 </li>
-        <li><a href="reference/middleware/logging.html#starlite.middleware.logging.LoggingMiddlewareConfig.request_log_message">request_log_message (starlite.middleware.logging.LoggingMiddlewareConfig attribute)</a>
-</li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="reference/middleware/logging.html#starlite.middleware.logging.LoggingMiddlewareConfig.request_log_message">request_log_message (starlite.middleware.logging.LoggingMiddlewareConfig attribute)</a>
+</li>
         <li><a href="reference/enums.html#starlite.enums.RequestEncodingType">RequestEncodingType (class in starlite.enums)</a>
 </li>
         <li><a href="reference/testing.html#starlite.testing.RequestFactory">RequestFactory (class in starlite.testing)</a>
@@ -2900,6 +2970,10 @@
         <li><a href="reference/openapi.html#starlite.openapi.datastructures.ResponseSpec">ResponseSpec (class in starlite.openapi.datastructures)</a>
 </li>
         <li><a href="reference/datastructures/pagination.html#starlite.datastructures.pagination.CursorPagination.results_per_page">results_per_page (starlite.datastructures.pagination.CursorPagination attribute)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.Reswap">Reswap (class in starlite.contrib.htmx.response)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.Retarget">Retarget (class in starlite.contrib.htmx.response)</a>
 </li>
         <li><a href="reference/middleware/rate_limit.html#starlite.middleware.rate_limit.RateLimitMiddleware.retrieve_cached_history">retrieve_cached_history() (starlite.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
@@ -3217,6 +3291,20 @@
 </li>
         </ul></li>
         <li>
+    starlite.contrib.htmx.request
+
+        <ul>
+          <li><a href="reference/contrib/htmx.html#module-starlite.contrib.htmx.request">module</a>
+</li>
+        </ul></li>
+        <li>
+    starlite.contrib.htmx.response
+
+        <ul>
+          <li><a href="reference/contrib/htmx.html#module-starlite.contrib.htmx.response">module</a>
+</li>
+        </ul></li>
+        <li>
     starlite.contrib.jinja
 
         <ul>
@@ -3258,6 +3346,8 @@
           <li><a href="reference/datastructures/cookie.html#module-starlite.datastructures.cookie">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     starlite.datastructures.headers
 
@@ -3265,8 +3355,6 @@
           <li><a href="reference/datastructures/headers.html#module-starlite.datastructures.headers">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     starlite.datastructures.multi_dicts
 
@@ -3694,6 +3782,8 @@
           <li><a href="reference/openapi.html#starlite.openapi.controller.OpenAPIController.tags">(starlite.openapi.controller.OpenAPIController attribute)</a>
 </li>
         </ul></li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.target">target (starlite.contrib.htmx.request.HtmxDetails property)</a>
+</li>
         <li><a href="reference/datastructures/response_containers.html#starlite.datastructures.response_containers.Template">Template (class in starlite.datastructures.response_containers)</a>
 </li>
         <li><a href="reference/config.html#starlite.config.AppConfig.template_config">template_config (starlite.config.AppConfig attribute)</a>
@@ -3744,12 +3834,12 @@
           <li><a href="reference/datastructures/headers.html#starlite.datastructures.headers.Header.to_header">(starlite.datastructures.headers.Header method)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/datastructures/headers.html#starlite.datastructures.headers.Headers.to_header_list">to_header_list() (starlite.datastructures.headers.Headers method)</a>
 </li>
         <li><a href="reference/dto.html#starlite.dto.DTO.to_model_instance">to_model_instance() (starlite.dto.DTO method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/config.html#starlite.config.OpenAPIConfig.to_openapi_schema">to_openapi_schema() (starlite.config.OpenAPIConfig method)</a>
 </li>
         <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginProtocol.to_pydantic_model_class">to_pydantic_model_class() (starlite.plugins.base.PluginProtocol method)</a>
@@ -3762,9 +3852,11 @@
           <li><a href="reference/plugins/tortoise_orm.html#starlite.plugins.tortoise_orm.TortoiseORMPlugin.to_pydantic_model_class">(starlite.plugins.tortoise_orm.TortoiseORMPlugin method)</a>
 </li>
         </ul></li>
-        <li><a href="reference/datastructures/response_containers.html#starlite.datastructures.response_containers.File.to_response">to_response() (starlite.datastructures.response_containers.File method)</a>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HTMXTemplate.to_response">to_response() (starlite.contrib.htmx.response.HTMXTemplate method)</a>
 
         <ul>
+          <li><a href="reference/datastructures/response_containers.html#starlite.datastructures.response_containers.File.to_response">(starlite.datastructures.response_containers.File method)</a>
+</li>
           <li><a href="reference/datastructures/response_containers.html#starlite.datastructures.response_containers.Redirect.to_response">(starlite.datastructures.response_containers.Redirect method)</a>
 </li>
           <li><a href="reference/datastructures/response_containers.html#starlite.datastructures.response_containers.ResponseContainer.to_response">(starlite.datastructures.response_containers.ResponseContainer method)</a>
@@ -3793,6 +3885,16 @@
         <li><a href="reference/datastructures/pagination.html#starlite.datastructures.pagination.OffsetPagination.total">total (starlite.datastructures.pagination.OffsetPagination attribute)</a>
 </li>
         <li><a href="reference/datastructures/pagination.html#starlite.datastructures.pagination.ClassicPagination.total_pages">total_pages (starlite.datastructures.pagination.ClassicPagination attribute)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.trigger">trigger (starlite.contrib.htmx.request.HtmxDetails property)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HTMXTemplate.trigger_event">trigger_event (starlite.contrib.htmx.response.HTMXTemplate attribute)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.trigger_name">trigger_name (starlite.contrib.htmx.request.HtmxDetails property)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.TriggerEvent">TriggerEvent (class in starlite.contrib.htmx.response)</a>
+</li>
+        <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails.triggering_event">triggering_event (starlite.contrib.htmx.request.HtmxDetails property)</a>
 </li>
         <li><a href="reference/types.html#starlite.types.FileInfo.type">type (starlite.types.FileInfo attribute)</a>
 </li>
