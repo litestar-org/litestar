@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import ImproperlyConfiguredException, Response
+from starlite import Response
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import RedirectResponse
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient

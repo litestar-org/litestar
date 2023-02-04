@@ -4,13 +4,8 @@ from typing import Any, Optional
 import pytest
 from pydantic_openapi_schema.v3_1_0 import Info, OpenAPI
 
-from starlite import (
-    Cookie,
-    ImproperlyConfiguredException,
-    MediaType,
-    OpenAPIMediaType,
-    get,
-)
+from starlite import Cookie, MediaType, OpenAPIMediaType, get
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
 from starlite.status_codes import (
     HTTP_100_CONTINUE,

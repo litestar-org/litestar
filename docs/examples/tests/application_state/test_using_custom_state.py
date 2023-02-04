@@ -1,5 +1,6 @@
 from examples.application_state.using_custom_state import app
-from starlite import TestClient
+from starlite.testing import TestClient
+
 from starlite.status_codes import HTTP_200_OK
 
 

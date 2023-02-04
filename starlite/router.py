@@ -16,7 +16,7 @@ from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.controller import Controller
-from starlite.datastructures import CacheControlHeader, ETag, Provide
+from starlite.datastructures import CacheControlHeader, ETag
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import (
     ASGIRouteHandler,
@@ -24,6 +24,7 @@ from starlite.handlers import (
     HTTPRouteHandler,
     WebsocketRouteHandler,
 )
+from starlite.provide import Provide
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
     AfterRequestHookHandler,

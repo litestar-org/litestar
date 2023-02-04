@@ -1,6 +1,7 @@
 from typing import Dict
 
-from starlite import MissingDependencyException, Starlite, get
+from starlite import Starlite, get
+from starlite.exceptions import MissingDependencyException
 from tests.openapi.utils import PersonController, PetController
 
 

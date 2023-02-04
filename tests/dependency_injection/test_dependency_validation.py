@@ -1,6 +1,7 @@
 import pytest
 
-from starlite import ImproperlyConfiguredException, Provide, Starlite, get
+from starlite import Provide, Starlite, get
+from starlite.exceptions import ImproperlyConfiguredException
 
 
 def first_method(query_param: int) -> int:

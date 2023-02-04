@@ -6,17 +6,8 @@ from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-from starlite import (
-    Controller,
-    DefineMiddleware,
-    MiddlewareProtocol,
-    Request,
-    Response,
-    Router,
-    ScopeType,
-    get,
-    post,
-)
+from starlite import Controller, Request, Response, Router, ScopeType, get, post
+from starlite.middleware import DefineMiddleware, MiddlewareProtocol
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:

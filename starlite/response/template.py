@@ -7,7 +7,7 @@ from starlite.response.base import Response
 from starlite.status_codes import HTTP_200_OK
 
 if TYPE_CHECKING:
-    from starlite.datastructures import BackgroundTask, BackgroundTasks
+    from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.template import TemplateEngineProtocol
     from starlite.types import ResponseCookies
 

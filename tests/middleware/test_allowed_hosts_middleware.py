@@ -3,8 +3,9 @@ from typing import TYPE_CHECKING, Any, cast
 import pytest
 from pydantic import ValidationError
 
-from starlite import MiddlewareProtocol, get
+from starlite import get
 from starlite.config import AllowedHostsConfig
+from starlite.middleware import MiddlewareProtocol
 from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client

@@ -22,20 +22,9 @@ from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 from typing_extensions import get_args
 
+from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.datastructures import (
-    CacheControlHeader,
-    Cookie,
-    ETag,
-    Provide,
-    ResponseHeader,
-)
-from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
-from starlite.datastructures.response_containers import (
-    File,
-    Redirect,
-    ResponseContainer,
-)
+from starlite.datastructures import CacheControlHeader, Cookie, ETag, ResponseHeader
 from starlite.dto import DTO
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
@@ -46,7 +35,9 @@ from starlite.exceptions import (
 from starlite.handlers.base import BaseRouteHandler
 from starlite.openapi.datastructures import ResponseSpec
 from starlite.plugins import get_plugin_for_value
+from starlite.provide import Provide
 from starlite.response import FileResponse, Response
+from starlite.response_containers import File, Redirect, ResponseContainer
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,

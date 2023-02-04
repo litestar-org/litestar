@@ -19,7 +19,7 @@ from starlite.types.composite_types import StreamType
 from starlite.utils.sync import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
-    from starlite.datastructures import BackgroundTask, BackgroundTasks
+    from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.enums import OpenAPIMediaType
     from starlite.types import HTTPResponseBodyEvent, Receive, ResponseCookies, Send
 

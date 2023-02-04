@@ -6,9 +6,9 @@ from starlite.routes.base import BaseRoute
 
 if TYPE_CHECKING:
     from starlite.connection import WebSocket
-    from starlite.datastructures.provide import DependencyCleanupGroup
     from starlite.handlers.websocket import WebsocketRouteHandler
     from starlite.kwargs import KwargsModel
+    from starlite.provide import DependencyCleanupGroup
     from starlite.types import Receive, Send, WebSocketScope
 
 

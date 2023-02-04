@@ -3,8 +3,8 @@ from typing import List
 from pydantic import BaseConfig, BaseModel
 
 from starlite import Body, RequestEncodingType, Starlite, post
-from starlite.datastructures import UploadFile
 from starlite.openapi.request_body import create_request_body
+from starlite.upload_file import UploadFile
 from tests.openapi.utils import PersonController
 
 

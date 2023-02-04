@@ -9,10 +9,11 @@ from unittest.mock import patch
 
 import pytest
 
-from starlite import InternalServerException, MediaType, StaticFilesConfig, get
+from starlite import MediaType, get
+from starlite.config.static_files import StaticFilesConfig
 from starlite.connection import Request, empty_send
 from starlite.datastructures import Address
-from starlite.exceptions import SerializationException
+from starlite.exceptions import InternalServerException, SerializationException
 from starlite.response import Response
 from starlite.testing import TestClient, create_test_client
 from starlite.utils.serialization import encode_msgpack
@@ -339,10 +340,10 @@ async def test_request_disconnect() -> None:
 
 def test_request_state() -> None:
     @get("/")
-    def handler(request: Request[Any, Any, Any]) -> Any:
+    def handler(request: Request[Any, Any, Any]) -> Dict[Any, Any]:
         request.state.test = 1
         assert request.state.test == 1
-        return request.state.dict()
+        return request.state.dict()  # type: ignore
 
     with create_test_client(handler) as client:
         response = client.get("/")

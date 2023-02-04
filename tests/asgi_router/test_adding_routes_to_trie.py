@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import ImproperlyConfiguredException, Starlite, asgi
+from starlite import Starlite, asgi
+from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send

@@ -8,11 +8,8 @@ from bs4 import BeautifulSoup
 
 from starlite import (
     Body,
-    CSRFConfig,
     MediaType,
     RequestEncodingType,
-    Template,
-    TemplateConfig,
     WebSocket,
     delete,
     get,
@@ -21,8 +18,11 @@ from starlite import (
     put,
     websocket,
 )
+from starlite.config.csrf import CSRFConfig
+from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
+from starlite.response_containers import Template
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
 from starlite.testing import create_test_client
 

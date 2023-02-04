@@ -3,9 +3,12 @@ from typing import List
 from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import Mapped, declarative_base
 
-from starlite import DTOFactory, HTTPException, Starlite, get
+from starlite import Starlite, get
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.status_codes import HTTP_404_NOT_FOUND
+from starlite.exceptions import HTTPException
+from starlite.dto import DTOFactory
+
 
 sqlalchemy_plugin = SQLAlchemyPlugin()
 dto_factory = DTOFactory(plugins=[sqlalchemy_plugin])

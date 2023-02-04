@@ -4,18 +4,7 @@ from pathlib import Path
 import pytest
 from pydantic import BaseModel
 
-from starlite import (
-    Cookie,
-    File,
-    MediaType,
-    Redirect,
-    Response,
-    ResponseHeader,
-    Starlite,
-    Stream,
-    Template,
-    get,
-)
+from starlite import Cookie, MediaType, Response, ResponseHeader, Starlite, get
 from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
@@ -31,6 +20,7 @@ from starlite.openapi.responses import (
     create_success_response,
 )
 from starlite.response.base import T
+from starlite.response_containers import File, Redirect, Stream, Template
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_307_TEMPORARY_REDIRECT,
