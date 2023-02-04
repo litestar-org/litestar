@@ -6,7 +6,9 @@ from pydantic import BaseModel
 from starlite import (
     Controller,
     HttpMethod,
+    ImproperlyConfiguredException,
     Response,
+    Starlite,
     delete,
     get,
     patch,
@@ -82,3 +84,19 @@ def test_controller_with_websocket_handler() -> None:
         ws.send_json({"data": "123"})
         data = ws.receive_json()
         assert data
+
+
+def test_controller_validation() -> None:
+    class BuggyController(Controller):
+        path: str = "/ctrl"
+
+        @get()
+        async def handle_get(self) -> str:
+            return "Hello World"
+
+        @get()
+        async def handle_get2(self) -> str:
+            return "Hello World"
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[BuggyController])
