@@ -535,6 +535,23 @@ the controller.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.controller.Controller.validate_route_handlers">
+<span class="sig-name descname"><span class="pre">validate_route_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route_handlers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="handlers/base.html#starlite.handlers.base.BaseRouteHandler" title="starlite.handlers.base.BaseRouteHandler"><span class="pre">BaseRouteHandler</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.controller.Controller.validate_route_handlers" title="Permalink to this definition">#</a></dt>
+<dd><p>Validate that the combination of path and decorator method or type are unique on the controller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>route_handlers</strong> – The controller’s route handlers.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -630,6 +647,7 @@ the controller.</p>
 <li><a class="reference internal" href="#starlite.controller.Controller.path"><code class="docutils literal notranslate"><span class="pre">Controller.path</span></code></a></li>
 <li><a class="reference internal" href="#starlite.controller.Controller.owner"><code class="docutils literal notranslate"><span class="pre">Controller.owner</span></code></a></li>
 <li><a class="reference internal" href="#starlite.controller.Controller.get_route_handlers"><code class="docutils literal notranslate"><span class="pre">Controller.get_route_handlers()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.controller.Controller.validate_route_handlers"><code class="docutils literal notranslate"><span class="pre">Controller.validate_route_handlers()</span></code></a></li>
 </ul>
 </li>
 </ul>
