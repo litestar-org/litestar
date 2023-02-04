@@ -625,6 +625,7 @@ class Starlite(Router):
         asgi_handler: "ASGIApp" = self.asgi_router
         if self.cors_config:
             asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
+
         return wrap_in_exception_handler(
             debug=self.debug, app=asgi_handler, exception_handlers=self.exception_handlers or {}
         )

@@ -6,7 +6,7 @@ from structlog.testing import capture_logs
 
 from starlite import Cookie, Response, get, post
 from starlite.config.compression import CompressionConfig
-from starlite.config.logging import LoggingConfig, StructLoggingConfig, default_handlers
+from starlite.config.logging import LoggingConfig, StructLoggingConfig
 from starlite.middleware import LoggingMiddlewareConfig
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
@@ -24,18 +24,6 @@ def handler() -> Response:
         headers={"token": "123", "regular": "abc"},
         cookies=[Cookie(key="first-cookie", value="abc"), Cookie(key="second-cookie", value="xxx")],
     )
-
-
-@pytest.fixture
-def get_logger() -> "GetLogger":
-    # due to the limitations of caplog we have to place this call here.
-    # we also have to allow propagation.
-    return LoggingConfig(
-        handlers=default_handlers,
-        loggers={
-            "starlite": {"level": "INFO", "handlers": ["queue_listener"], "propagate": True},
-        },
-    ).configure()
 
 
 def test_logging_middleware_regular_logger(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:

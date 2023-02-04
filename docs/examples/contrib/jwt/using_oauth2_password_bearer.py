@@ -64,7 +64,7 @@ async def login_handler(request: "Request[Any, Any, Any]", data: User) -> Respon
 
 
 @post("/login_custom")
-async def login_custom_response_handler(request: "Request[Any, Any]", data: User) -> Response[User]:
+async def login_custom_response_handler(request: "Request[Any, Any, Any]", data: User) -> Response[User]:
     await request.cache.set(str(data.id), data.dict())
 
     # If you'd like to define a custom response body, use the `response_body` parameter.  Note the `Response[User]` return type.

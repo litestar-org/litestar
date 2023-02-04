@@ -29,10 +29,20 @@ def test_get_starlite_scope_state_without_default_does_not_set_key_in_scope_stat
     assert "key" not in scope["state"][SCOPE_STATE_NAMESPACE]
 
 
-def test_get_starlite_scope_state_with_default_sets_key_in_scope_state(scope: "HTTPScope") -> None:
+def test_get_starlite_scope_state_with_default_does_not_set_key_in_scope_state(scope: "HTTPScope") -> None:
     value = get_starlite_scope_state(scope, "key", "value")
     assert SCOPE_STATE_NAMESPACE in scope["state"]
-    assert scope["state"][SCOPE_STATE_NAMESPACE]["key"] == "value" == value
+    assert value == "value"
+    assert "key" not in scope["state"][SCOPE_STATE_NAMESPACE]
+
+
+def test_get_starlite_scope_state_removes_value_from_state(scope: "HTTPScope") -> None:
+    key = "test"
+    value = {"key": "value"}
+    scope["state"][SCOPE_STATE_NAMESPACE] = {key: value}
+    retrieved_value = get_starlite_scope_state(scope, key, pop=True)
+    assert retrieved_value == value
+    assert key not in scope["state"][SCOPE_STATE_NAMESPACE]
 
 
 def test_set_starlite_scope_state(scope: "HTTPScope") -> None:

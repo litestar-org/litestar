@@ -1,12 +1,13 @@
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Dict, List, Mapping, Optional, cast
 
+import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import booleans, lists, none, one_of, sampled_from
 
 from starlite import get
 from starlite.config.cors import CORSConfig
 from starlite.middleware import CORSMiddleware
-from starlite.status_codes import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from starlite.testing import create_test_client
 
 
@@ -76,3 +77,23 @@ def test_cors_simple_response(
             assert "Access-Control-Allow-Origin" not in response.headers
             assert "Access-Control-Allow-Credentials" not in response.headers
             assert "Access-Control-Expose-Headers" not in response.headers
+
+
+@pytest.mark.parametrize("origin, should_apply_cors", (("http://www.example.com", True), (None, False)))
+def test_cors_applied_on_exception_response_if_origin_is_present(
+    origin: Optional[str], should_apply_cors: bool
+) -> None:
+    @get("/")
+    def handler() -> Dict[str, str]:
+        return {"hello": "world"}
+
+    cors_config = CORSConfig(allow_origins=["http://www.example.com"])
+
+    with create_test_client(handler, cors_config=cors_config) as client:
+        headers: Mapping[str, str] = {"Origin": origin} if origin else {}
+        response = client.get("/abc", headers=headers)
+        assert response.status_code == HTTP_404_NOT_FOUND
+        if should_apply_cors:
+            assert response.headers.get("Access-Control-Allow-Origin") == origin
+        else:
+            assert not response.headers.get("Access-Control-Allow-Origin")
