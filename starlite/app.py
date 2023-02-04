@@ -316,7 +316,7 @@ class Starlite(Router):
             event_emitter_backend=event_emitter_backend,
             exception_handlers=exception_handlers or {},
             guards=list(guards or []),
-            initial_state=initial_state or {},
+            initial_state=dict(initial_state or {}),
             listeners=list(listeners or []),
             logging_config=logging_config if logging_config is not Empty else LoggingConfig() if debug else None,  # type: ignore[arg-type]
             middleware=list(middleware or []),

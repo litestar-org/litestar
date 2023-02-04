@@ -1,16 +1,4 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Iterable,
-    List,
-    Literal,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Sequence, Type, Union
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.controller import Controller
@@ -32,7 +20,6 @@ if TYPE_CHECKING:
         WebSocket,
     )
     from starlite.config import AllowedHostsConfig
-    from starlite.datastructures.state import ImmutableState
     from starlite.middleware.session.base import BaseBackendConfig
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -51,6 +38,7 @@ if TYPE_CHECKING:
         ParametersMap,
         ResponseType,
     )
+    from starlite.types.composite_types import InitialStateType
     from starlite.types.helper_types import OptionalSequence
 
 
@@ -76,7 +64,7 @@ def create_test_client(
     dependencies: Optional["Dependencies"] = None,
     exception_handlers: Optional["ExceptionHandlersMap"] = None,
     guards: Optional[List["Guard"]] = None,
-    initial_state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
+    initial_state: Optional["InitialStateType"] = None,
     logging_config: Optional["BaseLoggingConfig"] = None,
     middleware: Optional[List["Middleware"]] = None,
     on_app_init: Optional[List["OnAppInitHandler"]] = None,
