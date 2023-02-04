@@ -1,7 +1,7 @@
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Type, Union, cast
 
 from pydantic_openapi_schema import construct_open_api_with_schema_class
 from typing_extensions import TypedDict
@@ -154,8 +154,7 @@ class Starlite(Router):
 
     def __init__(
         self,
-        route_handlers: List["ControllerRouterHandler"],
-        *,
+        route_handlers: Optional[Sequence["ControllerRouterHandler"]] = None,
         after_exception: Optional["SingleOrList[AfterExceptionHookHandler]"] = None,
         after_request: Optional["AfterRequestHookHandler"] = None,
         after_response: Optional["AfterResponseHookHandler"] = None,
@@ -320,7 +319,7 @@ class Starlite(Router):
             response_class=response_class,
             response_cookies=response_cookies or [],
             response_headers=response_headers or {},
-            route_handlers=route_handlers,
+            route_handlers=list(route_handlers) if route_handlers is not None else [],
             security=security or [],
             static_files_config=static_files_config or [],
             tags=tags or [],

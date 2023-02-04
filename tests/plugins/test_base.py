@@ -77,7 +77,7 @@ def test_plugin_on_app_init() -> None:
             app.on_startup.append(on_startup)
             app.register(greet)
 
-    with create_test_client(route_handlers=[], plugins=[PluginWithInitOnly()]) as client:  # type: ignore[abstract]
+    with create_test_client(plugins=[PluginWithInitOnly()]) as client:  # type: ignore[abstract]
         response = client.get("/")
         assert response.text == "hello world"
 
