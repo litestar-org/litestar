@@ -10,7 +10,6 @@ from typing import (
     Set,
     Tuple,
     Type,
-    Union,
     cast,
 )
 
@@ -110,7 +109,7 @@ def get_type_annotation_from_plugin(
 
 
 def parse_fn_signature(
-    fn: Union["AnyCallable", Type], plugins: List["PluginProtocol"], dependency_name_set: Set[str]
+    fn: "AnyCallable", plugins: List["PluginProtocol"], dependency_name_set: Set[str]
 ) -> Tuple[List[ParsedSignatureParameter], Any, Dict[str, PluginMapping], Set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
 
@@ -163,7 +162,7 @@ def parse_fn_signature(
 
 
 def create_signature_model(
-    fn: Union["AnyCallable", Type], plugins: List["PluginProtocol"], dependency_name_set: Set[str]
+    fn: "AnyCallable", plugins: List["PluginProtocol"], dependency_name_set: Set[str]
 ) -> Type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
