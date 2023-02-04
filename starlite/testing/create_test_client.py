@@ -1,4 +1,14 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Sequence, Type, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Sequence,
+    Type,
+    Union,
+)
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.controller import Controller
