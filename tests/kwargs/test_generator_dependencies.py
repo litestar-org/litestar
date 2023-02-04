@@ -4,7 +4,8 @@ from unittest.mock import MagicMock
 import pytest
 from pytest import FixtureRequest
 
-from starlite import Provide, WebSocket, create_test_client, get, websocket
+from starlite import Provide, WebSocket, get, websocket
+from starlite.testing import create_test_client
 
 
 @pytest.fixture

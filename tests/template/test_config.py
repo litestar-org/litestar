@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from starlite import TemplateConfig
+from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 
 if TYPE_CHECKING:

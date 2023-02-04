@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 from fsspec.implementations.local import LocalFileSystem
 
-from starlite import InternalServerException, NotAuthorizedException
+from starlite.exceptions import InternalServerException, NotAuthorizedException
 from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
 
 if TYPE_CHECKING:

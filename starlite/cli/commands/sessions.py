@@ -1,8 +1,9 @@
 from click import argument, group
 from rich.prompt import Confirm
 
-from starlite import DefineMiddleware, Starlite
+from starlite import Starlite
 from starlite.cli.utils import StarliteCLIException, StarliteGroup, console
+from starlite.middleware import DefineMiddleware
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.base import ServerSideBackend
 from starlite.utils import is_class_and_subclass

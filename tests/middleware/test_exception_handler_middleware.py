@@ -4,18 +4,12 @@ from typing import TYPE_CHECKING, Any, Optional
 import pytest
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from starlite import (
-    HTTPException,
-    LoggingConfig,
-    Request,
-    Response,
-    Starlite,
-    TestClient,
-    get,
-)
+from starlite import Request, Response, Starlite, get
+from starlite.config import LoggingConfig
+from starlite.exceptions import HTTPException
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from starlite.testing import create_test_client
+from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture

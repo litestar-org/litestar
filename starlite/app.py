@@ -44,9 +44,10 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
-    from starlite.datastructures import CacheControlHeader, ETag, Provide
+    from starlite.datastructures import CacheControlHeader, ETag
     from starlite.handlers.base import BaseRouteHandler
     from starlite.plugins.base import PluginProtocol
+    from starlite.provide import Provide
     from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,

@@ -8,7 +8,6 @@ from pydantic.main import BaseModel
 from starlite import (
     HttpMethod,
     HTTPRouteHandler,
-    ImproperlyConfiguredException,
     MediaType,
     Response,
     delete,
@@ -17,6 +16,7 @@ from starlite import (
     post,
     put,
 )
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http import _get_default_status_code
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.types import ResponseType

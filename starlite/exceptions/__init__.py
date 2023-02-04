@@ -1,7 +1,7 @@
 from .base_exceptions import (
     MissingDependencyException,
     SerializationException,
-    StarLiteException,
+    StarliteException,
 )
 from .http_exceptions import (
     ClientException,
@@ -33,7 +33,7 @@ __all__ = (
     "PermissionDeniedException",
     "SerializationException",
     "ServiceUnavailableException",
-    "StarLiteException",
+    "StarliteException",
     "TemplateNotFoundException",
     "TooManyRequestsException",
     "ValidationException",

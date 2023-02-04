@@ -12,9 +12,10 @@ from opentelemetry.sdk.trace import Span, TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
-from starlite import WebSocket, create_test_client, get, websocket
+from starlite import WebSocket, get, websocket
 from starlite.contrib.opentelemetry import OpenTelemetryConfig
 from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 
 def create_config(**kwargs: Any) -> Tuple[OpenTelemetryConfig, InMemoryMetricReader, InMemorySpanExporter]:

@@ -28,7 +28,8 @@ if TYPE_CHECKING:
 
     from anyio import Path
 
-    from starlite.datastructures import BackgroundTask, BackgroundTasks, ETag
+    from starlite.background_tasks import BackgroundTask, BackgroundTasks
+    from starlite.datastructures.headers import ETag
     from starlite.types import (
         HTTPResponseBodyEvent,
         PathType,

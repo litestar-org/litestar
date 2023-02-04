@@ -2,17 +2,13 @@ from typing import TYPE_CHECKING, Type
 
 import pytest
 
-from starlite import (
-    Controller,
+from starlite import Controller, Request, Response, Router, get
+from starlite.exceptions import (
     HTTPException,
     InternalServerException,
     NotFoundException,
-    Request,
-    Response,
-    Router,
     ServiceUnavailableException,
     ValidationException,
-    get,
 )
 from starlite.testing import create_test_client
 

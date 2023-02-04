@@ -4,8 +4,8 @@ import pytest
 
 from starlite import MediaType, WebSocket, get, websocket
 from starlite.config import CompressionConfig
-from starlite.datastructures import Stream
 from starlite.enums import CompressionEncoding
+from starlite.response_containers import Stream
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 

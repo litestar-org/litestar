@@ -3,8 +3,9 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic import ValidationError
 
-from starlite import HttpMethod, ImproperlyConfiguredException, MediaType, Starlite, get
+from starlite import HttpMethod, MediaType, Starlite, get
 from starlite.config import StaticFilesConfig
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK, HTTP_405_METHOD_NOT_ALLOWED
 from starlite.testing import create_test_client
 

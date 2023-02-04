@@ -10,13 +10,14 @@ from pydantic_openapi_schema.v3_1_0 import (
     SecurityScheme,
 )
 
-from starlite import Cookie, DefineMiddleware, Response
+from starlite import Cookie, Response
 from starlite.contrib.jwt.jwt_token import Token
 from starlite.contrib.jwt.middleware import (
     JWTAuthenticationMiddleware,
     JWTCookieAuthenticationMiddleware,
 )
 from starlite.enums import MediaType
+from starlite.middleware import DefineMiddleware
 from starlite.security.base import AbstractSecurityConfig, UserType
 from starlite.status_codes import HTTP_201_CREATED
 

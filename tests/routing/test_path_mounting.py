@@ -2,15 +2,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import (
-    ImproperlyConfiguredException,
-    MediaType,
-    Response,
-    Starlite,
-    asgi,
-    get,
-    websocket,
-)
+from starlite import MediaType, Response, Starlite, asgi, get, websocket
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 

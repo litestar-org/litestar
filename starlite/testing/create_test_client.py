@@ -16,20 +16,18 @@ from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.testing.client.sync_client import TestClient
 
 if TYPE_CHECKING:
-    from starlite import (
+    from starlite import PluginProtocol, Request, WebSocket
+    from starlite.config import (
+        AllowedHostsConfig,
         BaseLoggingConfig,
         CacheConfig,
         CompressionConfig,
         CORSConfig,
         CSRFConfig,
         OpenAPIConfig,
-        PluginProtocol,
-        Request,
         StaticFilesConfig,
         TemplateConfig,
-        WebSocket,
     )
-    from starlite.config import AllowedHostsConfig
     from starlite.datastructures.state import ImmutableState
     from starlite.middleware.session.base import BaseBackendConfig
     from starlite.types import (
