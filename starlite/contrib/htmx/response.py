@@ -1,7 +1,7 @@
-from typing import Any, Dict, Generic, Optional, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union
 from urllib.parse import quote
 
-from starlite import Response, Template
+from starlite import MediaType, Request, Response, Starlite, Template
 from starlite.contrib.htmx.types import (
     EventAfterType,
     HtmxHeaderType,
@@ -12,6 +12,9 @@ from starlite.contrib.htmx.types import (
 )
 from starlite.contrib.htmx.utils import HTMX_STOP_POLLING, get_headers
 from starlite.status_codes import HTTP_200_OK
+
+if TYPE_CHECKING:
+    from starlite.response import TemplateResponse
 
 # HTMX defined HTTP status code.
 # Response carrying this status code will ask client to stop Polling.
@@ -158,21 +161,40 @@ class HXLocation(Response):
 
 
 class HTMXTemplate(Template):
-    """Send Template or Partial Template and push url to browser history stack"""
+    """Container type for returning Template responses."""
 
-    def __init__(
+    push_url: Optional[PushUrlType] = None
+    """string url to push to browser history or boolean False to prevent from pushing to browser history."""
+    re_swap: ReSwapMethod = None
+    """string method value to instruct HTMX which swapping method to use."""
+    re_target: Optional[str] = None
+    """string value for 'id of target element' to apply changes to."""
+    trigger_event: Optional[str] = None
+    """string value of event name to trigger."""
+    params: Optional[Dict[str, Any]] = None
+    """dictionary of parameters if any required to trigger event."""
+    after: Optional[EventAfterType] = None
+    """string value for changes to apply after 'receive', 'settle' or 'swap' event."""
+
+    def to_response(
         self,
-        push_url: Optional[PushUrlType] = None,
-        re_swap: ReSwapMethod = None,
-        re_target: Optional[str] = None,
-        trigger_event: Optional[str] = None,
-        params: Optional[Dict[str, Any]] = None,
-        after: Optional[EventAfterType] = None,
-        **kwargs: Any,
-    ) -> None:
-        """Initialize class"""
-        event = TriggerEventType(name=str(trigger_event), params=params, after=after) if trigger_event else None
+        headers: Dict[str, Any],
+        media_type: Union["MediaType", str],
+        status_code: int,
+        app: "Starlite",
+        request: "Request",
+    ) -> "TemplateResponse":
+        """Add HTMX headers and create TemplateResponse"""
+
+        if self.trigger_event:
+            event = TriggerEventType(name=str(self.trigger_event), params=self.params, after=self.after)
+        else:
+            event = None
         hx_headers: Dict[str, Any] = get_headers(
-            hx_headers=HtmxHeaderType(push_url=push_url, re_swap=re_swap, re_target=re_target, trigger_event=event)
+            hx_headers=HtmxHeaderType(
+                push_url=self.push_url, re_swap=self.re_swap, re_target=self.re_target, trigger_event=event
+            )
         )
-        super().__init__(headers=hx_headers, **kwargs)
+        return super().to_response(
+            headers=hx_headers, status_code=status_code, media_type=media_type, app=app, request=request
+        )

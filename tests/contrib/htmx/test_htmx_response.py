@@ -368,11 +368,9 @@ def test_HTMXTemplate_response_bad_trigger_params(
         ),
     ) as client:
         response = client.get("/")
-        error = response.json()
-        assert (
-            error["detail"]
-            == "ValueError(\"Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.\")"
-        )
+        error = response.json()["detail"]
+        assert "ValidationError" in error
+        assert "unexpected value; permitted: 'receive', 'settle', 'swap', None" in error
         assert response.headers.get(HTMXHeaders.PUSH_URL) is None
         assert response.headers.get(HTMXHeaders.RE_SWAP) is None
         assert response.headers.get(HTMXHeaders.RE_TARGET) is None

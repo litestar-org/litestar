@@ -9,6 +9,7 @@ if TYPE_CHECKING:
         EventAfterType,
         HtmxHeaderType,
         LocationType,
+        PushUrlType,
         ReSwapMethod,
         TriggerEventType,
     )
@@ -62,14 +63,23 @@ def get_redirect_header(url: str) -> Dict[str, Any]:
     return {HTMXHeaders.REDIRECT.value: quote(url, safe="/#%[]=:;$&()+,!?*@'~"), "Location": ""}
 
 
-def get_push_url_header(url: str) -> Dict[str, Any]:
+def get_push_url_header(url: "PushUrlType") -> Dict[str, Any]:
     """Return headers for push url to browser history response."""
-    return {HTMXHeaders.PUSH_URL.value: url if url else "false"}
+    if isinstance(url, str):
+        url = url if url != "False" else "false"
+    elif isinstance(url, bool):
+        url = "false"
+
+    return {HTMXHeaders.PUSH_URL.value: url}
 
 
-def get_replace_url_header(url: str) -> Dict[str, Any]:
+def get_replace_url_header(url: "PushUrlType") -> Dict[str, Any]:
     """Return headers for replace url in browser tab response."""
-    return {HTMXHeaders.REPLACE_URL: url if url else "false"}
+    if isinstance(url, str):
+        url = url if url != "False" else "false"
+    else:
+        url = "false"
+    return {HTMXHeaders.REPLACE_URL: url}
 
 
 def get_refresh_header(refresh: bool) -> Dict[str, Any]:

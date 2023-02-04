@@ -4,7 +4,7 @@ from typing_extensions import Required
 
 EventAfterType = Literal["receive", "settle", "swap", None]
 
-PushUrlType = Union[str, Literal[False]]
+PushUrlType = Union[str, bool]
 
 ReSwapMethod = Literal[
     "innerHTML", "outerHTML", "beforebegin", "afterbegin", "beforeend", "afterend", "delete", "none", None
