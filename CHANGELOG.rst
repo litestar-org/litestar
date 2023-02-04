@@ -1,6 +1,16 @@
 Changelog
 =========
 
+1.51.0
+-------
+
+- fix optional sequence query param
+- fix emory leak in logging middleware
+- add missing CORS headers on exception responses
+- configure logger and force "DEBUG" level in debug mode
+- allow on-app-init hooks to modify initial state
+- add exception logging in debug mode
+
 1.50.2
 ------
 
