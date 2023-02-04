@@ -58,7 +58,7 @@ the application:
 The above example illustrates how dependencies are declared on the different layers of the application.
 
 Dependencies can be either callables - sync or async functions, methods or class instances that implement the
-:meth:`__call__` method, or class constructors. These are in turn wrapped inside an instance of the
+:meth:`__call__` method, or classes. These are in turn wrapped inside an instance of the
 :class:`Provide <.datastructures.Provide>` class.
 
 Pre-requisites and Scope
