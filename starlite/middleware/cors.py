@@ -36,7 +36,6 @@ class CORSMiddleware(AbstractMiddleware):
             None
         """
         headers = Headers.from_scope(scope=scope)
-
         origin = headers.get("origin")
 
         if not origin:
