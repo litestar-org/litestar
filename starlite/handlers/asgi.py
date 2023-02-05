@@ -5,7 +5,12 @@ from pydantic import validate_arguments
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import AsyncAnyCallable, ExceptionHandlersMap, Guard
+from starlite.types import (
+    AsyncAnyCallable,
+    ExceptionHandlersMap,
+    Guard,
+    TypeEncodersMap,
+)
 from starlite.utils import Ref, is_async_callable
 
 if TYPE_CHECKING:
@@ -31,6 +36,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         opt: Optional[Dict[str, Any]] = None,
         is_mount: bool = False,
         is_static: bool = False,
+        type_encoders: Optional[TypeEncodersMap] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``ASGIRouteHandler``.
@@ -47,6 +53,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
                 will accept requests for `/some-path/` and any sub path under this, e.g. `/some-path/sub-path/` etc.
             is_static: A boolean dictating whether the handler's paths should be regarded as static paths. Static paths
                 are used to deliver static files.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self.is_mount = is_mount or is_static
