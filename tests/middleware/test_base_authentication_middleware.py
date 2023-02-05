@@ -4,6 +4,7 @@ import pytest
 from pydantic import BaseModel
 
 from starlite import Starlite, get, websocket
+from starlite.config import StaticFilesConfig
 from starlite.connection import Request, WebSocket
 from starlite.exceptions import PermissionDeniedException, WebSocketDisconnect
 from starlite.middleware.authentication import (
@@ -19,6 +20,8 @@ from starlite.status_codes import (
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from starlite.connection import ASGIConnection
 
 
@@ -227,4 +230,26 @@ def test_authentication_middleware_exclude_from_auth_custom_key() -> None:
         assert response.status_code == HTTP_200_OK
 
         response = client.get("/west")
+        assert response.status_code == HTTP_403_FORBIDDEN
+
+
+def test_authentication_middleware_excludes_static_paths(tmpdir: "Path") -> None:
+    # see: https://github.com/starlite-api/starlite/issues/1149
+
+    path = tmpdir / "test.txt"
+    path.write_text("content", "utf-8")
+
+    auth_mw = DefineMiddleware(AuthMiddleware, exclude=["static"])
+
+    @get("/regular")
+    def regular() -> None:
+        return None
+
+    with create_test_client(
+        regular, static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])], middleware=[auth_mw]
+    ) as client:
+        response = client.get("/static/test.txt")
+        assert response.status_code == HTTP_200_OK, response.text
+
+        response = client.get("/regular")
         assert response.status_code == HTTP_403_FORBIDDEN

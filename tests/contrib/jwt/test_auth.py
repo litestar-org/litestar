@@ -7,12 +7,15 @@ from hypothesis import given, settings
 from hypothesis.strategies import integers, none, one_of, sampled_from, text, timedeltas
 
 from starlite import ASGIConnection, Request, Response, Starlite, get
+from starlite.config import StaticFilesConfig
 from starlite.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from starlite.status_codes import HTTP_200_OK, HTTP_401_UNAUTHORIZED
 from starlite.testing import create_test_client
 from tests import User, UserFactory
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from starlite.cache import SimpleCacheBackend
 
 
@@ -274,6 +277,37 @@ async def test_path_exclusion() -> None:
         assert response.status_code == HTTP_200_OK
 
         response = client.get("/west")
+        assert response.status_code == HTTP_401_UNAUTHORIZED
+
+
+def test_authentication_middleware_excludes_static_pahts(tmpdir: "Path") -> None:
+    # see: https://github.com/starlite-api/starlite/issues/1149
+
+    path = tmpdir / "test.txt"
+    path.write_text("content", "utf-8")
+
+    async def retrieve_user_handler(_: Token, __: ASGIConnection) -> None:
+        return None
+
+    jwt_auth = JWTAuth[Any](
+        token_secret="abc123",
+        retrieve_user_handler=retrieve_user_handler,
+        exclude=["static"],
+    )
+
+    @get("/regular")
+    def regular() -> None:
+        return None
+
+    with create_test_client(
+        regular,
+        static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])],
+        on_app_init=[jwt_auth.on_app_init],
+    ) as client:
+        response = client.get("/static/test.txt")
+        assert response.status_code == HTTP_200_OK, response.text
+
+        response = client.get("/regular")
         assert response.status_code == HTTP_401_UNAUTHORIZED
 
 
