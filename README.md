@@ -16,7 +16,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-79-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-80-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -383,6 +383,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/abdulhaq-e"><img src="https://avatars.githubusercontent.com/u/2532125?v=4?s=100" width="100px;" alt="Abdulhaq Emhemmed"/><br /><sub><b>Abdulhaq Emhemmed</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=abdulhaq-e" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jenish2014"><img src="https://avatars.githubusercontent.com/u/9599888?v=4?s=100" width="100px;" alt="Jenish"/><br /><sub><b>Jenish</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=jenish2014" title="Code">💻</a> <a href="https://github.com/starlite-api/starlite/commits?author=jenish2014" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/chris-telemetry"><img src="https://avatars.githubusercontent.com/u/78052999?v=4?s=100" width="100px;" alt="chris-telemetry"/><br /><sub><b>chris-telemetry</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=chris-telemetry" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
