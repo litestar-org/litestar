@@ -404,7 +404,7 @@ the Starlite constructor:</p>
 
 <span class="n">open_telemetry_config</span> <span class="o">=</span> <span class="n">OpenTelemetryConfig</span><span class="p">()</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">open_telemetry_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">open_telemetry_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>The above example will work out of the box if you configure a global <code class="docutils literal notranslate"><span class="pre">tracer_provider</span></code> and/or <code class="docutils literal notranslate"><span class="pre">metric_provider</span></code> and an

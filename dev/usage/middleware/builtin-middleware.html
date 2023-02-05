@@ -784,7 +784,7 @@ which can be installed together with starlite as an extra using <code class="doc
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">CookieBackendConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>  <span class="c1"># type: ignore[arg-type]</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -813,7 +813,7 @@ when trying to access them. Expired session files can be manually deleted using 
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">FileBackendConfig</span><span class="p">(</span><span class="n">storage_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/path/to/session/storage&quot;</span><span class="p">))</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -846,7 +846,7 @@ in redis. Session data stored in redis will expire automatically after its
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">RedisBackendConfig</span><span class="p">(</span><span class="n">redis</span><span class="o">=</span><span class="n">Redis</span><span class="p">())</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -878,7 +878,7 @@ in memcached. Session data stored in memcached will expire automatically after i
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">MemcachedBackendConfig</span><span class="p">(</span><span class="n">memcached</span><span class="o">=</span><span class="n">Client</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">))</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -907,7 +907,7 @@ testing purposes. It is not process safe, and data will not be persisted.</p>
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">MemoryBackendConfig</span><span class="p">()</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1004,9 +1004,7 @@ Asynchronous engine</label><div class="sd-tab-content docutils">
         <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">sqlalchemy_plugin</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">]</span>
-<span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">sqlalchemy_plugin</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1051,9 +1049,7 @@ Asynchronous engine</label><div class="sd-tab-content docutils">
         <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>  <span class="c1"># pyright: ignore</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">sqlalchemy_plugin</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">]</span>
-<span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">sqlalchemy_plugin</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1086,7 +1082,7 @@ from the database when using the <a class="reference internal" href="../../refer
     <span class="k">await</span> <span class="n">session_backend</span><span class="o">.</span><span class="n">delete_expired</span><span class="p">()</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_backend</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_backend</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>

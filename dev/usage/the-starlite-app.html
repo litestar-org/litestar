@@ -490,7 +490,7 @@ establish the connection, and another to close it, and then pass them to the Sta
         <span class="k">await</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AsyncEngine&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">get_db_connection</span><span class="p">],</span> <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">close_db_connection</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">get_db_connection</span><span class="p">],</span> <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">close_db_connection</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -806,10 +806,9 @@ respectively before or after the list of callables defined in the <code class="d
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
-    <span class="p">[],</span>
     <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">startup_callable</span><span class="p">],</span>
-    <span class="n">before_startup</span><span class="o">=</span><span class="n">before_startup_handler</span><span class="p">,</span>
-    <span class="n">after_startup</span><span class="o">=</span><span class="n">after_startup_handler</span><span class="p">,</span>
+    <span class="n">before_startup</span><span class="o">=</span><span class="p">[</span><span class="n">before_startup_handler</span><span class="p">],</span>
+    <span class="n">after_startup</span><span class="o">=</span><span class="p">[</span><span class="n">after_startup_handler</span><span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -853,10 +852,9 @@ list of callables defined in the <code class="docutils literal notranslate"><spa
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
-    <span class="p">[],</span>
     <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">shutdown_callable</span><span class="p">],</span>
-    <span class="n">before_shutdown</span><span class="o">=</span><span class="n">before_shutdown_handler</span><span class="p">,</span>
-    <span class="n">after_shutdown</span><span class="o">=</span><span class="n">after_shutdown_handler</span><span class="p">,</span>
+    <span class="n">before_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">before_shutdown_handler</span><span class="p">],</span>
+    <span class="n">after_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">after_shutdown_handler</span><span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -904,7 +902,7 @@ application <code class="docutils literal notranslate"><span class="pre">state</
     <span class="p">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">my_handler</span><span class="p">],</span> <span class="n">after_exception</span><span class="o">=</span><span class="n">after_exception_handler</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">my_handler</span><span class="p">],</span> <span class="n">after_exception</span><span class="o">=</span><span class="p">[</span><span class="n">after_exception_handler</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -955,7 +953,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">state</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;value injected during send&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">before_send</span><span class="o">=</span><span class="n">before_send_hook_handler</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">before_send</span><span class="o">=</span><span class="p">[</span><span class="n">before_send_hook_handler</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -996,7 +994,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">state</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;value injected during send&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">before_send</span><span class="o">=</span><span class="n">before_send_hook_handler</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">before_send</span><span class="o">=</span><span class="p">[</span><span class="n">before_send_hook_handler</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
