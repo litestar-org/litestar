@@ -43,7 +43,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
         raise_server_exceptions: bool = True,
         root_path: str = "",
         backend: AnyIOBackend = "asyncio",
-        backend_options: Optional[Dict[str, Any]] = None,
+        backend_options: Optional[Mapping[str, Any]] = None,
         session_config: Optional["BaseBackendConfig"] = None,
         cookies: Optional["CookieTypes"] = None,
     ) -> None:

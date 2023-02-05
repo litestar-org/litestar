@@ -1,19 +1,10 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Iterable,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Literal, Mapping, Optional, Sequence, Type, Union
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
+from starlite.controller import Controller
+from starlite.events import SimpleEventEmitter
 from starlite.testing.client import AsyncTestClient, TestClient
+from starlite.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
     from starlite import PluginProtocol, Request, WebSocket
@@ -28,8 +19,7 @@ if TYPE_CHECKING:
         StaticFilesConfig,
         TemplateConfig,
     )
-    from starlite.datastructures.state import ImmutableState
-    from starlite.events import EventListener
+    from starlite.events import BaseEventEmitterBackend, EventListener
     from starlite.middleware.session.base import BaseBackendConfig
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -41,55 +31,56 @@ if TYPE_CHECKING:
         Dependencies,
         ExceptionHandlersMap,
         Guard,
+        InitialStateType,
         LifeSpanHandler,
         LifeSpanHookHandler,
         Middleware,
         OnAppInitHandler,
+        OptionalSequence,
         ParametersMap,
         ResponseType,
-        SingleOrList,
     )
 
 
 def create_test_client(
-    route_handlers: Union["ControllerRouterHandler", List["ControllerRouterHandler"]],
-    *,
-    after_exception: Optional["SingleOrList[AfterExceptionHookHandler]"] = None,
+    route_handlers: Optional[Union["ControllerRouterHandler", Sequence["ControllerRouterHandler"]]] = None,
+    after_exception: "OptionalSequence[AfterExceptionHookHandler]" = None,
     after_request: Optional["AfterRequestHookHandler"] = None,
     after_response: Optional["AfterResponseHookHandler"] = None,
-    after_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
-    after_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
-    allowed_hosts: Optional[Union[List[str], "AllowedHostsConfig"]] = None,
+    after_shutdown: "OptionalSequence[LifeSpanHookHandler]" = None,
+    after_startup: "OptionalSequence[LifeSpanHookHandler]" = None,
+    allowed_hosts: Optional[Union[Sequence[str], "AllowedHostsConfig"]] = None,
     backend: Literal["asyncio", "trio"] = "asyncio",
-    backend_options: Optional[Dict[str, Any]] = None,
+    backend_options: Optional[Mapping[str, Any]] = None,
     base_url: str = "http://testserver.local",
     before_request: Optional["BeforeRequestHookHandler"] = None,
-    before_send: Optional["SingleOrList[BeforeMessageSendHookHandler]"] = None,
-    before_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
-    before_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
+    before_send: "OptionalSequence[BeforeMessageSendHookHandler]" = None,
+    before_shutdown: "OptionalSequence[LifeSpanHookHandler]" = None,
+    before_startup: "OptionalSequence[LifeSpanHookHandler]" = None,
     cache_config: "CacheConfig" = DEFAULT_CACHE_CONFIG,
     compression_config: Optional["CompressionConfig"] = None,
     cors_config: Optional["CORSConfig"] = None,
     csrf_config: Optional["CSRFConfig"] = None,
     dependencies: Optional["Dependencies"] = None,
+    event_emitter_backend: Type["BaseEventEmitterBackend"] = SimpleEventEmitter,
     exception_handlers: Optional["ExceptionHandlersMap"] = None,
-    guards: Optional[List["Guard"]] = None,
-    initial_state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
-    listeners: Optional[List["EventListener"]] = None,
+    guards: "OptionalSequence[Guard]" = None,
+    initial_state: Optional["InitialStateType"] = None,
+    listeners: "OptionalSequence[EventListener]" = None,
     logging_config: Optional["BaseLoggingConfig"] = None,
-    middleware: Optional[List["Middleware"]] = None,
-    on_app_init: Optional[List["OnAppInitHandler"]] = None,
-    on_shutdown: Optional[List["LifeSpanHandler"]] = None,
-    on_startup: Optional[List["LifeSpanHandler"]] = None,
+    middleware: "OptionalSequence[Middleware]" = None,
+    on_app_init: "OptionalSequence[OnAppInitHandler]" = None,
+    on_shutdown: "OptionalSequence[LifeSpanHandler]" = None,
+    on_startup: "OptionalSequence[LifeSpanHandler]" = None,
     openapi_config: Optional["OpenAPIConfig"] = None,
     parameters: Optional["ParametersMap"] = None,
-    plugins: Optional[List["PluginProtocol"]] = None,
+    plugins: "OptionalSequence[PluginProtocol]" = None,
     raise_server_exceptions: bool = True,
     request_class: Optional[Type["Request"]] = None,
     response_class: Optional["ResponseType"] = None,
     root_path: str = "",
     session_config: Optional["BaseBackendConfig"] = None,
-    static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
+    static_files_config: "OptionalSequence[StaticFilesConfig]" = None,
     template_config: Optional["TemplateConfig"] = None,
     websocket_class: Optional[Type["WebSocket"]] = None,
 ) -> TestClient["Starlite"]:
@@ -155,10 +146,11 @@ def create_test_client(
         cors_config: If set this enables the builtin CORS middleware.
         csrf_config: If set this enables the builtin CSRF middleware.
         dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+        event_emitter_backend: A subclass of :class:`BaseEventEmitterBackend <starlite.events.emitter.BaseEventEmitterBackend>`.
         exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
         guards: A list of :class:`Guard <starlite.types.Guard>` callables.
         initial_state: An object from which to initialize the app state.
-        listeners: A list of :class:`EventListener <starlite.events.listener.EventListener>`.
+        listeners: A sequence of :class:`EventListener <starlite.events.listener.EventListener>`.
         logging_config: A subclass of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>`.
         middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
         on_app_init:  A sequence of :class:`OnAppInitHandler <starlite.types.OnAppInitHandler>` instances. Handlers receive
@@ -189,6 +181,10 @@ def create_test_client(
     Returns:
         An instance of :class:`TestClient <starlite.testing.TestClient>` with a created app instance.
     """
+    route_handlers = () if route_handlers is None else route_handlers
+    if is_class_and_subclass(route_handlers, Controller) or not isinstance(route_handlers, Sequence):
+        route_handlers = (route_handlers,)
+
     return TestClient[Starlite](
         app=Starlite(
             after_exception=after_exception,
@@ -206,6 +202,7 @@ def create_test_client(
             cors_config=cors_config,
             csrf_config=csrf_config,
             dependencies=dependencies,
+            event_emitter_backend=event_emitter_backend,
             exception_handlers=exception_handlers,
             guards=guards,
             initial_state=initial_state,
@@ -220,7 +217,7 @@ def create_test_client(
             plugins=plugins,
             request_class=request_class,
             response_class=response_class,
-            route_handlers=cast("Any", route_handlers if isinstance(route_handlers, list) else [route_handlers]),
+            route_handlers=route_handlers,
             static_files_config=static_files_config,
             template_config=template_config,
             websocket_class=websocket_class,
@@ -235,50 +232,50 @@ def create_test_client(
 
 
 def create_async_test_client(
-    route_handlers: Union["ControllerRouterHandler", List["ControllerRouterHandler"]],
-    *,
-    after_exception: Optional["SingleOrList[AfterExceptionHookHandler]"] = None,
+    route_handlers: Optional[Union["ControllerRouterHandler", Sequence["ControllerRouterHandler"]]] = None,
+    after_exception: "OptionalSequence[AfterExceptionHookHandler]" = None,
     after_request: Optional["AfterRequestHookHandler"] = None,
     after_response: Optional["AfterResponseHookHandler"] = None,
-    after_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
-    after_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
-    allowed_hosts: Optional[Union[List[str], "AllowedHostsConfig"]] = None,
+    after_shutdown: "OptionalSequence[LifeSpanHookHandler]" = None,
+    after_startup: "OptionalSequence[LifeSpanHookHandler]" = None,
+    allowed_hosts: Optional[Union[Sequence[str], "AllowedHostsConfig"]] = None,
     backend: Literal["asyncio", "trio"] = "asyncio",
-    backend_options: Optional[Dict[str, Any]] = None,
+    backend_options: Optional[Mapping[str, Any]] = None,
     base_url: str = "http://testserver.local",
     before_request: Optional["BeforeRequestHookHandler"] = None,
-    before_send: Optional["SingleOrList[BeforeMessageSendHookHandler]"] = None,
-    before_shutdown: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
-    before_startup: Optional["SingleOrList[LifeSpanHookHandler]"] = None,
+    before_send: "OptionalSequence[BeforeMessageSendHookHandler]" = None,
+    before_shutdown: "OptionalSequence[LifeSpanHookHandler]" = None,
+    before_startup: "OptionalSequence[LifeSpanHookHandler]" = None,
     cache_config: "CacheConfig" = DEFAULT_CACHE_CONFIG,
     compression_config: Optional["CompressionConfig"] = None,
     cors_config: Optional["CORSConfig"] = None,
     csrf_config: Optional["CSRFConfig"] = None,
     dependencies: Optional["Dependencies"] = None,
+    event_emitter_backend: Type["BaseEventEmitterBackend"] = SimpleEventEmitter,
     exception_handlers: Optional["ExceptionHandlersMap"] = None,
-    guards: Optional[List["Guard"]] = None,
-    initial_state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
-    listeners: Optional[List["EventListener"]] = None,
+    guards: "OptionalSequence[Guard]" = None,
+    initial_state: Optional["InitialStateType"] = None,
+    listeners: "OptionalSequence[EventListener]" = None,
     logging_config: Optional["BaseLoggingConfig"] = None,
-    middleware: Optional[List["Middleware"]] = None,
-    on_app_init: Optional[List["OnAppInitHandler"]] = None,
-    on_shutdown: Optional[List["LifeSpanHandler"]] = None,
-    on_startup: Optional[List["LifeSpanHandler"]] = None,
+    middleware: "OptionalSequence[Middleware]" = None,
+    on_app_init: "OptionalSequence[OnAppInitHandler]" = None,
+    on_shutdown: "OptionalSequence[LifeSpanHandler]" = None,
+    on_startup: "OptionalSequence[LifeSpanHandler]" = None,
     openapi_config: Optional["OpenAPIConfig"] = None,
     parameters: Optional["ParametersMap"] = None,
-    plugins: Optional[List["PluginProtocol"]] = None,
+    plugins: "OptionalSequence[PluginProtocol]" = None,
     raise_server_exceptions: bool = True,
     request_class: Optional[Type["Request"]] = None,
     response_class: Optional["ResponseType"] = None,
     root_path: str = "",
     session_config: Optional["BaseBackendConfig"] = None,
-    static_files_config: Optional[Union["StaticFilesConfig", List["StaticFilesConfig"]]] = None,
+    static_files_config: "OptionalSequence[StaticFilesConfig]" = None,
     template_config: Optional["TemplateConfig"] = None,
     websocket_class: Optional[Type["WebSocket"]] = None,
 ) -> AsyncTestClient["Starlite"]:
     """Create a Starlite app instance and initializes it.
 
-    :class:`AsyncTestClient <starlite.testing.AsyncTestClient>` with it.
+    :class:`TestClient <starlite.testing.TestClient>` with it.
 
     Notes:
         - This function should be called as a context manager to ensure async startup and shutdown are
@@ -338,10 +335,11 @@ def create_async_test_client(
         cors_config: If set this enables the builtin CORS middleware.
         csrf_config: If set this enables the builtin CSRF middleware.
         dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+        event_emitter_backend: A subclass of :class:`BaseEventEmitterBackend <starlite.events.emitter.BaseEventEmitterBackend>`.
         exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
         guards: A list of :class:`Guard <starlite.types.Guard>` callables.
         initial_state: An object from which to initialize the app state.
-        listeners: A list of :class:`EventListener <starlite.events.listener.EventListener>`.
+        listeners: A sequence of :class:`EventListener <starlite.events.listener.EventListener>`.
         logging_config: A subclass of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>`.
         middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
         on_app_init:  A sequence of :class:`OnAppInitHandler <starlite.types.OnAppInitHandler>` instances. Handlers receive
@@ -372,6 +370,10 @@ def create_async_test_client(
     Returns:
         An instance of :class:`TestClient <starlite.testing.TestClient>` with a created app instance.
     """
+    route_handlers = () if route_handlers is None else route_handlers
+    if is_class_and_subclass(route_handlers, Controller) or not isinstance(route_handlers, Sequence):
+        route_handlers = (route_handlers,)
+
     return AsyncTestClient[Starlite](
         app=Starlite(
             after_exception=after_exception,
@@ -389,6 +391,7 @@ def create_async_test_client(
             cors_config=cors_config,
             csrf_config=csrf_config,
             dependencies=dependencies,
+            event_emitter_backend=event_emitter_backend,
             exception_handlers=exception_handlers,
             guards=guards,
             initial_state=initial_state,
@@ -403,7 +406,7 @@ def create_async_test_client(
             plugins=plugins,
             request_class=request_class,
             response_class=response_class,
-            route_handlers=cast("Any", route_handlers if isinstance(route_handlers, list) else [route_handlers]),
+            route_handlers=route_handlers,
             static_files_config=static_files_config,
             template_config=template_config,
             websocket_class=websocket_class,

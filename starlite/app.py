@@ -48,7 +48,6 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
-    from starlite import Provide
     from starlite.config import (
         BaseLoggingConfig,
         CompressionConfig,
@@ -69,9 +68,11 @@ if TYPE_CHECKING:
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
         ControllerRouterHandler,
+        Dependencies,
         EmptyType,
         ExceptionHandlersMap,
         Guard,
+        InitialStateType,
         LifeSpanHandler,
         LifeSpanHookHandler,
         LifeSpanReceive,
@@ -92,7 +93,6 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from starlite.types.callable_types import AnyCallable, GetLogger
-    from starlite.types.composite_types import InitialStateType
     from starlite.types.helper_types import OptionalSequence
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
@@ -182,7 +182,7 @@ class Starlite(Router):
         cors_config: Optional["CORSConfig"] = None,
         csrf_config: Optional["CSRFConfig"] = None,
         debug: bool = False,
-        dependencies: Optional[Mapping[str, "Provide"]] = None,
+        dependencies: Optional["Dependencies"] = None,
         etag: Optional["ETag"] = None,
         event_emitter_backend: Type[BaseEventEmitterBackend] = SimpleEventEmitter,
         exception_handlers: Optional["ExceptionHandlersMap"] = None,
