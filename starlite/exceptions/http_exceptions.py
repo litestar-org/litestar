@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from typing import Any, Dict, List, Optional, Union
 
-from starlite.exceptions.base_exceptions import StarLiteException
+from starlite.exceptions.base_exceptions import StarliteException
 from starlite.status_codes import (
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
@@ -14,7 +14,7 @@ from starlite.status_codes import (
 )
 
 
-class HTTPException(StarLiteException):
+class HTTPException(StarliteException):
     """Base exception for HTTP error responses.
 
     These exceptions carry information to construct an HTTP response.

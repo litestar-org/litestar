@@ -1,7 +1,8 @@
 from time import sleep
 
-from starlite import CacheConfig, get
+from starlite import get
 from starlite.cache import SimpleCacheBackend
+from starlite.config.cache import CacheConfig
 from starlite.testing import create_test_client
 
 from . import after_request_handler, slow_handler

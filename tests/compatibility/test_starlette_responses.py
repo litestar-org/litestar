@@ -2,8 +2,9 @@ from typing import TYPE_CHECKING
 
 from starlette.responses import JSONResponse
 
-from starlite import create_test_client, get
+from starlite import get
 from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from starlite.types import ASGIApp

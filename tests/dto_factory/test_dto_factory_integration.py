@@ -5,7 +5,8 @@ import pytest
 from pydantic import BaseModel
 from pydantic_factories import ModelFactory
 
-from starlite import DTOFactory, post
+from starlite import post
+from starlite.dto import DTOFactory
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client

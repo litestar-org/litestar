@@ -1,11 +1,11 @@
 from starlite import (
-    HTTPException,
     Request,
     Response,
     Starlite,
-    ValidationException,
     get,
 )
+
+from starlite.exceptions import HTTPException, ValidationException
 
 
 def app_exception_handler(request: Request, exc: HTTPException) -> Response:

@@ -3,4 +3,4 @@ starlite.testing
 
 
 .. automodule:: starlite.testing
-    :members: TestClient, WebSocketTestSession, create_test_client, RequestFactory
+    :members: RequestFactory, TestClient, WebSocketTestSession, create_async_test_client, create_test_client

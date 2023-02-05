@@ -8,7 +8,7 @@ class Task(Table):
     """An example table."""
 
     name = Varchar()
-    completed = Boolean(default=False)
+    completed = Boolean()
     created_at = Timestamp()
     task_user = ForeignKey(BaseUser)
 

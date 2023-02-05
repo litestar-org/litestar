@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, List, Type
 
-from starlite import Controller, MiddlewareProtocol, Router, Starlite, State, get
+from starlite import Controller, Router, Starlite, State, get
+from starlite.middleware import MiddlewareProtocol
 
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Receive, Scope, Send

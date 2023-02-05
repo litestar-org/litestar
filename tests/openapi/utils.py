@@ -17,7 +17,6 @@ from pydantic_openapi_schema.v3_1_0.example import Example
 
 from starlite import (
     Controller,
-    HTTPException,
     MediaType,
     Parameter,
     Partial,
@@ -29,6 +28,7 @@ from starlite import (
     post,
     put,
 )
+from starlite.exceptions import HTTPException
 from tests import Person, PersonFactory, Pet, VanillaDataClassPerson
 
 

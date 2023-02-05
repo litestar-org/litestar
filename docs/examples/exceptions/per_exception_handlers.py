@@ -1,13 +1,12 @@
 from starlite import (
-    HTTPException,
     MediaType,
     Request,
     Response,
     Starlite,
-    ValidationException,
     get,
 )
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from starlite.exceptions import HTTPException, ValidationException
 
 
 def validation_exception_handler(request: Request, exc: ValidationException) -> Response:

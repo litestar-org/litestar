@@ -87,7 +87,8 @@ class ExceptionHandlerMiddleware:
         response = exception_handler(Request(scope=scope, receive=receive, send=send), exc)
         await response(scope=scope, receive=receive, send=send)
 
-    async def handle_websocket_exception(self, send: "Send", exc: Exception) -> None:
+    @staticmethod
+    async def handle_websocket_exception(send: "Send", exc: Exception) -> None:
         """Handle exception raised inside 'websocket' scope routes.
 
         :param send: The ASGI send function.

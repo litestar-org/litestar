@@ -2,16 +2,10 @@ from typing import Any
 
 import pytest
 
-from starlite import (
-    Controller,
-    ImproperlyConfiguredException,
-    Starlite,
-    WebSocket,
-    create_test_client,
-    get,
-    websocket,
-)
+from starlite import Controller, Starlite, WebSocket, get, websocket
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 
 def test_register_validation_duplicate_handlers_for_same_route_and_method() -> None:
@@ -33,7 +27,7 @@ def test_supports_websocket_and_http_handlers() -> None:
         return {"hello": "world"}
 
     @websocket(path="/")
-    async def websocket_handler(socket: "WebSocket[Any, Any]") -> None:
+    async def websocket_handler(socket: "WebSocket[Any, Any, Any]") -> None:
         await socket.accept()
         await socket.send_json({"hello": "world"})
         await socket.close()
@@ -59,7 +53,7 @@ def test_controller_supports_websocket_and_http_handlers() -> None:
             return {"hello": "world"}
 
         @websocket()
-        async def websocket_handler(self, socket: "WebSocket[Any, Any]") -> None:
+        async def websocket_handler(self, socket: "WebSocket[Any, Any, Any]") -> None:
             await socket.accept()
             await socket.send_json({"hello": "world"})
             await socket.close()

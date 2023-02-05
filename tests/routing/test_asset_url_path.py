@@ -2,7 +2,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import NoRouteMatchFoundException, Starlite, StaticFilesConfig, get
+from starlite import Starlite, get
+from starlite.config.static_files import StaticFilesConfig
+from starlite.exceptions import NoRouteMatchFoundException
 
 if TYPE_CHECKING:
     from pathlib import Path

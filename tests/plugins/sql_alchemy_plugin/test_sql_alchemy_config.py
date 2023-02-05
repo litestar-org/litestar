@@ -6,7 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session, sessionmaker
 
-from starlite import LoggingConfig, Starlite, get
+from starlite import Starlite, get
+from starlite.config.logging import LoggingConfig
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.plugins.sql_alchemy.config import (
     SESSION_SCOPE_KEY,

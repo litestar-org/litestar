@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from starlite.connection import Request
 
 
-def default_cache_key_builder(request: "Request[Any, Any]") -> str:
+def default_cache_key_builder(request: "Request[Any, Any, Any]") -> str:
     """Given a request object, returns a cache key by combining the path with the sorted query params.
 
     Args:

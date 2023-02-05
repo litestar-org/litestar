@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union
 from urllib.parse import quote
 
-from starlite import MediaType, Request, Response, Starlite, Template
+from starlite import MediaType, Request, Response, Starlite
 from starlite.contrib.htmx.types import (
     EventAfterType,
     HtmxHeaderType,
@@ -11,6 +11,7 @@ from starlite.contrib.htmx.types import (
     TriggerEventType,
 )
 from starlite.contrib.htmx.utils import HTMX_STOP_POLLING, get_headers
+from starlite.response_containers import Template
 from starlite.status_codes import HTTP_200_OK
 
 if TYPE_CHECKING:
@@ -37,11 +38,7 @@ class ClientRedirect(Response):
         """Set status code to 200 (required by HTMX),
         and pass redirect url.
         """
-        super().__init__(
-            content=None,
-            status_code=HTTP_200_OK,
-            headers=get_headers(hx_headers=HtmxHeaderType(redirect=redirect_to)),
-        )
+        super().__init__(content=None, headers=get_headers(hx_headers=HtmxHeaderType(redirect=redirect_to)))
         del self.headers["Location"]
 
 
@@ -50,9 +47,7 @@ class ClientRefresh(Response):
 
     def __init__(self) -> None:
         """Set Status code to 200 and set headers."""
-        super().__init__(
-            content=None, status_code=HTTP_200_OK, headers=get_headers(hx_headers=HtmxHeaderType(refresh=True))
-        )
+        super().__init__(content=None, headers=get_headers(hx_headers=HtmxHeaderType(refresh=True)))
 
 
 class PushUrl(Generic[T], Response[T]):

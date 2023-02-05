@@ -1,5 +1,6 @@
 from examples.parameters.header_and_cookie_parameters import app
-from starlite import TestClient
+from starlite.testing import TestClient
+
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,

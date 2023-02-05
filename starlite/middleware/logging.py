@@ -1,7 +1,7 @@
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Type, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from starlite.constants import (
     HTTP_RESPONSE_BODY,
@@ -297,6 +297,21 @@ class LoggingMiddlewareConfig(BaseModel):
             Thus, re-arranging the log-message is as simple as changing the iterable.
         -  To turn off logging of responses, use and empty iterable.
     """
+
+    @validator("response_log_fields", "request_log_fields")
+    def iterable_to_tuple(cls, value: Iterable) -> tuple:  # pylint: disable=no-self-argument
+        """Override default Pydantic type conversion for iterables.
+
+        Args:
+            value: An iterable
+
+        Returns:
+            The `value` argument cast as a tuple.
+        """
+        if not isinstance(value, Iterable):
+            raise ValueError("The value must be a valid Iterable")
+        return tuple(value)
+
     middleware_class: Type[LoggingMiddleware] = LoggingMiddleware
     """Middleware class to use.
 

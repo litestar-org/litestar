@@ -8,7 +8,7 @@ from starlite.enums import MediaType
 from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
-    StarLiteException,
+    StarliteException,
     ValidationException,
 )
 from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
@@ -17,7 +17,7 @@ from starlite.utils.exception import create_exception_response
 
 @given(detail=st.one_of(st.none(), st.text()))
 def test_starlite_exception_repr(detail: Optional[str]) -> None:
-    result = StarLiteException(detail=detail)  # type: ignore
+    result = StarliteException(detail=detail)  # type: ignore
     assert result.detail == detail
     if detail:
         assert result.__repr__() == f"{result.__class__.__name__} - {result.detail}"
@@ -26,13 +26,13 @@ def test_starlite_exception_repr(detail: Optional[str]) -> None:
 
 
 def test_starlite_exception_str() -> None:
-    result = StarLiteException("an unknown exception occurred")
+    result = StarliteException("an unknown exception occurred")
     assert str(result) == "an unknown exception occurred"
 
-    result = StarLiteException(detail="an unknown exception occurred")
+    result = StarliteException(detail="an unknown exception occurred")
     assert str(result) == "an unknown exception occurred"
 
-    result = StarLiteException(200, detail="an unknown exception occurred")
+    result = StarliteException(200, detail="an unknown exception occurred")
     assert str(result) == "200 an unknown exception occurred"
 
 
@@ -45,7 +45,7 @@ def test_http_exception_str() -> None:
 def test_http_exception(status_code: int, detail: Optional[str]) -> None:
     assert HTTPException().status_code == HTTP_500_INTERNAL_SERVER_ERROR
     result = HTTPException(status_code=status_code, detail=detail or "")
-    assert isinstance(result, StarLiteException)
+    assert isinstance(result, StarliteException)
     assert result.__repr__() == f"{result.status_code} - {result.__class__.__name__} - {result.detail}"
     assert str(result) == f"{result.status_code}: {result.detail}".strip()
 
