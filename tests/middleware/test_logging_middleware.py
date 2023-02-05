@@ -142,7 +142,7 @@ def test_logging_middleware_compressed_response_body(
     with create_test_client(
         route_handlers=[handler],
         compression_config=CompressionConfig(backend="gzip", minimum_size=1),
-        middleware=[LoggingMiddlewareConfig(include_compressed_body=include, request_log_fields=[]).middleware],
+        middleware=[LoggingMiddlewareConfig(include_compressed_body=include).middleware],
     ) as client, caplog.at_level(INFO):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}  # type: ignore
