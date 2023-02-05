@@ -1,16 +1,11 @@
 from inspect import Signature
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, Union
 
 from pydantic import validate_arguments
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import (
-    AsyncAnyCallable,
-    ExceptionHandlersMap,
-    Guard,
-    TypeEncodersMap,
-)
+from starlite.types import AsyncAnyCallable, ExceptionHandlersMap, Guard
 from starlite.utils import Ref, is_async_callable
 
 if TYPE_CHECKING:
@@ -28,24 +23,23 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
+        path: Optional[Union[str, Sequence[str]]] = None,
         *,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
-        guards: Optional[List[Guard]] = None,
+        guards: Optional[Sequence[Guard]] = None,
         name: Optional[str] = None,
-        opt: Optional[Dict[str, Any]] = None,
+        opt: Optional[Mapping[str, Any]] = None,
         is_mount: bool = False,
         is_static: bool = False,
-        type_encoders: Optional[TypeEncodersMap] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``ASGIRouteHandler``.
 
         Args:
-            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
             name: A string identifying the route handler.
-            opt: A string key dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+            opt: A string key mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
             is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path accept

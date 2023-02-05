@@ -302,8 +302,6 @@ def show_app_info(app: Starlite) -> None:  # pragma: no cover
 
     if app.static_files_config:
         static_files_configs = app.static_files_config
-        if not isinstance(static_files_configs, list):
-            static_files_configs = [static_files_configs]
         static_files_info = []
         for static_files in static_files_configs:
             static_files_info.append(

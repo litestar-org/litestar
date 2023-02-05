@@ -5,4 +5,4 @@ from starlite.middleware.session.redis_backend import RedisBackendConfig
 
 session_config = RedisBackendConfig(redis=Redis())
 
-app = Starlite(route_handlers=[], middleware=[session_config.middleware])
+app = Starlite(middleware=[session_config.middleware])

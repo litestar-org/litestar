@@ -34,8 +34,8 @@ def get_exception_handler(exception_handlers: "ExceptionHandlersMap", exc: Excep
     if not exception_handlers:
         return None
     status_code: Optional[int] = getattr(exc, "status_code", None)
-    if status_code in exception_handlers:
-        return exception_handlers[status_code]  # pyright: ignore
+    if status_code and (exception_handler := exception_handlers.get(status_code)):
+        return exception_handler
     for cls in getmro(type(exc)):
         if cls in exception_handlers:
             return exception_handlers[cast("Type[Exception]", cls)]

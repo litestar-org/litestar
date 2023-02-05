@@ -21,7 +21,7 @@ def test_staticfiles_is_html_mode(tmpdir: "Path", file_system: "FileSystemProtoc
     static_files_config = StaticFilesConfig(
         path="/static", directories=[tmpdir], html_mode=True, file_system=file_system
     )
-    with create_test_client([], static_files_config=static_files_config) as client:
+    with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/static")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
@@ -36,7 +36,7 @@ def test_staticfiles_is_html_mode_serves_404_when_present(tmpdir: "Path", file_s
     static_files_config = StaticFilesConfig(
         path="/static", directories=[tmpdir], html_mode=True, file_system=file_system
     )
-    with create_test_client([], static_files_config=static_files_config) as client:
+    with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/static")
         assert response.status_code == HTTP_404_NOT_FOUND
         assert response.text == "not found"
@@ -50,7 +50,7 @@ def test_staticfiles_is_html_mode_raises_exception_when_no_404_html_is_present(
     static_files_config = StaticFilesConfig(
         path="/static", directories=[tmpdir], html_mode=True, file_system=file_system
     )
-    with create_test_client([], static_files_config=static_files_config) as client:
+    with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/static")
         assert response.status_code == HTTP_404_NOT_FOUND
         assert response.json() == {"status_code": 404, "detail": "no file or directory match the path  was found"}

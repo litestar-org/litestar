@@ -31,6 +31,4 @@ async def on_startup() -> None:
         await conn.run_sync(Base.metadata.create_all)  # pyright: ignore
 
 
-app = Starlite(
-    route_handlers=[], middleware=[session_config.middleware], plugins=[sqlalchemy_plugin], on_startup=[on_startup]
-)
+app = Starlite(middleware=[session_config.middleware], plugins=[sqlalchemy_plugin], on_startup=[on_startup])
