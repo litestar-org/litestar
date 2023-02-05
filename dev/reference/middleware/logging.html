@@ -594,6 +594,20 @@ message logged out.</p>
 </div>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.iterable_to_tuple">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">iterable_to_tuple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.11)"><span class="pre">Iterable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><span class="pre">tuple</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.iterable_to_tuple" title="Permalink to this definition">#</a></dt>
+<dd><p>Override default Pydantic type conversion for iterables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – An iterable</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <cite>value</cite> argument cast as a tuple.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.middleware_class">
 <span class="sig-name descname"><span class="pre">middleware_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddleware" title="starlite.middleware.logging.LoggingMiddleware"><span class="pre">LoggingMiddleware</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.middleware_class" title="Permalink to this definition">#</a></dt>
@@ -711,6 +725,7 @@ message logged out.</p>
 <li><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddlewareConfig.response_log_message"><code class="docutils literal notranslate"><span class="pre">LoggingMiddlewareConfig.response_log_message</span></code></a></li>
 <li><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddlewareConfig.request_log_fields"><code class="docutils literal notranslate"><span class="pre">LoggingMiddlewareConfig.request_log_fields</span></code></a></li>
 <li><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields"><code class="docutils literal notranslate"><span class="pre">LoggingMiddlewareConfig.response_log_fields</span></code></a></li>
+<li><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddlewareConfig.iterable_to_tuple"><code class="docutils literal notranslate"><span class="pre">LoggingMiddlewareConfig.iterable_to_tuple()</span></code></a></li>
 <li><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddlewareConfig.middleware_class"><code class="docutils literal notranslate"><span class="pre">LoggingMiddlewareConfig.middleware_class</span></code></a></li>
 <li><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddlewareConfig.middleware"><code class="docutils literal notranslate"><span class="pre">LoggingMiddlewareConfig.middleware</span></code></a></li>
 </ul>
