@@ -643,7 +643,7 @@ class Starlite(Router):
 
     @staticmethod
     def _set_runtime_callables(route_handler: "BaseRouteHandler") -> None:
-        """Optimize the route_handler.fn and any provider.dependency callables for runtime by doing the following:
+        """Optimize the 'route_handler.fn' and any 'provider.dependency' callables for runtime by doing the following:
 
         1. ensure that the ``self`` argument is preserved by binding it using partial.
         2. ensure sync functions are wrapped in AsyncCallable for sync_to_thread handlers.

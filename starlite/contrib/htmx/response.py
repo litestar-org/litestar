@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union
 from urllib.parse import quote
 
-from starlite import MediaType, Request, Response, Starlite, Template
+from starlite import MediaType, Request, Response, Starlite
 from starlite.contrib.htmx.types import (
     EventAfterType,
     HtmxHeaderType,
@@ -11,6 +11,7 @@ from starlite.contrib.htmx.types import (
     TriggerEventType,
 )
 from starlite.contrib.htmx.utils import HTMX_STOP_POLLING, get_headers
+from starlite.response_containers import Template
 from starlite.status_codes import HTTP_200_OK
 
 if TYPE_CHECKING:

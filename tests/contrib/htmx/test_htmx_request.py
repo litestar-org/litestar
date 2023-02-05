@@ -2,7 +2,7 @@ from starlite import MediaType, Response, get
 from starlite.contrib.htmx.request import HTMXRequest
 from starlite.contrib.htmx.utils import HTMXHeaders
 from starlite.status_codes import HTTP_200_OK
-from starlite.testing.create_test_client import create_test_client
+from starlite.testing import create_test_client
 
 
 def test_health_check() -> None:
