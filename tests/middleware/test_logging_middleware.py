@@ -194,7 +194,10 @@ def test_logging_messages_are_not_doubled(
 
 def test_logging_middleware_log_fields(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
     with create_test_client(
-        route_handlers=[handler], middleware=[LoggingMiddlewareConfig(response_log_fields=['status_code'], request_log_fields=['path']).middleware]
+        route_handlers=[handler],
+        middleware=[
+            LoggingMiddlewareConfig(response_log_fields=["status_code"], request_log_fields=["path"]).middleware
+        ],
     ) as client, caplog.at_level(INFO):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.app.get_logger = get_logger
@@ -203,9 +206,5 @@ def test_logging_middleware_log_fields(get_logger: "GetLogger", caplog: "LogCapt
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
 
-        assert (
-            caplog.messages[0] == 'HTTP Request: path=/'
-        )
-        assert (
-            caplog.messages[1] == 'HTTP Response: status_code=200'
-        )
+        assert caplog.messages[0] == "HTTP Request: path=/"
+        assert caplog.messages[1] == "HTTP Response: status_code=200"
