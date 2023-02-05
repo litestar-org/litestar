@@ -141,7 +141,7 @@ def test_check_throttle_handler() -> None:
     def handler2() -> None:
         return None
 
-    def check_throttle_handler(request: Request[Any, Any]) -> bool:
+    def check_throttle_handler(request: Request[Any, Any, Any]) -> bool:
         return request.url.path == "/path1"
 
     config = RateLimitConfig(rate_limit=("minute", 1), check_throttle_handler=check_throttle_handler)

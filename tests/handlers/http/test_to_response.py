@@ -12,27 +12,24 @@ from starlette.responses import Response as StarletteResponse
 
 from starlite import (
     Cookie,
-    File,
     HttpMethod,
     HTTPRoute,
     MediaType,
-    Redirect,
     Request,
     Response,
     ResponseHeader,
     Starlite,
-    Stream,
-    Template,
     get,
     route,
 )
-from starlite.datastructures import BackgroundTask
+from starlite.background_tasks import BackgroundTask
 from starlite.response import (
     FileResponse,
     RedirectResponse,
     StreamingResponse,
     TemplateResponse,
 )
+from starlite.response_containers import File, Redirect, Stream, Template
 from starlite.signature import create_signature_model
 from starlite.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from starlite.testing import RequestFactory, create_test_client

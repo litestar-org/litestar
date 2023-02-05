@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
 from starlite.connection import Request
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.datastructures.headers import Headers
-from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, MediaType, ScopeType
 from starlite.exceptions import (
     ClientException,
@@ -16,10 +15,11 @@ from starlite.handlers.http import HTTPRouteHandler
 from starlite.response import Response
 from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from starlite.upload_file import UploadFile
 
 if TYPE_CHECKING:
-    from starlite.datastructures.provide import DependencyCleanupGroup
     from starlite.kwargs import KwargsModel
+    from starlite.kwargs.cleanup import DependencyCleanupGroup
     from starlite.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
 
@@ -70,7 +70,7 @@ class HTTPRoute(BaseRoute):
         Returns:
             None
         """
-        request: "Request[Any, Any]" = scope["app"].request_class(scope=scope, receive=receive, send=send)
+        request: "Request[Any, Any, Any]" = scope["app"].request_class(scope=scope, receive=receive, send=send)
         route_handler, parameter_model = self.route_handler_map[scope["method"]]
 
         if route_handler.resolve_guards():
@@ -104,7 +104,7 @@ class HTTPRoute(BaseRoute):
     async def _get_response_for_request(
         self,
         scope: "Scope",
-        request: Request[Any, Any],
+        request: Request[Any, Any, Any],
         route_handler: "HTTPRouteHandler",
         parameter_model: "KwargsModel",
     ) -> "ASGIApp":

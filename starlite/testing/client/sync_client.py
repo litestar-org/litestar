@@ -14,12 +14,11 @@ from urllib.parse import urljoin
 
 from httpx import USE_CLIENT_DEFAULT, Client, Response
 
-from starlite import HttpMethod, ImproperlyConfiguredException
+from starlite import HttpMethod
 from starlite.testing.client.base import BaseTestClient
 from starlite.testing.life_span_handler import LifeSpanHandler
 from starlite.testing.transport import ConnectionUpgradeException, TestClientTransport
 from starlite.types import AnyIOBackend, ASGIApp
-from starlite.utils import deprecated
 
 if TYPE_CHECKING:
     from httpx._client import UseClientDefault
@@ -36,7 +35,6 @@ if TYPE_CHECKING:
     )
 
     from starlite.middleware.session.base import BaseBackendConfig
-    from starlite.middleware.session.cookie_backend import CookieBackend
     from starlite.testing.websocket_test_session import WebSocketTestSession
 
 
@@ -95,17 +93,6 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
                 root_path=root_path,
             ),
         )
-
-    @property
-    @deprecated("1.34.0", alternative="session_backend", pending=True, kind="property")
-    def session(self) -> "CookieBackend":
-        from starlite.middleware.session.cookie_backend import CookieBackend
-
-        if not isinstance(self.session_backend, CookieBackend):  # pragma: no cover
-            raise ImproperlyConfiguredException(
-                f"Invalid session backend: {type(self._session_backend)!r}. Expected 'CookieBackend'"
-            )
-        return self.session_backend
 
     def __enter__(self) -> "TestClient[T]":
         with ExitStack() as stack:
@@ -542,78 +529,6 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
             return exc.session
 
         raise RuntimeError("Expected WebSocket upgrade")  # pragma: no cover
-
-    @deprecated("1.34.0", alternative="set_session_data", pending=True)
-    def create_session_cookies(self, session_data: Dict[str, Any]) -> Dict[str, str]:
-        """Creates raw session cookies that are loaded into the session by the Session Middleware. It creates cookies
-        the same way as if they are coming from the browser. Your tests must set up session middleware to load raw
-        session cookies into the session.
-
-        Args:
-            session_data: Dictionary to create raw session cookies from.
-
-        Returns:
-            A dictionary with cookie name as key and cookie value as value.
-
-        .. deprecated:: 1.34.0
-
-            Use the explicit :meth:`TestClient.set_session_data` method
-
-        Examples:
-
-            .. code-block: python
-
-                import pytest
-                from starlite.testing import TestClient
-
-                from my_app.main import app, session_cookie_config_instance
-
-
-                class TestClass:
-                    @pytest.fixture()
-                    def test_client(self) -> TestClient:
-                        with TestClient(
-                            app=app, session_config=session_cookie_config_instance
-                        ) as client:
-                            yield client
-
-                    def test_something(self, test_client: TestClient) -> None:
-                        cookies = test_client.create_session_cookies(session_data={"user": "test_user"})
-                        # Set raw session cookies to the "cookies" attribute of test_client instance.
-                        test_client.cookies = cookies
-                        test_client.get(url="/my_route")
-
-        """
-        if self._session_backend is None:
-            return {}
-        return self._create_session_cookies(self.session, session_data)
-
-    @deprecated("1.34.0", alternative="get_session_data", pending=True)
-    def get_session_from_cookies(self) -> Dict[str, Any]:
-        """Raw session cookies are a serialized image of session which are created by session middleware and sent with
-        the response. To assert data in session, this method deserializes the raw session cookies and creates session
-        from them.
-
-        Returns:
-            A dictionary containing session data.
-
-        .. deprecated:: 1.34.0
-
-            Use the explicit :meth:`TestClient.get_session_data` method
-
-        Examples:
-
-            .. code-block: python
-
-                def test_something(self, test_client: TestClient) -> None:
-                    test_client.get(url="/my_route")
-                    session = test_client.get_session_from_cookies()
-                    assert "user" in session
-
-        """
-        if self._session_backend is None:
-            return {}
-        return self.get_session_data()
 
     def set_session_data(self, data: Dict[str, Any]) -> None:
         """Set session data.

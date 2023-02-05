@@ -1,7 +1,7 @@
 import pytest
 
-from starlite import ImproperlyConfiguredException, Starlite, get
-from starlite.app import DEFAULT_OPENAPI_CONFIG
+from starlite import Starlite, get
+from starlite.exceptions import ImproperlyConfiguredException
 
 
 def test_registering_openapi_docs_without_openapi_config_raises() -> None:
@@ -18,7 +18,7 @@ def test_registering_route_handler_generates_openapi_docs() -> None:
     def fn() -> None:
         return
 
-    app = Starlite(route_handlers=[], openapi_config=DEFAULT_OPENAPI_CONFIG)
+    app = Starlite(route_handlers=[])
     assert app.openapi_schema
 
     app.register(get("/path1")(fn))

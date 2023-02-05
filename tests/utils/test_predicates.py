@@ -20,8 +20,9 @@ from typing import (
 
 import pytest
 
-from starlite import CursorPagination, Response, get
+from starlite import Response, get
 from starlite.utils import is_any, is_class_and_subclass, is_optional_union, is_union
+from starlite.utils.pagination import CursorPagination
 from starlite.utils.predicates import (
     is_generic,
     is_mapping,

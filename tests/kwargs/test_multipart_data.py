@@ -9,9 +9,9 @@ import pytest
 from pydantic import BaseConfig, BaseModel
 
 from starlite import Body, Request, RequestEncodingType, post
-from starlite.datastructures import UploadFile
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
+from starlite.upload_file import UploadFile
 from tests import Person, PersonFactory
 from tests.kwargs import Form
 

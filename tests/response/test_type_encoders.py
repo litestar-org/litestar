@@ -1,14 +1,7 @@
 from typing import TYPE_CHECKING, Any, Tuple
 
-from starlite import (
-    Controller,
-    HttpMethod,
-    Response,
-    Router,
-    Starlite,
-    create_test_client,
-    get,
-)
+from starlite import Controller, HttpMethod, Response, Router, Starlite, get
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from starlite.types import Serializer

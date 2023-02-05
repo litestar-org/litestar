@@ -10,6 +10,7 @@ from typing import (
     Set,
     Tuple,
     Type,
+    cast,
 )
 
 from pydantic import create_model
@@ -175,7 +176,7 @@ def create_signature_model(
         A signature model.
     """
 
-    unwrapped_fn = unwrap_partial(fn)
+    unwrapped_fn = cast("AnyCallable", unwrap_partial(fn))
     fn_name = getattr(fn, "__name__", "anonymous")
     fn_module = getattr(fn, "__module__", None)
 

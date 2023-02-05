@@ -50,7 +50,7 @@ class AuthMiddleware(AbstractAuthenticationMiddleware):
 
 
 @get(path="/")
-def http_route_handler(request: Request[User, Auth]) -> None:
+def http_route_handler(request: Request[User, Auth, Any]) -> None:
     assert isinstance(request.user, User)
     assert isinstance(request.auth, Auth)
 
@@ -67,7 +67,7 @@ def test_authentication_middleware_http_routes() -> None:
 
 def test_authentication_middleware_not_installed_raises_for_user_scope_http() -> None:
     @get(path="/")
-    def http_route_handler_user_scope(request: Request[User, None]) -> None:
+    def http_route_handler_user_scope(request: Request[User, None, Any]) -> None:
         assert request.user
 
     client = create_test_client(route_handlers=[http_route_handler_user_scope])
@@ -78,7 +78,7 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_http() ->
 
 def test_authentication_middleware_not_installed_raises_for_auth_scope_http() -> None:
     @get(path="/")
-    def http_route_handler_auth_scope(request: Request[None, Auth]) -> None:
+    def http_route_handler_auth_scope(request: Request[None, Auth, Any]) -> None:
         assert request.auth
 
     client = create_test_client(route_handlers=[http_route_handler_auth_scope])
@@ -88,7 +88,7 @@ def test_authentication_middleware_not_installed_raises_for_auth_scope_http() ->
 
 
 @websocket(path="/")
-async def websocket_route_handler(socket: WebSocket[User, Auth]) -> None:
+async def websocket_route_handler(socket: WebSocket[User, Auth, Any]) -> None:
     await socket.accept()
     assert isinstance(socket.user, User)
     assert isinstance(socket.auth, Auth)
@@ -109,7 +109,7 @@ def test_authentication_middleware_websocket_routes() -> None:
 
 def test_authentication_middleware_not_installed_raises_for_user_scope_websocket() -> None:
     @websocket(path="/")
-    async def route_handler(socket: WebSocket[User, Auth]) -> None:
+    async def route_handler(socket: WebSocket[User, Auth, Any]) -> None:
         await socket.accept()
         assert isinstance(socket.user, User)
 
@@ -120,7 +120,7 @@ def test_authentication_middleware_not_installed_raises_for_user_scope_websocket
 
 def test_authentication_middleware_not_installed_raises_for_auth_scope_websocket() -> None:
     @websocket(path="/")
-    async def route_handler(socket: WebSocket[User, Auth]) -> None:
+    async def route_handler(socket: WebSocket[User, Auth, Any]) -> None:
         await socket.accept()
         assert isinstance(socket.auth, Auth)
 

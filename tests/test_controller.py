@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from starlite import (
     Controller,
     HttpMethod,
-    ImproperlyConfiguredException,
     Response,
     Starlite,
     delete,
@@ -17,6 +16,7 @@ from starlite import (
     websocket,
 )
 from starlite.connection import WebSocket
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory

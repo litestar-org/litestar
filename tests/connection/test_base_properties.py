@@ -1,6 +1,7 @@
 from typing import Any
 
-from starlite import ASGIConnection, LoggingConfig, Starlite, get
+from starlite import ASGIConnection, Starlite, get
+from starlite.config.logging import LoggingConfig
 from starlite.testing import RequestFactory
 
 
@@ -14,7 +15,7 @@ def test_connection_base_properties() -> None:
     auth = {"key": "value"}
     session = {"session": "abc"}
     scope = RequestFactory(app=app).get(route_handler=handler, user=user, auth=auth, session=session).scope
-    connection = ASGIConnection[Any, Any, Any](scope)
+    connection = ASGIConnection[Any, Any, Any, Any](scope)
 
     assert connection.app
     assert connection.app is app

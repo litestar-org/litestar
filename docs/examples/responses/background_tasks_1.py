@@ -1,7 +1,8 @@
 import logging
 from typing import Dict
 
-from starlite import BackgroundTask, Response, Starlite, get
+from starlite import Response, Starlite, get
+from starlite.background_tasks import BackgroundTask
 
 logger = logging.getLogger(__name__)
 

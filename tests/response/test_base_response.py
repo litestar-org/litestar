@@ -4,13 +4,8 @@ from typing import Any, Optional
 import pytest
 from pydantic_openapi_schema.v3_1_0 import Info, OpenAPI
 
-from starlite import (
-    Cookie,
-    ImproperlyConfiguredException,
-    MediaType,
-    OpenAPIMediaType,
-    get,
-)
+from starlite import Cookie, MediaType, OpenAPIMediaType, get
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
 from starlite.status_codes import (
     HTTP_100_CONTINUE,
@@ -193,17 +188,11 @@ def test_get_serializer() -> None:
     class CustomResponse(Response):
         pass
 
-    class ResponseWithSerializer(Response):
-        @classmethod
-        def serializer(cls, value: Any) -> Any:
-            pass
-
     class FooResponse(Response):
         type_encoders = foo_encoder
 
     assert Response.get_serializer() is default_serializer
     assert CustomResponse.get_serializer() is default_serializer
-    assert ResponseWithSerializer.get_serializer() == ResponseWithSerializer.serializer
 
     assert Response.get_serializer(type_encoders=foo_encoder)(Foo()) == "it's a foo"
     assert Response.get_serializer(type_encoders=path_encoder)(PurePosixPath()) == "it's a path"

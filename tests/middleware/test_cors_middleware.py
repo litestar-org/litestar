@@ -4,9 +4,11 @@ import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import booleans, lists, none, one_of, sampled_from
 
-from starlite import CORSConfig, create_test_client, get
+from starlite import get
+from starlite.config.cors import CORSConfig
 from starlite.middleware import CORSMiddleware
 from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
+from starlite.testing import create_test_client
 
 
 def test_setting_cors_middleware() -> None:
@@ -55,7 +57,8 @@ def test_cors_simple_response(
     )
 
     with create_test_client(handler, cors_config=cors_config) as client:
-        response = client.get("/", headers={"Origin": origin} if origin else {})  # type: ignore
+        headers: Mapping[str, str] = {"Origin": origin} if origin else {}
+        response = client.get("/", headers=headers)
         assert response.status_code == HTTP_200_OK
         assert response.json() == {"hello": "world"}
         assert cors_config.expose_headers == expose_headers

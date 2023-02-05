@@ -2,7 +2,8 @@ from typing import Any
 
 import pytest
 
-from starlite import ImproperlyConfiguredException, WebSocket, websocket
+from starlite import WebSocket, websocket
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.testing import create_test_client
 
 

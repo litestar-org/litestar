@@ -15,7 +15,7 @@ from typing import (
 
 from pydantic import validate_arguments
 
-from starlite.datastructures.provide import Provide
+from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.signature.models import SignatureField
 from starlite.types import (
@@ -26,6 +26,7 @@ from starlite.types import (
     Guard,
     Middleware,
     ParametersMap,
+    TypeEncodersMap,
 )
 from starlite.types.composite_types import MaybePartial
 from starlite.utils import AsyncCallable, Ref, get_name, normalize_path
@@ -37,7 +38,7 @@ if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
     from starlite.controller import Controller
     from starlite.router import Router
-    from starlite.signature import SignatureModel
+    from starlite.signature.models import SignatureModel
     from starlite.types import AnyCallable
 
 T = TypeVar("T", bound="BaseRouteHandler")
@@ -56,6 +57,7 @@ class BaseRouteHandler(Generic[T]):
         "_resolved_dependencies",
         "_resolved_guards",
         "_resolved_layered_parameters",
+        "_resolved_type_encoders",
         "dependencies",
         "exception_handlers",
         "fn",
@@ -67,6 +69,7 @@ class BaseRouteHandler(Generic[T]):
         "paths",
         "signature",
         "signature_model",
+        "type_encoders",
     )
 
     @validate_arguments(config={"arbitrary_types_allowed": True})
@@ -80,6 +83,7 @@ class BaseRouteHandler(Generic[T]):
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
+        type_encoders: Optional[TypeEncodersMap] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``HTTPRouteHandler``.
@@ -93,11 +97,14 @@ class BaseRouteHandler(Generic[T]):
             name: A string identifying the route handler.
             opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._resolved_dependencies: Union[Dict[str, "Provide"], "EmptyType"] = Empty
         self._resolved_guards: Union[List[Guard], EmptyType] = Empty
         self._resolved_layered_parameters: Union[Dict[str, "SignatureField"], "EmptyType"] = Empty
+        self._resolved_type_encoders: Union["TypeEncodersMap", EmptyType] = Empty
+
         self.dependencies = dependencies
         self.exception_handlers = exception_handlers
         self.guards = guards
@@ -112,6 +119,7 @@ class BaseRouteHandler(Generic[T]):
             else {normalize_path(path or "/")}  # type: ignore
         )
         self.opt.update(**kwargs)
+        self.type_encoders = type_encoders
 
     @property
     def handler_name(self) -> str:
@@ -148,6 +156,22 @@ class BaseRouteHandler(Generic[T]):
             cur = cur.owner
 
         return list(reversed(layers))
+
+    def resolve_type_encoders(self) -> "TypeEncodersMap":
+        """Return a merged type_encoders mapping.
+
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            A dict of type encoders
+        """
+        if self._resolved_type_encoders is Empty:
+            self._resolved_type_encoders = {}
+
+            for layer in self.ownership_layers:
+                if type_encoders := getattr(layer, "type_encoders", None):
+                    self._resolved_type_encoders.update(type_encoders)
+        return cast("TypeEncodersMap", self._resolved_type_encoders)
 
     def resolve_layered_parameters(self) -> Dict[str, "SignatureField"]:
         """Return all parameters declared above the handler."""

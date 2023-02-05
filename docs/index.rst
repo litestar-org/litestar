@@ -236,3 +236,4 @@ Example Applications
 
     benchmarks
     changelog
+    release_notes/index

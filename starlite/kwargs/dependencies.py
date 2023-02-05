@@ -5,8 +5,9 @@ from starlite.signature.utils import get_signature_model
 from starlite.utils.compat import async_next
 
 if TYPE_CHECKING:
+    from starlite import Provide
     from starlite.connection import ASGIConnection
-    from starlite.datastructures.provide import DependencyCleanupGroup, Provide
+    from starlite.kwargs.cleanup import DependencyCleanupGroup
 
 
 class Dependency:

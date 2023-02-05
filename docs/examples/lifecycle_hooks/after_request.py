@@ -5,10 +5,7 @@ from starlite import MediaType, Response, Starlite, get
 
 async def after_request(response: Response) -> Response:
     if response.media_type == MediaType.TEXT:
-        return Response(
-            {"message": response.body.decode()},
-            media_type=MediaType.JSON,
-        )
+        return Response({"message": response.body.decode()})
     return response
 
 

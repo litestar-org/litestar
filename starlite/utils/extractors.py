@@ -15,9 +15,9 @@ from typing import (
 from typing_extensions import TypedDict
 
 from starlite.connection.request import Request
-from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, RequestEncodingType
 from starlite.parsers import parse_cookie_string
+from starlite.upload_file import UploadFile
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
@@ -116,8 +116,8 @@ class ConnectionDataExtractor:
         self.parse_query = parse_query
         self.obfuscate_headers = {h.lower() for h in (obfuscate_headers or set())}
         self.obfuscate_cookies = {c.lower() for c in (obfuscate_cookies or set())}
-        self.connection_extractors: Dict[str, Callable[["ASGIConnection[Any, Any, Any]"], Any]] = {}
-        self.request_extractors: Dict[RequestExtractorField, Callable[["Request[Any, Any]"], Any]] = {}
+        self.connection_extractors: Dict[str, Callable[["ASGIConnection[Any, Any, Any, Any]"], Any]] = {}
+        self.request_extractors: Dict[RequestExtractorField, Callable[["Request[Any, Any, Any]"], Any]] = {}
         if extract_scheme:
             self.connection_extractors["scheme"] = self.extract_scheme
         if extract_client:
@@ -139,7 +139,7 @@ class ConnectionDataExtractor:
         if extract_body:
             self.request_extractors["body"] = self.extract_body
 
-    def __call__(self, connection: "ASGIConnection[Any, Any, Any]") -> ExtractedRequestData:
+    def __call__(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> ExtractedRequestData:
         """Extract data from the connection, returning a dictionary of values.
 
         Notes:
@@ -159,7 +159,7 @@ class ConnectionDataExtractor:
         return cast("ExtractedRequestData", {key: extractor(connection) for key, extractor in extractors.items()})
 
     @staticmethod
-    def extract_scheme(connection: "ASGIConnection[Any, Any, Any]") -> str:
+    def extract_scheme(connection: "ASGIConnection[Any, Any, Any, Any]") -> str:
         """Extract the scheme from an ``ASGIConnection``
 
         Args:
@@ -171,7 +171,7 @@ class ConnectionDataExtractor:
         return connection.scope["scheme"]
 
     @staticmethod
-    def extract_client(connection: "ASGIConnection[Any, Any, Any]") -> Tuple[str, int]:
+    def extract_client(connection: "ASGIConnection[Any, Any, Any, Any]") -> Tuple[str, int]:
         """Extract the client from an ``ASGIConnection``
 
         Args:
@@ -183,7 +183,7 @@ class ConnectionDataExtractor:
         return connection.scope.get("client") or ("", 0)
 
     @staticmethod
-    def extract_path(connection: "ASGIConnection[Any, Any, Any]") -> str:
+    def extract_path(connection: "ASGIConnection[Any, Any, Any, Any]") -> str:
         """Extract the path from an ``ASGIConnection``
 
         Args:
@@ -194,7 +194,7 @@ class ConnectionDataExtractor:
         """
         return connection.scope["path"]
 
-    def extract_headers(self, connection: "ASGIConnection[Any, Any, Any]") -> Dict[str, str]:
+    def extract_headers(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> Dict[str, str]:
         """Extract headers from an ``ASGIConnection``
 
         Args:
@@ -206,7 +206,7 @@ class ConnectionDataExtractor:
         headers = {k.decode("latin-1"): v.decode("latin-1") for k, v in connection.scope["headers"]}
         return obfuscate(headers, self.obfuscate_headers) if self.obfuscate_headers else headers
 
-    def extract_cookies(self, connection: "ASGIConnection[Any, Any, Any]") -> Dict[str, str]:
+    def extract_cookies(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> Dict[str, str]:
         """Extract cookies from an ``ASGIConnection``
 
         Args:
@@ -217,7 +217,7 @@ class ConnectionDataExtractor:
         """
         return obfuscate(connection.cookies, self.obfuscate_cookies) if self.obfuscate_cookies else connection.cookies
 
-    def extract_query(self, connection: "ASGIConnection[Any, Any, Any]") -> Any:
+    def extract_query(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> Any:
         """Extract query from an ``ASGIConnection``
 
         Args:
@@ -229,7 +229,7 @@ class ConnectionDataExtractor:
         return connection.query_params.dict() if self.parse_query else connection.scope.get("query_string", b"")
 
     @staticmethod
-    def extract_path_params(connection: "ASGIConnection[Any, Any, Any]") -> Dict[str, Any]:
+    def extract_path_params(connection: "ASGIConnection[Any, Any, Any, Any]") -> Dict[str, Any]:
         """Extract the path parameters from an ``ASGIConnection``
 
         Args:
@@ -241,7 +241,7 @@ class ConnectionDataExtractor:
         return connection.path_params
 
     @staticmethod
-    def extract_method(request: "Request[Any, Any]") -> "Method":
+    def extract_method(request: "Request[Any, Any, Any]") -> "Method":
         """Extract the method from an ``ASGIConnection``
 
         Args:
@@ -253,7 +253,7 @@ class ConnectionDataExtractor:
         return request.scope["method"]
 
     @staticmethod
-    def extract_content_type(request: "Request[Any, Any]") -> Tuple[str, Dict[str, str]]:
+    def extract_content_type(request: "Request[Any, Any, Any]") -> Tuple[str, Dict[str, str]]:
         """Extract the content-type from an ``ASGIConnection``
 
         Args:
@@ -264,7 +264,7 @@ class ConnectionDataExtractor:
         """
         return request.content_type
 
-    async def extract_body(self, request: "Request[Any, Any]") -> Any:
+    async def extract_body(self, request: "Request[Any, Any, Any]") -> Any:
         """Extract the body from an ``ASGIConnection``
 
         Args:

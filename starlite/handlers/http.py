@@ -22,20 +22,10 @@ from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 from typing_extensions import get_args
 
+from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.datastructures import (
-    CacheControlHeader,
-    Cookie,
-    ETag,
-    Provide,
-    ResponseHeader,
-)
-from starlite.datastructures.background_tasks import BackgroundTask, BackgroundTasks
-from starlite.datastructures.response_containers import (
-    File,
-    Redirect,
-    ResponseContainer,
-)
+from starlite.datastructures import CacheControlHeader, Cookie, ETag, ResponseHeader
+from starlite.di import Provide
 from starlite.dto import DTO
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
@@ -47,6 +37,7 @@ from starlite.handlers.base import BaseRouteHandler
 from starlite.openapi.datastructures import ResponseSpec
 from starlite.plugins import get_plugin_for_value
 from starlite.response import FileResponse, Response
+from starlite.response_containers import File, Redirect, ResponseContainer
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -313,7 +304,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "sync_to_thread",
         "tags",
         "template_name",
-        "type_encoders",
     )
 
     has_sync_callable: bool
@@ -436,6 +426,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             middleware=middleware,
             name=name,
             opt=opt,
+            type_encoders=type_encoders,
             **kwargs,
         )
 
@@ -463,7 +454,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.response_description = response_description
         self.summary = summary
         self.tags = tags
-        self.type_encoders = type_encoders
         self.security = security
         self.responses = responses
         # memoized attributes, defaulted to Empty
@@ -569,18 +559,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             )
 
         return cast("Optional[AfterResponseHookHandler]", self._resolved_after_response)
-
-    def resolve_type_encoders(self) -> Optional[TypeEncodersMap]:
-        """Resolve ``type_encoders`` by merging existing ``type_encoders`` from all layers.
-
-        Returns:
-            A ``TypeEncodersMap`` to use for this response or ``None``
-        """
-        type_encoders: TypeEncodersMap = {}
-        for layer in self.ownership_layers:
-            if layer_type_encoders := layer.type_encoders:
-                type_encoders.update(layer_type_encoders)
-        return type_encoders or None
 
     def resolve_response_handler(
         self,

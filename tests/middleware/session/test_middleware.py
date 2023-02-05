@@ -1,16 +1,7 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Dict, Optional
 
-from starlite import (
-    HttpMethod,
-    Request,
-    Response,
-    WebSocket,
-    get,
-    post,
-    route,
-    websocket,
-)
-from starlite.status_codes import HTTP_201_CREATED, HTTP_500_INTERNAL_SERVER_ERROR
+from starlite import HttpMethod, Request, get, post, route
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 from starlite.types import Empty
 
@@ -80,63 +71,6 @@ def test_set_empty(session_backend_config_async_safe: "BaseBackendConfig") -> No
         client.post("/create-session")
         client.post("/empty-session")
         assert not client.get_session_data()
-
-
-def test_use_of_custom_response_serializer_with_http_handler(session_backend_config: "BaseBackendConfig") -> None:
-    class Obj:
-        inner: str
-
-    class MyResponse(Response):
-        @staticmethod
-        def serializer(value: Any) -> Union[Dict[str, Any], str]:
-            if isinstance(value, Obj):
-                return value.inner
-            raise TypeError()
-
-    @post("/create-session")
-    def create_session_handler(request: Request) -> None:
-        obj = Obj()
-        obj.inner = "123Jeronimo"
-        request.set_session({"value": obj})
-
-    with create_test_client(
-        route_handlers=[create_session_handler],
-        middleware=[session_backend_config.middleware],
-        response_class=MyResponse,
-    ) as client:
-        response = client.post("/create-session")
-        assert response.status_code == HTTP_201_CREATED
-
-
-async def test_use_of_custom_response_serializer_with_websocket_handler(
-    session_backend_config: "BaseBackendConfig",
-) -> None:
-    class Obj:
-        inner: str
-
-    class MyResponse(Response):
-        @staticmethod
-        def serializer(value: Any) -> Union[Dict[str, Any], str]:
-            if isinstance(value, Obj):
-                return value.inner
-            raise TypeError()
-
-    @websocket("/create-session")
-    async def create_session_handler(socket: WebSocket) -> None:
-        await socket.accept()
-        obj = Obj()
-        obj.inner = "123Jeronimo"
-        socket.set_session({"value": obj})
-        await socket.send_json({"has_session": True})
-        await socket.close()
-
-    with create_test_client(
-        route_handlers=[create_session_handler],
-        middleware=[session_backend_config.middleware],
-        response_class=MyResponse,
-    ).websocket_connect("/create-session") as ws:
-        data = ws.receive_json()
-        assert data == {"has_session": True}
 
 
 def get_session_installed(request: Request) -> Dict[str, bool]:
