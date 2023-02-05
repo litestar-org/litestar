@@ -38,11 +38,7 @@ class ClientRedirect(Response):
         """Set status code to 200 (required by HTMX),
         and pass redirect url.
         """
-        super().__init__(
-            content=None,
-            status_code=HTTP_200_OK,
-            headers=get_headers(hx_headers=HtmxHeaderType(redirect=redirect_to)),
-        )
+        super().__init__(content=None, headers=get_headers(hx_headers=HtmxHeaderType(redirect=redirect_to)))
         del self.headers["Location"]
 
 
@@ -51,9 +47,7 @@ class ClientRefresh(Response):
 
     def __init__(self) -> None:
         """Set Status code to 200 and set headers."""
-        super().__init__(
-            content=None, status_code=HTTP_200_OK, headers=get_headers(hx_headers=HtmxHeaderType(refresh=True))
-        )
+        super().__init__(content=None, headers=get_headers(hx_headers=HtmxHeaderType(refresh=True)))
 
 
 class PushUrl(Generic[T], Response[T]):

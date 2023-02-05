@@ -26,7 +26,6 @@ def parse_query_string(query_string: bytes) -> Tuple[Tuple[str, Any], ...]:
 
     Args:
         query_string: A query string.
-        encoding: The encoding to use.
 
     Returns:
         A tuple of key value pairs.

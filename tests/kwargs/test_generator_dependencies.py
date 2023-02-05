@@ -97,7 +97,7 @@ async def test_generator_dependency_websocket(
         await socket.close()
 
     with create_test_client(route_handlers=[ws_handler]) as client, client.websocket_connect("/ws") as ws:
-        assert ws.receive_json("text") == {"value": "hello"}
+        assert ws.receive_json() == {"value": "hello"}
     cleanup_mock.assert_called_once()
     finally_mock.assert_called_once()
     exception_mock.assert_not_called()
