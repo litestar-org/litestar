@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="starlite.connection" href="connection/index.html" /><link rel="prev" title="starlite.enums" href="enums.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="starlite.connection" href="connection/index.html" /><link rel="prev" title="simple_cache_backend" href="cache/simple_cache_backend.html" />
 
     <link rel="shortcut icon" href="../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>starlite.config - Starlite 1.51 documentation</title>
@@ -216,6 +216,7 @@
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">API reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="app.html">starlite.app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="background_tasks.html">starlite.background_tasks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="cache/index.html">starlite.cache</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="cache/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cache/memcached_cache_backend.html">memcached_cache_backend</a></li>
@@ -223,42 +224,36 @@
 <li class="toctree-l3"><a class="reference internal" href="cache/simple_cache_backend.html">simple_cache_backend</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="router.html">starlite.router</a></li>
-<li class="toctree-l2"><a class="reference internal" href="controller.html">starlite.controller</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/cookie.html">cookie</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/headers.html">headers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/multi_dicts.html">multi_dicts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/pagination.html">pagination</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/provide.html">provide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/response_containers.html">response_containers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/response_header.html">response_header</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/state.html">state</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/upload_file.html">upload_file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/url.html">url</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="dto.html">starlite.dto</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="exceptions/base_exceptions.html">base_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="exceptions/http_exceptions.html">http_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="enums.html">starlite.enums</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">starlite.config</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="connection/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="connection/request.html">request</a></li>
 <li class="toctree-l3"><a class="reference internal" href="connection/websocket.html">websocket</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">starlite.contrib</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">starlite.contrib</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/htmx.html">HTMX</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="controller.html">starlite.controller</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="datastructures/cookie.html">cookie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datastructures/headers.html">headers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datastructures/multi_dicts.html">multi_dicts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datastructures/response_header.html">response_header</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datastructures/state.html">state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="datastructures/url.html">url</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dto.html">starlite.dto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enums.html">starlite.enums</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="exceptions/base_exceptions.html">base_exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions/http_exceptions.html">http_exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +293,10 @@
 <li class="toctree-l3"><a class="reference internal" href="plugins/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="provide.html">provide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="response.html">starlite.response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="response_containers.html">response_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="router.html">starlite.router</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">starlite.security</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/session_auth.html">session_auth</a></li>
@@ -307,13 +305,15 @@
 <li class="toctree-l2"><a class="reference internal" href="template.html">starlite.template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="types.html">starlite.types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="upload_file.html">upload_file</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="utils/predicates.html">predicates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/sync.html">sync</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/scope.html">scope</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils/exception.html">exception</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils/extractors.html">extractors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils/pagination.html">pagination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils/predicates.html">predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils/scope.html">scope</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils/serialization.html">serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils/sync.html">sync</a></li>
 </ul>
 </li>
 </ul>
@@ -334,6 +334,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../release_notes/index.html">Release notes</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../release_notes/migration_guide_2_0.html">Migrating to Starlite 2.0</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -498,7 +502,7 @@ middleware.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.config.AppConfig.dependencies">
-<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="datastructures/provide.html#starlite.datastructures.provide.Provide" title="starlite.datastructures.provide.Provide"><span class="pre">Provide</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.AppConfig.dependencies" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Provide</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.AppConfig.dependencies" title="Permalink to this definition">#</a></dt>
 <dd><p>A string keyed dictionary of dependency <code class="xref py py-class docutils literal notranslate"><span class="pre">Provider</span></code> instances.</p>
 </dd></dl>
 
@@ -510,8 +514,14 @@ middleware.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.config.AppConfig.event_emitter_backend">
+<span class="sig-name descname"><span class="pre">event_emitter_backend</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#starlite.events.BaseEventEmitterBackend" title="starlite.events.emitter.BaseEventEmitterBackend"><span class="pre">BaseEventEmitterBackend</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.AppConfig.event_emitter_backend" title="Permalink to this definition">#</a></dt>
+<dd><p>A subclass of <a class="reference internal" href="events.html#starlite.events.BaseEventEmitterBackend" title="starlite.events.emitter.BaseEventEmitterBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEventEmitterBackend</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.config.AppConfig.exception_handlers">
-<span class="sig-name descname"><span class="pre">exception_handlers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.11)"><span class="pre">Exception</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">_ExceptionT</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.AppConfig.exception_handlers" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">exception_handlers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.11)"><span class="pre">Exception</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ExceptionT</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.AppConfig.exception_handlers" title="Permalink to this definition">#</a></dt>
 <dd><p>A dictionary that maps handler functions to status codes and/or exception types.</p>
 </dd></dl>
 
@@ -525,6 +535,12 @@ middleware.</p>
 <dt class="sig sig-object py" id="starlite.config.AppConfig.initial_state">
 <span class="sig-name descname"><span class="pre">initial_state</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.11)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.11)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.AppConfig.initial_state" title="Permalink to this definition">#</a></dt>
 <dd><p>An object from which to initialize the app state.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.config.AppConfig.listeners">
+<span class="sig-name descname"><span class="pre">listeners</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="events.html#starlite.events.EventListener" title="starlite.events.listener.EventListener"><span class="pre">EventListener</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.AppConfig.listeners" title="Permalink to this definition">#</a></dt>
+<dd><p>A list of <a class="reference internal" href="events.html#starlite.events.EventListener" title="starlite.events.listener.EventListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventListener</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1343,7 +1359,7 @@ the ‘static_files_config’ key.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.config.StaticFilesConfig.exception_handlers">
-<span class="sig-name descname"><span class="pre">exception_handlers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.11)"><span class="pre">Exception</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">_ExceptionT</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.StaticFilesConfig.exception_handlers" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">exception_handlers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.11)"><span class="pre">Exception</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ExceptionT</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.StaticFilesConfig.exception_handlers" title="Permalink to this definition">#</a></dt>
 <dd><p>A dictionary that maps handler functions to status codes and/or exception types.</p>
 </dd></dl>
 
@@ -1571,14 +1587,14 @@ constructor using the <code class="docutils literal notranslate"><span class="pr
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="enums.html">
+          <a class="prev-page" href="cache/simple_cache_backend.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">starlite.enums</div>
+                <div class="title">simple_cache_backend</div>
                 
               </div>
             </a>
@@ -1645,9 +1661,11 @@ constructor using the <code class="docutils literal notranslate"><span class="pr
 <li><a class="reference internal" href="#starlite.config.AppConfig.debug"><code class="docutils literal notranslate"><span class="pre">AppConfig.debug</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.AppConfig.dependencies"><code class="docutils literal notranslate"><span class="pre">AppConfig.dependencies</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.AppConfig.etag"><code class="docutils literal notranslate"><span class="pre">AppConfig.etag</span></code></a></li>
+<li><a class="reference internal" href="#starlite.config.AppConfig.event_emitter_backend"><code class="docutils literal notranslate"><span class="pre">AppConfig.event_emitter_backend</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.AppConfig.exception_handlers"><code class="docutils literal notranslate"><span class="pre">AppConfig.exception_handlers</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.AppConfig.guards"><code class="docutils literal notranslate"><span class="pre">AppConfig.guards</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.AppConfig.initial_state"><code class="docutils literal notranslate"><span class="pre">AppConfig.initial_state</span></code></a></li>
+<li><a class="reference internal" href="#starlite.config.AppConfig.listeners"><code class="docutils literal notranslate"><span class="pre">AppConfig.listeners</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.AppConfig.logging_config"><code class="docutils literal notranslate"><span class="pre">AppConfig.logging_config</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.AppConfig.middleware"><code class="docutils literal notranslate"><span class="pre">AppConfig.middleware</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.AppConfig.on_shutdown"><code class="docutils literal notranslate"><span class="pre">AppConfig.on_shutdown</span></code></a></li>

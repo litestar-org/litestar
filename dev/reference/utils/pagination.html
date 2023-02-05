@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="response_containers" href="response_containers.html" /><link rel="prev" title="pagination" href="pagination.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="predicates" href="predicates.html" /><link rel="prev" title="extractors" href="extractors.html" />
 
     <link rel="shortcut icon" href="../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>provide - Starlite 1.51 documentation</title>
+        <title>pagination - Starlite 1.51 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -216,6 +216,7 @@
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../app.html">starlite.app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../background_tasks.html">starlite.background_tasks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../cache/index.html">starlite.cache</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../cache/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cache/memcached_cache_backend.html">memcached_cache_backend</a></li>
@@ -223,42 +224,36 @@
 <li class="toctree-l3"><a class="reference internal" href="../cache/simple_cache_backend.html">simple_cache_backend</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../router.html">starlite.router</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../controller.html">starlite.controller</a></li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">starlite.datastructures</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="background_tasks.html">background_tasks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cookie.html">cookie</a></li>
-<li class="toctree-l3"><a class="reference internal" href="headers.html">headers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="multi_dicts.html">multi_dicts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pagination.html">pagination</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">provide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="response_containers.html">response_containers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="response_header.html">response_header</a></li>
-<li class="toctree-l3"><a class="reference internal" href="state.html">state</a></li>
-<li class="toctree-l3"><a class="reference internal" href="upload_file.html">upload_file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="url.html">url</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../dto.html">starlite.dto</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions/base_exceptions.html">base_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions/http_exceptions.html">http_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../enums.html">starlite.enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../config.html">starlite.config</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../connection/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../connection/request.html">request</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../connection/websocket.html">websocket</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../contrib/index.html">starlite.contrib</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../contrib/index.html">starlite.contrib</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contrib/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contrib/htmx.html">HTMX</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../controller.html">starlite.controller</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/cookie.html">cookie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/headers.html">headers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/multi_dicts.html">multi_dicts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/response_header.html">response_header</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/state.html">state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/url.html">url</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../dto.html">starlite.dto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../enums.html">starlite.enums</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions/base_exceptions.html">base_exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions/http_exceptions.html">http_exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +293,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../plugins/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../provide.html">provide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../response.html">starlite.response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../response_containers.html">response_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../router.html">starlite.router</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">starlite.security</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/session_auth.html">session_auth</a></li>
@@ -307,13 +305,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../template.html">starlite.template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../types.html">starlite.types</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../utils/predicates.html">predicates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/sync.html">sync</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../upload_file.html">upload_file</a></li>
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">starlite.utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="exception.html">exception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extractors.html">extractors</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">pagination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="predicates.html">predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="serialization.html">serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sync.html">sync</a></li>
 </ul>
 </li>
 </ul>
@@ -334,6 +334,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release notes</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/migration_guide_2_0.html">Migrating to Starlite 2.0</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -354,7 +358,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/reference/datastructures/provide.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/reference/utils/pagination.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -370,114 +374,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-starlite.datastructures.provide">
-<span id="provide"></span><h1>provide<a class="headerlink" href="#module-starlite.datastructures.provide" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="starlite.datastructures.provide.Provide">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.datastructures.provide.</span></span><span class="sig-name descname"><span class="pre">Provide</span></span><a class="headerlink" href="#starlite.datastructures.provide.Provide" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Wrapper class for dependency injection</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.datastructures.provide.Provide.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dependency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AnyCallable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_to_thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.datastructures.provide.Provide.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">Provide</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dependency</strong> – Callable to inject, can be a function, method or class.</p></li>
-<li><p><strong>use_cache</strong> – Cache the dependency return value. Defaults to False.</p></li>
-<li><p><strong>sync_to_thread</strong> – Run sync code in an async thread. Defaults to False.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.datastructures.provide.Provide.__call__">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.datastructures.provide.Provide.__call__" title="Permalink to this definition">#</a></dt>
-<dd><p>Proxy a call to <code class="docutils literal notranslate"><span class="pre">self.proxy</span></code>.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="starlite.datastructures.provide.DependencyCleanupGroup">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.datastructures.provide.</span></span><span class="sig-name descname"><span class="pre">DependencyCleanupGroup</span></span><a class="headerlink" href="#starlite.datastructures.provide.DependencyCleanupGroup" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Wrapper for generator based dependencies.</p>
-<p>Simplify cleanup by wrapping <a class="reference external" href="https://docs.python.org/3/library/functions.html#next" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">next()</span></code></a> / <a class="reference external" href="https://docs.python.org/3/library/functions.html#anext" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anext()</span></code></a> calls and providing facilities to
-<a class="reference external" href="https://docs.python.org/3/reference/expressions.html#generator.throw" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">throw</span></code></a> / <a class="reference external" href="https://docs.python.org/3/reference/expressions.html#agen.athrow" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">athrow</span></code></a> into all generators consecutively. An instance of
-this class can be used as a contextmanager, which will automatically throw any exceptions into its generators. All
-exceptions caught in this manner will be re-raised after they have been thrown in the generators.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.datastructures.provide.DependencyCleanupGroup.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generators</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">AnyGenerator</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.datastructures.provide.DependencyCleanupGroup.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">DependencyCleanupGroup</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>generators</strong> – An optional list of generators to be called at cleanup</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.datastructures.provide.DependencyCleanupGroup.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.11)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncGenerator" title="(in Python v3.11)"><span class="pre">AsyncGenerator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.datastructures.provide.DependencyCleanupGroup.add" title="Permalink to this definition">#</a></dt>
-<dd><p>Add a new generator to the group.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>generator</strong> – The generator to add</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.datastructures.provide.DependencyCleanupGroup.cleanup">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.datastructures.provide.DependencyCleanupGroup.cleanup" title="Permalink to this definition">#</a></dt>
-<dd><p>Execute cleanup by calling <a class="reference external" href="https://docs.python.org/3/library/functions.html#next" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">next()</span></code></a> / <a class="reference external" href="https://docs.python.org/3/library/functions.html#anext" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anext()</span></code></a> on all generators.</p>
-<p>If there are multiple generators to be called, they will be executed in a <code class="xref py py-class docutils literal notranslate"><span class="pre">anyio.TaskGroup</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.datastructures.provide.DependencyCleanupGroup.__aenter__">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__aenter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.datastructures.provide.DependencyCleanupGroup.__aenter__" title="Permalink to this definition">#</a></dt>
-<dd><p>Support the async contextmanager protocol to allow for easier catching and throwing of exceptions into the
-generators.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.datastructures.provide.DependencyCleanupGroup.__aexit__">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__aexit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#BaseException" title="(in Python v3.11)"><span class="pre">BaseException</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#BaseException" title="(in Python v3.11)"><span class="pre">BaseException</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_tb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Traceback</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.datastructures.provide.DependencyCleanupGroup.__aexit__" title="Permalink to this definition">#</a></dt>
-<dd><p>If an exception was raised within the contextmanager block, throw it into all generators.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.datastructures.provide.DependencyCleanupGroup.throw">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">throw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#BaseException" title="(in Python v3.11)"><span class="pre">BaseException</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.datastructures.provide.DependencyCleanupGroup.throw" title="Permalink to this definition">#</a></dt>
-<dd><p>Throw an exception in all generators sequentially.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>exc</strong> – Exception to throw</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+          <section id="pagination">
+<h1>pagination<a class="headerlink" href="#pagination" title="Permalink to this heading">#</a></h1>
 </section>
 
         </article>
@@ -485,23 +389,23 @@ generators.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="response_containers.html">
+          <a class="next-page" href="predicates.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">response_containers</div>
+                <div class="title">predicates</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="pagination.html">
+          <a class="prev-page" href="extractors.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">pagination</div>
+                <div class="title">extractors</div>
                 
               </div>
             </a>
@@ -536,40 +440,8 @@ generators.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">provide</a><ul>
-<li><a class="reference internal" href="#starlite.datastructures.provide.Provide"><code class="docutils literal notranslate"><span class="pre">Provide</span></code></a><ul>
-<li><a class="reference internal" href="#starlite.datastructures.provide.Provide.__init__"><code class="docutils literal notranslate"><span class="pre">Provide.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#starlite.datastructures.provide.Provide.__call__"><code class="docutils literal notranslate"><span class="pre">Provide.__call__()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#starlite.datastructures.provide.DependencyCleanupGroup"><code class="docutils literal notranslate"><span class="pre">DependencyCleanupGroup</span></code></a><ul>
-<li><a class="reference internal" href="#starlite.datastructures.provide.DependencyCleanupGroup.__init__"><code class="docutils literal notranslate"><span class="pre">DependencyCleanupGroup.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#starlite.datastructures.provide.DependencyCleanupGroup.add"><code class="docutils literal notranslate"><span class="pre">DependencyCleanupGroup.add()</span></code></a></li>
-<li><a class="reference internal" href="#starlite.datastructures.provide.DependencyCleanupGroup.cleanup"><code class="docutils literal notranslate"><span class="pre">DependencyCleanupGroup.cleanup()</span></code></a></li>
-<li><a class="reference internal" href="#starlite.datastructures.provide.DependencyCleanupGroup.__aenter__"><code class="docutils literal notranslate"><span class="pre">DependencyCleanupGroup.__aenter__()</span></code></a></li>
-<li><a class="reference internal" href="#starlite.datastructures.provide.DependencyCleanupGroup.__aexit__"><code class="docutils literal notranslate"><span class="pre">DependencyCleanupGroup.__aexit__()</span></code></a></li>
-<li><a class="reference internal" href="#starlite.datastructures.provide.DependencyCleanupGroup.throw"><code class="docutils literal notranslate"><span class="pre">DependencyCleanupGroup.throw()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="starlite.handlers" href="../handlers/index.html" /><link rel="prev" title="jwt" href="jwt.html" />
+<link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="starlite.controller" href="../controller.html" /><link rel="prev" title="jwt" href="jwt.html" />
 
     <link rel="shortcut icon" href="../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>HTMX - Starlite 1.51 documentation</title>
@@ -216,6 +216,7 @@
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../index.html">API reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../app.html">starlite.app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../background_tasks.html">starlite.background_tasks</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../cache/index.html">starlite.cache</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../cache/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../cache/memcached_cache_backend.html">memcached_cache_backend</a></li>
@@ -223,42 +224,36 @@
 <li class="toctree-l3"><a class="reference internal" href="../cache/simple_cache_backend.html">simple_cache_backend</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../router.html">starlite.router</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../controller.html">starlite.controller</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/cookie.html">cookie</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/headers.html">headers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/multi_dicts.html">multi_dicts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/pagination.html">pagination</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/provide.html">provide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/response_containers.html">response_containers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/response_header.html">response_header</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/state.html">state</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/upload_file.html">upload_file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/url.html">url</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../dto.html">starlite.dto</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions/base_exceptions.html">base_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions/http_exceptions.html">http_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../enums.html">starlite.enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../config.html">starlite.config</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../connection/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../connection/request.html">request</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../connection/websocket.html">websocket</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">starlite.contrib</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="index.html">starlite.contrib</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="jwt.html">jwt</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">HTMX</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../controller.html">starlite.controller</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/cookie.html">cookie</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/headers.html">headers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/multi_dicts.html">multi_dicts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/response_header.html">response_header</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/state.html">state</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/url.html">url</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../dto.html">starlite.dto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../enums.html">starlite.enums</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions/base_exceptions.html">base_exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions/http_exceptions.html">http_exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -298,7 +293,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../plugins/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../provide.html">provide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../response.html">starlite.response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../response_containers.html">response_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../router.html">starlite.router</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">starlite.security</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" role="switch" type="checkbox"/><label for="toctree-checkbox-16"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/session_auth.html">session_auth</a></li>
@@ -307,13 +305,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../template.html">starlite.template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../types.html">starlite.types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../upload_file.html">upload_file</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" role="switch" type="checkbox"/><label for="toctree-checkbox-17"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../utils/predicates.html">predicates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/sync.html">sync</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/scope.html">scope</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/exception.html">exception</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/extractors.html">extractors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../utils/pagination.html">pagination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../utils/predicates.html">predicates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../utils/scope.html">scope</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/serialization.html">serialization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../utils/sync.html">sync</a></li>
 </ul>
 </li>
 </ul>
@@ -334,6 +334,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../release_notes/index.html">Release notes</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" role="switch" type="checkbox"/><label for="toctree-checkbox-19"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../release_notes/migration_guide_2_0.html">Migrating to Starlite 2.0</a></li>
+</ul>
+</li>
 </ul>
 
 </div>
@@ -594,7 +598,7 @@ and pass redirect url.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.HTMXTemplate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.contrib.htmx.response.</span></span><span class="sig-name descname"><span class="pre">HTMXTemplate</span></span><a class="headerlink" href="#starlite.contrib.htmx.response.HTMXTemplate" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../datastructures/response_containers.html#starlite.datastructures.response_containers.Template" title="starlite.datastructures.response_containers.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></p>
 <p>Convenient type for returning HTMX Template responses.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.HTMXTemplate.push_url">
@@ -649,12 +653,12 @@ boolean False to prevent HTMX client from pushing a url to browser history.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../handlers/index.html">
+          <a class="next-page" href="../controller.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">starlite.handlers</div>
+                <div class="title">starlite.controller</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
