@@ -142,7 +142,7 @@ def test_logging_middleware_compressed_response_body(
     with create_test_client(
         route_handlers=[handler],
         compression_config=CompressionConfig(backend="gzip", minimum_size=1),
-        middleware=[LoggingMiddlewareConfig(include_compressed_body=include, request_log_fields=[]).middleware],
+        middleware=[LoggingMiddlewareConfig(include_compressed_body=include).middleware],
     ) as client, caplog.at_level(INFO):
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = {"request-cookie": "abc"}  # type: ignore
@@ -190,3 +190,21 @@ def test_logging_messages_are_not_doubled(
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
+
+
+def test_logging_middleware_log_fields(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:
+    with create_test_client(
+        route_handlers=[handler],
+        middleware=[
+            LoggingMiddlewareConfig(response_log_fields=["status_code"], request_log_fields=["path"]).middleware
+        ],
+    ) as client, caplog.at_level(INFO):
+        # Set cookies on the client to avoid warnings about per-request cookies.
+        client.app.get_logger = get_logger
+        client.cookies = {"request-cookie": "abc"}  # type: ignore
+        response = client.get("/", headers={"request-header": "1"})
+        assert response.status_code == HTTP_200_OK
+        assert len(caplog.messages) == 2
+
+        assert caplog.messages[0] == "HTTP Request: path=/"
+        assert caplog.messages[1] == "HTTP Response: status_code=200"
