@@ -5,7 +5,6 @@
 <div align="center">
 
 [![ci](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml/badge.svg)](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml)
-[![docs](https://github.com/starlite-api/starlite/actions/workflows/docs.yaml/badge.svg)](https://github.com/starlite-api/starlite/actions/workflows/docs.yaml)
 [![PyPI version](https://badge.fury.io/py/starlite.svg)](https://badge.fury.io/py/starlite)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/starlite)](https://pypistats.org/packages/starlite)
 
