@@ -249,16 +249,16 @@ class Starlite(Router):
             etag: An ``etag`` header of type :class:`ETag <datastructures.ETag>` to add to route handlers of this app.
                 Can be overridden by route handlers.
             event_emitter_backend: A subclass of :class:`BaseEventEmitterBackend <starlite.events.emitter.BaseEventEmitterBackend>`.
-            exception_handlers: A mapping of handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
             initial_state: An object from which to initialize the app state.
-            listeners: A list of :class:`EventListener <starlite.events.listener.EventListener>`.
+            listeners: A sequence of :class:`EventListener <starlite.events.listener.EventListener>`.
             logging_config: A subclass of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>`.
             middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
             on_app_init: A sequence of :class:`OnAppInitHandler <starlite.types.OnAppInitHandler>` instances. Handlers
-            receive an instance of :class:`AppConfig <starlite.config.app.AppConfig>` that will have been initially
-            populated with the parameters passed to :class:`Starlite <starlite.app.Starlite>`, and must return an
-            instance of same. If more than one handler is registered they are called in the order they are provided.
+                receive an instance of :class:`AppConfig <starlite.config.app.AppConfig>` that will have been initially
+                populated with the parameters passed to :class:`Starlite <starlite.app.Starlite>`, and must return an
+                instance of same. If more than one handler is registered they are called in the order they are provided.
             on_shutdown: A sequence of :class:`LifeSpanHandler <starlite.types.LifeSpanHandler>` called during
                 application shutdown.
             on_startup: A sequence of :class:`LifeSpanHandler <starlite.types.LifeSpanHandler>` called during
@@ -273,7 +273,7 @@ class Starlite(Router):
             request_class: An optional subclass of :class:`Request <starlite.connection.request.Request>` to use for
                 http connections.
             response_class: A custom subclass of [starlite.response.Response] to be used as the app's default response.
-            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
+            response_cookies: A sequence of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
             route_handlers: A sequence of route handlers, which can include instances of
@@ -281,7 +281,7 @@ class Starlite(Router):
                 any function decorated by the route handler decorators.
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for details.
-            static_files_config: An sequence of :class:`StaticFilesConfig <starlite.config.StaticFilesConfig>`
+            static_files_config: A sequence of :class:`StaticFilesConfig <starlite.config.StaticFilesConfig>`
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the application.
             template_config: An instance of :class:`TemplateConfig <starlite.config.TemplateConfig>`
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.

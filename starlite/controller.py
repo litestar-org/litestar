@@ -1,16 +1,6 @@
 from collections import defaultdict
 from copy import copy
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    DefaultDict,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Set,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, DefaultDict, List, Mapping, Optional, Set, cast
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
@@ -30,6 +20,7 @@ if TYPE_CHECKING:
         ExceptionHandlersMap,
         Guard,
         Middleware,
+        OptionalSequence,
         ParametersMap,
         ResponseCookies,
         ResponseHeadersMap,
@@ -88,22 +79,20 @@ class Controller:
     Can be overridden by route handlers.
     """
     dependencies: Optional["Dependencies"]
-    """
-        dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
-    """
+    """A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances."""
     etag: Optional["ETag"]
     """An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` to add to route handlers of this controller.
 
     Can be overridden by route handlers.
     """
     exception_handlers: Optional["ExceptionHandlersMap"]
-    """A dictionary that maps handler functions to status codes and/or exception types."""
-    guards: Optional[Sequence["Guard"]]
-    """A list of :class:`Guard <starlite.types.Guard>` callables."""
-    middleware: Optional[Sequence["Middleware"]]
-    """A list of :class:`Middleware <starlite.types.Middleware>`."""
+    """A map of handler functions to status codes and/or exception types."""
+    guards: "OptionalSequence[Guard]"
+    """A sequence of :class:`Guard <starlite.types.Guard>` callables."""
+    middleware: "OptionalSequence[Middleware]"
+    """A sequence of :class:`Middleware <starlite.types.Middleware>`."""
     opt: Optional[Mapping[str, Any]]
-    """A string key dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or wherever
+    """A string key mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or wherever
     you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
     """
     owner: "Router"
@@ -126,10 +115,10 @@ class Controller:
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
     response_headers: Optional["ResponseHeadersMap"]
     """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
-    tags: Optional[Sequence[str]]
-    """A list of string tags that will be appended to the schema of all route handlers under the controller."""
-    security: Optional[Sequence["SecurityRequirement"]]
-    """A list of dictionaries that to the schema of all route handlers under the controller."""
+    tags: "OptionalSequence[str]"
+    """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""
+    security: "OptionalSequence[SecurityRequirement]"
+    """A sequence of dictionaries that to the schema of all route handlers under the controller."""
     type_encoders: Optional["TypeEncodersMap"]
     """A mapping of types to callables that transform them into types supported for serialization."""
 

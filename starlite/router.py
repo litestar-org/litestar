@@ -125,14 +125,12 @@ class Router:
             cache_control: A ``cache-control`` header of type
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` to add to route handlers of
                 this router. Can be overridden by route handlers.
-            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>`
-                instances.
-            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` to add to route handlers of
-                this router. Can be overridden by route handlers.
-            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
-            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>`
+            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <datastructures.ETag>` to add to route handlers of this app.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
+            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>`
                 or wherever you have access to :class:`Request <starlite.connection.request.Request>` or
                 :class:`ASGI Scope <starlite.types.Scope>`.
             parameters: A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all
@@ -141,15 +139,16 @@ class Router:
                 with the router instance.
             response_class: A custom subclass of [starlite.response.Response] to be used as the default for all route
                 handlers, controllers and other routers associated with the router instance.
-            response_cookies: A list of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed dictionary mapping
-                :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances.
-            route_handlers: A required list of route handlers, which can include instances of
+            response_cookies: A sequence of [Cookie](starlite.datastructures.Cookie] instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+                instances.
+            route_handlers: A required sequence of route handlers, which can include instances of
                 :class:`Router <starlite.router.Router>`, subclasses of
                 :class:`Controller <starlite.controller.Controller>` or any function decorated by the route handler
                 decorators.
-            security: A list of dictionaries that will be added to the schema of all route handlers under the router.
-            tags: A list of string tags that will be appended to the schema of all route handlers under the router.
+            security: A sequence of dicts that will be added to the schema of all route handlers in the application.
+                See :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for details.
+            tags: A sequence of string tags that will be appended to the schema of all route handlers under the application.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         """
 

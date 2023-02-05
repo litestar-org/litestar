@@ -360,7 +360,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """Initialize ``HTTPRouteHandler``.
 
         Args:
-            path: A path fragment for the route handler function or a list of path fragments.
+            path: A path fragment for the route handler function or a sequence of path fragments.
                 If not given defaults to ``'/'``
             after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
@@ -379,25 +379,25 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
-            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
             http_method: An :class:`http method string <starlite.types.Method>`, a member of the enum
                 :class:`HttpMethod <starlite.enums.HttpMethod>` or a list of these that correlates to the methods the
                 route handler function should handle.
             media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
-            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+            response_cookies: A sequence of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
-            responses: A dictionary of additional status codes and a description of their expected content.
+            responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
@@ -413,9 +413,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
-            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
+            security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
-            tags: A list of string tags that will be appended to the OpenAPI schema.
+            tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -740,7 +740,7 @@ class get(HTTPRouteHandler):
         """Initialize ``get``.
 
         Args:
-            path: A path fragment for the route handler function or a list of path fragments.
+            path: A path fragment for the route handler function or a sequence of path fragments.
                 If not given defaults to ``'/'``
             after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
@@ -759,24 +759,28 @@ class get(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
-            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
+            http_method: An :class:`http method string <starlite.types.Method>`, a member of the enum
+                :class:`HttpMethod <starlite.enums.HttpMethod>` or a list of these that correlates to the methods the
+                route handler function should handle.
             media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
-            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+            response_cookies: A sequence of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
-            responses: A dictionary of additional status codes and a description of their expected content.
+            responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to ``200``.
+            status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
+                ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
             content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
@@ -789,10 +793,9 @@ class get(HTTPRouteHandler):
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
-            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
+            security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
-            tags: A list of string tags that will be appended to the OpenAPI schema.
-                       type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -893,7 +896,7 @@ class head(HTTPRouteHandler):
                 See: [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/HEAD).
 
         Args:
-            path: A path fragment for the route handler function or a list of path fragments.
+            path: A path fragment for the route handler function or a sequence of path fragments.
                 If not given defaults to ``'/'``
             after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
@@ -912,23 +915,28 @@ class head(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
-            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
+            http_method: An :class:`http method string <starlite.types.Method>`, a member of the enum
+                :class:`HttpMethod <starlite.enums.HttpMethod>` or a list of these that correlates to the methods the
+                route handler function should handle.
             media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
-            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+            response_cookies: A sequence of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
-            responses: A dictionary of additional status codes and a description of their expected content.
+            responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to ``200``.
+            status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
+                ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
             content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
@@ -941,9 +949,9 @@ class head(HTTPRouteHandler):
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
-            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
+            security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
-            tags: A list of string tags that will be appended to the OpenAPI schema.
+            tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -1054,7 +1062,7 @@ class post(HTTPRouteHandler):
         """Initialize ``post``
 
         Args:
-            path: A path fragment for the route handler function or a list of path fragments.
+            path: A path fragment for the route handler function or a sequence of path fragments.
                 If not given defaults to ``'/'``
             after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
@@ -1073,24 +1081,28 @@ class post(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
-            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
+            http_method: An :class:`http method string <starlite.types.Method>`, a member of the enum
+                :class:`HttpMethod <starlite.enums.HttpMethod>` or a list of these that correlates to the methods the
+                route handler function should handle.
             media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
-            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+            response_cookies: A sequence of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
-            responses: A dictionary of additional status codes and a description of their expected content.
+            responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to ``201`` for ``POST``.
+            status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
+                ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
             content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
@@ -1099,13 +1111,13 @@ class post(HTTPRouteHandler):
             description: Text used for the route's schema description section.
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_id: An identifier used for the route's schema operationId. Defaults to the ``__name__`` of the wrapped function.
-            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI
-                documentation. This list should describe all exceptions raised within the route handler's function/method.
-                The Starlite ValidationException will be added automatically for the schema if any validation is involved.
+            raises:  A list of exception classes extending from starlite.HttpException that is used for the OpenAPI documentation.
+                This list should describe all exceptions raised within the route handler's function/method. The Starlite
+                ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
-            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
+            security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
-            tags: A list of string tags that will be appended to the OpenAPI schema.
+            tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -1201,7 +1213,7 @@ class put(HTTPRouteHandler):
         """Initialize ``put``
 
         Args:
-            path: A path fragment for the route handler function or a list of path fragments.
+            path: A path fragment for the route handler function or a sequence of path fragments.
                 If not given defaults to ``'/'``
             after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
@@ -1220,24 +1232,28 @@ class put(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
-            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
+            http_method: An :class:`http method string <starlite.types.Method>`, a member of the enum
+                :class:`HttpMethod <starlite.enums.HttpMethod>` or a list of these that correlates to the methods the
+                route handler function should handle.
             media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
-            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+            response_cookies: A sequence of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
-            responses: A dictionary of additional status codes and a description of their expected content.
+            responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to ``200``.
+            status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
+                ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
             content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
@@ -1250,9 +1266,9 @@ class put(HTTPRouteHandler):
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
-            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
+            security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
-            tags: A list of string tags that will be appended to the OpenAPI schema.
+            tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -1348,7 +1364,7 @@ class patch(HTTPRouteHandler):
         """Initialize ``patch``.
 
         Args:
-            path: A path fragment for the route handler function or a list of path fragments.
+            path: A path fragment for the route handler function or a sequence of path fragments.
                 If not given defaults to ``'/'``
             after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
@@ -1367,24 +1383,28 @@ class patch(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
-            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
+            http_method: An :class:`http method string <starlite.types.Method>`, a member of the enum
+                :class:`HttpMethod <starlite.enums.HttpMethod>` or a list of these that correlates to the methods the
+                route handler function should handle.
             media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
-            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+            response_cookies: A sequence of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
-            responses: A dictionary of additional status codes and a description of their expected content.
+            responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to ``200``.
+            status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
+                ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
             content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
@@ -1397,9 +1417,9 @@ class patch(HTTPRouteHandler):
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
-            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
+            security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
-            tags: A list of string tags that will be appended to the OpenAPI schema.
+            tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -1495,7 +1515,7 @@ class delete(HTTPRouteHandler):
         """Initialize ``delete``
 
         Args:
-            path: A path fragment for the route handler function or a list of path fragments.
+            path: A path fragment for the route handler function or a sequence of path fragments.
                 If not given defaults to ``'/'``
             after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
@@ -1514,24 +1534,28 @@ class delete(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
-            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
+            http_method: An :class:`http method string <starlite.types.Method>`, a member of the enum
+                :class:`HttpMethod <starlite.enums.HttpMethod>` or a list of these that correlates to the methods the
+                route handler function should handle.
             media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
                 valid IANA Media-Type.
-            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
-            response_headers: A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+            response_cookies: A sequence of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
-            responses: A dictionary of additional status codes and a description of their expected content.
+            responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            status_code: An http status code for the response. Defaults to ``204``.
+            status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
+                ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
             content_encoding: A string describing the encoding of the content, e.g. ``"base64"``.
@@ -1544,9 +1568,9 @@ class delete(HTTPRouteHandler):
                 This list should describe all exceptions raised within the route handler's function/method. The Starlite
                 ValidationException will be added automatically for the schema if any validation is involved.
             response_description: Text used for the route's response schema description section.
-            security: A list of dictionaries that contain information about which security scheme can be used on the endpoint.
+            security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
-            tags: A list of string tags that will be appended to the OpenAPI schema.
+            tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
