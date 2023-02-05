@@ -299,7 +299,7 @@ class LoggingMiddlewareConfig(BaseModel):
     """
 
     @validator("response_log_fields", "request_log_fields")
-    def iterable_to_tuple(cls, value: Iterable) -> tuple:
+    def iterable_to_tuple(cls, value: Iterable) -> tuple: # pylint: disable=no-self-argument
         """Override default Pydantic type conversion for iterables.
 
         Args:
