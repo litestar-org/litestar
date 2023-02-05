@@ -4,7 +4,8 @@ import pytest
 from pydantic import BaseModel, Field
 from pydantic_openapi_schema.v3_1_0 import Components, Example, Header
 
-from starlite import OpenAPIConfig, Starlite, get
+from starlite import Starlite, get
+from starlite.config.openapi import OpenAPIConfig
 
 
 @pytest.mark.skipif(version_info < (3, 10), reason="pydantic serialization differences in lower python versions")

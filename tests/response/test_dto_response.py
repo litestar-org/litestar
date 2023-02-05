@@ -6,9 +6,12 @@ from sqlalchemy import Column, Integer, String, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, declarative_base
 
-from starlite import DTOFactory, HTTPException, create_test_client, get, post
+from starlite import get, post
+from starlite.dto import DTOFactory
+from starlite.exceptions import HTTPException
 from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
+from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
 factory = DTOFactory()
@@ -92,7 +95,7 @@ def test_dto_response_with_the_sqla_plugin() -> None:
 
     async def on_shutdown() -> None:
         async with sqlalchemy_config.engine.begin() as conn:  # type: ignore
-            conn.run_sync(Base.metadata.drop_all)  # pyright: ignore
+            await conn.run_sync(Base.metadata.drop_all)  # pyright: ignore
 
     @post(path="/users")
     async def create_user(

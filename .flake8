@@ -14,3 +14,6 @@ per-file-ignores =
     starlite/types/builtin_types.py:F401
     tests/*:SCS108
     starlite/testing/test_client/*:SCS108
+    starlite/types/callable_types.py:TC004
+    starlite/types/composite_types.py:TC004
+    starlite/types/internal_types.py:TC004

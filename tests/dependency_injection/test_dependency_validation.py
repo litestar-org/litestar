@@ -1,6 +1,7 @@
 import pytest
 
-from starlite import ImproperlyConfiguredException, Provide, Starlite, get
+from starlite import Provide, Starlite, get
+from starlite.exceptions import ImproperlyConfiguredException
 
 
 def first_method(query_param: int) -> int:
@@ -31,3 +32,8 @@ def test_dependency_validation() -> None:
                 "third": Provide(first_method),
             },
         )
+
+
+def test_raises_when_dependency_is_not_callable() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        Provide(123)  # type: ignore

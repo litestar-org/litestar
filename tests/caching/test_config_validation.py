@@ -4,8 +4,9 @@ import pytest
 import redis
 from pydantic import ValidationError
 
-from starlite import CacheConfig, Starlite
+from starlite import Starlite
 from starlite.cache import CacheBackendProtocol
+from starlite.config.cache import CacheConfig
 
 
 def test_config_validation_scenario() -> None:

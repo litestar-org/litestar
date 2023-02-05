@@ -1,6 +1,7 @@
 import pytest
 
-from starlite import BaseRouteHandler, ImproperlyConfiguredException
+from starlite import BaseRouteHandler
+from starlite.exceptions import ImproperlyConfiguredException
 
 
 def test_raise_no_fn_validation() -> None:

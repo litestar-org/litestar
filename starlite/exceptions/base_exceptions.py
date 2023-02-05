@@ -1,13 +1,13 @@
 from typing import Any
 
 
-class StarLiteException(Exception):
+class StarliteException(Exception):
     """Base exception class from which all Starlite exceptions inherit."""
 
     detail: str
 
     def __init__(self, *args: Any, detail: str = "") -> None:
-        """Initialize ``StarLiteException``.
+        """Initialize ``StarliteException``.
 
         Args:
             *args (Any): args are cast to ``str`` before passing to `Exception.__init__()`
@@ -25,12 +25,12 @@ class StarLiteException(Exception):
         return " ".join(self.args).strip()
 
 
-class MissingDependencyException(StarLiteException):
+class MissingDependencyException(StarliteException):
     """Missing optional dependency.
 
     This exception is raised only when a module depends on a dependency that has not been installed.
     """
 
 
-class SerializationException(StarLiteException):
+class SerializationException(StarliteException):
     """Encoding or decoding of an object failed."""

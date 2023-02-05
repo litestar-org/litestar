@@ -5,15 +5,15 @@ from pydantic import BaseModel, EmailStr, SecretStr
 
 from starlite import (
     ASGIConnection,
-    NotAuthorizedException,
-    OpenAPIConfig,
     Request,
     Starlite,
     get,
     post,
 )
+from starlite.config.openapi import OpenAPIConfig
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
 from starlite.security.session_auth import SessionAuth
+from starlite.exceptions import NotAuthorizedException
 
 
 # Let's assume we have a User model that is a pydantic model.
@@ -106,7 +106,7 @@ async def signup(data: UserCreatePayload, request: Request) -> User:
 # the endpoint below requires the user to be already authenticated
 # to be able to access it.
 @get("/user")
-def get_user(request: Request[User, Dict[Literal["user_id"], str]]) -> Any:
+def get_user(request: Request[User, Dict[Literal["user_id"], str], Any]) -> Any:
     # because this route requires authentication, we can access
     # `request.user`, which is the authenticated user returned
     # by the 'retrieve_user_handler' function we passed to SessionAuth.

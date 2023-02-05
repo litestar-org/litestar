@@ -6,17 +6,8 @@ from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-from starlite import (
-    Controller,
-    DefineMiddleware,
-    MiddlewareProtocol,
-    Request,
-    Response,
-    Router,
-    ScopeType,
-    get,
-    post,
-)
+from starlite import Controller, Request, Response, Router, ScopeType, get, post
+from starlite.middleware import DefineMiddleware, MiddlewareProtocol
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -36,7 +27,7 @@ class MiddlewareProtocolRequestLoggingMiddleware(MiddlewareProtocol):
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         if scope["type"] == ScopeType.HTTP:
-            request = Request[Any, Any](scope=scope, receive=receive)
+            request = Request[Any, Any, Any](scope=scope, receive=receive)
             body = await request.json()
             logger.info(f"test logging: {request.method}, {request.url}, {body}")
         await self.app(scope, receive, send)

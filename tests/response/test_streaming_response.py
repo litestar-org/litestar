@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, AsyncIterator, Iterator
 
 import anyio
 
-from starlite import BackgroundTask
+from starlite.background_tasks import BackgroundTask
 from starlite.response import StreamingResponse
 from starlite.testing import TestClient
 

@@ -1,8 +1,11 @@
 from pathlib import Path
 
-from starlite import StaticFilesConfig, Template, TemplateConfig, get
+from starlite import get
+from starlite.config.static_files import StaticFilesConfig
+from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
+from starlite.response_containers import Template
 from starlite.testing import create_test_client
 
 

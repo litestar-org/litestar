@@ -4,13 +4,14 @@ from typing import TYPE_CHECKING, Optional, Type, Union
 import pytest
 from pydantic import ValidationError
 
-from starlite import MediaType, Starlite, Template, TemplateConfig, get
+from starlite import MediaType, Starlite, get
+from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
+from starlite.response_containers import Template
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-
     from starlite.template import TemplateEngineProtocol
 
 

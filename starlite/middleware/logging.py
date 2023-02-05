@@ -1,7 +1,7 @@
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Type, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 from starlite.constants import (
     HTTP_RESPONSE_BODY,
@@ -148,7 +148,6 @@ class LoggingMiddleware(AbstractMiddleware):
         """
         message = values.pop("message")
         if self.is_struct_logger:
-
             self.logger.info(message, **values)
         else:
             self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))
@@ -193,11 +192,11 @@ class LoggingMiddleware(AbstractMiddleware):
         serializer = get_serializer_from_scope(scope) or default_serializer
         extracted_data = self.response_extractor(
             messages=(
-                get_starlite_scope_state(scope, HTTP_RESPONSE_START),
-                get_starlite_scope_state(scope, HTTP_RESPONSE_BODY),
+                get_starlite_scope_state(scope, HTTP_RESPONSE_START, pop=True),
+                get_starlite_scope_state(scope, HTTP_RESPONSE_BODY, pop=True),
             ),
         )
-        response_body_compressed = get_starlite_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED)
+        response_body_compressed = get_starlite_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED, default=False)
         for key in self.config.response_log_fields:
             value: Any
             value = extracted_data.get(key)
@@ -298,6 +297,21 @@ class LoggingMiddlewareConfig(BaseModel):
             Thus, re-arranging the log-message is as simple as changing the iterable.
         -  To turn off logging of responses, use and empty iterable.
     """
+
+    @validator("response_log_fields", "request_log_fields")
+    def iterable_to_tuple(cls, value: Iterable) -> tuple:  # pylint: disable=no-self-argument
+        """Override default Pydantic type conversion for iterables.
+
+        Args:
+            value: An iterable
+
+        Returns:
+            The `value` argument cast as a tuple.
+        """
+        if not isinstance(value, Iterable):
+            raise ValueError("The value must be a valid Iterable")
+        return tuple(value)
+
     middleware_class: Type[LoggingMiddleware] = LoggingMiddleware
     """Middleware class to use.
 

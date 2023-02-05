@@ -2,8 +2,9 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, Generic, Tuple, cas
 
 from starlite.connection.base import (
     ASGIConnection,
-    Auth,
-    User,
+    AuthT,
+    StateT,
+    UserT,
     empty_receive,
     empty_send,
 )
@@ -16,7 +17,6 @@ from starlite.types import Empty
 from starlite.utils.serialization import decode_json, decode_msgpack
 
 if TYPE_CHECKING:
-
     from starlite.handlers.http import HTTPRouteHandler  # noqa: F401
     from starlite.types.asgi_types import HTTPScope, Method, Receive, Scope, Send
 
@@ -30,7 +30,7 @@ SERVER_PUSH_HEADERS = {
 }
 
 
-class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth]):
+class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", UserT, AuthT, StateT]):
     """The Starlite Request class."""
 
     __slots__ = ("_json", "_form", "_body", "_msgpack", "_content_type", "is_connected")
@@ -115,13 +115,16 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
                     if event["type"] == "http.request":
                         if event["body"]:
                             yield event["body"]
+
                         if not event.get("more_body", False):
                             break
+
                     if event["type"] == "http.disconnect":
                         raise InternalServerException("client disconnected prematurely")
 
                 self.is_connected = False
                 yield b""
+
             else:
                 raise InternalServerException("stream consumed")
         else:

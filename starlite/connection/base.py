@@ -9,7 +9,6 @@ from starlite.parsers import parse_cookie_string, parse_headers, parse_query_str
 from starlite.types.empty import Empty
 
 if TYPE_CHECKING:
-
     from typing import NoReturn
 
     from pydantic import BaseModel
@@ -20,9 +19,10 @@ if TYPE_CHECKING:
     from starlite.types.asgi_types import Message, Receive, Scope, Send
     from starlite.types.protocols import Logger
 
-User = TypeVar("User")
-Auth = TypeVar("Auth")
-Handler = TypeVar("Handler")
+UserT = TypeVar("UserT")
+AuthT = TypeVar("AuthT")
+HandlerT = TypeVar("HandlerT")
+StateT = TypeVar("StateT", bound=State)
 
 
 async def empty_receive() -> "NoReturn":  # pragma: no cover
@@ -50,7 +50,7 @@ async def empty_send(_: "Message") -> "NoReturn":  # pragma: no cover
     raise RuntimeError()
 
 
-class ASGIConnection(Generic[Handler, User, Auth]):
+class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     """The base ASGI connection container."""
 
     __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_headers", "_cookies")
@@ -89,22 +89,22 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         return self.scope["app"]
 
     @property
-    def route_handler(self) -> Handler:
+    def route_handler(self) -> HandlerT:
         """Return the ``route_handler`` for this connection.
 
         Returns:
             The target route handler instance.
         """
-        return cast("Handler", self.scope["route_handler"])
+        return cast("HandlerT", self.scope["route_handler"])
 
     @property
-    def state(self) -> State:
+    def state(self) -> StateT:
         """Return the ``State`` of this connection.
 
         Returns:
             A State instance constructed from the scope["state"] value.
         """
-        return State(self.scope["state"])
+        return cast("StateT", State(self.scope["state"]))
 
     @property
     def url(self) -> URL:
@@ -115,6 +115,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         if self._url is Empty:
             self._url = self.scope["_url"] = URL.from_scope(self.scope)  # type: ignore[typeddict-item]
+
         return cast("URL", self._url)
 
     @property
@@ -146,6 +147,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         if self._headers is Empty:
             self.scope.setdefault("headers", [])
             self._headers = self.scope["_headers"] = parse_headers(tuple(self.scope["headers"]))  # type: ignore[typeddict-item]
+
         return Headers(self._headers)
 
     @property
@@ -157,6 +159,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         if self._parsed_query is Empty:
             self._parsed_query = self.scope["_parsed_query"] = parse_query_string(self.scope.get("query_string", b""))  # type: ignore
+
         return MultiDict(self._parsed_query)
 
     @property
@@ -178,9 +181,12 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         if self._cookies is Empty:
             cookies: Dict[str, str] = {}
             cookie_header = self.headers.get("cookie")
+
             if cookie_header:
                 cookies = parse_cookie_string(cookie_header)
+
             self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-item]
+
         return cast("Dict[str, str]", self._cookies)
 
     @property
@@ -194,7 +200,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         return Address(*client) if client else None
 
     @property
-    def auth(self) -> Auth:
+    def auth(self) -> AuthT:
         """Return the ``auth`` data of this connection's ``Scope``.
 
         Raises:
@@ -205,10 +211,11 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         if "auth" not in self.scope:
             raise ImproperlyConfiguredException("'auth' is not defined in scope, install an AuthMiddleware to set it")
-        return cast("Auth", self.scope["auth"])
+
+        return cast("AuthT", self.scope["auth"])
 
     @property
-    def user(self) -> User:
+    def user(self) -> UserT:
         """Return the ``user`` data of this connection's ``Scope``.
 
         Raises:
@@ -219,7 +226,8 @@ class ASGIConnection(Generic[Handler, User, Auth]):
         """
         if "user" not in self.scope:
             raise ImproperlyConfiguredException("'user' is not defined in scope, install an AuthMiddleware to set it")
-        return cast("User", self.scope["user"])
+
+        return cast("UserT", self.scope["user"])
 
     @property
     def session(self) -> Dict[str, Any]:
@@ -235,6 +243,7 @@ class ASGIConnection(Generic[Handler, User, Auth]):
             raise ImproperlyConfiguredException(
                 "'session' is not defined in scope, install a SessionMiddleware to set it"
             )
+
         return cast("Dict[str, Any]", self.scope["session"])
 
     @property

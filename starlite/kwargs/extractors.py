@@ -15,7 +15,6 @@ from typing import (
     cast,
 )
 
-from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
 from starlite.multipart import parse_multipart_form
@@ -25,6 +24,7 @@ from starlite.parsers import (
     parse_url_encoded_form_data,
 )
 from starlite.types import Empty
+from starlite.upload_file import UploadFile
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection, Request
@@ -228,7 +228,7 @@ def socket_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> No
 
 def body_extractor(
     values: Dict[str, Any],
-    connection: "Request[Any, Any]",
+    connection: "Request[Any, Any, Any]",
 ) -> None:
     """Extract the body from the request instance.
 
@@ -246,7 +246,7 @@ def body_extractor(
 
 
 async def json_extractor(
-    connection: "Request[Any, Any]",
+    connection: "Request[Any, Any, Any]",
 ) -> Any:
     """Extract the data from request and insert it into the kwargs injected to the handler.
 
@@ -262,7 +262,7 @@ async def json_extractor(
     return await connection.json()
 
 
-async def msgpack_extractor(connection: "Request[Any, Any]") -> Any:
+async def msgpack_extractor(connection: "Request[Any, Any, Any]") -> Any:
     """Extract the data from request and insert it into the kwargs injected to the handler.
 
     Notes:
@@ -279,7 +279,7 @@ async def msgpack_extractor(connection: "Request[Any, Any]") -> Any:
 
 def create_multipart_extractor(
     signature_field: "SignatureField", is_data_optional: bool
-) -> Callable[["ASGIConnection[Any, Any, Any]"], Coroutine[Any, Any, Any]]:
+) -> Callable[["ASGIConnection[Any, Any, Any, Any]"], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
     Args:
@@ -291,7 +291,7 @@ def create_multipart_extractor(
     """
 
     async def extract_multipart(
-        connection: "Request[Any, Any]",
+        connection: "Request[Any, Any, Any]",
     ) -> Any:
         connection.scope["_form"] = form_values = (  # type: ignore[typeddict-item]
             connection.scope["_form"]  # type: ignore[typeddict-item]
@@ -308,12 +308,12 @@ def create_multipart_extractor(
 
         return form_values if form_values or not is_data_optional else None
 
-    return cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
+    return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
 
 
 def create_url_encoded_data_extractor(
     is_data_optional: bool,
-) -> Callable[["ASGIConnection[Any, Any, Any]"], Coroutine[Any, Any, Any]]:
+) -> Callable[["ASGIConnection[Any, Any, Any, Any]"], Coroutine[Any, Any, Any]]:
     """Create extractor for url encoded form-data.
 
     Args:
@@ -324,7 +324,7 @@ def create_url_encoded_data_extractor(
     """
 
     async def extract_url_encoded_extractor(
-        connection: "Request[Any, Any]",
+        connection: "Request[Any, Any, Any]",
     ) -> Any:
         connection.scope["_form"] = form_values = (  # type: ignore[typeddict-item]
             connection.scope["_form"]  # type: ignore[typeddict-item]
@@ -333,7 +333,9 @@ def create_url_encoded_data_extractor(
         )
         return form_values if form_values or not is_data_optional else None
 
-    return cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor)
+    return cast(
+        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor
+    )
 
 
 def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, Any], "ASGIConnection"], None]:
@@ -357,13 +359,17 @@ def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, An
         else:
             data_extractor = create_url_encoded_data_extractor(is_data_optional=kwargs_model.is_data_optional)
     elif kwargs_model.expected_msgpack_data:
-        data_extractor = cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor)
+        data_extractor = cast(
+            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
+        )
     else:
-        data_extractor = cast("Callable[[ASGIConnection[Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor)
+        data_extractor = cast(
+            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
+        )
 
     def extractor(
         values: Dict[str, Any],
-        connection: "ASGIConnection[Any, Any, Any]",
+        connection: "ASGIConnection[Any, Any, Any, Any]",
     ) -> None:
         values["data"] = data_extractor(connection)
 

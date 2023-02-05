@@ -17,7 +17,6 @@ from starlite.status_codes import WS_1001_GOING_AWAY
 from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
-
     from starlite.types import Receive, Scope, Send
 
 
@@ -66,7 +65,7 @@ async def test_accept_set_headers(headers: Any) -> None:
 async def test_custom_request_class() -> None:
     value: Any = {}
 
-    class MyWebSocket(WebSocket[Any, Any]):
+    class MyWebSocket(WebSocket[Any, Any, Any]):
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             super().__init__(*args, **kwargs)
             self.scope["called"] = True  # type: ignore
@@ -83,7 +82,7 @@ async def test_custom_request_class() -> None:
 
 def test_websocket_url() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         await websocket.send_json({"url": str(websocket.url)})
         await websocket.close()
@@ -95,7 +94,7 @@ def test_websocket_url() -> None:
 
 def test_websocket_binary_json() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         message = await websocket.receive_json(mode="binary")
         await websocket.send_json(message, mode="binary")
@@ -109,7 +108,7 @@ def test_websocket_binary_json() -> None:
 
 def test_websocket_query_params() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         query_params = dict(websocket.query_params)
         await websocket.accept()
         await websocket.send_json({"params": query_params})
@@ -122,7 +121,7 @@ def test_websocket_query_params() -> None:
 
 def test_websocket_headers() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         headers = dict(websocket.headers)
         await websocket.accept()
         await websocket.send_json({"headers": headers})
@@ -144,7 +143,7 @@ def test_websocket_headers() -> None:
 
 def test_websocket_port() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         await websocket.send_json({"port": websocket.url.port})
         await websocket.close()
@@ -156,7 +155,7 @@ def test_websocket_port() -> None:
 
 def test_websocket_send_and_receive_text() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         data = await websocket.receive_text()
         await websocket.send_text("Message was: " + data)
@@ -170,7 +169,7 @@ def test_websocket_send_and_receive_text() -> None:
 
 def test_websocket_send_and_receive_bytes() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         data = await websocket.receive_bytes()
         await websocket.send_bytes(b"Message was: " + data)
@@ -184,7 +183,7 @@ def test_websocket_send_and_receive_bytes() -> None:
 
 def test_websocket_send_and_receive_json() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         data = await websocket.receive_json()
         await websocket.send_json({"message": data})
@@ -199,18 +198,18 @@ def test_websocket_send_and_receive_json() -> None:
 def test_websocket_concurrency_pattern() -> None:
     stream_send, stream_receive = anyio.create_memory_object_stream()
 
-    async def reader(websocket: WebSocket[Any, Any]) -> None:
+    async def reader(websocket: WebSocket[Any, Any, Any]) -> None:
         async with stream_send:
             data = await websocket.receive_json()
             await stream_send.send(data)
 
-    async def writer(websocket: WebSocket[Any, Any]) -> None:
+    async def writer(websocket: WebSocket[Any, Any, Any]) -> None:
         async with stream_receive:
             async for message in stream_receive:
                 await websocket.send_json(message)
 
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         async with anyio.create_task_group() as task_group:
             task_group.start_soon(reader, websocket)
@@ -228,7 +227,7 @@ def test_client_close() -> None:
 
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
         nonlocal close_code
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         try:
             await websocket.receive_text()
@@ -242,7 +241,7 @@ def test_client_close() -> None:
 
 def test_application_close() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         await websocket.close(WS_1001_GOING_AWAY)
 
@@ -253,7 +252,7 @@ def test_application_close() -> None:
 
 def test_rejected_connection() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.close(WS_1001_GOING_AWAY)
 
     with pytest.raises(WebSocketDisconnect) as exc, TestClient(app).websocket_connect("/"):
@@ -263,7 +262,7 @@ def test_rejected_connection() -> None:
 
 def test_subprotocol() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         assert websocket.scope["subprotocols"] == ["soap", "wamp"]
         await websocket.accept(subprotocols="wamp")
         await websocket.close()
@@ -274,7 +273,7 @@ def test_subprotocol() -> None:
 
 def test_additional_headers() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept(headers=[(b"additional", b"header")])
         await websocket.close()
 
@@ -284,7 +283,7 @@ def test_additional_headers() -> None:
 
 def test_no_additional_headers() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         await websocket.close()
 
@@ -302,7 +301,7 @@ def test_websocket_exception() -> None:
 
 def test_duplicate_disconnect() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         message = await websocket.receive()
         assert message["type"] == "websocket.disconnect"
@@ -314,7 +313,7 @@ def test_duplicate_disconnect() -> None:
 
 def test_websocket_close_reason() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.accept()
         await websocket.close(code=WS_1001_GOING_AWAY, reason="Going Away")
 
@@ -326,7 +325,7 @@ def test_websocket_close_reason() -> None:
 
 def test_receive_text_before_accept() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.receive_text()
 
     with pytest.raises(WebSocketException), TestClient(app).websocket_connect("/"):
@@ -335,7 +334,7 @@ def test_receive_text_before_accept() -> None:
 
 def test_receive_bytes_before_accept() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.receive_bytes()
 
     with pytest.raises(WebSocketException), TestClient(app).websocket_connect("/"):
@@ -344,7 +343,7 @@ def test_receive_bytes_before_accept() -> None:
 
 def test_receive_json_before_accept() -> None:
     async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        websocket = WebSocket[Any, Any](scope, receive=receive, send=send)
+        websocket = WebSocket[Any, Any, Any](scope, receive=receive, send=send)
         await websocket.receive_json()
 
     with pytest.raises(WebSocketException), TestClient(app).websocket_connect("/"):

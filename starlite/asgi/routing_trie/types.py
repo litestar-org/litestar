@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, Literal, NamedTuple, Set, Tuple, Type, Union
 
 if TYPE_CHECKING:
-
     from starlite.types import ASGIApp, Method, RouteHandlerType
     from starlite.types.internal_types import PathParameterDefinition
 

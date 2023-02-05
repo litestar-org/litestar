@@ -89,9 +89,9 @@ class BaseBackendConfig(BaseModel):
                 from os import urandom
 
                 from starlite import Starlite, Request, get
-                from starlite.middleware.session import SessionCookieConfig
+                from starlite.middleware.sessions.cookie_backend import CookieBackendConfig
 
-                session_config = SessionCookieConfig(secret=urandom(16))
+                session_config = CookieBackendConfig(secret=urandom(16))
 
 
                 @get("/")
@@ -249,13 +249,13 @@ class ServerSideBackend(Generic[ServerConfigT], BaseSessionBackend[ServerConfigT
             None
         """
 
-    @abstractmethod
     async def delete_all(self) -> None:
         """Delete all session data stored within this backend.
 
         Returns:
             None
         """
+        raise NotImplementedError()
 
     def generate_session_id(self) -> str:
         """Generate a new session-ID, with
@@ -397,7 +397,7 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
             None
         """
 
-        connection = ASGIConnection[Any, Any, Any](scope, receive=receive, send=send)
+        connection = ASGIConnection[Any, Any, Any, Any](scope, receive=receive, send=send)
         scope["session"] = await self.backend.load_from_connection(connection)
 
         await self.app(scope, receive, self.create_send_wrapper(connection))

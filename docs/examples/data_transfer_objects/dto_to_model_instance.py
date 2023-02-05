@@ -1,8 +1,10 @@
 from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import Mapped, declarative_base
 
-from starlite import DTOFactory, post
+from starlite import post
 from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.dto import DTOFactory
+
 
 dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 

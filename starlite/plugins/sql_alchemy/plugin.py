@@ -18,7 +18,7 @@ from uuid import UUID
 from pydantic import BaseModel, conint, constr, create_model
 from pydantic_factories import ModelFactory
 
-from starlite.datastructures.provide import Provide
+from starlite.di import Provide
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,

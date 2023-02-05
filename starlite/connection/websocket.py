@@ -14,8 +14,9 @@ from typing import (
 
 from starlite.connection.base import (
     ASGIConnection,
-    Auth,
-    User,
+    AuthT,
+    StateT,
+    UserT,
     empty_receive,
     empty_send,
 )
@@ -42,7 +43,7 @@ if TYPE_CHECKING:
 DISCONNECT_MESSAGE = "connection is disconnected"
 
 
-class WebSocket(Generic[User, Auth], ASGIConnection["WebsocketRouteHandler", User, Auth]):
+class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHandler", UserT, AuthT, StateT]):
     """The Starlite WebSocket class."""
 
     __slots__ = ("connection_state",)

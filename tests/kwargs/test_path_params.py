@@ -7,14 +7,8 @@ from uuid import UUID, uuid1, uuid4
 import pytest
 from pydantic import UUID4
 
-from starlite import (
-    ImproperlyConfiguredException,
-    MediaType,
-    Parameter,
-    Starlite,
-    get,
-    post,
-)
+from starlite import MediaType, Parameter, Starlite, get, post
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 

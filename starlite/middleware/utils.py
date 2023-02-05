@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, List, Optional, Pattern, Union
 from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
-
     from starlite.types import Scope, Scopes
 
 

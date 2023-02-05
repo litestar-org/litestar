@@ -1,11 +1,13 @@
 import inspect
-from typing import List
-from unittest.mock import MagicMock, PropertyMock
+from typing import List, Tuple
+from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.config.app import AppConfig
+from starlite.config.logging import LoggingConfig
+from starlite.events.emitter import SimpleEventEmitter
 from starlite.router import Router
 
 
@@ -29,8 +31,12 @@ def app_config_object() -> AppConfig:
         csrf_config=None,
         debug=False,
         dependencies={},
+        etag=None,
+        event_emitter_backend=SimpleEventEmitter,
         exception_handlers={},
         guards=[],
+        initial_state={},
+        listeners=[],
         logging_config=None,
         middleware=[],
         on_shutdown=[],
@@ -39,6 +45,7 @@ def app_config_object() -> AppConfig:
         opt={},
         parameters={},
         plugins=[],
+        request_class=None,
         response_class=None,
         response_cookies=[],
         response_headers={},
@@ -47,9 +54,7 @@ def app_config_object() -> AppConfig:
         static_files_config=[],
         tags=[],
         template_config=None,
-        request_class=None,
         websocket_class=None,
-        etag=None,
     )
 
 
@@ -76,16 +81,18 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
 
     # replace each field on the `AppConfig` object with a `PropertyMock`, this allows us to assert that the properties
     # have been accessed during app instantiation.
-    property_mocks: List[PropertyMock] = []
+    property_mocks: List[Tuple[str, Mock]] = []
     for name in AppConfig.__fields__:
         if name == "cache_config":
             property_mock = PropertyMock(return_value=DEFAULT_CACHE_CONFIG)
+        if name in ["event_emitter_backend", "cache_config"]:
+            property_mock = PropertyMock(return_value=Mock())
         else:
             # default iterable return value allows the mock properties that need to be iterated over in
             # `Starlite.__init__()` to not blow up, for other properties it shouldn't matter what the value is for the
             # sake of this test.
             property_mock = PropertyMock(return_value=[])
-        property_mocks.append(property_mock)
+        property_mocks.append((name, property_mock))
         monkeypatch.setattr(type(app_config_object), name, property_mock, raising=False)
 
     # Things that we don't actually need to call for this test
@@ -97,5 +104,37 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     Starlite(route_handlers=[], on_app_init=[MagicMock(return_value=app_config_object)])
 
     # this ensures that each of the properties of the `AppConfig` object have been accessed within `Starlite.__init__()`
-    for mock in property_mocks:
-        mock.assert_called()
+    for name, mock in property_mocks:
+        assert mock.called, f"expected {name} to be called"
+
+
+def test_app_debug_create_logger() -> None:
+    app = Starlite([], debug=True)
+
+    assert app.logging_config
+    assert app.logging_config.loggers["starlite"]["level"] == "DEBUG"  # type: ignore[attr-defined]
+
+
+def test_app_debug_explicitly_disable_logging() -> None:
+    app = Starlite([], debug=True, logging_config=None)
+
+    assert not app.logging_config
+
+
+def test_app_debug_update_logging_config() -> None:
+    logging_config = LoggingConfig()
+    app = Starlite([], debug=True, logging_config=logging_config)
+
+    assert app.logging_config is logging_config
+    assert app.logging_config.loggers["starlite"]["level"] == "DEBUG"  # type: ignore[attr-defined]
+
+
+def test_set_initial_state() -> None:
+    def set_initial_state_in_hook(app_config: AppConfig) -> AppConfig:
+        assert isinstance(app_config.initial_state, dict)
+        app_config.initial_state["c"] = "D"  # pyright:ignore
+        app_config.initial_state["e"] = "f"  # pyright:ignore
+        return app_config
+
+    app = Starlite(route_handlers=[], initial_state={"a": "b", "c": "d"}, on_app_init=[set_initial_state_in_hook])
+    assert app.state._state == {"a": "b", "c": "D", "e": "f"}

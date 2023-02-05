@@ -4,7 +4,8 @@ from time import sleep
 import pytest
 from freezegun import freeze_time
 
-from starlite import CacheConfig, Request, get
+from starlite import Request, get
+from starlite.config.cache import CacheConfig
 from starlite.testing import create_test_client
 
 from . import after_request_handler, slow_handler

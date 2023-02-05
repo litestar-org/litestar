@@ -751,6 +751,25 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jenish2014",
+      "name": "Jenish",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9599888?v=4",
+      "profile": "https://github.com/jenish2014",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "chris-telemetry",
+      "name": "chris-telemetry",
+      "avatar_url": "https://avatars.githubusercontent.com/u/78052999?v=4",
+      "profile": "https://github.com/chris-telemetry",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

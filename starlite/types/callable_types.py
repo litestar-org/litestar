@@ -14,12 +14,12 @@ from .helper_types import SyncOrAsyncUnion
 from .internal_types import StarliteType
 
 if TYPE_CHECKING:
-    from starlite.config import AppConfig  # noqa: TC004
-    from starlite.connection import ASGIConnection, Request  # noqa: TC004
-    from starlite.datastructures.state import State  # noqa: TC004
-    from starlite.handlers import BaseRouteHandler  # noqa: TC004
-    from starlite.response import Response  # noqa: TC004
-    from starlite.types.protocols import Logger  # noqa: TC004
+    from starlite.config import AppConfig
+    from starlite.connection import ASGIConnection, Request
+    from starlite.datastructures.state import State
+    from starlite.handlers import BaseRouteHandler
+    from starlite.response import Response
+    from starlite.types.protocols import Logger
 else:
     AppConfig = Any
     BaseRouteHandler = Any
@@ -29,7 +29,7 @@ else:
     ASGIConnection = Any
     Logger = Any
 
-_ExceptionT = TypeVar("_ExceptionT", bound=Exception)
+ExceptionT = TypeVar("ExceptionT", bound=Exception)
 
 AfterExceptionHookHandler = Callable[[Exception, Scope, State], SyncOrAsyncUnion[None]]
 AfterRequestHookHandler = Union[
@@ -44,7 +44,7 @@ BeforeMessageSendHookHandler = Union[
 ]
 BeforeRequestHookHandler = Callable[[Request], Union[Any, Awaitable[Any]]]
 CacheKeyBuilder = Callable[[Request], str]
-ExceptionHandler = Callable[[Request, _ExceptionT], Response]
+ExceptionHandler = Callable[[Request, ExceptionT], Response]
 Guard = Callable[[ASGIConnection, BaseRouteHandler], SyncOrAsyncUnion[None]]
 LifeSpanHandler = Union[Callable[[], SyncOrAsyncUnion[Any]], Callable[[State], SyncOrAsyncUnion[Any]]]
 LifeSpanHookHandler = Callable[[StarliteType], SyncOrAsyncUnion[None]]

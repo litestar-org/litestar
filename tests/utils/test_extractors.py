@@ -65,7 +65,7 @@ async def test_parse_url_encoded() -> None:
 
 
 @pytest.mark.parametrize("req", [factory.get(headers={"Special": "123"}), factory.get(headers={"special": "123"})])
-def test_request_extraction_header_obfuscation(req: Request[Any, Any]) -> None:
+def test_request_extraction_header_obfuscation(req: Request[Any, Any, Any]) -> None:
     extractor = ConnectionDataExtractor(obfuscate_headers={"special"})
     extracted_data = extractor(req)
     assert extracted_data.get("headers") == {"special": "*****"}
@@ -80,7 +80,7 @@ def test_request_extraction_header_obfuscation(req: Request[Any, Any]) -> None:
         (factory.get(cookies=[Cookie(key="Special")]), "Special"),
     ],
 )
-def test_request_extraction_cookie_obfuscation(req: Request[Any, Any], key: str) -> None:
+def test_request_extraction_cookie_obfuscation(req: Request[Any, Any, Any], key: str) -> None:
     extractor = ConnectionDataExtractor(obfuscate_cookies={"special"})
     extracted_data = extractor(req)
     assert extracted_data.get("cookies") == {"Path": "/", "SameSite": "lax", key: "*****"}

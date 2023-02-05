@@ -1,13 +1,11 @@
 from unittest.mock import patch
 
-import pytest
-
 from examples.responses.response_cookies_1 import app
 from examples.responses.response_cookies_2 import app as app_2
 from examples.responses.response_cookies_3 import app as app_3
 from examples.responses.response_cookies_4 import app as app_4
 from examples.responses.response_cookies_5 import app as app_5
-from starlite import TestClient
+from starlite.testing import TestClient
 
 
 def test_response_cookies() -> None:
@@ -37,7 +35,6 @@ def test_response_cookies_3() -> None:
         assert res.cookies["Random-Cookie"] == "42"
 
 
-@pytest.mark.xfail
 def test_response_cookies_4() -> None:
     with TestClient(app=app_4) as client, patch("examples.responses.response_cookies_4.randint") as mock_randint:
         mock_randint.return_value = "42"
