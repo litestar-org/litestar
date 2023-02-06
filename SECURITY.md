@@ -4,7 +4,7 @@ Thanks for helping make Starlite safe for everyone.
 
 ## Security
 
-Starlite takes the security of our projects and services seriously, including all of the open source code repositories managed through our GitHub organizations, such as [@starlite-api](https://github.com/starlite-api).
+Starlite takes the security of our projects and services seriously, including all of the repositories managed by the [starlite-api organization](https://github.com/starlite-api).
 
 We will ensure that your finding gets escalated to the appropriate maintainer(s) for remediation.
 
