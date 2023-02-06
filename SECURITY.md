@@ -18,8 +18,8 @@ If you believe you have found a security vulnerability in any Starlite-owned rep
 
 - In the affected repository, browse to the **Security** tab, select **Advisories**, select "Report a vulnerability"
   - ![image](https://user-images.githubusercontent.com/45884264/217041010-8fd6b96b-329d-4d8e-8838-9b5bf4e1a78d.png)
-- Please Do **NOT** Creating an issue in the affected repository
-- Please do **NOT** Private message or tag "@maintainer" on our [Discord server](https://discord.gg/MmcwxztmQb)
+- Please do **NOT** create an issue in the affected repository
+- Please do **NOT** private message to or tag the "@maintainer" role on our [Discord server](https://discord.gg/MmcwxztmQb)
 
 Please include as much of the information listed below as you can to help us better understand and resolve the issue:
 
