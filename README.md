@@ -6,7 +6,6 @@
 
 [![ci](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml/badge.svg)](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml)
 [![PyPI version](https://badge.fury.io/py/starlite.svg)](https://badge.fury.io/py/starlite)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/starlite)](https://pypistats.org/packages/starlite)
 
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
