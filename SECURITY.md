@@ -14,7 +14,7 @@ We will ensure that your finding gets escalated to the appropriate maintainer(s)
 
 [Click to Open a Security Advisory Privately](https://github.com/starlite-api/starlite/security/advisories/new)
 
-If you believe you have found a security vulnerability in any Starlite-owned repository, please report it to us through coordinated disclore:
+If you believe you have found a security vulnerability in any Starlite-owned repository, please report it to us through coordinated disclosure:
   * In the affected repository, browse to the **Security** tab, select **Advisories**, select "Report a vulnerability"
       * ![image](https://user-images.githubusercontent.com/45884264/217041010-8fd6b96b-329d-4d8e-8838-9b5bf4e1a78d.png)
   * Please Do **NOT** Creating an issue in the affected repository
