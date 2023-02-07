@@ -147,8 +147,6 @@ Helper types are useful generic types that can be used.
 
 .. autodata:: starlite.types.SyncOrAsyncUnion
 
-.. autodata:: starlite.types.SingleOrList
-
 
 Protocols
 ---------

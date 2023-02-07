@@ -237,13 +237,12 @@ offering client- and server-side sessions. Different storage mechanisms are avai
 :class:`SessionBackends <starlite.middleware.session.base.BaseSessionBackend>`, and include support for
 storing data in:
 
-* `Cookies <client side sessions>`_
-* `Files <file storage>`_
-* `Redis <redis storage>`_
-* `Memcached <memcached storage>`_ (through ``aiomcache``)
-* `Databases <database storage>`_ (through ``sqlalchemy``)
-* `Memory <in memory storage>`_
-
+* :ref:`Cookies <usage/middleware/builtin-middleware:client-side sessions>`
+* :ref:`Files <usage/middleware/builtin-middleware:file storage>`
+* :ref:`Redis <usage/middleware/builtin-middleware:redis storage>`
+* :ref:`Memcached <usage/middleware/builtin-middleware:memcached storage>` (through ``aiomcache``)
+* :ref:`Databases <usage/middleware/builtin-middleware:database storage`> (through ``sqlalchemy``)
+* :ref:`Memory <usage/middleware/builtin-middleware:in-memory storage`>
 
 
 Setting up the middleware
