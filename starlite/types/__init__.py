@@ -60,6 +60,7 @@ from .callable_types import (
 from .composite_types import (
     Dependencies,
     ExceptionHandlersMap,
+    InitialStateType,
     MaybePartial,
     Middleware,
     ParametersMap,
@@ -71,7 +72,7 @@ from .composite_types import (
 )
 from .empty import Empty, EmptyType
 from .file_types import FileInfo, FileSystemProtocol
-from .helper_types import AnyIOBackend, SingleOrList, SyncOrAsyncUnion
+from .helper_types import AnyIOBackend, OptionalSequence, SyncOrAsyncUnion
 from .internal_types import (
     ControllerRouterHandler,
     ReservedKwargs,
@@ -116,6 +117,7 @@ __all__ = (
     "HTTPSendMessage",
     "HTTPSendMessage",
     "HTTPServerPushEvent",
+    "InitialStateType",
     "LifeSpanHandler",
     "LifeSpanHookHandler",
     "LifeSpanReceive",
@@ -139,6 +141,7 @@ __all__ = (
     "Method",
     "Middleware",
     "OnAppInitHandler",
+    "OptionalSequence",
     "ParametersMap",
     "Partial",
     "PathType",
@@ -158,7 +161,6 @@ __all__ = (
     "Send",
     "Send",
     "Serializer",
-    "SingleOrList",
     "SyncOrAsyncUnion",
     "TypeEncodersMap",
     "WebSocketAcceptEvent",

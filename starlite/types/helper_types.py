@@ -1,10 +1,10 @@
-from typing import Awaitable, List, Literal, TypeVar, Union
+from typing import Awaitable, Literal, Optional, Sequence, TypeVar, Union
 
 T = TypeVar("T")
 
+OptionalSequence = Optional[Sequence[T]]
+"""Types 'T' as union of Sequence[T] and None."""
 SyncOrAsyncUnion = Union[T, Awaitable[T]]
 """Types 'T' as a union of T and awaitable T."""
-SingleOrList = Union[T, List[T]]
-"""Types 'T' as a single value or a list T."""
 AnyIOBackend = Literal["asyncio", "trio"]
 """Anyio backend names."""

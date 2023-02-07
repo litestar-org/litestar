@@ -10,6 +10,7 @@ from starlite.params import Dependency
 from starlite.signature import create_signature_model
 from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from starlite.testing import RequestFactory, TestClient, create_test_client
+from starlite.types.helper_types import OptionalSequence  # noqa: TC001
 from tests.plugins.test_base import AModel, APlugin
 
 if TYPE_CHECKING:
@@ -205,7 +206,7 @@ def test_signature_field_is_non_string_iterable() -> None:
 
 
 def test_signature_field_is_non_string_sequence() -> None:
-    def fn(a: Sequence[int], b: Optional[Sequence[int]]) -> None:
+    def fn(a: Sequence[int], b: OptionalSequence[int]) -> None:
         pass
 
     model = create_signature_model(fn, plugins=[], dependency_name_set=set())

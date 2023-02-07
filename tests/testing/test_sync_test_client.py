@@ -44,16 +44,12 @@ def raise_error() -> NoReturn:
 
 
 def test_error_handling_on_startup(test_client_backend: "AnyIOBackend") -> None:
-    with pytest.raises(RuntimeError), TestClient(
-        Starlite(route_handlers=[], on_startup=[raise_error]), backend=test_client_backend
-    ):
+    with pytest.raises(RuntimeError), TestClient(Starlite(on_startup=[raise_error]), backend=test_client_backend):
         pass
 
 
 def test_error_handling_on_shutdown(test_client_backend: "AnyIOBackend") -> None:
-    with pytest.raises(RuntimeError), TestClient(
-        Starlite(route_handlers=[], on_shutdown=[raise_error]), backend=test_client_backend
-    ):
+    with pytest.raises(RuntimeError), TestClient(Starlite(on_shutdown=[raise_error]), backend=test_client_backend):
         pass
 
 

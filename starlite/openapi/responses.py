@@ -225,7 +225,7 @@ def create_responses(
         ),
     }
 
-    exceptions = route_handler.raises or []
+    exceptions = list(route_handler.raises or [])
     if raises_validation_error and ValidationException not in exceptions:
         exceptions.append(ValidationException)
     for status_code, response in create_error_responses(exceptions=exceptions):

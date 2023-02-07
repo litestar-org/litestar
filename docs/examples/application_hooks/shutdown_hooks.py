@@ -29,8 +29,7 @@ def after_shutdown_handler(app_instance: Starlite) -> None:
 
 
 app = Starlite(
-    [],
     on_shutdown=[shutdown_callable],
-    before_shutdown=before_shutdown_handler,
-    after_shutdown=after_shutdown_handler,
+    before_shutdown=[before_shutdown_handler],
+    after_shutdown=[after_shutdown_handler],
 )
