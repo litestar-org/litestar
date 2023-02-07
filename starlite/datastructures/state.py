@@ -26,7 +26,7 @@ class ImmutableState(Mapping[str, Any]):
     _state: Dict[str, Any]
 
     def __init__(
-        self, state: Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]], deep_copy: bool = True
+        self, state: Union["ImmutableState", Mapping[str, Any], Iterable[Tuple[str, Any]]], deep_copy: bool = True
     ) -> None:
         """Initialize an ``ImmutableState`` instance.
 
@@ -181,7 +181,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
 
     def __init__(
         self,
-        state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
+        state: Optional[Union["ImmutableState", Mapping[str, Any], Iterable[Tuple[str, Any]]]] = None,
         deep_copy: bool = False,
     ) -> None:
         """Initialize a ``State`` instance with an optional value.

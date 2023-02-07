@@ -101,7 +101,7 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     monkeypatch.setattr(Router, "__init__", MagicMock())
 
     # instantiates the app with an `on_app_config` that returns our patched `AppConfig` object.
-    Starlite(route_handlers=[], on_app_init=[MagicMock(return_value=app_config_object)])
+    Starlite(on_app_init=[MagicMock(return_value=app_config_object)])
 
     # this ensures that each of the properties of the `AppConfig` object have been accessed within `Starlite.__init__()`
     for name, mock in property_mocks:
@@ -136,5 +136,5 @@ def test_set_initial_state() -> None:
         app_config.initial_state["e"] = "f"  # pyright:ignore
         return app_config
 
-    app = Starlite(route_handlers=[], initial_state={"a": "b", "c": "d"}, on_app_init=[set_initial_state_in_hook])
+    app = Starlite(initial_state={"a": "b", "c": "d"}, on_app_init=[set_initial_state_in_hook])
     assert app.state._state == {"a": "b", "c": "D", "e": "f"}

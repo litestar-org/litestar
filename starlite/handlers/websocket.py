@@ -5,13 +5,7 @@ from pydantic import validate_arguments
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import (
-    Dependencies,
-    ExceptionHandler,
-    Guard,
-    Middleware,
-    TypeEncodersMap,
-)
+from starlite.types import Dependencies, ExceptionHandler, Guard, Middleware
 from starlite.utils import Ref, is_async_callable
 
 if TYPE_CHECKING:
@@ -36,19 +30,18 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
         opt: Optional[Dict[str, Any]] = None,
-        type_encoders: Optional[TypeEncodersMap] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``WebsocketRouteHandler``
 
         Args:
-            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
-            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
-            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
-            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
-            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+            path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults to '/'
+            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
+            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.

@@ -96,7 +96,7 @@ class Response(Generic[T]):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         """
         self.background = background
-        self.cookies = cookies or []
+        self.cookies = list(cookies or [])
         self.encoding = encoding
         self.headers = headers or {}
         self.is_head_response = is_head_response

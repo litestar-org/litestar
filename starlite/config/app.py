@@ -24,7 +24,6 @@ from starlite.types import (
     ResponseCookies,
     ResponseHeadersMap,
     ResponseType,
-    SingleOrList,
     TypeEncodersMap,
 )
 from starlite.types.composite_types import InitialStateType
@@ -51,7 +50,7 @@ class AppConfig(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
-    after_exception: SingleOrList[AfterExceptionHookHandler]
+    after_exception: List[AfterExceptionHookHandler]
     """An application level :class:`exception hook handler <starlite.types.AfterExceptionHookHandler>` or list thereof.
 
     This hook is called after an exception occurs. In difference to exception handlers, it is not meant to return a
@@ -68,12 +67,12 @@ class AppConfig(BaseModel):
 
     :class:`Request <starlite.connection.Request>` object and should not return any values.
     """
-    after_shutdown: SingleOrList[LifeSpanHookHandler]
+    after_shutdown: List[LifeSpanHookHandler]
     """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
 
     This hook is called during the ASGI shutdown, after all callables in the 'on_shutdown' list have been called.
     """
-    after_startup: SingleOrList[LifeSpanHookHandler]
+    after_startup: List[LifeSpanHookHandler]
     """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
 
     This hook is called during the ASGI startup, after all callables in the 'on_startup' list have been called.
@@ -86,17 +85,17 @@ class AppConfig(BaseModel):
     :class:`Request <starlite.connection.Request>` instance and any non-``None`` return value is used for the response, bypassing
     the route handler.
     """
-    before_send: SingleOrList[BeforeMessageSendHookHandler]
+    before_send: List[BeforeMessageSendHookHandler]
     """An application level :class:`before send hook handler <starlite.types.BeforeMessageSendHookHandler>` or list thereof.
 
     This hook is called when the ASGI send function is called.
     """
-    before_shutdown: SingleOrList[LifeSpanHookHandler]
+    before_shutdown: List[LifeSpanHookHandler]
     """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
 
     This hook is called during the ASGI shutdown, before any callables in the 'on_shutdown' list have been called.
     """
-    before_startup: SingleOrList[LifeSpanHookHandler]
+    before_startup: List[LifeSpanHookHandler]
     """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
 
     This hook is called during the ASGI startup, before any callables in the 'on_startup' list have been called.
@@ -175,7 +174,7 @@ class AppConfig(BaseModel):
 
     :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for details.
     """
-    static_files_config: SingleOrList[StaticFilesConfig]
+    static_files_config: List[StaticFilesConfig]
     """An instance or list of :class:`StaticFilesConfig <starlite.config.StaticFilesConfig>`."""
     tags: List[str]
     """A list of string tags that will be appended to the schema of all route handlers under the application."""

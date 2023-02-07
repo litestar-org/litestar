@@ -291,7 +291,7 @@ def test_jwt_auth_openapi() -> None:
         }
     }
     assert jwt_auth.security_requirement == {"BearerToken": []}
-    app = Starlite(route_handlers=[], on_app_init=[jwt_auth.on_app_init])
+    app = Starlite(on_app_init=[jwt_auth.on_app_init])
     assert app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
         "openapi": "3.1.0",
         "info": {"title": "Starlite API", "version": "1.0.0"},
@@ -356,7 +356,7 @@ async def test_oauth2_password_bearer_auth_openapi(
     }
     assert jwt_auth.security_requirement == {"BearerToken": []}
 
-    app = Starlite(route_handlers=[], on_app_init=[jwt_auth.on_app_init])
+    app = Starlite(on_app_init=[jwt_auth.on_app_init])
     assert app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
         "openapi": "3.1.0",
         "info": {"title": "Starlite API", "version": "1.0.0"},

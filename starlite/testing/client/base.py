@@ -1,7 +1,17 @@
 import warnings
 from contextlib import contextmanager
 from http.cookiejar import CookieJar
-from typing import TYPE_CHECKING, Any, Dict, Generator, Generic, Optional, TypeVar, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generator,
+    Generic,
+    Mapping,
+    Optional,
+    TypeVar,
+    cast,
+)
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 
@@ -76,7 +86,7 @@ class BaseTestClient(Generic[T]):
         app: T,
         base_url: str = "http://testserver.local",
         backend: AnyIOBackend = "asyncio",
-        backend_options: Optional[Dict[str, Any]] = None,
+        backend_options: Optional[Mapping[str, Any]] = None,
         session_config: Optional["BaseBackendConfig"] = None,
         cookies: Optional["CookieTypes"] = None,
     ):
@@ -114,7 +124,9 @@ class BaseTestClient(Generic[T]):
         if hasattr(self, "blocking_portal"):
             yield self.blocking_portal
         else:
-            with start_blocking_portal(backend=self.backend, backend_options=self.backend_options) as portal:
+            with start_blocking_portal(
+                backend=self.backend, backend_options=dict(self.backend_options or {})
+            ) as portal:
                 yield portal
 
     @staticmethod
@@ -129,19 +141,19 @@ class BaseTestClient(Generic[T]):
             message=fake_http_send_message(mutable_headers),
             connection=fake_asgi_connection(
                 app=self.app,
-                cookies=dict(self.cookies),  # type: ignore [arg-type]
+                cookies=dict(self.cookies),  # type: ignore[arg-type]
             ),
         )
         response = Response(200, request=Request("GET", self.base_url), headers=mutable_headers.headers)
 
         cookies = Cookies(CookieJar())
         cookies.extract_cookies(response)
-        self.cookies.update(cookies)  # type: ignore [union-attr]
+        self.cookies.update(cookies)  # type: ignore[union-attr]
 
     async def _get_session_data(self) -> Dict[str, Any]:
         return await self.session_backend.load_from_connection(
             connection=fake_asgi_connection(
                 app=self.app,
-                cookies=dict(self.cookies),  # type: ignore [arg-type]
+                cookies=dict(self.cookies),  # type: ignore[arg-type]
             ),
         )

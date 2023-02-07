@@ -10,8 +10,9 @@ from typing import (
     Dict,
     Iterable,
     Iterator,
-    List,
     Literal,
+    Mapping,
+    Sequence,
     Set,
     Tuple,
     Type,
@@ -44,17 +45,17 @@ else:
 T = TypeVar("T")
 
 
-Dependencies = Dict[str, Provide]
-ExceptionHandlersMap = Dict[Union[int, Type[Exception]], ExceptionHandler]
-InitialStateType = Union[ImmutableState, Dict[str, Any], Iterable[Tuple[str, Any]]]
+Dependencies = Mapping[str, Provide]
+ExceptionHandlersMap = Mapping[Union[int, Type[Exception]], ExceptionHandler]
+InitialStateType = Mapping[str, Any]
 MaybePartial = Union[T, partial]
 Middleware = Union[
     Callable[..., ASGIApp], DefineMiddleware, Iterator[Tuple[ASGIApp, Dict[str, Any]]], Type[MiddlewareProtocol]
 ]
-ParametersMap = Dict[str, ParameterKwarg]
+ParametersMap = Mapping[str, ParameterKwarg]
 PathType = Union[Path, PathLike, str]
-ResponseCookies = List[Cookie]
-ResponseHeadersMap = Dict[str, ResponseHeader]
+ResponseCookies = Sequence[Cookie]
+ResponseHeadersMap = Mapping[str, ResponseHeader]
 Scopes = Set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]
 StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]
-TypeEncodersMap = Dict[Any, Callable[[Any], Any]]
+TypeEncodersMap = Mapping[Any, Callable[[Any], Any]]
