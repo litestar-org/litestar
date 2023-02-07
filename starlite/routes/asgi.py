@@ -6,7 +6,7 @@ from starlite.routes.base import BaseRoute
 from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
-    from starlite.handlers.asgi import ASGIRouteHandler
+    from starlite.handlers.asgi_handlers import ASGIRouteHandler
     from starlite.types import Receive, Scope, Send
 
 

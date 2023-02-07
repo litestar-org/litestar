@@ -11,7 +11,7 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     SerializationException,
 )
-from starlite.handlers.http import HTTPRouteHandler
+from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.response import Response
 from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
