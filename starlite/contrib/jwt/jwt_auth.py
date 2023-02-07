@@ -20,7 +20,6 @@ from starlite.enums import MediaType
 from starlite.middleware import DefineMiddleware
 from starlite.security.base import AbstractSecurityConfig, UserType
 from starlite.status_codes import HTTP_201_CREATED
-from starlite.types import TypeEncodersMap
 
 
 class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
@@ -54,8 +53,6 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
 
     Must inherit from :class:`JWTAuthenticationMiddleware`
     """
-    type_encoders: Optional[TypeEncodersMap] = None
-    """A mapping of types to callables that transform them into types supported for serialization."""
 
     @property
     def openapi_components(self) -> Components:
@@ -139,12 +136,11 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             token_audience=token_audience,
             token_unique_jwt_id=token_unique_jwt_id,
         )
-        return Response(
+        return self.create_response(
             content=response_body,
             headers={self.auth_header: self.format_auth_header(encoded_token)},
             media_type=response_media_type,
             status_code=response_status_code,
-            type_encoders=self.type_encoders,
         )
 
     def create_token(
@@ -302,7 +298,7 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
             secure=self.secure,
             samesite=self.samesite,
         )
-        return Response(
+        return self.create_response(
             content=response_body,
             headers={self.auth_header: self.format_auth_header(encoded_token)},
             cookies=[cookie],
@@ -427,7 +423,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
             secure=self.secure,
             samesite=self.samesite,
         )
-        return Response(
+        return self.create_response(
             content=response_body or oauth2_token_response,
             headers={self.auth_header: self.format_auth_header(encoded_token)},
             cookies=[cookie],
