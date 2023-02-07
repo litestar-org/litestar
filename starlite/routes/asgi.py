@@ -25,7 +25,7 @@ class ASGIRoute(BaseRoute):
 
         Args:
             path: The path for the route.
-            route_handler: An instance of :ref:`ASGIRouteHandler <starlite.handlers.asgi.ASGIRouteHandler>`.
+            route_handler: An instance of :ref:`ASGIRouteHandler <starlite.handlers.asgi_handlers.ASGIRouteHandler>`.
         """
         self.route_handler = route_handler
         super().__init__(

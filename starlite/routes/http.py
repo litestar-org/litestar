@@ -41,7 +41,7 @@ class HTTPRoute(BaseRoute):
 
         Args:
             path: The path for the route.
-            route_handlers: A list of :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>`.
+            route_handlers: A list of :class:`HTTPRouteHandler <starlite.handlers.http_handlers.HTTPRouteHandler>`.
         """
         methods = list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
         if "OPTIONS" not in methods:
@@ -225,7 +225,7 @@ class HTTPRoute(BaseRoute):
 
         Args:
             request: The :class:`Request <starlite.connection.Request>` instance
-            route_handler: The :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>` instance
+            route_handler: The :class:`HTTPRouteHandler <starlite.handlers.http_handlers.HTTPRouteHandler>` instance
 
         Returns:
             A cached response instance, if existing.
