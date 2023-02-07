@@ -4,7 +4,6 @@ Usage
 .. toctree::
     :titlesonly:
 
-    the-starlite-app
     starlite-app/index
     routing
     route-handlers

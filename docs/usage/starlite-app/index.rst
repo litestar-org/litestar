@@ -1,16 +1,38 @@
-The Starlite app
-================
+The Starlite Application
+========================
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin auctor ante
-justo, in ultricies sapien iaculis vitae. Maecenas eu justo at felis rhoncus
-mattis vitae eget velit. In vitae euismod ex, et pretium ipsum. Vestibulum
-tortor diam, euismod ut imperdiet at, gravida fermentum dui. Nam at gravida
-nunc. Mauris imperdiet vel sem et lacinia. Mauris et gravida purus. Pellentesque
-sapien risus, tristique id quam non, dapibus molestie enim. Nulla id quam turpis.
+At the root of every Starlite project is an instance of the :class:`Starlite <starlite.app.Starlite>` class & this code
+is generally placed in a file named `main.py` at the project's root directory.
 
-Cras ut egestas nibh. Nunc hendrerit ipsum vitae magna ullamcorper sollicitudin.
-Nunc non lectus a ligula eleifend commodo. Fusce ac felis augue. Nam condimentum
-iaculis vestibulum. Nunc et felis consectetur, aliquet leo non, vestibulum eros.
-Aliquam auctor orci sit amet lorem auctor, suscipit condimentum lorem vehicula.
-Morbi vel massa feugiat, euismod eros in, tempor mi. Suspendisse metus nulla,
-porta consequat convallis non, condimentum et lacus.
+.. note::
+   Its just a standard practice to name the "root" Python file in a project as `main.py`. But you are free to name it
+   anything else like `app.py` or something else.
+
+That said, creating the root app is pretty straightforward & the only `required` argument is a list of
+:class:`Controllers <.controller.Controller>`, :class:`Routers <.router.Router>` or
+:class:`Route Handlers <.handlers.base.BaseRouteHandler>`. The later section of the documentation takes a more
+comprehensive take on how to use the said class instances. But here's a quick sneak peek into a simple standalone
+Starlite application:
+
+.. literalinclude:: /examples/hello_world.py
+   :caption: A "Hello World" Starlite Project
+   :language: python
+
+The ``app`` instance is the root level of the app, as in, it has the base path of ``/``. And all root level Controllers,
+Routers & Router Handlers should be registered on it.
+
+.. seealso::
+   You can learn more about registering routes at: :ref:`usage/routing:Registering Routes`
+
+Starlite also provides additional functionalities like managing application state, handling static files, logging & much
+more through this ``app`` instance as well. The next few chapters of the documentations will shed a more detailed look into
+how you can use those functionalities in your Starlite project as well.
+
+.. toctree::
+   :titlesonly:
+
+   app-hooks
+   app-state
+   static-files
+   logging
+   app-layers
