@@ -241,8 +241,8 @@ storing data in:
 * :ref:`Files <usage/middleware/builtin-middleware:file storage>`
 * :ref:`Redis <usage/middleware/builtin-middleware:redis storage>`
 * :ref:`Memcached <usage/middleware/builtin-middleware:memcached storage>` (through ``aiomcache``)
-* :ref:`Databases <usage/middleware/builtin-middleware:database storage`> (through ``sqlalchemy``)
-* :ref:`Memory <usage/middleware/builtin-middleware:in-memory storage`>
+* :ref:`Databases <usage/middleware/builtin-middleware:database storage>` (through ``sqlalchemy``)
+* :ref:`Memory <usage/middleware/builtin-middleware:in-memory storage>`
 
 
 Setting up the middleware
