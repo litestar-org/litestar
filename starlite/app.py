@@ -28,7 +28,7 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     NoRouteMatchFoundException,
 )
-from starlite.handlers.http import HTTPRouteHandler
+from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.middleware.cors import CORSMiddleware
 from starlite.openapi.path_item import create_path_item
 from starlite.router import Router

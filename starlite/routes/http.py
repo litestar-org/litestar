@@ -11,7 +11,7 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     SerializationException,
 )
-from starlite.handlers.http import HTTPRouteHandler
+from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.response import Response
 from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
@@ -41,7 +41,7 @@ class HTTPRoute(BaseRoute):
 
         Args:
             path: The path for the route.
-            route_handlers: A list of :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>`.
+            route_handlers: A list of :class:`HTTPRouteHandler <starlite.handlers.http_handlers.HTTPRouteHandler>`.
         """
         methods = list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
         if "OPTIONS" not in methods:
@@ -225,7 +225,7 @@ class HTTPRoute(BaseRoute):
 
         Args:
             request: The :class:`Request <starlite.connection.Request>` instance
-            route_handler: The :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>` instance
+            route_handler: The :class:`HTTPRouteHandler <starlite.handlers.http_handlers.HTTPRouteHandler>` instance
 
         Returns:
             A cached response instance, if existing.

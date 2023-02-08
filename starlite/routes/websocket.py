@@ -6,7 +6,7 @@ from starlite.routes.base import BaseRoute
 
 if TYPE_CHECKING:
     from starlite.connection import WebSocket
-    from starlite.handlers.websocket import WebsocketRouteHandler
+    from starlite.handlers.websocket_handlers import WebsocketRouteHandler
     from starlite.kwargs import KwargsModel
     from starlite.kwargs.cleanup import DependencyCleanupGroup
     from starlite.types import Receive, Send, WebSocketScope
@@ -30,7 +30,7 @@ class WebSocketRoute(BaseRoute):
 
         Args:
             path: The path for the route.
-            route_handler: An instance of :class:`WebsocketRouteHandler <starlite.handlers.websocket.WebsocketRouteHandler>`.
+            route_handler: An instance of :class:`WebsocketRouteHandler <starlite.handlers.websocket_handlers.WebsocketRouteHandler>`.
         """
         self.route_handler = route_handler
         self.handler_parameter_model: Optional["KwargsModel"] = None

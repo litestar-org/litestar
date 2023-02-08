@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from starlite.app import Starlite
 from starlite.connection import Request
 from starlite.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
-from starlite.handlers.http import get
+from starlite.handlers.http_handlers import get
 from starlite.types import HTTPScope, RouteHandlerType
 from starlite.types.asgi_types import ASGIVersion
 from starlite.utils.serialization import decode_json, encode_json

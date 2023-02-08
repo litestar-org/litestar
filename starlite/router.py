@@ -182,8 +182,8 @@ class Router:
 
         Args:
             value: a subclass or instance of Controller, an instance of ``Router`` or a function/method that has been
-                decorated by any of the routing decorators, e.g. :class:`get <starlite.handlers.http.get>`,
-                :class:`post <starlite.handlers.http.post>`.
+                decorated by any of the routing decorators, e.g. :class:`get <starlite.handlers.http_handlers.get>`,
+                :class:`post <starlite.handlers.http_handlers.post>`.
 
         Returns:
             Collection of handlers added to the router.

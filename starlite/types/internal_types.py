@@ -15,9 +15,9 @@ from starlite.types import Method
 if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.controller import Controller
-    from starlite.handlers.asgi import ASGIRouteHandler
-    from starlite.handlers.http import HTTPRouteHandler
-    from starlite.handlers.websocket import WebsocketRouteHandler
+    from starlite.handlers.asgi_handlers import ASGIRouteHandler
+    from starlite.handlers.http_handlers import HTTPRouteHandler
+    from starlite.handlers.websocket_handlers import WebsocketRouteHandler
     from starlite.response import Response
     from starlite.router import Router
 else:
