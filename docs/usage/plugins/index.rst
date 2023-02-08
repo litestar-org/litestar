@@ -14,7 +14,7 @@ data using non-pydantic classes. Additionally, they allow for seamless serializa
 Creating Plugins
 ----------------
 
-A plugin is a class that implements the :class:`PluginProtocol <starlite.plugins.base.PluginProtocol>`.
+A plugin is a class that implements the :class:`SerializationPluginProtocol <starlite.plugins.base.SerializationPluginProtocol>`.
 
 If you wish to support the serialization and deserialization of none-pydantic classes, you need to implement the
 following methods specified by the:
@@ -22,7 +22,7 @@ following methods specified by the:
 .. code-block:: python
 
    from typing import Type, Any, Dict
-   from starlite import PluginProtocol
+   from starlite import SerializationPluginProtocol
    from pydantic import BaseModel
 
 
@@ -30,14 +30,14 @@ following methods specified by the:
        ...
 
 
-   class MyPlugin(PluginProtocol[MyClass]):
+   class MyPlugin(SerializationPluginProtocol[MyClass, BaseModel]):
        """
        The class for which we create a plugin. For example, could be a base ORM class such as "Model" or "Document" etc.
        """
 
        ...
 
-       def to_pydantic_model_class(
+       def to_data_container_class(
            self, model_class: Type[MyClass], **kwargs: Any
        ) -> Type[BaseModel]:
            """
@@ -52,11 +52,11 @@ following methods specified by the:
            """
            ...
 
-       def from_pydantic_model_instance(
-           self, model_class: Type[MyClass], pydantic_model_instance: BaseModel
+       def from_data_container_instance(
+           self, model_class: Type[MyClass], data_container_instance: BaseModel
        ) -> MyClass:
            """
-           Given an instance of a pydantic model created using a plugin's ``to_pydantic_model_class``,
+           Given an instance of a pydantic model created using a plugin's ``to_data_container_class``,
            return an instance of the class from which that pydantic model has been created.
 
            This class is passed in as the ``model_class`` kwarg.
@@ -76,12 +76,13 @@ following methods specified by the:
            ...
 
 If you wish to register middlewares, guards, dependencies and so forth on the application init, you need to implement the
-:meth:`on_app_init <starlite.plugins.base.PluginProtocol.on_app_init>` method:
+:meth:`on_app_init <starlite.plugins.base.SerializationPluginProtocol.on_app_init>` method:
 
 .. code-block:: python
 
    from typing import Any
-   from starlite import PluginProtocol, Starlite, get
+   from starlite.plugins import InitPluginProtocol
+   from starlite import Starlite, get
 
 
    @get("/some-path")
@@ -89,7 +90,7 @@ If you wish to register middlewares, guards, dependencies and so forth on the ap
        ...
 
 
-   class MyPlugin(PluginProtocol[Any]):
+   class MyPlugin(InitPluginProtocol):
        def on_app_init(self, app: Starlite) -> None:
            # register a route handler
            app.register(my_handler)

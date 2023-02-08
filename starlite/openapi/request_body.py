@@ -10,12 +10,12 @@ from starlite.openapi.schema import create_schema, update_schema_with_signature_
 from starlite.params import BodyKwarg
 
 if TYPE_CHECKING:
-    from starlite.plugins.base import PluginProtocol
+    from starlite.plugins.base import OpenAPISchemaPluginProtocol
     from starlite.signature.models import SignatureField
 
 
 def create_request_body(
-    field: "SignatureField", generate_examples: bool, plugins: List["PluginProtocol"]
+    field: "SignatureField", generate_examples: bool, plugins: List["OpenAPISchemaPluginProtocol"]
 ) -> Optional[RequestBody]:
     """Create a RequestBody model for the given RouteHandler or return None."""
     media_type: Union[RequestEncodingType, str] = RequestEncodingType.JSON

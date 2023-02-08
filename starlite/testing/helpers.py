@@ -3,11 +3,12 @@ from typing import TYPE_CHECKING, Any, Literal, Mapping, Optional, Sequence, Typ
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.controller import Controller
 from starlite.events import SimpleEventEmitter
+from starlite.plugins import PluginProtocol
 from starlite.testing.client import AsyncTestClient, TestClient
 from starlite.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
-    from starlite import PluginProtocol, Request, WebSocket
+    from starlite import Request, SerializationPluginProtocol, WebSocket
     from starlite.config import (
         AllowedHostsConfig,
         BaseLoggingConfig,
@@ -264,7 +265,7 @@ def create_async_test_client(
     on_startup: "OptionalSequence[LifeSpanHandler]" = None,
     openapi_config: Optional["OpenAPIConfig"] = None,
     parameters: Optional["ParametersMap"] = None,
-    plugins: "OptionalSequence[PluginProtocol]" = None,
+    plugins: "OptionalSequence[SerializationPluginProtocol]" = None,
     raise_server_exceptions: bool = True,
     request_class: Optional[Type["Request"]] = None,
     response_class: Optional["ResponseType"] = None,
