@@ -64,6 +64,7 @@ if TYPE_CHECKING:
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
+        AnyCallable,
         ASGIApp,
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
@@ -71,6 +72,7 @@ if TYPE_CHECKING:
         Dependencies,
         EmptyType,
         ExceptionHandlersMap,
+        GetLogger,
         Guard,
         InitialStateType,
         LifeSpanHandler,
@@ -82,6 +84,7 @@ if TYPE_CHECKING:
         Message,
         Middleware,
         OnAppInitHandler,
+        OptionalSequence,
         ParametersMap,
         Receive,
         ResponseCookies,
@@ -92,8 +95,6 @@ if TYPE_CHECKING:
         Send,
         TypeEncodersMap,
     )
-    from starlite.types.callable_types import AnyCallable, GetLogger
-    from starlite.types.helper_types import OptionalSequence
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """The default OpenAPI config used if not configuration is explicitly passed to the :class:`Starlite
@@ -294,6 +295,8 @@ class Starlite(Router):
         self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
         self.asgi_router = ASGIRouter(app=self)
 
+        logging_config = logging_config if logging_config is not Empty else LoggingConfig() if debug else None
+
         config = AppConfig(
             after_exception=list(after_exception or []),
             after_request=after_request,
@@ -318,7 +321,7 @@ class Starlite(Router):
             guards=list(guards or []),
             initial_state=dict(initial_state or {}),
             listeners=list(listeners or []),
-            logging_config=logging_config if logging_config is not Empty else LoggingConfig() if debug else None,  # type: ignore[arg-type]
+            logging_config=logging_config,  # type: ignore[arg-type]
             middleware=list(middleware or []),
             on_shutdown=list(on_shutdown or []),
             on_startup=list(on_startup or []),
@@ -436,7 +439,9 @@ class Starlite(Router):
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
-    def register(self, value: "ControllerRouterHandler", add_to_openapi_schema: bool = False) -> None:  # type: ignore[override]
+    def register(  # type: ignore[override]
+        self, value: "ControllerRouterHandler", add_to_openapi_schema: bool = False
+    ) -> None:
         """Register a route handler on the app.
 
         This method can be used to dynamically add endpoints to an application.
@@ -731,18 +736,30 @@ class Starlite(Router):
         if not self.openapi_config or not self.openapi_schema or self.openapi_schema.paths is None:
             raise ImproperlyConfiguredException("Cannot generate OpenAPI schema without initializing an OpenAPIConfig")
 
+        operation_ids: List[str] = []
+
         for route in self.routes:
             if (
                 isinstance(route, HTTPRoute)
                 and any(route_handler.include_in_schema for route_handler, _ in route.route_handler_map.values())
                 and (route.path_format or "/") not in self.openapi_schema.paths
             ):
-                self.openapi_schema.paths[route.path_format or "/"] = create_path_item(
+                path_item, created_operation_ids = create_path_item(
                     route=route,
                     create_examples=self.openapi_config.create_examples,
                     plugins=self.plugins,
                     use_handler_docstrings=self.openapi_config.use_handler_docstrings,
+                    operation_id_creator=self.openapi_config.operation_id_creator,
                 )
+                self.openapi_schema.paths[route.path_format or "/"] = path_item
+
+                for operation_id in created_operation_ids:
+                    if operation_id in operation_ids:
+                        raise ImproperlyConfiguredException(
+                            f"operation_ids must be unique, "
+                            f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
+                        )
+                    operation_ids.append(operation_id)
         self.openapi_schema = construct_open_api_with_schema_class(
             open_api_schema=self.openapi_schema, by_alias=self.openapi_config.by_alias
         )

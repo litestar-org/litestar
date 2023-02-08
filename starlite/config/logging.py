@@ -193,7 +193,7 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
 
             values = self.dict(exclude_none=True, exclude={"incremental"})
         else:
-            from logging import config, getLogger  # type: ignore[no-redef]
+            from logging import config, getLogger  # type: ignore[no-redef, assignment]
 
             values = self.dict(exclude_none=True)
 

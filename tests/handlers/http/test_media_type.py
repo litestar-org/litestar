@@ -31,7 +31,7 @@ class MyBytes(bytes):
 )
 def test_media_type_inference(annotation: Any, expected_media_type: MediaType) -> None:
     @get("/")
-    def handler() -> annotation:  # type: ignore
+    def handler() -> annotation:
         return None
 
     assert handler.media_type == expected_media_type

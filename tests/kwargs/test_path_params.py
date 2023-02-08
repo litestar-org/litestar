@@ -137,10 +137,10 @@ def test_duplicate_path_param_validation() -> None:
 )
 def test_path_param_type_resolution(param_type_name: str, param_type_class: Any, value: Any) -> None:
     @get("/some/test/path/{test:" + param_type_name + "}")
-    def handler(test: param_type_class) -> None:  # type: ignore
+    def handler(test: param_type_class) -> None:
         if isinstance(test, (date, datetime)):
-            assert test.isoformat() == value  # type: ignore
-        elif isinstance(test, timedelta):  # type: ignore
+            assert test.isoformat() == value
+        elif isinstance(test, timedelta):
             assert test.total_seconds() == value
         elif isinstance(test, Decimal):
             assert str(test) == str(value)

@@ -1,10 +1,11 @@
 from sys import version_info
+from typing import Any
 
 import pytest
 from pydantic import BaseModel, Field
 from pydantic_openapi_schema.v3_1_0 import Components, Example, Header
 
-from starlite import Starlite, get
+from starlite import HTTPRouteHandler, Starlite, get
 from starlite.config.openapi import OpenAPIConfig
 
 
@@ -70,4 +71,39 @@ def test_by_alias() -> None:
         "type": "object",
         "required": ["first"],
         "title": "ModelWithAlias",
+    }
+
+
+def test_allows_customization_of_operation_id_creator() -> None:
+    def operation_id_creator(handler: HTTPRouteHandler, _: Any, __: Any) -> str:
+        return handler.name or ""
+
+    @get(path="/1", name="x")
+    def handler_1() -> None:
+        return
+
+    @get(path="/2", name="y")
+    def handler_2() -> None:
+        return
+
+    app = Starlite(
+        route_handlers=[handler_1, handler_2],
+        openapi_config=OpenAPIConfig(title="my title", version="1.0.0", operation_id_creator=operation_id_creator),
+    )
+
+    assert app.openapi_schema.dict(exclude_none=True)["paths"] == {  # type: ignore[union-attr]
+        "/1": {
+            "get": {
+                "deprecated": False,
+                "operationId": "x",
+                "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
+            }
+        },
+        "/2": {
+            "get": {
+                "deprecated": False,
+                "operationId": "y",
+                "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
+            }
+        },
     }
