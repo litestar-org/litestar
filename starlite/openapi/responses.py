@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
     from starlite.datastructures.cookie import Cookie
     from starlite.handlers import HTTPRouteHandler
-    from starlite.plugins.base import PluginProtocol
+    from starlite.plugins.base import OpenAPISchemaPluginProtocol
 
 
 def create_cookie_schema(cookie: "Cookie") -> Schema:
@@ -49,7 +49,7 @@ def create_cookie_schema(cookie: "Cookie") -> Schema:
 
 
 def create_success_response(
-    route_handler: "HTTPRouteHandler", generate_examples: bool, plugins: List["PluginProtocol"]
+    route_handler: "HTTPRouteHandler", generate_examples: bool, plugins: List["OpenAPISchemaPluginProtocol"]
 ) -> Response:
     """Create the schema for a success response."""
     signature = route_handler.signature
@@ -191,7 +191,7 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
 
 
 def create_additional_responses(
-    route_handler: "HTTPRouteHandler", plugins: List["PluginProtocol"]
+    route_handler: "HTTPRouteHandler", plugins: List["OpenAPISchemaPluginProtocol"]
 ) -> Iterator[Tuple[str, Response]]:
     """Create the schema for additional responses, if any."""
     if not route_handler.responses:
@@ -213,7 +213,7 @@ def create_responses(
     route_handler: "HTTPRouteHandler",
     raises_validation_error: bool,
     generate_examples: bool,
-    plugins: List["PluginProtocol"],
+    plugins: List["OpenAPISchemaPluginProtocol"],
 ) -> Optional["Responses"]:
     """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
 

@@ -21,7 +21,11 @@ from typing_extensions import get_args
 from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
-from starlite.plugins.base import PluginMapping, PluginProtocol, get_plugin_for_value
+from starlite.plugins.base import (
+    PluginMapping,
+    SerializationPluginProtocol,
+    get_plugin_for_value,
+)
 from starlite.signature.models import PydanticSignatureModel, SignatureModel
 from starlite.types import Empty
 from starlite.utils import is_optional_union
@@ -89,13 +93,15 @@ class ParsedSignatureParameter(NamedTuple):
 
 
 def get_type_annotation_from_plugin(
-    parameter: ParsedSignatureParameter, plugin: PluginProtocol, field_plugin_mappings: Dict[str, PluginMapping]
+    parameter: ParsedSignatureParameter,
+    plugin: SerializationPluginProtocol,
+    field_plugin_mappings: Dict[str, PluginMapping],
 ) -> Any:
     """Use plugin declared for parameter annotation type to generate a pydantic model.
 
     Args:
         parameter:  ParsedSignatureParameter
-        plugin: PluginProtocol
+        plugin: SerializationPluginProtocol
         field_plugin_mappings: A dictionary mapping fields for plugin mappings.
 
     Returns:
@@ -104,12 +110,12 @@ def get_type_annotation_from_plugin(
     type_args = get_args(parameter.annotation)
     type_value = type_args[0] if type_args else parameter.annotation
     field_plugin_mappings[parameter.name] = PluginMapping(plugin=plugin, model_class=type_value)
-    pydantic_model = plugin.to_pydantic_model_class(model_class=type_value, parameter_name=parameter.name)
+    pydantic_model = plugin.to_data_container_class(model_class=type_value, parameter_name=parameter.name)
     return List[pydantic_model] if type_args else pydantic_model  # type:ignore[valid-type]
 
 
 def parse_fn_signature(
-    fn: "AnyCallable", plugins: List["PluginProtocol"], dependency_name_set: Set[str]
+    fn: "AnyCallable", plugins: List["SerializationPluginProtocol"], dependency_name_set: Set[str]
 ) -> Tuple[List[ParsedSignatureParameter], Any, Dict[str, PluginMapping], Set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
 
@@ -162,7 +168,7 @@ def parse_fn_signature(
 
 
 def create_signature_model(
-    fn: "AnyCallable", plugins: List["PluginProtocol"], dependency_name_set: Set[str]
+    fn: "AnyCallable", plugins: List["SerializationPluginProtocol"], dependency_name_set: Set[str]
 ) -> Type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.

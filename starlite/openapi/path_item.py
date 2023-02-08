@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
     from starlite.handlers import HTTPRouteHandler
-    from starlite.plugins.base import PluginProtocol
+    from starlite.plugins.base import OpenAPISchemaPluginProtocol
     from starlite.routes import HTTPRoute
     from starlite.types.callable_types import OperationIDCreator
 
@@ -62,7 +62,7 @@ def extract_layered_values(
 def create_path_item(
     route: "HTTPRoute",
     create_examples: bool,
-    plugins: List["PluginProtocol"],
+    plugins: List["OpenAPISchemaPluginProtocol"],
     use_handler_docstrings: bool,
     operation_id_creator: "OperationIDCreator",
 ) -> Tuple[PathItem, List[str]]:
