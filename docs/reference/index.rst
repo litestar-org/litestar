@@ -14,15 +14,16 @@ API reference
     contrib/index
     controller
     datastructures/index
+    di
     dto
     enums
+    events
     exceptions/index
     handlers/index
     middleware/index
     openapi
     params
     plugins/index
-    provide
     response
     response_containers
     router
