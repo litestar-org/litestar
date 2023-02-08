@@ -136,7 +136,7 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             token_audience=token_audience,
             token_unique_jwt_id=token_unique_jwt_id,
         )
-        return Response(
+        return self.create_response(
             content=response_body,
             headers={self.auth_header: self.format_auth_header(encoded_token)},
             media_type=response_media_type,
@@ -298,7 +298,7 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
             secure=self.secure,
             samesite=self.samesite,
         )
-        return Response(
+        return self.create_response(
             content=response_body,
             headers={self.auth_header: self.format_auth_header(encoded_token)},
             cookies=[cookie],
@@ -423,7 +423,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
             secure=self.secure,
             samesite=self.samesite,
         )
-        return Response(
+        return self.create_response(
             content=response_body or oauth2_token_response,
             headers={self.auth_header: self.format_auth_header(encoded_token)},
             cookies=[cookie],

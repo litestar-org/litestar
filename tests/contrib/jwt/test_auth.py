@@ -5,10 +5,11 @@ from uuid import uuid4
 
 from hypothesis import given, settings
 from hypothesis.strategies import integers, none, one_of, sampled_from, text, timedeltas
+from pydantic import BaseModel, Field
 
 from starlite import ASGIConnection, Request, Response, Starlite, get
 from starlite.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
-from starlite.status_codes import HTTP_200_OK, HTTP_401_UNAUTHORIZED
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from starlite.testing import create_test_client
 from tests import User, UserFactory
 
@@ -377,3 +378,29 @@ async def test_oauth2_password_bearer_auth_openapi(
         },
         "security": [{"BearerToken": []}],
     }
+
+
+def test_type_encoders() -> None:
+    # see: https://github.com/starlite-api/starlite/issues/1136
+
+    class User(BaseModel):
+        id: str = Field(..., alias="_id")
+
+    async def retrieve_user_handler(token: Token, connection: ASGIConnection[Any, Any, Any, Any]) -> User:
+        return User(_id=token.sub)
+
+    jwt_cookie_auth = JWTCookieAuth[User](
+        retrieve_user_handler=retrieve_user_handler,
+        token_secret="abc1234",
+        exclude=["/"],
+        type_encoders={BaseModel: lambda m: m.dict(by_alias=True)},
+    )
+
+    @get()
+    def handler() -> Response[User]:
+        data = User(_id="1")
+        return jwt_cookie_auth.login(identifier=str(data.id), response_body=data)
+
+    with create_test_client([handler]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_201_CREATED
