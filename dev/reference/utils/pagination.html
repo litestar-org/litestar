@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -248,8 +248,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/url.html">url</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dto.html">starlite.dto</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">starlite.enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events.html">starlite.events</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../exceptions/base_exceptions.html">base_exceptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../exceptions/http_exceptions.html">http_exceptions</a></li>
@@ -258,9 +260,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../handlers/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/asgi.html">asgi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/http.html">http</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/websocket.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -293,7 +292,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../plugins/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../provide.html">provide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../response.html">starlite.response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../router.html">starlite.router</a></li>
@@ -374,14 +372,422 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="pagination">
-<h1>pagination<a class="headerlink" href="#pagination" title="Permalink to this heading">#</a></h1>
+          <section id="module-starlite.utils.pagination">
+<span id="pagination"></span><h1>pagination<a class="headerlink" href="#module-starlite.utils.pagination" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.utils.pagination.ClassicPagination">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.pagination.</span></span><span class="sig-name descname"><span class="pre">ClassicPagination</span></span><a class="headerlink" href="#starlite.utils.pagination.ClassicPagination" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Container for data returned using limit/offset pagination.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.ClassicPagination.items">
+<span class="sig-name descname"><span class="pre">items</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.utils.pagination.ClassicPagination.items" title="Permalink to this definition">#</a></dt>
+<dd><p>List of data being sent as part of the response.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.ClassicPagination.page_size">
+<span class="sig-name descname"><span class="pre">page_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><a class="headerlink" href="#starlite.utils.pagination.ClassicPagination.page_size" title="Permalink to this definition">#</a></dt>
+<dd><p>Number of items per page.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.ClassicPagination.current_page">
+<span class="sig-name descname"><span class="pre">current_page</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><a class="headerlink" href="#starlite.utils.pagination.ClassicPagination.current_page" title="Permalink to this definition">#</a></dt>
+<dd><p>Current page number.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.ClassicPagination.total_pages">
+<span class="sig-name descname"><span class="pre">total_pages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><a class="headerlink" href="#starlite.utils.pagination.ClassicPagination.total_pages" title="Permalink to this definition">#</a></dt>
+<dd><p>Total number of pages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.ClassicPagination.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_pages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.utils.pagination.ClassicPagination.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.utils.pagination.OffsetPagination">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.pagination.</span></span><span class="sig-name descname"><span class="pre">OffsetPagination</span></span><a class="headerlink" href="#starlite.utils.pagination.OffsetPagination" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Container for data returned using limit/offset pagination.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.OffsetPagination.items">
+<span class="sig-name descname"><span class="pre">items</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.utils.pagination.OffsetPagination.items" title="Permalink to this definition">#</a></dt>
+<dd><p>List of data being sent as part of the response.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.OffsetPagination.limit">
+<span class="sig-name descname"><span class="pre">limit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><a class="headerlink" href="#starlite.utils.pagination.OffsetPagination.limit" title="Permalink to this definition">#</a></dt>
+<dd><p>Maximal number of items to send.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.OffsetPagination.offset">
+<span class="sig-name descname"><span class="pre">offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><a class="headerlink" href="#starlite.utils.pagination.OffsetPagination.offset" title="Permalink to this definition">#</a></dt>
+<dd><p>Offset from the beginning of the query.</p>
+<p>Identical to an index.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.OffsetPagination.total">
+<span class="sig-name descname"><span class="pre">total</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><a class="headerlink" href="#starlite.utils.pagination.OffsetPagination.total" title="Permalink to this definition">#</a></dt>
+<dd><p>Total number of items.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.OffsetPagination.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">total</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.utils.pagination.OffsetPagination.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.utils.pagination.CursorPagination">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.pagination.</span></span><span class="sig-name descname"><span class="pre">CursorPagination</span></span><a class="headerlink" href="#starlite.utils.pagination.CursorPagination" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">C</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Container for data returned using cursor pagination.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.CursorPagination.items">
+<span class="sig-name descname"><span class="pre">items</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.utils.pagination.CursorPagination.items" title="Permalink to this definition">#</a></dt>
+<dd><p>List of data being sent as part of the response.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.CursorPagination.results_per_page">
+<span class="sig-name descname"><span class="pre">results_per_page</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><a class="headerlink" href="#starlite.utils.pagination.CursorPagination.results_per_page" title="Permalink to this definition">#</a></dt>
+<dd><p>Maximal number of items to send.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.utils.pagination.CursorPagination.cursor">
+<span class="sig-name descname"><span class="pre">cursor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.utils.pagination.CursorPagination.cursor" title="Permalink to this definition">#</a></dt>
+<dd><p>Unique ID, designating the last identifier in the given data set.</p>
+<p>This value can be used to request the “next” batch of records.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.CursorPagination.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_per_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.utils.pagination.CursorPagination.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncClassicPaginator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.pagination.</span></span><span class="sig-name descname"><span class="pre">AbstractSyncClassicPaginator</span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncClassicPaginator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Base paginator class for sync classic pagination.</p>
+<p>Implement this class to return paginated result sets using the classic pagination scheme.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncClassicPaginator.get_total">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_total</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncClassicPaginator.get_total" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the total number of records.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>page_size</strong> – Maximal number of records to return.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An integer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncClassicPaginator.get_items">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncClassicPaginator.get_items" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of items of the given size ‘page_size’ correlating with ‘current_page’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page_size</strong> – Maximal number of records to return.</p></li>
+<li><p><strong>current_page</strong> – The current page of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of items.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncClassicPaginator.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.utils.pagination.ClassicPagination" title="starlite.utils.pagination.ClassicPagination"><span class="pre">ClassicPagination</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncClassicPaginator.__call__" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a paginated result set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page_size</strong> – Maximal number of records to return.</p></li>
+<li><p><strong>current_page</strong> – The current page of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A paginated result set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncClassicPaginator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.pagination.</span></span><span class="sig-name descname"><span class="pre">AbstractAsyncClassicPaginator</span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncClassicPaginator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Base paginator class for async classic pagination.</p>
+<p>Implement this class to return paginated result sets using the classic pagination scheme.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncClassicPaginator.get_total">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_total</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncClassicPaginator.get_total" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the total number of records.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>page_size</strong> – Maximal number of records to return.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An integer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncClassicPaginator.get_items">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncClassicPaginator.get_items" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of items of the given size ‘page_size’ correlating with ‘current_page’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page_size</strong> – Maximal number of records to return.</p></li>
+<li><p><strong>current_page</strong> – The current page of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of items.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncClassicPaginator.__call__">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.utils.pagination.ClassicPagination" title="starlite.utils.pagination.ClassicPagination"><span class="pre">ClassicPagination</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncClassicPaginator.__call__" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a paginated result set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page_size</strong> – Maximal number of records to return.</p></li>
+<li><p><strong>current_page</strong> – The current page of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A paginated result set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncOffsetPaginator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.pagination.</span></span><span class="sig-name descname"><span class="pre">AbstractSyncOffsetPaginator</span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncOffsetPaginator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Base paginator class for limit / offset pagination.</p>
+<p>Implement this class to return paginated result sets using the limit / offset pagination scheme.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncOffsetPaginator.get_total">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_total</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncOffsetPaginator.get_total" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the total number of records.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An integer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncOffsetPaginator.get_items">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncOffsetPaginator.get_items" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of items of the given size ‘limit’ starting from position ‘offset’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>limit</strong> – Maximal number of records to return.</p></li>
+<li><p><strong>offset</strong> – Starting position within the result set (assume index 0 as starting position).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of items.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncOffsetPaginator.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.utils.pagination.OffsetPagination" title="starlite.utils.pagination.OffsetPagination"><span class="pre">OffsetPagination</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncOffsetPaginator.__call__" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a paginated result set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>limit</strong> – Maximal number of records to return.</p></li>
+<li><p><strong>offset</strong> – Starting position within the result set (assume index 0 as starting position).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A paginated result set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncOffsetPaginator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.pagination.</span></span><span class="sig-name descname"><span class="pre">AbstractAsyncOffsetPaginator</span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncOffsetPaginator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Base paginator class for limit / offset pagination.</p>
+<p>Implement this class to return paginated result sets using the limit / offset pagination scheme.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncOffsetPaginator.get_total">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_total</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncOffsetPaginator.get_total" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the total number of records.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An integer.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncOffsetPaginator.get_items">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncOffsetPaginator.get_items" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of items of the given size ‘limit’ starting from position ‘offset’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>limit</strong> – Maximal number of records to return.</p></li>
+<li><p><strong>offset</strong> – Starting position within the result set (assume index 0 as starting position).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of items.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncOffsetPaginator.__call__">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.utils.pagination.OffsetPagination" title="starlite.utils.pagination.OffsetPagination"><span class="pre">OffsetPagination</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncOffsetPaginator.__call__" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a paginated result set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>limit</strong> – Maximal number of records to return.</p></li>
+<li><p><strong>offset</strong> – Starting position within the result set (assume index 0 as starting position).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A paginated result set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncCursorPaginator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.pagination.</span></span><span class="sig-name descname"><span class="pre">AbstractSyncCursorPaginator</span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncCursorPaginator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">C</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Base paginator class for sync cursor pagination.</p>
+<p>Implement this class to return paginated result sets using the cursor pagination scheme.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncCursorPaginator.get_items">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_per_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.11)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncCursorPaginator.get_items" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of items of the size ‘results_per_page’ following the given cursor, if any,</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cursor</strong> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
+<li><p><strong>results_per_page</strong> – A maximal number of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the result set and a new cursor that marks the last record retrieved.
+The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractSyncCursorPaginator.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_per_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.utils.pagination.CursorPagination" title="starlite.utils.pagination.CursorPagination"><span class="pre">CursorPagination</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractSyncCursorPaginator.__call__" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a paginated result set given an optional cursor (unique ID) and a maximal number of results to return.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cursor</strong> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
+<li><p><strong>results_per_page</strong> – A maximal number of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A paginated result set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncCursorPaginator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.pagination.</span></span><span class="sig-name descname"><span class="pre">AbstractAsyncCursorPaginator</span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncCursorPaginator" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">C</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Base paginator class for async cursor pagination.</p>
+<p>Implement this class to return paginated result sets using the cursor pagination scheme.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncCursorPaginator.get_items">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_per_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.11)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncCursorPaginator.get_items" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of items of the size ‘results_per_page’ following the given cursor, if any,</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cursor</strong> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
+<li><p><strong>results_per_page</strong> – A maximal number of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the result set and a new cursor that marks the last record retrieved.
+The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.pagination.AbstractAsyncCursorPaginator.__call__">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cursor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results_per_page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.utils.pagination.CursorPagination" title="starlite.utils.pagination.CursorPagination"><span class="pre">CursorPagination</span></a><span class="p"><span class="pre">[</span></span><span class="pre">C</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.pagination.AbstractAsyncCursorPaginator.__call__" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a paginated result set given an optional cursor (unique ID) and a maximal number of results to return.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cursor</strong> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
+<li><p><strong>results_per_page</strong> – A maximal number of results to return.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A paginated result set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -440,8 +846,83 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">pagination</a><ul>
+<li><a class="reference internal" href="#starlite.utils.pagination.ClassicPagination"><code class="docutils literal notranslate"><span class="pre">ClassicPagination</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.utils.pagination.ClassicPagination.items"><code class="docutils literal notranslate"><span class="pre">ClassicPagination.items</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.ClassicPagination.page_size"><code class="docutils literal notranslate"><span class="pre">ClassicPagination.page_size</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.ClassicPagination.current_page"><code class="docutils literal notranslate"><span class="pre">ClassicPagination.current_page</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.ClassicPagination.total_pages"><code class="docutils literal notranslate"><span class="pre">ClassicPagination.total_pages</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.ClassicPagination.__init__"><code class="docutils literal notranslate"><span class="pre">ClassicPagination.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.utils.pagination.OffsetPagination"><code class="docutils literal notranslate"><span class="pre">OffsetPagination</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.utils.pagination.OffsetPagination.items"><code class="docutils literal notranslate"><span class="pre">OffsetPagination.items</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.OffsetPagination.limit"><code class="docutils literal notranslate"><span class="pre">OffsetPagination.limit</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.OffsetPagination.offset"><code class="docutils literal notranslate"><span class="pre">OffsetPagination.offset</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.OffsetPagination.total"><code class="docutils literal notranslate"><span class="pre">OffsetPagination.total</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.OffsetPagination.__init__"><code class="docutils literal notranslate"><span class="pre">OffsetPagination.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.utils.pagination.CursorPagination"><code class="docutils literal notranslate"><span class="pre">CursorPagination</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.utils.pagination.CursorPagination.items"><code class="docutils literal notranslate"><span class="pre">CursorPagination.items</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.CursorPagination.results_per_page"><code class="docutils literal notranslate"><span class="pre">CursorPagination.results_per_page</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.CursorPagination.cursor"><code class="docutils literal notranslate"><span class="pre">CursorPagination.cursor</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.CursorPagination.__init__"><code class="docutils literal notranslate"><span class="pre">CursorPagination.__init__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncClassicPaginator"><code class="docutils literal notranslate"><span class="pre">AbstractSyncClassicPaginator</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncClassicPaginator.get_total"><code class="docutils literal notranslate"><span class="pre">AbstractSyncClassicPaginator.get_total()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncClassicPaginator.get_items"><code class="docutils literal notranslate"><span class="pre">AbstractSyncClassicPaginator.get_items()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncClassicPaginator.__call__"><code class="docutils literal notranslate"><span class="pre">AbstractSyncClassicPaginator.__call__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncClassicPaginator"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncClassicPaginator</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncClassicPaginator.get_total"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncClassicPaginator.get_total()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncClassicPaginator.get_items"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncClassicPaginator.get_items()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncClassicPaginator.__call__"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncClassicPaginator.__call__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncOffsetPaginator"><code class="docutils literal notranslate"><span class="pre">AbstractSyncOffsetPaginator</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncOffsetPaginator.get_total"><code class="docutils literal notranslate"><span class="pre">AbstractSyncOffsetPaginator.get_total()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncOffsetPaginator.get_items"><code class="docutils literal notranslate"><span class="pre">AbstractSyncOffsetPaginator.get_items()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncOffsetPaginator.__call__"><code class="docutils literal notranslate"><span class="pre">AbstractSyncOffsetPaginator.__call__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncOffsetPaginator"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncOffsetPaginator</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncOffsetPaginator.get_total"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncOffsetPaginator.get_total()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncOffsetPaginator.get_items"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncOffsetPaginator.get_items()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncOffsetPaginator.__call__"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncOffsetPaginator.__call__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncCursorPaginator"><code class="docutils literal notranslate"><span class="pre">AbstractSyncCursorPaginator</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncCursorPaginator.get_items"><code class="docutils literal notranslate"><span class="pre">AbstractSyncCursorPaginator.get_items()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractSyncCursorPaginator.__call__"><code class="docutils literal notranslate"><span class="pre">AbstractSyncCursorPaginator.__call__()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncCursorPaginator"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncCursorPaginator</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncCursorPaginator.get_items"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncCursorPaginator.get_items()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.utils.pagination.AbstractAsyncCursorPaginator.__call__"><code class="docutils literal notranslate"><span class="pre">AbstractAsyncCursorPaginator.__call__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

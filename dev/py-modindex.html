@@ -246,8 +246,10 @@
 <li class="toctree-l3"><a class="reference internal" href="reference/datastructures/url.html">url</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="reference/di.html">di</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/dto.html">starlite.dto</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/enums.html">starlite.enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/events.html">starlite.events</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/exceptions/base_exceptions.html">base_exceptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/exceptions/http_exceptions.html">http_exceptions</a></li>
@@ -256,9 +258,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/handlers/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/handlers/asgi.html">asgi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/handlers/http.html">http</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/handlers/websocket.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -291,7 +290,6 @@
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="reference/provide.html">provide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/response.html">starlite.response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/router.html">starlite.router</a></li>
@@ -523,6 +521,12 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
+        <a href="reference/di.html#module-starlite.di"><code class="xref">starlite.di</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
         <a href="reference/dto.html#module-starlite.dto"><code class="xref">starlite.dto</code></a></td><td>
     <em></em></td>
   </tr>
@@ -559,7 +563,7 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="reference/handlers/asgi.html#module-starlite.handlers.asgi"><code class="xref">starlite.handlers.asgi</code></a></td><td>
+        <a href="reference/handlers/asgi_handlers.html#module-starlite.handlers.asgi_handlers"><code class="xref">starlite.handlers.asgi_handlers</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -571,13 +575,13 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="reference/handlers/http.html#module-starlite.handlers.http"><code class="xref">starlite.handlers.http</code></a></td><td>
+        <a href="reference/handlers/http_handlers.html#module-starlite.handlers.http_handlers"><code class="xref">starlite.handlers.http_handlers</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
-        <a href="reference/handlers/websocket.html#module-starlite.handlers.websocket"><code class="xref">starlite.handlers.websocket</code></a></td><td>
+        <a href="reference/handlers/websocket_handlers.html#module-starlite.handlers.websocket_handlers"><code class="xref">starlite.handlers.websocket_handlers</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">
@@ -709,6 +713,12 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
+        <a href="reference/response_containers.html#module-starlite.response_containers"><code class="xref">starlite.response_containers</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
         <a href="reference/router.html#module-starlite.router"><code class="xref">starlite.router</code></a></td><td>
     <em></em></td>
   </tr>
@@ -727,6 +737,12 @@
   <tr class="cg-1">
     <td></td>
     <td>&#160;&#160;&#160;
+        <a href="reference/upload_file.html#module-starlite.upload_file"><code class="xref">starlite.upload_file</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
         <a href="reference/utils/exception.html#module-starlite.utils.exception"><code class="xref">starlite.utils.exception</code></a></td><td>
     <em></em></td>
   </tr>
@@ -734,6 +750,12 @@
     <td></td>
     <td>&#160;&#160;&#160;
         <a href="reference/utils/extractors.html#module-starlite.utils.extractors"><code class="xref">starlite.utils.extractors</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="reference/utils/pagination.html#module-starlite.utils.pagination"><code class="xref">starlite.utils.pagination</code></a></td><td>
     <em></em></td>
   </tr>
   <tr class="cg-1">

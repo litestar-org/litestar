@@ -248,8 +248,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/url.html">url</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/di.html">di</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/dto.html">starlite.dto</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/enums.html">starlite.enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/events.html">starlite.events</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/exceptions/base_exceptions.html">base_exceptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/exceptions/http_exceptions.html">http_exceptions</a></li>
@@ -258,9 +260,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/asgi.html">asgi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/http.html">http</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/websocket.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -293,7 +292,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/provide.html">provide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/response.html">starlite.response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">starlite.router</a></li>
@@ -656,12 +654,12 @@ offering client- and server-side sessions. Different storage mechanisms are avai
 <a class="reference internal" href="../../reference/middleware/session/base.html#starlite.middleware.session.base.BaseSessionBackend" title="starlite.middleware.session.base.BaseSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionBackends</span></code></a>, and include support for
 storing data in:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="clientsidesessions">Cookies</a></p></li>
-<li><p><a class="reference external" href="filestorage">Files</a></p></li>
-<li><p><a class="reference external" href="redisstorage">Redis</a></p></li>
-<li><p><a class="reference external" href="memcachedstorage">Memcached</a> (through <code class="docutils literal notranslate"><span class="pre">aiomcache</span></code>)</p></li>
-<li><p><a class="reference external" href="databasestorage">Databases</a> (through <code class="docutils literal notranslate"><span class="pre">sqlalchemy</span></code>)</p></li>
-<li><p><a class="reference external" href="inmemorystorage">Memory</a></p></li>
+<li><p><a class="reference internal" href="#client-side-sessions"><span class="std std-ref">Cookies</span></a></p></li>
+<li><p><a class="reference internal" href="#file-storage"><span class="std std-ref">Files</span></a></p></li>
+<li><p><a class="reference internal" href="#redis-storage"><span class="std std-ref">Redis</span></a></p></li>
+<li><p><a class="reference internal" href="#memcached-storage"><span class="std std-ref">Memcached</span></a> (through <code class="docutils literal notranslate"><span class="pre">aiomcache</span></code>)</p></li>
+<li><p><a class="reference internal" href="#database-storage"><span class="std std-ref">Databases</span></a> (through <code class="docutils literal notranslate"><span class="pre">sqlalchemy</span></code>)</p></li>
+<li><p><a class="reference internal" href="#in-memory-storage"><span class="std std-ref">Memory</span></a></p></li>
 </ul>
 <section id="setting-up-the-middleware">
 <h3>Setting up the middleware<a class="headerlink" href="#setting-up-the-middleware" title="Permalink to this heading">#</a></h3>

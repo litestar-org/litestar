@@ -1,5 +1,5 @@
 pagination
 ----------
 
-.. automodule:: starlite.datastructures.pagination
+.. automodule:: starlite.utils.pagination
    :members:

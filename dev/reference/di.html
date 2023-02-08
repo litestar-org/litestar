@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="starlite.response" href="response.html" /><link rel="prev" title="tortoise_orm" href="plugins/tortoise_orm.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="starlite.dto" href="dto.html" /><link rel="prev" title="url" href="datastructures/url.html" />
 
     <link rel="shortcut icon" href="../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
-        <title>provide - Starlite 1.51 documentation</title>
+        <title>di - Starlite 1.51 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -147,7 +147,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -248,8 +248,10 @@
 <li class="toctree-l3"><a class="reference internal" href="datastructures/url.html">url</a></li>
 </ul>
 </li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">di</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dto.html">starlite.dto</a></li>
 <li class="toctree-l2"><a class="reference internal" href="enums.html">starlite.enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="events.html">starlite.events</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="exceptions/base_exceptions.html">base_exceptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="exceptions/http_exceptions.html">http_exceptions</a></li>
@@ -258,9 +260,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="handlers/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="handlers/asgi.html">asgi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="handlers/http.html">http</a></li>
-<li class="toctree-l3"><a class="reference internal" href="handlers/websocket.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -293,7 +292,6 @@
 <li class="toctree-l3"><a class="reference internal" href="plugins/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">provide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="response.html">starlite.response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="router.html">starlite.router</a></li>
@@ -358,7 +356,7 @@
         </a>
         <div class="content-icon-container">
           <div class="edit-this-page">
-  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/reference/provide.rst" title="Edit this page">
+  <a class="muted-link" href="https://github.com/starlite-api/starlite/edit/main/docs/reference/di.rst" title="Edit this page">
     <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
@@ -374,14 +372,42 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="provide">
-<h1>provide<a class="headerlink" href="#provide" title="Permalink to this heading">#</a></h1>
+          <section id="module-starlite.di">
+<span id="di"></span><h1>di<a class="headerlink" href="#module-starlite.di" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.di.Provide">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.di.</span></span><span class="sig-name descname"><span class="pre">Provide</span></span><a class="headerlink" href="#starlite.di.Provide" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Wrapper class for dependency injection</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.di.Provide.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dependency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><span class="pre">AnyCallable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_to_thread</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.di.Provide.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">Provide</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dependency</strong> – Callable to call or class to instantiate. The result is then injected as a dependency.</p></li>
+<li><p><strong>use_cache</strong> – Cache the dependency return value. Defaults to False.</p></li>
+<li><p><strong>sync_to_thread</strong> – Run sync code in an async thread. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.di.Provide.__call__">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.di.Provide.__call__" title="Permalink to this definition">#</a></dt>
+<dd><p>Call the provider’s dependency.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -389,23 +415,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="response.html">
+          <a class="next-page" href="dto.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">starlite.response</div>
+                <div class="title">starlite.dto</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="plugins/tortoise_orm.html">
+          <a class="prev-page" href="datastructures/url.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">tortoise_orm</div>
+                <div class="title">url</div>
                 
               </div>
             </a>
@@ -440,8 +466,31 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">di</a><ul>
+<li><a class="reference internal" href="#starlite.di.Provide"><code class="docutils literal notranslate"><span class="pre">Provide</span></code></a><ul>
+<li><a class="reference internal" href="#starlite.di.Provide.__init__"><code class="docutils literal notranslate"><span class="pre">Provide.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.di.Provide.__call__"><code class="docutils literal notranslate"><span class="pre">Provide.__call__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

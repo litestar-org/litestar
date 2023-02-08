@@ -248,8 +248,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/url.html">url</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dto.html">starlite.dto</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">starlite.enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events.html">starlite.events</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../exceptions/base_exceptions.html">base_exceptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../exceptions/http_exceptions.html">http_exceptions</a></li>
@@ -258,9 +260,6 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../handlers/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/asgi.html">asgi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/http.html">http</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/websocket.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -293,7 +292,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../plugins/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../provide.html">provide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../response.html">starlite.response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../router.html">starlite.router</a></li>
@@ -429,7 +427,7 @@ processed.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.security.base.AbstractSecurityConfig.dependencies">
-<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Provide</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.security.base.AbstractSecurityConfig.dependencies" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../di.html#starlite.di.Provide" title="starlite.di.Provide"><span class="pre">Provide</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.security.base.AbstractSecurityConfig.dependencies" title="Permalink to this definition">#</a></dt>
 <dd><p>An optional dictionary of dependency providers.</p>
 </dd></dl>
 
@@ -448,6 +446,12 @@ Once provided, they can access via the <code class="docutils literal notranslate
 </div>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.security.base.AbstractSecurityConfig.type_encoders">
+<span class="sig-name descname"><span class="pre">type_encoders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.security.base.AbstractSecurityConfig.type_encoders" title="Permalink to this definition">#</a></dt>
+<dd><p>A mapping of types to callables that transform them into types supported for serialization.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.security.base.AbstractSecurityConfig.on_app_init">
 <span class="sig-name descname"><span class="pre">on_app_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../config.html#starlite.config.AppConfig" title="starlite.config.AppConfig"><span class="pre">AppConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../config.html#starlite.config.AppConfig" title="starlite.config.AppConfig"><span class="pre">AppConfig</span></a></span></span><a class="headerlink" href="#starlite.security.base.AbstractSecurityConfig.on_app_init" title="Permalink to this definition">#</a></dt>
@@ -459,6 +463,28 @@ level.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The <a class="reference internal" href="../config.html#starlite.config.AppConfig" title="starlite.config.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.security.base.AbstractSecurityConfig.create_response">
+<span class="sig-name descname"><span class="pre">create_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">media_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../enums.html#starlite.enums.MediaType" title="starlite.enums.MediaType"><span class="pre">MediaType</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../enums.html#starlite.enums.OpenAPIMediaType" title="starlite.enums.OpenAPIMediaType"><span class="pre">OpenAPIMediaType</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ResponseCookies</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../response.html#starlite.response.Response" title="starlite.response.base.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.security.base.AbstractSecurityConfig.create_response" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a response object.</p>
+<p>Handles setting the type encoders mapping on the response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>content</strong> – A value for the response body that will be rendered into bytes string.</p></li>
+<li><p><strong>status_code</strong> – An HTTP status code.</p></li>
+<li><p><strong>media_type</strong> – A value for the response ‘Content-Type’ header.</p></li>
+<li><p><strong>headers</strong> – A string keyed dictionary of response headers. Header keys are insensitive.</p></li>
+<li><p><strong>cookies</strong> – A list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code> instances to be set under
+the response ‘Set-Cookie’ header.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A response object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -595,7 +621,9 @@ wrapping it in Starlite’s <code class="docutils literal notranslate"><span cla
 <li><a class="reference internal" href="#starlite.security.base.AbstractSecurityConfig.route_handlers"><code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig.route_handlers</span></code></a></li>
 <li><a class="reference internal" href="#starlite.security.base.AbstractSecurityConfig.dependencies"><code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig.dependencies</span></code></a></li>
 <li><a class="reference internal" href="#starlite.security.base.AbstractSecurityConfig.retrieve_user_handler"><code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig.retrieve_user_handler</span></code></a></li>
+<li><a class="reference internal" href="#starlite.security.base.AbstractSecurityConfig.type_encoders"><code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig.type_encoders</span></code></a></li>
 <li><a class="reference internal" href="#starlite.security.base.AbstractSecurityConfig.on_app_init"><code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig.on_app_init()</span></code></a></li>
+<li><a class="reference internal" href="#starlite.security.base.AbstractSecurityConfig.create_response"><code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig.create_response()</span></code></a></li>
 <li><a class="reference internal" href="#starlite.security.base.AbstractSecurityConfig.validate_retrieve_user_handler"><code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig.validate_retrieve_user_handler()</span></code></a></li>
 <li><a class="reference internal" href="#starlite.security.base.AbstractSecurityConfig.openapi_components"><code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig.openapi_components</span></code></a></li>
 <li><a class="reference internal" href="#starlite.security.base.AbstractSecurityConfig.security_requirement"><code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig.security_requirement</span></code></a></li>
