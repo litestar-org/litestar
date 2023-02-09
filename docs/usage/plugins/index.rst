@@ -16,7 +16,7 @@ Creating Plugins
 
 A plugin is a class that implements the :class:`SerializationPluginProtocol <starlite.plugins.base.SerializationPluginProtocol>`.
 
-If you wish to support the serialization and deserialization of none-pydantic classes, you need to implement the
+If you wish to support the serialization and deserialization of non-pydantic classes, you need to implement the
 following methods specified by the:
 
 .. code-block:: python
