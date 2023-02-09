@@ -34,9 +34,11 @@ def add_to_versions_file(version: str) -> VersionSpec:
 
 
 def clean_files(keep: list[str]) -> None:
-    keep.append("versions.json")
+    keep.extend(["versions.json", ".git"])
 
     for path in Path().iterdir():
+        if path.name in keep:
+            continue
         if path.is_dir():
             shutil.rmtree(path)
         else:
