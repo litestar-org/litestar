@@ -1,5 +1,5 @@
-Starlite library documentation (dev)
-=====================================
+Starlite library documentation
+==============================
 
 
 Starlite is a powerful, flexible, highly performant and opinionated ASGI framework,
