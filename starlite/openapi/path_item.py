@@ -7,13 +7,14 @@ from pydantic_openapi_schema.v3_1_0.path_item import PathItem
 from starlite.openapi.parameters import create_parameter_for_handler
 from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
+from starlite.openapi.utils import SEPARATORS_CLEANUP_PATTERN
 from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
     from starlite.handlers import HTTPRouteHandler
-    from starlite.plugins.base import PluginProtocol
+    from starlite.plugins.base import OpenAPISchemaPluginProtocol
     from starlite.routes import HTTPRoute
     from starlite.types.callable_types import OperationIDCreator
 
@@ -62,7 +63,7 @@ def extract_layered_values(
 def create_path_item(
     route: "HTTPRoute",
     create_examples: bool,
-    plugins: List["PluginProtocol"],
+    plugins: List["OpenAPISchemaPluginProtocol"],
     use_handler_docstrings: bool,
     operation_id_creator: "OperationIDCreator",
 ) -> Tuple[PathItem, List[str]]:
@@ -97,7 +98,7 @@ def create_path_item(
             operation = Operation(
                 operationId=operation_id,
                 tags=tags,
-                summary=route_handler.summary,
+                summary=route_handler.summary or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),
                 description=get_description_for_handler(route_handler, use_handler_docstrings),
                 deprecated=route_handler.deprecated,
                 responses=create_responses(

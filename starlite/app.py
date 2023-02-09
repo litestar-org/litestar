@@ -31,6 +31,11 @@ from starlite.exceptions import (
 from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.middleware.cors import CORSMiddleware
 from starlite.openapi.path_item import create_path_item
+from starlite.plugins.base import (
+    InitPluginProtocol,
+    OpenAPISchemaPluginProtocol,
+    SerializationPluginProtocol,
+)
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import create_signature_model
@@ -59,7 +64,7 @@ if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler
-    from starlite.plugins.base import PluginProtocol
+    from starlite.plugins import PluginProtocol
     from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
@@ -155,9 +160,10 @@ class Starlite(Router):
         "on_startup",
         "openapi_config",
         "openapi_schema",
-        "plugins",
         "request_class",
         "route_map",
+        "serialization_plugins",
+        "openapi_schema_plugins",
         "state",
         "static_files_config",
         "template_engine",
@@ -360,7 +366,8 @@ class Starlite(Router):
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
-        self.plugins = config.plugins
+        self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
+        self.openapi_schema_plugins = [p for p in config.plugins if isinstance(p, OpenAPISchemaPluginProtocol)]
         self.request_class = config.request_class or Request
         self.state = State(config.initial_state, deep_copy=True)
         self.static_files_config = config.static_files_config
@@ -391,7 +398,7 @@ class Starlite(Router):
             type_encoders=config.type_encoders,
         )
 
-        for plugin in self.plugins:
+        for plugin in (p for p in config.plugins if isinstance(p, InitPluginProtocol)):
             plugin.on_app_init(app=self)
 
         for route_handler in config.route_handlers:
@@ -693,7 +700,7 @@ class Starlite(Router):
         if not route_handler.signature_model:
             route_handler.signature_model = create_signature_model(
                 fn=cast("AnyCallable", route_handler.fn.value),
-                plugins=self.plugins,
+                plugins=self.serialization_plugins,
                 dependency_name_set=route_handler.dependency_name_set,
             )
 
@@ -701,7 +708,7 @@ class Starlite(Router):
             if not getattr(provider, "signature_model", None):
                 provider.signature_model = create_signature_model(
                     fn=provider.dependency.value,
-                    plugins=self.plugins,
+                    plugins=self.serialization_plugins,
                     dependency_name_set=route_handler.dependency_name_set,
                 )
 
@@ -747,7 +754,7 @@ class Starlite(Router):
                 path_item, created_operation_ids = create_path_item(
                     route=route,
                     create_examples=self.openapi_config.create_examples,
-                    plugins=self.plugins,
+                    plugins=self.openapi_schema_plugins,
                     use_handler_docstrings=self.openapi_config.use_handler_docstrings,
                     operation_id_creator=self.openapi_config.operation_id_creator,
                 )

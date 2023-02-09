@@ -167,7 +167,7 @@ class HTTPRoute(BaseRoute):
             else await route_handler.to_response(
                 app=scope["app"],
                 data=response_data,
-                plugins=request.app.plugins,
+                plugins=request.app.serialization_plugins,
                 request=request,
             )
         )

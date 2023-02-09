@@ -205,19 +205,19 @@ imperative_model = Table(
 
 
 def test_sql_alchemy_plugin_model_class_parsing() -> None:
-    result = plugin.to_pydantic_model_class(model_class=DeclarativeModel)
+    result = plugin.to_data_container_class(model_class=DeclarativeModel)
     assert issubclass(result, BaseModel)
 
 
 def test_sql_alchemy_plugin_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        plugin.to_pydantic_model_class(model_class=imperative_model)
+        plugin.to_data_container_class(model_class=imperative_model)
 
     class MyClass(BaseModel):
         id: int
 
     with pytest.raises(ImproperlyConfiguredException):
-        plugin.to_pydantic_model_class(model_class=MyClass)
+        plugin.to_data_container_class(model_class=MyClass)
 
 
 def test_provider_validation() -> None:
@@ -229,4 +229,4 @@ def test_provider_validation() -> None:
         custom_column = Column(MyStrColumn)
 
     with pytest.raises(ImproperlyConfiguredException):
-        plugin.to_pydantic_model_class(model_class=ModelWithCustomColumn)
+        plugin.to_data_container_class(model_class=ModelWithCustomColumn)

@@ -97,6 +97,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
                 "deprecated": False,
                 "operationId": "x",
                 "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
+                "summary": "Handler1",
             }
         },
         "/2": {
@@ -104,6 +105,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
                 "deprecated": False,
                 "operationId": "y",
                 "responses": {"200": {"description": "Request fulfilled, document follows", "headers": {}}},
+                "summary": "Handler2",
             }
         },
     }
