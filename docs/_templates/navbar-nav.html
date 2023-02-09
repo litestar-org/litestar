@@ -1,6 +1,6 @@
 {% macro nav_link(label, target) -%}
     <li class="nav-item">
-        <a class="nav-link nav-internal" href="{{ target }}">{{ label }}</a>
+        <a class="nav-link nav-internal" href="{{ target if target.startswith('http') else pathto(target) }}">{{ label }}</a>
     </li>
 {%- endmacro %}
 

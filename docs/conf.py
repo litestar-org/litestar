@@ -89,15 +89,15 @@ html_theme_options = {
 
 html_context = {
     "navbar_items": {
-        "Documentation": "/lib",
+        "Documentation": "lib/index",
         "Community": {
-            "Contribution guide": "/community/contribution-guide.html",
+            "Contribution guide": "community/contribution-guide/index",
             "Code of Conduct": "https://github.com/starlite-api/starlite/blob/main/CODE_OF_CONDUCT.md",
         },
         "About": {
-            "Organization": "/about/organization.html",
-            "Releases": "/about/starlite-releases.html",
+            "Organization": "about/organization",
+            "Releases": "about/starlite-releases",
         },
-        "Release notes": "/release-notes",
+        "Release notes": "release-notes/index",
     }
 }

@@ -79,6 +79,10 @@ const addVersionSelect = (currentVersion, versionSpec) => {
 
 
 const setupVersioning = (versions) => {
+    if (versions === null ){
+        return
+    }
+
     const currentVersion = DOCUMENTATION_OPTIONS.VERSION
 
     addVersionWarning(currentVersion, versions.latest)
