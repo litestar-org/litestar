@@ -530,7 +530,7 @@ Changelog
 ------
 
 -  refactored brotli middleware typing.
--  update Extended ``SerializationPluginProtocol`` with an ``on_app_init`` method.
+-  update Extended ``PluginProtocol `` with an ``on_app_init`` method.
 
 
 
