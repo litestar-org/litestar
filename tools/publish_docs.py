@@ -71,6 +71,8 @@ def make_version(version: str | None, push: bool) -> None:
     if push:
         subprocess.run(["git", "push"])
 
+    subprocess.run(["git", "checkout", "-"])
+
 
 def main() -> None:
     args = parser.parse_args()
