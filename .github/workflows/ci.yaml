@@ -1,4 +1,4 @@
-name: ci
+name: Tests And Linting
 on:
   pull_request:
   push:
