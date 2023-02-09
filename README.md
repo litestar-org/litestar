@@ -1,7 +1,7 @@
 <!-- markdownlint-disable -->
 <p align="center">
-  <img src="artwork/PNG/logo-banner-inline-dark.png#gh-light-mode-only" alt="Starlite Logo - Light" width="100%" height="auto" />
-  <img src="artwork/PNG/logo-banner-inline-light.png#gh-dark-mode-only" alt="Starlite Logo - Dark" width="100%" height="auto" />
+  <img src="artwork/PNG/logo-banner-inline-light.png#gh-light-mode-only" alt="Starlite Logo - Light" width="100%" height="auto" />
+  <img src="artwork/PNG/logo-banner-inline-dark.png#gh-dark-mode-only" alt="Starlite Logo - Dark" width="100%" height="auto" />
 </p>
 <!-- markdownlint-restore -->
 
