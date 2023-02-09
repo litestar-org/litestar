@@ -48,6 +48,8 @@ def make_version(version: str, push: bool) -> None:
 
     subprocess.run(["git", "checkout", "gh-pages"], check=True)
 
+    Path(".nojekyll").touch(exist_ok=True)
+
     version_spec = add_to_versions_file(version)
     is_latest = version == version_spec["latest"]
 
