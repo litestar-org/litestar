@@ -1,9 +1,8 @@
 <!-- markdownlint-disable -->
-#gh-light-mode-only
-
-[//]: # (insert the artwork/SVG/logo-light for the light theme and logo-dark for dark theme here)
-![Starlite Logo - Light](./artwork/SVG/logo-light.svg#gh-light-mode-only)
-![Starlite Logo - Dark](./artwork/SVG/logo-dark.svg#gh-dark-mode-only)
+<p align="center">
+  <img src="./artwork/SVG/logo-banner-light.svg#gh-light-mode-only" alt="Starlite Logo - Light" width="200" height="200" />
+  <img src="./artwork/SVG/logo-banner-dark.svg#gh-dark-mode-only" alt="Starlite Logo - Dark" width="200" height="200" />
+</p>
 <!-- markdownlint-restore -->
 
 <div align="center">
