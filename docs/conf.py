@@ -56,6 +56,7 @@ suppress_warnings = ["autosectionlabel.*"]
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 html_css_files = ["style.css"]
+html_js_files = ["versioning.js"]
 html_favicon = "images/favicon.ico"
 html_logo = "images/logo.svg"
 html_show_sourcelink = False
@@ -64,6 +65,7 @@ html_show_sourcelink = False
 html_theme_options = {
     "use_edit_page_button": False,
     "show_toc_level": 4,
+    "navbar_align": "left",
     "icon_links": [
         {
             "name": "GitHub",
@@ -76,6 +78,6 @@ html_theme_options = {
             "url": "https://discord.gg/X3FJqy8d2j",
             "icon": "fa-brands fa-discord",
             "type": "fontawesome",
-        }
-    ]
+        },
+    ],
 }
