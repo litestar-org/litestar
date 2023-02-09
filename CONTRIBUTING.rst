@@ -81,8 +81,8 @@ Project documentation
 
 The documentation is located in the ``/docs`` directory and is `ReST <https://docutils.sourceforge.io/rst.html>`_ and
 `Sphinx <https://www.sphinx-doc.org/en/master/>`_. If you're unfamiliar with any of those,
-`ReStructuredText primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ and
-`Sphinx quickstart <https://www.sphinx-doc.org/en/master/usage/quickstart.html>`_ are recommended reads.
+`ReStructuredText primer <https://www.sphinx-doc.org/en/master/lib/usage/restructuredtext/basics.html>`_ and
+`Sphinx quickstart <https://www.sphinx-doc.org/en/master/lib/usage/quickstart.html>`_ are recommended reads.
 
 Docs theme and appearance
 +++++++++++++++++++++++++
@@ -109,7 +109,7 @@ restructure the docs etc., but make sure to follow these guidelines:
 - Write text in idiomatic english, using simple language
 - Keep examples simple and self contained
 - Provide links where applicable
-- Use `intersphinx <https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html>`_ wherever possible when
+- Use `intersphinx <https://www.sphinx-doc.org/en/master/lib/usage/extensions/intersphinx.html>`_ wherever possible when
   referencing external libraries
 - Provide diagrams using `mermaidjs <https://mermaid.js.org/>`_ where applicable and possible
 

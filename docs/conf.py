@@ -60,6 +60,13 @@ html_js_files = ["versioning.js"]
 html_favicon = "images/favicon.ico"
 html_logo = "images/logo.svg"
 html_show_sourcelink = False
+html_sidebars = {
+    "about/*": []
+}
+
+html_additional_pages = {
+    "index": "landing-page.html"
+}
 
 
 html_theme_options = {
@@ -80,4 +87,20 @@ html_theme_options = {
             "type": "fontawesome",
         },
     ],
+}
+
+
+html_context = {
+    "navbar_items": {
+        "Documentation": "/lib",
+        "Community": {
+            "Contribution guide": "/community/contribution-guide.html",
+            "Code of Conduct": "https://github.com/starlite-api/starlite/blob/main/CODE_OF_CONDUCT.md"
+        },
+        "About": {
+            "Organization": "/about/organization.html",
+            "Releases": "/about/starlite-releases.html",
+        },
+        "Release notes": "/release-notes"
+    }
 }
