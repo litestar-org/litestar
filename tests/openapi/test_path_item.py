@@ -55,12 +55,16 @@ def test_create_path_item(route: HTTPRoute) -> None:
     )
     assert schema.delete
     assert schema.delete.operationId == "ServiceIdPersonPersonIdDeletePerson"
+    assert schema.delete.summary == "DeletePerson"
     assert schema.get
     assert schema.get.operationId == "ServiceIdPersonPersonIdGetPersonById"
+    assert schema.get.summary == "GetPersonById"
     assert schema.patch
     assert schema.patch.operationId == "ServiceIdPersonPersonIdPartialUpdatePerson"
+    assert schema.patch.summary == "PartialUpdatePerson"
     assert schema.put
     assert schema.put.operationId == "ServiceIdPersonPersonIdUpdatePerson"
+    assert schema.put.summary == "UpdatePerson"
 
 
 def test_unique_operation_ids_for_multiple_http_methods(route_with_multiple_methods: HTTPRoute) -> None:
