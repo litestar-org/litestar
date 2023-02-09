@@ -1,14 +1,16 @@
 <!-- markdownlint-disable -->
-<img alt="Starlite logo" src="./artwork/SVG/starlite-banner.svg" width="100%" height="auto">
+<p align="center">
+  <img src="artwork/SVG/logo-banner-inline-light.svg#gh-light-mode-only" alt="Starlite Logo - Light" width="100%" height="auto" />
+  <img src="artwork/SVG/logo-banner-inline-dark.svg#gh-dark-mode-only" alt="Starlite Logo - Dark" width="100%" height="auto" />
+</p>
 <!-- markdownlint-restore -->
 
 <div align="center">
 
 [![ci](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml/badge.svg)](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml)
-[![PyPI version](https://badge.fury.io/py/starlite.svg)](https://badge.fury.io/py/starlite)
-
+[![PyPI - Version](https://badge.fury.io/py/starlite.svg)](https://badge.fury.io/py/starlite)
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
+![PyPI - Support Python Versions](https://img.shields.io/pypi/pyversions/starlite)
 
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=coverage)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
