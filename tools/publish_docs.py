@@ -56,6 +56,8 @@ def make_version(version: str, push: bool) -> None:
             else:
                 shutil.copy2(path, ".")
 
+    shutil.rmtree("docs/_build")
+
     for file in git_add:
         subprocess.run(["git", "add", file])
     subprocess.run(["git", "commit", "-m", f"Automatic docs build for version {version!r}"])
