@@ -57,7 +57,7 @@ def default_operation_id_creator(
     )
 
     components_namespace = ""
-    for component in [c if not isinstance(c, PathParameterDefinition) else c.name for c in path_components]:
+    for component in (c if not isinstance(c, PathParameterDefinition) else c.name for c in path_components):
         if component.title() not in components_namespace:
             components_namespace += component.title()
 
