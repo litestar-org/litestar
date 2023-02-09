@@ -9,7 +9,7 @@ from starlite.testing import create_test_client
 
 async def initialize_beanie() -> None:
     client = AsyncMongoMockClient()
-    await init_beanie(document_models=[Widget], database=client.get_database(name="db"))
+    await init_beanie(document_models=[Widget], database=client.get_database(name="db"))  # type: ignore
 
 
 class Widget(Document):

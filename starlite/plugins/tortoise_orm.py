@@ -1,15 +1,20 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Type
 
+from pydantic import BaseModel
 from pydantic_factories.utils import is_pydantic_model
+from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 from tortoise.fields import ReverseRelation
 from tortoise.fields.relational import RelationalField
 
 from starlite.exceptions import MissingDependencyException
-from starlite.plugins.base import PluginProtocol
+from starlite.plugins.base import (
+    OpenAPISchemaPluginProtocol,
+    SerializationPluginProtocol,
+)
 
 try:
-    from tortoise import Model, ModelMeta  # type:ignore [attr-defined]
-    from tortoise.contrib.pydantic import (  # type:ignore [attr-defined]
+    from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
+    from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
         PydanticModel,
         pydantic_model_creator,
     )
@@ -17,11 +22,11 @@ except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
 
 if TYPE_CHECKING:
-    from pydantic import BaseModel
+    from pydantic_openapi_schema.v3_1_0 import Schema
     from typing_extensions import TypeGuard
 
 
-class TortoiseORMPlugin(PluginProtocol[Model]):
+class TortoiseORMPlugin(SerializationPluginProtocol[Model, BaseModel], OpenAPISchemaPluginProtocol[Model]):
     """Support (de)serialization and OpenAPI generation for Tortoise ORMtypes."""
 
     _models_map: Dict[Type[Model], Type[PydanticModel]] = {}
@@ -33,7 +38,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
 
         This fixes some issues with the result of the tortoise model creator.
         """
-        pydantic_model = cast("Type[PydanticModel]", pydantic_model_creator(model_class, **kwargs))
+        pydantic_model = pydantic_model_creator(model_class, **kwargs)
         for (
             field_name,
             tortoise_model_field,
@@ -44,8 +49,8 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
                     and "." in pydantic_model.__fields__[field_name].type_.__name__
                 ):
                     sub_model_name = pydantic_model.__fields__[field_name].type_.__name__.split(".")[-2]
-                    pydantic_model.__fields__[field_name].type_ = cast(
-                        "Type[PydanticModel]", pydantic_model_creator(model_class, name=sub_model_name)
+                    pydantic_model.__fields__[field_name].type_ = pydantic_model_creator(
+                        model_class, name=sub_model_name
                     )
                 if not tortoise_model_field.required:
                     pydantic_model.__fields__[field_name].required = False
@@ -53,7 +58,7 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
                     pydantic_model.__fields__[field_name].allow_none = True
         return pydantic_model
 
-    def to_pydantic_model_class(self, model_class: Type[Model], **kwargs: Any) -> Type[PydanticModel]:
+    def to_data_container_class(self, model_class: Type[Model], **kwargs: Any) -> Type[PydanticModel]:
         """Given a tortoise model_class instance, convert it to a subclass of the tortoise PydanticModel.
 
         Since incoming request body's cannot and should not include values for
@@ -85,20 +90,28 @@ class TortoiseORMPlugin(PluginProtocol[Model]):
         """Given a value of indeterminate type, determine if this value is supported by the plugin."""
         return isinstance(value, (Model, ModelMeta))
 
-    def from_pydantic_model_instance(self, model_class: Type[Model], pydantic_model_instance: "BaseModel") -> Model:
-        """Given an instance of a pydantic model created using the plugin's ``to_pydantic_model_class``, return an
+    def from_data_container_instance(self, model_class: Type[Model], data_container_instance: "BaseModel") -> Model:
+        """Given an instance of a pydantic model created using the plugin's ``to_data_container_class``, return an
         instance of the class from which that pydantic model has been created.
 
         This class is passed in as the ``model_class`` kwarg.
         """
-        return model_class().update_from_dict(pydantic_model_instance.dict())
+        return model_class().update_from_dict(data_container_instance.dict())
 
     async def to_dict(self, model_instance: Model) -> Dict[str, Any]:  # pylint: disable=invalid-overridden-method
         """Given an instance of a model supported by the plugin, return a dictionary of serializable values."""
-        pydantic_model_class = self.to_pydantic_model_class(type(model_instance))
+        pydantic_model_class = self.to_data_container_class(type(model_instance))
         data = await pydantic_model_class.from_tortoise_orm(model_instance)
-        return cast("Dict[str, Any]", data.dict())
+        return data.dict()
 
     def from_dict(self, model_class: Type[Model], **kwargs: Any) -> Model:  # pragma: no cover
         """Given a class supported by this plugin and a dict of values, create an instance of the class."""
         return model_class().update_from_dict(**kwargs)
+
+    def to_openapi_schema(self, model_class: Type[Model]) -> "Schema":
+        """Given a model class, transform it into an OpenAPI schema class.
+
+        :param model_class: A table class.
+        :return: An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+        """
+        return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))

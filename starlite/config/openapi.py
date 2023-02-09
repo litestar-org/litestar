@@ -16,6 +16,8 @@ from pydantic_openapi_schema.v3_1_0 import (
 )
 
 from starlite.openapi.controller import OpenAPIController
+from starlite.openapi.utils import default_operation_id_creator
+from starlite.types.callable_types import OperationIDCreator
 
 
 class OpenAPIConfig(BaseModel):
@@ -81,6 +83,8 @@ class OpenAPIConfig(BaseModel):
     """A set of the enabled documentation sites and schema download endpoints."""
     by_alias: bool = True
     """Render pydantic model schema using field aliases, if defined."""
+    operation_id_creator: OperationIDCreator = default_operation_id_creator
+    """A callable that generates unique operation ids"""
 
     def to_openapi_schema(self) -> "OpenAPI":
         """Return an ``OpenAPI`` instance from the values stored in ``self``.

@@ -71,7 +71,7 @@ if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.connection import Request
     from starlite.datastructures.headers import Header
-    from starlite.plugins import PluginProtocol
+    from starlite.plugins import SerializationPluginProtocol
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
     from starlite.types import AnyCallable, AsyncAnyCallable
 
@@ -98,12 +98,12 @@ def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
     return {k: v.value for k, v in headers.items() if not v.documentation_only}
 
 
-async def _normalize_response_data(data: Any, plugins: List["PluginProtocol"]) -> Any:
+async def _normalize_response_data(data: Any, plugins: List["SerializationPluginProtocol"]) -> Any:
     """Normalize the response's data by awaiting any async values and resolving plugins.
 
     Args:
         data: An arbitrary value
-        plugins: A list of :class:`plugins <starlite.plugins.base.PluginProtocol>`
+        plugins: A list of :class:`plugins <starlite.plugins.base.SerializationPluginProtocol>`
 
     Returns:
         Value for the response body
@@ -210,7 +210,7 @@ def _create_data_handler(
 
         return response
 
-    async def handler(data: Any, plugins: List["PluginProtocol"], **kwargs: Any) -> "ASGIApp":
+    async def handler(data: Any, plugins: List["SerializationPluginProtocol"], **kwargs: Any) -> "ASGIApp":
         if isawaitable(data):
             data = await data
 
@@ -627,7 +627,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         return self._resolved_response_handler  # type:ignore[return-value]
 
     async def to_response(
-        self, app: "Starlite", data: Any, plugins: List["PluginProtocol"], request: "Request"
+        self, app: "Starlite", data: Any, plugins: List["SerializationPluginProtocol"], request: "Request"
     ) -> "ASGIApp":
         """Return a :class:`Response <starlite.Response>` from the handler by resolving and calling it.
 

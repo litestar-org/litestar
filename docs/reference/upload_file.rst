@@ -1,5 +1,5 @@
 upload_file
 -----------
 
-.. automodule:: starlite.datastructures.upload_file
+.. automodule:: starlite.upload_file
    :members:

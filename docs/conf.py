@@ -58,7 +58,7 @@ html_theme = "furo"
 html_static_path = ["_static"]
 html_js_files = ["js/version_select.js"]
 html_css_files = ["style.css"]
-html_favicon = "images/starlite-favicon.ico"
+html_favicon = "images/favicon.ico"
 
 html_theme_options = {
     "footer_icons": [
@@ -84,8 +84,8 @@ html_theme_options = {
             "class": "",
         },
     ],
-    "light_logo": "starlite-logo-light.svg",
-    "dark_logo": "starlite-logo-transparent.svg",
+    "light_logo": "logo-light.svg",
+    "dark_logo": "logo-dark.svg",
     "source_repository": "https://github.com/starlite-api/starlite",
     "source_branch": "main",
     "source_directory": "docs/",

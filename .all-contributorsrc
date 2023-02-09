@@ -770,6 +770,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "WardPearce",
+      "name": "Ward",
+      "avatar_url": "https://avatars.githubusercontent.com/u/27844174?v=4",
+      "profile": "http://wardpearce.com",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,

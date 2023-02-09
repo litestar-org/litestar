@@ -1,14 +1,16 @@
 <!-- markdownlint-disable -->
-<img alt="Starlite logo" src="./artwork/SVG/starlite-banner.svg" width="100%" height="auto">
+<p align="center">
+  <img src="artwork/SVG/logo-banner-inline-light.svg#gh-light-mode-only" alt="Starlite Logo - Light" width="100%" height="auto" />
+  <img src="artwork/SVG/logo-banner-inline-dark.svg#gh-dark-mode-only" alt="Starlite Logo - Dark" width="100%" height="auto" />
+</p>
 <!-- markdownlint-restore -->
 
 <div align="center">
 
 [![ci](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml/badge.svg)](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml)
-[![PyPI version](https://badge.fury.io/py/starlite.svg)](https://badge.fury.io/py/starlite)
-
+[![PyPI - Version](https://badge.fury.io/py/starlite.svg)](https://badge.fury.io/py/starlite)
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
+![PyPI - Support Python Versions](https://img.shields.io/pypi/pyversions/starlite)
 
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=coverage)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
@@ -18,7 +20,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-80-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-81-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -385,6 +387,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/abdulhaq-e"><img src="https://avatars.githubusercontent.com/u/2532125?v=4?s=100" width="100px;" alt="Abdulhaq Emhemmed"/><br /><sub><b>Abdulhaq Emhemmed</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=abdulhaq-e" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jenish2014"><img src="https://avatars.githubusercontent.com/u/9599888?v=4?s=100" width="100px;" alt="Jenish"/><br /><sub><b>Jenish</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=jenish2014" title="Code">💻</a> <a href="https://github.com/starlite-api/starlite/commits?author=jenish2014" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/chris-telemetry"><img src="https://avatars.githubusercontent.com/u/78052999?v=4?s=100" width="100px;" alt="chris-telemetry"/><br /><sub><b>chris-telemetry</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=chris-telemetry" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://wardpearce.com"><img src="https://avatars.githubusercontent.com/u/27844174?v=4?s=100" width="100px;" alt="Ward"/><br /><sub><b>Ward</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/issues?q=author%3AWardPearce" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>

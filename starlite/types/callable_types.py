@@ -5,19 +5,20 @@ from typing import (
     Awaitable,
     Callable,
     Generator,
+    List,
     TypeVar,
     Union,
 )
 
-from .asgi_types import ASGIApp, Message, Scope
+from .asgi_types import ASGIApp, Message, Method, Scope
 from .helper_types import SyncOrAsyncUnion
-from .internal_types import StarliteType
+from .internal_types import PathParameterDefinition, StarliteType
 
 if TYPE_CHECKING:
     from starlite.config import AppConfig
     from starlite.connection import ASGIConnection, Request
     from starlite.datastructures.state import State
-    from starlite.handlers import BaseRouteHandler
+    from starlite.handlers import BaseRouteHandler, HTTPRouteHandler
     from starlite.response import Response
     from starlite.types.protocols import Logger
 else:
@@ -28,6 +29,7 @@ else:
     State = Any
     ASGIConnection = Any
     Logger = Any
+    HTTPRouteHandler = Any
 
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
 
@@ -51,3 +53,4 @@ LifeSpanHookHandler = Callable[[StarliteType], SyncOrAsyncUnion[None]]
 OnAppInitHandler = Callable[[AppConfig], AppConfig]
 Serializer = Callable[[Any], Any]
 GetLogger = Callable[..., Logger]
+OperationIDCreator = Callable[[HTTPRouteHandler, Method, List[Union[str, PathParameterDefinition]]], str]
