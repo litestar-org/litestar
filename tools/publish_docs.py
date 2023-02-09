@@ -1,5 +1,6 @@
 import importlib.metadata
 import json
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -33,7 +34,12 @@ def add_to_versions_file(version: str) -> VersionSpec:
     return version_spec
 
 
-def make_version(version: str, push: bool) -> None:
+def make_version(version: str | None, push: bool) -> None:
+    if version is None:
+        version = importlib.metadata.version("starlite").rsplit(".")[0]
+    else:
+        os.environ["_STARLITE_DOCS_BUILD_VERSION"] = version
+
     git_add = [".nojekyll", "versions.json", version]
     subprocess.run(["make", "docs"], check=True)
 
@@ -65,8 +71,7 @@ def make_version(version: str, push: bool) -> None:
 
 def main() -> None:
     args = parser.parse_args()
-    version = args.version or importlib.metadata.version("starlite").rsplit(".")[0]
-    make_version(version=version, push=args.push)
+    make_version(version=args.version, push=args.push)
 
 
 if __name__ == "__main__":

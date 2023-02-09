@@ -1,9 +1,10 @@
 import importlib.metadata
+import os
 
 project = "Starlite"
 copyright = "2023, Starlite-API"
 author = "Starlite-API"
-release = importlib.metadata.version("starlite").rsplit(".")[0]
+release = os.getenv("_STARLITE_DOCS_BUILD_VERSION", importlib.metadata.version("starlite").rsplit(".")[0])
 
 extensions = [
     "sphinx.ext.intersphinx",
