@@ -968,7 +968,7 @@ Changelog
 -  add support for multiple paths per route handler.
 -  add support for static files.
 -  update ``DTOFactory``.
--  update ``SerializationPluginProtocol`` - add ``from_dict`` methods.
+-  update ``PluginProtocol `` - add ``from_dict`` methods.
 -  update ``SQLAlchemyPlugin``.
 -  update dependency injection to allow for dependency injection into dependencies.
 -  update lifecycle support to allow for application state injection.
