@@ -59,12 +59,13 @@ def make_version(version: str, push: bool) -> None:
 
     shutil.copytree(docs_src_path / "lib", version, dirs_exist_ok=True)
 
-    breakpoint()
     if is_latest:
         for path in docs_src_path.iterdir():
             if path.is_dir():
+                print(f"Copy dir: {path} -> .")
                 shutil.copytree(path, ".", dirs_exist_ok=True)
             else:
+                print(f"Copy file: {path} -> .")
                 shutil.copy2(path, ".")
 
     clean_files(version_spec["versions"])
