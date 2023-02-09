@@ -151,7 +151,7 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
 
 @runtime_checkable
 class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
-    """Protocol used to defined plugins that extends the support of OpenAPI schema generation for non-library types."""
+    """Plugin to extend the support of OpenAPI schema generation for non-library types."""
 
     __slots__ = ()
 
