@@ -34,7 +34,7 @@ def add_to_versions_file(version: str) -> VersionSpec:
 
 
 def clean_files(keep: list[str]) -> None:
-    keep.extend(["versions.json", ".git", ".nojekyll"])
+    keep.extend(["versions.json", ".git", ".nojekyll", "docs"])
 
     for path in Path().iterdir():
         if path.name in keep:
@@ -55,6 +55,8 @@ def make_version(version: str, push: bool) -> None:
     version_spec = add_to_versions_file(version)
     is_latest = version == version_spec["latest"]
 
+    clean_files(version_spec["versions"])
+
     docs_src_path = Path("docs/_build/html")
 
     shutil.copytree(docs_src_path / "lib", version, dirs_exist_ok=True)
@@ -62,13 +64,11 @@ def make_version(version: str, push: bool) -> None:
     if is_latest:
         for path in docs_src_path.iterdir():
             if path.is_dir():
-                print(f"Copy dir: {path} -> .")
                 shutil.copytree(path, ".", dirs_exist_ok=True)
             else:
-                print(f"Copy file: {path} -> .")
                 shutil.copy2(path, ".")
 
-    clean_files(version_spec["versions"])
+    shutil.rmtree("docs")
 
     subprocess.run(["git", "add", "."])
     subprocess.run(["git", "commit", "-m", f"Automatic docs build for version {version!r}"])
