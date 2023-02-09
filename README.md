@@ -8,10 +8,9 @@
 <div align="center">
 
 [![ci](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml/badge.svg)](https://github.com/starlite-api/starlite/actions/workflows/ci.yaml)
-[![PyPI version](https://badge.fury.io/py/starlite.svg)](https://badge.fury.io/py/starlite)
-
+[![PyPI - Version](https://badge.fury.io/py/starlite.svg)](https://badge.fury.io/py/starlite)
 ![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/starlite)
+![PyPI - Support Python Versions](https://img.shields.io/pypi/pyversions/starlite)
 
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=coverage)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
