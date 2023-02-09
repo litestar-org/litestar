@@ -68,6 +68,9 @@ def make_version(version: str | None, push: bool) -> None:
         subprocess.run(["git", "add", file])
     subprocess.run(["git", "commit", "-m", f"Automatic docs build for version {version!r}"])
 
+    if push:
+        subprocess.run(["git", "push"])
+
 
 def main() -> None:
     args = parser.parse_args()
