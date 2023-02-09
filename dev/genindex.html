@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="search.html" />
 
-    <link rel="shortcut icon" href="_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 --><title>Index - Starlite 1.51 documentation</title>
+    <link rel="shortcut icon" href="_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 --><title>Index - Starlite 1.51 documentation</title>
 <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
@@ -157,8 +157,8 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   <div class="sidebar-logo-container">
-    <img class="sidebar-logo only-light" src="_static/starlite-logo-light.svg" alt="Light Logo"/>
-    <img class="sidebar-logo only-dark" src="_static/starlite-logo-transparent.svg" alt="Dark Logo"/>
+    <img class="sidebar-logo only-light" src="_static/logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="_static/logo-dark.svg" alt="Dark Logo"/>
   </div>
   
   
@@ -623,7 +623,11 @@
 </li>
           <li><a href="reference/params.html#starlite.params.ParameterKwarg.__init__">(starlite.params.ParameterKwarg method)</a>
 </li>
-          <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginProtocol.__init__">(starlite.plugins.base.PluginProtocol method)</a>
+          <li><a href="reference/plugins/base.html#starlite.plugins.base.InitPluginProtocol.__init__">(starlite.plugins.base.InitPluginProtocol method)</a>
+</li>
+          <li><a href="reference/plugins/base.html#starlite.plugins.base.OpenAPISchemaPluginProtocol.__init__">(starlite.plugins.base.OpenAPISchemaPluginProtocol method)</a>
+</li>
+          <li><a href="reference/plugins/base.html#starlite.plugins.base.SerializationPluginProtocol.__init__">(starlite.plugins.base.SerializationPluginProtocol method)</a>
 </li>
           <li><a href="reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin.__init__">(starlite.plugins.sql_alchemy.SQLAlchemyPlugin method)</a>
 </li>
@@ -1682,7 +1686,17 @@
 </li>
         <li><a href="reference/datastructures/url.html#starlite.datastructures.url.URL.from_components">from_components() (starlite.datastructures.url.URL class method)</a>
 </li>
-        <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginProtocol.from_dict">from_dict() (starlite.plugins.base.PluginProtocol method)</a>
+        <li><a href="reference/plugins/base.html#starlite.plugins.base.SerializationPluginProtocol.from_data_container_instance">from_data_container_instance() (starlite.plugins.base.SerializationPluginProtocol method)</a>
+
+        <ul>
+          <li><a href="reference/plugins/piccolo_orm.html#starlite.plugins.piccolo_orm.PiccoloORMPlugin.from_data_container_instance">(starlite.plugins.piccolo_orm.PiccoloORMPlugin method)</a>
+</li>
+          <li><a href="reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin.from_data_container_instance">(starlite.plugins.sql_alchemy.SQLAlchemyPlugin method)</a>
+</li>
+          <li><a href="reference/plugins/tortoise_orm.html#starlite.plugins.tortoise_orm.TortoiseORMPlugin.from_data_container_instance">(starlite.plugins.tortoise_orm.TortoiseORMPlugin method)</a>
+</li>
+        </ul></li>
+        <li><a href="reference/plugins/base.html#starlite.plugins.base.SerializationPluginProtocol.from_dict">from_dict() (starlite.plugins.base.SerializationPluginProtocol method)</a>
 
         <ul>
           <li><a href="reference/plugins/piccolo_orm.html#starlite.plugins.piccolo_orm.PiccoloORMPlugin.from_dict">(starlite.plugins.piccolo_orm.PiccoloORMPlugin method)</a>
@@ -1706,16 +1720,6 @@
 </li>
         <li><a href="reference/dto.html#starlite.dto.DTO.from_model_instance_async">from_model_instance_async() (starlite.dto.DTO class method)</a>
 </li>
-        <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginProtocol.from_pydantic_model_instance">from_pydantic_model_instance() (starlite.plugins.base.PluginProtocol method)</a>
-
-        <ul>
-          <li><a href="reference/plugins/piccolo_orm.html#starlite.plugins.piccolo_orm.PiccoloORMPlugin.from_pydantic_model_instance">(starlite.plugins.piccolo_orm.PiccoloORMPlugin method)</a>
-</li>
-          <li><a href="reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin.from_pydantic_model_instance">(starlite.plugins.sql_alchemy.SQLAlchemyPlugin method)</a>
-</li>
-          <li><a href="reference/plugins/tortoise_orm.html#starlite.plugins.tortoise_orm.TortoiseORMPlugin.from_pydantic_model_instance">(starlite.plugins.tortoise_orm.TortoiseORMPlugin method)</a>
-</li>
-        </ul></li>
         <li><a href="reference/datastructures/headers.html#starlite.datastructures.headers.Headers.from_scope">from_scope() (starlite.datastructures.headers.Headers class method)</a>
 
         <ul>
@@ -1992,6 +1996,8 @@
 </li>
         <li><a href="reference/config.html#starlite.config.AppConfig.initial_state">initial_state (starlite.config.AppConfig attribute)</a>
 </li>
+        <li><a href="reference/plugins/base.html#starlite.plugins.base.InitPluginProtocol">InitPluginProtocol (class in starlite.plugins.base)</a>
+</li>
         <li><a href="reference/types.html#starlite.types.FileInfo.ino">ino (starlite.types.FileInfo attribute)</a>
 </li>
         <li><a href="reference/exceptions/http_exceptions.html#starlite.exceptions.http_exceptions.InternalServerException">InternalServerException</a>
@@ -2026,9 +2032,11 @@
 </li>
         <li><a href="reference/config.html#starlite.config.CORSConfig.is_origin_allowed">is_origin_allowed() (starlite.config.CORSConfig method)</a>
 </li>
-        <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginProtocol.is_plugin_supported_type">is_plugin_supported_type() (starlite.plugins.base.PluginProtocol static method)</a>
+        <li><a href="reference/plugins/base.html#starlite.plugins.base.OpenAPISchemaPluginProtocol.is_plugin_supported_type">is_plugin_supported_type() (starlite.plugins.base.OpenAPISchemaPluginProtocol static method)</a>
 
         <ul>
+          <li><a href="reference/plugins/base.html#starlite.plugins.base.SerializationPluginProtocol.is_plugin_supported_type">(starlite.plugins.base.SerializationPluginProtocol static method)</a>
+</li>
           <li><a href="reference/plugins/piccolo_orm.html#starlite.plugins.piccolo_orm.PiccoloORMPlugin.is_plugin_supported_type">(starlite.plugins.piccolo_orm.PiccoloORMPlugin static method)</a>
 </li>
           <li><a href="reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin.is_plugin_supported_type">(starlite.plugins.sql_alchemy.SQLAlchemyPlugin static method)</a>
@@ -2551,7 +2559,7 @@
 </li>
         <li><a href="reference/utils/pagination.html#starlite.utils.pagination.OffsetPagination">OffsetPagination (class in starlite.utils.pagination)</a>
 </li>
-        <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginProtocol.on_app_init">on_app_init() (starlite.plugins.base.PluginProtocol method)</a>
+        <li><a href="reference/plugins/base.html#starlite.plugins.base.InitPluginProtocol.on_app_init">on_app_init() (starlite.plugins.base.InitPluginProtocol method)</a>
 
         <ul>
           <li><a href="reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin.on_app_init">(starlite.plugins.sql_alchemy.SQLAlchemyPlugin method)</a>
@@ -2594,6 +2602,10 @@
         <li><a href="reference/openapi.html#starlite.openapi.controller.OpenAPIController">OpenAPIController (class in starlite.openapi.controller)</a>
 </li>
         <li><a href="reference/enums.html#starlite.enums.OpenAPIMediaType">OpenAPIMediaType (class in starlite.enums)</a>
+</li>
+        <li><a href="reference/plugins/base.html#starlite.plugins.base.OpenAPISchemaPluginProtocol">OpenAPISchemaPluginProtocol (class in starlite.plugins.base)</a>
+</li>
+        <li><a href="reference/config.html#starlite.config.OpenAPIConfig.operation_id_creator">operation_id_creator (starlite.config.OpenAPIConfig attribute)</a>
 </li>
         <li><a href="reference/config.html#starlite.config.AppConfig.opt">opt (starlite.config.AppConfig attribute)</a>
 
@@ -2694,8 +2706,6 @@
         <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginMapping.plugin">plugin (starlite.plugins.base.PluginMapping attribute)</a>
 </li>
         <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginMapping">PluginMapping (class in starlite.plugins.base)</a>
-</li>
-        <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginProtocol">PluginProtocol (class in starlite.plugins.base)</a>
 </li>
         <li><a href="reference/config.html#starlite.config.AppConfig.plugins">plugins (starlite.config.AppConfig attribute)</a>
 </li>
@@ -3112,6 +3122,8 @@
 </li>
         </ul></li>
         <li><a href="reference/exceptions/base_exceptions.html#starlite.exceptions.base_exceptions.SerializationException">SerializationException</a>
+</li>
+        <li><a href="reference/plugins/base.html#starlite.plugins.base.SerializationPluginProtocol">SerializationPluginProtocol (class in starlite.plugins.base)</a>
 </li>
         <li><a href="reference/cache/memcached_cache_backend.html#starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig.serialize">serialize (starlite.cache.memcached_cache_backend.MemcachedCacheBackendConfig attribute)</a>
 </li>
@@ -3825,7 +3837,17 @@
         </ul></li>
         <li><a href="reference/config.html#starlite.config.CacheConfig.to_cache">to_cache() (starlite.config.CacheConfig method)</a>
 </li>
-        <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginProtocol.to_dict">to_dict() (starlite.plugins.base.PluginProtocol method)</a>
+        <li><a href="reference/plugins/base.html#starlite.plugins.base.SerializationPluginProtocol.to_data_container_class">to_data_container_class() (starlite.plugins.base.SerializationPluginProtocol method)</a>
+
+        <ul>
+          <li><a href="reference/plugins/piccolo_orm.html#starlite.plugins.piccolo_orm.PiccoloORMPlugin.to_data_container_class">(starlite.plugins.piccolo_orm.PiccoloORMPlugin method)</a>
+</li>
+          <li><a href="reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin.to_data_container_class">(starlite.plugins.sql_alchemy.SQLAlchemyPlugin method)</a>
+</li>
+          <li><a href="reference/plugins/tortoise_orm.html#starlite.plugins.tortoise_orm.TortoiseORMPlugin.to_data_container_class">(starlite.plugins.tortoise_orm.TortoiseORMPlugin method)</a>
+</li>
+        </ul></li>
+        <li><a href="reference/plugins/base.html#starlite.plugins.base.SerializationPluginProtocol.to_dict">to_dict() (starlite.plugins.base.SerializationPluginProtocol method)</a>
 
         <ul>
           <li><a href="reference/plugins/piccolo_orm.html#starlite.plugins.piccolo_orm.PiccoloORMPlugin.to_dict">(starlite.plugins.piccolo_orm.PiccoloORMPlugin method)</a>
@@ -3847,20 +3869,20 @@
         </ul></li>
         <li><a href="reference/datastructures/headers.html#starlite.datastructures.headers.Headers.to_header_list">to_header_list() (starlite.datastructures.headers.Headers method)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="reference/dto.html#starlite.dto.DTO.to_model_instance">to_model_instance() (starlite.dto.DTO method)</a>
 </li>
         <li><a href="reference/config.html#starlite.config.OpenAPIConfig.to_openapi_schema">to_openapi_schema() (starlite.config.OpenAPIConfig method)</a>
-</li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="reference/plugins/base.html#starlite.plugins.base.PluginProtocol.to_pydantic_model_class">to_pydantic_model_class() (starlite.plugins.base.PluginProtocol method)</a>
 
         <ul>
-          <li><a href="reference/plugins/piccolo_orm.html#starlite.plugins.piccolo_orm.PiccoloORMPlugin.to_pydantic_model_class">(starlite.plugins.piccolo_orm.PiccoloORMPlugin method)</a>
+          <li><a href="reference/plugins/base.html#starlite.plugins.base.OpenAPISchemaPluginProtocol.to_openapi_schema">(starlite.plugins.base.OpenAPISchemaPluginProtocol method)</a>
 </li>
-          <li><a href="reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin.to_pydantic_model_class">(starlite.plugins.sql_alchemy.SQLAlchemyPlugin method)</a>
+          <li><a href="reference/plugins/piccolo_orm.html#starlite.plugins.piccolo_orm.PiccoloORMPlugin.to_openapi_schema">(starlite.plugins.piccolo_orm.PiccoloORMPlugin method)</a>
 </li>
-          <li><a href="reference/plugins/tortoise_orm.html#starlite.plugins.tortoise_orm.TortoiseORMPlugin.to_pydantic_model_class">(starlite.plugins.tortoise_orm.TortoiseORMPlugin method)</a>
+          <li><a href="reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin.to_openapi_schema">(starlite.plugins.sql_alchemy.SQLAlchemyPlugin method)</a>
+</li>
+          <li><a href="reference/plugins/tortoise_orm.html#starlite.plugins.tortoise_orm.TortoiseORMPlugin.to_openapi_schema">(starlite.plugins.tortoise_orm.TortoiseORMPlugin method)</a>
 </li>
         </ul></li>
         <li><a href="reference/contrib/htmx.html#starlite.contrib.htmx.response.HTMXTemplate.to_response">to_response() (starlite.contrib.htmx.response.HTMXTemplate method)</a>

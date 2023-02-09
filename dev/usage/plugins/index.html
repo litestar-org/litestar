@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Piccolo ORM Plugin" href="piccolo-orm.html" /><link rel="prev" title="Testing" href="../testing.html" />
 
-    <link rel="shortcut icon" href="../../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>Plugins - Starlite 1.51 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
@@ -159,8 +159,8 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
   
   <div class="sidebar-logo-container">
-    <img class="sidebar-logo only-light" src="../../_static/starlite-logo-light.svg" alt="Light Logo"/>
-    <img class="sidebar-logo only-dark" src="../../_static/starlite-logo-transparent.svg" alt="Dark Logo"/>
+    <img class="sidebar-logo only-light" src="../../_static/logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../_static/logo-dark.svg" alt="Dark Logo"/>
   </div>
   
   
@@ -390,15 +390,15 @@
 data using non-pydantic classes. Additionally, they allow for seamless serialization and schema generation.</p>
 <section id="creating-plugins">
 <h2>Creating Plugins<a class="headerlink" href="#creating-plugins" title="Permalink to this heading">#</a></h2>
-<p>A plugin is a class that implements the <a class="reference internal" href="../../reference/plugins/base.html#starlite.plugins.base.PluginProtocol" title="starlite.plugins.base.PluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">PluginProtocol</span></code></a>.</p>
-<p>If you wish to support the serialization and deserialization of none-pydantic classes, you need to implement the
+<p>A plugin is a class that implements the <a class="reference internal" href="../../reference/plugins/base.html#starlite.plugins.base.SerializationPluginProtocol" title="starlite.plugins.base.SerializationPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a>.</p>
+<p>If you wish to support the serialization and deserialization of non-pydantic classes, you need to implement the
 following methods specified by the:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">PluginProtocol</span>
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">SerializationPluginProtocol</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
 
@@ -406,14 +406,14 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="o">...</span>
 
 
-<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">PluginProtocol</span><span class="p">[</span><span class="n">MyClass</span><span class="p">]):</span>
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">SerializationPluginProtocol</span><span class="p">[</span><span class="n">MyClass</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The class for which we create a plugin. For example, could be a base ORM class such as &quot;Model&quot; or &quot;Document&quot; etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="o">...</span>
 
-    <span class="k">def</span> <span class="nf">to_pydantic_model_class</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">to_data_container_class</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">model_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">MyClass</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -428,11 +428,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span>
 
-    <span class="k">def</span> <span class="nf">from_pydantic_model_instance</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">model_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">MyClass</span><span class="p">],</span> <span class="n">pydantic_model_instance</span><span class="p">:</span> <span class="n">BaseModel</span>
+    <span class="k">def</span> <span class="nf">from_data_container_instance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">model_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">MyClass</span><span class="p">],</span> <span class="n">data_container_instance</span><span class="p">:</span> <span class="n">BaseModel</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyClass</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Given an instance of a pydantic model created using a plugin&#39;s ``to_pydantic_model_class``,</span>
+<span class="sd">        Given an instance of a pydantic model created using a plugin&#39;s ``to_data_container_class``,</span>
 <span class="sd">        return an instance of the class from which that pydantic model has been created.</span>
 
 <span class="sd">        This class is passed in as the ``model_class`` kwarg.</span>
@@ -457,7 +457,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">PluginProtocol</span>
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">SerializationPluginProtocol</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
 
@@ -465,14 +465,14 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="o">...</span>
 
 
-<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">PluginProtocol</span><span class="p">[</span><span class="n">MyClass</span><span class="p">]):</span>
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">SerializationPluginProtocol</span><span class="p">[</span><span class="n">MyClass</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The class for which we create a plugin. For example, could be a base ORM class such as &quot;Model&quot; or &quot;Document&quot; etc.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="o">...</span>
 
-    <span class="k">def</span> <span class="nf">to_pydantic_model_class</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">to_data_container_class</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">model_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">MyClass</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -487,11 +487,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span>
 
-    <span class="k">def</span> <span class="nf">from_pydantic_model_instance</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">model_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">MyClass</span><span class="p">],</span> <span class="n">pydantic_model_instance</span><span class="p">:</span> <span class="n">BaseModel</span>
+    <span class="k">def</span> <span class="nf">from_data_container_instance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">model_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">MyClass</span><span class="p">],</span> <span class="n">data_container_instance</span><span class="p">:</span> <span class="n">BaseModel</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MyClass</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Given an instance of a pydantic model created using a plugin&#39;s ``to_pydantic_model_class``,</span>
+<span class="sd">        Given an instance of a pydantic model created using a plugin&#39;s ``to_data_container_class``,</span>
 <span class="sd">        return an instance of the class from which that pydantic model has been created.</span>
 
 <span class="sd">        This class is passed in as the ``model_class`` kwarg.</span>
@@ -514,9 +514,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <p>If you wish to register middlewares, guards, dependencies and so forth on the application init, you need to implement the
-<a class="reference internal" href="../../reference/plugins/base.html#starlite.plugins.base.PluginProtocol.on_app_init" title="starlite.plugins.base.PluginProtocol.on_app_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init</span></code></a> method:</p>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init</span></code> method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">PluginProtocol</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.plugins</span> <span class="kn">import</span> <span class="n">InitPluginProtocol</span>
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">)</span>
@@ -524,7 +525,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="o">...</span>
 
 
-<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">PluginProtocol</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">InitPluginProtocol</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Starlite</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># register a route handler</span>
         <span class="n">app</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">my_handler</span><span class="p">)</span>

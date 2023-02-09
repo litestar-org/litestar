@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="starlite.connection" href="connection/index.html" /><link rel="prev" title="simple_cache_backend" href="cache/simple_cache_backend.html" />
 
-    <link rel="shortcut icon" href="../_static/starlite-favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
         <title>starlite.config - Starlite 1.51 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
@@ -159,8 +159,8 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   <div class="sidebar-logo-container">
-    <img class="sidebar-logo only-light" src="../_static/starlite-logo-light.svg" alt="Light Logo"/>
-    <img class="sidebar-logo only-dark" src="../_static/starlite-logo-transparent.svg" alt="Dark Logo"/>
+    <img class="sidebar-logo only-light" src="../_static/logo-light.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/logo-dark.svg" alt="Dark Logo"/>
   </div>
   
   
@@ -587,8 +587,8 @@ wherever you have access to <a class="reference internal" href="connection/reque
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.config.AppConfig.plugins">
-<span class="sig-name descname"><span class="pre">plugins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="plugins/base.html#starlite.plugins.base.PluginProtocol" title="starlite.plugins.base.PluginProtocol"><span class="pre">PluginProtocol</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.AppConfig.plugins" title="Permalink to this definition">#</a></dt>
-<dd><p>List of <a class="reference internal" href="plugins/base.html#starlite.plugins.base.PluginProtocol" title="starlite.plugins.base.PluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">PluginProtocol</span></code></a>.</p>
+<span class="sig-name descname"><span class="pre">plugins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="plugins/base.html#starlite.plugins.base.SerializationPluginProtocol" title="starlite.plugins.base.SerializationPluginProtocol"><span class="pre">SerializationPluginProtocol</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="plugins/base.html#starlite.plugins.base.InitPluginProtocol" title="starlite.plugins.base.InitPluginProtocol"><span class="pre">InitPluginProtocol</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="plugins/base.html#starlite.plugins.base.OpenAPISchemaPluginProtocol" title="starlite.plugins.base.OpenAPISchemaPluginProtocol"><span class="pre">OpenAPISchemaPluginProtocol</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.AppConfig.plugins" title="Permalink to this definition">#</a></dt>
+<dd><p>List of <a class="reference internal" href="plugins/base.html#starlite.plugins.base.SerializationPluginProtocol" title="starlite.plugins.base.SerializationPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1276,6 +1276,12 @@ Logger instance.</p>
 <dd><p>Render pydantic model schema using field aliases, if defined.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.config.OpenAPIConfig.operation_id_creator">
+<span class="sig-name descname"><span class="pre">operation_id_creator</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.11)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'GET'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'POST'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'DELETE'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'PATCH'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'PUT'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'HEAD'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'TRACE'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'OPTIONS'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">PathParameterDefinition</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.OpenAPIConfig.operation_id_creator" title="Permalink to this definition">#</a></dt>
+<dd><p>A callable that generates unique operation ids</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.config.OpenAPIConfig.to_openapi_schema">
 <span class="sig-name descname"><span class="pre">to_openapi_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OpenAPI</span></span></span><a class="headerlink" href="#starlite.config.OpenAPIConfig.to_openapi_schema" title="Permalink to this definition">#</a></dt>
@@ -1777,6 +1783,7 @@ constructor using the <code class="docutils literal notranslate"><span class="pr
 <li><a class="reference internal" href="#starlite.config.OpenAPIConfig.root_schema_site"><code class="docutils literal notranslate"><span class="pre">OpenAPIConfig.root_schema_site</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.OpenAPIConfig.enabled_endpoints"><code class="docutils literal notranslate"><span class="pre">OpenAPIConfig.enabled_endpoints</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.OpenAPIConfig.by_alias"><code class="docutils literal notranslate"><span class="pre">OpenAPIConfig.by_alias</span></code></a></li>
+<li><a class="reference internal" href="#starlite.config.OpenAPIConfig.operation_id_creator"><code class="docutils literal notranslate"><span class="pre">OpenAPIConfig.operation_id_creator</span></code></a></li>
 <li><a class="reference internal" href="#starlite.config.OpenAPIConfig.to_openapi_schema"><code class="docutils literal notranslate"><span class="pre">OpenAPIConfig.to_openapi_schema()</span></code></a></li>
 </ul>
 </li>
