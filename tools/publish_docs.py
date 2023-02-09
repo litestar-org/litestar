@@ -64,7 +64,7 @@ def make_version(version: str, push: bool) -> None:
     if is_latest:
         for path in docs_src_path.iterdir():
             if path.is_dir():
-                shutil.copytree(path, ".", dirs_exist_ok=True)
+                shutil.copytree(path, path.name, dirs_exist_ok=True)
             else:
                 shutil.copy2(path, ".")
 
