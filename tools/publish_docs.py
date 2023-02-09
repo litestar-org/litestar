@@ -34,7 +34,7 @@ def add_to_versions_file(version: str) -> VersionSpec:
 
 
 def clean_files(keep: list[str]) -> None:
-    keep.extend(["versions.json", ".git"])
+    keep.extend(["versions.json", ".git", ".nojekyll"])
 
     for path in Path().iterdir():
         if path.name in keep:
