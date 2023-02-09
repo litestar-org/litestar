@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, Dict, Optional
 from uuid import uuid4
 
+import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import integers, none, one_of, sampled_from, text, timedeltas
 from pydantic import BaseModel, Field
@@ -404,3 +405,65 @@ def test_type_encoders() -> None:
     with create_test_client([handler]) as client:
         response = client.get("/")
         assert response.status_code == HTTP_201_CREATED
+
+
+async def retrieve_user_handler(token: Token, connection: ASGIConnection[Any, Any, Any, Any]) -> Any:
+    return User(name="moishe", id=uuid4())
+
+
+@pytest.mark.parametrize(
+    "config",
+    (
+        JWTAuth[User](
+            retrieve_user_handler=retrieve_user_handler,
+            token_secret="abc1234",
+            exclude=["/"],
+        ),
+        JWTCookieAuth[User](
+            retrieve_user_handler=retrieve_user_handler,
+            token_secret="abc1234",
+            exclude=["/"],
+        ),
+        OAuth2PasswordBearerAuth(
+            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+        ),
+    ),
+)
+def test_returns_token_in_response_when_configured(config: JWTAuth) -> None:
+    @get()
+    def handler() -> Response[User]:
+        return config.login(identifier="123", send_token_as_response_body=True)
+
+    with create_test_client([handler]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_201_CREATED
+        assert isinstance(response.json(), dict) and response.json()
+
+
+@pytest.mark.parametrize(
+    "config",
+    (
+        JWTAuth[User](
+            retrieve_user_handler=retrieve_user_handler,
+            token_secret="abc1234",
+            exclude=["/"],
+        ),
+        JWTCookieAuth[User](
+            retrieve_user_handler=retrieve_user_handler,
+            token_secret="abc1234",
+            exclude=["/"],
+        ),
+        OAuth2PasswordBearerAuth(
+            token_url="/", exclude=["/"], token_secret="abc123", retrieve_user_handler=retrieve_user_handler
+        ),
+    ),
+)
+def test_returns_none_when_response_body_is_none(config: JWTAuth) -> None:
+    @get()
+    def handler() -> Response[User]:
+        return config.login(identifier="123", send_token_as_response_body=True, response_body=None)
+
+    with create_test_client([handler]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() is None

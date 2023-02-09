@@ -28,8 +28,8 @@ async def test_serializing_single_tortoise_model_instance(anyio_backend: str) ->
             .prefetch_related("events__participants")
             .first()
         )
-        assert db_tournament.name == data["name"]
-        assert len(db_tournament.events.related_objects) == len(data["events"])
+        assert db_tournament.name == data["name"]  # type: ignore[arg-type, union-attr]
+        assert len(db_tournament.events.related_objects) == len(data["events"])  # type: ignore[union-attr]
 
 
 async def test_serializing_list_of_tortoise_models(anyio_backend: str) -> None:
@@ -50,8 +50,8 @@ async def test_serializing_list_of_tortoise_models(anyio_backend: str) -> None:
             .prefetch_related("events__participants")
             .first()
         )
-        assert db_tournament.name == serialized_tournament["name"]
-        assert len(db_tournament.events.related_objects) == len(serialized_tournament["events"])
+        assert db_tournament.name == serialized_tournament["name"]  # type: ignore[arg-type, union-attr]
+        assert len(db_tournament.events.related_objects) == len(serialized_tournament["events"])  # type: ignore[union-attr]
 
 
 async def test_creating_a_tortoise_model(anyio_backend: str) -> None:

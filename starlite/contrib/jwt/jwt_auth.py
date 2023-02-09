@@ -20,6 +20,7 @@ from starlite.enums import MediaType
 from starlite.middleware import DefineMiddleware
 from starlite.security.base import AbstractSecurityConfig, UserType
 from starlite.status_codes import HTTP_201_CREATED
+from starlite.types import Empty
 
 
 class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
@@ -106,13 +107,14 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         self,
         identifier: str,
         *,
-        response_body: Optional[Any] = None,
+        response_body: Any = Empty,
         response_media_type: Union[str, MediaType] = MediaType.JSON,
         response_status_code: int = HTTP_201_CREATED,
         token_expiration: Optional[timedelta] = None,
         token_issuer: Optional[str] = None,
         token_audience: Optional[str] = None,
         token_unique_jwt_id: Optional[str] = None,
+        send_token_as_response_body: bool = False,
     ) -> Response[Any]:
         """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
 
@@ -125,6 +127,8 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             token_issuer: An optional value of the token ``iss`` field.
             token_audience: An optional value for the token ``aud`` field.
             token_unique_jwt_id: An optional value for the token ``jti`` field.
+            send_token_as_response_body: If ``True`` the response will be a dict including the token: ``{ "token": <token> }``
+                will be returned as the response body. Note: if a response body is passed this setting will be ignored.
 
         Returns:
             A :class:`Response <starlite.response.Response>` instance.
@@ -136,8 +140,16 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
             token_audience=token_audience,
             token_unique_jwt_id=token_unique_jwt_id,
         )
+
+        if response_body is not Empty:
+            body = response_body
+        elif send_token_as_response_body:
+            body = {"token": encoded_token}
+        else:
+            body = None
+
         return self.create_response(
-            content=response_body,
+            content=body,
             headers={self.auth_header: self.format_auth_header(encoded_token)},
             media_type=response_media_type,
             status_code=response_status_code,
@@ -204,10 +216,7 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
     secure: Optional[bool] = None
     """Https is required for the cookie."""
     samesite: Literal["lax", "strict", "none"] = "lax"
-    """Controls whether or not a cookie is sent with cross-site requests.
-
-    Defaults to ``lax``.
-    """
+    """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``. """
     description: str = "JWT cookie-based authentication and authorization."
     """Description for the OpenAPI security scheme."""
     authentication_middleware_class: Type[JWTCookieAuthenticationMiddleware] = JWTCookieAuthenticationMiddleware
@@ -259,13 +268,14 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
         self,
         identifier: str,
         *,
-        response_body: Optional[Any] = None,
+        response_body: Any = Empty,
         response_media_type: Union[str, MediaType] = MediaType.JSON,
         response_status_code: int = HTTP_201_CREATED,
         token_expiration: Optional[timedelta] = None,
         token_issuer: Optional[str] = None,
         token_audience: Optional[str] = None,
         token_unique_jwt_id: Optional[str] = None,
+        send_token_as_response_body: bool = False,
     ) -> Response[Any]:
         """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
 
@@ -278,10 +288,13 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
             token_issuer: An optional value of the token ``iss`` field.
             token_audience: An optional value for the token ``aud`` field.
             token_unique_jwt_id: An optional value for the token ``jti`` field.
+            send_token_as_response_body: If ``True`` the response will be a dict including the token: ``{ "token": <token> }``
+                will be returned as the response body. Note: if a response body is passed this setting will be ignored.
 
         Returns:
             A :class:`Response <starlite.response.Response>` instance.
         """
+
         encoded_token = self.create_token(
             identifier=identifier,
             token_expiration=token_expiration,
@@ -298,8 +311,16 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
             secure=self.secure,
             samesite=self.samesite,
         )
+
+        if response_body is not Empty:
+            body = response_body
+        elif send_token_as_response_body:
+            body = {"token": encoded_token}
+        else:
+            body = None
+
         return self.create_response(
-            content=response_body,
+            content=body,
             headers={self.auth_header: self.format_auth_header(encoded_token)},
             cookies=[cookie],
             media_type=response_media_type,
@@ -376,13 +397,14 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
         self,
         identifier: str,
         *,
-        response_body: Optional[Any] = None,
+        response_body: Any = Empty,
         response_media_type: Union[str, MediaType] = MediaType.JSON,
         response_status_code: int = HTTP_201_CREATED,
         token_expiration: Optional[timedelta] = None,
         token_issuer: Optional[str] = None,
         token_audience: Optional[str] = None,
         token_unique_jwt_id: Optional[str] = None,
+        send_token_as_response_body: bool = True,
     ) -> Response[Any]:
         """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
 
@@ -395,6 +417,8 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
             token_issuer: An optional value of the token ``iss`` field.
             token_audience: An optional value for the token ``aud`` field.
             token_unique_jwt_id: An optional value for the token ``jti`` field.
+            send_token_as_response_body: If ``True`` the response will be an oAuth2 token response dict.
+                Note: if a response body is passed this setting will be ignored.
 
         Returns:
             A :class:`Response <starlite.response.Response>` instance.
@@ -407,13 +431,6 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
             token_unique_jwt_id=token_unique_jwt_id,
         )
         expires_in = int((datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)).timestamp())
-        oauth2_token_response = OAuth2Login.parse_obj(
-            {
-                "access_token": encoded_token,
-                "expires_in": expires_in,
-                "token_type": "bearer",
-            }
-        )
         cookie = Cookie(
             key=self.key,
             path=self.path,
@@ -423,8 +440,21 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
             secure=self.secure,
             samesite=self.samesite,
         )
+
+        if response_body is not Empty:
+            body = response_body
+        elif send_token_as_response_body:
+            token_dto = OAuth2Login(
+                access_token=encoded_token,
+                expires_in=expires_in,
+                token_type="bearer",
+            )
+            body = token_dto.dict()
+        else:
+            body = None
+
         return self.create_response(
-            content=response_body or oauth2_token_response,
+            content=body,
             headers={self.auth_header: self.format_auth_header(encoded_token)},
             cookies=[cookie],
             media_type=response_media_type,

@@ -1,5 +1,5 @@
 from inspect import cleandoc
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from pydantic_openapi_schema.v3_1_0.operation import Operation
 from pydantic_openapi_schema.v3_1_0.path_item import PathItem
@@ -7,7 +7,6 @@ from pydantic_openapi_schema.v3_1_0.path_item import PathItem
 from starlite.openapi.parameters import create_parameter_for_handler
 from starlite.openapi.request_body import create_request_body
 from starlite.openapi.responses import create_responses
-from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
@@ -16,6 +15,7 @@ if TYPE_CHECKING:
     from starlite.handlers import HTTPRouteHandler
     from starlite.plugins.base import PluginProtocol
     from starlite.routes import HTTPRoute
+    from starlite.types.callable_types import OperationIDCreator
 
 
 def get_description_for_handler(route_handler: "HTTPRouteHandler", use_handler_docstrings: bool) -> Optional[str]:
@@ -59,29 +59,16 @@ def extract_layered_values(
     return sorted(set(tags)) if tags else None, security or None
 
 
-def get_start_of_path_components_str(path_components: List[Union[str, PathParameterDefinition]]) -> List[str]:
-    """Extract str from path_components until the first occurrence of PathParameterDefinition. This is used to get none
-    parameter paths from Routes to prefix operation_id.
-
-    Args:
-        path_components: A list of str and PathParameterDefinition instances
-
-    Returns:
-        A list of str
-    """
-    output = []
-    for component in path_components:
-        if isinstance(component, PathParameterDefinition):
-            break
-        output.append(component.title())
-    return output
-
-
 def create_path_item(
-    route: "HTTPRoute", create_examples: bool, plugins: List["PluginProtocol"], use_handler_docstrings: bool
-) -> PathItem:
+    route: "HTTPRoute",
+    create_examples: bool,
+    plugins: List["PluginProtocol"],
+    use_handler_docstrings: bool,
+    operation_id_creator: "OperationIDCreator",
+) -> Tuple[PathItem, List[str]]:
     """Create a PathItem model for the given route parsing all http_methods into Operation Models."""
     path_item = PathItem()
+    operation_ids: List[str] = []
 
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple
@@ -97,18 +84,15 @@ def create_path_item(
                 or None
             )
             raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
-            handler_name = unwrap_partial(route_handler.handler_name).title().replace("_", "")
-            operation_id = route_handler.operation_id or handler_name
-            if len(route_handler.http_methods) > 1:
-                operation_id = "".join((http_method.title(), operation_id))
-            operation_id = "".join((*get_start_of_path_components_str(route.path_components), operation_id))
 
             request_body = None
             if "data" in handler_fields:
                 request_body = create_request_body(
                     field=handler_fields["data"], generate_examples=create_examples, plugins=plugins
                 )
-
+            operation_id = route_handler.operation_id or operation_id_creator(
+                route_handler, http_method, route.path_components
+            )
             tags, security = extract_layered_values(route_handler)
             operation = Operation(
                 operationId=operation_id,
@@ -126,6 +110,6 @@ def create_path_item(
                 parameters=parameters,  # type: ignore[arg-type]
                 security=security,
             )
-
+            operation_ids.append(operation_id)
             setattr(path_item, http_method.lower(), operation)
-    return path_item
+    return path_item, operation_ids
