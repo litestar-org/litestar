@@ -5,65 +5,72 @@ import subprocess
 from pathlib import Path
 import argparse
 import shutil
+from typing import TypedDict
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--version", required=False)
 parser.add_argument("--push", action="store_true")
-parser.add_argument("--latest", action="store_true")
 
 
-def add_to_versions_file(version: str, latest: bool) -> None:
+class VersionSpec(TypedDict):
+    versions: list[str]
+    latest: str
+
+
+def add_to_versions_file(version: str) -> VersionSpec:
     versions_file = Path("versions.json")
-    versions = []
+    version_spec: VersionSpec
     if versions_file.exists():
-        versions = json.loads(versions_file.read_text())
-
-    new_version_spec = {"version": version, "title": version, "aliases": []}
-    if any(v["version"] == version for v in versions):
-        versions = [v if v["version"] != version else new_version_spec for v in versions]
+        version_spec = json.loads(versions_file.read_text())
     else:
-        versions.insert(0, new_version_spec)
+        version_spec = {"versions": [], "latest": ""}
 
-    if latest:
-        for version in versions:
-            version["aliases"] = []
-        versions[0]["aliases"] = ["latest"]
+    if version not in version_spec["versions"]:
+        version_spec["versions"].append(version)
 
-    versions_file.write_text(json.dumps(versions))
+    versions_file.write_text(json.dumps(version_spec))
+
+    return version_spec
 
 
-def make_version(version: str, push: bool, latest: bool) -> None:
+def clean_files(keep: list[str]) -> None:
+    keep.append("versions.json")
+
+    for path in Path().iterdir():
+        if path.is_dir():
+            shutil.rmtree(path)
+        else:
+            path.unlink()
+
+
+def make_version(version: str, push: bool) -> None:
     subprocess.run(["make", "docs"], check=True)
 
     subprocess.run(["git", "checkout", "gh-pages"], check=True)
 
-    add_to_versions_file(version, latest)
+    version_spec = add_to_versions_file(version)
+    is_latest = version == version_spec["latest"]
 
     docs_src_path = Path("docs/_build/html")
-    docs_dest_path = Path(version)
-    docs_dest_path_latest = Path("latest")
-    if docs_dest_path.exists():
-        shutil.rmtree(docs_dest_path)
 
-    docs_src_path.rename(docs_dest_path)
-    if latest:
-        if docs_dest_path_latest.exists():
-            shutil.rmtree(docs_dest_path_latest)
-        shutil.copytree(docs_dest_path, docs_dest_path_latest)
-        subprocess.run(["git", "add", "latest"], check=True)
+    shutil.copytree(docs_src_path / "lib", version)
 
-    subprocess.run(["git", "add", version], check=True)
-    subprocess.run(["git", "add", "versions.json"], check=True)
-    subprocess.run(["git", "commit", "-m", f"automated docs build: {version}"], check=True)
-    if push:
-        subprocess.run(["git", "push"], check=True)
-    subprocess.run(["git", "checkout", "-"], check=True)
+    if is_latest:
+        for path in docs_src_path.iterdir():
+            if path.is_dir():
+                shutil.copytree(path, ".")
+            else:
+                shutil.copy2(path, ".")
+
+    clean_files(version_spec["versions"])
+
+    subprocess.run(["git", "add", "."])
 
 
 def main() -> None:
     args = parser.parse_args()
-    version = args.version or importlib.metadata.version("starlite").rsplit(".", 1)[0]
-    make_version(version=version, push=args.push, latest=args.latest)
+    version = args.version or importlib.metadata.version("starlite").rsplit(".")[0]
+    make_version(version=version, push=args.push)
 
 
 if __name__ == "__main__":
