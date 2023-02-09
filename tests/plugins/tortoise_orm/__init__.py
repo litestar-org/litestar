@@ -5,7 +5,7 @@ from tortoise import Model, Tortoise, fields  # type: ignore
 from starlite.handlers.http_handlers import get, post
 
 
-class Tournament(Model):  # type: ignore[misc]
+class Tournament(Model):
     id = fields.IntField(pk=True)
     name = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -16,7 +16,7 @@ class Tournament(Model):  # type: ignore[misc]
         ordering = ["name"]
 
 
-class Event(Model):  # type: ignore[misc]
+class Event(Model):
     id = fields.IntField(pk=True)
     name = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -32,7 +32,7 @@ class Event(Model):  # type: ignore[misc]
         ordering = ["name"]
 
 
-class Address(Model):  # type: ignore[misc]
+class Address(Model):
     city = fields.CharField(max_length=64)
     street = fields.CharField(max_length=128)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -43,7 +43,7 @@ class Address(Model):  # type: ignore[misc]
         ordering = ["city"]
 
 
-class Team(Model):  # type: ignore[misc]
+class Team(Model):
     id = fields.IntField(pk=True)
     name = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -81,8 +81,7 @@ async def cleanup() -> None:
 
 @get("/tournaments")
 async def get_tournaments() -> List[Tournament]:
-    tournaments = await Tournament.all()
-    return cast("List[Tournament]", tournaments)
+    return await Tournament.all()
 
 
 @get("/tournaments/{tournament_id:int}")

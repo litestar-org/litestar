@@ -63,7 +63,7 @@ def create_session_model(base: Type[Any], table_name: str = "session") -> Type[S
         A mapped model subclassing ``base`` and ``SessionModelMixin``
     """
 
-    class Model(base, SessionModelMixin):  # type: ignore[valid-type,misc]
+    class Model(base, SessionModelMixin):  # type: ignore[misc]
         __tablename__ = table_name
         id: Mapped[int] = sa.Column(sa.Integer, primary_key=True)  # pyright: ignore
 

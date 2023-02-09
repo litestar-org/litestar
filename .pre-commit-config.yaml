@@ -119,7 +119,7 @@ repos:
             jsbeautifier,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v0.991"
+    rev: "v1.0.0"
     hooks:
       - id: mypy
         exclude: "test_apps|docs|tools"
@@ -158,7 +158,7 @@ repos:
             jsbeautifier,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.292
+    rev: v1.1.293
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs"

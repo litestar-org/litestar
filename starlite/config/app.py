@@ -7,7 +7,7 @@ from starlite.connection import Request, WebSocket
 from starlite.datastructures import CacheControlHeader, ETag
 from starlite.di import Provide
 from starlite.events.listener import EventListener
-from starlite.plugins.base import PluginProtocol
+from starlite.plugins import PluginProtocol
 from starlite.types import (
     AfterExceptionHookHandler,
     AfterRequestHookHandler,
@@ -154,7 +154,7 @@ class AppConfig(BaseModel):
     parameters: ParametersMap
     """A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all application paths."""
     plugins: List[PluginProtocol]
-    """List of :class:`PluginProtocol <starlite.plugins.base.PluginProtocol>`."""
+    """List of :class:`SerializationPluginProtocol <starlite.plugins.base.SerializationPluginProtocol>`."""
     request_class: Optional[Type[Request]]
     """An optional subclass of :class:`Request <starlite.connection.request.Request>` to use for http connections."""
     response_class: Optional[ResponseType]
