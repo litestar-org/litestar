@@ -1,4 +1,4 @@
-name: docs
+name: Documentation Building
 on:
   workflow_run:
     workflows: ["ci"]
