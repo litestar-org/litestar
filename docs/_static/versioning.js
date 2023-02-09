@@ -7,6 +7,23 @@ const loadVersions = async () => {
 }
 
 
+const getCurrentVersion = (versions) => {
+    const baseURL = new URL(DOCUMENTATION_OPTIONS.URL_ROOT, window.location).href
+    const parts = window.location.href.replace(baseURL, "").split("/")
+    if (!parts.length) {
+        return null
+    }
+    const maybeVersion = parts[0]
+    if (maybeVersion === "lib") {
+        return versions.latest
+    }
+    if (versions.versions.includes(maybeVersion)) {
+        return maybeVersion
+    }
+    return null
+}
+
+
 const addVersionWarning = (currentVersion, latestVersion) => {
     if (currentVersion === latestVersion) {
         return
@@ -33,9 +50,8 @@ const addVersionWarning = (currentVersion, latestVersion) => {
 }
 
 
-const formatVersionName = (version, isLatest) => {
-    return version === "dev" ? version : "v" + version + (isLatest ? " (latest)" : "")
-}
+const formatVersionName = (version, isLatest) => version + (isLatest ? " (latest)" : "")
+
 
 const addVersionSelect = (currentVersion, versionSpec) => {
     const navEnd = document.getElementById("navbar-end")
@@ -54,7 +70,7 @@ const addVersionSelect = (currentVersion, versionSpec) => {
     dropdownToggle.classList.add("btn", "dropdown-toggle", "nav-item")
     dropdownToggle.setAttribute("data-toggle", "dropdown")
     dropdownToggle.setAttribute("type", "button")
-    dropdownToggle.textContent = formatVersionName(currentVersion, currentVersion === versionSpec.latest)
+    dropdownToggle.textContent = `Version: ${formatVersionName(currentVersion, currentVersion === versionSpec.latest)}`
     dropdown.appendChild(dropdownToggle)
 
     const dropdownContent = document.createElement("div")
@@ -79,11 +95,14 @@ const addVersionSelect = (currentVersion, versionSpec) => {
 
 
 const setupVersioning = (versions) => {
-    if (versions === null ){
+    if (versions === null) {
         return
     }
 
-    const currentVersion = DOCUMENTATION_OPTIONS.VERSION
+    const currentVersion = getCurrentVersion(versions)
+    if (currentVersion === null) {
+        return
+    }
 
     addVersionWarning(currentVersion, versions.latest)
     addVersionSelect(currentVersion, versions)
