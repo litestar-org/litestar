@@ -55,11 +55,10 @@ def make_version(version: str, push: bool) -> None:
     version_spec = add_to_versions_file(version)
     is_latest = version == version_spec["latest"]
 
-    clean_files(version_spec["versions"])
-
     docs_src_path = Path("docs/_build/html")
 
     shutil.copytree(docs_src_path / "lib", version, dirs_exist_ok=True)
+    keep_files = version_spec["versions"]
 
     if is_latest:
         for path in docs_src_path.iterdir():
@@ -67,8 +66,9 @@ def make_version(version: str, push: bool) -> None:
                 shutil.copytree(path, path.name, dirs_exist_ok=True)
             else:
                 shutil.copy2(path, ".")
+            keep_files.append(path.name)
 
-    shutil.rmtree("docs")
+    clean_files(keep_files)
 
     subprocess.run(["git", "add", "."])
     subprocess.run(["git", "commit", "-m", f"Automatic docs build for version {version!r}"])
