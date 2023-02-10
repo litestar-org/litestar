@@ -50,7 +50,7 @@ def test_delete_session(
     runner: "CliRunner", monkeypatch: "MonkeyPatch", mocker: "MockerFixture", mock_confirm_ask: "MagicMock"
 ) -> None:
     monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.memory_backend:app")
-    mock_delete = mocker.patch("starlite.middleware.session.memory_backend.MemoryBackend.delete")
+    mock_delete = mocker.patch("starlite.storage.memory_backend.MemoryStorageBackend.delete")
 
     result = runner.invoke(cli_command, ["sessions", "delete", "foo"])
 
@@ -80,7 +80,7 @@ def test_clear_sessions(
     runner: "CliRunner", monkeypatch: "MonkeyPatch", mocker: "MockerFixture", mock_confirm_ask: "MagicMock"
 ) -> None:
     monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.memory_backend:app")
-    mock_delete = mocker.patch("starlite.middleware.session.memory_backend.MemoryBackend.delete_all")
+    mock_delete = mocker.patch("starlite.storage.memory_backend.MemoryStorageBackend.delete_all")
 
     result = runner.invoke(cli_command, ["sessions", "clear"])
 

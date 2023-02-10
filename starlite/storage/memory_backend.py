@@ -4,43 +4,23 @@ from datetime import datetime, timedelta
 
 from anyio import Lock
 
-from .base import StorageBackend
-
-
-class StorageObject:
-    """A container class for cache data."""
-
-    def __init__(self, value: bytes, expiration: datetime | None = None) -> None:
-        self.value = value
-        self.expiration = expiration
-
-    @property
-    def expired(self) -> bool:
-        return self.expiration is not None and datetime.now() >= self.expiration
+from .base import StorageBackend, StorageObject
 
 
 class MemoryStorageBackend(StorageBackend):
     __slots__ = ("_store", "_lock")
 
-    def __init__(self, key_prefix: str | None = None) -> None:
-        super().__init__(key_prefix=key_prefix)
+    def __init__(self) -> None:
         self._store: dict[str, StorageObject] = {}
         self._lock = Lock()
 
-    def with_key_prefix(self, key_prefix: str) -> MemoryStorageBackend:
-        new = type(self)(key_prefix=key_prefix)
-        new._store = self._store
-        new._lock = self._lock
-        return new
-
     async def get(self, key: str) -> bytes | None:
-        key = self.make_key(key)
         async with self._lock:
             cache_obj = self._store.get(key)
 
         if cache_obj:
             if not cache_obj.expired:
-                return cache_obj.value
+                return cache_obj.data
 
             await self.delete(key)
 
@@ -51,17 +31,12 @@ class MemoryStorageBackend(StorageBackend):
         if expires:
             expiration = datetime.now() + timedelta(seconds=expires)
         async with self._lock:
-            self._store[self.make_key(key)] = StorageObject(value=value, expiration=expiration)
+            self._store[key] = StorageObject(data=value, expires=expiration)
 
     async def delete(self, key: str) -> None:
         async with self._lock:
-            self._store.pop(self.make_key(key), None)
+            self._store.pop(key, None)
 
     async def delete_all(self) -> None:
         async with self._lock:
-            if not self.key_prefix:
-                self._store.clear()
-            else:
-                for key in set(self._store.keys()):
-                    if key.startswith(self.key_prefix):
-                        self._store.pop(key)
+            self._store.clear()

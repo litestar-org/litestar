@@ -50,7 +50,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Returns:
             None
         """
-        await self.storage.set(session_id, data)
+        await self.storage.set(session_id, data, expires=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
         """Delete the data associated with ``session_id``. Fails silently if no such session-ID exists.

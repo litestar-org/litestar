@@ -102,13 +102,23 @@ async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> Non
 
 
 @pytest.fixture()
-def redis_storage_backend() -> RedisStorageBackend:
-    return RedisStorageBackend(redis=FakeRedis())
+def fake_redis() -> FakeRedis:
+    return FakeRedis()
 
 
 @pytest.fixture()
-def memcached_storage_backend() -> MemcachedStorageBackend:
-    return MemcachedStorageBackend(memcached=FakeAsyncMemcached())
+def fake_async_memcached() -> FakeAsyncMemcached:
+    return FakeAsyncMemcached()
+
+
+@pytest.fixture()
+def redis_storage_backend(fake_redis: FakeRedis) -> RedisStorageBackend:
+    return RedisStorageBackend(redis=fake_redis)
+
+
+@pytest.fixture()
+def memcached_storage_backend(fake_async_memcached: FakeAsyncMemcached) -> MemcachedStorageBackend:
+    return MemcachedStorageBackend(memcached=fake_async_memcached)
 
 
 @pytest.fixture()
