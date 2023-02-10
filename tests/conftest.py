@@ -1,64 +1,31 @@
 import importlib.util
 import sys
 from os import environ, urandom
-from pathlib import Path
-from sys import version_info
 from typing import (
     TYPE_CHECKING,
     Any,
     AsyncGenerator,
     Callable,
     Dict,
-    Generator,
     Optional,
     Tuple,
     TypeVar,
     Union,
-    cast,
 )
 from uuid import uuid4
 
-import fakeredis.aioredis  # pyright: ignore
-import pytest
 from piccolo.conf.apps import Finder
 from piccolo.table import create_db_tables, drop_db_tables
 from pydantic import SecretBytes
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.pool import StaticPool
 
-from starlite.cache import SimpleCacheBackend
 from starlite.middleware.session import SessionMiddleware
-from starlite.middleware.session.base import (
-    BaseSessionBackend,
+from starlite.middleware.session.base import BaseSessionBackend
+from starlite.middleware.session.client_side import CookieBackend, CookieBackendConfig
+from starlite.middleware.session.server_side import (
     ServerSideBackend,
     ServerSideSessionConfig,
 )
-from starlite.middleware.session.cookie_backend import (
-    CookieBackend,
-    CookieBackendConfig,
-)
-from starlite.middleware.session.file_backend import FileBackend, FileBackendConfig
-from starlite.middleware.session.memcached_backend import (
-    MemcachedBackend,
-    MemcachedBackendConfig,
-)
-from starlite.middleware.session.memory_backend import (
-    MemoryBackend,
-    MemoryBackendConfig,
-)
-from starlite.middleware.session.redis_backend import RedisBackend, RedisBackendConfig
-from starlite.middleware.session.sqlalchemy_backend import (
-    AsyncSQLAlchemyBackend,
-    SQLAlchemyBackend,
-    SQLAlchemyBackendConfig,
-    create_session_model,
-)
-from starlite.plugins.sql_alchemy import (
-    SQLAlchemyConfig,
-    SQLAlchemyEngineConfig,
-    SQLAlchemyPlugin,
-)
-from tests.mocks import FakeAsyncMemcached
+from starlite.storage.base import StorageBackend
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -75,6 +42,19 @@ if TYPE_CHECKING:
         ScopeSession,
         Send,
     )
+
+from pathlib import Path
+from typing import cast
+
+import pytest
+from _pytest.fixtures import FixtureRequest
+from fakeredis.aioredis import FakeRedis
+
+from starlite.storage.file_backend import FileStorageBackend
+from starlite.storage.memcached_backend import MemcachedStorageBackend
+from starlite.storage.memory_backend import MemoryStorageBackend
+from starlite.storage.redis_backend import RedisStorageBackend
+from tests.mocks import FakeAsyncMemcached
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
@@ -117,18 +97,40 @@ def anyio_backend(request: pytest.FixtureRequest) -> str:
     return request.param  # type: ignore[no-any-return]
 
 
-@pytest.fixture()
-def sqlalchemy_base() -> Any:
-    return declarative_base()
-
-
-@pytest.fixture()
-def sqlalchemy_session_model(sqlalchemy_base: Any) -> Any:
-    return create_session_model(sqlalchemy_base)
-
-
 async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
     pass
+
+
+@pytest.fixture()
+def redis_storage_backend() -> RedisStorageBackend:
+    return RedisStorageBackend(redis=FakeRedis())
+
+
+@pytest.fixture()
+def memcached_storage_backend() -> MemcachedStorageBackend:
+    return MemcachedStorageBackend(memcached=FakeAsyncMemcached())
+
+
+@pytest.fixture()
+def memory_storage_backend() -> MemoryStorageBackend:
+    return MemoryStorageBackend()
+
+
+@pytest.fixture()
+def file_storage_backend(tmp_path: Path) -> FileStorageBackend:
+    return FileStorageBackend(path=tmp_path)
+
+
+@pytest.fixture(
+    params=[
+        "redis_storage_backend",
+        "memcached_storage_backend",
+        "memory_storage_backend",
+        "file_storage_backend",
+    ]
+)
+def storage_backend(request: FixtureRequest) -> StorageBackend:
+    return cast("StorageBackend", request.getfixturevalue(request.param))
 
 
 @pytest.fixture
@@ -141,148 +143,39 @@ def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -
     return CookieBackend(config=cookie_session_backend_config)
 
 
-@pytest.fixture
-def memory_session_backend_config() -> MemoryBackendConfig:
-    return MemoryBackendConfig()
-
-
-@pytest.fixture
-def file_session_backend_config(tmpdir: Path) -> FileBackendConfig:
-    return FileBackendConfig(storage_path=tmpdir)
-
-
-@pytest.fixture
-def redis_session_backend_config() -> RedisBackendConfig:
-    return RedisBackendConfig(redis=fakeredis.aioredis.FakeRedis())
-
-
-engine_config = SQLAlchemyEngineConfig(connect_args={"check_same_thread": False}, poolclass=StaticPool)
-
-
-@pytest.fixture
-def sqlalchemy_session_backend_config(
-    sqlalchemy_session_model: Any, sqlalchemy_base: Any
-) -> Generator[SQLAlchemyBackendConfig, None, None]:
-    config = SQLAlchemyConfig(
-        connection_string="sqlite+pysqlite://",
-        use_async_engine=False,
-        engine_config=engine_config,
-    )
-    sqlalchemy_base.metadata.create_all(config.engine)
-    yield SQLAlchemyBackendConfig(plugin=SQLAlchemyPlugin(config=config), model=sqlalchemy_session_model)
-    sqlalchemy_base.metadata.drop_all(config.engine)
-
-
-@pytest.fixture
-async def async_sqlalchemy_session_backend_config(
-    sqlalchemy_session_model: Any, sqlalchemy_base: Any
-) -> AsyncGenerator[SQLAlchemyBackendConfig, None]:
-    config = SQLAlchemyConfig(connection_string="sqlite+aiosqlite://", engine_config=engine_config)
-    async with config.engine.begin() as conn:  # type: ignore
-        await conn.run_sync(sqlalchemy_base.metadata.create_all)  # pyright: ignore
-    yield SQLAlchemyBackendConfig(plugin=SQLAlchemyPlugin(config=config), model=sqlalchemy_session_model)
-    async with config.engine.begin() as conn:  # type: ignore
-        await conn.run_sync(sqlalchemy_base.metadata.drop_all)  # pyright: ignore
-
-
-@pytest.fixture
-def memcached_session_backend_config() -> MemcachedBackendConfig:
-    return MemcachedBackendConfig(memcached=FakeAsyncMemcached())
-
-
-@pytest.fixture
-def memory_session_backend(memory_session_backend_config: MemoryBackendConfig) -> MemoryBackend:
-    return MemoryBackend(config=memory_session_backend_config)
-
-
-@pytest.fixture
-def file_session_backend(file_session_backend_config: FileBackendConfig) -> FileBackend:
-    return FileBackend(config=file_session_backend_config)
-
-
-@pytest.fixture
-def redis_session_backend(redis_session_backend_config: RedisBackendConfig) -> RedisBackend:
-    return RedisBackend(config=redis_session_backend_config)
-
-
-@pytest.fixture
-def memcached_session_backend(memcached_session_backend_config: MemcachedBackendConfig) -> MemcachedBackend:
-    return MemcachedBackend(config=memcached_session_backend_config)
-
-
-@pytest.fixture
-def sqlalchemy_session_backend(sqlalchemy_session_backend_config: SQLAlchemyBackendConfig) -> SQLAlchemyBackend:
-    return SQLAlchemyBackend(config=sqlalchemy_session_backend_config)
-
-
-@pytest.fixture
-async def async_sqlalchemy_session_backend(
-    async_sqlalchemy_session_backend_config: SQLAlchemyBackendConfig,
-) -> AsyncSQLAlchemyBackend:
-    return AsyncSQLAlchemyBackend(config=async_sqlalchemy_session_backend_config)
-
-
 @pytest.fixture(
     params=[
         pytest.param("cookie_session_backend_config", id="cookie"),
-        pytest.param("memory_session_backend_config", id="memory"),
-        pytest.param("file_session_backend_config", id="file"),
-        pytest.param("redis_session_backend_config", id="redis"),
-        pytest.param("memcached_session_backend_config", id="memcached"),
-        pytest.param("sqlalchemy_session_backend_config", id="sqlalchemy"),
-        pytest.param("async_sqlalchemy_session_backend_config", id="sqlalchemy-async"),
+        pytest.param("server_side_session_config", id="server-side"),
     ]
 )
 def session_backend_config(request: pytest.FixtureRequest) -> Union[ServerSideSessionConfig, CookieBackendConfig]:
     return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.getfixturevalue(request.param))
 
 
-@pytest.fixture(
-    params=[
-        pytest.param("cookie_session_backend_config", id="cookie"),
-        pytest.param("memory_session_backend_config", id="memory"),
-        pytest.param("file_session_backend_config", id="file"),
-        pytest.param("redis_session_backend_config", id="redis"),
-        pytest.param("memcached_session_backend_config", id="memcached"),
-        pytest.param("sqlalchemy_session_backend_config", id="sqlalchemy"),
-        pytest.param("async_sqlalchemy_session_backend_config", id="sqlalchemy-async"),
-    ]
-)
-def session_backend_config_async_safe(
-    request: pytest.FixtureRequest,
-) -> Union[ServerSideSessionConfig, CookieBackendConfig]:
-    if version_info < (3, 10) and request.param == "redis_session_backend_config":
-        return pytest.skip("")
-    return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.getfixturevalue(request.param))
+@pytest.fixture()
+def server_side_session_config(storage_backend: StorageBackend) -> ServerSideSessionConfig:
+    return ServerSideSessionConfig(storage=storage_backend)
+
+
+@pytest.fixture()
+def server_side_session_backend(server_side_session_config: ServerSideSessionConfig) -> ServerSideBackend:
+    return ServerSideBackend(config=server_side_session_config)
 
 
 @pytest.fixture(
     params=[
         pytest.param("cookie_session_backend", id="cookie"),
-        pytest.param("memory_session_backend", id="memory"),
-        pytest.param("file_session_backend", id="file"),
-        pytest.param("redis_session_backend", id="redis"),
-        pytest.param("memcached_session_backend", id="memcached"),
-        pytest.param("sqlalchemy_session_backend", id="sqlalchemy"),
-        pytest.param("async_sqlalchemy_session_backend", id="sqlalchemy-async"),
+        pytest.param("server_side_session_backend", id="server-side"),
     ]
 )
 def session_backend(request: pytest.FixtureRequest) -> BaseSessionBackend:
     return cast("BaseSessionBackend", request.getfixturevalue(request.param))
 
 
-@pytest.fixture(
-    params=[
-        pytest.param("memory_session_backend", id="memory"),
-        pytest.param("file_session_backend", id="file"),
-        pytest.param("redis_session_backend", id="redis"),
-        pytest.param("memcached_session_backend", id="memcached"),
-        pytest.param("sqlalchemy_session_backend", id="sqlalchemy"),
-        pytest.param("async_sqlalchemy_session_backend", id="sqlalchemy-async"),
-    ]
-)
-def server_side_session_backend(request: pytest.FixtureRequest) -> ServerSideBackend:
-    return cast("ServerSideBackend", request.getfixturevalue(request.param))
+@pytest.fixture()
+def session_backend_config_memory(memory_storage_backend: MemoryStorageBackend) -> ServerSideSessionConfig:
+    return ServerSideSessionConfig(storage=memory_storage_backend)
 
 
 @pytest.fixture
@@ -388,5 +281,5 @@ def create_module(tmp_path: Path, monkeypatch: "MonkeyPatch") -> "Callable[[str]
 
 
 @pytest.fixture(scope="module")
-def mock_db() -> SimpleCacheBackend:
-    return SimpleCacheBackend()
+def mock_db() -> MemoryStorageBackend:
+    return MemoryStorageBackend()

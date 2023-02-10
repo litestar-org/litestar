@@ -7,7 +7,7 @@ from starlite.types import Empty
 
 if TYPE_CHECKING:
     from starlite.middleware.session.base import BaseBackendConfig
-    from starlite.middleware.session.memory_backend import MemoryBackendConfig
+    from starlite.middleware.session.server_side import ServerSideSessionConfig
 
 
 def test_session_middleware_not_installed_raises() -> None:
@@ -54,7 +54,7 @@ def test_integration(session_backend_config: "BaseBackendConfig") -> None:
         assert response.json() == {"has_session": True}
 
 
-def test_set_empty(session_backend_config_async_safe: "BaseBackendConfig") -> None:
+def test_set_empty(session_backend_config: "BaseBackendConfig") -> None:
     @post("/create-session")
     def create_session_handler(request: Request) -> None:
         request.set_session({"foo": "bar"})
@@ -65,8 +65,8 @@ def test_set_empty(session_backend_config_async_safe: "BaseBackendConfig") -> No
 
     with create_test_client(
         route_handlers=[create_session_handler, empty_session_handler],
-        middleware=[session_backend_config_async_safe.middleware],
-        session_config=session_backend_config_async_safe,
+        middleware=[session_backend_config.middleware],
+        session_config=session_backend_config,
     ) as client:
         client.post("/create-session")
         client.post("/empty-session")
@@ -77,8 +77,8 @@ def get_session_installed(request: Request) -> Dict[str, bool]:
     return {"has_session": "session" in request.scope}
 
 
-def test_middleware_exclude_pattern(memory_session_backend_config: "MemoryBackendConfig") -> None:
-    memory_session_backend_config.exclude = ["north", "south"]
+def test_middleware_exclude_pattern(session_backend_config_memory: "ServerSideSessionConfig") -> None:
+    session_backend_config_memory.exclude = ["north", "south"]
 
     @get("/north")
     def north_handler(request: Request) -> Dict[str, bool]:
@@ -94,7 +94,7 @@ def test_middleware_exclude_pattern(memory_session_backend_config: "MemoryBacken
 
     with create_test_client(
         route_handlers=[north_handler, south_handler, west_handler],
-        middleware=[memory_session_backend_config.middleware],
+        middleware=[session_backend_config_memory.middleware],
     ) as client:
         response = client.get("/north")
         assert response.json() == {"has_session": False}
@@ -106,7 +106,7 @@ def test_middleware_exclude_pattern(memory_session_backend_config: "MemoryBacken
         assert response.json() == {"has_session": True}
 
 
-def test_middleware_exclude_flag(memory_session_backend_config: "MemoryBackendConfig") -> None:
+def test_middleware_exclude_flag(session_backend_config_memory: "ServerSideSessionConfig") -> None:
     @get("/north")
     def north_handler(request: Request) -> Dict[str, bool]:
         return get_session_installed(request)
@@ -117,7 +117,7 @@ def test_middleware_exclude_flag(memory_session_backend_config: "MemoryBackendCo
 
     with create_test_client(
         route_handlers=[north_handler, south_handler],
-        middleware=[memory_session_backend_config.middleware],
+        middleware=[session_backend_config_memory.middleware],
     ) as client:
         response = client.get("/north")
         assert response.json() == {"has_session": True}
@@ -126,8 +126,8 @@ def test_middleware_exclude_flag(memory_session_backend_config: "MemoryBackendCo
         assert response.json() == {"has_session": False}
 
 
-def test_middleware_exclude_custom_key(memory_session_backend_config: "MemoryBackendConfig") -> None:
-    memory_session_backend_config.exclude_opt_key = "my_exclude_key"
+def test_middleware_exclude_custom_key(session_backend_config_memory: "ServerSideSessionConfig") -> None:
+    session_backend_config_memory.exclude_opt_key = "my_exclude_key"
 
     @get("/north")
     def north_handler(request: Request) -> Dict[str, bool]:
@@ -139,7 +139,7 @@ def test_middleware_exclude_custom_key(memory_session_backend_config: "MemoryBac
 
     with create_test_client(
         route_handlers=[north_handler, south_handler],
-        middleware=[memory_session_backend_config.middleware],
+        middleware=[session_backend_config_memory.middleware],
     ) as client:
         response = client.get("/north")
         assert response.json() == {"has_session": True}

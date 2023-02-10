@@ -9,7 +9,6 @@ from starlette.status import (
 )
 
 from starlite import Request, Starlite, delete, get, post
-from starlite.middleware.session.memory_backend import MemoryBackendConfig
 from starlite.security.session_auth import SessionAuth
 from starlite.testing import create_test_client
 from tests import User, UserFactory
@@ -26,9 +25,11 @@ def retrieve_user_handler(session_data: Dict[str, Any], _: "ASGIConnection") -> 
     return None
 
 
-def test_authentication() -> None:
+def test_authentication(session_backend_config_memory) -> None:
     session_auth = SessionAuth[Any](
-        retrieve_user_handler=retrieve_user_handler, exclude=["login"], session_backend_config=MemoryBackendConfig()
+        retrieve_user_handler=retrieve_user_handler,
+        exclude=["login"],
+        session_backend_config=session_backend_config_memory,
     )
 
     @post("/login")
@@ -69,11 +70,10 @@ def test_authentication() -> None:
         assert response.status_code == HTTP_401_UNAUTHORIZED, response.json()
 
 
-def test_session_auth_openapi() -> None:
-    backend_config = MemoryBackendConfig()
+def test_session_auth_openapi(session_backend_config_memory) -> None:
     session_auth = SessionAuth[Any](
         retrieve_user_handler=retrieve_user_handler,
-        session_backend_config=backend_config,
+        session_backend_config=session_backend_config_memory,
     )
     app = Starlite(on_app_init=[session_auth.on_app_init])
     assert app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
@@ -86,7 +86,7 @@ def test_session_auth_openapi() -> None:
                 "sessionCookie": {
                     "type": "apiKey",
                     "description": "Session cookie authentication.",
-                    "name": backend_config.key,
+                    "name": session_backend_config_memory.key,
                     "security_scheme_in": "cookie",
                 }
             }

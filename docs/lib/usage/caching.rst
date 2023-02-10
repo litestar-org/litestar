@@ -13,7 +13,7 @@ Builtin cache backends
 
 Starlite comes with the following builtin cache backends:
 
-By default, Starlite uses the :class:`SimpleCacheBackend <starlite.cache.SimpleCacheBackend>`, which stores values
+By default, Starlite uses the :class:`MemoryStorageBackend <starlite.cache.MemoryStorageBackend>`, which stores values
 in local memory with the added security of async locks. This is fine for local development, but it's not a good solution
 for production environments.
 

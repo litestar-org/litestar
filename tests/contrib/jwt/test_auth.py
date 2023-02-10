@@ -15,7 +15,7 @@ from starlite.testing import create_test_client
 from tests import User, UserFactory
 
 if TYPE_CHECKING:
-    from starlite.cache import SimpleCacheBackend
+    from starlite.storage.memory_backend import MemoryStorageBackend
     from starlite.connection import ASGIConnection
 
 
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 )
 @settings(deadline=None)
 async def test_jwt_auth(
-    mock_db: "SimpleCacheBackend",
+    mock_db: MemoryStorageBackend,
     algorithm: str,
     auth_header: str,
     default_token_expiration: timedelta,
@@ -51,7 +51,7 @@ async def test_jwt_auth(
 ) -> None:
     user = UserFactory.build()
 
-    await mock_db.set(str(user.id), user, 120)
+    await mock_db.set(str(user.id), user, 120)  # type: ignore[arg-type]
 
     async def retrieve_user_handler(token: Token, _: "ASGIConnection") -> Any:
         return await mock_db.get(token.sub)
@@ -137,7 +137,7 @@ async def test_jwt_auth(
 )
 @settings(deadline=None)
 async def test_jwt_cookie_auth(
-    mock_db: "SimpleCacheBackend",
+    mock_db: MemoryStorageBackend,
     algorithm: str,
     auth_header: str,
     auth_cookie: str,
@@ -151,7 +151,7 @@ async def test_jwt_cookie_auth(
 ) -> None:
     user = UserFactory.build()
 
-    await mock_db.set(str(user.id), user, 120)
+    await mock_db.set(str(user.id), user, 120)  # type: ignore[arg-type]
 
     async def retrieve_user_handler(token: Token, connection: Any) -> Any:
         assert connection
@@ -315,12 +315,10 @@ def test_jwt_auth_openapi() -> None:
     }
 
 
-async def test_oauth2_password_bearer_auth_openapi(
-    mock_db: "SimpleCacheBackend",
-) -> None:
+async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStorageBackend") -> None:
     user = UserFactory.build()
 
-    await mock_db.set(str(user.id), user, 120)
+    await mock_db.set(str(user.id), user, 120)  # type: ignore[arg-type]
 
     async def retrieve_user_handler(token: Token, connection: Any) -> Any:
         assert connection

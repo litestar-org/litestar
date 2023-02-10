@@ -4,7 +4,7 @@ from starlite import Starlite
 from starlite.cli.commands.sessions import get_session_backend
 from starlite.cli.main import starlite_group as cli_command
 from starlite.middleware.rate_limit import RateLimitConfig
-from starlite.middleware.session.memory_backend import MemoryBackendConfig
+from starlite.middleware.session.server_side import ServerSideSessionConfig
 
 if TYPE_CHECKING:
     from unittest.mock import MagicMock
@@ -13,9 +13,11 @@ if TYPE_CHECKING:
     from click.testing import CliRunner
     from pytest_mock import MockerFixture
 
+    from starlite.storage.memory_backend import MemoryStorageBackend
 
-def test_get_session_backend() -> None:
-    session_middleware = MemoryBackendConfig().middleware
+
+def test_get_session_backend(memory_storage_backend: "MemoryStorageBackend") -> None:
+    session_middleware = ServerSideSessionConfig(storage=memory_storage_backend).middleware
     app = Starlite(
         [],
         middleware=[

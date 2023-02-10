@@ -298,10 +298,10 @@ and load the appropriate data from the storage backend.
 File storage
 ~~~~~~~~~~~~
 
-The :class:`FileBackend <starlite.middleware.session.file_backend.FileBackend>` will store session data
+The :class:`FileStorageBackend <starlite.middleware.session.file_backend.FileStorageBackend>` will store session data
 in files on disk, alongside some metadata. Files containing expired sessions will only be deleted
 when trying to access them. Expired session files can be manually deleted using the
-:meth:`delete_expired <starlite.middleware.session.file_backend.FileBackend.delete_expired>` method.
+:meth:`delete_expired <starlite.middleware.session.file_backend.FileStorageBackend.delete_expired>` method.
 
 .. literalinclude:: /examples/middleware/session/file_backend.py
     :caption: file_backend.py

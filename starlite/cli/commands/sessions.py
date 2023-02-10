@@ -5,7 +5,7 @@ from starlite import Starlite
 from starlite.cli.utils import StarliteCLIException, StarliteGroup, console
 from starlite.middleware import DefineMiddleware
 from starlite.middleware.session import SessionMiddleware
-from starlite.middleware.session.base import ServerSideBackend
+from starlite.middleware.session.server_side import ServerSideBackend
 from starlite.utils import is_class_and_subclass
 
 
@@ -46,7 +46,9 @@ def clear_sessions_command(app: Starlite) -> None:
     import anyio
 
     backend = get_session_backend(app)
+    if not hasattr(backend.storage, "delete_all"):
+        raise StarliteCLIException(f"{type(backend.storage)} does not support clearing all sessions")
 
     if Confirm.ask("[red]Delete all sessions?"):
-        anyio.run(backend.delete_all)
+        anyio.run(backend.storage.delete_all)
         console.print("[green]All active sessions deleted")
