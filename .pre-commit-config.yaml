@@ -154,6 +154,7 @@ repos:
             types-redis,
             uvicorn,
             jsbeautifier,
+            fakeredis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.294
@@ -198,6 +199,7 @@ repos:
             structlog,
             uvicorn,
             jsbeautifier,
+            fakeredis,
           ]
   - repo: local
     hooks:
