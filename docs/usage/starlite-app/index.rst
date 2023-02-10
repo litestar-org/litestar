@@ -11,7 +11,7 @@ is generally placed in a file named `main.py` at the project's root directory.
 That said, creating the root app is pretty straightforward & the only `required` argument is a list of
 :class:`Controllers <.controller.Controller>`, :class:`Routers <.router.Router>` or
 :class:`Route Handlers <.handlers.base.BaseRouteHandler>`. The later section of the documentation takes a more
-comprehensive take on how to use the said class instances. But here's a quick sneak peek into a simple standalone
+comprehensive take on how to use the said class instances. But here's a quick peek into a simple standalone
 Starlite application:
 
 .. literalinclude:: /examples/hello_world.py
