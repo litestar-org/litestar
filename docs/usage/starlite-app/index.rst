@@ -8,7 +8,7 @@ is generally placed in a file named `main.py` at the project's root directory.
    Its just a standard practice to name the "root" Python file in a project as `main.py`. But you are free to name it
    anything else like `app.py` or something else.
 
-That said, creating the root app is pretty straightforward & the only `required` argument is a list of
+That said, creating the root app is pretty straightforward and the only `required` argument is a list of
 :class:`Controllers <.controller.Controller>`, :class:`Routers <.router.Router>` or
 :class:`Route Handlers <.handlers.base.BaseRouteHandler>`. The later section of the documentation takes a more
 comprehensive take on how to use the said class instances. But here's a quick peek into a simple standalone
