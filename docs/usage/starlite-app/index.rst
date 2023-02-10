@@ -24,7 +24,7 @@ Routers & Router Handlers should be registered on it.
 .. seealso::
    You can learn more about registering routes at: :ref:`usage/routing:Registering Routes`
 
-Starlite also provides additional functionalities like managing application state, handling static files, logging & much
+Starlite also provides additional functionalities like managing application state, handling static files, logging and much
 more through this ``app`` instance as well. The next few chapters of the documentations will shed a more detailed look into
 how you can use those functionalities in your Starlite project as well.
 
