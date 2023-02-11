@@ -6,11 +6,11 @@ import pytest
 from starlite import Cookie, HttpMethod, create_test_client
 from starlite.datastructures import MultiDict
 from starlite.parsers import (
+    _parse_headers,
     parse_cookie_string,
+    parse_headers,
     parse_query_string,
     parse_url_encoded_form_data,
-    parse_headers,
-    _parse_headers,
 )
 from starlite.testing import RequestFactory
 
@@ -109,7 +109,7 @@ def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[st
         assert parsed_query == values
 
 
-def test_parse_headers():
+def test_parse_headers() -> None:
     """Test that headers are parsed correctly."""
     headers = [
         [b"Host", b"localhost:8000"],
@@ -126,7 +126,7 @@ def test_parse_headers():
     assert parsed["Cookie"] == "foo=bar; bar=baz"
     assert parsed["Content-Type"] == "application/x-www-form-urlencoded"
     assert parsed["Content-Length"] == "12"
-    # demonstrate that calling the private function with lists (as ASGI) specifies
+    # demonstrate that calling the private function with lists (as ASGI specifies)
     # does raise an error
     with pytest.raises(TypeError):
-        _parse_headers(headers)
+        _parse_headers(headers)  # type: ignore[arg-type]
