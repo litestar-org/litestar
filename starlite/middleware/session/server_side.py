@@ -1,5 +1,5 @@
 import secrets
-from typing import Any, Dict, Type
+from typing import Any, Dict, Optional, Type
 
 from starlite import ASGIConnection, Cookie
 from starlite.datastructures import MutableScopeHeaders
@@ -26,7 +26,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         super().__init__(config=config)
         self.storage = config.storage
 
-    async def get(self, session_id: str) -> bytes | None:
+    async def get(self, session_id: str) -> Optional[bytes]:
         """Retrieve data associated with ``session_id``.
 
         Args:
@@ -92,9 +92,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         scope = connection.scope
         headers = MutableScopeHeaders.from_message(message)
         session_id = connection.cookies.get(self.config.key)
-        if session_id == "null":
-            session_id = None
-        if not session_id:
+        if not session_id or session_id == "null":
             session_id = self.generate_session_id()
 
         cookie_params = self.config.dict(

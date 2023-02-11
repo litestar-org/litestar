@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from msgspec import Struct
 from msgspec.msgpack import decode as msgpack_decode
@@ -45,7 +45,7 @@ class NamespacedStorageBackend(StorageBackend):
 
 
 class StorageObject(Struct):
-    expires: datetime | None
+    expires: Optional[datetime]
     data: bytes
 
     @property
