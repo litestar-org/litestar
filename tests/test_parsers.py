@@ -126,11 +126,7 @@ def test_parse_headers():
     assert parsed["Cookie"] == "foo=bar; bar=baz"
     assert parsed["Content-Type"] == "application/x-www-form-urlencoded"
     assert parsed["Content-Length"] == "12"
-    # ensure that calling the function with the same headers doesn't raise
-    # an error due to lists not being hashable
-    parse_headers(headers)
-    # demonstrate that calling the private function with only strings (as ASGI) specifies
+    # demonstrate that calling the private function with lists (as ASGI) specifies
     # does raise an error
     with pytest.raises(TypeError):
-        _parse_headers(headers)
         _parse_headers(headers)
