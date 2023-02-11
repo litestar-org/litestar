@@ -4,6 +4,10 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import TYPE_CHECKING
 
+from msgspec import Struct
+from msgspec.msgpack import decode as msgpack_decode
+from msgspec.msgpack import encode as msgpack_encode
+
 from starlite.types import Empty, EmptyType
 
 if TYPE_CHECKING:
@@ -40,13 +44,17 @@ class NamespacedStorageBackend(StorageBackend):
         pass
 
 
-class StorageObject:
-    """A container class for cache data."""
-
-    def __init__(self, data: bytes, expires: datetime | None = None) -> None:
-        self.data = data
-        self.expires = expires
+class StorageObject(Struct):
+    expires: datetime | None
+    data: bytes
 
     @property
     def expired(self) -> bool:
         return self.expires is not None and datetime.now() >= self.expires
+
+    def to_bytes(self) -> bytes:
+        return msgpack_encode(self)
+
+    @classmethod
+    def from_bytes(cls, raw: bytes) -> StorageObject:
+        return msgpack_decode(raw, type=cls)

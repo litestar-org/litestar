@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pickle
 import shutil
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
@@ -26,8 +25,7 @@ class FileStorageBackend(StorageBackend):
     @staticmethod
     async def _load_from_path(path: Path) -> StorageObject:
         data = await path.read_bytes()
-        stored_obj: StorageObject = pickle.loads(data)  # nosec # noqa: SCS113
-        return stored_obj
+        return StorageObject.from_bytes(data)
 
     async def get(self, key: str) -> bytes | None:
         path = self.path / key
@@ -45,12 +43,12 @@ class FileStorageBackend(StorageBackend):
     async def set(self, key: str, value: bytes, expires: int | None = None) -> None:
         await self.path.mkdir(exist_ok=True)
         path = self.path / key
-        wrapped_data = StorageObject(
+        storage_obj = StorageObject(
             expires=(datetime.now() + timedelta(seconds=expires)) if expires else None,
             data=value,
         )
         async with self._lock:
-            await path.write_bytes(pickle.dumps(wrapped_data))
+            await path.write_bytes(storage_obj.to_bytes())
 
     async def delete(self, key: str) -> None:
         path = self.path / key
