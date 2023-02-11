@@ -20,7 +20,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-81-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-82-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -388,6 +388,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jenish2014"><img src="https://avatars.githubusercontent.com/u/9599888?v=4?s=100" width="100px;" alt="Jenish"/><br /><sub><b>Jenish</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=jenish2014" title="Code">💻</a> <a href="https://github.com/starlite-api/starlite/commits?author=jenish2014" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/chris-telemetry"><img src="https://avatars.githubusercontent.com/u/78052999?v=4?s=100" width="100px;" alt="chris-telemetry"/><br /><sub><b>chris-telemetry</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=chris-telemetry" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://wardpearce.com"><img src="https://avatars.githubusercontent.com/u/27844174?v=4?s=100" width="100px;" alt="Ward"/><br /><sub><b>Ward</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/issues?q=author%3AWardPearce" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://knowsuchagency.com"><img src="https://avatars.githubusercontent.com/u/11974795?v=4?s=100" width="100px;" alt="Stephan Fitzpatrick"/><br /><sub><b>Stephan Fitzpatrick</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/issues?q=author%3Aknowsuchagency" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
