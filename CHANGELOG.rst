@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.51.1
+------
+
+- Fix critical bug in parsing headers @knowsuchagency
+
 1.51.0
 -------
 
