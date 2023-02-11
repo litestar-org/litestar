@@ -779,6 +779,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "knowsuchagency",
+      "name": "Stephan Fitzpatrick",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11974795?v=4",
+      "profile": "https://knowsuchagency.com",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
