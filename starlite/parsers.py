@@ -65,5 +65,6 @@ def parse_headers(headers: Tuple[Tuple[bytes, bytes], ...]) -> Dict[str, str]:
     """
     return {k.decode(): v.decode() for k, v in headers}
 
-if not "AWS_EXECUTION_ENV" in os.environ:
+
+if "AWS_EXECUTION_ENV" not in os.environ:
     parse_headers = lru_cache(1024)(parse_headers)
