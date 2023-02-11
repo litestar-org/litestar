@@ -71,5 +71,4 @@ def parse_headers(headers: Iterable[Union[Tuple[bytes, bytes], List[bytes]]]) ->
     Since the ASGI protocol only allows for lists (not tuples) which cannot be hashed,
     this function will convert the headers to a tuple of tuples before invoking the cached function.
     """
-    headers = tuple(tuple(header) for header in headers)  # type: ignore[misc]
-    return _parse_headers(headers)
+    return _parse_headers(tuple(tuple(h) for h in headers))
