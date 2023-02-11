@@ -34,8 +34,12 @@ class MemcachedStorageBackend(NamespacedStorageBackend):
     async def set(self, key: str, value: bytes, expires: int | None = None) -> None:
         await self._memcached.set(self.make_key(key).encode("utf-8"), value, exptime=expires or 0)
 
-    async def get(self, key: str) -> bytes | None:
-        return await self._memcached.get(self.make_key(key).encode("utf-8"))
+    async def get(self, key: str, renew: int | None = None) -> bytes | None:
+        encoded_key = self.make_key(key).encode("utf-8")
+        data = await self._memcached.get(encoded_key)
+        if renew:
+            await self._memcached.touch(encoded_key, renew)
+        return data  # noqa: R504
 
     async def delete(self, key: str) -> None:
         await self._memcached.delete(self.make_key(key).encode("utf-8"))

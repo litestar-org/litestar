@@ -27,15 +27,18 @@ class FileStorageBackend(StorageBackend):
         data = await path.read_bytes()
         return StorageObject.from_bytes(data)
 
-    async def get(self, key: str) -> bytes | None:
+    async def get(self, key: str, renew: int | None = None) -> bytes | None:
         path = self.path / key
         async with self._lock:
             if not await path.exists():
                 return None
 
-            wrapped_data = await self._load_from_path(path)
-            if not wrapped_data.expired:
-                return wrapped_data.data
+            storage_obj = await self._load_from_path(path)
+            if not storage_obj.expired:
+                if renew and storage_obj.expires:
+                    storage_obj.expires = datetime.now() + timedelta(seconds=renew)
+                    await path.write_bytes(storage_obj.to_bytes())
+                return storage_obj.data
             await path.unlink()
 
         return None

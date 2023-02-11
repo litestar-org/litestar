@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import Optional, TYPE_CHECKING
 
 from msgspec import Struct
 from msgspec.msgpack import decode as msgpack_decode
@@ -20,7 +20,7 @@ class StorageBackend(ABC):  # pragma: no cover
         raise NotImplementedError
 
     @abstractmethod
-    async def get(self, key: str) -> bytes | None:
+    async def get(self, key: str, renew: int | None = None) -> bytes | None:
         raise NotImplementedError
 
     @abstractmethod

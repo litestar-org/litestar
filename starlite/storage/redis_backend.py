@@ -43,8 +43,14 @@ class RedisStorageBackend(NamespacedStorageBackend):
     async def set(self, key: str, value: bytes, expires: int | None = None) -> None:
         await self._redis.set(self.make_key(key), value, ex=expires)
 
-    async def get(self, key: str) -> bytes | None:
-        return await self._redis.get(self.make_key(key))
+    async def get(self, key: str, renew: int | None = None) -> bytes | None:
+        key = self.make_key(key)
+        data = await self._redis.get(key)
+        if renew:
+            ttl = await self._redis.ttl(key)
+            if ttl > 0:  # ensure an initial expiry time was set
+                await self._redis.expire(key, renew)
+        return data  # noqa: R504
 
     async def delete(self, key: str) -> None:
         await self._redis.delete(self.make_key(key))

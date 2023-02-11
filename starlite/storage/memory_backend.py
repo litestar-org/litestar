@@ -14,15 +14,19 @@ class MemoryStorageBackend(StorageBackend):
         self._store: dict[str, StorageObject] = {}
         self._lock = Lock()
 
-    async def get(self, key: str) -> bytes | None:
+    async def get(self, key: str, renew: int | None = None) -> bytes | None:
         async with self._lock:
-            cache_obj = self._store.get(key)
+            storage_obj = self._store.get(key)
 
-        if cache_obj:
-            if not cache_obj.expired:
-                return cache_obj.data
+            if storage_obj:
+                if storage_obj.expired:
+                    self._store.pop(key)
+                    return None
 
-            await self.delete(key)
+                if renew and storage_obj.expires:
+                    storage_obj.expires = datetime.now() + timedelta(seconds=renew)
+
+                return storage_obj.data
 
         return None
 
@@ -30,6 +34,7 @@ class MemoryStorageBackend(StorageBackend):
         expiration: datetime | None = None
         if expires:
             expiration = datetime.now() + timedelta(seconds=expires)
+
         async with self._lock:
             self._store[key] = StorageObject(data=value, expires=expiration)
 

@@ -32,3 +32,8 @@ class FakeAsyncMemcached(Client):
 
     def ttl(self, key: Union[bytes, str]) -> Optional[int]:
         return self._expirations.get(key.decode() if isinstance(key, bytes) else key)
+
+    async def touch(self, key: Union[bytes, str], exptime: int) -> None:  # type: ignore[override]
+        normalised_key = key.decode() if isinstance(key, bytes) else key
+        self._expirations[normalised_key] = exptime
+        self._added_times[normalised_key] = time.monotonic()
