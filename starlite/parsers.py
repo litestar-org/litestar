@@ -1,7 +1,7 @@
 import os
 from functools import lru_cache
 from http.cookies import _unquote as unquote_cookie
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, Iterable
 from urllib.parse import unquote
 
 from fast_query_parsers import parse_query_string as fast_parse_query_string
@@ -53,8 +53,8 @@ def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
     return output
 
 
-# @lru_cache(1024)
-def parse_headers(headers: Tuple[Tuple[bytes, bytes], ...]) -> Dict[str, str]:
+@lru_cache(1024)
+def _parse_headers(headers: Tuple[Tuple[bytes, bytes], ...]) -> Dict[str, str]:
     """Parse ASGI headers into a dict of string keys and values.
 
     Args:
@@ -66,5 +66,12 @@ def parse_headers(headers: Tuple[Tuple[bytes, bytes], ...]) -> Dict[str, str]:
     return {k.decode(): v.decode() for k, v in headers}
 
 
-if "AWS_EXECUTION_ENV" not in os.environ:
-    parse_headers = lru_cache(1024)(parse_headers)
+def parse_headers(headers: Iterable[Iterable[Tuple[bytes, bytes]]]) -> Dict[str, str]:
+    """
+    Parse ASGI headers into a dict of string keys and values.
+
+    Since the ASGI protocol only allows for lists (not tuples) which cannot be hashed,
+    this function will convert the headers to a tuple of tuples before invoking the cached function.
+    """
+    headers = tuple(tuple(header) for header in headers)
+    return _parse_headers(headers)

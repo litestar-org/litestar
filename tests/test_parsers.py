@@ -9,6 +9,8 @@ from starlite.parsers import (
     parse_cookie_string,
     parse_query_string,
     parse_url_encoded_form_data,
+    parse_headers,
+    _parse_headers,
 )
 from starlite.testing import RequestFactory
 
@@ -105,3 +107,30 @@ def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[st
         request = client.build_request(method=HttpMethod.GET, url="http://www.example.com", params=dict(values))
         parsed_query = parse_query_string(request.url.query)
         assert parsed_query == values
+
+
+def test_parse_headers():
+    """Test that headers are parsed correctly."""
+    headers = [
+        [b"Host", b"localhost:8000"],
+        [b"User-Agent", b"curl/7.64.1"],
+        [b"Accept", b"*/*"],
+        [b"Cookie", b"foo=bar; bar=baz"],
+        [b"Content-Type", b"application/x-www-form-urlencoded"],
+        [b"Content-Length", b"12"],
+    ]
+    parsed = parse_headers(headers)
+    assert parsed["Host"] == "localhost:8000"
+    assert parsed["User-Agent"] == "curl/7.64.1"
+    assert parsed["Accept"] == "*/*"
+    assert parsed["Cookie"] == "foo=bar; bar=baz"
+    assert parsed["Content-Type"] == "application/x-www-form-urlencoded"
+    assert parsed["Content-Length"] == "12"
+    # ensure that calling the function with the same headers doesn't raise
+    # an error due to lists not being hashable
+    parse_headers(headers)
+    # demonstrate that calling the private function with only strings (as ASGI) specifies
+    # does raise an error
+    with pytest.raises(TypeError):
+        _parse_headers(headers)
+        _parse_headers(headers)
