@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from starlite import HttpMethod, Request, Starlite, get, post
 from starlite.datastructures import Cookie, MultiDict
 from starlite.enums import ParamType, RequestEncodingType
+from starlite.middleware.session.server_side import ServerSideSessionConfig
+from starlite.storage.redis_backend import RedisStorageBackend
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from tests import Pet, PetFactory
 
@@ -190,6 +192,20 @@ async def test_request_factory_post_put_patch(factory: Callable, method: HttpMet
     assert json.loads(body) == pet.dict()
 
 
+@pytest.fixture()
+def skip_for_trio_redis(
+    session_backend_config: "BaseBackendConfig",
+    test_client_backend: "AnyIOBackend",
+) -> None:
+    if (
+        isinstance(session_backend_config, ServerSideSessionConfig)
+        and isinstance(session_backend_config.storage, RedisStorageBackend)
+        and test_client_backend == "trio"
+    ):
+        pytest.skip("fakeredis does not always play well with trio, so skip this for now")
+
+
+@pytest.mark.usefixtures("skip_for_trio_redis")
 @pytest.mark.parametrize("with_domain", [False, True])
 def test_test_client_set_session_data(
     with_domain: bool,
@@ -212,6 +228,7 @@ def test_test_client_set_session_data(
         assert session_data == client.get("/test").json()
 
 
+@pytest.mark.usefixtures("skip_for_trio_redis")
 @pytest.mark.parametrize("with_domain", [False, True])
 def test_test_client_get_session_data(
     with_domain: bool,

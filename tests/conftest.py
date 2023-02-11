@@ -17,6 +17,7 @@ from uuid import uuid4
 from piccolo.conf.apps import Finder
 from piccolo.table import create_db_tables, drop_db_tables
 from pydantic import SecretBytes
+from pytest_lazyfixture import lazy_fixture
 
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.base import BaseSessionBackend
@@ -155,12 +156,12 @@ def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -
 
 @pytest.fixture(
     params=[
-        pytest.param("cookie_session_backend_config", id="cookie"),
-        pytest.param("server_side_session_config", id="server-side"),
+        pytest.param(lazy_fixture("cookie_session_backend_config"), id="cookie"),
+        pytest.param(lazy_fixture("server_side_session_config"), id="server-side"),
     ]
 )
 def session_backend_config(request: pytest.FixtureRequest) -> Union[ServerSideSessionConfig, CookieBackendConfig]:
-    return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.getfixturevalue(request.param))
+    return cast("Union[ServerSideSessionConfig, CookieBackendConfig]", request.param)
 
 
 @pytest.fixture()

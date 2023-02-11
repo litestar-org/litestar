@@ -100,6 +100,7 @@ structlog = "*"
 tortoise-orm = ">=0.17.0"
 trio = "*"
 uvicorn = "*"
+pytest-lazy-fixture = "^0.6.3"
 
 [tool.poetry.group.docs]
 optional = true
