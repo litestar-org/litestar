@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from http.cookies import _unquote as unquote_cookie
 from typing import Any, Dict, Tuple
@@ -63,3 +64,6 @@ def parse_headers(headers: Tuple[Tuple[bytes, bytes], ...]) -> Dict[str, str]:
         A string / string dict.
     """
     return {k.decode(): v.decode() for k, v in headers}
+
+if not "AWS_EXECUTION_ENV" in os.environ:
+    parse_headers = lru_cache(1024)(parse_headers)
