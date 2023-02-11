@@ -35,7 +35,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Returns:
             The session data, if existing, otherwise ``None``.
         """
-        return await self.storage.get(session_id)
+        return await self.storage.get(session_id, renew=self.config.max_age if self.config.renew_on_access else None)
 
     async def set(self, session_id: str, data: bytes) -> None:
         """Store ``data`` under the ``session_id`` for later retrieval.
@@ -142,4 +142,7 @@ class ServerSideSessionConfig(BaseBackendConfig):
     session_id_bytes: int = 32
     """Number of bytes used to generate a random session-ID."""
     storage: StorageBackend
+    """:class:`.storage.base.StorageBackend <StorageBackend>` to use"""
+    renew_on_access: bool = False
+    """Renew expiry times of sessions when they're being accessed"""
     _backend_class: Type[ServerSideBackend] = ServerSideBackend

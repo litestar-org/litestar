@@ -27,6 +27,21 @@ async def test_get_set(server_side_session_backend: "ServerSideBackend", session
     assert loaded == session_data
 
 
+async def test_get_renew_on_access(server_side_session_backend: "ServerSideBackend", session_data: bytes) -> None:
+    expiry = 0.01 if not isinstance(server_side_session_backend.storage, RedisStorageBackend) else 1
+    server_side_session_backend.config.max_age = expiry
+    server_side_session_backend.config.renew_on_access = True
+
+    await server_side_session_backend.set("foo", session_data)
+    server_side_session_backend.config.max_age = 10
+
+    await server_side_session_backend.get("foo")
+
+    await anyio.sleep(expiry + 0.01)
+
+    assert await server_side_session_backend.get("foo") is not None
+
+
 async def test_get_set_multiple_returns_correct_identity(server_side_session_backend: "ServerSideBackend") -> None:
     foo_data = generate_session_data()
     bar_data = generate_session_data()
@@ -59,6 +74,6 @@ async def test_max_age_expires(server_side_session_backend: "ServerSideBackend",
     expiry = 0.01 if not isinstance(server_side_session_backend.storage, RedisStorageBackend) else 1
     server_side_session_backend.config.max_age = expiry
     await server_side_session_backend.set("foo", session_data)
-    await anyio.sleep(1)
+    await anyio.sleep(expiry + 0.01)
 
     assert not await server_side_session_backend.get("foo")
