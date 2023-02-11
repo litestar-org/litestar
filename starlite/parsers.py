@@ -52,7 +52,7 @@ def parse_cookie_string(cookie_string: str) -> Dict[str, str]:
     return output
 
 
-@lru_cache(1024)
+# @lru_cache(1024)
 def parse_headers(headers: Tuple[Tuple[bytes, bytes], ...]) -> Dict[str, str]:
     """Parse ASGI headers into a dict of string keys and values.
 
