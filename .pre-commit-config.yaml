@@ -200,6 +200,7 @@ repos:
             uvicorn,
             jsbeautifier,
             fakeredis,
+            pytest-lazy-fixture,
           ]
   - repo: local
     hooks:

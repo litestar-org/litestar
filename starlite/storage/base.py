@@ -14,18 +14,18 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-class StorageBackend(ABC):
+class StorageBackend(ABC):  # pragma: no cover
     @abstractmethod
     async def set(self, key: str, value: bytes, expires: int | None = None) -> None:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     async def get(self, key: str) -> bytes | None:
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     async def delete(self, key: str) -> None:
-        pass
+        raise NotImplementedError
 
 
 class NamespacedStorageBackend(StorageBackend):

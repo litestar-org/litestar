@@ -50,5 +50,5 @@ def clear_sessions_command(app: Starlite) -> None:
         raise StarliteCLIException(f"{type(backend.storage)} does not support clearing all sessions")
 
     if Confirm.ask("[red]Delete all sessions?"):
-        anyio.run(backend.storage.delete_all)
+        anyio.run(backend.storage.delete_all)  # pyright: ignore
         console.print("[green]All active sessions deleted")
