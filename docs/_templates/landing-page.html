@@ -1,5 +1,10 @@
 {%- extends "layout.html" %}
 
+{%- block css %}
+  {{ super() }}
+    <link href="_static/index.css" rel="stylesheet">
+{%- endblock css %}
+
 {%- block htmltitle %}
     <title>Starlite Framework</title>
 {%- endblock %}

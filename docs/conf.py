@@ -85,6 +85,8 @@ html_theme_options = {
             "type": "fontawesome",
         },
     ],
+    "navbar_end": ["navbar-icon-links"],
+    "navbar_persistent": ["search-button", "theme-switcher"],
 }
 
 
