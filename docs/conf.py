@@ -62,6 +62,7 @@ html_favicon = "images/favicon.ico"
 html_logo = "images/logo.svg"
 html_show_sourcelink = False
 html_sidebars = {"about/*": []}
+html_title = "Starlite Framework"
 
 html_additional_pages = {"index": "landing-page.html"}
 

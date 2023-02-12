@@ -1,5 +1,9 @@
 {%- extends "layout.html" %}
 
+{%- block htmltitle %}
+    <title>Starlite Framework</title>
+{%- endblock %}
+
 {% block docs_main %}
 
     <div id="landing-header">
@@ -13,15 +17,15 @@
             <h2>Fully featured</h2>
             <p>
                 Everything that's needed to build modern APIs, from data serialization and validation
-                to websockets, ORM integration, session and authentication management
+                to websockets, ORM integration, session management, authentication and more
             </p>
         </section>
 
         <section>
-            <h2>Performant</h2>
+            <h2>Fast</h2>
             <p>
-                Starlite puts great emphasis on performance and is amongst the fastest ASGI frameworks in end-to-end
-                tests.
+                Starlite puts great emphasis on developer experience and performance: It's one of the fastest ASGI
+                frameworks and developing with it is just as fast
             </p>
         </section>
 
@@ -29,8 +33,7 @@
             <h2>(a)synchronous</h2>
             <p>
                 Fully compliant with the ASGI specification, Starlite is asynchronous at heart, but synchronous
-                execution is not a second class citizen: All user facing parts support both synchronous and asynchronous
-                code without performance penalties
+                execution is not a second class citizen: Synchronous applications run without performance penalties
             </p>
         </section>
 
@@ -43,18 +46,19 @@
         </section>
 
         <section>
-            <h2>Section 5</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat.
+            <h2>Scalable</h2>
+            <p>
+                Bottom-up architecture makes it easy to develop modular and decoupled code, allowing applications to
+                scale easily, both in development and deployment
             </p>
         </section>
 
         <section>
-            <h2>Section 6</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat.
+            <h2>Community driven</h2>
+            <p>
+                Developed by a community of volunteers, and lead by a team of maintainers, Starlite is a community
+                project
+                at heart
             </p>
         </section>
     </div>

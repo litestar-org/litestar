@@ -143,10 +143,15 @@ div.literal-block-wrapper, pre {
 
 
 
-#landing-overview > section > h2 {
+#landing-overview > section  h2 {
 	margin-top: 0;
 	font-weight: bold;
 	font-size: medium;
 	text-transform: uppercase;
 	color: #edb641;
+}
+
+
+#landing-overview > section > p {
+	width: 100%;
 }
