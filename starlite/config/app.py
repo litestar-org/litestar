@@ -6,6 +6,7 @@ from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 from starlite.connection import Request, WebSocket
 from starlite.datastructures import CacheControlHeader, ETag
 from starlite.di import Provide
+from starlite.events.emitter import SimpleEventEmitter
 from starlite.events.listener import EventListener
 from starlite.plugins import PluginProtocol
 from starlite.types import (
@@ -15,11 +16,13 @@ from starlite.types import (
     BeforeMessageSendHookHandler,
     BeforeRequestHookHandler,
     ControllerRouterHandler,
+    EmptyType,
     ExceptionHandlersMap,
     Guard,
     LifeSpanHandler,
     LifeSpanHookHandler,
     Middleware,
+    OptionalSequence,
     ParametersMap,
     ResponseCookies,
     ResponseHeadersMap,
@@ -34,7 +37,7 @@ from .cache import CacheConfig
 from .compression import CompressionConfig
 from .cors import CORSConfig
 from .csrf import CSRFConfig
-from .logging import BaseLoggingConfig
+from .logging import BaseLoggingConfig  # noqa: TC003
 from .openapi import OpenAPIConfig
 from .static_files import StaticFilesConfig
 from .template import TemplateConfig
@@ -50,7 +53,7 @@ class AppConfig(BaseModel):
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
-    after_exception: List[AfterExceptionHookHandler]
+    after_exception: List[AfterExceptionHookHandler] = []
     """An application level :class:`exception hook handler <starlite.types.AfterExceptionHookHandler>` or list thereof.
 
     This hook is called after an exception occurs. In difference to exception handlers, it is not meant to return a
@@ -67,12 +70,12 @@ class AppConfig(BaseModel):
 
     :class:`Request <starlite.connection.Request>` object and should not return any values.
     """
-    after_shutdown: List[LifeSpanHookHandler]
+    after_shutdown: List[LifeSpanHookHandler] = []
     """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
 
     This hook is called during the ASGI shutdown, after all callables in the 'on_shutdown' list have been called.
     """
-    after_startup: List[LifeSpanHookHandler]
+    after_startup: List[LifeSpanHookHandler] = []
     """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
 
     This hook is called during the ASGI startup, after all callables in the 'on_startup' list have been called.
@@ -85,22 +88,22 @@ class AppConfig(BaseModel):
     :class:`Request <starlite.connection.Request>` instance and any non-``None`` return value is used for the response, bypassing
     the route handler.
     """
-    before_send: List[BeforeMessageSendHookHandler]
+    before_send: List[BeforeMessageSendHookHandler] = []
     """An application level :class:`before send hook handler <starlite.types.BeforeMessageSendHookHandler>` or list thereof.
 
     This hook is called when the ASGI send function is called.
     """
-    before_shutdown: List[LifeSpanHookHandler]
+    before_shutdown: List[LifeSpanHookHandler] = []
     """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
 
     This hook is called during the ASGI shutdown, before any callables in the 'on_shutdown' list have been called.
     """
-    before_startup: List[LifeSpanHookHandler]
+    before_startup: List[LifeSpanHookHandler] = []
     """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
 
     This hook is called during the ASGI startup, before any callables in the 'on_startup' list have been called.
     """
-    cache_config: CacheConfig
+    cache_config: CacheConfig = CacheConfig()
     """Configures caching behavior of the application."""
     cache_control: Optional[CacheControlHeader]
     """A ``cache-control`` header of type :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` to add to route
@@ -116,67 +119,67 @@ class AppConfig(BaseModel):
     """If set this enables the builtin CORS middleware."""
     csrf_config: Optional[CSRFConfig]
     """If set this enables the builtin CSRF middleware."""
-    debug: bool
+    debug: bool = True
     """If ``True``, app errors rendered as HTML with a stack trace."""
-    dependencies: Dict[str, Provide]
+    dependencies: Dict[str, Provide] = {}
     """A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances."""
     etag: Optional[ETag]
     """An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` to add to route handlers of this app.
 
     Can be overridden by route handlers.
     """
-    event_emitter_backend: Type[BaseEventEmitterBackend]
+    event_emitter_backend: Type[BaseEventEmitterBackend] = SimpleEventEmitter
     """A subclass of :class:`BaseEventEmitterBackend <starlite.events.emitter.BaseEventEmitterBackend>`."""
-    exception_handlers: ExceptionHandlersMap
+    exception_handlers: Optional[ExceptionHandlersMap] = None
     """A dictionary that maps handler functions to status codes and/or exception types."""
-    guards: List[Guard]
+    guards: List[Guard] = []
     """A list of :class:`Guard <starlite.types.Guard>` callables."""
-    initial_state: InitialStateType
+    initial_state: Optional[InitialStateType] = None
     """An object from which to initialize the app state."""
-    listeners: List[EventListener]
+    listeners: List[EventListener] = []
     """A list of :class:`EventListener <starlite.events.listener.EventListener>`."""
-    logging_config: Optional[BaseLoggingConfig]
+    logging_config: Union["BaseLoggingConfig", "EmptyType", None]
     """An instance of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>` subclass."""
     middleware: List[Middleware]
     """A list of :class:`Middleware <starlite.types.Middleware>`."""
-    on_shutdown: List[LifeSpanHandler]
+    on_shutdown: List[LifeSpanHandler] = []
     """A list of :class:`LifeSpanHandler <starlite.types.LifeSpanHandler>` called during application shutdown."""
-    on_startup: List[LifeSpanHandler]
+    on_startup: List[LifeSpanHandler] = []
     """A list of :class:`LifeSpanHandler <starlite.types.LifeSpanHandler>` called during application startup."""
     openapi_config: Optional[OpenAPIConfig]
     """Defaults to :data:`DEFAULT_OPENAPI_CONFIG <starlite.app.DEFAULT_OPENAPI_CONFIG>`"""
-    opt: Dict[str, Any]
+    opt: Dict[str, Any] = {}
     """A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
     wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
 
     Can be overridden by routers and router handlers.
     """
-    parameters: ParametersMap
+    parameters: Optional[ParametersMap] = None
     """A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all application paths."""
-    plugins: List[PluginProtocol]
+    plugins: List[PluginProtocol] = []
     """List of :class:`SerializationPluginProtocol <starlite.plugins.base.SerializationPluginProtocol>`."""
     request_class: Optional[Type[Request]]
     """An optional subclass of :class:`Request <starlite.connection.request.Request>` to use for http connections."""
     response_class: Optional[ResponseType]
     """A custom subclass of [starlite.response.Response] to be used as the app's default response."""
-    response_cookies: ResponseCookies
+    response_cookies: Optional["ResponseCookies"] = None
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
-    response_headers: ResponseHeadersMap
+    response_headers: Optional["ResponseHeadersMap"] = None
     """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
-    route_handlers: List[ControllerRouterHandler]
+    route_handlers: "OptionalSequence[ControllerRouterHandler]" = None
     """A required list of route handlers, which can include instances of :class:`Router <starlite.router.Router>`, subclasses
     of.
 
     :class:`Controller <starlite.controller.Controller>` or any function decorated by the route handler decorators.
     """
-    security: List[SecurityRequirement]
+    security: "OptionalSequence[SecurityRequirement]" = []
     """A list of dictionaries that will be added to the schema of all route handlers in the application. See.
 
     :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for details.
     """
-    static_files_config: List[StaticFilesConfig]
+    static_files_config: "OptionalSequence[StaticFilesConfig]" = None
     """An instance or list of :class:`StaticFilesConfig <starlite.config.StaticFilesConfig>`."""
-    tags: List[str]
+    tags: List[str] = []
     """A list of string tags that will be appended to the schema of all route handlers under the application."""
     template_config: Optional[TemplateConfig]
     """An instance of :class:`TemplateConfig <starlite.config.TemplateConfig>`."""
