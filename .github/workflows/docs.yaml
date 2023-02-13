@@ -33,4 +33,4 @@ jobs:
         run: python tools/publish_docs.py --version dev --push
       - name: Deploy to GH-Pages (release)
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
-        run: python tools/publish_docs.py --latest --push
+        run: python tools/publish_docs.py --push
