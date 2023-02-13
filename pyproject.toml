@@ -32,7 +32,7 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-include = ["CHANGELOG.md"]
+include = ["docs/release-notes/changelog_1.rst"]
 packages = [
     { include = "starlite" },
 ]
