@@ -8,7 +8,6 @@ from typing import (
     List,
     Mapping,
     Optional,
-    Self,
     Sequence,
     Type,
     Union,
@@ -16,7 +15,7 @@ from typing import (
 )
 
 from pydantic_openapi_schema import construct_open_api_with_schema_class
-from typing_extensions import TypedDict
+from typing_extensions import Self, TypedDict
 
 from starlite.asgi import ASGIRouter
 from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -328,7 +327,7 @@ class Starlite(Router):
             guards=list(guards or []),
             initial_state=dict(initial_state or {}),
             listeners=list(listeners or []),
-            logging_config=logging_config,
+            logging_config=logging_config,  # type: ignore[arg-type]
             middleware=list(middleware or []),
             on_shutdown=list(on_shutdown or []),
             on_startup=list(on_startup or []),
@@ -402,14 +401,14 @@ class Starlite(Router):
         for plugin in (p for p in config.plugins if isinstance(p, InitPluginProtocol)):
             plugin.on_app_init(app=self)
 
-        for route_handler in config.route_handlers:  # type: ignore
+        for route_handler in config.route_handlers:
             self.register(route_handler)
 
         if self.debug and isinstance(self.logging_config, LoggingConfig):
             self.logging_config.loggers["starlite"]["level"] = "DEBUG"
 
         if self.logging_config:
-            self.get_logger = self.logging_config.configure()  # type: ignore
+            self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("starlite")
 
         if self.openapi_config:
@@ -417,7 +416,7 @@ class Starlite(Router):
             self.update_openapi_schema()
             self.register(self.openapi_config.openapi_controller)
 
-        for static_config in self.static_files_config:  # type: ignore
+        for static_config in self.static_files_config:
             self.register(static_config.to_static_files_app())
 
         self.asgi_handler = self._create_asgi_handler()

@@ -16,13 +16,11 @@ from starlite.types import (
     BeforeMessageSendHookHandler,
     BeforeRequestHookHandler,
     ControllerRouterHandler,
-    EmptyType,
     ExceptionHandlersMap,
     Guard,
     LifeSpanHandler,
     LifeSpanHookHandler,
     Middleware,
-    OptionalSequence,
     ParametersMap,
     ResponseCookies,
     ResponseHeadersMap,
@@ -37,7 +35,7 @@ from .cache import CacheConfig
 from .compression import CompressionConfig
 from .cors import CORSConfig
 from .csrf import CSRFConfig
-from .logging import BaseLoggingConfig  # noqa: TC003
+from .logging import BaseLoggingConfig
 from .openapi import OpenAPIConfig
 from .static_files import StaticFilesConfig
 from .template import TemplateConfig
@@ -119,7 +117,7 @@ class AppConfig(BaseModel):
     """If set this enables the builtin CORS middleware."""
     csrf_config: Optional[CSRFConfig]
     """If set this enables the builtin CSRF middleware."""
-    debug: bool = True
+    debug: bool = False
     """If ``True``, app errors rendered as HTML with a stack trace."""
     dependencies: Dict[str, Provide] = {}
     """A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances."""
@@ -130,15 +128,15 @@ class AppConfig(BaseModel):
     """
     event_emitter_backend: Type[BaseEventEmitterBackend] = SimpleEventEmitter
     """A subclass of :class:`BaseEventEmitterBackend <starlite.events.emitter.BaseEventEmitterBackend>`."""
-    exception_handlers: Optional[ExceptionHandlersMap] = None
+    exception_handlers: ExceptionHandlersMap = {}
     """A dictionary that maps handler functions to status codes and/or exception types."""
     guards: List[Guard] = []
     """A list of :class:`Guard <starlite.types.Guard>` callables."""
-    initial_state: Optional[InitialStateType] = None
+    initial_state: InitialStateType = {}
     """An object from which to initialize the app state."""
     listeners: List[EventListener] = []
     """A list of :class:`EventListener <starlite.events.listener.EventListener>`."""
-    logging_config: Union["BaseLoggingConfig", "EmptyType", None]
+    logging_config: Optional[BaseLoggingConfig]
     """An instance of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>` subclass."""
     middleware: List[Middleware]
     """A list of :class:`Middleware <starlite.types.Middleware>`."""
@@ -154,7 +152,7 @@ class AppConfig(BaseModel):
 
     Can be overridden by routers and router handlers.
     """
-    parameters: Optional[ParametersMap] = None
+    parameters: ParametersMap = {}
     """A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all application paths."""
     plugins: List[PluginProtocol] = []
     """List of :class:`SerializationPluginProtocol <starlite.plugins.base.SerializationPluginProtocol>`."""
@@ -162,22 +160,22 @@ class AppConfig(BaseModel):
     """An optional subclass of :class:`Request <starlite.connection.request.Request>` to use for http connections."""
     response_class: Optional[ResponseType]
     """A custom subclass of [starlite.response.Response] to be used as the app's default response."""
-    response_cookies: Optional["ResponseCookies"] = None
+    response_cookies: ResponseCookies = []
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
-    response_headers: Optional["ResponseHeadersMap"] = None
+    response_headers: ResponseHeadersMap = {}
     """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
-    route_handlers: "OptionalSequence[ControllerRouterHandler]" = None
+    route_handlers: List[ControllerRouterHandler] = []
     """A required list of route handlers, which can include instances of :class:`Router <starlite.router.Router>`, subclasses
     of.
 
     :class:`Controller <starlite.controller.Controller>` or any function decorated by the route handler decorators.
     """
-    security: "OptionalSequence[SecurityRequirement]" = []
+    security: List[SecurityRequirement] = []
     """A list of dictionaries that will be added to the schema of all route handlers in the application. See.
 
     :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for details.
     """
-    static_files_config: "OptionalSequence[StaticFilesConfig]" = None
+    static_files_config: List[StaticFilesConfig] = []
     """An instance or list of :class:`StaticFilesConfig <starlite.config.StaticFilesConfig>`."""
     tags: List[str] = []
     """A list of string tags that will be appended to the schema of all route handlers under the application."""
