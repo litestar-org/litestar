@@ -95,7 +95,7 @@ html_context = {
         "Documentation": "lib/index",
         "Community": {
             "Contribution guide": "community/contribution-guide",
-            "Code of Conduct": "https://github.com/starlite-api/starlite/blob/main/CODE_OF_CONDUCT.md",
+            "Code of Conduct": "https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md",
         },
         "About": {
             "Organization": "about/organization",

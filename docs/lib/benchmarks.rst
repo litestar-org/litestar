@@ -4,7 +4,7 @@ Benchmarks
 Methodology
 -----------
 
--  Benchmarking is done using the `bomardier <https://github.com/codesenberg/bombardier>`__ benchmarking tool.
+-  Benchmarking is done using the `bombardier <https://github.com/codesenberg/bombardier>`__ benchmarking tool.
 -  Benchmarks are run on a dedicated machine, with a base Debian 11 installation.
 -  Each framework is contained within its own docker container, running on a dedicated CPU core (using the ``cset shield`` command and the ``--cpuset-cpus`` option for docker)
 -  Tests for the frameworks are written to make them as comparable as possible while completing the same tasks (you can see them `here <https://github.com/starlite-api/api-performance-tests/tree/main/frameworks>`__)
