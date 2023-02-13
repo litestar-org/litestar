@@ -16,17 +16,25 @@ from typing import (
 from pydantic import BaseConfig, validator
 from pydantic.generics import GenericModel
 
-from starlite import Provide
+from starlite import Provide, Response
 from starlite.connection import ASGIConnection
 from starlite.middleware.authentication import AbstractAuthenticationMiddleware
-from starlite.types import ControllerRouterHandler, Guard, Scopes, SyncOrAsyncUnion
+from starlite.types import (
+    ControllerRouterHandler,
+    Guard,
+    Scopes,
+    SyncOrAsyncUnion,
+    TypeEncodersMap,
+)
 from starlite.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
 
     from starlite.config import AppConfig
+    from starlite.enums import MediaType, OpenAPIMediaType
     from starlite.middleware.base import DefineMiddleware
+    from starlite.types import ResponseCookies
 
 
 UserType = TypeVar("UserType")
@@ -70,6 +78,8 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
+    type_encoders: Optional[TypeEncodersMap] = None
+    """A mapping of types to callables that transform them into types supported for serialization."""
 
     def on_app_init(self, app_config: "AppConfig") -> "AppConfig":
         """Handle app init by injecting middleware, guards etc. into the app. This method can be used only on the app
@@ -81,7 +91,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
         Returns:
             The :class:`AppConfig <starlite.config.AppConfig>`.
         """
-        app_config.middleware = [self.middleware, *app_config.middleware]
+        app_config.middleware.insert(0, self.middleware)
 
         if app_config.openapi_config:
             app_config.openapi_config = app_config.openapi_config.copy()
@@ -106,7 +116,42 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
         if self.route_handlers:
             app_config.route_handlers.extend(self.route_handlers)
 
+        if self.type_encoders is None:
+            self.type_encoders = app_config.type_encoders
+
         return app_config
+
+    def create_response(
+        self,
+        content: Optional[Any],
+        status_code: int,
+        media_type: "Union[MediaType, OpenAPIMediaType, str]",
+        headers: Optional[Dict[str, Any]] = None,
+        cookies: "Optional[ResponseCookies]" = None,
+    ) -> Response[Any]:
+        """Create a response object.
+
+        Handles setting the type encoders mapping on the response.
+
+        Args:
+            content: A value for the response body that will be rendered into bytes string.
+            status_code: An HTTP status code.
+            media_type: A value for the response 'Content-Type' header.
+            headers: A string keyed dictionary of response headers. Header keys are insensitive.
+            cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances to be set under
+                the response 'Set-Cookie' header.
+
+        Returns:
+            A response object.
+        """
+        return Response(
+            content=content,
+            status_code=status_code,
+            media_type=media_type,
+            headers=headers,
+            cookies=cookies,
+            type_encoders=self.type_encoders,
+        )
 
     @validator("retrieve_user_handler")
     def validate_retrieve_user_handler(  # pylint: disable=no-self-argument

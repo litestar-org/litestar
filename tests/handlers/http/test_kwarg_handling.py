@@ -16,7 +16,7 @@ from starlite import (
     put,
 )
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers.http import _get_default_status_code
+from starlite.handlers.http_handlers import _get_default_status_code
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.types import ResponseType
 from starlite.utils import normalize_path

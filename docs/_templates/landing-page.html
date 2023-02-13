@@ -1,0 +1,75 @@
+{%- extends "layout.html" %}
+
+{%- block css %}
+    {{ super() }}
+    <link href="_static/index.css" rel="stylesheet">
+{%- endblock css %}
+
+{%- block htmltitle %}
+    <title>Starlite Framework</title>
+{%- endblock %}
+
+{% block docs_main %}
+
+    <div id="landing-header">
+        <img src="_static/logo-banner-inline-dark.svg" class="only-dark">
+        <img src="_static/logo-banner-inline-light.svg" class="only-light">
+        <span id="landing-tagline">Effortlessly build performant APIs</span>
+    </div>
+
+    <div id="landing-overview">
+        <section>
+            <h2>Fully featured</h2>
+            <p>
+                Everything that's needed to build modern APIs, from data serialization and validation
+                to websockets, ORM integration, session management, authentication and more
+            </p>
+        </section>
+
+        <section>
+            <h2>Fast</h2>
+            <p>
+                Starlite puts great emphasis on developer experience and performance: It's one of the fastest ASGI
+                frameworks and developing with it is just as fast
+            </p>
+        </section>
+
+        <section>
+            <h2>(a)synchronous</h2>
+            <p>
+                Fully compliant with the ASGI specification, Starlite is asynchronous at heart, but synchronous
+                execution is not a second class citizen: Synchronous applications run without performance penalties
+            </p>
+        </section>
+
+        <section>
+            <h2>Community driven</h2>
+            <p>
+                Developed by a community of volunteers, and led by a team of maintainers, Starlite is a community
+                project
+                at heart
+            </p>
+        </section>
+
+        <section>
+            <h2>Opinionated yet flexible</h2>
+            <p>
+                Developed to encourage best practices, but flexible enough to stay out of your way
+            </p>
+        </section>
+
+        <section>
+            <h2>Scalable</h2>
+            <p>
+                Bottom-up architecture makes it easy to develop modular and decoupled code, allowing applications to
+                scale easily, both in development and deployment
+            </p>
+        </section>
+
+    </div>
+
+{% endblock docs_main %}
+
+
+{%- block footer %}
+{%- endblock footer %}

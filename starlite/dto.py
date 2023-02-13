@@ -21,7 +21,7 @@ from pydantic.generics import GenericModel
 from pydantic_factories import ModelFactory
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.plugins import PluginProtocol, get_plugin_for_value
+from starlite.plugins import SerializationPluginProtocol, get_plugin_for_value
 from starlite.utils import (
     convert_dataclass_to_model,
     convert_typeddict_to_model,
@@ -65,7 +65,7 @@ class DTO(GenericModel, Generic[T]):
 
     dto_source_model: ClassVar[Any]
     dto_field_mapping: ClassVar[Dict[str, str]]
-    dto_source_plugin: ClassVar[Optional[PluginProtocol]] = None
+    dto_source_plugin: ClassVar[Optional[SerializationPluginProtocol]] = None
 
     @classmethod
     def _from_value_mapping(cls, mapping: Dict[str, Any]) -> "DTO[T]":
@@ -97,7 +97,7 @@ class DTO(GenericModel, Generic[T]):
         elif isinstance(model_instance, dict):
             values = dict(model_instance)  # copy required as `_from_value_mapping()`` mutates ``values`.
         else:
-            values = asdict(model_instance)
+            values = asdict(model_instance)  # pyright: ignore
         return cls._from_value_mapping(mapping=values)
 
     @classmethod
@@ -149,7 +149,7 @@ class DTOFactory:
     via plugins.
     """
 
-    def __init__(self, plugins: Optional[List[PluginProtocol]] = None) -> None:
+    def __init__(self, plugins: Optional[List[SerializationPluginProtocol]] = None) -> None:
         """Initialize ``DTOFactory``
 
         Args:
@@ -248,16 +248,16 @@ class DTOFactory:
 
     def _get_fields_from_source(
         self, source: Type[T]  # pyright: ignore
-    ) -> Tuple[Dict[str, ModelField], Optional[PluginProtocol]]:
+    ) -> Tuple[Dict[str, ModelField], Optional[SerializationPluginProtocol]]:
         """Convert a ``BaseModel`` subclass, :class:`TypedDict <typing.TypedDict>`, ``dataclass`` or any other type that
         has a plugin registered into a mapping of :class:`str` to ``ModelField``.
         """
         fields: Optional[Dict[str, ModelField]] = None
         if plugin := get_plugin_for_value(value=source, plugins=self.plugins):
-            model = plugin.to_pydantic_model_class(model_class=source)
+            model = plugin.to_data_container_class(model_class=source)
             fields = model.__fields__
 
-            return fields, plugin
+            return fields, plugin  # type: ignore
 
         if issubclass(source, BaseModel):
             source.update_forward_refs()

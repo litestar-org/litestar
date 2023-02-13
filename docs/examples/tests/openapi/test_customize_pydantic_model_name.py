@@ -11,6 +11,7 @@ def test_schema_generation() -> None:
             "paths": {
                 "/id": {
                     "get": {
+                        "summary": "RetrieveIdHandler",
                         "operationId": "IdRetrieveIdHandler",
                         "responses": {
                             "200": {
@@ -24,7 +25,7 @@ def test_schema_generation() -> None:
                             }
                         },
                         "deprecated": False,
-                    },
+                    }
                 }
             },
             "components": {

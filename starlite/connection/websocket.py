@@ -26,7 +26,7 @@ from starlite.status_codes import WS_1000_NORMAL_CLOSURE
 from starlite.utils.serialization import decode_json, default_serializer, encode_json
 
 if TYPE_CHECKING:
-    from starlite.handlers.websocket import WebsocketRouteHandler  # noqa: F401
+    from starlite.handlers.websocket_handlers import WebsocketRouteHandler  # noqa: F401
     from starlite.types import Message, Serializer, WebSocketScope
     from starlite.types.asgi_types import WebSocketDisconnectEvent  # nopycln: import
     from starlite.types.asgi_types import WebSocketReceiveEvent  # nopycln: import
