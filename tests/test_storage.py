@@ -60,7 +60,7 @@ async def test_get_and_renew(storage_backend: StorageBackend) -> None:
     expiry = (
         0.01 if not isinstance(storage_backend, RedisStorageBackend) else 1
     )  # redis doesn't allow fractional values
-    await storage_backend.set("foo", b"bar", expires=expiry)
+    await storage_backend.set("foo", b"bar", expires=expiry)  # type: ignore[arg-type]
     await storage_backend.get("foo", renew=10)
     await anyio.sleep(expiry + 0.01)
 
