@@ -1,7 +1,7 @@
 {%- extends "layout.html" %}
 
 {%- block css %}
-  {{ super() }}
+    {{ super() }}
     <link href="_static/index.css" rel="stylesheet">
 {%- endblock css %}
 
@@ -43,6 +43,15 @@
         </section>
 
         <section>
+            <h2>Community driven</h2>
+            <p>
+                Developed by a community of volunteers, and led by a team of maintainers, Starlite is a community
+                project
+                at heart
+            </p>
+        </section>
+
+        <section>
             <h2>Opinionated yet flexible</h2>
             <p>
                 Developed to encourage best practices, but flexible enough to stay out of your way
@@ -57,14 +66,6 @@
             </p>
         </section>
 
-        <section>
-            <h2>Community driven</h2>
-            <p>
-                Developed by a community of volunteers, and led by a team of maintainers, Starlite is a community
-                project
-                at heart
-            </p>
-        </section>
     </div>
 
 {% endblock docs_main %}
