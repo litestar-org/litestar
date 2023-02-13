@@ -88,3 +88,6 @@ div.literal-block-wrapper, pre {
 	padding-left: 1rem;
 }
 
+#navbar-icon-links a {
+	padding-top: .2rem;
+}
