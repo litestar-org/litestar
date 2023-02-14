@@ -22,7 +22,7 @@ The ``app`` instance is the root level of the app, as in, it has the base path o
 Routers & Router Handlers should be registered on it.
 
 .. seealso::
-   You can learn more about registering routes at: :ref:`/lib/routing:Registering Routes`
+   You can learn more about registering routes at: :ref:`Registering Routes </lib/routing:Registering Routes>`
 
 Starlite also provides additional functionalities like managing application state, handling static files, logging and much
 more through this ``app`` instance as well. The next few chapters of the documentations will shed a more detailed look into
