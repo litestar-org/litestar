@@ -29,7 +29,6 @@ more through this ``app`` instance as well. The next few chapters of the documen
 how you can use those functionalities in your Starlite project as well.
 
 .. toctree::
-   :titlesonly:
 
    app-hooks
    app-state
