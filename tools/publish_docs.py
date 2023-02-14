@@ -67,7 +67,10 @@ def make_version(version: str | None, push: bool) -> None:
     for file in git_add:
         subprocess.run(["git", "add", file], check=True)
 
-    subprocess.run(["git", "commit", "-m", f"Automatic docs build for version {version!r}"], check=True)
+    subprocess.run(
+        ["git", "commit", "-m", f"Automatic docs build for version {version!r}", "--no-verify"],
+        check=True,
+    )
 
     if push:
         subprocess.run(["git", "push"], check=True)
