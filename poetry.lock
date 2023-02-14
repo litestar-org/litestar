@@ -941,24 +941,24 @@ python-dateutil = ">=2.4"
 
 [[package]]
 name = "fakeredis"
-version = "1.1.0"
+version = "2.2.0"
 description = "Fake implementation of redis API for testing purposes."
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7,<4.0"
 files = [
-    {file = "fakeredis-1.1.0-py2.py3-none-any.whl", hash = "sha256:1db27ec3a5c964b9fb9f36ec1b9770a81204c54e84f83c763f36689eef4a5fd4"},
-    {file = "fakeredis-1.1.0.tar.gz", hash = "sha256:169598943dc10aadd62871a34b2867bb5e24f9da7ebc97a2058c3f35c760241e"},
+    {file = "fakeredis-2.2.0-py3-none-any.whl", hash = "sha256:1ac7adf04dcbf8f9886add5972018e0e42781ee772fbaa0a573350cd4e4c66f7"},
+    {file = "fakeredis-2.2.0.tar.gz", hash = "sha256:dacdede58b0e682d5dc6176518858b6933c3d529ec18270f162ad5aaf97f5769"},
 ]
 
 [package.dependencies]
-lupa = {version = "*", optional = true, markers = "extra == \"lua\""}
-redis = "*"
-six = ">=1.12"
-sortedcontainers = "*"
+lupa = {version = ">=1.14,<2.0", optional = true, markers = "extra == \"lua\""}
+redis = "<4.5"
+sortedcontainers = ">=2.4.0,<3.0.0"
 
 [package.extras]
-lua = ["lupa"]
+json = ["jsonpath-ng (>=1.5,<2.0)"]
+lua = ["lupa (>=1.14,<2.0)"]
 
 [[package]]
 name = "fast-query-parsers"
@@ -2753,14 +2753,14 @@ files = [
 
 [[package]]
 name = "redis"
-version = "4.5.1"
+version = "4.4.2"
 description = "Python client for Redis database and key-value store"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "redis-4.5.1-py3-none-any.whl", hash = "sha256:5deb072d26e67d2be1712603bfb7947ec3431fb0eec9c578994052e33035af6d"},
-    {file = "redis-4.5.1.tar.gz", hash = "sha256:1eec3741cda408d3a5f84b78d089c8b8d895f21b3b050988351e925faf202864"},
+    {file = "redis-4.4.2-py3-none-any.whl", hash = "sha256:e6206448e2f8a432871d07d432c13ed6c2abcf6b74edb436c99752b1371be387"},
+    {file = "redis-4.4.2.tar.gz", hash = "sha256:a010f6cb7378065040a02839c3f75c7e0fb37a87116fb4a95be82a95552776c7"},
 ]
 
 [package.dependencies]
@@ -3747,4 +3747,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "dff7523b71c2ca0e401a0ceb5520f263d282ce983a1f445d50e5858b484c0d7f"
+content-hash = "03a676bfb16c5dd2efb4c8ceab39ed85b955cdd3fa10c080e6432df16654b9b6"
