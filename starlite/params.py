@@ -286,6 +286,8 @@ class BodyKwarg:
 
     Equivalent to pattern in the OpenAPI specification.
     """
+    multipart_form_part_limit: Optional[int] = field(default=None)
+    """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from DoS attacks."""
 
     def __hash__(self) -> int:  # pragma: no cover
         """Hash the dataclass in a safe way.
@@ -315,7 +317,8 @@ def Body(
     max_items: Optional[int] = None,
     min_length: Optional[int] = None,
     max_length: Optional[int] = None,
-    regex: Optional[str] = None
+    regex: Optional[str] = None,
+    multipart_form_part_limit: Optional[int] = None
 ) -> Any:
     """Create an extended request body kwarg definition.
 
@@ -354,6 +357,8 @@ def Body(
             maxLength in the OpenAPI specification.
         regex: A string representing a regex against which the given string will be matched.
             Equivalent to pattern in the OpenAPI specification.
+        multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request.
+            This limit is intended to protect from DoS attacks.
     """
     return BodyKwarg(
         media_type=media_type,
@@ -374,6 +379,7 @@ def Body(
         min_length=min_length,
         max_length=max_length,
         regex=regex,
+        multipart_form_part_limit=multipart_form_part_limit,
     )
 
 

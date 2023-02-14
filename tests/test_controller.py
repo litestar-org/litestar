@@ -52,8 +52,8 @@ async def test_controller_http_method(
         path = test_path
 
         @decorator()
-        def test_method(self) -> return_annotation:  # type: ignore[valid-type]
-            return return_value  # type: ignore[no-any-return]
+        def test_method(self) -> return_annotation:
+            return return_value
 
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)

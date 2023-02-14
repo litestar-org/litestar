@@ -48,10 +48,10 @@ def test_lifespan() -> None:
 
     with create_test_client(
         [],
-        after_shutdown=after_shutdown,
-        after_startup=after_startup,
-        before_shutdown=before_shutdown,
-        before_startup=before_startup,
+        after_shutdown=[after_shutdown],
+        after_startup=[after_startup],
+        before_shutdown=[before_shutdown],
+        before_startup=[before_startup],
         on_startup=[
             sync_function_without_state,
             async_function_without_state,

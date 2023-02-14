@@ -1,0 +1,10 @@
+# Code owner settings for `starlite`
+# @maintainers should be assigned to all reviews.
+# Most specific assignment takes precedence though, so if you add a more specific thing than the `*` glob, you must also add @maintainers
+# For more info about code owners see https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners#codeowners-file-example
+
+# Global Assignment
+*      @starlite-api/maintainers
+
+# Documentation
+docs/* @starlite-api/maintainers @Jarmos-san

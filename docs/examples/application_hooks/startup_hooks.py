@@ -29,8 +29,7 @@ def after_startup_handler(app_instance: Starlite) -> None:
 
 
 app = Starlite(
-    [],
     on_startup=[startup_callable],
-    before_startup=before_startup_handler,
-    after_startup=after_startup_handler,
+    before_startup=[before_startup_handler],
+    after_startup=[after_startup_handler],
 )

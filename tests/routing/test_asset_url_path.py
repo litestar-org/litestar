@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 def test_url_for_static_asset(tmp_path: "Path") -> None:
     app = Starlite(
         route_handlers=[],
-        static_files_config=StaticFilesConfig(path="/static/path", directories=[tmp_path], name="asset"),
+        static_files_config=[StaticFilesConfig(path="/static/path", directories=[tmp_path], name="asset")],
     )
     url_path = app.url_for_static_asset("asset", "abc/def.css")
     assert url_path == "/static/path/abc/def.css"
@@ -26,7 +26,7 @@ def test_url_for_static_asset_doesnt_work_with_http_handler_name(tmp_path: "Path
 
     app = Starlite(
         route_handlers=[handler],
-        static_files_config=StaticFilesConfig(path="/static/path", directories=[tmp_path], name="asset"),
+        static_files_config=[StaticFilesConfig(path="/static/path", directories=[tmp_path], name="asset")],
     )
 
     with pytest.raises(NoRouteMatchFoundException):
@@ -36,7 +36,7 @@ def test_url_for_static_asset_doesnt_work_with_http_handler_name(tmp_path: "Path
 def test_url_for_static_asset_validates_name(tmp_path: "Path") -> None:
     app = Starlite(
         route_handlers=[],
-        static_files_config=StaticFilesConfig(path="/static/path", directories=[tmp_path], name="asset"),
+        static_files_config=[StaticFilesConfig(path="/static/path", directories=[tmp_path], name="asset")],
     )
 
     with pytest.raises(NoRouteMatchFoundException):

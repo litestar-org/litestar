@@ -14,7 +14,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Dict,
+    Mapping,
     Optional,
     Type,
     TypeVar,
@@ -98,11 +98,11 @@ DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
 }
 
 
-def default_serializer(value: Any, type_encoders: Optional[Dict[Any, Callable[[Any], Any]]] = None) -> Any:
+def default_serializer(value: Any, type_encoders: Optional[Mapping[Any, Callable[[Any], Any]]] = None) -> Any:
     """Transform values non-natively supported by ``msgspec``
 
     Args:
-        value: A value to serialize#
+        value: A value to serialized
         type_encoders: Mapping of types to callables to transforming types
     Returns:
         A serialized value

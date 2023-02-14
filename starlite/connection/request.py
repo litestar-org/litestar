@@ -17,7 +17,7 @@ from starlite.types import Empty
 from starlite.utils.serialization import decode_json, decode_msgpack
 
 if TYPE_CHECKING:
-    from starlite.handlers.http import HTTPRouteHandler  # noqa: F401
+    from starlite.handlers.http_handlers import HTTPRouteHandler  # noqa: F401
     from starlite.types.asgi_types import HTTPScope, Method, Receive, Scope, Send
 
 
@@ -154,7 +154,9 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             content_type, options = self.content_type
             if content_type == RequestEncodingType.MULTI_PART:
                 self._form = self.scope["_form"] = form_values = parse_multipart_form(  # type: ignore[typeddict-item]
-                    body=await self.body(), boundary=options.get("boundary", "").encode()
+                    body=await self.body(),
+                    boundary=options.get("boundary", "").encode(),
+                    multipart_form_part_limit=self.app.multipart_form_part_limit,
                 )
                 return FormMultiDict(form_values)
             if content_type == RequestEncodingType.URL_ENCODED:

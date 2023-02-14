@@ -175,7 +175,7 @@ async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
         exclude=[r"^/src.*$"],
     )
     with create_test_client(
-        [handler], static_files_config=static_files_config, middleware=[rate_limit_config.middleware]
+        [handler], static_files_config=[static_files_config], middleware=[rate_limit_config.middleware]
     ) as client:
         response = client.get("/not-excluded")
         assert response.status_code == HTTP_200_OK

@@ -28,7 +28,7 @@ from starlite.handlers import (
     websocket,
 )
 from starlite.params import Body, Dependency, Parameter
-from starlite.plugins import PluginProtocol
+from starlite.plugins import SerializationPluginProtocol
 from starlite.response import Response
 from starlite.router import Router
 from starlite.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
@@ -54,7 +54,7 @@ __all__ = (
     "OpenAPIMediaType",
     "Parameter",
     "Partial",
-    "PluginProtocol",
+    "SerializationPluginProtocol",
     "Provide",
     "Request",
     "RequestEncodingType",

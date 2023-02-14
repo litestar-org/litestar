@@ -35,9 +35,7 @@ class ClientRedirect(Response):
     """HTMX Response class to support client side redirect."""
 
     def __init__(self, redirect_to: str) -> None:
-        """Set status code to 200 (required by HTMX),
-        and pass redirect url.
-        """
+        """Set status code to 200 (required by HTMX), and pass redirect url."""
         super().__init__(content=None, headers=get_headers(hx_headers=HtmxHeaderType(redirect=redirect_to)))
         del self.headers["Location"]
 
@@ -155,21 +153,21 @@ class HXLocation(Response):
 
 
 class HTMXTemplate(Template):
-    """Convenient type for returning HTMX Template responses."""
+    """HTMX template wrapper"""
 
     push_url: Optional[PushUrlType] = None
-    """This parameter accepts either a string value for url to push to browser history or
-    boolean False to prevent HTMX client from pushing a url to browser history."""
+    """Either a string value specifying a URL to push to browser history or ``False`` to
+    prevent HTMX client from pushing a url to browser history."""
     re_swap: ReSwapMethod = None
-    """This parameter accepts either a string method value to instruct HTMX which swapping method to use."""
+    """Method value to instruct HTMX which swapping method to use."""
     re_target: Optional[str] = None
-    """This parameter accepts string value for 'id of target element' to apply changes to."""
+    """Value for 'id of target element' to apply changes to."""
     trigger_event: Optional[str] = None
-    """This parameter accepts string value of event name to trigger."""
+    """Event name to trigger."""
     params: Optional[Dict[str, Any]] = None
-    """This parameter accepts dictionary of parameters if any required with trigger event parameter."""
+    """Dictionary of parameters if any required with trigger event parameter."""
     after: Optional[EventAfterType] = None
-    """This parameter accepts string value for changes to apply after 'receive', 'settle' or 'swap' event."""
+    """Changes to apply after ``receive``, ``settle`` or ``swap`` event."""
 
     def to_response(
         self,
@@ -179,7 +177,7 @@ class HTMXTemplate(Template):
         app: "Starlite",
         request: "Request",
     ) -> "TemplateResponse":
-        """Add HTMX headers and create TemplateResponse."""
+        """Add HTMX headers and return a :class:`.response.TemplateResponse`."""
 
         if self.trigger_event:
             event = TriggerEventType(name=str(self.trigger_event), params=self.params, after=self.after)
