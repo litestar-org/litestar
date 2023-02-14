@@ -39,7 +39,6 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
-aiomcache = { version = "*", optional = true }
 anyio = ">=3"
 brotli = { version = "*", optional = true }
 click = {version = "*", optional = true}
@@ -65,14 +64,13 @@ structlog = { version = "*", optional = true }
 typing-extensions = "*"
 
 [tool.poetry.group.dev.dependencies]
-aiomcache = "*"
 aiosqlite = "*"
 beanie = "*"
 beautifulsoup4 = "*"
 brotli = "*"
 click = "*"
 cryptography = "*"
-fakeredis = {version = ">=2.2,<=2.3", extras = ["lua"]}
+fakeredis = {extras = ["lua"], version = ">=2.9.0"}
 freezegun = "*"
 fsspec = "*"
 greenlet = "*"
@@ -125,7 +123,6 @@ cli = ["click", "rich", "jsbeautifier"]
 cryptography = ["cryptography"]
 jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
-memcached = ["aiomcache"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
@@ -133,7 +130,6 @@ standard = ["click", "jinja2", "jsbeautifier", "picologging", "rich",]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
 full = [
-    "aiomcache",
     "brotli",
     "click",
     "cryptography",

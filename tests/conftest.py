@@ -52,10 +52,8 @@ from _pytest.fixtures import FixtureRequest
 from fakeredis.aioredis import FakeRedis
 
 from starlite.storage.file_backend import FileStorageBackend
-from starlite.storage.memcached_backend import MemcachedStorageBackend
 from starlite.storage.memory_backend import MemoryStorageBackend
 from starlite.storage.redis_backend import RedisStorageBackend
-from tests.mocks import FakeAsyncMemcached
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
@@ -108,18 +106,8 @@ def fake_redis() -> FakeRedis:
 
 
 @pytest.fixture()
-def fake_async_memcached() -> FakeAsyncMemcached:
-    return FakeAsyncMemcached()
-
-
-@pytest.fixture()
 def redis_storage_backend(fake_redis: FakeRedis) -> RedisStorageBackend:
     return RedisStorageBackend(redis=fake_redis)
-
-
-@pytest.fixture()
-def memcached_storage_backend(fake_async_memcached: FakeAsyncMemcached) -> MemcachedStorageBackend:
-    return MemcachedStorageBackend(memcached=fake_async_memcached)
 
 
 @pytest.fixture()
@@ -135,7 +123,6 @@ def file_storage_backend(tmp_path: Path) -> FileStorageBackend:
 @pytest.fixture(
     params=[
         "redis_storage_backend",
-        "memcached_storage_backend",
         "memory_storage_backend",
         "file_storage_backend",
     ]

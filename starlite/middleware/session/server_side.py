@@ -35,7 +35,9 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Returns:
             The session data, if existing, otherwise ``None``.
         """
-        return await self.storage.get(session_id, renew=self.config.max_age if self.config.renew_on_access else None)
+        return await self.storage.get(
+            session_id, renew_for=self.config.max_age if self.config.renew_on_access else None
+        )
 
     async def set(self, session_id: str, data: bytes) -> None:
         """Store ``data`` under the ``session_id`` for later retrieval.
@@ -50,7 +52,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Returns:
             None
         """
-        await self.storage.set(session_id, data, expires=self.config.max_age)
+        await self.storage.set(session_id, data, expires_in=self.config.max_age)
 
     async def delete(self, session_id: str) -> None:
         """Delete the data associated with ``session_id``. Fails silently if no such session-ID exists.

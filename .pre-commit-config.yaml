@@ -92,7 +92,6 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
-            aiomcache,
             click,
             fast-query-parsers,
             fsspec,
@@ -124,7 +123,6 @@ repos:
         exclude: "test_apps|tools|docs"
         additional_dependencies:
           [
-            aiomcache,
             beanie,
             click,
             fast-query-parsers,
@@ -164,7 +162,6 @@ repos:
         exclude: "tools|piccolo*|examples/plugins/sqlalchemy_plugin*|using_offset_pagination_with_sqlalchemy"
         additional_dependencies:
           [
-            aiomcache,
             beanie,
             beautifulsoup4,
             brotli,

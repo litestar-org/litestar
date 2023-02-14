@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import shutil
-from datetime import datetime, timedelta
 from tempfile import mkstemp
 from typing import TYPE_CHECKING
 
@@ -12,13 +11,14 @@ from anyio.to_thread import run_sync
 from .base import StorageBackend, StorageObject
 
 if TYPE_CHECKING:
+    from datetime import timedelta
     from os import PathLike
 
 
 class FileStorageBackend(StorageBackend):
     """Session backend to store data in files."""
 
-    __slots__ = ("path", "_lock")
+    __slots__ = ("path",)
 
     def __init__(self, path: PathLike) -> None:
         self.path = Path(path)
@@ -52,7 +52,13 @@ class FileStorageBackend(StorageBackend):
     async def _write(self, target_file: Path, storage_obj: StorageObject) -> None:
         await run_sync(self._write_sync, target_file, storage_obj)
 
-    async def get(self, key: str, renew: int | None = None) -> bytes | None:
+    async def set(self, key: str, value: bytes, expires_in: int | timedelta | None = None) -> None:
+        await self.path.mkdir(exist_ok=True)
+        path = self.path / key
+        storage_obj = StorageObject.new(data=value, expires_in=expires_in)
+        await self._write(path, storage_obj)
+
+    async def get(self, key: str, renew_for: int | timedelta | None = None) -> bytes | None:
         path = self.path / key
         storage_obj = await self._load_from_path(path)
 
@@ -63,20 +69,10 @@ class FileStorageBackend(StorageBackend):
             await path.unlink(missing_ok=True)
             return None
 
-        if renew and storage_obj.expires:
-            storage_obj.expires = datetime.now() + timedelta(seconds=renew)
-            await self._write(path, storage_obj)
+        if renew_for and storage_obj.expires_at:
+            await self.set(key, value=storage_obj.data, expires_in=renew_for)
 
         return storage_obj.data
-
-    async def set(self, key: str, value: bytes, expires: int | None = None) -> None:
-        await self.path.mkdir(exist_ok=True)
-        path = self.path / key
-        storage_obj = StorageObject(
-            expires=(datetime.now() + timedelta(seconds=expires)) if expires else None,
-            data=value,
-        )
-        await self._write(path, storage_obj)
 
     async def delete(self, key: str) -> None:
         path = self.path / key
@@ -91,3 +87,12 @@ class FileStorageBackend(StorageBackend):
             wrapper = await self._load_from_path(file)
             if wrapper and wrapper.expired:
                 await file.unlink(missing_ok=True)
+
+    async def exists(self, key: str) -> bool:
+        path = self.path / key
+        return await path.exists()
+
+    async def expires_in(self, key: str) -> int | None:
+        if storage_obj := await self._load_from_path(self.path / key):
+            return storage_obj.expires_in
+        return None

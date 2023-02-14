@@ -1,58 +1,62 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from datetime import datetime, timedelta
+from typing import Optional
 
 from msgspec import Struct
 from msgspec.msgpack import decode as msgpack_decode
 from msgspec.msgpack import encode as msgpack_encode
 
-from starlite.types import Empty, EmptyType
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
-
 
 class StorageBackend(ABC):  # pragma: no cover
     @abstractmethod
-    async def set(self, key: str, value: bytes, expires: int | None = None) -> None:
+    async def set(self, key: str, value: bytes, expires_in: int | timedelta | None = None) -> None:
         raise NotImplementedError
 
     @abstractmethod
-    async def get(self, key: str, renew: int | None = None) -> bytes | None:
+    async def get(self, key: str, renew_for: int | timedelta | None = None) -> bytes | None:
         raise NotImplementedError
 
     @abstractmethod
     async def delete(self, key: str) -> None:
         raise NotImplementedError
 
-
-class NamespacedStorageBackend(StorageBackend):
-    __slots__ = ("namespace",)
-
-    def __init__(self, namespace: str | None | EmptyType = Empty) -> None:
-        self.namespace = "STARLITE" if namespace is Empty else namespace
-
-    @property
-    def key_prefix(self) -> str:
-        return f"{self.namespace}:" if self.namespace else ""
-
-    def make_key(self, key: str) -> str:
-        return self.key_prefix + key
+    @abstractmethod
+    async def delete_all(self) -> None:
+        raise NotImplementedError
 
     @abstractmethod
-    def with_namespace(self, namespace: str) -> Self:
-        pass
+    async def exists(self, key: str) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def expires_in(self, key: str) -> int | None:
+        raise NotImplementedError
 
 
 class StorageObject(Struct):
-    expires: Optional[datetime]
+    expires_at: Optional[datetime]
     data: bytes
+
+    @classmethod
+    def new(cls, data: bytes, expires_in: int | timedelta | None) -> StorageObject:
+        if expires_in is not None and not isinstance(expires_in, timedelta):
+            expires_in = timedelta(seconds=expires_in)
+        return cls(
+            data=data,
+            expires_at=(datetime.now() + expires_in) if expires_in else None,
+        )
 
     @property
     def expired(self) -> bool:
-        return self.expires is not None and datetime.now() >= self.expires
+        return self.expires_at is not None and datetime.now() >= self.expires_at
+
+    @property
+    def expires_in(self) -> int:
+        if self.expires_at:
+            return (self.expires_at - datetime.now()).seconds
+        return -1
 
     def to_bytes(self) -> bytes:
         return msgpack_encode(self)

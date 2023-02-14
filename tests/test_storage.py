@@ -7,7 +7,6 @@ from unittest.mock import Mock, patch
 import anyio
 import pytest
 
-from starlite.storage.memcached_backend import MemcachedStorageBackend
 from starlite.storage.redis_backend import RedisStorageBackend
 
 if TYPE_CHECKING:
@@ -15,7 +14,6 @@ if TYPE_CHECKING:
 
     from starlite.storage.base import StorageBackend
     from starlite.storage.file_backend import FileStorageBackend
-    from tests.mocks import FakeAsyncMemcached
 
 
 @pytest.fixture()
@@ -23,7 +21,7 @@ def mock_redis() -> None:
     patch("starlite.storage.redis_backend.Redis")
 
 
-async def test_get_from_cache(storage_backend: StorageBackend) -> None:
+async def test_get(storage_backend: StorageBackend) -> None:
     key = "key"
     value = b"value"
     await storage_backend.set(key, value, 60)
@@ -32,7 +30,7 @@ async def test_get_from_cache(storage_backend: StorageBackend) -> None:
     assert stored_value == value
 
 
-async def test_set_in_cache(storage_backend: StorageBackend) -> None:
+async def test_set(storage_backend: StorageBackend) -> None:
     values = {"key_1": b"value_1", "key_2": b"value_2"}
 
     for key, value in values.items():
@@ -47,7 +45,7 @@ async def test_expires(storage_backend: StorageBackend) -> None:
     expiry = (
         0.01 if not isinstance(storage_backend, RedisStorageBackend) else 1
     )  # redis doesn't allow fractional values
-    await storage_backend.set("foo", b"bar", expires=expiry)  # type: ignore[arg-type]
+    await storage_backend.set("foo", b"bar", expires_in=expiry)  # type: ignore[arg-type]
 
     await anyio.sleep(expiry + 0.01)
 
@@ -60,8 +58,8 @@ async def test_get_and_renew(storage_backend: StorageBackend) -> None:
     expiry = (
         0.01 if not isinstance(storage_backend, RedisStorageBackend) else 1
     )  # redis doesn't allow fractional values
-    await storage_backend.set("foo", b"bar", expires=expiry)  # type: ignore[arg-type]
-    await storage_backend.get("foo", renew=10)
+    await storage_backend.set("foo", b"bar", expires_in=expiry)  # type: ignore[arg-type]
+    await storage_backend.get("foo", renew_for=10)
     await anyio.sleep(expiry + 0.01)
 
     stored_value = await storage_backend.get("foo")
@@ -69,7 +67,7 @@ async def test_get_and_renew(storage_backend: StorageBackend) -> None:
     assert stored_value is not None
 
 
-async def test_delete_from_cache(storage_backend: StorageBackend) -> None:
+async def test_delete(storage_backend: StorageBackend) -> None:
     key = "key"
     await storage_backend.set(key, b"value", 60)
 
@@ -82,25 +80,6 @@ async def test_delete_from_cache(storage_backend: StorageBackend) -> None:
 async def test_delete_empty(storage_backend: StorageBackend) -> None:
     # assert that this does not raise an exception
     await storage_backend.delete("foo")
-
-
-@patch("starlite.storage.memcached_backend.Client")
-def test_memcached_backend_with_client_default(memcached_mock: Mock) -> None:
-    host = "127.0.0.1"
-    backend = MemcachedStorageBackend.with_client(host=host)
-    assert backend._memcached
-    memcached_mock.assert_called_once_with(host=host, pool_minsize=None, pool_size=2, port=11211)
-
-
-@patch("starlite.storage.memcached_backend.Client")
-def test_memcached_backend_with_client_non_default(memcached_mock: Mock) -> None:
-    host = "127.0.0.1"
-    port = 22122
-    pool_size = 10
-    pool_minsize = 7
-    backend = MemcachedStorageBackend.with_client(host=host, port=port, pool_size=pool_size, pool_minsize=pool_minsize)
-    assert backend._memcached
-    memcached_mock.assert_called_once_with(host=host, port=port, pool_size=pool_size, pool_minsize=pool_minsize)
 
 
 @patch("starlite.storage.redis_backend.Redis")
@@ -147,12 +126,11 @@ async def test_redis_delete_all(redis_storage_backend: RedisStorageBackend) -> N
     for i in range(10):
         key = f"key-{i}"
         keys.append(key)
-        await redis_storage_backend.set(key, b"value", expires=10 if i % 2 else None)
+        await redis_storage_backend.set(key, b"value", expires_in=10 if i % 2 else None)
 
-    count_deleted = await redis_storage_backend.delete_all()
+    await redis_storage_backend.delete_all()
 
     assert not any([await redis_storage_backend.get(key) for key in keys])
-    assert count_deleted == len(keys)
 
 
 def test_redis_namespaced_key(redis_storage_backend: RedisStorageBackend) -> None:
@@ -169,19 +147,3 @@ def test_redis_with_namespace(redis_storage_backend: RedisStorageBackend) -> Non
 def test_redis_namespace_explicit_none(fake_redis: Redis) -> None:
     assert RedisStorageBackend.with_client(url="redis://127.0.0.1", namespace=None).namespace is None
     assert RedisStorageBackend(redis=fake_redis, namespace=None).namespace is None
-
-
-def test_memcached_namespaced_key(memcached_storage_backend: MemcachedStorageBackend) -> None:
-    assert memcached_storage_backend.namespace == "STARLITE"
-    assert memcached_storage_backend.make_key("foo") == "STARLITE:foo"
-
-
-def test_memcached_with_namespace(memcached_storage_backend: MemcachedStorageBackend) -> None:
-    namespaced = memcached_storage_backend.with_namespace("TEST")
-    assert namespaced.namespace == "STARLITE_TEST"
-    assert namespaced._memcached is memcached_storage_backend._memcached
-
-
-def test_memcached_namespace_explicit_none(fake_async_memcached: FakeAsyncMemcached) -> None:
-    assert MemcachedStorageBackend.with_client(host="127.0.0.1", namespace=None).namespace is None
-    assert MemcachedStorageBackend(memcached=fake_async_memcached, namespace=None).namespace is None
