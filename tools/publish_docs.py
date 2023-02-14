@@ -65,13 +65,14 @@ def make_version(version: str | None, push: bool) -> None:
     shutil.rmtree("docs/_build")
 
     for file in git_add:
-        subprocess.run(["git", "add", file])
-    subprocess.run(["git", "commit", "-m", f"Automatic docs build for version {version!r}"])
+        subprocess.run(["git", "add", file], check=True)
+
+    subprocess.run(["git", "commit", "-m", f"Automatic docs build for version {version!r}"], check=True)
 
     if push:
-        subprocess.run(["git", "push"])
+        subprocess.run(["git", "push"], check=True)
 
-    subprocess.run(["git", "checkout", "-"])
+    subprocess.run(["git", "checkout", "-"], check=True)
 
 
 def main() -> None:
