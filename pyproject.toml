@@ -72,7 +72,7 @@ beautifulsoup4 = "*"
 brotli = "*"
 click = "*"
 cryptography = "*"
-fakeredis = "*"
+fakeredis = {version = "*", extras = ["lua"]}
 freezegun = "*"
 fsspec = "*"
 greenlet = "*"

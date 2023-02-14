@@ -103,30 +103,32 @@ def test_memcached_backend_with_client_non_default(memcached_mock: Mock) -> None
     memcached_mock.assert_called_once_with(host=host, port=port, pool_size=pool_size, pool_minsize=pool_minsize)
 
 
+@patch("starlite.storage.redis_backend.Redis")
 @patch("starlite.storage.redis_backend.ConnectionPool.from_url")
-@pytest.mark.usefixtures("mock_redis")
-def test_redis_backend_with_client_default(connection_pool_from_url_mock: Mock) -> None:
+def test_redis_backend_with_client_default(connection_pool_from_url_mock: Mock, mock_redis: Mock) -> None:
     url = "redis://localhost"
-    cache = RedisStorageBackend.with_client(url=url)
-    assert cache._redis
+    backend = RedisStorageBackend.with_client(url=url)
     connection_pool_from_url_mock.assert_called_once_with(
         url=url, db=None, port=None, username=None, password=None, decode_responses=False
     )
+    mock_redis.assert_called_once_with(connection_pool=connection_pool_from_url_mock.return_value)
+    assert backend._redis is mock_redis.return_value
 
 
+@patch("starlite.storage.redis_backend.Redis")
 @patch("starlite.storage.redis_backend.ConnectionPool.from_url")
-@pytest.mark.usefixtures("mock_redis")
-def test_redis_backend_with_non_default(connection_pool_from_url_mock: Mock) -> None:
+def test_redis_backend_with_non_default(connection_pool_from_url_mock: Mock, mock_redis: Mock) -> None:
     url = "redis://localhost"
     db = 2
     port = 1234
     username = "user"
     password = "password"
-    cache = RedisStorageBackend.with_client(url=url, db=db, port=port, username=username, password=password)
-    assert cache._redis
+    backend = RedisStorageBackend.with_client(url=url, db=db, port=port, username=username, password=password)
     connection_pool_from_url_mock.assert_called_once_with(
         url=url, db=db, port=port, username=username, password=password, decode_responses=False
     )
+    mock_redis.assert_called_once_with(connection_pool=connection_pool_from_url_mock.return_value)
+    assert backend._redis is mock_redis.return_value
 
 
 async def test_file_backend_init_directory(file_storage_backend: FileStorageBackend) -> None:
@@ -140,9 +142,22 @@ async def test_file_backend_path(file_storage_backend: FileStorageBackend) -> No
     assert await (file_storage_backend.path / "foo").exists()
 
 
+async def test_redis_delete_all(redis_storage_backend: RedisStorageBackend) -> None:
+    keys = []
+    for i in range(10):
+        key = f"key-{i}"
+        keys.append(key)
+        await redis_storage_backend.set(key, b"value", expires=10 if i % 2 else None)
+
+    count_deleted = await redis_storage_backend.delete_all()
+
+    assert not any([await redis_storage_backend.get(key) for key in keys])
+    assert count_deleted == len(keys)
+
+
 def test_redis_namespaced_key(redis_storage_backend: RedisStorageBackend) -> None:
     assert redis_storage_backend.namespace == "STARLITE"
-    assert redis_storage_backend.make_key("foo") == "STARLITE_foo"
+    assert redis_storage_backend.make_key("foo") == "STARLITE:foo"
 
 
 def test_redis_with_namespace(redis_storage_backend: RedisStorageBackend) -> None:
@@ -158,7 +173,7 @@ def test_redis_namespace_explicit_none(fake_redis: Redis) -> None:
 
 def test_memcached_namespaced_key(memcached_storage_backend: MemcachedStorageBackend) -> None:
     assert memcached_storage_backend.namespace == "STARLITE"
-    assert memcached_storage_backend.make_key("foo") == "STARLITE_foo"
+    assert memcached_storage_backend.make_key("foo") == "STARLITE:foo"
 
 
 def test_memcached_with_namespace(memcached_storage_backend: MemcachedStorageBackend) -> None:

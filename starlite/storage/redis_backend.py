@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool
 
@@ -15,6 +17,43 @@ class RedisStorageBackend(NamespacedStorageBackend):
     def __init__(self, redis: Redis, namespace: str | None | EmptyType = Empty) -> None:
         super().__init__(namespace=namespace)
         self._redis = redis
+
+        # script to get and possibly renew a key in one atomic step
+        self._get_and_renew_script = self._redis.register_script(
+            b"""
+        local key = KEYS[1]
+        local renew = tonumber(ARGV[1])
+        local data = redis.call('GET', key)
+
+        if renew > 0 then
+            local ttl = redis.call('TTL', key)
+            if ttl > 0 then
+                redis.call('EXPIRE', key, renew)
+            end
+        end
+
+        return data
+        """
+        )
+
+        # script to delete all keys in the namespace
+        self._delete_all_script = self._redis.register_script(
+            b"""
+        local cursor = 0
+        local count_deleted = 0
+
+        repeat
+            local result = redis.call('SCAN', cursor, 'MATCH', ARGV[1])
+            for _,key in ipairs(result[2]) do
+                redis.call('UNLINK', key)
+                count_deleted = count_deleted + 1
+            end
+            cursor = tonumber(result[1])
+        until cursor == 0
+
+        return count_deleted
+        """
+        )
 
     @classmethod
     def with_client(
@@ -45,23 +84,15 @@ class RedisStorageBackend(NamespacedStorageBackend):
 
     async def get(self, key: str, renew: int | None = None) -> bytes | None:
         key = self.make_key(key)
-        data = await self._redis.get(key)
-        if renew:
-            ttl = await self._redis.ttl(key)
-            if ttl > 0:  # ensure an initial expiry time was set
-                await self._redis.expire(key, renew)
-        return data  # noqa: R504
+        data = await self._get_and_renew_script(keys=[key], args=[0 if renew is None else renew])
+        return cast("bytes | None", data)
 
     async def delete(self, key: str) -> None:
         await self._redis.delete(self.make_key(key))
 
-    async def delete_all(self) -> None:
+    async def delete_all(self) -> int:
         if not self.namespace:
             raise ImproperlyConfiguredException("Cannot perform delete operation: key_prefix not set")
 
-        pattern = f"{self.namespace}:*"
-        cursor: int | None = None
-        while (cursor is None) or cursor > 0:
-            cursor, keys = await self._redis.scan(cursor=cursor or 0, match=pattern, count=3000)
-            if keys:
-                await self._redis.delete(*keys)
+        count = await self._delete_all_script(keys=[], args=[self.key_prefix + "*"])
+        return cast("int", count)

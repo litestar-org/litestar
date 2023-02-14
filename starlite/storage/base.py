@@ -34,10 +34,12 @@ class NamespacedStorageBackend(StorageBackend):
     def __init__(self, namespace: str | None | EmptyType = Empty) -> None:
         self.namespace = "STARLITE" if namespace is Empty else namespace
 
+    @property
+    def key_prefix(self) -> str:
+        return f"{self.namespace}:" if self.namespace else ""
+
     def make_key(self, key: str) -> str:
-        if self.namespace:
-            return f"{self.namespace}_{key}"
-        return key
+        return self.key_prefix + key
 
     @abstractmethod
     def with_namespace(self, namespace: str) -> Self:
