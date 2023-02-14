@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - v1.51
 jobs:
   validate:
     runs-on: ubuntu-latest
