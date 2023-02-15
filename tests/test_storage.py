@@ -6,8 +6,10 @@ from unittest.mock import Mock, patch
 
 import anyio
 import pytest
+from _pytest.fixtures import FixtureRequest
 
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.storage.memory_backend import MemoryStorageBackend
 from starlite.storage.redis_backend import RedisStorageBackend
 
 if TYPE_CHECKING:
@@ -191,3 +193,22 @@ def test_redis_with_namespace(redis_storage_backend: RedisStorageBackend) -> Non
 def test_redis_namespace_explicit_none(fake_redis: Redis) -> None:
     assert RedisStorageBackend.with_client(url="redis://127.0.0.1", namespace=None).namespace is None
     assert RedisStorageBackend(redis=fake_redis, namespace=None).namespace is None
+
+
+@pytest.mark.parametrize("storage_backend_fixture", ["memory_storage_backend", "file_storage_backend"])
+async def test_memory_delete_expired(storage_backend_fixture: str, request: FixtureRequest) -> None:
+    storage_backend = request.getfixturevalue(storage_backend_fixture)
+
+    expect_expired = []
+    expect_not_expired = []
+    for i in range(10):
+        key = f"key-{i}"
+        expires_in = 0.001 if i % 2 == 0 else None
+        await storage_backend.set(key, b"value", expires_in=expires_in)
+        (expect_expired if expires_in else expect_not_expired).append(key)
+
+    await anyio.sleep(0.002)
+    await storage_backend.delete_expired()
+
+    assert not any([await storage_backend.exists(key) for key in expect_expired])
+    assert all([await storage_backend.exists(key) for key in expect_not_expired])

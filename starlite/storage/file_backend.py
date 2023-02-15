@@ -124,11 +124,11 @@ class FileStorageBackend(StorageBackend):
         await self.path.mkdir(exist_ok=True)
 
     async def delete_expired(self) -> None:
-        """Delete expired files.
+        """Delete expired items.
 
-        Since expired files are normally only cleared on access (i.e. when calling
+        Since expired items are normally only cleared on access (i.e. when calling
         :meth:`.get` or :meth:`.set`, this method should be called in regular intervals
-        to not let expired files amass.
+        to free disk space.
         """
         async for file in self.path.iterdir():
             wrapper = await self._load_from_path(file)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import anyio
 from anyio import Lock
 
 from .base import StorageBackend, StorageObject
@@ -80,7 +81,21 @@ class MemoryStorageBackend(StorageBackend):
         async with self._lock:
             self._store.clear()
 
-    # TODO: Add delete_expired method
+    async def delete_expired(self) -> None:
+        """Delete expired items.
+
+        Since expired items are normally only cleared on access (i.e. when calling
+        :meth:`.get` or :meth:`.set`, this method should be called in regular intervals
+        to free memory.
+        """
+        async with self._lock:
+            new_store = {}
+            for i, (key, storage_obj) in enumerate(self._store.items()):
+                if not storage_obj.expired:
+                    new_store[key] = storage_obj
+                if i % 1000 == 0:
+                    await anyio.sleep(0)
+            self._store = new_store
 
     async def exists(self, key: str) -> bool:
         """Check if a given ``key`` exists."""
