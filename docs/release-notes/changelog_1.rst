@@ -1,6 +1,11 @@
 1.x Changelog
 =============
 
+1.51.2
+------
+
+- Fix for security advisory https://github.com/starlite-api/starlite/security/advisories/GHSA-p24m-863f-fm6q
+
 1.51.1
 ------
 
