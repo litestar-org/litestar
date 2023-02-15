@@ -78,6 +78,7 @@ def create_test_client(
     initial_state: Optional[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]] = None,
     logging_config: Optional["BaseLoggingConfig"] = None,
     middleware: Optional[List["Middleware"]] = None,
+    multipart_form_part_limit: int = 1000,
     on_app_init: Optional[List["OnAppInitHandler"]] = None,
     on_shutdown: Optional[List["LifeSpanHandler"]] = None,
     on_startup: Optional[List["LifeSpanHandler"]] = None,
@@ -160,6 +161,8 @@ def create_test_client(
         initial_state: An object from which to initialize the app state.
         logging_config: A subclass of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>`.
         middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
+        multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request.
+            This limit is intended to protect from DoS attacks.
         on_app_init:  A sequence of :class:`OnAppInitHandler <starlite.types.OnAppInitHandler>` instances. Handlers receive
                 an instance of :class:`AppConfig <starlite.config.app.AppConfig>` that will have been initially populated with
                 the parameters passed to :class:`Starlite <starlite.app.Starlite>`, and must return an instance of same. If more
@@ -210,6 +213,7 @@ def create_test_client(
             initial_state=initial_state,
             logging_config=logging_config,
             middleware=middleware,
+            multipart_form_part_limit=multipart_form_part_limit,
             on_app_init=on_app_init,
             on_shutdown=on_shutdown,
             on_startup=on_startup,

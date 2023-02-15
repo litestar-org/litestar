@@ -178,6 +178,8 @@ class AppConfig(BaseModel):
     """A mapping of types to callables that transform them into types supported for serialization."""
     websocket_class: Optional[Type[WebSocket]]
     """An optional subclass of :class:`WebSocket <starlite.connection.websocket.WebSocket>` to use for websocket connections."""
+    multipart_form_part_limit: int
+    """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from DoS attacks."""
 
     @validator("allowed_hosts", always=True)
     def validate_allowed_hosts(  # pylint: disable=no-self-argument

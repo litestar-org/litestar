@@ -30,10 +30,11 @@ from typing import Any, DefaultDict, Dict, List, Tuple
 from urllib.parse import unquote
 
 from starlite.datastructures.upload_file import UploadFile
-from starlite.exceptions import SerializationException
+from starlite.exceptions import SerializationException, ValidationException
 from starlite.utils.serialization import decode_json
 
-_token, _quoted = r"([\w!#$%&'*+\-.^_`|~]+)", r'"([^"]*)"'
+_token = r"([\w!#$%&'*+\-.^_`|~]+)"
+_quoted = r'"([^"]*)"'
 _param = re.compile(rf";\s*{_token}=(?:{_token}|{_quoted})", re.ASCII)
 _firefox_quote_escape = re.compile(r'\\"(?!; |\s*$)')
 
@@ -59,12 +60,37 @@ def parse_content_header(value: str) -> Tuple[str, Dict[str, str]]:
     return value.strip().lower(), options
 
 
-def parse_multipart_form(body: bytes, boundary: bytes) -> Dict[str, Any]:
+def parse_body(body: bytes, boundary: bytes, multipart_form_part_limit: int) -> List[bytes]:
+    """Split the body using the boundary
+        and validate the number of form parts is within the allowed limit.
+
+    :param body: The form body.
+    :param boundary: The boundary used to separate form components.
+    :param multipart_form_part_limit: The limit of allowed form components
+    :return:
+        A list of form components.
+    """
+    if not (body and boundary):
+        return []
+
+    form_parts = body.split(boundary, multipart_form_part_limit + 3)[1:-1]
+
+    if len(form_parts) > multipart_form_part_limit:
+        raise ValidationException(
+            f"number of multipart components exceeds the allowed limit of {multipart_form_part_limit}, "
+            f"this potentially indicates a DoS attack"
+        )
+
+    return form_parts
+
+
+def parse_multipart_form(body: bytes, boundary: bytes, multipart_form_part_limit: int = 1000) -> Dict[str, Any]:
     """Parse multipart form data.
 
     Args:
         body: Body of the request.
         boundary: Boundary of the multipart message.
+        multipart_form_part_limit: Limit of the number of parts allowed.
 
     Returns:
         A dictionary of parsed results.
@@ -72,54 +98,52 @@ def parse_multipart_form(body: bytes, boundary: bytes) -> Dict[str, Any]:
 
     fields: DefaultDict[str, List[Any]] = defaultdict(list)
 
-    if body and boundary:
-        form_parts = body.split(boundary)
-        for form_part in form_parts[1:-1]:
-            file_name = None
-            content_type = "text/plain"
-            content_charset = "utf-8"
-            field_name = None
-            line_index = 2
-            line_end_index = 0
-            headers: List[Tuple[str, str]] = []
+    for form_part in parse_body(body=body, boundary=boundary, multipart_form_part_limit=multipart_form_part_limit):
+        file_name = None
+        content_type = "text/plain"
+        content_charset = "utf-8"
+        field_name = None
+        line_index = 2
+        line_end_index = 0
+        headers: List[Tuple[str, str]] = []
 
-            while line_end_index != -1:
-                line_end_index = form_part.find(b"\r\n", line_index)
-                form_line = form_part[line_index:line_end_index].decode("utf-8")
+        while line_end_index != -1:
+            line_end_index = form_part.find(b"\r\n", line_index)
+            form_line = form_part[line_index:line_end_index].decode("utf-8")
 
-                if not form_line:
-                    break
+            if not form_line:
+                break
 
-                line_index = line_end_index + 2
-                colon_index = form_line.index(":")
-                current_idx = colon_index + 2
-                form_header_field = form_line[0:colon_index].lower()
-                form_header_value, form_parameters = parse_content_header(form_line[current_idx:])
+            line_index = line_end_index + 2
+            colon_index = form_line.index(":")
+            current_idx = colon_index + 2
+            form_header_field = form_line[0:colon_index].lower()
+            form_header_value, form_parameters = parse_content_header(form_line[current_idx:])
 
-                if form_header_field == "content-disposition":
-                    field_name = form_parameters.get("name")
-                    file_name = form_parameters.get("filename")
+            if form_header_field == "content-disposition":
+                field_name = form_parameters.get("name")
+                file_name = form_parameters.get("filename")
 
-                    if file_name is None and (filename_with_asterisk := form_parameters.get("filename*")):
-                        encoding, _, value = decode_rfc2231(filename_with_asterisk)
-                        file_name = unquote(value, encoding=encoding or content_charset)
+                if file_name is None and (filename_with_asterisk := form_parameters.get("filename*")):
+                    encoding, _, value = decode_rfc2231(filename_with_asterisk)
+                    file_name = unquote(value, encoding=encoding or content_charset)
 
-                elif form_header_field == "content-type":
-                    content_type = form_header_value
-                    content_charset = form_parameters.get("charset", "utf-8")
-                headers.append((form_header_field, form_header_value))
+            elif form_header_field == "content-type":
+                content_type = form_header_value
+                content_charset = form_parameters.get("charset", "utf-8")
+            headers.append((form_header_field, form_header_value))
 
-            if field_name:
-                post_data = form_part[line_index:-4].lstrip(b"\r\n")
-                if file_name:
-                    form_file = UploadFile(
-                        content_type=content_type, filename=file_name, file_data=post_data, headers=dict(headers)
-                    )
-                    fields[field_name].append(form_file)
-                else:
-                    try:
-                        fields[field_name].append(decode_json(post_data))
-                    except SerializationException:
-                        fields[field_name].append(post_data.decode(content_charset))
+        if field_name:
+            post_data = form_part[line_index:-4].lstrip(b"\r\n")
+            if file_name:
+                form_file = UploadFile(
+                    content_type=content_type, filename=file_name, file_data=post_data, headers=dict(headers)
+                )
+                fields[field_name].append(form_file)
+            else:
+                try:
+                    fields[field_name].append(decode_json(post_data))
+                except SerializationException:
+                    fields[field_name].append(post_data.decode(content_charset))
 
     return {k: v if len(v) > 1 else v[0] for k, v in fields.items()}

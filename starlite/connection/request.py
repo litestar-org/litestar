@@ -150,7 +150,9 @@ class Request(Generic[User, Auth], ASGIConnection["HTTPRouteHandler", User, Auth
             content_type, options = self.content_type
             if content_type == RequestEncodingType.MULTI_PART:
                 self._form = self.scope["_form"] = form_values = parse_multipart_form(  # type: ignore[typeddict-item]
-                    body=await self.body(), boundary=options.get("boundary", "").encode()
+                    body=await self.body(),
+                    boundary=options.get("boundary", "").encode(),
+                    multipart_form_part_limit=self.app.multipart_form_part_limit,
                 )
                 return FormMultiDict(form_values)
             if content_type == RequestEncodingType.URL_ENCODED:

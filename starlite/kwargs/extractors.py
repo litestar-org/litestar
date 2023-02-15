@@ -19,6 +19,7 @@ from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
 from starlite.multipart import parse_multipart_form
+from starlite.params import BodyKwarg
 from starlite.parsers import (
     parse_headers,
     parse_query_string,
@@ -289,15 +290,25 @@ def create_multipart_extractor(
     Returns:
         An extractor function.
     """
+    body_kwarg_multipart_form_part_limit: Optional[int] = None
+    if signature_field.kwarg_model and isinstance(signature_field.kwarg_model, BodyKwarg):
+        body_kwarg_multipart_form_part_limit = signature_field.kwarg_model.multipart_form_part_limit
 
     async def extract_multipart(
         connection: "Request[Any, Any]",
     ) -> Any:
+        multipart_form_part_limit = (
+            body_kwarg_multipart_form_part_limit
+            if body_kwarg_multipart_form_part_limit is not None
+            else connection.app.multipart_form_part_limit
+        )
         connection.scope["_form"] = form_values = (  # type: ignore[typeddict-item]
             connection.scope["_form"]  # type: ignore[typeddict-item]
             if "_form" in connection.scope
             else parse_multipart_form(
-                body=await connection.body(), boundary=connection.content_type[-1].get("boundary", "").encode()
+                body=await connection.body(),
+                boundary=connection.content_type[-1].get("boundary", "").encode(),
+                multipart_form_part_limit=multipart_form_part_limit,
             )
         )
 

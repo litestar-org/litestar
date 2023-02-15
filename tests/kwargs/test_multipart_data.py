@@ -10,7 +10,7 @@ from pydantic import BaseConfig, BaseModel
 
 from starlite import Body, Request, RequestEncodingType, post
 from starlite.datastructures import UploadFile
-from starlite.status_codes import HTTP_201_CREATED
+from starlite.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 from tests.kwargs import Form
@@ -405,3 +405,40 @@ def test_optional_formdata() -> None:
     with create_test_client(route_handlers=[hello_world]) as client:
         response = client.post("/")
         assert response.status_code == HTTP_201_CREATED
+
+
+@pytest.mark.parametrize("limit", (1000, 100, 10))
+def test_multipart_form_part_limit(limit: int) -> None:
+    @post("/")
+    async def hello_world(data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+        assert len(data) == limit
+
+    with create_test_client(route_handlers=[hello_world], multipart_form_part_limit=limit) as client:
+        data = {str(i): "a" for i in range(limit)}
+        response = client.post("/", files=data)
+        assert response.status_code == HTTP_201_CREATED
+
+        data = {str(i): "a" for i in range(limit)}
+        data[str(limit + 1)] = "b"
+        response = client.post("/", files=data)
+        assert response.status_code == HTTP_400_BAD_REQUEST
+
+
+def test_multipart_form_part_limit_body_param_precedence() -> None:
+    app_limit = 100
+    route_limit = 10
+
+    @post("/")
+    async def hello_world(
+        data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART, multipart_form_part_limit=route_limit)
+    ) -> None:
+        assert len(data) == route_limit
+
+    with create_test_client(route_handlers=[hello_world], multipart_form_part_limit=app_limit) as client:
+        data = {str(i): "a" for i in range(route_limit)}
+        response = client.post("/", files=data)
+        assert response.status_code == HTTP_201_CREATED
+
+        data = {str(i): "a" for i in range(route_limit + 1)}
+        response = client.post("/", files=data)
+        assert response.status_code == HTTP_400_BAD_REQUEST
