@@ -213,8 +213,8 @@ def test_redis_namespace_explicit_none(fake_redis: Redis) -> None:
 async def test_memory_delete_expired(storage_backend_fixture: str, request: FixtureRequest) -> None:
     storage_backend = request.getfixturevalue(storage_backend_fixture)
 
-    expect_expired = []
-    expect_not_expired = []
+    expect_expired: list[str] = []
+    expect_not_expired: list[str] = []
     for i in range(10):
         key = f"key-{i}"
         expires_in = 0.001 if i % 2 == 0 else None
