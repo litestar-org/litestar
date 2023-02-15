@@ -788,6 +788,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "ekeric13",
+      "name": "Eric Kennedy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6489651?v=4",
+      "profile": "https://codepen.io/ekeric13/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
