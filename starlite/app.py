@@ -15,7 +15,7 @@ from typing import (
 )
 
 from pydantic_openapi_schema import construct_open_api_with_schema_class
-from typing_extensions import TypedDict
+from typing_extensions import Self, TypedDict
 
 from starlite.asgi import ASGIRouter
 from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -451,6 +451,18 @@ class Starlite(Router):
             return
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
+
+    @classmethod
+    def from_config(cls, config: AppConfig) -> Self:
+        """Initialize a ``Starlite`` application from a configuration instance.
+
+        Args:
+            config: An instance of :class:`AppConfig` <startlite.config.AppConfig>
+
+        Returns:
+            An instance of ``Starlite`` application.
+        """
+        return cls(**dict(config))
 
     def register(  # type: ignore[override]
         self, value: "ControllerRouterHandler", add_to_openapi_schema: bool = False
