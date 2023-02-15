@@ -59,7 +59,7 @@ html[data-theme="light"], html[data-theme="dark"] {
 
 .bd-sidebar-primary {
 	flex: 0 0 18%;
-	overflow-y: initial;
+	overflow-y: scroll;
 }
 
 
