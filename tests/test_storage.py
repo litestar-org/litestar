@@ -7,6 +7,7 @@ from unittest.mock import Mock, patch
 import anyio
 import pytest
 
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.storage.redis_backend import RedisStorageBackend
 
 if TYPE_CHECKING:
@@ -121,7 +122,18 @@ async def test_file_backend_path(file_storage_backend: FileStorageBackend) -> No
     assert await (file_storage_backend.path / "foo").exists()
 
 
+async def test_redis_namespaced_get_set(redis_storage_backend: RedisStorageBackend) -> None:
+    foo_namespaced = redis_storage_backend.with_namespace("foo")
+    await redis_storage_backend.set("foo", b"starlite namespace")
+    await foo_namespaced.set("foo", b"foo namespace")
+
+    assert await redis_storage_backend.get("foo") == b"starlite namespace"
+    assert await foo_namespaced.get("foo") == b"foo namespace"
+
+
 async def test_redis_delete_all(redis_storage_backend: RedisStorageBackend) -> None:
+    await redis_storage_backend._redis.set("test_key", b"test_value")
+
     keys = []
     for i in range(10):
         key = f"key-{i}"
@@ -131,17 +143,49 @@ async def test_redis_delete_all(redis_storage_backend: RedisStorageBackend) -> N
     await redis_storage_backend.delete_all()
 
     assert not any([await redis_storage_backend.get(key) for key in keys])
+    assert await redis_storage_backend._redis.get("test_key") == b"test_value"  # check it doesn't delete other values
+
+
+async def test_redis_delete_all_namespace_does_not_propagate_up(redis_storage_backend: RedisStorageBackend) -> None:
+    foo_namespace = redis_storage_backend.with_namespace("FOO")
+    await foo_namespace.set("foo", b"foo-value")
+    await redis_storage_backend.set("bar", b"bar-value")
+
+    await foo_namespace.delete_all()
+
+    assert await foo_namespace.get("foo") is None
+    assert await redis_storage_backend.get("bar") == b"bar-value"
+
+
+async def test_redis_delete_all_namespace_propagates_down(redis_storage_backend: RedisStorageBackend) -> None:
+    foo_namespace = redis_storage_backend.with_namespace("FOO")
+    await foo_namespace.set("foo", b"foo-value")
+    await redis_storage_backend.set("bar", b"bar-value")
+
+    await redis_storage_backend.delete_all()
+
+    assert await foo_namespace.get("foo") is None
+    assert await redis_storage_backend.get("bar") is None
+
+
+async def test_redis_delete_all_no_namespace_raises(fake_redis: Redis) -> None:
+    redis_storage_backend = RedisStorageBackend(redis=fake_redis, namespace=None)
+
+    with pytest.raises(ImproperlyConfiguredException):
+        await redis_storage_backend.delete_all()
 
 
 def test_redis_namespaced_key(redis_storage_backend: RedisStorageBackend) -> None:
     assert redis_storage_backend.namespace == "STARLITE"
-    assert redis_storage_backend.make_key("foo") == "STARLITE:foo"
+    assert redis_storage_backend._make_key("foo") == "STARLITE:foo"
 
 
 def test_redis_with_namespace(redis_storage_backend: RedisStorageBackend) -> None:
-    namespaced = redis_storage_backend.with_namespace("TEST")
-    assert namespaced.namespace == "STARLITE_TEST"
-    assert namespaced._redis is redis_storage_backend._redis
+    namespaced_test = redis_storage_backend.with_namespace("TEST")
+    namespaced_test_foo = namespaced_test.with_namespace("FOO")
+    assert namespaced_test.namespace == "STARLITE_TEST"
+    assert namespaced_test_foo.namespace == "STARLITE_TEST_FOO"
+    assert namespaced_test._redis is redis_storage_backend._redis
 
 
 def test_redis_namespace_explicit_none(fake_redis: Redis) -> None:

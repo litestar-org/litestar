@@ -16,11 +16,16 @@ if TYPE_CHECKING:
 
 
 class FileStorageBackend(StorageBackend):
-    """Session backend to store data in files."""
+    """File based, thread and process safe, asynchronous key/value store."""
 
     __slots__ = ("path",)
 
     def __init__(self, path: PathLike) -> None:
+        """Initialize ``FileStorageBackend``.
+
+        Args:
+            path: Path to store data under
+        """
         self.path = Path(path)
 
     @staticmethod
@@ -53,12 +58,34 @@ class FileStorageBackend(StorageBackend):
         await run_sync(self._write_sync, target_file, storage_obj)
 
     async def set(self, key: str, value: bytes, expires_in: int | timedelta | None = None) -> None:
+        """Set a value.
+
+        Args:
+            key: Key to associate the value with
+            value: Value to store
+            expires_in: Time in seconds before the key is considered expired
+
+        Returns:
+            ``None``
+        """
         await self.path.mkdir(exist_ok=True)
         path = self.path / key
         storage_obj = StorageObject.new(data=value, expires_in=expires_in)
         await self._write(path, storage_obj)
 
     async def get(self, key: str, renew_for: int | timedelta | None = None) -> bytes | None:
+        """Get a value.
+
+        Args:
+            key: Key associated with the value
+            renew_for: If given and the value had an initial expiry time set, renew the
+                expiry time for ``renew_for`` seconds. If the value has not been set
+                with an expiry time this is a no-op
+
+        Returns:
+            The value associated with ``key`` if it exists and is not expired, else
+            ``None``
+        """
         path = self.path / key
         storage_obj = await self._load_from_path(path)
 
@@ -75,24 +102,48 @@ class FileStorageBackend(StorageBackend):
         return storage_obj.data
 
     async def delete(self, key: str) -> None:
+        """Delete a value.
+
+        If no such key exists, this is a no-op.
+
+        Args:
+            key: Key of the value to delete
+        """
         path = self.path / key
         await path.unlink(missing_ok=True)
 
     async def delete_all(self) -> None:
+        """Delete all stored values.
+
+        .. note::
+
+            This deletes and recreates :attr:`FileStorageBackend.path`
+        """
+
         await run_sync(shutil.rmtree, self.path)
         await self.path.mkdir(exist_ok=True)
 
     async def delete_expired(self) -> None:
+        """Delete expired files.
+
+        Since expired files are normally only cleared on access (i.e. when calling
+        :meth:`.get` or :meth:`.set`, this method should be called in regular intervals
+        to not let expired files amass.
+        """
         async for file in self.path.iterdir():
             wrapper = await self._load_from_path(file)
             if wrapper and wrapper.expired:
                 await file.unlink(missing_ok=True)
 
     async def exists(self, key: str) -> bool:
+        """Check if a given ``key`` exists."""
         path = self.path / key
         return await path.exists()
 
     async def expires_in(self, key: str) -> int | None:
+        """Get the time in seconds ``key`` expires in. If no such ``key`` exists or no
+        expiry time was set, return ``None``.
+        """
         if storage_obj := await self._load_from_path(self.path / key):
             return storage_obj.expires_in
         return None
