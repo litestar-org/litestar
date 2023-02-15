@@ -168,7 +168,7 @@ class RedisStorageBackend(StorageBackend):
         """Get the time in seconds ``key`` expires in. If no such ``key`` exists or no
         expiry time was set, return ``None``.
         """
-        ttl = await self._redis.ttl(key)
+        ttl = await self._redis.ttl(self._make_key(key))
         if ttl == -2:
             return None
         return ttl

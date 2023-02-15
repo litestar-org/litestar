@@ -9,7 +9,6 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.storage.memory_backend import MemoryStorageBackend
 from starlite.storage.redis_backend import RedisStorageBackend
 
 if TYPE_CHECKING:
@@ -83,6 +82,21 @@ async def test_delete(storage_backend: StorageBackend) -> None:
 async def test_delete_empty(storage_backend: StorageBackend) -> None:
     # assert that this does not raise an exception
     await storage_backend.delete("foo")
+
+
+async def test_exists(storage_backend: StorageBackend) -> None:
+    assert await storage_backend.exists("foo") is False
+
+    await storage_backend.set("foo", b"bar")
+
+    assert await storage_backend.exists("foo") is True
+
+
+async def test_expires_in_not_set(storage_backend: StorageBackend) -> None:
+    assert await storage_backend.expires_in("foo") is None
+
+    await storage_backend.set("foo", b"bar")
+    assert await storage_backend.expires_in("foo") == -1
 
 
 @patch("starlite.storage.redis_backend.Redis")
