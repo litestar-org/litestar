@@ -1,7 +1,8 @@
+from pathlib import Path
+
 from starlite import Starlite, get
-from starlite.config import LoggingConfig
+from starlite.config import StaticFilesConfig
 from starlite.exceptions import MissingDependencyException
-from starlite.middleware import LoggingMiddlewareConfig
 
 
 @get("/")
@@ -9,12 +10,11 @@ async def handler() -> dict[str, str]:
     return {"hello": "world"}
 
 
-logging_middleware_config = LoggingMiddlewareConfig()
-
 app = Starlite(
-    route_handlers=[handler],
-    logging_config=LoggingConfig(),
-    middleware=[logging_middleware_config.middleware],
+    route_handlers=[],
+    static_files_config=[
+        StaticFilesConfig(directories=[Path(__file__).parent / "public"], path="/", html_mode=True),
+    ],
 )
 
 
