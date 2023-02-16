@@ -4,9 +4,10 @@ starlite.utils
 .. toctree::
     :maxdepth: 1
 
-    predicates
-    sync
-    scope
     exception
     extractors
+    pagination
+    predicates
+    scope
     serialization
+    sync

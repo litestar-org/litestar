@@ -1,0 +1,171 @@
+HTMX Request Class
+=====================
+
+This class extends the Starlite request class to allow it to read headers sent by the `htmx` client and make them accessible via properties.
+
+.. code-block:: python
+
+    from starlite.contrib.htmx.request import HTMXRequest
+    from starlite.contrib.htmx.response import HTMXTemplate
+
+
+    @get(path="/form")
+    def get_form(request: HTMXRequest) -> Template:
+        htmx = request.htmx  #  if true will return HTMXDetails class object
+        if htmx:
+            print(htmx.current_url)
+        # OR
+        if request.htmx:
+            print(request.htmx.current_url)
+        return HTMXTemplate(name="partial.html", context=context, push_url="/form")
+
+
+See :class:`HTMXDetails <starlite.contrib.htmx.request.HTMXDetails>` for a full list of available properties.
+
+
+HTMX Response Classes
+---------------------
+
+
+HTMXTemplate Response Classes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The most common  use-case for `htmx` to render an html page or html snippet. Starlite makes this easy by providing
+an :class:`HTMXTemplate <starlite.contrib.htmx.response.HTMXTemplate>` response:
+
+.. code-block:: python
+
+    from starlite.contrib.htmx.response import HTMXTemplate
+
+
+    @get(path="/form")
+    def get_form(
+        request: HTMXRequest,
+    ) -> Template:  # Return type is Template and not HTMXTemplate.
+        ...
+        return HTMXTemplate(
+            name="partial.html",
+            context=context,
+            # Optional parameters
+            push_url="/form",  # update browser history
+            re_swap="outerHTML",  # change swapping method
+            re_target="#new-target",  # change target element
+            trigger_event="showMessage",  # trigger event name
+            params={"alert": "Confirm your Choice."},  # parameter to pass to the event
+            after="receive"  #  when to trigger event,
+            # possible values 'receive', 'settle' and 'swap'
+        )
+
+.. note::
+    - Return type is starlite's ``Template`` and not ``HTMXTemplate``.
+    - ``trigger_event``, ``params`` and ``after parameters`` are linked to one another.
+    - If you are triggering an event then ``after`` is required and it must be one of ``receive``, ``settle`` or ``swap``.
+
+HTMX provides two types of responses - one that donsn't allow changes to the DOM and one that does.
+Starlite supports both of these:
+
+1 - Responses that don't make any changes to DOM.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use :class:`HXStopPolling <starlite.contrib.htmx.response.HXStopPolling>` to stop polling for a response.
+
+.. code-block:: python
+
+    @get("/")
+    def handler() -> HXStopPolling:
+        ...
+        return HXStopPolling()
+
+Use :class:`ClientRedirect  <starlite.contrib.htmx.response.ClientRedirect>` to redirect with a page reload.
+
+.. code-block:: python
+
+    @get("/")
+    def handler() -> ClientRedirect:
+        ...
+        return ClientRedirect(redirect_to="/contact-us")
+
+Use :class:`ClientRefresh  <starlite.contrib.htmx.response.ClientRefresh>` to force a full page refresh.
+
+.. code-block:: python
+
+    @get("/")
+    def handler() -> ClientRefresh:
+        ...
+        return ClientRefresh()
+
+2 - Responses that may change DOM.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Use :class:`HXLocation <starlite.contrib.htmx.response.HXLocation>` to redirect to a new location without page reload.
+
+- Note: this class provides the ability to change ``target``, ``swapping`` method, the sent ``values`` and the ``headers``.)
+
+.. code-block:: python
+
+    @get("/about")
+    def handler() -> HXLocation:
+        ...
+        return HXLocation(
+            redirect_to="/contact-us",
+            # Optional parameters
+            source,  # the source element of the request.
+            event,  # an event that "triggered" the request.
+            target="#target",  # element id to target to.
+            swap="outerHTML",  # swapping method to use.
+            hx_headers={"attr": "val"},  # headers to pass to htmx.
+            values={"val": "one"},
+        )  # values to submit with response.
+
+Use :class:`PushUrl <starlite.contrib.htmx.response.PushUrl>` to carry a response and push a url to the browser, optionally updating the `history` stack.
+
+- Note: If the value for ``push_url`` is set to ``False`` it will prevent updating browser history.
+
+.. code-block:: python
+
+    @get("/about")
+    def handler() -> PushUrl:
+        ...
+        return PushUrl(content="Success!", push_url="/about")
+
+Use :class:`ReplaceUrl <starlite.contrib.htmx.response.ReplaceUrl>` to carry a response and replace the url in the browser's ``location`` bar.
+- Note: If the value to ``replace_url`` is set to ``False`` it will prevent it updating the browser location bar.
+
+.. code-block:: python
+
+    @get("/contact-us")
+    def handler() -> ReplaceUrl:
+        ...
+        return ReplaceUrl(content="Success!", replace_url="/contact-us")
+
+Use :class:`Reswap <starlite.contrib.htmx.response.Reswap>` to carry a response perhaps a swap
+
+.. code-block:: python
+
+    @get("/contact-us")
+    def handler() -> Reswap:
+        ...
+        return Reswap(content="Success!", method="beforebegin")
+
+Use :class:`Retarget <starlite.contrib.htmx.response.Retarget>` to carry a response and change the target element.
+
+.. code-block:: python
+
+    @get("/contact-us")
+    def handler() -> Retarget:
+        ...
+        return Retarget(content="Success!", target="#new-target")
+
+Use :class:`TriggerEvent <starlite.contrib.htmx.response.TriggerEvent>` to carry a response and trigger an event.
+
+.. code-block:: python
+
+    @get("/contact-us")
+    def handler() -> TriggerEvent:
+        ...
+        return TriggerEvent(
+            content="Success!",
+            name="showMessage",
+            params={"attr": "value"},
+            after="receive",  # possible values 'receive', 'settle' and 'swap'
+        )

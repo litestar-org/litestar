@@ -144,7 +144,7 @@ HTTP route handlers
 -------------------
 
 The most commonly used route handlers are those that handle http requests and responses. These route handlers all
-inherit from the class :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>`, which
+inherit from the class :class:`HTTPRouteHandler <starlite.handlers.http_handlers.HTTPRouteHandler>`, which
 is aliased as the decorator called :func:`route <starlite.handlers.route>`:
 
 .. code-block:: python
@@ -236,7 +236,7 @@ These are used exactly like ``route`` with the sole exception that you cannot co
    def delete_resource(pk: int) -> None:
        ...
 
-Although these decorators are merely subclasses of :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>`
+Although these decorators are merely subclasses of :class:`HTTPRouteHandler <starlite.handlers.http_handlers.HTTPRouteHandler>`
 that pre-set the ``http_method``\ , using *get*\ , *patch*\ , *put*\ , *delete* or *post* instead of *route* makes the
 code clearer and simpler.
 
@@ -288,7 +288,7 @@ Starlite supports Websockets via the :func:`websocket <starlite.handlers.websock
        await socket.close()
 
 The\ ``websocket`` decorator is an alias of the class
-:class:`WebsocketRouteHandler <starlite.handlers.websocket.WebsocketRouteHandler>`. Thus, the below
+:class:`WebsocketRouteHandler <starlite.handlers.websocket_handlers.WebsocketRouteHandler>`. Thus, the below
 code is equivalent to the one above:
 
 .. code-block:: python

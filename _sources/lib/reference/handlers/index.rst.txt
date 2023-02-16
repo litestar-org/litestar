@@ -6,6 +6,6 @@ starlite.handlers
     :maxdepth: 1
 
     base
-    asgi
-    http
-    websocket
+    asgi_handlers
+    http_handlers
+    websocket_handlers
