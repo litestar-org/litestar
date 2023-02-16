@@ -21,7 +21,7 @@ def test_default_static_files_config(tmpdir: "Path") -> None:
     path.write_text("content", "utf-8")
     static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
 
-    with create_test_client([], static_files_config=static_files_config) as client:
+    with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/static/test.txt")
         assert response.status_code == HTTP_200_OK, response.text
         assert response.text == "content"
@@ -83,9 +83,9 @@ def test_static_files_config_with_multiple_directories(tmpdir: "Path", file_syst
 
     with create_test_client(
         [],
-        static_files_config=StaticFilesConfig(
-            path="/static", directories=[root1, root2], file_system=file_system  # pyright: ignore
-        ),
+        static_files_config=[
+            StaticFilesConfig(path="/static", directories=[root1, root2], file_system=file_system)  # pyright: ignore
+        ],
     ) as client:
         response = client.get("/static/test1.txt")
         assert response.status_code == HTTP_200_OK
@@ -96,15 +96,26 @@ def test_static_files_config_with_multiple_directories(tmpdir: "Path", file_syst
         assert response.text == "content2"
 
 
-def test_staticfiles_for_slash_path(tmpdir: "Path") -> None:
+def test_staticfiles_for_slash_path_regular_mode(tmpdir: "Path") -> None:
     path = tmpdir / "text.txt"
     path.write_text("content", "utf-8")
 
     static_files_config = StaticFilesConfig(path="/", directories=[tmpdir])
-    with create_test_client([], static_files_config=static_files_config) as client:
+    with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/text.txt")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
+
+
+def test_staticfiles_for_slash_path_html_mode(tmpdir: "Path") -> None:
+    path = tmpdir / "index.html"
+    path.write_text("<html></html>", "utf-8")
+
+    static_files_config = StaticFilesConfig(path="/", directories=[tmpdir], html_mode=True)
+    with create_test_client([], static_files_config=[static_files_config]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "<html></html>"
 
 
 def test_sub_path_under_static_path(tmpdir: "Path") -> None:
@@ -116,7 +127,7 @@ def test_sub_path_under_static_path(tmpdir: "Path") -> None:
         return f
 
     with create_test_client(
-        handler, static_files_config=StaticFilesConfig(path="/static", directories=[tmpdir])
+        handler, static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])]
     ) as client:
         response = client.get("/static/test.txt")
         assert response.status_code == HTTP_200_OK
@@ -130,7 +141,7 @@ def test_static_substring_of_self(tmpdir: "Path") -> None:
     path.write_text("content", "utf-8")
 
     static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
-    with create_test_client([], static_files_config=static_files_config) as client:
+    with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/static/static_part/static/test.txt")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
@@ -144,7 +155,7 @@ def test_static_files_response_mimetype(tmpdir: "Path", extension: str) -> None:
     static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir])
     expected_mime_type = mimetypes.guess_type(fn)[0]
 
-    with create_test_client([], static_files_config=static_files_config) as client:
+    with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get(f"/static/{fn}")
         assert expected_mime_type
         assert response.status_code == HTTP_200_OK
@@ -158,7 +169,7 @@ def test_static_files_content_disposition(tmpdir: "Path", send_as_attachment: bo
 
     static_files_config = StaticFilesConfig(path="/static", directories=[tmpdir], send_as_attachment=send_as_attachment)
 
-    with create_test_client([], static_files_config=static_files_config) as client:
+    with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/static/static_part/static/test.txt")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-disposition"].startswith(disposition)
