@@ -1,7 +1,7 @@
 Exceptions and exception handling
 =================================
 
-Starlite define a base exception called :class:`StarliteException <starlite.exceptions.StarliteException>` which serves
+Starlite define a base exception called :class:`StarliteException <starlite.exceptions.StarLiteException>` which serves
 as a basis to all other exceptions.
 
 In general, Starlite will raise two types of exceptions:
