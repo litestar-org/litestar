@@ -472,6 +472,9 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../handlers/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../handlers/asgi_handlers.html">asgi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../handlers/http_handlers.html">http</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../handlers/websocket_handlers.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -533,6 +536,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
 </ul>
 
   </div>
@@ -566,6 +570,33 @@
               
   <section id="module-starlite.connection.base">
 <span id="base"></span><h1>base<a class="headerlink" href="#module-starlite.connection.base" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.connection.base.empty_receive">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.connection.base.</span></span><span class="sig-name descname"><span class="pre">empty_receive</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NoReturn</span></span></span><a class="headerlink" href="#starlite.connection.base.empty_receive" title="Permalink to this definition">#</a></dt>
+<dd><p>Raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>.</p>
+<p>Serves as a placeholder <code class="docutils literal notranslate"><span class="pre">send</span></code> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.11)"><strong>RuntimeError</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.connection.base.empty_send">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.connection.base.</span></span><span class="sig-name descname"><span class="pre">empty_send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Message</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NoReturn</span></span></span><a class="headerlink" href="#starlite.connection.base.empty_send" title="Permalink to this definition">#</a></dt>
+<dd><p>Raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>.</p>
+<p>Serves as a placeholder <code class="docutils literal notranslate"><span class="pre">send</span></code> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>_</strong> – An ASGI message</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.11)"><strong>RuntimeError</strong></a> – </p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="starlite.connection.base.ASGIConnection">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.connection.base.</span></span><span class="sig-name descname"><span class="pre">ASGIConnection</span></span><a class="headerlink" href="#starlite.connection.base.ASGIConnection" title="Permalink to this definition">#</a></dt>
@@ -894,6 +925,24 @@ enabled, this will cause the session data to be cleared.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.connection.base.empty_receive">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     empty_receive()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.connection.base.empty_send">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     empty_send()
+    </span>
+   </code>
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#starlite.connection.base.ASGIConnection">
    <code class="docutils literal notranslate">

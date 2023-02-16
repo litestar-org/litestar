@@ -472,6 +472,9 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="handlers/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="handlers/asgi_handlers.html">asgi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="handlers/http_handlers.html">http</a></li>
+<li class="toctree-l3"><a class="reference internal" href="handlers/websocket_handlers.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -533,6 +536,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
 </ul>
 
   </div>
@@ -566,6 +570,299 @@
               
   <section id="module-starlite.testing">
 <span id="starlite-testing"></span><h1>starlite.testing<a class="headerlink" href="#module-starlite.testing" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.testing.</span></span><span class="sig-name descname"><span class="pre">AsyncTestClient</span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncClient</span></code>, <a class="reference internal" href="#starlite.testing.BaseTestClient" title="starlite.testing.client.base.BaseTestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTestClient</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'http://testserver.local'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_server_exceptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.11)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'asyncio'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'trio'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'asyncio'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="middleware/session/base.html#starlite.middleware.session.base.BaseBackendConfig" title="starlite.middleware.session.base.BaseBackendConfig"><span class="pre">BaseBackendConfig</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">CookieTypes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.testing.AsyncTestClient.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>An Async client implementation providing a context manager for testing applications asynchronously.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>app</strong> – The instance of <a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> under test.</p></li>
+<li><p><strong>base_url</strong> – URL scheme and domain for test request paths, e.g. ‘<a class="reference external" href="http://testserver">http://testserver</a>’.</p></li>
+<li><p><strong>raise_server_exceptions</strong> – Flag for the underlying test client to raise server exceptions instead of
+wrapping them in an HTTP response.</p></li>
+<li><p><strong>root_path</strong> – Path prefix for requests.</p></li>
+<li><p><strong>backend</strong> – The async backend to use, options are “asyncio” or “trio”.</p></li>
+<li><p><strong>backend_options</strong> – ‘anyio’ options.</p></li>
+<li><p><strong>session_config</strong> – Configuration for Session Middleware class to create raw session cookies for request to the
+route handlers.</p></li>
+<li><p><strong>cookies</strong> – Cookies to set on the client.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.request">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url:</span> <span class="pre">URLTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content:</span> <span class="pre">~typing.Optional[RequestContent]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">~typing.Optional[RequestData]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files:</span> <span class="pre">~typing.Optional[RequestFiles]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json:</span> <span class="pre">~typing.Optional[~typing.Any]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params:</span> <span class="pre">~typing.Optional[QueryParamTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers:</span> <span class="pre">~typing.Optional[HeaderTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies:</span> <span class="pre">~typing.Optional[CookieTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth:</span> <span class="pre">~typing.Optional[~typing.Union[AuthTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_redirects:</span> <span class="pre">~typing.Union[bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout:</span> <span class="pre">~typing.Union[TimeoutTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions:</span> <span class="pre">~typing.Optional[~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient.request" title="Permalink to this definition">#</a></dt>
+<dd><p>Sends a request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> – An HTTP method.</p></li>
+<li><p><strong>url</strong> – URL or path for the request.</p></li>
+<li><p><strong>content</strong> – Request content.</p></li>
+<li><p><strong>data</strong> – Form encoded data.</p></li>
+<li><p><strong>files</strong> – Multipart files to send.</p></li>
+<li><p><strong>json</strong> – JSON data to send.</p></li>
+<li><p><strong>params</strong> – Query parameters.</p></li>
+<li><p><strong>headers</strong> – Request headers.</p></li>
+<li><p><strong>cookies</strong> – Request cookies.</p></li>
+<li><p><strong>auth</strong> – Auth headers.</p></li>
+<li><p><strong>follow_redirects</strong> – Whether to follow redirects.</p></li>
+<li><p><strong>timeout</strong> – Request timeout.</p></li>
+<li><p><strong>extensions</strong> – Dictionary of ASGI extensions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An HTTPX Response.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url:</span> <span class="pre">URLTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params:</span> <span class="pre">~typing.Optional[QueryParamTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers:</span> <span class="pre">~typing.Optional[HeaderTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies:</span> <span class="pre">~typing.Optional[CookieTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth:</span> <span class="pre">~typing.Union[AuthTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_redirects:</span> <span class="pre">~typing.Union[bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout:</span> <span class="pre">~typing.Union[TimeoutTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions:</span> <span class="pre">~typing.Optional[~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient.get" title="Permalink to this definition">#</a></dt>
+<dd><p>Sends a GET request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – URL or path for the request.</p></li>
+<li><p><strong>params</strong> – Query parameters.</p></li>
+<li><p><strong>headers</strong> – Request headers.</p></li>
+<li><p><strong>cookies</strong> – Request cookies.</p></li>
+<li><p><strong>auth</strong> – Auth headers.</p></li>
+<li><p><strong>follow_redirects</strong> – Whether to follow redirects.</p></li>
+<li><p><strong>timeout</strong> – Request timeout.</p></li>
+<li><p><strong>extensions</strong> – Dictionary of ASGI extensions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An HTTPX Response.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.options">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url:</span> <span class="pre">URLTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params:</span> <span class="pre">~typing.Optional[QueryParamTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers:</span> <span class="pre">~typing.Optional[HeaderTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies:</span> <span class="pre">~typing.Optional[CookieTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth:</span> <span class="pre">~typing.Union[AuthTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_redirects:</span> <span class="pre">~typing.Union[bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout:</span> <span class="pre">~typing.Union[TimeoutTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions:</span> <span class="pre">~typing.Optional[~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient.options" title="Permalink to this definition">#</a></dt>
+<dd><p>Sends an OPTIONS request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – URL or path for the request.</p></li>
+<li><p><strong>params</strong> – Query parameters.</p></li>
+<li><p><strong>headers</strong> – Request headers.</p></li>
+<li><p><strong>cookies</strong> – Request cookies.</p></li>
+<li><p><strong>auth</strong> – Auth headers.</p></li>
+<li><p><strong>follow_redirects</strong> – Whether to follow redirects.</p></li>
+<li><p><strong>timeout</strong> – Request timeout.</p></li>
+<li><p><strong>extensions</strong> – Dictionary of ASGI extensions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An HTTPX Response.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.head">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url:</span> <span class="pre">URLTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params:</span> <span class="pre">~typing.Optional[QueryParamTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers:</span> <span class="pre">~typing.Optional[HeaderTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies:</span> <span class="pre">~typing.Optional[CookieTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth:</span> <span class="pre">~typing.Union[AuthTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_redirects:</span> <span class="pre">~typing.Union[bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout:</span> <span class="pre">~typing.Union[TimeoutTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions:</span> <span class="pre">~typing.Optional[~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient.head" title="Permalink to this definition">#</a></dt>
+<dd><p>Sends a HEAD request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – URL or path for the request.</p></li>
+<li><p><strong>params</strong> – Query parameters.</p></li>
+<li><p><strong>headers</strong> – Request headers.</p></li>
+<li><p><strong>cookies</strong> – Request cookies.</p></li>
+<li><p><strong>auth</strong> – Auth headers.</p></li>
+<li><p><strong>follow_redirects</strong> – Whether to follow redirects.</p></li>
+<li><p><strong>timeout</strong> – Request timeout.</p></li>
+<li><p><strong>extensions</strong> – Dictionary of ASGI extensions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An HTTPX Response.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.post">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">post</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url:</span> <span class="pre">URLTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content:</span> <span class="pre">~typing.Optional[RequestContent]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">~typing.Optional[RequestData]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files:</span> <span class="pre">~typing.Optional[RequestFiles]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json:</span> <span class="pre">~typing.Optional[~typing.Any]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params:</span> <span class="pre">~typing.Optional[QueryParamTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers:</span> <span class="pre">~typing.Optional[HeaderTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies:</span> <span class="pre">~typing.Optional[CookieTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth:</span> <span class="pre">~typing.Union[AuthTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_redirects:</span> <span class="pre">~typing.Union[bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout:</span> <span class="pre">~typing.Union[TimeoutTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions:</span> <span class="pre">~typing.Optional[~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient.post" title="Permalink to this definition">#</a></dt>
+<dd><p>Sends a POST request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – URL or path for the request.</p></li>
+<li><p><strong>content</strong> – Request content.</p></li>
+<li><p><strong>data</strong> – Form encoded data.</p></li>
+<li><p><strong>files</strong> – Multipart files to send.</p></li>
+<li><p><strong>json</strong> – JSON data to send.</p></li>
+<li><p><strong>params</strong> – Query parameters.</p></li>
+<li><p><strong>headers</strong> – Request headers.</p></li>
+<li><p><strong>cookies</strong> – Request cookies.</p></li>
+<li><p><strong>auth</strong> – Auth headers.</p></li>
+<li><p><strong>follow_redirects</strong> – Whether to follow redirects.</p></li>
+<li><p><strong>timeout</strong> – Request timeout.</p></li>
+<li><p><strong>extensions</strong> – Dictionary of ASGI extensions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An HTTPX Response.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.put">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">put</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url:</span> <span class="pre">URLTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content:</span> <span class="pre">~typing.Optional[RequestContent]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">~typing.Optional[RequestData]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files:</span> <span class="pre">~typing.Optional[RequestFiles]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json:</span> <span class="pre">~typing.Optional[~typing.Any]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params:</span> <span class="pre">~typing.Optional[QueryParamTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers:</span> <span class="pre">~typing.Optional[HeaderTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies:</span> <span class="pre">~typing.Optional[CookieTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth:</span> <span class="pre">~typing.Union[AuthTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_redirects:</span> <span class="pre">~typing.Union[bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout:</span> <span class="pre">~typing.Union[TimeoutTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions:</span> <span class="pre">~typing.Optional[~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient.put" title="Permalink to this definition">#</a></dt>
+<dd><p>Sends a PUT request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – URL or path for the request.</p></li>
+<li><p><strong>content</strong> – Request content.</p></li>
+<li><p><strong>data</strong> – Form encoded data.</p></li>
+<li><p><strong>files</strong> – Multipart files to send.</p></li>
+<li><p><strong>json</strong> – JSON data to send.</p></li>
+<li><p><strong>params</strong> – Query parameters.</p></li>
+<li><p><strong>headers</strong> – Request headers.</p></li>
+<li><p><strong>cookies</strong> – Request cookies.</p></li>
+<li><p><strong>auth</strong> – Auth headers.</p></li>
+<li><p><strong>follow_redirects</strong> – Whether to follow redirects.</p></li>
+<li><p><strong>timeout</strong> – Request timeout.</p></li>
+<li><p><strong>extensions</strong> – Dictionary of ASGI extensions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An HTTPX Response.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.patch">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">patch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url:</span> <span class="pre">URLTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content:</span> <span class="pre">~typing.Optional[RequestContent]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">~typing.Optional[RequestData]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files:</span> <span class="pre">~typing.Optional[RequestFiles]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json:</span> <span class="pre">~typing.Optional[~typing.Any]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params:</span> <span class="pre">~typing.Optional[QueryParamTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers:</span> <span class="pre">~typing.Optional[HeaderTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies:</span> <span class="pre">~typing.Optional[CookieTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth:</span> <span class="pre">~typing.Union[AuthTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_redirects:</span> <span class="pre">~typing.Union[bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout:</span> <span class="pre">~typing.Union[TimeoutTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions:</span> <span class="pre">~typing.Optional[~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient.patch" title="Permalink to this definition">#</a></dt>
+<dd><p>Sends a PATCH request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – URL or path for the request.</p></li>
+<li><p><strong>content</strong> – Request content.</p></li>
+<li><p><strong>data</strong> – Form encoded data.</p></li>
+<li><p><strong>files</strong> – Multipart files to send.</p></li>
+<li><p><strong>json</strong> – JSON data to send.</p></li>
+<li><p><strong>params</strong> – Query parameters.</p></li>
+<li><p><strong>headers</strong> – Request headers.</p></li>
+<li><p><strong>cookies</strong> – Request cookies.</p></li>
+<li><p><strong>auth</strong> – Auth headers.</p></li>
+<li><p><strong>follow_redirects</strong> – Whether to follow redirects.</p></li>
+<li><p><strong>timeout</strong> – Request timeout.</p></li>
+<li><p><strong>extensions</strong> – Dictionary of ASGI extensions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An HTTPX Response.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url:</span> <span class="pre">URLTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params:</span> <span class="pre">~typing.Optional[QueryParamTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers:</span> <span class="pre">~typing.Optional[HeaderTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies:</span> <span class="pre">~typing.Optional[CookieTypes]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth:</span> <span class="pre">~typing.Union[AuthTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_redirects:</span> <span class="pre">~typing.Union[bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout:</span> <span class="pre">~typing.Union[TimeoutTypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UseClientDefault]</span> <span class="pre">=</span> <span class="pre">&lt;httpx._client.UseClientDefault</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extensions:</span> <span class="pre">~typing.Optional[~typing.Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Response</span></span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient.delete" title="Permalink to this definition">#</a></dt>
+<dd><p>Sends a DELETE request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – URL or path for the request.</p></li>
+<li><p><strong>params</strong> – Query parameters.</p></li>
+<li><p><strong>headers</strong> – Request headers.</p></li>
+<li><p><strong>cookies</strong> – Request cookies.</p></li>
+<li><p><strong>auth</strong> – Auth headers.</p></li>
+<li><p><strong>follow_redirects</strong> – Whether to follow redirects.</p></li>
+<li><p><strong>timeout</strong> – Request timeout.</p></li>
+<li><p><strong>extensions</strong> – Dictionary of ASGI extensions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An HTTPX Response.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.get_session_data">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_session_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient.get_session_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Get session data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary containing session data.</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.AsyncTestClient.set_session_data">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_session_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.testing.AsyncTestClient.set_session_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Set session data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – Session data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.testing.BaseTestClient">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.testing.</span></span><span class="sig-name descname"><span class="pre">BaseTestClient</span></span><a class="headerlink" href="#starlite.testing.BaseTestClient" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.BaseTestClient.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'http://testserver.local'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.11)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'asyncio'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'trio'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'asyncio'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="middleware/session/base.html#starlite.middleware.session.base.BaseBackendConfig" title="starlite.middleware.session.base.BaseBackendConfig"><span class="pre">BaseBackendConfig</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">CookieTypes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.testing.BaseTestClient.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.BaseTestClient.portal">
+<span class="sig-name descname"><span class="pre">portal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.11)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.abc.BlockingPortal" title="(in AnyIO v3.6.2)"><span class="pre">BlockingPortal</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.testing.BaseTestClient.portal" title="Permalink to this definition">#</a></dt>
+<dd><p>Get a BlockingPortal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A contextmanager for a BlockingPortal.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="starlite.testing.ConnectionUpgradeException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.testing.</span></span><span class="sig-name descname"><span class="pre">ConnectionUpgradeException</span></span><a class="headerlink" href="#starlite.testing.ConnectionUpgradeException" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.ConnectionUpgradeException.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">WebSocketTestSession</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.testing.ConnectionUpgradeException.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="starlite.testing.RequestFactory">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.testing.</span></span><span class="sig-name descname"><span class="pre">RequestFactory</span></span><a class="headerlink" href="#starlite.testing.RequestFactory" title="Permalink to this definition">#</a></dt>
@@ -738,9 +1035,15 @@ This value can include multiple cookies.</p></li>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="starlite.testing.SendReceiveContext">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.testing.</span></span><span class="sig-name descname"><span class="pre">SendReceiveContext</span></span><a class="headerlink" href="#starlite.testing.SendReceiveContext" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="starlite.testing.TestClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.testing.</span></span><span class="sig-name descname"><span class="pre">TestClient</span></span><a class="headerlink" href="#starlite.testing.TestClient" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTestClient</span></code>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Client</span></code>, <a class="reference internal" href="#starlite.testing.BaseTestClient" title="starlite.testing.client.base.BaseTestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTestClient</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.testing.TestClient.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'http://testserver.local'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_server_exceptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.11)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'asyncio'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'trio'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'asyncio'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="middleware/session/base.html#starlite.middleware.session.base.BaseBackendConfig" title="starlite.middleware.session.base.BaseBackendConfig"><span class="pre">BaseBackendConfig</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cookies</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">CookieTypes</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.testing.TestClient.__init__" title="Permalink to this definition">#</a></dt>
@@ -1021,9 +1324,20 @@ route handlers.</p></li>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.testing.TestClientTransport">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.testing.</span></span><span class="sig-name descname"><span class="pre">TestClientTransport</span></span><a class="headerlink" href="#starlite.testing.TestClientTransport" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.testing.TestClientTransport.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raise_server_exceptions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.testing.TestClientTransport.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="starlite.testing.create_async_test_client">
-<span class="sig-prename descclassname"><span class="pre">starlite.testing.</span></span><span class="sig-name descname"><span class="pre">create_async_test_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">route_handlers:</span> <span class="pre">~typing.Optional[~typing.Union[ControllerRouterHandler,</span> <span class="pre">~typing.Sequence[ControllerRouterHandler]]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">after_exception:</span> <span class="pre">OptionalSequence[AfterExceptionHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">after_request:</span> <span class="pre">~typing.Optional[AfterRequestHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">after_response:</span> <span class="pre">~typing.Optional[AfterResponseHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">after_shutdown:</span> <span class="pre">OptionalSequence[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">after_startup:</span> <span class="pre">OptionalSequence[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">allowed_hosts:</span> <span class="pre">~typing.Optional[~typing.Union[~typing.Sequence[str],</span> <span class="pre">AllowedHostsConfig]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">backend:</span> <span class="pre">~typing.Literal['asyncio',</span> <span class="pre">'trio']</span> <span class="pre">=</span> <span class="pre">'asyncio',</span> <span class="pre">backend_options:</span> <span class="pre">~typing.Optional[~typing.Mapping[str,</span> <span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">base_url:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'http://testserver.local',</span> <span class="pre">before_request:</span> <span class="pre">~typing.Optional[BeforeRequestHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">before_send:</span> <span class="pre">OptionalSequence[BeforeMessageSendHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">before_shutdown:</span> <span class="pre">OptionalSequence[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">before_startup:</span> <span class="pre">OptionalSequence[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">cache_config:</span> <span class="pre">CacheConfig</span> <span class="pre">=</span> <span class="pre">CacheConfig(backend=None,</span> <span class="pre">expiration=60,</span> <span class="pre">cache_key_builder=&lt;function</span> <span class="pre">default_cache_key_builder&gt;),</span> <span class="pre">compression_config:</span> <span class="pre">~typing.Optional[CompressionConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">cors_config:</span> <span class="pre">~typing.Optional[CORSConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">csrf_config:</span> <span class="pre">~typing.Optional[CSRFConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">dependencies:</span> <span class="pre">~typing.Optional[Dependencies]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">event_emitter_backend:</span> <span class="pre">~typing.Type[BaseEventEmitterBackend]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'starlite.events.emitter.SimpleEventEmitter'&gt;,</span> <span class="pre">exception_handlers:</span> <span class="pre">~typing.Optional[ExceptionHandlersMap]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">guards:</span> <span class="pre">OptionalSequence[Guard]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">initial_state:</span> <span class="pre">~typing.Optional[InitialStateType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">listeners:</span> <span class="pre">OptionalSequence[EventListener]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logging_config:</span> <span class="pre">~typing.Optional[BaseLoggingConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">middleware:</span> <span class="pre">OptionalSequence[Middleware]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">multipart_form_part_limit:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1000,</span> <span class="pre">on_app_init:</span> <span class="pre">OptionalSequence[OnAppInitHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">on_shutdown:</span> <span class="pre">OptionalSequence[LifeSpanHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">on_startup:</span> <span class="pre">OptionalSequence[LifeSpanHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">openapi_config:</span> <span class="pre">~typing.Optional[OpenAPIConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">parameters:</span> <span class="pre">~typing.Optional[ParametersMap]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">plugins:</span> <span class="pre">OptionalSequence[SerializationPluginProtocol]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">raise_server_exceptions:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">request_class:</span> <span class="pre">~typing.Optional[~typing.Type[Request]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">response_class:</span> <span class="pre">~typing.Optional[ResponseType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">root_path:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'',</span> <span class="pre">session_config:</span> <span class="pre">~typing.Optional[BaseBackendConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">static_files_config:</span> <span class="pre">OptionalSequence[StaticFilesConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">template_config:</span> <span class="pre">~typing.Optional[TemplateConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">websocket_class:</span> <span class="pre">~typing.Optional[~typing.Type[WebSocket]]</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncTestClient</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><span class="pre">Starlite</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.testing.create_async_test_client" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">starlite.testing.</span></span><span class="sig-name descname"><span class="pre">create_async_test_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">route_handlers:</span> <span class="pre">~typing.Optional[~typing.Union[ControllerRouterHandler,</span> <span class="pre">~typing.Sequence[ControllerRouterHandler]]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">after_exception:</span> <span class="pre">OptionalSequence[AfterExceptionHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">after_request:</span> <span class="pre">~typing.Optional[AfterRequestHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">after_response:</span> <span class="pre">~typing.Optional[AfterResponseHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">after_shutdown:</span> <span class="pre">OptionalSequence[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">after_startup:</span> <span class="pre">OptionalSequence[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">allowed_hosts:</span> <span class="pre">~typing.Optional[~typing.Union[~typing.Sequence[str],</span> <span class="pre">AllowedHostsConfig]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">backend:</span> <span class="pre">~typing.Literal['asyncio',</span> <span class="pre">'trio']</span> <span class="pre">=</span> <span class="pre">'asyncio',</span> <span class="pre">backend_options:</span> <span class="pre">~typing.Optional[~typing.Mapping[str,</span> <span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">base_url:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'http://testserver.local',</span> <span class="pre">before_request:</span> <span class="pre">~typing.Optional[BeforeRequestHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">before_send:</span> <span class="pre">OptionalSequence[BeforeMessageSendHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">before_shutdown:</span> <span class="pre">OptionalSequence[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">before_startup:</span> <span class="pre">OptionalSequence[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">cache_config:</span> <span class="pre">CacheConfig</span> <span class="pre">=</span> <span class="pre">CacheConfig(backend=None,</span> <span class="pre">expiration=60,</span> <span class="pre">cache_key_builder=&lt;function</span> <span class="pre">default_cache_key_builder&gt;),</span> <span class="pre">compression_config:</span> <span class="pre">~typing.Optional[CompressionConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">cors_config:</span> <span class="pre">~typing.Optional[CORSConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">csrf_config:</span> <span class="pre">~typing.Optional[CSRFConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">dependencies:</span> <span class="pre">~typing.Optional[Dependencies]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">event_emitter_backend:</span> <span class="pre">~typing.Type[BaseEventEmitterBackend]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'starlite.events.emitter.SimpleEventEmitter'&gt;,</span> <span class="pre">exception_handlers:</span> <span class="pre">~typing.Optional[ExceptionHandlersMap]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">guards:</span> <span class="pre">OptionalSequence[Guard]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">initial_state:</span> <span class="pre">~typing.Optional[InitialStateType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">listeners:</span> <span class="pre">OptionalSequence[EventListener]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">logging_config:</span> <span class="pre">~typing.Optional[BaseLoggingConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">middleware:</span> <span class="pre">OptionalSequence[Middleware]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">multipart_form_part_limit:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1000,</span> <span class="pre">on_app_init:</span> <span class="pre">OptionalSequence[OnAppInitHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">on_shutdown:</span> <span class="pre">OptionalSequence[LifeSpanHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">on_startup:</span> <span class="pre">OptionalSequence[LifeSpanHandler]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">openapi_config:</span> <span class="pre">~typing.Optional[OpenAPIConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">parameters:</span> <span class="pre">~typing.Optional[ParametersMap]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">plugins:</span> <span class="pre">OptionalSequence[SerializationPluginProtocol]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">raise_server_exceptions:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">request_class:</span> <span class="pre">~typing.Optional[~typing.Type[Request]]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">response_class:</span> <span class="pre">~typing.Optional[ResponseType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">root_path:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'',</span> <span class="pre">session_config:</span> <span class="pre">~typing.Optional[BaseBackendConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">static_files_config:</span> <span class="pre">OptionalSequence[StaticFilesConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">template_config:</span> <span class="pre">~typing.Optional[TemplateConfig]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">websocket_class:</span> <span class="pre">~typing.Optional[~typing.Type[WebSocket]]</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.testing.AsyncTestClient" title="starlite.testing.client.async_client.AsyncTestClient"><span class="pre">AsyncTestClient</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><span class="pre">Starlite</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.testing.create_async_test_client" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a Starlite app instance and initializes it.</p>
 <p><a class="reference internal" href="#starlite.testing.TestClient" title="starlite.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> with it.</p>
 <div class="admonition-notes admonition">
@@ -1115,7 +1429,7 @@ websocket connections.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncTestClient</span></code> with a created app instance.</p>
+<dd class="field-even"><p>An instance of <a class="reference internal" href="#starlite.testing.AsyncTestClient" title="starlite.testing.AsyncTestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncTestClient</span></code></a> with a created app instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1260,6 +1574,165 @@ websocket connections.</p></li>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     AsyncTestClient
+    </span>
+   </code>
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.request">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.request()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.get">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.get()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.options">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.options()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.head">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.head()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.post">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.post()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.put">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.put()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.patch">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.patch()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.delete">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.delete()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.get_session_data">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.get_session_data()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.AsyncTestClient.set_session_data">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncTestClient.set_session_data()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.testing.BaseTestClient">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     BaseTestClient
+    </span>
+   </code>
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.BaseTestClient.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BaseTestClient.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.BaseTestClient.portal">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       BaseTestClient.portal()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.testing.ConnectionUpgradeException">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ConnectionUpgradeException
+    </span>
+   </code>
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.ConnectionUpgradeException.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ConnectionUpgradeException.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#starlite.testing.RequestFactory">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -1323,6 +1796,15 @@ websocket connections.</p></li>
     </a>
    </li>
   </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.testing.SendReceiveContext">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     SendReceiveContext
+    </span>
+   </code>
+  </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#starlite.testing.TestClient">
@@ -1437,6 +1919,26 @@ websocket connections.</p></li>
      <code class="docutils literal notranslate">
       <span class="pre">
        TestClient.get_session_data()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.testing.TestClientTransport">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     TestClientTransport
+    </span>
+   </code>
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.testing.TestClientTransport.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TestClientTransport.__init__()
       </span>
      </code>
     </a>

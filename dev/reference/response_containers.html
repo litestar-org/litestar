@@ -472,6 +472,9 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="handlers/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="handlers/asgi_handlers.html">asgi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="handlers/http_handlers.html">http</a></li>
+<li class="toctree-l3"><a class="reference internal" href="handlers/websocket_handlers.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -533,6 +536,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
 </ul>
 
   </div>
@@ -564,69 +568,8 @@
             
             <article class="bd-article" role="main">
               
-  <section id="module-starlite.response_containers">
-<span id="response-containers"></span><h1>response_containers<a class="headerlink" href="#module-starlite.response_containers" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="starlite.response_containers.ResponseContainer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.response_containers.</span></span><span class="sig-name descname"><span class="pre">ResponseContainer</span></span><a class="headerlink" href="#starlite.response_containers.ResponseContainer" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">GenericModel</span></code>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">R</span></code>]</p>
-<p>Generic response container.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.response_containers.ResponseContainer.background">
-<span class="sig-name descname"><span class="pre">background</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="background_tasks.html#starlite.background_tasks.BackgroundTask" title="starlite.background_tasks.BackgroundTask"><span class="pre">BackgroundTask</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="background_tasks.html#starlite.background_tasks.BackgroundTasks" title="starlite.background_tasks.BackgroundTasks"><span class="pre">BackgroundTasks</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.response_containers.ResponseContainer.background" title="Permalink to this definition">#</a></dt>
-<dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code> instance or.</p>
-<p><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTasks</span></code> to execute after the response is finished.
-Defaults to None.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.response_containers.ResponseContainer.headers">
-<span class="sig-name descname"><span class="pre">headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.response_containers.ResponseContainer.headers" title="Permalink to this definition">#</a></dt>
-<dd><p>A string/string dictionary of response headers.</p>
-<p>Header keys are insensitive. Defaults to None.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.response_containers.ResponseContainer.cookies">
-<span class="sig-name descname"><span class="pre">cookies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="datastructures/cookie.html#starlite.datastructures.cookie.Cookie" title="starlite.datastructures.cookie.Cookie"><span class="pre">Cookie</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.response_containers.ResponseContainer.cookies" title="Permalink to this definition">#</a></dt>
-<dd><p>A list of Cookie instances to be set under the response ‘Set-Cookie’ header.</p>
-<p>Defaults to None.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.response_containers.ResponseContainer.media_type">
-<span class="sig-name descname"><span class="pre">media_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="enums.html#starlite.enums.MediaType" title="starlite.enums.MediaType"><span class="pre">MediaType</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.response_containers.ResponseContainer.media_type" title="Permalink to this definition">#</a></dt>
-<dd><p>If defined, overrides the media type configured in the route decorator.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.response_containers.ResponseContainer.encoding">
-<span class="sig-name descname"><span class="pre">encoding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.response_containers.ResponseContainer.encoding" title="Permalink to this definition">#</a></dt>
-<dd><p>The encoding to be used for the response headers.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.response_containers.ResponseContainer.to_response">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">media_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="enums.html#starlite.enums.MediaType" title="starlite.enums.MediaType"><span class="pre">MediaType</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><span class="pre">Starlite</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection/request.html#starlite.connection.request.Request" title="starlite.connection.request.Request"><span class="pre">Request</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">R</span></span></span><a class="headerlink" href="#starlite.response_containers.ResponseContainer.to_response" title="Permalink to this definition">#</a></dt>
-<dd><p>Abstract method that should be implemented by subclasses.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>headers</strong> – A dictionary of headers.</p></li>
-<li><p><strong>media_type</strong> – A string or member of the <a class="reference internal" href="enums.html#starlite.enums.MediaType" title="starlite.enums.MediaType"><code class="xref py py-class docutils literal notranslate"><span class="pre">MediaType</span></code></a> enum.</p></li>
-<li><p><strong>status_code</strong> – A response status code.</p></li>
-<li><p><strong>app</strong> – The <a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> application instance.</p></li>
-<li><p><strong>request</strong> – A <a class="reference internal" href="connection/request.html#starlite.connection.request.Request" title="starlite.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A Response Object</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="response-containers">
+<h1>response_containers<a class="headerlink" href="#response-containers" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="starlite.response_containers.File">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.response_containers.</span></span><span class="sig-name descname"><span class="pre">File</span></span><a class="headerlink" href="#starlite.response_containers.File" title="Permalink to this definition">#</a></dt>
@@ -929,71 +872,6 @@ Defaults to None.</p>
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.response_containers.ResponseContainer">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     ResponseContainer
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.response_containers.ResponseContainer.background">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseContainer.background
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.response_containers.ResponseContainer.headers">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseContainer.headers
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.response_containers.ResponseContainer.cookies">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseContainer.cookies
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.response_containers.ResponseContainer.media_type">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseContainer.media_type
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.response_containers.ResponseContainer.encoding">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseContainer.encoding
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.response_containers.ResponseContainer.to_response">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseContainer.to_response()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#starlite.response_containers.File">
    <code class="docutils literal notranslate">

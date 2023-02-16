@@ -472,6 +472,9 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../handlers/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../handlers/asgi_handlers.html">asgi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../handlers/http_handlers.html">http</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../handlers/websocket_handlers.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -533,6 +536,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
 </ul>
 
   </div>
@@ -569,77 +573,79 @@
 <section id="module-starlite.contrib.htmx.request">
 <span id="request"></span><h2>Request<a class="headerlink" href="#module-starlite.contrib.htmx.request" title="Permalink to this heading">#</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.contrib.htmx.request.</span></span><span class="sig-name descname"><span class="pre">HtmxDetails</span></span><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.contrib.htmx.request.</span></span><span class="sig-name descname"><span class="pre">HTMXDetails</span></span><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>HtmxDetails holds all the values sent by HTMX client in headers
+<p>HTMXDetails holds all the values sent by HTMX client in headers
 and provide convenient properties.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection/request.html#starlite.connection.request.Request" title="starlite.connection.request.Request"><span class="pre">Request</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize HtmxDetails</p>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection/request.html#starlite.connection.request.Request" title="starlite.connection.request.Request"><span class="pre">Request</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize <a class="reference internal" href="#starlite.contrib.htmx.request.HTMXDetails" title="starlite.contrib.htmx.request.HTMXDetails"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXDetails</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.__bool__">
-<span class="sig-name descname"><span class="pre">__bool__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.__bool__" title="Permalink to this definition">#</a></dt>
-<dd><p>Allow to check whether request is sent by a HTMX client.</p>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.__bool__">
+<span class="sig-name descname"><span class="pre">__bool__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.__bool__" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if request is sent by an HTMX client.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.boosted">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">boosted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.boosted" title="Permalink to this definition">#</a></dt>
-<dd><p>Allow to check whether request is boosted.</p>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.boosted">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">boosted</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.boosted" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if request is boosted.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.current_url">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.current_url" title="Permalink to this definition">#</a></dt>
-<dd><p>Current url value sent by HTMX client. Helps in tracking navigation history.</p>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.current_url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.current_url" title="Permalink to this definition">#</a></dt>
+<dd><p>Current url value sent by HTMX client.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.current_url_abs_path">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_url_abs_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.current_url_abs_path" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.current_url_abs_path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">current_url_abs_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.current_url_abs_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Current url abs path value, to get query and path parameter sent by HTMX client.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.history_restore_request">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">history_restore_request</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.history_restore_request" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.history_restore_request">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">history_restore_request</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.history_restore_request" title="Permalink to this definition">#</a></dt>
 <dd><p>If True then, request is for history restoration after a miss in the local history cache.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.prompt">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prompt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.prompt" title="Permalink to this definition">#</a></dt>
-<dd><p>User Response to prompt.
-<a href="#id1"><span class="problematic" id="id2">|</span></a><code class="docutils literal notranslate"><span class="pre">&lt;button</span> <span class="pre">hx-delete=&quot;/account&quot;</span> <span class="pre">hx-prompt=&quot;Enter</span> <span class="pre">your</span> <span class="pre">account</span> <span class="pre">name</span> <span class="pre">to</span> <span class="pre">confirm</span> <span class="pre">deletion&quot;&gt;Delete</span> <span class="pre">My</span> <span class="pre">Account&lt;/button&gt;</span></code></p>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.prompt">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prompt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.prompt" title="Permalink to this definition">#</a></dt>
+<dd><p>User Response to prompt.</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">button</span> <span class="na">hx-delete</span><span class="o">=</span><span class="s">&quot;/account&quot;</span> <span class="na">hx-prompt</span><span class="o">=</span><span class="s">&quot;Enter your account name to confirm deletion&quot;</span><span class="p">&gt;</span>Delete My Account<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.target">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.target" title="Permalink to this definition">#</a></dt>
-<dd><p>The id of the target element if provided on the element.</p>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.target">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.target" title="Permalink to this definition">#</a></dt>
+<dd><p>ID of the target element if provided on the element.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.trigger">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trigger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.trigger" title="Permalink to this definition">#</a></dt>
-<dd><p>The id of the triggered element if provided on the element.</p>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.trigger">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trigger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.trigger" title="Permalink to this definition">#</a></dt>
+<dd><p>ID of the triggered element if provided on the element.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.trigger_name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trigger_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.trigger_name" title="Permalink to this definition">#</a></dt>
-<dd><p>The name of the triggered element if provided on the element.</p>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.trigger_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trigger_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.trigger_name" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the triggered element if provided on the element.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HtmxDetails.triggering_event">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">triggering_event</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></em><a class="headerlink" href="#starlite.contrib.htmx.request.HtmxDetails.triggering_event" title="Permalink to this definition">#</a></dt>
-<dd><p>The name of the triggered event.
-This value is added by ‘event-header’ extension of htmx to the Triggering-Event header to requests.</p>
+<dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXDetails.triggering_event">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">triggering_event</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></em><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXDetails.triggering_event" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the triggered event.</p>
+<p>This value is added by <code class="docutils literal notranslate"><span class="pre">event-header</span></code> extension of HTMX to the <code class="docutils literal notranslate"><span class="pre">Triggering-Event</span></code> header to requests.</p>
 </dd></dl>
 
 </dd></dl>
@@ -652,7 +658,7 @@ This value is added by ‘event-header’ extension of htmx to the Triggering-Ev
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.request.HTMXRequest.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Receive</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Send</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.contrib.htmx.request.HTMXRequest.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize Request</p>
+<dd><p>Initialize <a class="reference internal" href="#starlite.contrib.htmx.request.HTMXRequest" title="starlite.contrib.htmx.request.HTMXRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXRequest</span></code></a></p>
 </dd></dl>
 
 </dd></dl>
@@ -681,8 +687,7 @@ This value is added by ‘event-header’ extension of htmx to the Triggering-Ev
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.ClientRedirect.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">redirect_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.contrib.htmx.response.ClientRedirect.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Set status code to 200 (required by HTMX),
-and pass redirect url.</p>
+<dd><p>Set status code to 200 (required by HTMX), and pass redirect url.</p>
 </dd></dl>
 
 </dd></dl>
@@ -783,48 +788,48 @@ and pass redirect url.</p>
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.HTMXTemplate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.contrib.htmx.response.</span></span><span class="sig-name descname"><span class="pre">HTMXTemplate</span></span><a class="headerlink" href="#starlite.contrib.htmx.response.HTMXTemplate" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../response_containers.html#starlite.response_containers.Template" title="starlite.response_containers.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></p>
-<p>Convenient type for returning HTMX Template responses.</p>
+<p>HTMX template wrapper</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.HTMXTemplate.push_url">
 <span class="sig-name descname"><span class="pre">push_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.response.HTMXTemplate.push_url" title="Permalink to this definition">#</a></dt>
-<dd><p>This parameter accepts either a string value for url to push to browser history or
-boolean False to prevent HTMX client from pushing a url to browser history.</p>
+<dd><p>Either a string value specifying a URL to push to browser history or <code class="docutils literal notranslate"><span class="pre">False</span></code> to
+prevent HTMX client from pushing a url to browser history.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.HTMXTemplate.re_swap">
 <span class="sig-name descname"><span class="pre">re_swap</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.11)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'innerHTML'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'outerHTML'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'beforebegin'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'afterbegin'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'beforeend'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'afterend'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'delete'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.response.HTMXTemplate.re_swap" title="Permalink to this definition">#</a></dt>
-<dd><p>This parameter accepts either a string method value to instruct HTMX which swapping method to use.</p>
+<dd><p>Method value to instruct HTMX which swapping method to use.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.HTMXTemplate.re_target">
 <span class="sig-name descname"><span class="pre">re_target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.response.HTMXTemplate.re_target" title="Permalink to this definition">#</a></dt>
-<dd><p>This parameter accepts string value for ‘id of target element’ to apply changes to.</p>
+<dd><p>Value for ‘id of target element’ to apply changes to.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.HTMXTemplate.trigger_event">
 <span class="sig-name descname"><span class="pre">trigger_event</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.response.HTMXTemplate.trigger_event" title="Permalink to this definition">#</a></dt>
-<dd><p>This parameter accepts string value of event name to trigger.</p>
+<dd><p>Event name to trigger.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.HTMXTemplate.params">
 <span class="sig-name descname"><span class="pre">params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.response.HTMXTemplate.params" title="Permalink to this definition">#</a></dt>
-<dd><p>This parameter accepts dictionary of parameters if any required with trigger event parameter.</p>
+<dd><p>Dictionary of parameters if any required with trigger event parameter.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.HTMXTemplate.after">
 <span class="sig-name descname"><span class="pre">after</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.11)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'receive'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'settle'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'swap'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.htmx.response.HTMXTemplate.after" title="Permalink to this definition">#</a></dt>
-<dd><p>This parameter accepts string value for changes to apply after ‘receive’, ‘settle’ or ‘swap’ event.</p>
+<dd><p>Changes to apply after <code class="docutils literal notranslate"><span class="pre">receive</span></code>, <code class="docutils literal notranslate"><span class="pre">settle</span></code> or <code class="docutils literal notranslate"><span class="pre">swap</span></code> event.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.contrib.htmx.response.HTMXTemplate.to_response">
 <span class="sig-name descname"><span class="pre">to_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">media_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../enums.html#starlite.enums.MediaType" title="starlite.enums.MediaType"><span class="pre">MediaType</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../app.html#starlite.app.Starlite" title="starlite.app.Starlite"><span class="pre">Starlite</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection/request.html#starlite.connection.request.Request" title="starlite.connection.request.Request"><span class="pre">Request</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../response.html#starlite.response.TemplateResponse" title="starlite.response.TemplateResponse"><span class="pre">TemplateResponse</span></a></span></span><a class="headerlink" href="#starlite.contrib.htmx.response.HTMXTemplate.to_response" title="Permalink to this definition">#</a></dt>
-<dd><p>Add HTMX headers and create TemplateResponse.</p>
+<dd><p>Add HTMX headers and return a <a class="reference internal" href="../response.html#starlite.response.TemplateResponse" title="starlite.response.TemplateResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">response.TemplateResponse</span></code></a>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -876,109 +881,109 @@ boolean False to prevent HTMX client from pushing a url to browser history.</p>
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails">
+    <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails">
      <code class="docutils literal notranslate">
       <span class="pre">
-       HtmxDetails
+       HTMXDetails
       </span>
      </code>
     </a>
     <ul class="visible nav section-nav flex-column">
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.__init__">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.__init__">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.__init__()
+         HTMXDetails.__init__()
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.__bool__">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.__bool__">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.__bool__()
+         HTMXDetails.__bool__()
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.boosted">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.boosted">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.boosted
+         HTMXDetails.boosted
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.current_url">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.current_url">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.current_url
+         HTMXDetails.current_url
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.current_url_abs_path">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.current_url_abs_path">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.current_url_abs_path
+         HTMXDetails.current_url_abs_path
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.history_restore_request">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.history_restore_request">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.history_restore_request
+         HTMXDetails.history_restore_request
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.prompt">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.prompt">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.prompt
+         HTMXDetails.prompt
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.target">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.target">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.target
+         HTMXDetails.target
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.trigger">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.trigger">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.trigger
+         HTMXDetails.trigger
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.trigger_name">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.trigger_name">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.trigger_name
+         HTMXDetails.trigger_name
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HtmxDetails.triggering_event">
+      <a class="reference internal nav-link" href="#starlite.contrib.htmx.request.HTMXDetails.triggering_event">
        <code class="docutils literal notranslate">
         <span class="pre">
-         HtmxDetails.triggering_event
+         HTMXDetails.triggering_event
         </span>
        </code>
       </a>

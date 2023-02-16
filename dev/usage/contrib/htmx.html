@@ -472,6 +472,9 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/asgi_handlers.html">asgi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/http_handlers.html">http</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/handlers/websocket_handlers.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -533,6 +536,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
 </ul>
 
   </div>
@@ -573,7 +577,7 @@
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_form</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">HTMXRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
-    <span class="n">htmx</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">htmx</span>  <span class="c1">#  if true will return HtmxDetails class object</span>
+    <span class="n">htmx</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">htmx</span>  <span class="c1">#  if true will return HTMXDetails class object</span>
     <span class="k">if</span> <span class="n">htmx</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">htmx</span><span class="o">.</span><span class="n">current_url</span><span class="p">)</span>
     <span class="c1"># OR</span>
@@ -582,7 +586,7 @@
     <span class="k">return</span> <span class="n">HTMXTemplate</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;partial.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span> <span class="n">push_url</span><span class="o">=</span><span class="s2">&quot;/form&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>See <a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.request.HtmxDetails" title="starlite.contrib.htmx.request.HtmxDetails"><code class="xref py py-class docutils literal notranslate"><span class="pre">HtmxDetails</span></code></a> for a full list of available properties.</p>
+<p>See <a class="reference internal" href="../../reference/contrib/htmx.html#starlite.contrib.htmx.request.HTMXDetails" title="starlite.contrib.htmx.request.HTMXDetails"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXDetails</span></code></a> for a full list of available properties.</p>
 <section id="htmx-response-classes">
 <h2>HTMX Response Classes<a class="headerlink" href="#htmx-response-classes" title="Permalink to this heading">#</a></h2>
 <section id="htmxtemplate-response-classes">

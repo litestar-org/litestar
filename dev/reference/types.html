@@ -472,6 +472,9 @@
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="handlers/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="handlers/asgi_handlers.html">asgi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="handlers/http_handlers.html">http</a></li>
+<li class="toctree-l3"><a class="reference internal" href="handlers/websocket_handlers.html">websocket</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -533,6 +536,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
 </ul>
 
   </div>
@@ -731,16 +735,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">HTTPRequestEvent</span></span><a class="headerlink" href="#starlite.types.HTTPRequestEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>http.request</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.HTTPRequestEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.HTTPRequestEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.HTTPRequestEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.HTTPRequestEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -748,16 +742,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">HTTPResponseStartEvent</span></span><a class="headerlink" href="#starlite.types.HTTPResponseStartEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <p>ASGI <cite>http.response.start</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.HTTPResponseStartEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.HTTPResponseStartEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.HTTPResponseStartEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.HTTPResponseStartEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -765,16 +749,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">HTTPResponseBodyEvent</span></span><a class="headerlink" href="#starlite.types.HTTPResponseBodyEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>http.response.body</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.HTTPResponseBodyEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.HTTPResponseBodyEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.HTTPResponseBodyEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.HTTPResponseBodyEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -782,16 +756,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">HTTPServerPushEvent</span></span><a class="headerlink" href="#starlite.types.HTTPServerPushEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <p>ASGI <cite>http.response.push</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.HTTPServerPushEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.HTTPServerPushEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.HTTPServerPushEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.HTTPServerPushEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -799,16 +763,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">HTTPDisconnectEvent</span></span><a class="headerlink" href="#starlite.types.HTTPDisconnectEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>http.disconnect</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.HTTPDisconnectEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.HTTPDisconnectEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.HTTPDisconnectEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.HTTPDisconnectEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -816,16 +770,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketConnectEvent</span></span><a class="headerlink" href="#starlite.types.WebSocketConnectEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.connect</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketConnectEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketConnectEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketConnectEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketConnectEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -833,16 +777,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketAcceptEvent</span></span><a class="headerlink" href="#starlite.types.WebSocketAcceptEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <p>ASGI <cite>websocket.accept</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketAcceptEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketAcceptEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketAcceptEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketAcceptEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -850,16 +784,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketReceiveEvent</span></span><a class="headerlink" href="#starlite.types.WebSocketReceiveEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.receive</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketReceiveEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketReceiveEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketReceiveEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketReceiveEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -867,16 +791,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketSendEvent</span></span><a class="headerlink" href="#starlite.types.WebSocketSendEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.send</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketSendEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketSendEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketSendEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketSendEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -884,16 +798,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketResponseStartEvent</span></span><a class="headerlink" href="#starlite.types.WebSocketResponseStartEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
 <p>ASGI <cite>websocket.http.response.start</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketResponseStartEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketResponseStartEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketResponseStartEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketResponseStartEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -901,16 +805,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketResponseBodyEvent</span></span><a class="headerlink" href="#starlite.types.WebSocketResponseBodyEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.http.response.body</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketResponseBodyEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketResponseBodyEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketResponseBodyEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketResponseBodyEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -918,16 +812,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketDisconnectEvent</span></span><a class="headerlink" href="#starlite.types.WebSocketDisconnectEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.disconnect</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketDisconnectEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketDisconnectEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketDisconnectEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketDisconnectEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -935,16 +819,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketCloseEvent</span></span><a class="headerlink" href="#starlite.types.WebSocketCloseEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>websocket.close</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketCloseEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketCloseEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.WebSocketCloseEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.WebSocketCloseEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -952,16 +826,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanStartupEvent</span></span><a class="headerlink" href="#starlite.types.LifeSpanStartupEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.startup</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanStartupEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanStartupEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanStartupEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanStartupEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -969,16 +833,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanShutdownEvent</span></span><a class="headerlink" href="#starlite.types.LifeSpanShutdownEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.shutdown</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanShutdownEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanShutdownEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanShutdownEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanShutdownEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -986,16 +840,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanStartupCompleteEvent</span></span><a class="headerlink" href="#starlite.types.LifeSpanStartupCompleteEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.startup.complete</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanStartupCompleteEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanStartupCompleteEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanStartupCompleteEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanStartupCompleteEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -1003,16 +847,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanStartupFailedEvent</span></span><a class="headerlink" href="#starlite.types.LifeSpanStartupFailedEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.startup.failed</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanStartupFailedEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanStartupFailedEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanStartupFailedEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanStartupFailedEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -1020,16 +854,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanShutdownCompleteEvent</span></span><a class="headerlink" href="#starlite.types.LifeSpanShutdownCompleteEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.shutdown.complete</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanShutdownCompleteEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanShutdownCompleteEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanShutdownCompleteEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanShutdownCompleteEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -1037,16 +861,6 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanShutdownFailedEvent</span></span><a class="headerlink" href="#starlite.types.LifeSpanShutdownFailedEvent" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
 <p>ASGI <cite>lifespan.shutdown.failed</cite> event.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanShutdownFailedEvent.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanShutdownFailedEvent.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.LifeSpanShutdownFailedEvent.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.LifeSpanShutdownFailedEvent.__new__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </section>
@@ -1135,13 +949,129 @@
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
 <p>Logger protocol.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.Logger.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.Logger.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="starlite.types.Logger.debug">
+<span class="sig-name descname"><span class="pre">debug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.types.Logger.debug" title="Permalink to this definition">#</a></dt>
+<dd><p>Output a log message at ‘DEBUG’ level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event</strong> – Log message.</p></li>
+<li><p><strong>*args</strong> – Any args.</p></li>
+<li><p><strong>**kwargs</strong> – Any kwargs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.types.Logger.__new__">
-<span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.Logger.__new__" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="starlite.types.Logger.info">
+<span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.types.Logger.info" title="Permalink to this definition">#</a></dt>
+<dd><p>Output a log message at ‘INFO’ level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event</strong> – Log message.</p></li>
+<li><p><strong>*args</strong> – Any args.</p></li>
+<li><p><strong>**kwargs</strong> – Any kwargs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.types.Logger.warning">
+<span class="sig-name descname"><span class="pre">warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.types.Logger.warning" title="Permalink to this definition">#</a></dt>
+<dd><p>Output a log message at ‘WARNING’ level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event</strong> – Log message.</p></li>
+<li><p><strong>*args</strong> – Any args.</p></li>
+<li><p><strong>**kwargs</strong> – Any kwargs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.types.Logger.warn">
+<span class="sig-name descname"><span class="pre">warn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.types.Logger.warn" title="Permalink to this definition">#</a></dt>
+<dd><p>Output a log message at ‘WARN’ level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event</strong> – Log message.</p></li>
+<li><p><strong>*args</strong> – Any args.</p></li>
+<li><p><strong>**kwargs</strong> – Any kwargs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.types.Logger.error">
+<span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.types.Logger.error" title="Permalink to this definition">#</a></dt>
+<dd><p>Output a log message at ‘ERROR’ level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event</strong> – Log message.</p></li>
+<li><p><strong>*args</strong> – Any args.</p></li>
+<li><p><strong>**kwargs</strong> – Any kwargs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.types.Logger.fatal">
+<span class="sig-name descname"><span class="pre">fatal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.types.Logger.fatal" title="Permalink to this definition">#</a></dt>
+<dd><p>Output a log message at ‘FATAL’ level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event</strong> – Log message.</p></li>
+<li><p><strong>*args</strong> – Any args.</p></li>
+<li><p><strong>**kwargs</strong> – Any kwargs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.types.Logger.exception">
+<span class="sig-name descname"><span class="pre">exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.types.Logger.exception" title="Permalink to this definition">#</a></dt>
+<dd><p>Log a message with level ‘ERROR’ on this logger. The arguments are interpreted as for debug(). Exception info
+is added to the logging message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event</strong> – Log message.</p></li>
+<li><p><strong>*args</strong> – Any args.</p></li>
+<li><p><strong>**kwargs</strong> – Any kwargs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.types.Logger.critical">
+<span class="sig-name descname"><span class="pre">critical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.types.Logger.critical" title="Permalink to this definition">#</a></dt>
+<dd><p>Output a log message at ‘INFO’ level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event</strong> – Log message.</p></li>
+<li><p><strong>*args</strong> – Any args.</p></li>
+<li><p><strong>**kwargs</strong> – Any kwargs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.types.Logger.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.Logger.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1653,26 +1583,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.HTTPRequestEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           HTTPRequestEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.HTTPRequestEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           HTTPRequestEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.HTTPResponseStartEvent">
@@ -1682,26 +1592,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.HTTPResponseStartEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           HTTPResponseStartEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.HTTPResponseStartEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           HTTPResponseStartEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.HTTPResponseBodyEvent">
@@ -1711,26 +1601,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.HTTPResponseBodyEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           HTTPResponseBodyEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.HTTPResponseBodyEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           HTTPResponseBodyEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.HTTPServerPushEvent">
@@ -1740,26 +1610,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.HTTPServerPushEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           HTTPServerPushEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.HTTPServerPushEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           HTTPServerPushEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.HTTPDisconnectEvent">
@@ -1769,26 +1619,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.HTTPDisconnectEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           HTTPDisconnectEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.HTTPDisconnectEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           HTTPDisconnectEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.WebSocketConnectEvent">
@@ -1798,26 +1628,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketConnectEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketConnectEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketConnectEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketConnectEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.WebSocketAcceptEvent">
@@ -1827,26 +1637,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketAcceptEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketAcceptEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketAcceptEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketAcceptEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.WebSocketReceiveEvent">
@@ -1856,26 +1646,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketReceiveEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketReceiveEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketReceiveEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketReceiveEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.WebSocketSendEvent">
@@ -1885,26 +1655,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketSendEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketSendEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketSendEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketSendEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.WebSocketResponseStartEvent">
@@ -1914,26 +1664,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketResponseStartEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketResponseStartEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketResponseStartEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketResponseStartEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.WebSocketResponseBodyEvent">
@@ -1943,26 +1673,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketResponseBodyEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketResponseBodyEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketResponseBodyEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketResponseBodyEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.WebSocketDisconnectEvent">
@@ -1972,26 +1682,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketDisconnectEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketDisconnectEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketDisconnectEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketDisconnectEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.WebSocketCloseEvent">
@@ -2001,26 +1691,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketCloseEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketCloseEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.WebSocketCloseEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           WebSocketCloseEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.LifeSpanStartupEvent">
@@ -2030,26 +1700,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanStartupEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanStartupEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanStartupEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanStartupEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.LifeSpanShutdownEvent">
@@ -2059,26 +1709,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanShutdownEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanShutdownEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanShutdownEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanShutdownEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.LifeSpanStartupCompleteEvent">
@@ -2088,26 +1718,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanStartupCompleteEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanStartupCompleteEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanStartupCompleteEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanStartupCompleteEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.LifeSpanStartupFailedEvent">
@@ -2117,26 +1727,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanStartupFailedEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanStartupFailedEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanStartupFailedEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanStartupFailedEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.LifeSpanShutdownCompleteEvent">
@@ -2146,26 +1736,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanShutdownCompleteEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanShutdownCompleteEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanShutdownCompleteEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanShutdownCompleteEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.LifeSpanShutdownFailedEvent">
@@ -2175,26 +1745,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
         </span>
        </code>
       </a>
-      <ul class="visible nav section-nav flex-column">
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanShutdownFailedEvent.__init__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanShutdownFailedEvent.__init__()
-          </span>
-         </code>
-        </a>
-       </li>
-       <li class="toc-h5 nav-item toc-entry">
-        <a class="reference internal nav-link" href="#starlite.types.LifeSpanShutdownFailedEvent.__new__">
-         <code class="docutils literal notranslate">
-          <span class="pre">
-           LifeSpanShutdownFailedEvent.__new__()
-          </span>
-         </code>
-        </a>
-       </li>
-      </ul>
      </li>
     </ul>
    </li>
@@ -2335,19 +1885,82 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
     </a>
     <ul class="visible nav section-nav flex-column">
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.types.Logger.__init__">
+      <a class="reference internal nav-link" href="#starlite.types.Logger.debug">
        <code class="docutils literal notranslate">
         <span class="pre">
-         Logger.__init__()
+         Logger.debug()
         </span>
        </code>
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.types.Logger.__new__">
+      <a class="reference internal nav-link" href="#starlite.types.Logger.info">
        <code class="docutils literal notranslate">
         <span class="pre">
-         Logger.__new__()
+         Logger.info()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#starlite.types.Logger.warning">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Logger.warning()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#starlite.types.Logger.warn">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Logger.warn()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#starlite.types.Logger.error">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Logger.error()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#starlite.types.Logger.fatal">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Logger.fatal()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#starlite.types.Logger.exception">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Logger.exception()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#starlite.types.Logger.critical">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Logger.critical()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#starlite.types.Logger.__init__">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Logger.__init__()
         </span>
        </code>
       </a>
