@@ -219,3 +219,4 @@ Example Applications
     usage/index
     reference/index
     migration/index
+    benchmarks
