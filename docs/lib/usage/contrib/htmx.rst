@@ -11,7 +11,7 @@ This class extends the Starlite request class to allow it to read headers sent b
 
     @get(path="/form")
     def get_form(request: HTMXRequest) -> Template:
-        htmx = request.htmx  #  if true will return HtmxDetails class object
+        htmx = request.htmx  #  if true will return HTMXDetails class object
         if htmx:
             print(htmx.current_url)
         # OR
@@ -20,7 +20,7 @@ This class extends the Starlite request class to allow it to read headers sent b
         return HTMXTemplate(name="partial.html", context=context, push_url="/form")
 
 
-See :class:`HtmxDetails <starlite.contrib.htmx.request.HtmxDetails>` for a full list of available properties.
+See :class:`HTMXDetails <starlite.contrib.htmx.request.HTMXDetails>` for a full list of available properties.
 
 
 HTMX Response Classes
