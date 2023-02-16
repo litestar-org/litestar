@@ -1,11 +1,12 @@
+from __future__ import annotations
+
+import argparse
 import importlib.metadata
 import json
 import os
 import shutil
 import subprocess
 from pathlib import Path
-import argparse
-import shutil
 from typing import TypedDict
 
 parser = argparse.ArgumentParser()
