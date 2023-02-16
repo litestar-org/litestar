@@ -39,6 +39,7 @@ def app_config_object() -> AppConfig:
         listeners=[],
         logging_config=None,
         middleware=[],
+        multipart_form_part_limit=1000,
         on_shutdown=[],
         on_startup=[],
         openapi_config=None,

@@ -15,7 +15,7 @@ from typing import (
 )
 
 from pydantic_openapi_schema import construct_open_api_with_schema_class
-from typing_extensions import TypedDict
+from typing_extensions import Self, TypedDict
 
 from starlite.asgi import ASGIRouter
 from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -156,6 +156,7 @@ class Starlite(Router):
         "get_logger",
         "logger",
         "logging_config",
+        "multipart_form_part_limit",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -198,6 +199,7 @@ class Starlite(Router):
         listeners: "OptionalSequence[EventListener]" = None,
         logging_config: Union["BaseLoggingConfig", "EmptyType", None] = Empty,
         middleware: "OptionalSequence[Middleware]" = None,
+        multipart_form_part_limit: int = 1000,
         on_app_init: "OptionalSequence[OnAppInitHandler]" = None,
         on_shutdown: "OptionalSequence[LifeSpanHandler]" = None,
         on_startup: "OptionalSequence[LifeSpanHandler]" = None,
@@ -262,6 +264,8 @@ class Starlite(Router):
             listeners: A sequence of :class:`EventListener <starlite.events.listener.EventListener>`.
             logging_config: A subclass of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>`.
             middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
+            multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request.
+                This limit is intended to protect from DoS attacks.
             on_app_init: A sequence of :class:`OnAppInitHandler <starlite.types.OnAppInitHandler>` instances. Handlers
                 receive an instance of :class:`AppConfig <starlite.config.app.AppConfig>` that will have been initially
                 populated with the parameters passed to :class:`Starlite <starlite.app.Starlite>`, and must return an
@@ -329,6 +333,7 @@ class Starlite(Router):
             listeners=list(listeners or []),
             logging_config=logging_config,  # type: ignore[arg-type]
             middleware=list(middleware or []),
+            multipart_form_part_limit=multipart_form_part_limit,
             on_shutdown=list(on_shutdown or []),
             on_startup=list(on_startup or []),
             openapi_config=openapi_config,
@@ -374,6 +379,7 @@ class Starlite(Router):
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
+        self.multipart_form_part_limit = config.multipart_form_part_limit
 
         super().__init__(
             after_request=config.after_request,
@@ -445,6 +451,18 @@ class Starlite(Router):
             return
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
+
+    @classmethod
+    def from_config(cls, config: AppConfig) -> Self:
+        """Initialize a ``Starlite`` application from a configuration instance.
+
+        Args:
+            config: An instance of :class:`AppConfig` <startlite.config.AppConfig>
+
+        Returns:
+            An instance of ``Starlite`` application.
+        """
+        return cls(**dict(config))
 
     def register(  # type: ignore[override]
         self, value: "ControllerRouterHandler", add_to_openapi_schema: bool = False

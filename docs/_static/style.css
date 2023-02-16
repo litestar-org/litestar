@@ -58,8 +58,8 @@ html[data-theme="light"], html[data-theme="dark"] {
 }
 
 .bd-sidebar-primary {
+	display: block;
 	flex: 0 0 18%;
-	overflow-y: initial;
 }
 
 
