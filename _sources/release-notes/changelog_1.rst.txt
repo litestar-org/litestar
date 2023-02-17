@@ -1,6 +1,16 @@
 1.x Changelog
 =============
 
+1.51.4
+------
+
+- support passing type encoders to ``AbstractSecurityConfig``
+
+1.51.3
+------
+
+- Fix static path validation for ``/``
+
 1.51.2
 ------
 
