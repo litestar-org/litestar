@@ -14,7 +14,7 @@ from starlite.utils.helpers import unwrap_partial
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
-    from starlite.datastructures import CacheControlHeader, ETag
+    from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.router import Router
     from starlite.types import (
         AfterRequestHookHandler,
@@ -27,7 +27,6 @@ if TYPE_CHECKING:
         OptionalSequence,
         ParametersMap,
         ResponseCookies,
-        ResponseHeadersMap,
         ResponseType,
         TypeEncodersMap,
     )
@@ -117,7 +116,7 @@ class Controller:
     """
     response_cookies: ResponseCookies | None
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
-    response_headers: ResponseHeadersMap | None
+    response_headers: OptionalSequence[ResponseHeader]
     """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
     tags: OptionalSequence[str]
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""

@@ -32,8 +32,10 @@ if TYPE_CHECKING:
     from starlite.middleware.base import DefineMiddleware, MiddlewareProtocol
     from starlite.params import ParameterKwarg
 else:
+    BaseHTTPMiddleware = Any
     Cookie = Any
     DefineMiddleware = Any
+    ImmutableState = Any
     MiddlewareProtocol = Any
     ParameterKwarg = Any
     Provide = Any

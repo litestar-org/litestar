@@ -13,9 +13,11 @@ class Resource(BaseModel):
 
 @get(
     "/resources",
-    response_headers={
-        "Random-Header": ResponseHeader(description="a random number in the range 1 - 100", documentation_only=True)
-    },
+    response_headers=[
+        ResponseHeader(
+            name="Random-Header", description="a random number in the range 1 - 100", documentation_only=True
+        )
+    ],
 )
 def retrieve_resource() -> Response[Resource]:
     return Response(

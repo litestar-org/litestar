@@ -124,7 +124,7 @@ class PetController(Controller):
     def pets(self) -> List[Pet]:
         return []
 
-    @get(path="/owner-or-pet", response_headers={"x-my-tag": ResponseHeader(value="123")}, raises=[PetException])
+    @get(path="/owner-or-pet", response_headers=[ResponseHeader(name="x-my-tag", value="123")], raises=[PetException])
     def get_pets_or_owners(self) -> List[Union[Person, Pet]]:
         return []
 

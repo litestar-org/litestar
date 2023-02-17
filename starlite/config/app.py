@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Type, Union
+from typing import Any, Dict, List, Optional, Sequence, Type, Union
 
 from pydantic import BaseModel, validator
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -14,7 +14,7 @@ from starlite.config.openapi import OpenAPIConfig
 from starlite.config.static_files import StaticFilesConfig
 from starlite.config.template import TemplateConfig
 from starlite.connection import Request, WebSocket
-from starlite.datastructures import CacheControlHeader, ETag
+from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
 from starlite.di import Provide
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from starlite.events.listener import EventListener
@@ -33,7 +33,6 @@ from starlite.types import (
     Middleware,
     ParametersMap,
     ResponseCookies,
-    ResponseHeadersMap,
     ResponseType,
     TypeEncodersMap,
 )
@@ -161,7 +160,7 @@ class AppConfig(BaseModel):
     """A custom subclass of [starlite.response.Response] to be used as the app's default response."""
     response_cookies: ResponseCookies = []
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
-    response_headers: ResponseHeadersMap = {}
+    response_headers: Sequence[ResponseHeader] = []
     """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
     route_handlers: List[ControllerRouterHandler] = []
     """A required list of route handlers, which can include instances of :class:`Router <starlite.router.Router>`, subclasses

@@ -113,7 +113,7 @@ def test_create_error_responses() -> None:
 def test_create_success_response_with_headers() -> None:
     @get(
         path="/test",
-        response_headers={"special-header": ResponseHeader(value=100, description="super-duper special")},
+        response_headers=[ResponseHeader(name="special-header", value=100, description="super-duper special")],
         response_description="test",
         content_encoding="base64",
         content_media_type="image/png",

@@ -11,38 +11,31 @@ from starlite.testing import TestClient, create_test_client
 
 
 def test_response_headers() -> None:
-    router_first = ResponseHeader(value=1)
-    router_second = ResponseHeader(value=2)
-    controller_first = ResponseHeader(value=3)
-    controller_second = ResponseHeader(value=4)
-    app_first = ResponseHeader(value=5)
-    app_second = ResponseHeader(value=6)
-    local_first = ResponseHeader(value=7)
+    router_first = ResponseHeader(name="second", value=1)
+    router_second = ResponseHeader(name="third", value=2)
+    controller_first = ResponseHeader(name="first", value=3)
+    controller_second = ResponseHeader(name="second", value=4)
+    app_first = ResponseHeader(name="first", value=5)
+    app_second = ResponseHeader(name="fourth", value=6)
+    local_first = ResponseHeader(name="first", value=7)
 
     test_path = "/test"
 
     class MyController(Controller):
         path = test_path
-        response_headers = {"first": controller_first, "second": controller_second}
+        response_headers = [controller_first, controller_second]
 
-        @get(
-            path="/{path_param:str}",
-            response_headers={
-                "first": local_first,
-            },
-        )
+        @get(path="/{path_param:str}", response_headers=[local_first])
         def test_method(self) -> None:
             pass
 
-    first_router = Router(
-        path="/users", response_headers={"second": router_first, "third": router_second}, route_handlers=[MyController]
-    )
+    first_router = Router(path="/users", response_headers=[router_first, router_second], route_handlers=[MyController])
     second_router = Router(
-        path="/external", response_headers={"external": ResponseHeader(value="nope")}, route_handlers=[]
+        path="/external", response_headers=[ResponseHeader(name="external", value="nope")], route_handlers=[]
     )
     app = Starlite(
         openapi_config=None,
-        response_headers={"first": app_first, "fourth": app_second},
+        response_headers=[app_first, app_second],
         route_handlers=[first_router, second_router],
     )
 
@@ -56,16 +49,16 @@ def test_response_headers() -> None:
 
 
 def test_response_headers_validation() -> None:
-    ResponseHeader(documentation_only=True)
+    ResponseHeader(name="test", documentation_only=True)
     with pytest.raises(ValidationError):
-        ResponseHeader()
+        ResponseHeader(name="test")
 
 
 def test_response_headers_rendering() -> None:
     @post(
         path="/test",
         tags=["search"],
-        response_headers={"test-header": ResponseHeader(value="test value", description="test")},
+        response_headers=[ResponseHeader(name="test-header", value="test value", description="test")],
     )
     def my_handler(data: Dict[str, str]) -> Dict[str, str]:
         return data
@@ -152,8 +145,12 @@ def test_explicit_headers_documentation_only(config_kwarg: str, header: Header) 
 @pytest.mark.parametrize(
     "config_kwarg,response_header,header",
     [
-        ("cache_control", ResponseHeader(value="no-store"), CacheControlHeader(no_cache=True)),
-        ("etag", ResponseHeader(value="1"), ETag(value="2")),
+        (
+            "cache_control",
+            ResponseHeader(name=CacheControlHeader.HEADER_NAME, value="no-store"),
+            CacheControlHeader(no_cache=True),
+        ),
+        ("etag", ResponseHeader(name=ETag.HEADER_NAME, value="1"), ETag(value="2")),
     ],
 )
 def test_explicit_headers_override_response_headers(
@@ -161,7 +158,7 @@ def test_explicit_headers_override_response_headers(
 ) -> None:
     @get(
         path="/test",
-        response_headers={header.HEADER_NAME: response_header},
+        response_headers=[response_header],
         **{config_kwarg: header},  # type: ignore[arg-type]
     )
     def my_handler() -> None:

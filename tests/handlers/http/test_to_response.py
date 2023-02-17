@@ -148,7 +148,7 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
     @get(
         path="/test",
         status_code=301,
-        response_headers={"local-header": ResponseHeader(value="123")},
+        response_headers=[ResponseHeader(name="local-header", value="123")],
         response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
     )
     def test_function() -> Redirect:
@@ -207,7 +207,7 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
 
     @get(
         path="/test",
-        response_headers={"local-header": ResponseHeader(value="123")},
+        response_headers=[ResponseHeader(name="local-header", value="123")],
         response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
     )
     def test_function() -> File:
@@ -264,7 +264,7 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
 
         @get(
             path="/test",
-            response_headers={"local-header": ResponseHeader(value="123")},
+            response_headers=[ResponseHeader(name="local-header", value="123")],
             response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
         )
         def test_function() -> Stream:
@@ -300,7 +300,7 @@ async def func_to_response_template_response(anyio_backend: str) -> None:
 
     @get(
         path="/test",
-        response_headers={"local-header": ResponseHeader(value="123")},
+        response_headers=[ResponseHeader(name="local-header", value="123")],
         response_cookies=[Cookie(key="redirect-cookie", value="aaa"), Cookie(key="general-cookie", value="xxx")],
     )
     def test_function() -> Template:

@@ -53,7 +53,7 @@ if TYPE_CHECKING:
     from starlite.config.logging import BaseLoggingConfig
     from starlite.config.static_files import StaticFilesConfig
     from starlite.config.template import TemplateConfig
-    from starlite.datastructures import CacheControlHeader, ETag
+    from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler  # noqa: TC004
     from starlite.plugins import PluginProtocol
@@ -85,7 +85,6 @@ if TYPE_CHECKING:
         ParametersMap,
         Receive,
         ResponseCookies,
-        ResponseHeadersMap,
         ResponseType,
         RouteHandlerType,
         Scope,
@@ -202,7 +201,7 @@ class Starlite(Router):
         request_class: type[Request] | None = None,
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
-        response_headers: ResponseHeadersMap | None = None,
+        response_headers: OptionalSequence[ResponseHeader] = None,
         security: OptionalSequence[SecurityRequirement] = None,
         static_files_config: OptionalSequence[StaticFilesConfig] = None,
         tags: Sequence[str] | None = None,
@@ -335,7 +334,7 @@ class Starlite(Router):
             request_class=request_class,
             response_class=response_class,
             response_cookies=response_cookies or [],
-            response_headers=response_headers or {},
+            response_headers=response_headers or [],
             route_handlers=list(route_handlers) if route_handlers is not None else [],
             security=list(security or []),
             static_files_config=list(static_files_config or []),
