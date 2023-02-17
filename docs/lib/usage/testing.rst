@@ -132,7 +132,7 @@ We would then be able to rewrite our test like so:
 Using sessions
 ++++++++++++++
 
-If you are using :ref:`session middleware <usage/middleware/builtin-middleware:session middleware>` for session persistence
+If you are using :ref:`session middleware <lib/usage/middleware/builtin-middleware:session middleware>` for session persistence
 across requests, then you might want to inject or inspect session data outside a request. For this,
 :class:`TestClient <.testing.TestClient>` provides two methods:
 
