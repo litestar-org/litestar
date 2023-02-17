@@ -4,15 +4,15 @@ import pytest
 
 from starlite.cache import Cache
 from starlite.config.cache import default_cache_key_builder
-from starlite.storage.memory_backend import MemoryStorageBackend
+from starlite.storage.memory import MemoryStorage
 
 
 @pytest.fixture()
-def backend() -> MemoryStorageBackend:
-    return MemoryStorageBackend()
+def backend() -> MemoryStorage:
+    return MemoryStorage()
 
 
-async def test_cache_wrapper_integration(backend: MemoryStorageBackend) -> None:
+async def test_cache_wrapper_integration(backend: MemoryStorage) -> None:
     value_to_cache = b"123"
     cache = Cache(backend=backend, default_expiration=1, cache_key_builder=default_cache_key_builder)
     await cache.set("test-key", value_to_cache)
@@ -21,7 +21,7 @@ async def test_cache_wrapper_integration(backend: MemoryStorageBackend) -> None:
     assert (await cache.get("test-key")) is None
 
 
-async def test_cache_wrapper_default_expiration(backend: MemoryStorageBackend) -> None:
+async def test_cache_wrapper_default_expiration(backend: MemoryStorage) -> None:
     value_to_cache = b"123"
     cache = Cache(backend=backend, default_expiration=0.1, cache_key_builder=default_cache_key_builder)  # type: ignore
     await cache.set("test-key", value_to_cache)
@@ -30,7 +30,7 @@ async def test_cache_wrapper_default_expiration(backend: MemoryStorageBackend) -
     assert (await cache.get("test-key")) is None
 
 
-async def test_cache_wrapper_custom_expiration(backend: MemoryStorageBackend) -> None:
+async def test_cache_wrapper_custom_expiration(backend: MemoryStorage) -> None:
     value_to_cache = b"123"
     cache = Cache(backend=backend, default_expiration=1, cache_key_builder=default_cache_key_builder)
     await cache.set("test-key", value=value_to_cache, expiration=0.1)  # type: ignore

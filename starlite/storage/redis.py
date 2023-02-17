@@ -9,16 +9,16 @@ from redis.asyncio.connection import ConnectionPool
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Empty, EmptyType
 
-from .base import StorageBackend
+from .base import Storage
 
 
-class RedisStorageBackend(StorageBackend):
+class RedisStorage(Storage):
     """Redis based, thread and process safe asynchronous key/value store."""
 
     __slots__ = ("_redis",)
 
     def __init__(self, redis: Redis, namespace: str | None | EmptyType = Empty) -> None:
-        """Initialize :class:`RedisStorageBackend`
+        """Initialize :class:`RedisStorage`
 
         Args:
             redis: An :class:`redis.asyncio.Redis` instance
@@ -71,8 +71,8 @@ class RedisStorageBackend(StorageBackend):
         username: str | None = None,
         password: str | None = None,
         namespace: str | None | EmptyType = Empty,
-    ) -> RedisStorageBackend:
-        """Initialize a :class:`RedisStorageBackend` instance with a new class:`redis.asyncio.Redis` instance.
+    ) -> RedisStorage:
+        """Initialize a :class:`RedisStorage` instance with a new class:`redis.asyncio.Redis` instance.
 
         Args:
             url: Redis URL to connect to
@@ -92,8 +92,8 @@ class RedisStorageBackend(StorageBackend):
         )
         return cls(redis=Redis(connection_pool=pool), namespace=namespace)
 
-    def with_namespace(self, namespace: str) -> RedisStorageBackend:
-        """Return a new :class:`RedisStorageBackend` with a nested virtual key namespace.
+    def with_namespace(self, namespace: str) -> RedisStorage:
+        """Return a new :class:`RedisStorage` with a nested virtual key namespace.
         The current instances namespace will serve as a prefix for the namespace, so it
         can be considered the parent namespace.
         """

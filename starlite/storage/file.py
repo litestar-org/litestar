@@ -8,20 +8,20 @@ from typing import TYPE_CHECKING
 from anyio import Path
 from anyio.to_thread import run_sync
 
-from .base import StorageBackend, StorageObject
+from .base import Storage, StorageObject
 
 if TYPE_CHECKING:
     from datetime import timedelta
     from os import PathLike
 
 
-class FileStorageBackend(StorageBackend):
+class FileStorage(Storage):
     """File based, thread and process safe, asynchronous key/value store."""
 
     __slots__ = ("path",)
 
     def __init__(self, path: PathLike) -> None:
-        """Initialize ``FileStorageBackend``.
+        """Initialize ``FileStorage``.
 
         Args:
             path: Path to store data under
@@ -117,7 +117,7 @@ class FileStorageBackend(StorageBackend):
 
         .. note::
 
-            This deletes and recreates :attr:`FileStorageBackend.path`
+            This deletes and recreates :attr:`FileStorage.path`
         """
 
         await run_sync(shutil.rmtree, self.path)

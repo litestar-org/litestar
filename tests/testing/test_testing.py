@@ -8,7 +8,7 @@ from starlite import HttpMethod, Request, Starlite, get, post
 from starlite.datastructures import Cookie, MultiDict
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.middleware.session.server_side import ServerSideSessionConfig
-from starlite.storage.redis_backend import RedisStorageBackend
+from starlite.storage.redis import RedisStorage
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from tests import Pet, PetFactory
 
@@ -199,7 +199,7 @@ def skip_for_trio_redis(
 ) -> None:
     if (
         isinstance(session_backend_config, ServerSideSessionConfig)
-        and isinstance(session_backend_config.storage, RedisStorageBackend)
+        and isinstance(session_backend_config.storage, RedisStorage)
         and test_client_backend == "trio"
     ):
         pytest.skip("fakeredis does not always play well with trio, so skip this for now")

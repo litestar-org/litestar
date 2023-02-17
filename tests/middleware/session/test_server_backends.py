@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import anyio
 import pytest
 
-from starlite.storage.redis_backend import RedisStorageBackend
+from starlite.storage.redis import RedisStorage
 from starlite.utils.serialization import encode_json
 
 if TYPE_CHECKING:
@@ -28,7 +28,7 @@ async def test_get_set(server_side_session_backend: "ServerSideBackend", session
 
 
 async def test_get_renew_on_access(server_side_session_backend: "ServerSideBackend", session_data: bytes) -> None:
-    expiry = 0.01 if not isinstance(server_side_session_backend.storage, RedisStorageBackend) else 1
+    expiry = 0.01 if not isinstance(server_side_session_backend.storage, RedisStorage) else 1
     server_side_session_backend.config.max_age = expiry
     server_side_session_backend.config.renew_on_access = True
 
@@ -71,7 +71,7 @@ async def test_delete_idempotence(server_side_session_backend: "ServerSideBacken
 
 
 async def test_max_age_expires(server_side_session_backend: "ServerSideBackend", session_data: bytes) -> None:
-    expiry = 0.01 if not isinstance(server_side_session_backend.storage, RedisStorageBackend) else 1
+    expiry = 0.01 if not isinstance(server_side_session_backend.storage, RedisStorage) else 1
     server_side_session_backend.config.max_age = expiry
     await server_side_session_backend.set("foo", session_data)
     await anyio.sleep(expiry + 0.01)

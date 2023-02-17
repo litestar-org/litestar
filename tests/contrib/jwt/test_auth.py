@@ -15,8 +15,8 @@ from starlite.testing import create_test_client
 from tests import User, UserFactory
 
 if TYPE_CHECKING:
-    from starlite.storage.memory_backend import MemoryStorageBackend
     from starlite.connection import ASGIConnection
+    from starlite.storage.memory import MemoryStorage
 
 
 @given(
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 )
 @settings(deadline=None)
 async def test_jwt_auth(
-    mock_db: MemoryStorageBackend,
+    mock_db: MemoryStorage,
     algorithm: str,
     auth_header: str,
     default_token_expiration: timedelta,
@@ -137,7 +137,7 @@ async def test_jwt_auth(
 )
 @settings(deadline=None)
 async def test_jwt_cookie_auth(
-    mock_db: MemoryStorageBackend,
+    mock_db: MemoryStorage,
     algorithm: str,
     auth_header: str,
     auth_cookie: str,
@@ -315,7 +315,7 @@ def test_jwt_auth_openapi() -> None:
     }
 
 
-async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStorageBackend") -> None:
+async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStorage") -> None:
     user = UserFactory.build()
 
     await mock_db.set(str(user.id), user, 120)  # type: ignore[arg-type]

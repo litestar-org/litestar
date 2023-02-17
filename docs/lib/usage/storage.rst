@@ -7,9 +7,10 @@ where a simple key value store might be needed.
 
 Currently supported storages are:
 
-- :class:`MemoryStorageBackend <.storage.memory_backend.MemoryStorageBackend>`: A simple in-memory storage
-- :class:`FileStorageBackend <starlite.storage.file_backend.FileStorageBackend>`: File-based storage
-- :class:`RedisStorageBackend <starlite.storage.redis_backend.RedisStorageBackend>`: Redis based storage
+
+- :class:`MemoryStorage <starlite.storage.memory.MemoryStorage>`: A simple in-memory storage
+- :class:`FileStorage <starlite.storage.file.FileStorage>`: File-based storage
+- :class:`RedisStorage <starlite.storage.redis.RedisStorage>`: Redis based storage
 
 .. admonition:: Why not memcached?
     :class: info

@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, Type
 from starlite import ASGIConnection, Cookie
 from starlite.datastructures import MutableScopeHeaders
 from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
-from starlite.storage.base import StorageBackend
+from starlite.storage.base import Storage
 from starlite.types import Empty, Message, ScopeSession
 
 
@@ -143,8 +143,8 @@ class ServerSideSessionConfig(BaseBackendConfig):
 
     session_id_bytes: int = 32
     """Number of bytes used to generate a random session-ID."""
-    storage: StorageBackend
-    """:class:`.storage.base.StorageBackend <StorageBackend>` to use"""
+    storage: Storage
+    """:class:`.storage.base.Storage <Storage>` to use"""
     renew_on_access: bool = False
     """Renew expiry times of sessions when they're being accessed"""
     _backend_class: Type[ServerSideBackend] = ServerSideBackend

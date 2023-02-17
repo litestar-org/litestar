@@ -290,7 +290,7 @@ Server side session store data - as the name suggests - on the server instead of
 They use a cookie containing a session ID which is a randomly generated string to identify a client
 and load the appropriate data from the storage backend
 
-.. literalinclude:: /examples/middleware/session/memory_backend.py
+.. literalinclude:: /examples/middleware/session/memory_storage.py
 
 
 .. seealso::
@@ -304,7 +304,7 @@ Interacting with the storage backend
 
 In some situations you might want to access the storage backend directly, outside a
 request. For example to delete a specific session's data, or delete expired sessions
-from the database when using the :class:`FileStorageBackend <starlite.storage.file_backend.FileStorageBackend>`:
+from the database when using the :class:`FileStorage <starlite.storage.file_backend.FileStorage>`:
 
 .. literalinclude:: /examples/middleware/session/backend_access_explicit.py
     :language: python

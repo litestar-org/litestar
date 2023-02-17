@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from starlite import Request
-    from starlite.storage.base import StorageBackend
+    from starlite.storage.base import Storage
     from starlite.types import CacheKeyBuilder
 
 
@@ -13,7 +13,7 @@ class Cache:
 
     __slots__ = ("backend", "default_expiration", "key_builder")
 
-    def __init__(self, backend: StorageBackend, default_expiration: int, cache_key_builder: CacheKeyBuilder) -> None:
+    def __init__(self, backend: Storage, default_expiration: int, cache_key_builder: CacheKeyBuilder) -> None:
         """Initialize cache
 
         Args:
