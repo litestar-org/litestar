@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import importlib
 import logging
 import multiprocessing
@@ -166,13 +164,13 @@ class LiteralInclude(LiteralIncludeOverride):
         return nodes
 
 
-def on_env_before_read_docs(app: Sphinx, env: BuildEnvironment, docnames: set[str]) -> None:
+def on_env_before_read_docs(app: "Sphinx", env: "BuildEnvironment", docnames: set[str]) -> None:
     tmp_examples_path = Path.cwd() / "docs/_build/_tmp_examples"
     tmp_examples_path.mkdir(exist_ok=True, parents=True)
     env.tmp_examples_path = tmp_examples_path
 
 
-def setup(app: Sphinx) -> dict[str, bool]:
+def setup(app: "Sphinx") -> dict[str, bool]:
     app.add_directive("literalinclude", LiteralInclude, override=True)
     app.connect("env-before-read-docs", on_env_before_read_docs)
 

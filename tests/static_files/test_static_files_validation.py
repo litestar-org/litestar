@@ -58,9 +58,7 @@ def test_runtime_validation_of_static_path_and_path_parameter(tmpdir: "Path") ->
         return f
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(
-            route_handlers=[handler], static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])]
-        )
+        Starlite(route_handlers=[handler], static_files_config=StaticFilesConfig(path="/static", directories=[tmpdir]))
 
 
 @pytest.mark.parametrize(
@@ -79,8 +77,6 @@ def test_runtime_validation_of_request_method(tmpdir: "Path", method: HttpMethod
     path = tmpdir / "test.txt"
     path.write_text("content", "utf-8")
 
-    with create_test_client(
-        [], static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])]
-    ) as client:
+    with create_test_client([], static_files_config=StaticFilesConfig(path="/static", directories=[tmpdir])) as client:
         response = client.request(method, "/static/test.txt")
         assert response.status_code == expected

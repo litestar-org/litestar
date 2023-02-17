@@ -29,4 +29,4 @@ def on_startup(state: "State") -> None:
     state.message = "value injected during send"
 
 
-app = Starlite(route_handlers=[handler], on_startup=[on_startup], before_send=[before_send_hook_handler])
+app = Starlite(route_handlers=[handler], on_startup=[on_startup], before_send=before_send_hook_handler)

@@ -24,7 +24,7 @@ from starlite.types import Scope
 @pytest.mark.parametrize("connection_string", ["sqlite+aiosqlite://", "sqlite://"])
 def test_sets_engine_and_session_maker(connection_string: str) -> None:
     config = SQLAlchemyConfig(connection_string=connection_string, use_async_engine="+aiosqlite" in connection_string)
-    app = Starlite(plugins=[SQLAlchemyPlugin(config=config)])
+    app = Starlite(route_handlers=[], plugins=[SQLAlchemyPlugin(config=config)])
     assert app.state.get(config.engine_app_state_key)
     assert app.state.get(config.session_maker_app_state_key)
 
@@ -32,7 +32,7 @@ def test_sets_engine_and_session_maker(connection_string: str) -> None:
 @pytest.mark.parametrize("connection_string", ["sqlite+aiosqlite://", "sqlite://"])
 def test_dependency_creates_session(connection_string: str) -> None:
     config = SQLAlchemyConfig(connection_string=connection_string, use_async_engine="+aiosqlite" in connection_string)
-    app = Starlite(plugins=[SQLAlchemyPlugin(config=config)])
+    app = Starlite(route_handlers=[], plugins=[SQLAlchemyPlugin(config=config)])
     request = RequestFactory().get()
     session = config.create_db_session_dependency(state=app.state, scope=request.scope)
     assert session
@@ -89,7 +89,7 @@ def test_logging_config(engine_logger: Optional[str], pool_logger: Optional[str]
         ),
     )
     logging_config = LoggingConfig()
-    app = Starlite(plugins=[SQLAlchemyPlugin(config=config)], logging_config=logging_config)
+    app = Starlite(route_handlers=[], plugins=[SQLAlchemyPlugin(config=config)], logging_config=logging_config)
     assert app.logging_config.loggers[engine_logger or "sqlalchemy.engine"] == {  # type: ignore
         "level": logging_level or "WARNING",
         "handlers": ["queue_listener"],

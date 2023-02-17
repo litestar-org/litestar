@@ -45,7 +45,9 @@ class _TestEnum(enum.Enum):
     ],
 )
 def test_response_serialization_structured_types(content: Any, response_type: Any, media_type: MediaType) -> None:
-    response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
+    response = Response[response_type](  # type: ignore[valid-type]
+        content, media_type=media_type, status_code=HTTP_200_OK
+    )
     if media_type == media_type.JSON:
         value = loads(response.body)
     else:
@@ -68,5 +70,7 @@ def test_response_serialization_structured_types(content: Any, response_type: An
     "content, response_type, media_type", [["abcdefg", str, MediaType.TEXT], ["<div/>", str, MediaType.HTML]]
 )
 def test_response_serialization_text_types(content: Any, response_type: Any, media_type: MediaType) -> None:
-    response = Response[response_type](content, media_type=media_type, status_code=HTTP_200_OK)
+    response = Response[response_type](  # type: ignore[valid-type]
+        content, media_type=media_type, status_code=HTTP_200_OK
+    )
     assert response.body == content.encode("utf-8")

@@ -11,19 +11,18 @@ if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
 
 
-class HTMXDetails:
-    """HTMXDetails holds all the values sent by HTMX client in headers
+class HtmxDetails:
+    """HtmxDetails holds all the values sent by HTMX client in headers
     and provide convenient properties.
     """
 
     def __init__(self, request: Request) -> None:
-        """Initialize :class:`HTMXDetails`"""
+        """Initialize HtmxDetails"""
         self.request = request
 
     def _get_header_value(self, name: str) -> Optional[str]:
         """Parse request header
-
-        Check for uri encoded header and unquotes it in readable format.
+        Checks for uri encoded header and unquotes it in readable format.
         """
         value = self.request.headers.get(name) or None
         if value and self.request.headers.get(name + "-URI-AutoEncoded") == "true":
@@ -31,17 +30,17 @@ class HTMXDetails:
         return value
 
     def __bool__(self) -> bool:
-        """Check if request is sent by an HTMX client."""
+        """Allow to check whether request is sent by a HTMX client."""
         return self._get_header_value(HTMXHeaders.REQUEST) == "true"
 
     @cached_property
     def boosted(self) -> bool:
-        """Check if request is boosted."""
+        """Allow to check whether request is boosted."""
         return self._get_header_value(HTMXHeaders.BOOSTED) == "true"
 
     @cached_property
     def current_url(self) -> Optional[str]:
-        """Current url value sent by HTMX client."""
+        """Current url value sent by HTMX client. Helps in tracking navigation history."""
         return self._get_header_value(HTMXHeaders.CURRENT_URL)
 
     @cached_property
@@ -63,33 +62,29 @@ class HTMXDetails:
     @cached_property
     def prompt(self) -> Optional[str]:
         """User Response to prompt.
-
-        .. code-block:: html
-
-            <button hx-delete="/account" hx-prompt="Enter your account name to confirm deletion">Delete My Account</button>
+        |``<button hx-delete="/account" hx-prompt="Enter your account name to confirm deletion">Delete My Account</button>``
         """
         return self._get_header_value(HTMXHeaders.PROMPT)
 
     @cached_property
     def target(self) -> Optional[str]:
-        """ID of the target element if provided on the element."""
+        """The id of the target element if provided on the element."""
         return self._get_header_value(HTMXHeaders.TARGET)
 
     @cached_property
     def trigger(self) -> Optional[str]:
-        """ID of the triggered element if provided on the element."""
+        """The id of the triggered element if provided on the element."""
         return self._get_header_value(HTMXHeaders.TRIGGER_ID)
 
     @cached_property
     def trigger_name(self) -> Optional[str]:
-        """Name of the triggered element if provided on the element."""
+        """The name of the triggered element if provided on the element."""
         return self._get_header_value(HTMXHeaders.TRIGGER_NAME)
 
     @cached_property
     def triggering_event(self) -> Any:
-        """Name of the triggered event.
-
-        This value is added by ``event-header`` extension of HTMX to the ``Triggering-Event`` header to requests.
+        """The name of the triggered event.
+        This value is added by 'event-header' extension of htmx to the Triggering-Event header to requests.
         """
         value = self._get_header_value(HTMXHeaders.TRIGGERING_EVENT)
         if value is not None:
@@ -106,6 +101,6 @@ class HTMXRequest(Request):
     __slots__ = ("htmx",)
 
     def __init__(self, scope: "Scope", receive: "Receive", send: "Send"):
-        """Initialize :class:`HTMXRequest`"""
+        """Initialize Request"""
         super().__init__(scope=scope, receive=receive, send=send)
-        self.htmx = HTMXDetails(self)
+        self.htmx = HtmxDetails(self)

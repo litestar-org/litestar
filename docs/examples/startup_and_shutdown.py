@@ -29,4 +29,4 @@ async def close_db_connection(state: State) -> None:
         await cast("AsyncEngine", state.engine).dispose()
 
 
-app = Starlite(on_startup=[get_db_connection], on_shutdown=[close_db_connection])
+app = Starlite(route_handlers=[], on_startup=[get_db_connection], on_shutdown=[close_db_connection])

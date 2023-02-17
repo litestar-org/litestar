@@ -1,5 +1,15 @@
 from contextlib import ExitStack
-from typing import TYPE_CHECKING, Any, Dict, Generic, Mapping, Optional, TypeVar, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Generic,
+    Mapping,
+    Optional,
+    Sequence,
+    TypeVar,
+    Union,
+)
 from urllib.parse import urljoin
 
 from httpx import USE_CLIENT_DEFAULT, Client, Response
@@ -26,7 +36,6 @@ if TYPE_CHECKING:
 
     from starlite.middleware.session.base import BaseBackendConfig
     from starlite.testing.websocket_test_session import WebSocketTestSession
-    from starlite.types.helper_types import OptionalSequence
 
 
 T = TypeVar("T", bound=ASGIApp)
@@ -43,7 +52,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
         raise_server_exceptions: bool = True,
         root_path: str = "",
         backend: AnyIOBackend = "asyncio",
-        backend_options: Optional[Mapping[str, Any]] = None,
+        backend_options: Optional[Dict[str, Any]] = None,
         session_config: Optional["BaseBackendConfig"] = None,
         cookies: Optional["CookieTypes"] = None,
     ) -> None:
@@ -471,7 +480,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
     def websocket_connect(
         self,
         url: str,
-        subprotocols: "OptionalSequence[str]" = None,
+        subprotocols: Optional[Sequence[str]] = None,
         params: Optional["QueryParamTypes"] = None,
         headers: Optional["HeaderTypes"] = None,
         cookies: Optional["CookieTypes"] = None,

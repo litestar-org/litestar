@@ -1,13 +1,7 @@
 from typing import TYPE_CHECKING, Any, Dict, Type
 
-from pydantic import BaseModel
-from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
-
 from starlite.exceptions import MissingDependencyException
-from starlite.plugins.base import (
-    OpenAPISchemaPluginProtocol,
-    SerializationPluginProtocol,
-)
+from starlite.plugins.base import PluginProtocol
 
 try:
     from piccolo.table import Table, TableMetaclass
@@ -16,17 +10,17 @@ except ImportError as e:
     raise MissingDependencyException("piccolo orm is not installed") from e
 
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import Schema
+    from pydantic import BaseModel
     from typing_extensions import TypeGuard
 
 
-class PiccoloORMPlugin(SerializationPluginProtocol[Table, BaseModel], OpenAPISchemaPluginProtocol[Table]):
+class PiccoloORMPlugin(PluginProtocol[Table]):
     """Support (de)serialization and OpenAPI generation for Piccolo ORM types."""
 
     _models_map: Dict[Type[Table], Type["BaseModel"]] = {}
     _data_models_map: Dict[Type[Table], Type["BaseModel"]] = {}
 
-    def to_data_container_class(self, model_class: Type[Table], **kwargs: Any) -> Type["BaseModel"]:
+    def to_pydantic_model_class(self, model_class: Type[Table], **kwargs: Any) -> Type["BaseModel"]:
         """Given a piccolo model_class instance, convert it to a subclass of the piccolo "BaseModel".
 
         Since incoming request body's cannot and should not include values for
@@ -53,13 +47,13 @@ class PiccoloORMPlugin(SerializationPluginProtocol[Table, BaseModel], OpenAPISch
         """Given a value of indeterminate type, determine if this value is supported by the plugin."""
         return isinstance(value, (Table, TableMetaclass))
 
-    def from_data_container_instance(self, model_class: Type[Table], data_container_instance: "BaseModel") -> Table:
-        """Given an instance of a pydantic model created using the plugin's ``to_data_container_class``, return an
+    def from_pydantic_model_instance(self, model_class: Type[Table], pydantic_model_instance: "BaseModel") -> Table:
+        """Given an instance of a pydantic model created using the plugin's ``to_pydantic_model_class``, return an
         instance of the class from which that pydantic model has been created.
 
         This class is passed in as the ``model_class`` kwarg.
         """
-        return self.from_dict(model_class=model_class, **data_container_instance.dict())
+        return self.from_dict(model_class=model_class, **pydantic_model_instance.dict())
 
     def to_dict(self, model_instance: Table) -> Dict[str, Any]:
         """Given an instance of a model supported by the plugin, return a dictionary of serializable values."""
@@ -73,11 +67,3 @@ class PiccoloORMPlugin(SerializationPluginProtocol[Table, BaseModel], OpenAPISch
             if meta.name in kwargs:
                 setattr(instance, meta.name, kwargs[meta.name])
         return instance
-
-    def to_openapi_schema(self, model_class: Type[Table]) -> "Schema":
-        """Given a model class, transform it into an OpenAPI schema class.
-
-        :param model_class: A table class.
-        :return: An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
-        """
-        return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))

@@ -4,8 +4,16 @@ from home.piccolo_app import APP_CONFIG
 from home.tables import Task
 from piccolo.engine import engine_finder
 
-from starlite import Starlite, asgi, delete, get, patch, post
-from starlite.exceptions import MissingDependencyException, NotFoundException
+from starlite import (
+    MissingDependencyException,
+    NotFoundException,
+    Starlite,
+    asgi,
+    delete,
+    get,
+    patch,
+    post,
+)
 from starlite.plugins.piccolo_orm import PiccoloORMPlugin
 
 try:

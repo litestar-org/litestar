@@ -3,6 +3,7 @@ from typing import Any, Optional
 import pytest
 from hypothesis import given
 from hypothesis import strategies as st
+from pydantic.main import BaseModel
 
 from starlite import (
     HttpMethod,
@@ -16,7 +17,7 @@ from starlite import (
     put,
 )
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers.http_handlers import _get_default_status_code
+from starlite.handlers.http import _get_default_status_code
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.types import ResponseType
 from starlite.utils import normalize_path
@@ -31,7 +32,7 @@ def dummy_method() -> None:
     media_type=st.sampled_from(MediaType),
     include_in_schema=st.booleans(),
     response_class=st.one_of(st.none(), st.just(Response)),
-    response_headers=st.one_of(st.none(), st.builds(dict)),
+    response_headers=st.one_of(st.none(), st.builds(BaseModel), st.builds(dict)),
     status_code=st.one_of(st.none(), st.integers(min_value=200, max_value=204)),
     path=st.one_of(st.none(), st.text()),
 )

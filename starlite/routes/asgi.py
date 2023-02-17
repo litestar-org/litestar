@@ -6,7 +6,7 @@ from starlite.routes.base import BaseRoute
 from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
-    from starlite.handlers.asgi_handlers import ASGIRouteHandler
+    from starlite.handlers.asgi import ASGIRouteHandler
     from starlite.types import Receive, Scope, Send
 
 
@@ -25,7 +25,7 @@ class ASGIRoute(BaseRoute):
 
         Args:
             path: The path for the route.
-            route_handler: An instance of :ref:`ASGIRouteHandler <starlite.handlers.asgi_handlers.ASGIRouteHandler>`.
+            route_handler: An instance of :ref:`ASGIRouteHandler <starlite.handlers.asgi.ASGIRouteHandler>`.
         """
         self.route_handler = route_handler
         super().__init__(

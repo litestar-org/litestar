@@ -4,11 +4,7 @@ import pytest
 from pydantic import BaseModel
 
 from starlite import MediaType, Starlite, State, get
-from starlite.plugins.base import (
-    InitPluginProtocol,
-    PluginMapping,
-    SerializationPluginProtocol,
-)
+from starlite.plugins.base import PluginMapping, PluginProtocol
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -29,8 +25,8 @@ class APydanticModel(BaseModel):
     name: str
 
 
-class APlugin(SerializationPluginProtocol[AModel, BaseModel]):
-    def to_data_container_class(self, model_class: Type[AModel], **kwargs: Any) -> Type[BaseModel]:
+class APlugin(PluginProtocol[AModel]):
+    def to_pydantic_model_class(self, model_class: Type[AModel], **kwargs: Any) -> Type[BaseModel]:
         assert model_class is AModel
         return APydanticModel
 
@@ -38,10 +34,10 @@ class APlugin(SerializationPluginProtocol[AModel, BaseModel]):
     def is_plugin_supported_type(value: Any) -> "TypeGuard[AModel]":
         return value is AModel
 
-    def from_data_container_instance(self, model_class: Type[AModel], data_container_instance: BaseModel) -> AModel:
+    def from_pydantic_model_instance(self, model_class: Type[AModel], pydantic_model_instance: BaseModel) -> AModel:
         assert model_class is AModel
-        assert isinstance(data_container_instance, APydanticModel)
-        return model_class(**data_container_instance.dict())
+        assert isinstance(pydantic_model_instance, APydanticModel)
+        return model_class(**pydantic_model_instance.dict())
 
     def to_dict(self, model_instance: AModel) -> Dict[str, Any]:
         return dict(model_instance)  # type: ignore
@@ -75,13 +71,13 @@ def test_plugin_on_app_init() -> None:
     def on_startup(state: State) -> None:
         state.called = True
 
-    class PluginWithInitOnly(InitPluginProtocol):
+    class PluginWithInitOnly(PluginProtocol[Any]):
         def on_app_init(self, app: "Starlite") -> None:
             app.tags.append(tag)
             app.on_startup.append(on_startup)
             app.register(greet)
 
-    with create_test_client(plugins=[PluginWithInitOnly()]) as client:
+    with create_test_client(route_handlers=[], plugins=[PluginWithInitOnly()]) as client:  # type: ignore[abstract]
         response = client.get("/")
         assert response.text == "hello world"
 

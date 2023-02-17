@@ -9,29 +9,24 @@ from typing import (
     Protocol,
     Tuple,
     Type,
-    TypedDict,
     TypeVar,
     Union,
     runtime_checkable,
 )
 
-from pydantic import BaseModel
 from typing_extensions import TypeGuard, get_args
 
-from starlite.types.protocols import DataclassProtocol
-
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import Schema
+    from pydantic import BaseModel
 
     from starlite.app import Starlite
 
 ModelT = TypeVar("ModelT")
-DataContainerT = TypeVar("DataContainerT", bound=Union[BaseModel, DataclassProtocol, TypedDict])  # type: ignore[valid-type]
 
 
 @runtime_checkable
-class InitPluginProtocol(Protocol):
-    """Protocol used to define plugins that affect the application's init process."""
+class PluginProtocol(Protocol[ModelT]):  # pragma: no cover
+    """Base plugin protocol to be inherited when implementing plugins."""
 
     __slots__ = ()
 
@@ -41,8 +36,8 @@ class InitPluginProtocol(Protocol):
 
         Examples:
             .. code-block: python
-                from starlite import Starlite, get
-                from starlite.plugins import InitPluginProtocol
+
+                from starlite import PluginProtocol, Starlite, get
 
 
                 @get("/my-path")
@@ -50,7 +45,7 @@ class InitPluginProtocol(Protocol):
                     return {"hello": "world"}
 
 
-                class MyPlugin(InitPluginProtocol):
+                class MyPlugin(PluginProtocol[Any]):
                     def on_app_init(self, app: Starlite) -> None:
                         # update app attributes
 
@@ -81,15 +76,6 @@ class InitPluginProtocol(Protocol):
         """
         return None  # noqa: R501
 
-
-@runtime_checkable
-class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
-    """Protocol used to define a serialization plugin.
-    Serialization plugins are used to extend serialization and deserialization support.
-    """
-
-    __slots__ = ()
-
     @staticmethod
     def is_plugin_supported_type(value: Any) -> TypeGuard[ModelT]:
         """Given a value of indeterminate type, determine if this value is supported by the plugin.
@@ -99,6 +85,33 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
 
         Returns:
             A typeguard dictating whether the value is supported by the plugin.
+        """
+        return False
+
+    def to_pydantic_model_class(self, model_class: Type[ModelT], **kwargs: Any) -> Type["BaseModel"]:
+        """Given a model_class supported by the plugin, convert it to a subclass of the pydantic BaseModel.
+
+        Args:
+            model_class: A model class supported by the plugin.
+            **kwargs: Any additional kwargs.
+
+        Returns:
+            A pydantic model class.
+        """
+        raise NotImplementedError()
+
+    def from_pydantic_model_instance(self, model_class: Type[ModelT], pydantic_model_instance: "BaseModel") -> ModelT:
+        """Given an instance of a pydantic model created using a plugin's ``to_pydantic_model_class``, return an instance
+        of the class from which that pydantic model has been created.
+
+        This class is passed in as the ``model_class`` kwarg.
+
+        Args:
+            model_class: A model class supported by the plugin.
+            pydantic_model_instance: A pydantic model instance.
+
+        Returns:
+            A model instance.
         """
         raise NotImplementedError()
 
@@ -128,57 +141,8 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
         """
         raise NotImplementedError()
 
-    def to_data_container_class(self, model_class: Type[ModelT], **kwargs: Any) -> Type[DataContainerT]:
-        """Create a data container class corresponding to the given model class.
 
-        :param model_class: The model class that serves as a basis.
-        :param kwargs: Any kwargs.
-        :return: The generated data container class.
-        """
-        raise NotImplementedError()
-
-    def from_data_container_instance(
-        self, model_class: Type[ModelT], data_container_instance: DataContainerT
-    ) -> ModelT:
-        """Create a model instance from the given data container instance.
-
-        :param model_class: The model class to be instantiated.
-        :param data_container_instance: The data container instance.
-        :return: A model instance.
-        """
-        raise NotImplementedError()
-
-
-@runtime_checkable
-class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
-    """Plugin to extend the support of OpenAPI schema generation for non-library types."""
-
-    __slots__ = ()
-
-    @staticmethod
-    def is_plugin_supported_type(value: Any) -> TypeGuard[ModelT]:
-        """Given a value of indeterminate type, determine if this value is supported by the plugin.
-
-        Args:
-            value: An arbitrary value.
-
-        Returns:
-            A typeguard dictating whether the value is supported by the plugin.
-        """
-        raise NotImplementedError()
-
-    def to_openapi_schema(self, model_class: Type[ModelT]) -> "Schema":
-        """Given a model class, transform it into an OpenAPI schema class.
-
-        :param model_class: A model class.
-        :return: An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
-        """
-        raise NotImplementedError()
-
-
-def get_plugin_for_value(
-    value: Any, plugins: List[SerializationPluginProtocol]
-) -> Optional[SerializationPluginProtocol]:
+def get_plugin_for_value(value: Any, plugins: List[PluginProtocol]) -> Optional[PluginProtocol]:
     """Return a plugin for handling the given value, if any plugin supports it.
 
     Args:
@@ -202,11 +166,11 @@ def get_plugin_for_value(
 class PluginMapping(NamedTuple):
     """Named tuple, mapping plugins > models."""
 
-    plugin: SerializationPluginProtocol[Any, Any]
+    plugin: PluginProtocol
     model_class: Any
 
     def get_model_instance_for_value(
-        self, value: Union[DataContainerT, List[DataContainerT], Tuple[DataContainerT, ...]]
+        self, value: Union["BaseModel", List["BaseModel"], Tuple["BaseModel", ...]]
     ) -> Any:
         """Given a value generated by plugin, return an instance of the original class.
 
@@ -219,5 +183,8 @@ class PluginMapping(NamedTuple):
             Any
         """
         if isinstance(value, (list, tuple)):
-            return [self.plugin.from_data_container_instance(self.model_class, item) for item in value]
-        return self.plugin.from_data_container_instance(self.model_class, value)
+            return [
+                self.plugin.from_pydantic_model_instance(self.model_class, pydantic_model_instance=item)
+                for item in value
+            ]
+        return self.plugin.from_pydantic_model_instance(self.model_class, pydantic_model_instance=value)

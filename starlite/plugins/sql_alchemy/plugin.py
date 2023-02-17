@@ -17,14 +17,13 @@ from uuid import UUID
 
 from pydantic import BaseModel, conint, constr, create_model
 from pydantic_factories import ModelFactory
-from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 
 from starlite.di import Provide
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
-from starlite.plugins.base import InitPluginProtocol, SerializationPluginProtocol
+from starlite.plugins.base import PluginProtocol
 
 from .types import SQLAlchemyBinaryType
 
@@ -40,14 +39,13 @@ except ImportError as e:
 
 
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import Schema
     from typing_extensions import TypeGuard
 
     from starlite.app import Starlite
     from starlite.plugins.sql_alchemy.config import SQLAlchemyConfig
 
 
-class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[DeclarativeMeta, BaseModel]):
+class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
     """A Plugin for SQLAlchemy."""
 
     __slots__ = ("_model_namespace_map", "_config")
@@ -351,7 +349,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
             "Unsupported 'model_class' kwarg: only subclasses of the SQLAlchemy ``DeclarativeMeta`` are supported"
         )
 
-    def to_data_container_class(self, model_class: Type[DeclarativeMeta], **kwargs: Any) -> "Type[BaseModel]":
+    def to_pydantic_model_class(self, model_class: Type[DeclarativeMeta], **kwargs: Any) -> "Type[BaseModel]":
         """Generate a pydantic model for a given SQLAlchemy declarative table and any nested relations.
 
         Args:
@@ -373,7 +371,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
                     field_definitions[name] = (self.get_pydantic_type(column.type), ...)
                 else:
                     field_definitions[name] = (self.get_pydantic_type(column.type), None)
-            related_entity_classes: List[Type[DeclarativeMeta]] = []
+            related_entity_classes: List[DeclarativeMeta] = []
             if mapper.relationships:
                 # list of references to other entities, not the self entity
                 # to avoid duplication of pydantic models, we are using forward refs
@@ -396,24 +394,24 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
                 model_name, __config__=type("Config", (), {"orm_mode": True}), **field_definitions
             )
             for related_entity_class in related_entity_classes:
-                self.to_data_container_class(model_class=related_entity_class)
+                self.to_pydantic_model_class(model_class=related_entity_class)
         model = self._model_namespace_map[model_name]
         model.update_forward_refs(**self._model_namespace_map)
         return model
 
-    def from_data_container_instance(
-        self, model_class: "Type[DeclarativeMeta]", data_container_instance: BaseModel
+    def from_pydantic_model_instance(
+        self, model_class: "Type[DeclarativeMeta]", pydantic_model_instance: BaseModel
     ) -> Any:
-        """Create an instance of a given model_class using the values stored in the given data_container_instance.
+        """Create an instance of a given model_class using the values stored in the given pydantic_model_instance.
 
         Args:
             model_class: A declarative table class.
-            data_container_instance: A pydantic model instance.
+            pydantic_model_instance: A pydantic model instance.
 
         Returns:
             A declarative meta table instance.
         """
-        return model_class(**data_container_instance.dict())
+        return model_class(**pydantic_model_instance.dict())
 
     def to_dict(self, model_instance: "DeclarativeMeta") -> Dict[str, Any]:
         """Given a model instance, convert it to a dict of values that can be serialized.
@@ -425,7 +423,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
             A string keyed dict of values.
         """
         model_class = type(model_instance)
-        pydantic_model = self._model_namespace_map.get(model_class.__qualname__) or self.to_data_container_class(
+        pydantic_model = self._model_namespace_map.get(model_class.__qualname__) or self.to_pydantic_model_class(
             model_class=model_class
         )
         return pydantic_model.from_orm(model_instance).dict()  # type:ignore[pydantic-unexpected]
@@ -441,11 +439,3 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
             An instantiated table instance.
         """
         return model_class(**kwargs)
-
-    def to_openapi_schema(self, model_class: Type[DeclarativeMeta]) -> "Schema":
-        """Given a model class, transform it into an OpenAPI schema class.
-
-        :param model_class: A table class.
-        :return: An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
-        """
-        return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))

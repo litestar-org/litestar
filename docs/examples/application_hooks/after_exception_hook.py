@@ -33,4 +33,4 @@ async def after_exception_handler(exc: Exception, scope: "Scope", state: "State"
     )
 
 
-app = Starlite([my_handler], after_exception=[after_exception_handler])
+app = Starlite([my_handler], after_exception=after_exception_handler)

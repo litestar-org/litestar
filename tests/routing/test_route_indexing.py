@@ -134,5 +134,5 @@ def test_indexing_validation(tmp_path: "Path") -> None:
     with pytest.raises(ImproperlyConfiguredException):
         Starlite(
             route_handlers=[handler_one],
-            static_files_config=[StaticFilesConfig(path="/static", directories=[tmp_path], name="same-name")],
+            static_files_config=StaticFilesConfig(path="/static", directories=[tmp_path], name="same-name"),
         )

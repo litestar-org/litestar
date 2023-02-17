@@ -48,7 +48,7 @@ from starlite.utils.pagination import (
 )
 
 if TYPE_CHECKING:
-    from starlite.plugins.base import OpenAPISchemaPluginProtocol
+    from starlite.plugins.base import PluginProtocol
 
 
 def normalize_example_value(value: Any) -> Any:
@@ -127,7 +127,7 @@ def create_string_constrained_field_schema(
 def create_collection_constrained_field_schema(
     field_type: Union[Type[ConstrainedList], Type["ConstrainedSet"], Type["ConstrainedFrozenSet"]],
     children: Optional[Tuple["SignatureField", ...]],
-    plugins: List["OpenAPISchemaPluginProtocol"],
+    plugins: List["PluginProtocol"],
 ) -> Schema:
     """Create Schema from Constrained List/Set field."""
     schema = Schema(type=OpenAPIType.ARRAY)
@@ -165,7 +165,7 @@ def create_constrained_field_schema(
         Type["ConstrainedStr"],
     ],
     children: Optional[List["SignatureField"]],
-    plugins: List["OpenAPISchemaPluginProtocol"],
+    plugins: List["PluginProtocol"],
 ) -> "Schema":
     """Create Schema for Pydantic Constrained fields (created using constr(), conint() and so forth, or by subclassing
     Constrained*)
@@ -207,7 +207,7 @@ class GenericPydanticSchema(OpenAPI310PydanticSchema):
     schema_class: Any
 
 
-def get_schema_for_field_type(field: "SignatureField", plugins: List["OpenAPISchemaPluginProtocol"]) -> "Schema":
+def get_schema_for_field_type(field: "SignatureField", plugins: List["PluginProtocol"]) -> "Schema":
     """Get or create a Schema object for the given field type."""
     if field.field_type in TYPE_MAP:
         return TYPE_MAP[field.field_type].copy()
@@ -228,7 +228,9 @@ def get_schema_for_field_type(field: "SignatureField", plugins: List["OpenAPISch
 
     if any(plugin.is_plugin_supported_type(field.field_type) for plugin in plugins):
         plugin = [plugin for plugin in plugins if plugin.is_plugin_supported_type(field.field_type)][0]
-        return plugin.to_openapi_schema(field.field_type)
+        return OpenAPI310PydanticSchema(
+            schema_class=plugin.to_pydantic_model_class(field.field_type, parameter_name=field.name)
+        )
 
     if field.field_type is UploadFile:
         # the following is a hack -https://www.openapis.org/blog/2021/02/16/migrating-from-openapi-3-0-to-3-1-0
@@ -243,9 +245,7 @@ def get_schema_for_field_type(field: "SignatureField", plugins: List["OpenAPISch
     return Schema()
 
 
-def get_schema_for_generic_type(
-    field: "SignatureField", plugins: List["OpenAPISchemaPluginProtocol"], origin: Any
-) -> "Schema":
+def get_schema_for_generic_type(field: "SignatureField", plugins: List["PluginProtocol"], origin: Any) -> "Schema":
     """Handle generic types.
 
     Raises:
@@ -330,10 +330,7 @@ def create_examples_for_field(field: "SignatureField") -> List["Example"]:
 
 
 def create_schema(
-    field: "SignatureField",
-    generate_examples: bool,
-    plugins: List["OpenAPISchemaPluginProtocol"],
-    ignore_optional: bool = False,
+    field: "SignatureField", generate_examples: bool, plugins: List["PluginProtocol"], ignore_optional: bool = False
 ) -> "Schema":
     """Create a Schema model for a given SignatureField and if needed - recursively traverse its children as well."""
 

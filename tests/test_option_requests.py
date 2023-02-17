@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 @given(http_methods=permutations(["GET", "POST", "POST", "PATCH", "DELETE", "HEAD"]))
 def test_regular_options_request(http_methods: List["Method"]) -> None:
-    @route("/", http_method=http_methods)
+    @route("/", http_method=http_methods)  # type: ignore
     def handler() -> None:
         return None
 

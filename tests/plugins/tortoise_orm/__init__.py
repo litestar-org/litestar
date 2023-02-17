@@ -2,10 +2,10 @@ from typing import List, cast
 
 from tortoise import Model, Tortoise, fields  # type: ignore
 
-from starlite.handlers.http_handlers import get, post
+from starlite.handlers.http import get, post
 
 
-class Tournament(Model):
+class Tournament(Model):  # type: ignore[misc]
     id = fields.IntField(pk=True)
     name = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -16,7 +16,7 @@ class Tournament(Model):
         ordering = ["name"]
 
 
-class Event(Model):
+class Event(Model):  # type: ignore[misc]
     id = fields.IntField(pk=True)
     name = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -32,7 +32,7 @@ class Event(Model):
         ordering = ["name"]
 
 
-class Address(Model):
+class Address(Model):  # type: ignore[misc]
     city = fields.CharField(max_length=64)
     street = fields.CharField(max_length=128)
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -43,7 +43,7 @@ class Address(Model):
         ordering = ["city"]
 
 
-class Team(Model):
+class Team(Model):  # type: ignore[misc]
     id = fields.IntField(pk=True)
     name = fields.TextField()
     created_at = fields.DatetimeField(auto_now_add=True)
@@ -81,7 +81,8 @@ async def cleanup() -> None:
 
 @get("/tournaments")
 async def get_tournaments() -> List[Tournament]:
-    return await Tournament.all()
+    tournaments = await Tournament.all()
+    return cast("List[Tournament]", tournaments)
 
 
 @get("/tournaments/{tournament_id:int}")

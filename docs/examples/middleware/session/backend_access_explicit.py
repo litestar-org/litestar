@@ -12,4 +12,4 @@ async def clear_expired_sessions() -> None:
     await session_backend.delete_expired()
 
 
-app = Starlite(middleware=[session_backend.config.middleware])
+app = Starlite(route_handlers=[], middleware=[session_backend.config.middleware])

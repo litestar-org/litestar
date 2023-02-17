@@ -56,8 +56,8 @@ else:
 )
 def test_dto_list_response(data: Any, annotation: Any) -> None:
     @get("/")
-    def handler() -> annotation:
-        return data
+    def handler() -> annotation:  # type: ignore
+        return data  # type: ignore
 
     with create_test_client(handler) as client:
         response = client.get("/")

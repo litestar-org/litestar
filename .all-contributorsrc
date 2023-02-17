@@ -770,42 +770,6 @@
       "contributions": [
         "code"
       ]
-    },
-    {
-      "login": "WardPearce",
-      "name": "Ward",
-      "avatar_url": "https://avatars.githubusercontent.com/u/27844174?v=4",
-      "profile": "http://wardpearce.com",
-      "contributions": [
-        "bug"
-      ]
-    },
-    {
-      "login": "knowsuchagency",
-      "name": "Stephan Fitzpatrick",
-      "avatar_url": "https://avatars.githubusercontent.com/u/11974795?v=4",
-      "profile": "https://knowsuchagency.com",
-      "contributions": [
-        "bug"
-      ]
-    },
-    {
-      "login": "ekeric13",
-      "name": "Eric Kennedy",
-      "avatar_url": "https://avatars.githubusercontent.com/u/6489651?v=4",
-      "profile": "https://codepen.io/ekeric13/",
-      "contributions": [
-        "doc"
-      ]
-    },
-    {
-      "login": "wassafshahzad",
-      "name": "wassaf shahzad",
-      "avatar_url": "https://avatars.githubusercontent.com/u/25094157?v=4",
-      "profile": "https://github.com/wassafshahzad",
-      "contributions": [
-        "code"
-      ]
     }
   ],
   "contributorsPerLine": 7,

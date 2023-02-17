@@ -72,7 +72,7 @@ def test_session_auth_openapi() -> None:
         retrieve_user_handler=retrieve_user_handler,
         session_backend_config=backend_config,
     )
-    app = Starlite(on_app_init=[session_auth.on_app_init])
+    app = Starlite(route_handlers=[], on_app_init=[session_auth.on_app_init])
     assert app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
         "openapi": "3.1.0",
         "info": {"title": "Starlite API", "version": "1.0.0"},

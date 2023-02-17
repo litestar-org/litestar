@@ -18,7 +18,7 @@ HTMX_STOP_POLLING = 286
 
 
 class HTMXHeaders(str, Enum):
-    """Enum for HTMX Headers"""
+    """An Enum for HTMX Headers"""
 
     REDIRECT = "HX-Redirect"
     REFRESH = "HX-Refresh"

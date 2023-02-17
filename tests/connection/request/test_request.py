@@ -96,7 +96,7 @@ def test_request_asset_url(tmp_path: "Path") -> None:
 
     with create_test_client(
         route_handlers=[resolver, resolver_none],
-        static_files_config=[StaticFilesConfig(path="/static/js", directories=[tmp_path], name="js")],
+        static_files_config=StaticFilesConfig(path="/static/js", directories=[tmp_path], name="js"),
     ) as client:
         response = client.get("/resolver")
         assert response.json() == {"url": "http://testserver.local/static/js/main.js"}

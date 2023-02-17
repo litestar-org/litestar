@@ -21,7 +21,7 @@ def test_setting_cors_middleware() -> None:
     assert cors_config.max_age == 600
     assert cors_config.expose_headers == []
 
-    with create_test_client(cors_config=cors_config) as client:
+    with create_test_client(route_handlers=[], cors_config=cors_config) as client:
         unpacked_middleware = []
         cur = client.app.asgi_handler
         while hasattr(cur, "app"):

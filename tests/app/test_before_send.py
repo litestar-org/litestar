@@ -23,7 +23,7 @@ def test_before_send() -> None:
     def on_startup(state: "State") -> None:
         state.message = "value injected during send"
 
-    with create_test_client(handler, on_startup=[on_startup], before_send=[before_send_hook_handler]) as client:
+    with create_test_client(handler, on_startup=[on_startup], before_send=before_send_hook_handler) as client:
         response = client.get("/test")
         assert response.status_code == HTTP_200_OK
         assert response.headers.get("My Header") == "value injected during send"

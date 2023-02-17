@@ -1,10 +1,9 @@
-name: Tests And Linting
+name: ci
 on:
   pull_request:
   push:
     branches:
       - main
-      - v1.51
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -116,7 +115,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Initialize CodeQL With Dependencies
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && github.ref_name == 'main'
         uses: github/codeql-action/init@v2
       - name: Initialize CodeQL Without Dependencies
         if: github.event_name == 'pull_request'

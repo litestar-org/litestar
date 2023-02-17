@@ -5,9 +5,7 @@ from typing import (
     Dict,
     Generic,
     List,
-    Mapping,
     Optional,
-    Sequence,
     Set,
     Type,
     TypeVar,
@@ -27,6 +25,7 @@ from starlite.types import (
     ExceptionHandlersMap,
     Guard,
     Middleware,
+    ParametersMap,
     TypeEncodersMap,
 )
 from starlite.types.composite_types import MaybePartial
@@ -38,10 +37,9 @@ if TYPE_CHECKING:
 
     from starlite.connection import ASGIConnection
     from starlite.controller import Controller
-    from starlite.params import ParameterKwarg
     from starlite.router import Router
     from starlite.signature.models import SignatureModel
-    from starlite.types import AnyCallable, ExceptionHandler
+    from starlite.types import AnyCallable
 
 T = TypeVar("T", bound="BaseRouteHandler")
 
@@ -77,27 +75,27 @@ class BaseRouteHandler(Generic[T]):
     @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[Union[str, Sequence[str]]] = None,
+        path: Union[Optional[str], Optional[List[str]]] = None,
         *,
         dependencies: Optional[Dependencies] = None,
         exception_handlers: Optional[ExceptionHandlersMap] = None,
-        guards: Optional[Sequence[Guard]] = None,
-        middleware: Optional[Sequence[Middleware]] = None,
+        guards: Optional[List[Guard]] = None,
+        middleware: Optional[List[Middleware]] = None,
         name: Optional[str] = None,
-        opt: Optional[Mapping[str, Any]] = None,
+        opt: Optional[Dict[str, Any]] = None,
         type_encoders: Optional[TypeEncodersMap] = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``HTTPRouteHandler``.
 
         Args:
-            path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults to '/'
-            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
-            exception_handlers: A mapping of status codes and/or exception types to handler functions.
-            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
-            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
+            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
+            dependencies: A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            exception_handlers: A dictionary that maps handler functions to status codes and/or exception types.
+            guards: A list of :class:`Guard <starlite.types.Guard>` callables.
+            middleware: A list of :class:`Middleware <starlite.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
+            opt: A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
                 wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
@@ -112,7 +110,7 @@ class BaseRouteHandler(Generic[T]):
         self.guards = guards
         self.middleware = middleware
         self.name = name
-        self.opt = dict(opt or {})
+        self.opt: Dict[str, Any] = opt or {}
         self.owner: Optional[Union["Controller", "Router"]] = None
         self.signature_model: Optional[Type["SignatureModel"]] = None
         self.paths = (
@@ -178,7 +176,7 @@ class BaseRouteHandler(Generic[T]):
     def resolve_layered_parameters(self) -> Dict[str, "SignatureField"]:
         """Return all parameters declared above the handler."""
         if self._resolved_layered_parameters is Empty:
-            parameter_kwargs: Dict[str, "ParameterKwarg"] = {}
+            parameter_kwargs: "ParametersMap" = {}
 
             for layer in self.ownership_layers:
                 parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
@@ -223,7 +221,7 @@ class BaseRouteHandler(Generic[T]):
 
         The middlewares are added from top to bottom (app -> router -> controller -> route handler) and then reversed.
         """
-        resolved_middleware: List["Middleware"] = []
+        resolved_middleware = []
         for layer in self.ownership_layers:
             resolved_middleware.extend(layer.middleware or [])
         return list(reversed(resolved_middleware))
@@ -233,7 +231,7 @@ class BaseRouteHandler(Generic[T]):
 
         This method is memoized so the computation occurs only once.
         """
-        resolved_exception_handlers: Dict[Union[int, Type[Exception]], "ExceptionHandler"] = {}
+        resolved_exception_handlers = {}
         for layer in self.ownership_layers:
             resolved_exception_handlers.update(layer.exception_handlers or {})
         return resolved_exception_handlers
