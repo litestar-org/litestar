@@ -1,100 +1,29 @@
 Caching
 =======
 
-Cache backends
----------------
-
-Starlite includes a builtin :class:`Cache <starlite.cache.Cache>` that offers a uniform interface to interact with different
-"Cache Backends". A *Cache Backend* is a class that either implements or fulfills the interface specified by
-:class:`CacheBackendProtocol <starlite.cache.CacheBackendProtocol>` to provide cache services.
-
-Builtin cache backends
-++++++++++++++++++++++
-
-Starlite comes with the following builtin cache backends:
-
-By default, Starlite uses the :class:`MemoryStorageBackend <starlite.cache.MemoryStorageBackend>`, which stores values
-in local memory with the added security of async locks. This is fine for local development, but it's not a good solution
-for production environments.
-
-Starlite also ships with two other ready to use cache backends:
-
-Redis
-******
-
-:class:`RedisCacheBackend <starlite.cache.redis_cache_backend.RedisCacheBackend>`, which uses
-`Redis <https://github.com/redis/redis-py>`_ as the caching database. Under the hood it uses
-`redis-py asyncio <https://redis-py.readthedocs.io/en/stable/examples/asyncio_examples.html>`_ to make sure requests are
-not blocked and `hiredis <https://github.com/redis/hiredis>`_ to boost performance.
-
-.. note::
-
-    ``redis`` is a required dependency when using this backend. You can install it as an extra with
-    ``pip install starlite[redis]`` or independently.
-
-Memcached
-*********
-
-:class:`MemcachedCacheBackend <starlite.cache.memcached_cache_backend.MemcachedCacheBackend>`, which uses
-`memcached <https://memcached.org/>`_ as the caching database. Under the hood it uses
-`aiomcache <https://github.com/aio-libs/aiomcache>`_ to make sure requests are not blocked.
-
-.. note::
-
-    ``aiomcache`` is a required dependency when using this backend. You can install it as an extra with
-    ``pip install starlite[memcached]`` or independently.
-
 
 Configuring caching
-+++++++++++++++++++
+-------------------
 
 You can configure caching behaviour on the application level by passing an instance of
 :class:`CacheConfig <.config.CacheConfig>` to the :class:`Starlite instance <starlite.app.Starlite>`.
 
 Here is an example of how to configure a cache backend
 
-.. tab-set::
 
-    .. tab-item:: Redis
-        :sync: redis
+.. code-block:: python
 
-        .. code-block:: python
+   from starlite import CacheConfig
+   from starlite.cache.redis_cache_backend import (
+       RedisCacheBackendConfig,
+       RedisCacheBackend,
+   )
 
-           from starlite.config.cache import CacheConfig
-           from starlite.cache.redis_cache_backend import (
-               RedisCacheBackendConfig,
-               RedisCacheBackend,
-           )
+   config = RedisCacheBackendConfig(url="redis://localhost/", port=6379, db=0)
+   redis_backend = RedisCacheBackend(config=config)
 
-           config = RedisCacheBackendConfig(url="redis://localhost/", port=6379, db=0)
-           redis_backend = RedisCacheBackend(config=config)
+   cache_config = CacheConfig(backend=redis_backend)
 
-           cache_config = CacheConfig(backend=redis_backend)
-
-    .. tab-item:: Memcached
-        :sync: memcached
-
-        .. code-block:: python
-
-           from starlite.config.cache import CacheConfig
-           from starlite.cache.memcached_cache_backend import (
-               MemcachedCacheBackendConfig,
-               MemcachedCacheBackend,
-           )
-
-           config = MemcachedCacheBackendConfig(url="127.0.0.1", port=11211)
-           memcached_backend = MemcachedCacheBackend(config=config)
-
-           cache_config = CacheConfig(backend=memcached_backend)
-
-
-Creating a custom cache backend
-++++++++++++++++++++++++++++++++
-
-Since Starlite relies on the :class:`CacheBackendProtocol <starlite.cache.CacheBackendProtocol>` to define cache,
-creating a custom cache backend is very simple - all that is required is to create a class that inherits from the
-protocol and implements all its methods, or even a class that simply implements these methods without inheriting from
-the protocol. Once this is done, you can use the backend in the cache config.
 
 
 Response caching
@@ -158,7 +87,7 @@ object. For example, you can access the cache in a custom middleware thus:
 
 .. code-block:: python
 
-   from starlite.middleware import MiddlewareProtocol
+   from starlite import MiddlewareProtocol
    from starlite.types import Scope, Receive, Send, ASGIApp
 
 
@@ -188,5 +117,5 @@ inherit from it. You can thus interact with the cache inside a route handler eas
 
 .. attention::
 
-   Cache based operations are async because async locking is used to protect against race conditions. If you need to use
-   caching - use an async route handler.
+    Cache based operations are async because async locking is used to protect against race conditions, therefore you
+    need to use an async route handler if you want to interact with the cache.
