@@ -245,7 +245,7 @@ Another helper is the :class:`RequestFactory <starlite.testing.RequestFactory>` 
 you need to test logic that expects to receive a request object.
 
 For example, lets say we wanted to unit test a *guard* function in isolation, to which end we'll reuse the examples
-from the :doc:`route guards </usage/security/guards>` documentation:
+from the :doc:`route guards </lib/usage/security/guards>` documentation:
 
 
 .. code-block:: python
