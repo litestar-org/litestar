@@ -40,7 +40,7 @@ def test_response_headers() -> None:
     )
 
     route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore
-    resolved_headers = route_handler.resolve_response_headers()
+    resolved_headers = {header.name: header for header in route_handler.resolve_response_headers()}
     assert resolved_headers["first"].value == local_first.value
     assert resolved_headers["second"].value == controller_second.value
     assert resolved_headers["third"].value == router_second.value
@@ -167,5 +167,5 @@ def test_explicit_headers_override_response_headers(
     app = Starlite(route_handlers=[my_handler])
 
     route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore
-    resolved_headers = route_handler.resolve_response_headers()
+    resolved_headers = {header.name: header for header in route_handler.resolve_response_headers()}
     assert resolved_headers[header.HEADER_NAME].value == header.to_header()

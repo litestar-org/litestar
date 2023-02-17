@@ -59,7 +59,6 @@ from starlite.types import (
     Method,
     Middleware,
     ResponseCookies,
-    ResponseHeadersMap,
     ResponseType,
     TypeEncodersMap,
 )
@@ -86,7 +85,7 @@ def _normalize_cookies(local_cookies: FrozenSet["Cookie"], layered_cookies: Froz
     return [cookie for cookie in sorted_set if not cookie.documentation_only]
 
 
-def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
+def _normalize_headers(headers: FrozenSet["ResponseHeader"]) -> Dict[str, Any]:
     """Given a dictionary of ResponseHeader, filter them and return a dictionary of values.
 
     Args:
@@ -95,7 +94,7 @@ def _normalize_headers(headers: "ResponseHeadersMap") -> Dict[str, Any]:
     Returns:
         A string keyed dictionary of normalized values
     """
-    return {k: v.value for k, v in headers.items() if not v.documentation_only}
+    return {header.name: header.value for header in headers if not header.documentation_only}
 
 
 async def _normalize_response_data(data: Any, plugins: List["SerializationPluginProtocol"]) -> Any:
@@ -126,7 +125,7 @@ async def _normalize_response_data(data: Any, plugins: List["SerializationPlugin
 def _create_response_container_handler(
     after_request: Optional["AfterRequestHookHandler"],
     cookies: FrozenSet["Cookie"],
-    headers: Mapping[str, Any],
+    headers: FrozenSet["ResponseHeader"],
     media_type: str,
     status_code: int,
 ) -> "AsyncAnyCallable":
@@ -179,7 +178,7 @@ def _create_data_handler(
     after_request: Optional["AfterRequestHookHandler"],
     background: Optional[Union["BackgroundTask", "BackgroundTasks"]],
     cookies: FrozenSet["Cookie"],
-    headers: "ResponseHeadersMap",
+    headers: FrozenSet["ResponseHeader"],
     media_type: str,
     response_class: "ResponseType",
     return_annotation: Any,
@@ -497,30 +496,27 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 return layer.response_class
         return Response
 
-    def resolve_response_headers(self) -> "ResponseHeadersMap":
+    def resolve_response_headers(self) -> FrozenSet["ResponseHeader"]:
         """Return all header parameters in the scope of the handler function.
 
         Returns:
             A dictionary mapping keys to :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances.
         """
         resolved_response_headers: dict[str, "ResponseHeader"] = {}
+
         for layer in self.ownership_layers:
             if layer_response_headers := layer.response_headers:
-                resolved_response_headers.update({header.name: header for header in layer_response_headers})
+                resolved_response_headers.update({h.name: h for h in layer_response_headers})
             for extra_header in ("cache_control", "etag"):
                 header_model: Optional["Header"] = getattr(layer, extra_header, None)
                 if header_model:
-                    resolved_response_headers.update(
-                        {
-                            header_model.HEADER_NAME: ResponseHeader(
-                                name=header_model.HEADER_NAME,
-                                value=header_model.to_header(),
-                                documentation_only=header_model.documentation_only,
-                            )
-                        }
+                    resolved_response_headers[header_model.HEADER_NAME] = ResponseHeader(
+                        name=header_model.HEADER_NAME,
+                        value=header_model.to_header(),
+                        documentation_only=header_model.documentation_only,
                     )
 
-        return resolved_response_headers
+        return frozenset(resolved_response_headers.values())
 
     def resolve_response_cookies(self) -> FrozenSet["Cookie"]:
         """Return a list of Cookie instances. Filters the list to ensure each cookie key is unique.

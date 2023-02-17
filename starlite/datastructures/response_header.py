@@ -20,3 +20,6 @@ class ResponseHeader(Header):
         if values.get("documentation_only") or value is not None:
             return value
         raise ValueError("value must be set if documentation_only is false")
+
+    def __hash__(self) -> int:
+        return hash(self.name)
