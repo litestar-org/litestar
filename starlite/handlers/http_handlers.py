@@ -338,7 +338,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         opt: Optional[Mapping[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[ResponseHeadersMap] = None,
+        response_headers: Optional[Sequence[ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -505,14 +505,17 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """
         resolved_response_headers: dict[str, "ResponseHeader"] = {}
         for layer in self.ownership_layers:
-            resolved_response_headers.update(layer.response_headers or {})
+            if layer_response_headers := layer.response_headers:
+                resolved_response_headers.update({header.name: header for header in layer_response_headers})
             for extra_header in ("cache_control", "etag"):
                 header_model: Optional["Header"] = getattr(layer, extra_header, None)
                 if header_model:
                     resolved_response_headers.update(
                         {
                             header_model.HEADER_NAME: ResponseHeader(
-                                value=header_model.to_header(), documentation_only=header_model.documentation_only
+                                name=header_model.HEADER_NAME,
+                                value=header_model.to_header(),
+                                documentation_only=header_model.documentation_only,
                             )
                         }
                     )
@@ -718,7 +721,7 @@ class get(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[ResponseHeadersMap] = None,
+        response_headers: Optional[Sequence[ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -870,7 +873,7 @@ class head(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[ResponseHeadersMap] = None,
+        response_headers: Optional[Sequence[ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -1040,7 +1043,7 @@ class post(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[ResponseHeadersMap] = None,
+        response_headers: Optional[Sequence[ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -1191,7 +1194,7 @@ class put(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[ResponseHeadersMap] = None,
+        response_headers: Optional[Sequence[ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -1342,7 +1345,7 @@ class patch(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[ResponseHeadersMap] = None,
+        response_headers: Optional[Sequence[ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -1493,7 +1496,7 @@ class delete(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[ResponseHeadersMap] = None,
+        response_headers: Optional[Sequence[ResponseHeader]] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes

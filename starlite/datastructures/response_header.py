@@ -7,6 +7,8 @@ from pydantic_openapi_schema.v3_1_0 import Header
 class ResponseHeader(Header):
     """Container type for a response header."""
 
+    name: str  # type: ignore[assignment]
+    """Header name"""
     documentation_only: bool = False
     """Defines the ResponseHeader instance as for OpenAPI documentation purpose only."""
     value: Any = None
