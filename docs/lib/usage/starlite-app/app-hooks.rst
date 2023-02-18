@@ -7,7 +7,7 @@ and a couple of those arguments can be configured to control the behavior of you
 . This section of the documentations take a deeper dive into how you
 can use these hooks to configure your application throughout its lifespan.
 
-Brief Overview of Application Hooks and Their Respective Events
+Application Hooks Overview
 -------------------------------------------------------------
 
 All ASGI webservers (like `Uvicorn <https://www.uvicorn.org>`_ or
