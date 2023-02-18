@@ -15,7 +15,7 @@ ASGI webservers (like `Uvicorn <https://www.uvicorn.org>`_ or
 application they are invoked with. And Starlite can hook into those events to perform certain tasks as
 intended for that particular event.
 
-These hooks accepts a `list of callables` - either sync/async functions, methods or class instances and
+These hooks accept a `list of callables` - either sync/async functions, methods or class instances and
 you can pass those hooks as optional arguments to the ``Starlite`` instance. Two common examples of
 such hooks are the :class:`on_startup <starlite.config.AppConfig.on_startup>` and the
 :class:`on_shutdown <starlite.config.AppConfig.on_shutdown>` keyword arguments of the ``Starlite``
