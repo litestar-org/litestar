@@ -48,6 +48,18 @@ def test_response_headers() -> None:
     assert "external" not in resolved_headers
 
 
+def test_response_headers_mapping() -> None:
+    @get(response_headers={"foo": "bar"})
+    def handler_one() -> None:
+        pass
+
+    @get(response_headers=[ResponseHeader(name="foo", value="bar")])
+    def handler_two() -> None:
+        pass
+
+    assert handler_one.resolve_response_headers() == handler_two.resolve_response_headers()
+
+
 def test_response_headers_validation() -> None:
     ResponseHeader(name="test", documentation_only=True)
     with pytest.raises(ValidationError):

@@ -68,7 +68,7 @@ from .composite_types import (
     ParametersMap,
     PathType,
     ResponseCookies,
-    ResponseHeadersMap,
+    ResponseHeaders,
     Scopes,
     TypeEncodersMap,
 )
@@ -145,8 +145,8 @@ __all__ = (
     "ReceiveMessage",
     "ReservedKwargs",
     "ResponseCookies",
-    "ResponseHeadersMap",
     "ResponseType",
+    "ResponseHeaders",
     "RouteHandlerMapItem",
     "RouteHandlerType",
     "Scope",
