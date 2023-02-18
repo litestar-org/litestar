@@ -53,7 +53,7 @@ Middleware = Union[
 ]
 ParametersMap = Mapping[str, ParameterKwarg]
 PathType = Union[Path, PathLike, str]
-ResponseCookies = Sequence[Cookie]
+ResponseCookies = Union[Sequence[Cookie], Mapping[str, str]]
 ResponseHeaders = Union[Sequence[ResponseHeader], Mapping[str, str]]
 Scopes = Set[Literal[ScopeType.HTTP, ScopeType.WEBSOCKET]]
 StreamType = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncIterator[T]]

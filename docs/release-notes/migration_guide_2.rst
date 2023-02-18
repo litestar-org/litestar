@@ -144,7 +144,8 @@ Response headers
 ----------------
 
 Response header can now be set using either a :class:`Sequence <typing.Sequence>` of :class:`ResponseHeader <.datastructures.response_header.ResponseHeader>`,
-or by using a plain :class:`Mapping[str, str] <typing.Mapping>`.
+or by using a plain :class:`Mapping[str, str] <typing.Mapping>`. The typing of :class:`ResponseHeader` was also changed to be more strict and now
+only allows string values.
 
 
 .. tab-set::
@@ -178,3 +179,9 @@ or by using a plain :class:`Mapping[str, str] <typing.Mapping>`.
             @get(response_headers={"my-header": "header-value"})
             async def handler() -> str:
                 ...
+
+
+Response cookies
+----------------
+
+Response cookies might now also be set using a :class:`Mapping[str, str] <typing.Mapping>`, analogous to `Response headers`_.

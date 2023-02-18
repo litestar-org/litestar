@@ -46,6 +46,18 @@ def test_response_cookies() -> None:
     assert "external" not in response_cookies
 
 
+def test_response_cookies_mapping() -> None:
+    @get(response_cookies={"foo": "bar"})
+    def handler_one() -> None:
+        pass
+
+    @get(response_cookies=[Cookie(key="foo", value="bar")])
+    def handler_two() -> None:
+        pass
+
+    assert handler_one.resolve_response_cookies() == handler_two.resolve_response_cookies()
+
+
 def test_response_cookie_rendering() -> None:
     @get(
         "/",
