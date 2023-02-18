@@ -10,7 +10,7 @@ can use these hooks to configure your application throughout its lifespan.
 Application Hooks Overview
 -------------------------------------------------------------
 
-All ASGI webservers (like `Uvicorn <https://www.uvicorn.org>`_ or
+ASGI webservers (like `Uvicorn <https://www.uvicorn.org>`_ or
 `Daphne <https://github.com/django/daphne>`_ and such) emits certain events through the lifespan of the
 application they are invoked with. And Starlite can hook into those events to perform certain tasks as
 intended for that particular event.
