@@ -66,6 +66,8 @@ from starlite.utils import Ref, annotation_is_iterable_of_type, is_async_callabl
 from starlite.utils.predicates import is_class_and_subclass
 from starlite.utils.sync import AsyncCallable
 
+from .utils import narrow_response_cookies, narrow_response_headers
+
 if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.connection import Request
@@ -451,13 +453,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.media_type: Union[MediaType, str] = media_type or ""
         self.response_class = response_class
 
-        # resolve these once, so it won't have to be resolved again in resolve_response_headers / resolve_response_cookies
-        self.response_cookies = response_cookies
-        self.response_headers = (
-            [ResponseHeader(name=name, value=value) for name, value in response_headers.items()]
-            if isinstance(response_headers, Mapping)
-            else response_headers
-        )
+        self.response_cookies: Optional[Sequence[Cookie]] = narrow_response_cookies(response_cookies)
+        self.response_headers: Optional[Sequence[ResponseHeader]] = narrow_response_headers(response_headers)
 
         self.sync_to_thread = sync_to_thread
         # OpenAPI related attributes
@@ -518,6 +515,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         for layer in self.ownership_layers:
             if layer_response_headers := layer.response_headers:
                 if isinstance(layer_response_headers, Mapping):
+                    # this can't happen unless you manually set response_headers on an instance, which would result in a
+                    # type-checking error on everything but the controller. We cover this case nevertheless
                     resolved_response_headers.update(
                         {name: ResponseHeader(name=name, value=value) for name, value in layer_response_headers.items()}
                     )
@@ -544,6 +543,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         for layer in reversed(self.ownership_layers):
             if layer_response_cookies := layer.response_cookies:
                 if isinstance(layer_response_cookies, Mapping):
+                    # this can't happen unless you manually set response_cookies on an instance, which would result in a
+                    # type-checking error on everything but the controller. We cover this case nevertheless
                     response_cookies.update(
                         {Cookie(key=key, value=value) for key, value in layer_response_cookies.items()}
                     )

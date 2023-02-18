@@ -25,6 +25,7 @@ from starlite.handlers.asgi_handlers import ASGIRouteHandler
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
+from starlite.handlers.utils import narrow_response_cookies, narrow_response_headers
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
     AfterRequestHookHandler,
@@ -164,8 +165,8 @@ class Router:
         self.parameters = dict(parameters or {})
         self.path = normalize_path(path)
         self.response_class = response_class
-        self.response_cookies = response_cookies or []
-        self.response_headers = response_headers
+        self.response_cookies = narrow_response_cookies(response_cookies)
+        self.response_headers = narrow_response_headers(response_headers)
         self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
         self.security = list(security or [])
         self.tags = list(tags or [])

@@ -60,6 +60,19 @@ def test_response_headers_mapping() -> None:
     assert handler_one.resolve_response_headers() == handler_two.resolve_response_headers()
 
 
+def test_response_headers_mapping_unresolved() -> None:
+    # this should never happen, as there's no way to create this situation which type-checks.
+    # we test for it nevertheless
+
+    @get()
+    def handler_one() -> None:
+        pass
+
+    handler_one.response_headers = {"foo": "bar"}  # type: ignore[assignment]
+
+    assert handler_one.resolve_response_headers() == frozenset([ResponseHeader(name="foo", value="bar")])
+
+
 def test_response_headers_validation() -> None:
     ResponseHeader(name="test", documentation_only=True)
     with pytest.raises(ValidationError):

@@ -10,6 +10,7 @@ from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.utils import AsyncCallable, normalize_path
 from starlite.utils.helpers import unwrap_partial
+from starlite.handlers.utils import narrow_response_headers, narrow_response_cookies
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -144,6 +145,9 @@ class Controller:
         for key in self.__slots__:
             if not hasattr(self, key):
                 setattr(self, key, None)
+
+        self.response_cookies = narrow_response_cookies(self.response_cookies)
+        self.response_headers = narrow_response_headers(self.response_headers)
 
         self.path = normalize_path(self.path or "/")
         self.owner = owner
