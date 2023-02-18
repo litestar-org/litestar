@@ -487,9 +487,24 @@ Of the two declarations of ``my-cookie`` only the route handler one will be used
 
    Set-Cookie: my-cookie=456; Path=/; SameSite=lax
 
+
+
+.. tip::
+
+    If all you need for your cookies are key and value, you can supply them using a :class:`Mapping[str, str] <typing.Mapping>`
+    - like a :class:`dict` - instead:
+
+    .. code-block:: python
+
+        @get(response_cookies={"my-cookie": "cookie-value"})
+        async def handler() -> str:
+            ...
+
+
 .. seealso::
 
     :class:`Cookie reference <starlite.datastructures.cookie.Cookie>`
+
 
 
 Dynamic Cookies
