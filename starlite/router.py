@@ -18,7 +18,7 @@ from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.controller import Controller
-from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
+from starlite.datastructures import CacheControlHeader, ETag
 from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import (
@@ -43,6 +43,7 @@ from starlite.types import (
     RouteHandlerType,
     TypeEncodersMap,
 )
+from starlite.types.composite_types import ResponseHeaders
 from starlite.utils import (
     find_index,
     is_class_and_subclass,
@@ -104,7 +105,7 @@ class Router:
         parameters: Optional[ParametersMap] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[Sequence[ResponseHeader]] = None,
+        response_headers: Optional[ResponseHeaders] = None,
         route_handlers: Sequence[ControllerRouterHandler],
         security: Optional[Sequence[SecurityRequirement]] = None,
         tags: Optional[Sequence[str]] = None,
@@ -166,7 +167,7 @@ class Router:
         self.path = normalize_path(path)
         self.response_class = response_class
         self.response_cookies = response_cookies or []
-        self.response_headers = response_headers or []
+        self.response_headers = response_headers
         self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
         self.security = list(security or [])
         self.tags = list(tags or [])

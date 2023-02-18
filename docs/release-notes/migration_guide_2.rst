@@ -138,3 +138,43 @@ Changed module paths
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.AbstractSecurityConfig``                | ``starlite.security.AbstractSecurityConfig``                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
+
+
+Response headers
+----------------
+
+Response header can now be set using either a :class:`Sequence <typing.Sequence>` of :class:`ResponseHeader <.datastructures.response_header.ResponseHeader>`,
+or by using a plain :class:`Mapping[str, str] <typing.Mapping>`.
+
+
+.. tab-set::
+
+    .. tab-item:: 1.51
+
+        .. code-block:: python
+
+            from starlite import ResponseHeader, get
+
+
+            @get(response_headers={"my-header": ResponseHeader(value="header-value")})
+            async def handler() -> str:
+                ...
+
+    .. tab-item:: 2.x
+
+        .. code-block:: python
+
+            from starlite import ResponseHeader, get
+
+
+            @get(response_headers=[ResponseHeader(name="my-header", value="header-value")])
+            async def handler() -> str:
+                ...
+
+
+            # or
+
+
+            @get(response_headers={"my-header": "header-value"})
+            async def handler() -> str:
+                ...

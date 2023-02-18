@@ -165,7 +165,7 @@ Composite Types
 
 .. autodata:: starlite.types.ResponseCookies
 
-.. autodata:: starlite.types.ResponseHeadersMap
+.. autodata:: starlite.types.ResponseHeaders
 
 .. autodata:: starlite.types.PathType
 

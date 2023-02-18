@@ -339,6 +339,22 @@ application using the given key+value combinations. I.e. it will be a dictionary
 
 The respective descriptions will be used for the OpenAPI documentation.
 
+
+.. tip::
+
+    :class:`ResponseHeader <starlite.datastructures.response_header.ResponseHeader>` is
+    a special class that allows to add OpenAPI attributes such as `description` or `documentation_only`.
+    If you don't need those, you can optionally define `response_headers` using a mapping - such as a dictionary -
+    as well:
+
+    .. code-block:: python
+
+        @get(response_headers={"my-header": "header-value"})
+        async def handler() -> str:
+            ...
+
+
+
 Dynamic Headers
 +++++++++++++++
 

@@ -62,6 +62,7 @@ from starlite.types import (
     ResponseType,
     TypeEncodersMap,
 )
+from starlite.types.composite_types import ResponseHeaders
 from starlite.utils import Ref, annotation_is_iterable_of_type, is_async_callable
 from starlite.utils.predicates import is_class_and_subclass
 from starlite.utils.sync import AsyncCallable
@@ -337,7 +338,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         opt: Optional[Mapping[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[Sequence[ResponseHeader]] = None,
+        response_headers: Optional[ResponseHeaders] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -447,7 +448,11 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.media_type: Union[MediaType, str] = media_type or ""
         self.response_class = response_class
         self.response_cookies = response_cookies
-        self.response_headers = response_headers
+        self.response_headers = (  # resolve this once, so it won't have to be resolved again in resolve_response_headers
+            (ResponseHeader(name=name, value=value) for name, value in response_headers.items())
+            if isinstance(response_headers, Mapping)
+            else response_headers
+        )
         self.sync_to_thread = sync_to_thread
         # OpenAPI related attributes
         self.content_encoding = content_encoding
@@ -506,7 +511,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         for layer in self.ownership_layers:
             if layer_response_headers := layer.response_headers:
-                resolved_response_headers.update({h.name: h for h in layer_response_headers})
+                if isinstance(layer_response_headers, Mapping):
+                    resolved_response_headers.update(
+                        {name: ResponseHeader(name=name, value=value) for name, value in layer_response_headers.items()}
+                    )
+                else:
+                    resolved_response_headers.update({h.name: h for h in layer_response_headers})
             for extra_header in ("cache_control", "etag"):
                 header_model: Optional["Header"] = getattr(layer, extra_header, None)
                 if header_model:
@@ -717,7 +727,7 @@ class get(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[Sequence[ResponseHeader]] = None,
+        response_headers: Optional[ResponseHeaders] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -869,7 +879,7 @@ class head(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[Sequence[ResponseHeader]] = None,
+        response_headers: Optional[ResponseHeaders] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -1039,7 +1049,7 @@ class post(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[Sequence[ResponseHeader]] = None,
+        response_headers: Optional[ResponseHeaders] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -1190,7 +1200,7 @@ class put(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[Sequence[ResponseHeader]] = None,
+        response_headers: Optional[ResponseHeaders] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -1341,7 +1351,7 @@ class patch(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[Sequence[ResponseHeader]] = None,
+        response_headers: Optional[ResponseHeaders] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -1492,7 +1502,7 @@ class delete(HTTPRouteHandler):
         opt: Optional[Dict[str, Any]] = None,
         response_class: Optional[ResponseType] = None,
         response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[Sequence[ResponseHeader]] = None,
+        response_headers: Optional[ResponseHeaders] = None,
         status_code: Optional[int] = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
