@@ -178,9 +178,10 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
         assert response.headers["local-header"] == "123"
         assert response.headers["response-header"] == "abc"
         cookies = response.cookies
-        assert len(cookies) == 2
-        assert cookies[1].to_header(header="") == "redirect-cookie=xyz; Path=/; SameSite=lax"
-        assert cookies[0].to_header(header="") == "general-cookie=xxx; Path=/; SameSite=lax"
+        assert {cookie.to_header(header="") for cookie in cookies} == {
+            "general-cookie=xxx; Path=/; SameSite=lax",
+            "redirect-cookie=xyz; Path=/; SameSite=lax",
+        }
         assert response.background == background_task
 
 
@@ -240,9 +241,11 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         assert response.headers["local-header"] == "123"
         assert response.headers["response-header"] == "abc"
         cookies = response.cookies
-        assert len(cookies) == 3
-        assert cookies[0].to_header(header="") == "file-cookie=xyz; Path=/; SameSite=lax"
-        assert cookies[1].to_header(header="") == "general-cookie=xxx; Path=/; SameSite=lax"
+        assert {cookie.to_header(header="") for cookie in cookies} == {
+            "file-cookie=xyz; Path=/; SameSite=lax",
+            "general-cookie=xxx; Path=/; SameSite=lax",
+            "redirect-cookie=aaa; Path=/; SameSite=lax",
+        }
         assert response.background == background_task
 
 
@@ -293,10 +296,11 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
             assert response.headers["local-header"] == "123"
             assert response.headers["response-header"] == "abc"
             cookies = response.cookies
-            assert len(cookies) == 3
-            assert cookies[0].to_header(header="") == "general-cookie=xxx; Path=/; SameSite=lax"
-            assert cookies[1].to_header(header="") == "redirect-cookie=aaa; Path=/; SameSite=lax"
-            assert cookies[2].to_header(header="") == "streaming-cookie=xyz; Path=/; SameSite=lax"
+            assert {cookie.to_header(header="") for cookie in cookies} == {
+                "general-cookie=xxx; Path=/; SameSite=lax",
+                "redirect-cookie=aaa; Path=/; SameSite=lax",
+                "streaming-cookie=xyz; Path=/; SameSite=lax",
+            }
             assert response.background == background_task
     else:
         with pytest.raises(ValidationError):
@@ -330,7 +334,8 @@ async def func_to_response_template_response(anyio_backend: str) -> None:
         assert response.headers["local-header"] == "123"
         assert response.headers["response-header"] == "abc"
         cookies = response.cookies
-        assert len(cookies) == 2
-        assert cookies[0].to_header(header="") == "template-cookie=xyz; Path=/; SameSite=lax"
-        assert cookies[1].to_header(header="") == "general-cookie=xxx; Path=/; SameSite=lax"
+        assert {cookie.to_header(header="") for cookie in cookies} == {
+            "general-cookie=xxx; Path=/; SameSite=lax",
+            "template-cookie=xyz; Path=/; SameSite=lax",
+        }
         assert response.background == background_task

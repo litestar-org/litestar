@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from pydantic import validator
 from pydantic_openapi_schema.v3_1_0 import Header
@@ -11,7 +11,7 @@ class ResponseHeader(Header):
     """Header name"""
     documentation_only: bool = False
     """Defines the ResponseHeader instance as for OpenAPI documentation purpose only."""
-    value: Any = None
+    value: Optional[str] = None
     """Value to set for the response header."""
 
     @validator("value", always=True)

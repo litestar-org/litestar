@@ -11,13 +11,13 @@ from starlite.testing import TestClient, create_test_client
 
 
 def test_response_headers() -> None:
-    router_first = ResponseHeader(name="second", value=1)
-    router_second = ResponseHeader(name="third", value=2)
-    controller_first = ResponseHeader(name="first", value=3)
-    controller_second = ResponseHeader(name="second", value=4)
-    app_first = ResponseHeader(name="first", value=5)
-    app_second = ResponseHeader(name="fourth", value=6)
-    local_first = ResponseHeader(name="first", value=7)
+    router_first = ResponseHeader(name="second", value="1")
+    router_second = ResponseHeader(name="third", value="2")
+    controller_first = ResponseHeader(name="first", value="3")
+    controller_second = ResponseHeader(name="second", value="4")
+    app_first = ResponseHeader(name="first", value="5")
+    app_second = ResponseHeader(name="fourth", value="6")
+    local_first = ResponseHeader(name="first", value="7")
 
     test_path = "/test"
 

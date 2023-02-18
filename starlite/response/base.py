@@ -7,6 +7,7 @@ from typing import (
     Generic,
     List,
     Literal,
+    Mapping,
     Optional,
     Tuple,
     TypeVar,
@@ -37,6 +38,7 @@ if TYPE_CHECKING:
         HTTPResponseStartEvent,
         Receive,
         ResponseCookies,
+        ResponseHeaders,
         Scope,
         Send,
         Serializer,
@@ -73,7 +75,7 @@ class Response(Generic[T]):
         status_code: int = HTTP_200_OK,
         media_type: Union[MediaType, "OpenAPIMediaType", str] = MediaType.JSON,
         background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        headers: Optional[Dict[str, Any]] = None,
+        headers: Optional["ResponseHeaders"] = None,
         cookies: Optional["ResponseCookies"] = None,
         encoding: str = "utf-8",
         is_head_response: bool = False,
@@ -96,9 +98,15 @@ class Response(Generic[T]):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         """
         self.background = background
-        self.cookies = list(cookies or [])
+        self.cookies: List[Cookie] = (
+            [Cookie(key=key, value=value) for key, value in cookies.items()]
+            if isinstance(cookies, Mapping)
+            else list(cookies or [])
+        )
         self.encoding = encoding
-        self.headers = headers or {}
+        self.headers: Dict[str, Any] = (
+            dict(headers) if isinstance(headers, Mapping) else {h.name: h.value for h in headers or {}}
+        )
         self.is_head_response = is_head_response
         self.media_type = get_enum_string_value(media_type)
         self.status_allows_body = not (

@@ -1,7 +1,6 @@
 from enum import Enum
+from functools import lru_cache
 from inspect import Signature, isawaitable
-from itertools import chain
-from operator import attrgetter
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -78,15 +77,14 @@ if TYPE_CHECKING:
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
 
 
-def _normalize_cookies(local_cookies: FrozenSet["Cookie"], layered_cookies: FrozenSet["Cookie"]) -> List[Cookie]:
-    """Given two lists of cookies, ensure the uniqueness of cookies by key and return a normalized dict ready to be set
-    on the response.
-    """
-    sorted_set = sorted(frozenset.union(local_cookies, layered_cookies), key=attrgetter("key"))
-    return [cookie for cookie in sorted_set if not cookie.documentation_only]
+@lru_cache(1024)
+def _filter_cookies(local_cookies: FrozenSet[Cookie], layered_cookies: FrozenSet[Cookie]) -> List[Cookie]:
+    """Given two sets of cookies, return a unique list of cookies, that are not marked as documentation_only."""
+    return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]
 
 
-def _normalize_headers(headers: FrozenSet["ResponseHeader"]) -> Dict[str, Any]:
+@lru_cache(1024)
+def _normalize_headers(headers: FrozenSet["ResponseHeader"]) -> Dict[str, str]:
     """Given a dictionary of ResponseHeader, filter them and return a dictionary of values.
 
     Args:
@@ -95,7 +93,12 @@ def _normalize_headers(headers: FrozenSet["ResponseHeader"]) -> Dict[str, Any]:
     Returns:
         A string keyed dictionary of normalized values
     """
-    return {header.name: header.value for header in headers if not header.documentation_only}
+    return {
+        header.name: cast("str", header.value)  # we know value to be a string at this point because we validate it
+        # that it's not None when initializing a header with documentation_only=True
+        for header in headers
+        if not header.documentation_only
+    }
 
 
 async def _normalize_response_data(data: Any, plugins: List["SerializationPluginProtocol"]) -> Any:
@@ -141,7 +144,7 @@ def _create_response_container_handler(
             media_type=data.media_type or media_type,
             request=request,
         )
-        response.cookies = _normalize_cookies(frozenset(data.cookies), cookies)
+        response.cookies = _filter_cookies(frozenset(data.cookies), cookies)
         return await after_request(response) if after_request else response  # type: ignore
 
     return handler
@@ -154,7 +157,7 @@ def _create_response_handler(
     """Create a handler function for Starlite Responses."""
 
     async def handler(data: Response, **kwargs: Any) -> "ASGIApp":
-        data.cookies = _normalize_cookies(frozenset(data.cookies), cookies)
+        data.cookies = _filter_cookies(frozenset(data.cookies), cookies)
         return await after_request(data) if after_request else data  # type: ignore
 
     return handler
@@ -188,7 +191,7 @@ def _create_data_handler(
 ) -> "AsyncAnyCallable":
     """Create a handler function for arbitrary data."""
     normalized_headers = [
-        (k.lower().encode("latin-1"), str(v).encode("latin-1")) for k, v in _normalize_headers(headers).items()
+        (name.lower().encode("latin-1"), value.encode("latin-1")) for name, value in _normalize_headers(headers).items()
     ]
     cookie_headers = [cookie.to_encoded_header() for cookie in cookies if not cookie.documentation_only]
     raw_headers = [*normalized_headers, *cookie_headers]
@@ -447,12 +450,15 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.etag = etag
         self.media_type: Union[MediaType, str] = media_type or ""
         self.response_class = response_class
+
+        # resolve these once, so it won't have to be resolved again in resolve_response_headers / resolve_response_cookies
         self.response_cookies = response_cookies
-        self.response_headers = (  # resolve this once, so it won't have to be resolved again in resolve_response_headers
-            (ResponseHeader(name=name, value=value) for name, value in response_headers.items())
+        self.response_headers = (
+            [ResponseHeader(name=name, value=value) for name, value in response_headers.items()]
             if isinstance(response_headers, Mapping)
             else response_headers
         )
+
         self.sync_to_thread = sync_to_thread
         # OpenAPI related attributes
         self.content_encoding = content_encoding
@@ -534,8 +540,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         Returns:
             A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
         """
-
-        return frozenset(chain.from_iterable(layer.response_cookies or [] for layer in reversed(self.ownership_layers)))
+        response_cookies: Set["Cookie"] = set()
+        for layer in reversed(self.ownership_layers):
+            if layer_response_cookies := layer.response_cookies:
+                if isinstance(layer_response_cookies, Mapping):
+                    response_cookies.update(
+                        {Cookie(key=key, value=value) for key, value in layer_response_cookies.items()}
+                    )
+                else:
+                    response_cookies.update(layer_response_cookies)
+        return frozenset(response_cookies)
 
     def resolve_before_request(self) -> Optional["BeforeRequestHookHandler"]:
         """Resolve the before_handler handler by starting from the route handler and moving up.
