@@ -119,7 +119,7 @@ repos:
             jsbeautifier,
           ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.0.0"
+    rev: "v1.0.1"
     hooks:
       - id: mypy
         exclude: "test_apps|docs|tools"
