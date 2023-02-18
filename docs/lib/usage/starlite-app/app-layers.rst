@@ -1,7 +1,7 @@
 Layered Architecture
 ====================
 
-.. TODO: Elaborate this section & reorganise the hyperlinks to the rest of the docs.
+.. TODO: Elaborate this section and reorganise the hyperlinks to the rest of the docs.
 
 Every Starlite application comprises of four architectural layers:
 
@@ -10,7 +10,7 @@ Every Starlite application comprises of four architectural layers:
 #. Controllers
 #. Handlers
 
-And each of those layers can accept certain parameters & in which case the parameter defined on the layer **closest to
+And each of those layers can accept certain parameters and in which case the parameter defined on the layer **closest to
 the handler** takes precedence. This allows for maximum flexibility and simplicity when configuring complex
 applications to enable transparent overriding of parameters.
 

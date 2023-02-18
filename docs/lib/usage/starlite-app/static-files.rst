@@ -26,14 +26,14 @@ Starlite knows which file to serve after matching the filename. For example, in 
 retrieve the path ``/files/file.txt``, then the directory for the base path ``/files`` will be searched for the file
 ``file.txt``. If found, Starlite will serve the file or a 404 response otherwise.
 
-On the other hand, if ``html_mode`` is enabled & no specific file is requested then the application will fallback to
+On the other hand, if ``html_mode`` is enabled and no specific file is requested then the application will fallback to
 serving the ``index.html`` file instead. And if no such ``index.html`` file is found either, then the application will
 look for a ``404.html`` instead. If in either case there is no HTML file to serve then a 404
 :class:`NotFoundException <starlite.exceptions.http_exceptions.NotFoundException>` will be raised.
 
-Its also possible to provide a ``name`` parameter to the ``StaticFilesConfig`` class for identifying & generating links
+Its also possible to provide a ``name`` parameter to the ``StaticFilesConfig`` class for identifying and generating links
 to files in folders belong to a particular config. Do note though, the value passed to the ``name`` keyword argument
-should be a unique string across all static configs & route handlers.
+should be a unique string across all static configs and route handlers.
 
 Here's a short example code snippet showcasing the same:
 
@@ -86,7 +86,7 @@ The ``StaticFilesConfig`` class also accepts a value called :class:`file_system 
 and this value can be any class adhering to the Starlite
 :class:`FileSystemProtocol <starlite.types.FileSystemProtocol>` class. The said protocol is similar to the file systems
 defined by `fsspec <https://filesystem-spec.readthedocs.io>`_ which covers all major cloud providers and a wide range of
-other use cases (like HTTP-based file serves, FTP & more).
+other use cases (like HTTP-based file serves, FTP and more).
 
 In order to use any file-system with your Starlite application, simple use ``fsspec`` or one of the libraries based on
 it. Or you can also provide a custom implementation adhering to the ``FileSystemProtocol`` class.

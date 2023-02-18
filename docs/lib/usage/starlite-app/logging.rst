@@ -66,7 +66,7 @@ Subclass Logging Configs
 
 If none of the aforementioned logging configuration suit your needs, Starlite enables the user to create customised
 logging configurations as well. This is done by creating a custom
-:class:`LoggingConfig <starlite.config.logging.LoggingConfig>` class & subclassing it on the
+:class:`LoggingConfig <starlite.config.logging.LoggingConfig>` class and subclassing it on the
 :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>` class to implement the ``configure`` method.
 
 .. TODO: Example(s)?

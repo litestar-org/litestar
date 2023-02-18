@@ -33,7 +33,7 @@ the hooks it triggers.
 
 A typical real-world use case utilising these hooks would be for managing database connections to your
 Starlite application. When you need to establish a database connection on application startup and close it
-gracefully upon shutdown, these are the hooks which you'll need.
+gracefully upon shutdown, these are the hooks which you will need.
 
 Here's an example code snippet showcasing this real-world scenario. It makes use of the async engine in
 `SQLAlchemy <https://docs.sqlalchemy.org/en/latest/orm/extensions/asyncio.html>`_ to create a database
@@ -45,7 +45,7 @@ connection. These functions will then be supplied to the ``Starlite`` constructo
    :language: python
 
 The aforementioned ``on_startup`` and the ``on_shutdown`` were two simple hooks but Starlite provides
-several such application level hooks. And in the next section of this documentation we'll take a more
+several such application level hooks. And in the next section of this documentation we will take a more
 detailed look at how we can use those hooks in your Starlite project.
 
 
