@@ -25,7 +25,7 @@ JSON
 
 Serializing a dictionary into JSON
 
-.. figure:: images/benchmarks/rps_json.svg
+.. figure:: /images/benchmarks/rps_json.svg
    :alt: RPS JSON
 
    RPS JSON
@@ -33,7 +33,7 @@ Serializing a dictionary into JSON
 Files
 ~~~~~
 
-.. figure:: images/benchmarks/rps_files.svg
+.. figure:: /images/benchmarks/rps_files.svg
    :alt: RPS files
 
    RPS files
@@ -48,7 +48,7 @@ Path and query parameter handling
 -  Query params: Single query parameter, coerced into an integer
 -  Mixed params: A path and a query parameters, coerced into integers
 
-.. figure:: images/benchmarks/rps_params.svg
+.. figure:: /images/benchmarks/rps_params.svg
    :alt: RPS path and query parameters
 
    RPS path and query parameters
@@ -62,7 +62,7 @@ Dependency injection
 -  Resolving 3 nested asynchronous dependencies (only supported by ``Starlite`` and ``FastAPI``)
 -  Resolving 3 nested synchronous, and 3 nested asynchronous dependencies (only supported by ``Starlite`` and ``FastAPI``)
 
-.. figure:: images/benchmarks/rps_dependency-injection.svg
+.. figure:: /images/benchmarks/rps_dependency-injection.svg
    :alt: RPS Dependency injection
 
    RPS Dependency injection
@@ -80,7 +80,7 @@ Modifying responses
 Plaintext
 ~~~~~~~~~
 
-.. figure:: images/benchmarks/rps_plaintext.svg
+.. figure:: /images/benchmarks/rps_plaintext.svg
    :alt: RPS Plaintext
 
    RPS Plaintext

@@ -1,5 +1,15 @@
 response_containers
 --------------------
 
-.. automodule:: starlite.response_containers
-   :members: ResponseContainer, File, Redirect, Stream, Template
+
+.. autoclass:: starlite.response_containers.File
+    :members:
+
+.. autoclass:: starlite.response_containers.Redirect
+    :members:
+
+.. autoclass:: starlite.response_containers.Stream
+    :members:
+
+.. autoclass:: starlite.response_containers.Template
+    :members:

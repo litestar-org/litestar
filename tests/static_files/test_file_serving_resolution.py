@@ -96,7 +96,7 @@ def test_static_files_config_with_multiple_directories(tmpdir: "Path", file_syst
         assert response.text == "content2"
 
 
-def test_staticfiles_for_slash_path(tmpdir: "Path") -> None:
+def test_staticfiles_for_slash_path_regular_mode(tmpdir: "Path") -> None:
     path = tmpdir / "text.txt"
     path.write_text("content", "utf-8")
 
@@ -105,6 +105,17 @@ def test_staticfiles_for_slash_path(tmpdir: "Path") -> None:
         response = client.get("/text.txt")
         assert response.status_code == HTTP_200_OK
         assert response.text == "content"
+
+
+def test_staticfiles_for_slash_path_html_mode(tmpdir: "Path") -> None:
+    path = tmpdir / "index.html"
+    path.write_text("<html></html>", "utf-8")
+
+    static_files_config = StaticFilesConfig(path="/", directories=[tmpdir], html_mode=True)
+    with create_test_client([], static_files_config=[static_files_config]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "<html></html>"
 
 
 def test_sub_path_under_static_path(tmpdir: "Path") -> None:
