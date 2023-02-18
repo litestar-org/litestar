@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import atexit
 from queue import Queue
-from typing import Any, List, Optional
+from typing import Any
 
 from starlite.exceptions import MissingDependencyException
 from starlite.logging.utils import resolve_handlers
@@ -15,7 +17,7 @@ except ImportError as e:
 class QueueListenerHandler(QueueHandler):
     """Configure queue listener and handler to support non-blocking logging configuration."""
 
-    def __init__(self, handlers: Optional[List[Any]] = None) -> None:
+    def __init__(self, handlers: list[Any] | None = None) -> None:
         """Initialize ``QueueListenerHandler``.
 
         Args:

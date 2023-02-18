@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections import defaultdict
 from copy import copy
-from typing import TYPE_CHECKING, Any, DefaultDict, List, Mapping, Optional, Set, cast
+from typing import TYPE_CHECKING, Any, DefaultDict, Mapping, cast
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
@@ -58,73 +60,73 @@ class Controller:
         "type_encoders",
     )
 
-    after_request: Optional["AfterRequestHookHandler"]
+    after_request: AfterRequestHookHandler | None
     """A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed to any route handler.
 
     If this function returns a value, the request will not reach the route handler, and instead this value will be used.
     """
-    after_response: Optional["AfterResponseHookHandler"]
+    after_response: AfterResponseHookHandler | None
     """A sync or async function called after the response has been awaited.
 
     It receives the :class:`Request <starlite.connection.Request>` instance and should not return any values.
     """
-    before_request: Optional["BeforeRequestHookHandler"]
+    before_request: BeforeRequestHookHandler | None
     """A sync or async function called immediately before calling the route handler.
 
     It receives the :class:`Request <starlite.connection.Request>` instance and any non-``None`` return value is used for the
     response, bypassing the route handler.
     """
-    cache_control: Optional["CacheControlHeader"]
+    cache_control: CacheControlHeader | None
     """A :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` header to add to route handlers of this
     controller.
 
     Can be overridden by route handlers.
     """
-    dependencies: Optional["Dependencies"]
+    dependencies: Dependencies | None
     """A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances."""
-    etag: Optional["ETag"]
+    etag: ETag | None
     """An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` to add to route handlers of this controller.
 
     Can be overridden by route handlers.
     """
-    exception_handlers: Optional["ExceptionHandlersMap"]
+    exception_handlers: ExceptionHandlersMap | None
     """A map of handler functions to status codes and/or exception types."""
-    guards: "OptionalSequence[Guard]"
+    guards: OptionalSequence[Guard]
     """A sequence of :class:`Guard <starlite.types.Guard>` callables."""
-    middleware: "OptionalSequence[Middleware]"
+    middleware: OptionalSequence[Middleware]
     """A sequence of :class:`Middleware <starlite.types.Middleware>`."""
-    opt: Optional[Mapping[str, Any]]
+    opt: Mapping[str, Any] | None
     """A string key mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or wherever
     you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
     """
-    owner: "Router"
+    owner: Router
     """The :class:`Router <starlite.router.Router>` or :class:`Starlite <starlite.app.Starlite>` app that owns the controller.
 
     This value is set internally by Starlite and it should not be set when subclassing the controller.
     """
-    parameters: Optional["ParametersMap"]
+    parameters: ParametersMap | None
     """A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all application paths."""
     path: str
     """A path fragment for the controller.
 
     All route handlers under the controller will have the fragment appended to them. If not set it defaults to '/'.
     """
-    response_class: Optional["ResponseType"]
+    response_class: ResponseType | None
     """A custom subclass of [starlite.response.Response] to be used as the default response for all route handlers under
     the controller.
     """
-    response_cookies: Optional["ResponseCookies"]
+    response_cookies: ResponseCookies | None
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
-    response_headers: Optional["ResponseHeadersMap"]
+    response_headers: ResponseHeadersMap | None
     """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
-    tags: "OptionalSequence[str]"
+    tags: OptionalSequence[str]
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""
-    security: "OptionalSequence[SecurityRequirement]"
+    security: OptionalSequence[SecurityRequirement]
     """A sequence of dictionaries that to the schema of all route handlers under the controller."""
-    type_encoders: Optional["TypeEncodersMap"]
+    type_encoders: TypeEncodersMap | None
     """A mapping of types to callables that transform them into types supported for serialization."""
 
-    def __init__(self, owner: "Router") -> None:
+    def __init__(self, owner: Router) -> None:
         """Initialize a controller.
 
         Should only be called by routers as part of controller registration.
@@ -146,13 +148,13 @@ class Controller:
         self.path = normalize_path(self.path or "/")
         self.owner = owner
 
-    def get_route_handlers(self) -> List["BaseRouteHandler"]:
+    def get_route_handlers(self) -> list[BaseRouteHandler]:
         """Get a controller's route handlers and set the controller as the handlers' owner.
 
         Returns:
             A list containing a copy of the route handlers defined on the controller
         """
-        route_handlers: List["BaseRouteHandler"] = []
+        route_handlers: list[BaseRouteHandler] = []
         route_handler_fields = [
             f_name
             for f_name in dir(self)
@@ -173,18 +175,18 @@ class Controller:
 
         return route_handlers
 
-    def validate_route_handlers(self, route_handlers: List["BaseRouteHandler"]) -> None:
+    def validate_route_handlers(self, route_handlers: list[BaseRouteHandler]) -> None:
         """Validate that the combination of path and decorator method or type are unique on the controller.
 
         :param route_handlers: The controller's route handlers.
         :raises: ``ImproperlyConfiguredException``
         :return: None.
         """
-        paths: DefaultDict[str, Set[str]] = defaultdict(set)
+        paths: DefaultDict[str, set[str]] = defaultdict(set)
 
         for route_handler in route_handlers:
             if isinstance(route_handler, HTTPRouteHandler):
-                methods: Set[str] = cast("Set[str]", route_handler.http_methods)
+                methods: set[str] = cast("set[str]", route_handler.http_methods)
             elif isinstance(route_handler, WebsocketRouteHandler):
                 methods = {"websocket"}
             else:

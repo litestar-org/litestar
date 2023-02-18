@@ -1,16 +1,6 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Coroutine,
-    Dict,
-    Literal,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-    cast,
-)
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, Literal, cast
 
 from typing_extensions import TypedDict
 
@@ -25,7 +15,7 @@ if TYPE_CHECKING:
     from starlite.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
 
-def obfuscate(values: Dict[str, Any], fields_to_obfuscate: Set[str]) -> Dict[str, Any]:
+def obfuscate(values: dict[str, Any], fields_to_obfuscate: set[str]) -> dict[str, Any]:
     """Obfuscate values in a dictionary, replacing values with `******`
 
     Args:
@@ -52,14 +42,14 @@ class ExtractedRequestData(TypedDict, total=False):
     """Dictionary representing extracted request data."""
 
     body: Coroutine
-    client: Tuple[str, int]
-    content_type: Tuple[str, Dict[str, str]]
-    cookies: Dict[str, str]
-    headers: Dict[str, str]
-    method: "Method"
+    client: tuple[str, int]
+    content_type: tuple[str, dict[str, str]]
+    cookies: dict[str, str]
+    headers: dict[str, str]
+    method: Method
     path: str
-    path_params: Dict[str, Any]
-    query: Union[bytes, Dict[str, Any]]
+    path_params: dict[str, Any]
+    query: bytes | dict[str, Any]
     scheme: str
 
 
@@ -89,8 +79,8 @@ class ConnectionDataExtractor:
         extract_path_params: bool = True,
         extract_query: bool = True,
         extract_scheme: bool = True,
-        obfuscate_cookies: Optional[Set[str]] = None,
-        obfuscate_headers: Optional[Set[str]] = None,
+        obfuscate_cookies: set[str] | None = None,
+        obfuscate_headers: set[str] | None = None,
         parse_body: bool = False,
         parse_query: bool = False,
     ):
@@ -116,8 +106,8 @@ class ConnectionDataExtractor:
         self.parse_query = parse_query
         self.obfuscate_headers = {h.lower() for h in (obfuscate_headers or set())}
         self.obfuscate_cookies = {c.lower() for c in (obfuscate_cookies or set())}
-        self.connection_extractors: Dict[str, Callable[["ASGIConnection[Any, Any, Any, Any]"], Any]] = {}
-        self.request_extractors: Dict[RequestExtractorField, Callable[["Request[Any, Any, Any]"], Any]] = {}
+        self.connection_extractors: dict[str, Callable[[ASGIConnection[Any, Any, Any, Any]], Any]] = {}
+        self.request_extractors: dict[RequestExtractorField, Callable[[Request[Any, Any, Any]], Any]] = {}
         if extract_scheme:
             self.connection_extractors["scheme"] = self.extract_scheme
         if extract_client:
@@ -139,7 +129,7 @@ class ConnectionDataExtractor:
         if extract_body:
             self.request_extractors["body"] = self.extract_body
 
-    def __call__(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> ExtractedRequestData:
+    def __call__(self, connection: ASGIConnection[Any, Any, Any, Any]) -> ExtractedRequestData:
         """Extract data from the connection, returning a dictionary of values.
 
         Notes:
@@ -159,7 +149,7 @@ class ConnectionDataExtractor:
         return cast("ExtractedRequestData", {key: extractor(connection) for key, extractor in extractors.items()})
 
     @staticmethod
-    def extract_scheme(connection: "ASGIConnection[Any, Any, Any, Any]") -> str:
+    def extract_scheme(connection: ASGIConnection[Any, Any, Any, Any]) -> str:
         """Extract the scheme from an ``ASGIConnection``
 
         Args:
@@ -171,7 +161,7 @@ class ConnectionDataExtractor:
         return connection.scope["scheme"]
 
     @staticmethod
-    def extract_client(connection: "ASGIConnection[Any, Any, Any, Any]") -> Tuple[str, int]:
+    def extract_client(connection: ASGIConnection[Any, Any, Any, Any]) -> tuple[str, int]:
         """Extract the client from an ``ASGIConnection``
 
         Args:
@@ -183,7 +173,7 @@ class ConnectionDataExtractor:
         return connection.scope.get("client") or ("", 0)
 
     @staticmethod
-    def extract_path(connection: "ASGIConnection[Any, Any, Any, Any]") -> str:
+    def extract_path(connection: ASGIConnection[Any, Any, Any, Any]) -> str:
         """Extract the path from an ``ASGIConnection``
 
         Args:
@@ -194,7 +184,7 @@ class ConnectionDataExtractor:
         """
         return connection.scope["path"]
 
-    def extract_headers(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> Dict[str, str]:
+    def extract_headers(self, connection: ASGIConnection[Any, Any, Any, Any]) -> dict[str, str]:
         """Extract headers from an ``ASGIConnection``
 
         Args:
@@ -206,7 +196,7 @@ class ConnectionDataExtractor:
         headers = {k.decode("latin-1"): v.decode("latin-1") for k, v in connection.scope["headers"]}
         return obfuscate(headers, self.obfuscate_headers) if self.obfuscate_headers else headers
 
-    def extract_cookies(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> Dict[str, str]:
+    def extract_cookies(self, connection: ASGIConnection[Any, Any, Any, Any]) -> dict[str, str]:
         """Extract cookies from an ``ASGIConnection``
 
         Args:
@@ -217,7 +207,7 @@ class ConnectionDataExtractor:
         """
         return obfuscate(connection.cookies, self.obfuscate_cookies) if self.obfuscate_cookies else connection.cookies
 
-    def extract_query(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> Any:
+    def extract_query(self, connection: ASGIConnection[Any, Any, Any, Any]) -> Any:
         """Extract query from an ``ASGIConnection``
 
         Args:
@@ -229,7 +219,7 @@ class ConnectionDataExtractor:
         return connection.query_params.dict() if self.parse_query else connection.scope.get("query_string", b"")
 
     @staticmethod
-    def extract_path_params(connection: "ASGIConnection[Any, Any, Any, Any]") -> Dict[str, Any]:
+    def extract_path_params(connection: ASGIConnection[Any, Any, Any, Any]) -> dict[str, Any]:
         """Extract the path parameters from an ``ASGIConnection``
 
         Args:
@@ -241,7 +231,7 @@ class ConnectionDataExtractor:
         return connection.path_params
 
     @staticmethod
-    def extract_method(request: "Request[Any, Any, Any]") -> "Method":
+    def extract_method(request: Request[Any, Any, Any]) -> Method:
         """Extract the method from an ``ASGIConnection``
 
         Args:
@@ -253,7 +243,7 @@ class ConnectionDataExtractor:
         return request.scope["method"]
 
     @staticmethod
-    def extract_content_type(request: "Request[Any, Any, Any]") -> Tuple[str, Dict[str, str]]:
+    def extract_content_type(request: Request[Any, Any, Any]) -> tuple[str, dict[str, str]]:
         """Extract the content-type from an ``ASGIConnection``
 
         Args:
@@ -293,8 +283,8 @@ class ExtractedResponseData(TypedDict, total=False):
 
     body: bytes
     status_code: int
-    headers: Dict[str, str]
-    cookies: Dict[str, str]
+    headers: dict[str, str]
+    cookies: dict[str, str]
 
 
 class ResponseDataExtractor:
@@ -308,8 +298,8 @@ class ResponseDataExtractor:
         extract_cookies: bool = True,
         extract_headers: bool = True,
         extract_status_code: bool = True,
-        obfuscate_cookies: Optional[Set[str]] = None,
-        obfuscate_headers: Optional[Set[str]] = None,
+        obfuscate_cookies: set[str] | None = None,
+        obfuscate_headers: set[str] | None = None,
     ):
         """Initialize ``ResponseDataExtractor`` with options.
 
@@ -323,8 +313,8 @@ class ResponseDataExtractor:
         """
         self.obfuscate_headers = {h.lower() for h in (obfuscate_headers or set())}
         self.obfuscate_cookies = {c.lower() for c in (obfuscate_cookies or set())}
-        self.extractors: Dict[
-            ResponseExtractorField, Callable[[Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]], Any]
+        self.extractors: dict[
+            ResponseExtractorField, Callable[[tuple[HTTPResponseStartEvent, HTTPResponseBodyEvent]], Any]
         ] = {}
         if extract_body:
             self.extractors["body"] = self.extract_response_body
@@ -335,7 +325,7 @@ class ResponseDataExtractor:
         if extract_cookies:
             self.extractors["cookies"] = self.extract_cookies
 
-    def __call__(self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> ExtractedResponseData:
+    def __call__(self, messages: tuple[HTTPResponseStartEvent, HTTPResponseBodyEvent]) -> ExtractedResponseData:
         """Extract data from the response, returning a dictionary of values.
 
         Args:
@@ -349,7 +339,7 @@ class ResponseDataExtractor:
         return cast("ExtractedResponseData", {key: extractor(messages) for key, extractor in self.extractors.items()})
 
     @staticmethod
-    def extract_response_body(messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> bytes:
+    def extract_response_body(messages: tuple[HTTPResponseStartEvent, HTTPResponseBodyEvent]) -> bytes:
         """Extract the response body from a ``Message``
 
         Args:
@@ -363,7 +353,7 @@ class ResponseDataExtractor:
         return messages[1]["body"]
 
     @staticmethod
-    def extract_status_code(messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> int:
+    def extract_status_code(messages: tuple[HTTPResponseStartEvent, HTTPResponseBodyEvent]) -> int:
         """Extract a status code from a ``Message``
 
         Args:
@@ -376,7 +366,7 @@ class ResponseDataExtractor:
         """
         return messages[0]["status"]
 
-    def extract_headers(self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> Dict[str, str]:
+    def extract_headers(self, messages: tuple[HTTPResponseStartEvent, HTTPResponseBodyEvent]) -> dict[str, str]:
         """Extract headers from a ``Message``
 
         Args:
@@ -400,7 +390,7 @@ class ResponseDataExtractor:
             else headers
         )
 
-    def extract_cookies(self, messages: Tuple["HTTPResponseStartEvent", "HTTPResponseBodyEvent"]) -> Dict[str, str]:
+    def extract_cookies(self, messages: tuple[HTTPResponseStartEvent, HTTPResponseBodyEvent]) -> dict[str, str]:
         """Extract cookies from a ``Message``
 
         Args:

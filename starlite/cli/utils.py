@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import importlib
 import inspect
 import sys
@@ -6,18 +8,7 @@ from functools import wraps
 from importlib.metadata import version
 from os import getenv
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    Optional,
-    Sequence,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence, TypeVar, cast
 
 from click import ClickException, Command, Context, Group, pass_context, style
 from rich.console import Console
@@ -69,13 +60,13 @@ class StarliteEnv:
     debug: bool
     app: Starlite
     cwd: Path
-    host: Optional[str] = None
-    port: Optional[int] = None
-    reload: Optional[bool] = None
+    host: str | None = None
+    port: int | None = None
+    reload: bool | None = None
     is_app_factory: bool = False
 
     @classmethod
-    def from_env(cls, app_path: Optional[str]) -> "StarliteEnv":
+    def from_env(cls, app_path: str | None) -> StarliteEnv:
         """Load environment variables.
 
         If ``python-dotenv`` is installed, use it to populate environment first
@@ -129,15 +120,15 @@ class StarliteGroup(Group):
 
     def __init__(
         self,
-        name: Optional[str] = None,
-        commands: Optional[Union[Dict[str, Command], Sequence[Command]]] = None,
+        name: str | None = None,
+        commands: dict[str, Command] | Sequence[Command] | None = None,
         **attrs: Any,
     ):
         """Init ``StarliteGroup``"""
         self.group_class = StarliteGroup
         super().__init__(name=name, commands=commands, **attrs)
 
-    def add_command(self, cmd: Command, name: Optional[str] = None) -> None:
+    def add_command(self, cmd: Command, name: str | None = None) -> None:
         """Add command.
 
         If necessary, inject ``app`` and ``env`` kwargs
@@ -146,14 +137,14 @@ class StarliteGroup(Group):
             cmd.callback = _inject_args(cmd.callback)
         super().add_command(cmd)
 
-    def command(self, *args: Any, **kwargs: Any) -> Union[Callable[["AnyCallable"], Command], Command]:  # type: ignore[override]
+    def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:  # type: ignore[override]
         # For some reason, even when copying the overloads + signature from click 1:1, mypy goes haywire
         """Add a function as a command.
 
         If necessary, inject ``app`` and ``env`` kwargs
         """
 
-        def decorator(f: "AnyCallable") -> Command:
+        def decorator(f: AnyCallable) -> Command:
             f = _inject_args(f)
             return cast("Command", Group.command(self, *args, **kwargs)(f))  # pylint: disable=E1102
 
@@ -168,8 +159,8 @@ class StarliteExtensionGroup(StarliteGroup):
 
     def __init__(
         self,
-        name: Optional[str] = None,
-        commands: Optional[Union[Dict[str, Command], Sequence[Command]]] = None,
+        name: str | None = None,
+        commands: dict[str, Command] | Sequence[Command] | None = None,
         **attrs: Any,
     ):
         """Init ``StarliteExtensionGroup``"""
@@ -230,7 +221,7 @@ def _path_to_dotted_path(path: Path) -> str:
     return ".".join(path.with_suffix("").parts)
 
 
-def _autodiscover_app(app_path: Optional[str], cwd: Path) -> LoadedApp:
+def _autodiscover_app(app_path: str | None, cwd: Path) -> LoadedApp:
     if app_path:
         console.print(f"Using Starlite app from env: [bright_blue]{app_path!r}")
         return _load_app_from_path(app_path)

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from inspect import isasyncgen, isgenerator
-from typing import TYPE_CHECKING, Any, Dict, List, Set
+from typing import TYPE_CHECKING, Any
 
 from starlite.signature.utils import get_signature_model
 from starlite.utils.compat import async_next
@@ -15,7 +17,7 @@ class Dependency:
 
     __slots__ = ("key", "provide", "dependencies")
 
-    def __init__(self, key: str, provide: "Provide", dependencies: List["Dependency"]) -> None:
+    def __init__(self, key: str, provide: Provide, dependencies: list[Dependency]) -> None:
         """Initialize a dependency.
 
         Args:
@@ -38,7 +40,7 @@ class Dependency:
 async def resolve_dependency(
     dependency: "Dependency",
     connection: "ASGIConnection",
-    kwargs: Dict[str, Any],
+    kwargs: dict[str, Any],
     cleanup_group: "DependencyCleanupGroup",
 ) -> None:
     """Resolve a given instance of :class:`Dependency <starlite.kwargs.Dependency>`.
@@ -71,7 +73,7 @@ async def resolve_dependency(
     kwargs[dependency.key] = value
 
 
-def create_dependency_batches(expected_dependencies: Set["Dependency"]) -> List[Set["Dependency"]]:
+def create_dependency_batches(expected_dependencies: set[Dependency]) -> list[set[Dependency]]:
     """Calculate batches for all dependencies, recursively.
 
     Args:
@@ -80,7 +82,7 @@ def create_dependency_batches(expected_dependencies: Set["Dependency"]) -> List[
     Returns:
         A list of batches.
     """
-    dependencies_to: Dict["Dependency", Set["Dependency"]] = {}
+    dependencies_to: dict[Dependency, set[Dependency]] = {}
     for dependency in expected_dependencies:
         if dependency not in dependencies_to:
             map_dependencies_recursively(dependency, dependencies_to)
@@ -103,9 +105,7 @@ def create_dependency_batches(expected_dependencies: Set["Dependency"]) -> List[
     return batches
 
 
-def map_dependencies_recursively(
-    dependency: "Dependency", dependencies_to: Dict["Dependency", Set["Dependency"]]
-) -> None:
+def map_dependencies_recursively(dependency: Dependency, dependencies_to: dict[Dependency, set[Dependency]]) -> None:
     """Recursively map dependencies to their sub dependencies.
 
     Args:

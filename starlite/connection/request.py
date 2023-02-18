@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Dict, Generic, Tuple, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Generic, cast
 
 from starlite.connection.base import (
     ASGIConnection,
@@ -35,14 +37,14 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
 
     __slots__ = ("_json", "_form", "_body", "_msgpack", "_content_type", "is_connected")
 
-    scope: "HTTPScope"
+    scope: HTTPScope
     """The ASGI scope attached to the connection."""
-    receive: "Receive"
+    receive: Receive
     """The ASGI receive function."""
-    send: "Send"
+    send: Send
     """The ASGI send function."""
 
-    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
+    def __init__(self, scope: Scope, receive: Receive = empty_receive, send: Send = empty_send) -> None:
         """Initialize ``Request``.
 
         Args:
@@ -59,7 +61,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         self._content_type: Any = scope.get("_content_type", Empty)
 
     @property
-    def method(self) -> "Method":
+    def method(self) -> Method:
         """Return the request method.
 
         Returns:
@@ -68,7 +70,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         return self.scope["method"]
 
     @property
-    def content_type(self) -> Tuple[str, Dict[str, str]]:
+    def content_type(self) -> tuple[str, dict[str, str]]:
         """Parse the request's 'Content-Type' header, returning the header value and any options as a dictionary.
 
         Returns:
@@ -76,7 +78,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         if self._content_type is Empty:
             self._content_type = self.scope["_content_type"] = parse_content_header(self.headers.get("Content-Type", ""))  # type: ignore[typeddict-item]
-        return cast("Tuple[str, Dict[str, str]]", self._content_type)
+        return cast("tuple[str, dict[str, str]]", self._content_type)
 
     async def json(self) -> Any:
         """Retrieve the json request body from the request.
@@ -178,7 +180,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         Returns:
             None
         """
-        extensions: Dict[str, Dict[Any, Any]] = self.scope.get("extensions") or {}
+        extensions: dict[str, dict[Any, Any]] = self.scope.get("extensions") or {}
         if "http.response.push" in extensions:
             raw_headers = []
             for name in SERVER_PUSH_HEADERS:

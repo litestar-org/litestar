@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from http import HTTPStatus
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from starlite.exceptions.base_exceptions import StarliteException
 from starlite.status_codes import (
@@ -24,18 +26,18 @@ class HTTPException(StarliteException):
     """Exception status code."""
     detail: str
     """Exception details or message."""
-    headers: Optional[Dict[str, str]]
+    headers: dict[str, str] | None
     """Headers to attach to the response."""
-    extra: Optional[Union[Dict[str, Any], List[Any]]]
+    extra: dict[str, Any] | list[Any] | None
     """An extra mapping to attach to the exception."""
 
     def __init__(
         self,
         *args: Any,
         detail: str = "",
-        status_code: Optional[int] = None,
-        headers: Optional[Dict[str, str]] = None,
-        extra: Optional[Union[Dict[str, Any], List[Any]]] = None,
+        status_code: int | None = None,
+        headers: dict[str, str] | None = None,
+        extra: dict[str, Any] | list[Any] | None = None,
     ) -> None:
         """Initialize ``HTTPException``.
 

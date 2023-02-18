@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 from click import Context, group, option, pass_context
 
@@ -9,7 +9,7 @@ from .utils import StarliteEnv, StarliteExtensionGroup
 @group(cls=StarliteExtensionGroup)
 @option("--app", "app_path", help="Module path to a Starlite application")
 @pass_context
-def starlite_group(ctx: Context, app_path: Optional[str]) -> None:
+def starlite_group(ctx: Context, app_path: str | None) -> None:
     """Starlite CLI."""
 
     ctx.obj = StarliteEnv.from_env(app_path)

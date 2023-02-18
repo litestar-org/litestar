@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
 
 from starlite.connection import Request
@@ -23,7 +25,7 @@ class ExceptionHandlerMiddleware:
     This used in multiple layers of Starlite.
     """
 
-    def __init__(self, app: "ASGIApp", debug: bool, exception_handlers: "ExceptionHandlersMap") -> None:
+    def __init__(self, app: ASGIApp, debug: bool, exception_handlers: ExceptionHandlersMap) -> None:
         """Initialize ``ExceptionHandlerMiddleware``.
 
         Args:
@@ -101,10 +103,10 @@ class ExceptionHandlerMiddleware:
         else:
             code = 4000 + getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
             reason = getattr(exc, "detail", repr(exc))
-        event: "WebSocketCloseEvent" = {"type": "websocket.close", "code": code, "reason": reason}
+        event: WebSocketCloseEvent = {"type": "websocket.close", "code": code, "reason": reason}
         await send(event)
 
-    def default_http_exception_handler(self, request: Request, exc: Exception) -> "Response[Any]":
+    def default_http_exception_handler(self, request: Request, exc: Exception) -> Response[Any]:
         """Handle an HTTP exception by returning the appropriate response.
 
         :param request: An HTTP Request instance.

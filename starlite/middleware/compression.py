@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from gzip import GzipFile
 from io import BytesIO
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Union
+from typing import TYPE_CHECKING, Any, Literal, Optional
 
 from starlite.constants import SCOPE_STATE_RESPONSE_COMPRESSED
 from starlite.datastructures import Headers, MutableScopeHeaders
@@ -31,9 +33,9 @@ class CompressionFacade:
 
     __slots__ = ("compressor", "buffer", "compression_encoding")
 
-    compressor: Union["GzipFile", "Compressor"]  # pyright: ignore
+    compressor: GzipFile | Compressor  # pyright: ignore
 
-    def __init__(self, buffer: BytesIO, compression_encoding: CompressionEncoding, config: "CompressionConfig") -> None:
+    def __init__(self, buffer: BytesIO, compression_encoding: CompressionEncoding, config: CompressionConfig) -> None:
         """Initialize ``CompressionFacade``.
 
         Args:
@@ -50,7 +52,7 @@ class CompressionFacade:
             except ImportError as e:
                 raise MissingDependencyException("brotli is not installed") from e
 
-            modes: Dict[Literal["generic", "text", "font"], int] = {
+            modes: dict[Literal["generic", "text", "font"], int] = {
                 "text": int(MODE_TEXT),
                 "font": int(MODE_FONT),
                 "generic": int(MODE_GENERIC),
@@ -97,7 +99,7 @@ class CompressionMiddleware(AbstractMiddleware):
     This is a wrapper allowing for generic compression configuration / handler middleware
     """
 
-    def __init__(self, app: "ASGIApp", config: "CompressionConfig") -> None:
+    def __init__(self, app: ASGIApp, config: CompressionConfig) -> None:
         """Initialize ``CompressionMiddleware``
 
         Args:
@@ -148,10 +150,10 @@ class CompressionMiddleware(AbstractMiddleware):
 
     def create_compression_send_wrapper(
         self,
-        send: "Send",
+        send: Send,
         compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP],
-        scope: "Scope",
-    ) -> "Send":
+        scope: Scope,
+    ) -> Send:
         """Wrap ``send`` to handle brotli compression.
 
         Args:

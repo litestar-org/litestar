@@ -1,16 +1,7 @@
-from inspect import isasyncgen
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    AsyncGenerator,
-    Callable,
-    Coroutine,
-    Generator,
-    List,
-    Optional,
-    Type,
-    Union,
-)
+from __future__ import annotations
+
+from inspect import Traceback, isasyncgen
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Coroutine, Generator
 
 from anyio import create_task_group
 
@@ -18,8 +9,6 @@ from starlite.utils import AsyncCallable
 from starlite.utils.compat import async_next
 
 if TYPE_CHECKING:
-    from inspect import Traceback
-
     from starlite.types import AnyGenerator
 
 
@@ -34,7 +23,7 @@ class DependencyCleanupGroup:
 
     __slots__ = ("_generators", "_closed")
 
-    def __init__(self, generators: Optional[List["AnyGenerator"]] = None) -> None:
+    def __init__(self, generators: list[AnyGenerator] | None = None) -> None:
         """Initialize ``DependencyCleanupGroup``.
 
         Args:
@@ -43,7 +32,7 @@ class DependencyCleanupGroup:
         self._generators = generators or []
         self._closed = False
 
-    def add(self, generator: Union[Generator[Any, None, None], AsyncGenerator[Any, None]]) -> None:
+    def add(self, generator: Generator[Any, None, None] | AsyncGenerator[Any, None]) -> None:
         """Add a new generator to the group.
 
         Args:
@@ -57,7 +46,7 @@ class DependencyCleanupGroup:
         self._generators.append(generator)
 
     @staticmethod
-    def _wrap_next(generator: "AnyGenerator") -> Callable[[], Coroutine[None, None, None]]:
+    def _wrap_next(generator: AnyGenerator) -> Callable[[], Coroutine[None, None, None]]:
         if isasyncgen(generator):
 
             async def wrapped_async() -> None:
@@ -101,9 +90,9 @@ class DependencyCleanupGroup:
 
     async def __aexit__(
         self,
-        exc_type: Optional[Type[BaseException]],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional["Traceback"],
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: Traceback | None,
     ) -> None:
         """If an exception was raised within the contextmanager block, throw it into all generators."""
         if exc_val:

@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from functools import partial
-from typing import TYPE_CHECKING, Any, DefaultDict, List
+from typing import TYPE_CHECKING, Any, DefaultDict
 
 from anyio import create_task_group
 
@@ -17,9 +19,9 @@ class BaseEventEmitterBackend(ABC):
 
     __slots__ = ("listeners",)
 
-    listeners: DefaultDict[str, List[AsyncCallable[Any, Any]]]
+    listeners: DefaultDict[str, list[AsyncCallable[Any, Any]]]
 
-    def __init__(self, listeners: List["EventListener"]):
+    def __init__(self, listeners: list[EventListener]):
         """Create an event emitter instance.
 
         :param listeners: A list of listeners.

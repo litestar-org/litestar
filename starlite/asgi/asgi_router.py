@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import re
 from collections import defaultdict
 from functools import lru_cache
 from traceback import format_exc
-from typing import TYPE_CHECKING, Dict, List, Optional, Pattern, Set, Tuple, Union
+from typing import TYPE_CHECKING, Pattern
 
 from starlite.asgi.routing_trie import validate_node
 from starlite.asgi.routing_trie.mapping import add_route_to_trie
@@ -52,20 +54,20 @@ class ASGIRouter:
         "route_mapping",
     )
 
-    def __init__(self, app: "Starlite") -> None:
+    def __init__(self, app: Starlite) -> None:
         """Initialize ``ASGIRouter``.
 
         Args:
             app: The Starlite app instance
         """
-        self._mount_paths_regex: Optional[Pattern] = None
-        self._mount_routes: Dict[str, "RouteTrieNode"] = {}
-        self._plain_routes: Set[str] = set()
-        self._registered_routes: Set[Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"]] = set()
+        self._mount_paths_regex: Pattern | None = None
+        self._mount_routes: dict[str, RouteTrieNode] = {}
+        self._plain_routes: set[str] = set()
+        self._registered_routes: set[HTTPRoute | WebSocketRoute | ASGIRoute] = set()
         self.app = app
-        self.root_route_map_node: "RouteTrieNode" = create_node()
-        self.route_handler_index: Dict[str, "RouteHandlerType"] = {}
-        self.route_mapping: Dict[str, List["BaseRoute"]] = defaultdict(list)
+        self.root_route_map_node: RouteTrieNode = create_node()
+        self.route_handler_index: dict[str, RouteHandlerType] = {}
+        self.route_mapping: dict[str, list[BaseRoute]] = defaultdict(list)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """ASGI callable.
@@ -80,7 +82,7 @@ class ASGIRouter:
         await asgi_app(scope, receive, send)
 
     @lru_cache(1024)  # noqa: B019
-    def handle_routing(self, path: str, method: Optional["Method"]) -> Tuple["ASGIApp", "RouteHandlerType", str, dict]:
+    def handle_routing(self, path: str, method: Method | None) -> tuple[ASGIApp, RouteHandlerType, str, dict]:
         """Handle routing for a given path / method combo. This method is meant to allow easy caching.
 
         Args:
@@ -99,7 +101,7 @@ class ASGIRouter:
             method=method,
         )
 
-    def _store_handler_to_route_mapping(self, route: "BaseRoute") -> None:
+    def _store_handler_to_route_mapping(self, route: BaseRoute) -> None:
         """Store the mapping of route handlers to routes and to route handler names.
 
         Args:
@@ -165,11 +167,11 @@ class ASGIRouter:
         """
         message = await receive()
         try:
-            shutdown_event: "LifeSpanShutdownCompleteEvent" = {"type": "lifespan.shutdown.complete"}
+            shutdown_event: LifeSpanShutdownCompleteEvent = {"type": "lifespan.shutdown.complete"}
 
             if message["type"] == "lifespan.startup":
                 await self.startup()
-                startup_event: "LifeSpanStartupCompleteEvent" = {"type": "lifespan.startup.complete"}
+                startup_event: LifeSpanStartupCompleteEvent = {"type": "lifespan.startup.complete"}
                 await send(startup_event)
                 await receive()
             else:  # pragma: no cover
@@ -177,13 +179,13 @@ class ASGIRouter:
                 await send(shutdown_event)
         except BaseException as e:
             if message["type"] == "lifespan.startup":
-                startup_failure_event: "LifeSpanStartupFailedEvent" = {
+                startup_failure_event: LifeSpanStartupFailedEvent = {
                     "type": "lifespan.startup.failed",
                     "message": format_exc(),
                 }
                 await send(startup_failure_event)
             else:  # pragma: no cover
-                shutdown_failure_event: "LifeSpanShutdownFailedEvent" = {
+                shutdown_failure_event: LifeSpanShutdownFailedEvent = {
                     "type": "lifespan.shutdown.failed",
                     "message": format_exc(),
                 }

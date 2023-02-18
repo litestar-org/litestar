@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 from starlite import Request
@@ -20,7 +22,7 @@ class HTMXDetails:
         """Initialize :class:`HTMXDetails`"""
         self.request = request
 
-    def _get_header_value(self, name: str) -> Optional[str]:
+    def _get_header_value(self, name: str) -> str | None:
         """Parse request header
 
         Check for uri encoded header and unquotes it in readable format.
@@ -40,12 +42,12 @@ class HTMXDetails:
         return self._get_header_value(HTMXHeaders.BOOSTED) == "true"
 
     @cached_property
-    def current_url(self) -> Optional[str]:
+    def current_url(self) -> str | None:
         """Current url value sent by HTMX client."""
         return self._get_header_value(HTMXHeaders.CURRENT_URL)
 
     @cached_property
-    def current_url_abs_path(self) -> Optional[str]:
+    def current_url_abs_path(self) -> str | None:
         """Current url abs path value, to get query and path parameter sent by HTMX client."""
         url = self.current_url
         if url is not None:
@@ -61,7 +63,7 @@ class HTMXDetails:
         return self._get_header_value(HTMXHeaders.HISTORY_RESTORE_REQUEST) == "true"
 
     @cached_property
-    def prompt(self) -> Optional[str]:
+    def prompt(self) -> str | None:
         """User Response to prompt.
 
         .. code-block:: html
@@ -71,17 +73,17 @@ class HTMXDetails:
         return self._get_header_value(HTMXHeaders.PROMPT)
 
     @cached_property
-    def target(self) -> Optional[str]:
+    def target(self) -> str | None:
         """ID of the target element if provided on the element."""
         return self._get_header_value(HTMXHeaders.TARGET)
 
     @cached_property
-    def trigger(self) -> Optional[str]:
+    def trigger(self) -> str | None:
         """ID of the triggered element if provided on the element."""
         return self._get_header_value(HTMXHeaders.TRIGGER_ID)
 
     @cached_property
-    def trigger_name(self) -> Optional[str]:
+    def trigger_name(self) -> str | None:
         """Name of the triggered element if provided on the element."""
         return self._get_header_value(HTMXHeaders.TRIGGER_NAME)
 
@@ -105,7 +107,7 @@ class HTMXRequest(Request):
 
     __slots__ = ("htmx",)
 
-    def __init__(self, scope: "Scope", receive: "Receive", send: "Send"):
+    def __init__(self, scope: Scope, receive: Receive, send: Send):
         """Initialize :class:`HTMXRequest`"""
         super().__init__(scope=scope, receive=receive, send=send)
         self.htmx = HTMXDetails(self)

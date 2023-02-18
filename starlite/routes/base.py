@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import re
 from abc import ABC, abstractmethod
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable
 from uuid import UUID
 
 from pydantic.datetime_parse import (
@@ -40,7 +42,7 @@ param_type_map = {
 }
 
 
-parsers_map: Dict[Any, Callable[[Any], Any]] = {
+parsers_map: dict[Any, Callable[[Any], Any]] = {
     float: float,
     int: int,
     Decimal: Decimal,
@@ -72,10 +74,10 @@ class BaseRoute(ABC):
     def __init__(
         self,
         *,
-        handler_names: List[str],
+        handler_names: list[str],
         path: str,
-        scope_type: "ScopeType",
-        methods: Optional[List["Method"]] = None,
+        scope_type: ScopeType,
+        methods: list[Method] | None = None,
     ) -> None:
         """Initialize the route.
 
@@ -86,7 +88,7 @@ class BaseRoute(ABC):
             methods: Supported methods
         """
         self.path, self.path_format, self.path_components = self._parse_path(path)
-        self.path_parameters: Tuple[PathParameterDefinition, ...] = tuple(
+        self.path_parameters: tuple[PathParameterDefinition, ...] = tuple(
             component for component in self.path_components if isinstance(component, PathParameterDefinition)
         )
         self.handler_names = handler_names
@@ -107,7 +109,7 @@ class BaseRoute(ABC):
         """
         raise NotImplementedError("Route subclasses must implement handle which serves as the ASGI app entry point")
 
-    def create_handler_kwargs_model(self, route_handler: "BaseRouteHandler") -> KwargsModel:
+    def create_handler_kwargs_model(self, route_handler: BaseRouteHandler) -> KwargsModel:
         """Create a `KwargsModel` for a given route handler."""
 
         path_parameters = set()
@@ -143,7 +145,7 @@ class BaseRoute(ABC):
             )
 
     @classmethod
-    def _parse_path(cls, path: str) -> Tuple[str, str, List[Union[str, PathParameterDefinition]]]:
+    def _parse_path(cls, path: str) -> tuple[str, str, list[str | PathParameterDefinition]]:
         """Normalize and parse a path.
 
         Splits the path into a list of components, parsing any that are path parameters. Also builds the OpenAPI
@@ -154,7 +156,7 @@ class BaseRoute(ABC):
         """
         path = normalize_path(path)
 
-        parsed_components: List[Union[str, PathParameterDefinition]] = []
+        parsed_components: list[str | PathParameterDefinition] = []
         path_format_components = []
 
         components = [component for component in path.split("/") if component]

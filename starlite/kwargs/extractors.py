@@ -1,19 +1,8 @@
+from __future__ import annotations
+
 from collections import defaultdict
 from functools import lru_cache
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Coroutine,
-    DefaultDict,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, DefaultDict, Dict, cast
 
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import ParamType, RequestEncodingType
@@ -35,11 +24,11 @@ if TYPE_CHECKING:
 
 
 def create_connection_value_extractor(
-    kwargs_model: "KwargsModel",
+    kwargs_model: KwargsModel,
     connection_key: str,
-    expected_params: Set["ParameterDefinition"],
-    parser: Optional[Callable[["ASGIConnection", "KwargsModel"], Dict[str, Any]]] = None,
-) -> Callable[[Dict[str, Any], "ASGIConnection"], None]:
+    expected_params: set[ParameterDefinition],
+    parser: Callable[[ASGIConnection, KwargsModel], dict[str, Any]] | None = None,
+) -> Callable[[dict[str, Any], ASGIConnection], None]:
     """Create a kwargs extractor function.
 
     Args:
@@ -62,11 +51,11 @@ def create_connection_value_extractor(
         if not (p.is_required or p.default_value is Ellipsis)
     }
 
-    def extractor(values: Dict[str, Any], connection: "ASGIConnection") -> None:
+    def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
         data = parser(connection, kwargs_model) if parser else getattr(connection, connection_key, {})
 
         try:
-            connection_mapping: Dict[str, Any] = {
+            connection_mapping: dict[str, Any] = {
                 key: data[alias] if alias in data else alias_defaults[alias] for alias, key in alias_and_key_tuple
             }
             values.update(connection_mapping)
@@ -78,8 +67,8 @@ def create_connection_value_extractor(
 
 @lru_cache(1024)
 def create_query_default_dict(
-    parsed_query: Tuple[Tuple[str, str], ...], sequence_query_parameter_names: Tuple[str, ...]
-) -> DefaultDict[str, Union[List[str], str]]:
+    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...]
+) -> DefaultDict[str, list[str] | str]:
     """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
 
     Args:
@@ -89,7 +78,7 @@ def create_query_default_dict(
     Returns:
         A default dict
     """
-    output: DefaultDict[str, Union[List[str], str]] = defaultdict(list)
+    output: DefaultDict[str, list[str] | str] = defaultdict(list)
 
     for k, v in parsed_query:
         if k in sequence_query_parameter_names:
@@ -100,7 +89,7 @@ def create_query_default_dict(
     return output
 
 
-def parse_connection_query_params(connection: "ASGIConnection", kwargs_model: "KwargsModel") -> Dict[str, Any]:
+def parse_connection_query_params(connection: ASGIConnection, kwargs_model: KwargsModel) -> dict[str, Any]:
     """Parse query params and cache the result in scope.
 
     Args:
@@ -120,7 +109,7 @@ def parse_connection_query_params(connection: "ASGIConnection", kwargs_model: "K
     )
 
 
-def parse_connection_headers(connection: "ASGIConnection", _: "KwargsModel") -> Dict[str, Any]:
+def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> dict[str, Any]:
     """Parse header parameters and cache the result in scope.
 
     Args:
@@ -136,7 +125,7 @@ def parse_connection_headers(connection: "ASGIConnection", _: "KwargsModel") -> 
     return cast("Dict[str, Any]", parsed_headers)
 
 
-def state_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> None:
+def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the app state from the connection and insert it to the kwargs injected to the handler.
 
     Args:
@@ -149,7 +138,7 @@ def state_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> Non
     values["state"] = connection.app.state._state
 
 
-def headers_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> None:
+def headers_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the headers from the connection and insert them to the kwargs injected to the handler.
 
     Args:
@@ -162,7 +151,7 @@ def headers_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> N
     values["headers"] = connection.headers
 
 
-def cookies_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> None:
+def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the cookies from the connection and insert them to the kwargs injected to the handler.
 
     Args:
@@ -175,7 +164,7 @@ def cookies_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> N
     values["cookies"] = connection.cookies
 
 
-def query_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> None:
+def query_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the query params from the connection and insert them to the kwargs injected to the handler.
 
     Args:
@@ -188,7 +177,7 @@ def query_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> Non
     values["query"] = connection.query_params
 
 
-def scope_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> None:
+def scope_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the scope from the connection and insert it into the kwargs injected to the handler.
 
     Args:
@@ -201,7 +190,7 @@ def scope_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> Non
     values["scope"] = connection.scope
 
 
-def request_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> None:
+def request_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Set the connection instance as the 'request' value in the kwargs injected to the handler.
 
     Args:
@@ -214,7 +203,7 @@ def request_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> N
     values["request"] = connection
 
 
-def socket_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> None:
+def socket_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Set the connection instance as the 'socket' value in the kwargs injected to the handler.
 
     Args:
@@ -228,8 +217,8 @@ def socket_extractor(values: Dict[str, Any], connection: "ASGIConnection") -> No
 
 
 def body_extractor(
-    values: Dict[str, Any],
-    connection: "Request[Any, Any, Any]",
+    values: dict[str, Any],
+    connection: Request[Any, Any, Any],
 ) -> None:
     """Extract the body from the request instance.
 
@@ -279,8 +268,8 @@ async def msgpack_extractor(connection: "Request[Any, Any, Any]") -> Any:
 
 
 def create_multipart_extractor(
-    signature_field: "SignatureField", is_data_optional: bool
-) -> Callable[["ASGIConnection[Any, Any, Any, Any]"], Coroutine[Any, Any, Any]]:
+    signature_field: SignatureField, is_data_optional: bool
+) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
     Args:
@@ -290,7 +279,7 @@ def create_multipart_extractor(
     Returns:
         An extractor function.
     """
-    body_kwarg_multipart_form_part_limit: Optional[int] = None
+    body_kwarg_multipart_form_part_limit: int | None = None
     if signature_field.kwarg_model and isinstance(signature_field.kwarg_model, BodyKwarg):
         body_kwarg_multipart_form_part_limit = signature_field.kwarg_model.multipart_form_part_limit
 
@@ -324,7 +313,7 @@ def create_multipart_extractor(
 
 def create_url_encoded_data_extractor(
     is_data_optional: bool,
-) -> Callable[["ASGIConnection[Any, Any, Any, Any]"], Coroutine[Any, Any, Any]]:
+) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create extractor for url encoded form-data.
 
     Args:
@@ -349,7 +338,7 @@ def create_url_encoded_data_extractor(
     )
 
 
-def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, Any], "ASGIConnection"], None]:
+def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any], ASGIConnection], None]:
     """Create an extractor for a request's body.
 
     Args:
@@ -379,8 +368,8 @@ def create_data_extractor(kwargs_model: "KwargsModel") -> Callable[[Dict[str, An
         )
 
     def extractor(
-        values: Dict[str, Any],
-        connection: "ASGIConnection[Any, Any, Any, Any]",
+        values: dict[str, Any],
+        connection: ASGIConnection[Any, Any, Any, Any],
     ) -> None:
         values["data"] = data_extractor(connection)
 

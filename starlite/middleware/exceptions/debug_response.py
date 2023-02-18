@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from html import escape
 from inspect import getinnerframes
 from pathlib import Path
 from traceback import format_exception
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from starlite.enums import MediaType
 from starlite.response import Response
@@ -17,7 +19,7 @@ if TYPE_CHECKING:
 tpl_dir = Path(__file__).parent / "templates"
 
 
-def get_symbol_name(frame: "FrameInfo") -> str:
+def get_symbol_name(frame: FrameInfo) -> str:
     """Return full name of the function that is being executed by the given frame.
 
     Args:
@@ -69,7 +71,7 @@ def create_line_html(
     return template.format(**data)
 
 
-def create_frame_html(frame: "FrameInfo", collapsed: bool) -> str:
+def create_frame_html(frame: FrameInfo, collapsed: bool) -> str:
     """Produce HTML representation of the given frame object including filename containing source code and name of the
     function being executed.
 
@@ -82,7 +84,7 @@ def create_frame_html(frame: "FrameInfo", collapsed: bool) -> str:
     """
     frame_tpl = (tpl_dir / "frame.html").read_text()
 
-    code_lines: List[str] = []
+    code_lines: list[str] = []
     for idx, line in enumerate(frame.code_context or []):
         code_lines.append(create_line_html(line, frame.lineno, frame.index or 0, idx))
 
@@ -114,7 +116,7 @@ def create_exception_html(exc: BaseException, line_limit: int) -> str:
     return "".join(result)
 
 
-def create_html_response_content(exc: Exception, request: "Request", line_limit: int = 15) -> str:
+def create_html_response_content(exc: Exception, request: Request, line_limit: int = 15) -> str:
     """Given an exception, produces its traceback in HTML.
 
     Args:
@@ -125,7 +127,7 @@ def create_html_response_content(exc: Exception, request: "Request", line_limit:
     Returns:
         A string containing HTML page with exception traceback.
     """
-    exception_data: List[str] = [create_exception_html(exc, line_limit)]
+    exception_data: list[str] = [create_exception_html(exc, line_limit)]
     cause = exc.__cause__
     while cause:
         cause_data = create_exception_html(cause, line_limit)
@@ -161,7 +163,7 @@ def create_plain_text_response_content(exc: Exception) -> str:
     return "".join(format_exception(type(exc), value=exc, tb=exc.__traceback__))
 
 
-def create_debug_response(request: "Request", exc: Exception) -> Response:
+def create_debug_response(request: Request, exc: Exception) -> Response:
     """Create debug response either in plain text or HTML depending on client capabilities.
 
     Args:

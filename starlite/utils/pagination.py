@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Generic, List, Optional, Tuple, TypeVar
+from typing import Generic, TypeVar
 from uuid import UUID
 
 T = TypeVar("T")
@@ -13,7 +15,7 @@ class ClassicPagination(Generic[T]):
 
     __slots__ = ("items", "page_size", "current_page", "total_pages")
 
-    items: List[T]
+    items: list[T]
     """List of data being sent as part of the response."""
     page_size: int
     """Number of items per page."""
@@ -29,7 +31,7 @@ class OffsetPagination(Generic[T]):
 
     __slots__ = ("items", "limit", "offset", "total")
 
-    items: List[T]
+    items: list[T]
     """List of data being sent as part of the response."""
     limit: int
     """Maximal number of items to send."""
@@ -48,11 +50,11 @@ class CursorPagination(Generic[C, T]):
 
     __slots__ = ("items", "results_per_page", "cursor", "next_cursor")
 
-    items: List[T]
+    items: list[T]
     """List of data being sent as part of the response."""
     results_per_page: int
     """Maximal number of items to send."""
-    cursor: Optional[C]
+    cursor: C | None
     """Unique ID, designating the last identifier in the given data set.
 
     This value can be used to request the "next" batch of records.
@@ -78,7 +80,7 @@ class AbstractSyncClassicPaginator(ABC, Generic[T]):
         raise NotImplementedError
 
     @abstractmethod
-    def get_items(self, page_size: int, current_page: int) -> List[T]:
+    def get_items(self, page_size: int, current_page: int) -> list[T]:
         """Return a list of items of the given size 'page_size' correlating with 'current_page'.
 
         Args:
@@ -128,7 +130,7 @@ class AbstractAsyncClassicPaginator(ABC, Generic[T]):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_items(self, page_size: int, current_page: int) -> List[T]:
+    async def get_items(self, page_size: int, current_page: int) -> list[T]:
         """Return a list of items of the given size 'page_size' correlating with 'current_page'.
 
         Args:
@@ -175,7 +177,7 @@ class AbstractSyncOffsetPaginator(ABC, Generic[T]):
         raise NotImplementedError
 
     @abstractmethod
-    def get_items(self, limit: int, offset: int) -> List[T]:
+    def get_items(self, limit: int, offset: int) -> list[T]:
         """Return a list of items of the given size 'limit' starting from position 'offset'.
 
         Args:
@@ -220,7 +222,7 @@ class AbstractAsyncOffsetPaginator(ABC, Generic[T]):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_items(self, limit: int, offset: int) -> List[T]:
+    async def get_items(self, limit: int, offset: int) -> list[T]:
         """Return a list of items of the given size 'limit' starting from position 'offset'.
 
         Args:
@@ -255,7 +257,7 @@ class AbstractSyncCursorPaginator(ABC, Generic[C, T]):
     """
 
     @abstractmethod
-    def get_items(self, cursor: Optional[C], results_per_page: int) -> Tuple[List[T], Optional[C]]:
+    def get_items(self, cursor: C | None, results_per_page: int) -> tuple[list[T], C | None]:
         """Return a list of items of the size 'results_per_page' following the given cursor, if any,
 
         Args:
@@ -268,7 +270,7 @@ class AbstractSyncCursorPaginator(ABC, Generic[C, T]):
         """
         raise NotImplementedError
 
-    def __call__(self, cursor: Optional[C], results_per_page: int) -> CursorPagination[C, T]:
+    def __call__(self, cursor: C | None, results_per_page: int) -> CursorPagination[C, T]:
         """Return a paginated result set given an optional cursor (unique ID) and a maximal number of results to return.
 
         Args:
@@ -294,7 +296,7 @@ class AbstractAsyncCursorPaginator(ABC, Generic[C, T]):
     """
 
     @abstractmethod
-    async def get_items(self, cursor: Optional[C], results_per_page: int) -> Tuple[List[T], Optional[C]]:
+    async def get_items(self, cursor: C | None, results_per_page: int) -> tuple[list[T], C | None]:
         """Return a list of items of the size 'results_per_page' following the given cursor, if any,
 
         Args:
@@ -307,7 +309,7 @@ class AbstractAsyncCursorPaginator(ABC, Generic[C, T]):
         """
         raise NotImplementedError
 
-    async def __call__(self, cursor: Optional[C], results_per_page: int) -> CursorPagination[C, T]:
+    async def __call__(self, cursor: C | None, results_per_page: int) -> CursorPagination[C, T]:
         """Return a paginated result set given an optional cursor (unique ID) and a maximal number of results to return.
 
         Args:

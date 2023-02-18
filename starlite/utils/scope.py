@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from starlite.constants import SCOPE_STATE_NAMESPACE
 
@@ -6,7 +8,7 @@ if TYPE_CHECKING:
     from starlite.types import Scope, Serializer
 
 
-def get_serializer_from_scope(scope: "Scope") -> Optional["Serializer"]:
+def get_serializer_from_scope(scope: Scope) -> Serializer | None:
     """Return a serializer given a scope object.
 
     Args:
@@ -32,7 +34,7 @@ def get_serializer_from_scope(scope: "Scope") -> Optional["Serializer"]:
     return None
 
 
-def get_starlite_scope_state(scope: "Scope", key: str, default: Any = None, pop: bool = False) -> Any:
+def get_starlite_scope_state(scope: Scope, key: str, default: Any = None, pop: bool = False) -> Any:
     """Get an internal value from connection scope state.
 
     Note:
@@ -55,7 +57,7 @@ def get_starlite_scope_state(scope: "Scope", key: str, default: Any = None, pop:
     return namespace.get(key, default) if not pop else namespace.pop(key, default)
 
 
-def set_starlite_scope_state(scope: "Scope", key: str, value: Any) -> None:
+def set_starlite_scope_state(scope: Scope, key: str, value: Any) -> None:
     """Set an internal value in connection scope state.
 
     Args:

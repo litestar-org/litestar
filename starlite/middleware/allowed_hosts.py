@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import re
-from typing import TYPE_CHECKING, Optional, Pattern, Set
+from typing import TYPE_CHECKING, Pattern
 
 from starlite.datastructures import URL, MutableScopeHeaders
 from starlite.middleware.base import AbstractMiddleware
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
 class AllowedHostsMiddleware(AbstractMiddleware):
     """Middleware ensuring the host of a request originated in a trusted host."""
 
-    def __init__(self, app: "ASGIApp", config: "AllowedHostsConfig"):
+    def __init__(self, app: ASGIApp, config: AllowedHostsConfig):
         """Initialize ``AllowedHostsMiddleware``.
 
         Args:
@@ -24,20 +26,20 @@ class AllowedHostsMiddleware(AbstractMiddleware):
 
         super().__init__(app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes=config.scopes)
 
-        self.allowed_hosts_regex: Optional[Pattern] = None
-        self.redirect_domains: Optional[Pattern] = None
+        self.allowed_hosts_regex: Pattern | None = None
+        self.redirect_domains: Pattern | None = None
 
         if any(host == "*" for host in config.allowed_hosts):
             return
 
-        allowed_hosts: Set[str] = {
+        allowed_hosts: set[str] = {
             rf".*\.{host.replace('*.', '')}$" if host.startswith("*.") else host for host in config.allowed_hosts
         }
 
         self.allowed_hosts_regex = re.compile("|".join(sorted(allowed_hosts)))  # pyright: ignore
 
         if config.www_redirect:
-            redirect_domains: Set[str] = {
+            redirect_domains: set[str] = {
                 host.replace("www.", "") for host in config.allowed_hosts if host.startswith("www.")
             }
             if redirect_domains:

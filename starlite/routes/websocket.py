@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
@@ -24,7 +26,7 @@ class WebSocketRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handler: "WebsocketRouteHandler",
+        route_handler: WebsocketRouteHandler,
     ) -> None:
         """Initialize the route.
 
@@ -33,7 +35,7 @@ class WebSocketRoute(BaseRoute):
             route_handler: An instance of :class:`WebsocketRouteHandler <starlite.handlers.websocket_handlers.WebsocketRouteHandler>`.
         """
         self.route_handler = route_handler
-        self.handler_parameter_model: Optional["KwargsModel"] = None
+        self.handler_parameter_model: KwargsModel | None = None
 
         super().__init__(
             path=path,
@@ -52,7 +54,7 @@ class WebSocketRoute(BaseRoute):
         Returns:
             None
         """
-        websocket: "WebSocket[Any, Any, Any]" = scope["app"].websocket_class(scope=scope, receive=receive, send=send)
+        websocket: WebSocket[Any, Any, Any] = scope["app"].websocket_class(scope=scope, receive=receive, send=send)
 
         if not self.handler_parameter_model:  # pragma: no cover
             raise ImproperlyConfiguredException("handler parameter model not defined")
@@ -60,8 +62,8 @@ class WebSocketRoute(BaseRoute):
         if self.route_handler.resolve_guards():
             await self.route_handler.authorize_connection(connection=websocket)
 
-        parsed_kwargs: Dict[str, Any] = {}
-        cleanup_group: Optional["DependencyCleanupGroup"] = None
+        parsed_kwargs: dict[str, Any] = {}
+        cleanup_group: DependencyCleanupGroup | None = None
 
         if self.handler_parameter_model.has_kwargs and self.route_handler.signature_model:
             parsed_kwargs = self.handler_parameter_model.to_kwargs(connection=websocket)

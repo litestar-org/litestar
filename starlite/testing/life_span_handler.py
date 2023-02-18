@@ -1,11 +1,14 @@
+from __future__ import annotations
+
 from math import inf
-from typing import TYPE_CHECKING, Generic, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Generic, Optional, TypeVar, cast
 
 from anyio import create_memory_object_stream
 from anyio.streams.stapled import StapledObjectStream
 
+from starlite.testing.client.base import BaseTestClient
+
 if TYPE_CHECKING:
-    from starlite.testing.client import AsyncTestClient, TestClient
     from starlite.types import LifeSpanReceiveMessage  # noqa: F401  # nopycln: import
     from starlite.types import (
         LifeSpanSendMessage,
@@ -13,7 +16,7 @@ if TYPE_CHECKING:
         LifeSpanStartupEvent,
     )
 
-T = TypeVar("T", bound=Union["AsyncTestClient", "TestClient"])
+T = TypeVar("T", bound=BaseTestClient)
 
 
 class LifeSpanHandler(Generic[T]):
@@ -35,7 +38,7 @@ class LifeSpanHandler(Generic[T]):
         return cast("LifeSpanSendMessage", message)
 
     async def wait_startup(self) -> None:
-        event: "LifeSpanStartupEvent" = {"type": "lifespan.startup"}
+        event: LifeSpanStartupEvent = {"type": "lifespan.startup"}
         await self.stream_receive.send(event)
 
         message = await self.receive()
@@ -49,7 +52,7 @@ class LifeSpanHandler(Generic[T]):
 
     async def wait_shutdown(self) -> None:
         async with self.stream_send:
-            lifespan_shutdown_event: "LifeSpanShutdownEvent" = {"type": "lifespan.shutdown"}
+            lifespan_shutdown_event: LifeSpanShutdownEvent = {"type": "lifespan.shutdown"}
             await self.stream_receive.send(lifespan_shutdown_event)
 
             message = await self.receive()

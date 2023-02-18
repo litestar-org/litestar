@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections import deque
 from decimal import Decimal
 from ipaddress import (
@@ -10,17 +12,7 @@ from ipaddress import (
 )
 from pathlib import Path, PurePath
 from re import Pattern
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Mapping,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar, overload
 
 import msgspec
 from pydantic import (
@@ -64,7 +56,7 @@ def _enc_pattern(pattern: Pattern) -> Any:
     return pattern.pattern
 
 
-DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
+DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     Path: str,
     PurePath: str,
     # pydantic specific types
@@ -98,7 +90,7 @@ DEFAULT_TYPE_ENCODERS: "TypeEncodersMap" = {
 }
 
 
-def default_serializer(value: Any, type_encoders: Optional[Mapping[Any, Callable[[Any], Any]]] = None) -> Any:
+def default_serializer(value: Any, type_encoders: Mapping[Any, Callable[[Any], Any]] | None = None) -> Any:
     """Transform values non-natively supported by ``msgspec``
 
     Args:
@@ -143,7 +135,7 @@ _msgspec_msgpack_encoder = msgspec.msgpack.Encoder(enc_hook=default_serializer)
 _msgspec_msgpack_decoder = msgspec.msgpack.Decoder(dec_hook=dec_hook)
 
 
-def encode_json(obj: Any, default: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
+def encode_json(obj: Any, default: Callable[[Any], Any] | None = default_serializer) -> bytes:
     """Encode a value into JSON.
 
     Args:
@@ -165,16 +157,16 @@ def encode_json(obj: Any, default: Optional[Callable[[Any], Any]] = default_seri
 
 
 @overload
-def decode_json(raw: Union[str, bytes]) -> Any:
+def decode_json(raw: str | bytes) -> Any:
     ...
 
 
 @overload
-def decode_json(raw: Union[str, bytes], type_: Type[T]) -> T:
+def decode_json(raw: str | bytes, type_: type[T]) -> T:
     ...
 
 
-def decode_json(raw: Union[str, bytes], type_: Any = Empty) -> Any:
+def decode_json(raw: str | bytes, type_: Any = Empty) -> Any:
     """Decode a JSON string/bytes into an object.
 
     Args:
@@ -195,7 +187,7 @@ def decode_json(raw: Union[str, bytes], type_: Any = Empty) -> Any:
         raise SerializationException(str(msgspec_error)) from msgspec_error
 
 
-def encode_msgpack(obj: Any, enc_hook: Optional[Callable[[Any], Any]] = default_serializer) -> bytes:
+def encode_msgpack(obj: Any, enc_hook: Callable[[Any], Any] | None = default_serializer) -> bytes:
     """Encode a value into MessagePack.
 
     Args:
@@ -222,7 +214,7 @@ def decode_msgpack(raw: bytes) -> Any:
 
 
 @overload
-def decode_msgpack(raw: bytes, type_: Type[T]) -> T:
+def decode_msgpack(raw: bytes, type_: type[T]) -> T:
     ...
 
 

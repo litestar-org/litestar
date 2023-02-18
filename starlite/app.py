@@ -1,18 +1,9 @@
+from __future__ import annotations
+
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Type,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
 from pydantic_openapi_schema import construct_open_api_with_schema_class
 from typing_extensions import Self, TypedDict
@@ -64,9 +55,9 @@ if TYPE_CHECKING:
     from starlite.config.template import TemplateConfig
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.events.listener import EventListener
-    from starlite.handlers.base import BaseRouteHandler
+    from starlite.handlers.base import BaseRouteHandler  # noqa: TC004
     from starlite.plugins import PluginProtocol
-    from starlite.types import (
+    from starlite.types import (  # noqa: TC004
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
@@ -118,9 +109,9 @@ class HandlerIndex(TypedDict):
     It's returned from the 'get_handler_index_by_name' utility method.
     """
 
-    paths: List[str]
+    paths: list[str]
     """Full route paths to the route handler."""
-    handler: "RouteHandlerType"
+    handler: RouteHandlerType
     """Route handler instance."""
     identifier: str
     """Unique identifier of the handler.
@@ -174,50 +165,50 @@ class Starlite(Router):
 
     def __init__(
         self,
-        route_handlers: "OptionalSequence[ControllerRouterHandler]" = None,
-        after_exception: "OptionalSequence[AfterExceptionHookHandler]" = None,
-        after_request: Optional["AfterRequestHookHandler"] = None,
-        after_response: Optional["AfterResponseHookHandler"] = None,
-        after_shutdown: "OptionalSequence[LifeSpanHookHandler]" = None,
-        after_startup: "OptionalSequence[LifeSpanHookHandler]" = None,
-        allowed_hosts: Optional[Union[Sequence[str], "AllowedHostsConfig"]] = None,
-        before_request: Optional["BeforeRequestHookHandler"] = None,
-        before_send: "OptionalSequence[BeforeMessageSendHookHandler]" = None,
-        before_shutdown: "OptionalSequence[LifeSpanHookHandler]" = None,
-        before_startup: "OptionalSequence[LifeSpanHookHandler]" = None,
+        route_handlers: OptionalSequence[ControllerRouterHandler] = None,
+        after_exception: OptionalSequence[AfterExceptionHookHandler] = None,
+        after_request: AfterRequestHookHandler | None = None,
+        after_response: AfterResponseHookHandler | None = None,
+        after_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
+        after_startup: OptionalSequence[LifeSpanHookHandler] = None,
+        allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
+        before_request: BeforeRequestHookHandler | None = None,
+        before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
+        before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
+        before_startup: OptionalSequence[LifeSpanHookHandler] = None,
         cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
-        cache_control: Optional["CacheControlHeader"] = None,
-        compression_config: Optional["CompressionConfig"] = None,
-        cors_config: Optional["CORSConfig"] = None,
-        csrf_config: Optional["CSRFConfig"] = None,
+        cache_control: CacheControlHeader | None = None,
+        compression_config: CompressionConfig | None = None,
+        cors_config: CORSConfig | None = None,
+        csrf_config: CSRFConfig | None = None,
         debug: bool = False,
-        dependencies: Optional["Dependencies"] = None,
-        etag: Optional["ETag"] = None,
-        event_emitter_backend: Type[BaseEventEmitterBackend] = SimpleEventEmitter,
-        exception_handlers: Optional["ExceptionHandlersMap"] = None,
-        guards: "OptionalSequence[Guard]" = None,
-        initial_state: Optional["InitialStateType"] = None,
-        listeners: "OptionalSequence[EventListener]" = None,
-        logging_config: Union["BaseLoggingConfig", "EmptyType", None] = Empty,
-        middleware: "OptionalSequence[Middleware]" = None,
+        dependencies: Dependencies | None = None,
+        etag: ETag | None = None,
+        event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
+        exception_handlers: ExceptionHandlersMap | None = None,
+        guards: OptionalSequence[Guard] = None,
+        initial_state: InitialStateType | None = None,
+        listeners: OptionalSequence[EventListener] = None,
+        logging_config: BaseLoggingConfig | EmptyType | None = Empty,
+        middleware: OptionalSequence[Middleware] = None,
         multipart_form_part_limit: int = 1000,
-        on_app_init: "OptionalSequence[OnAppInitHandler]" = None,
-        on_shutdown: "OptionalSequence[LifeSpanHandler]" = None,
-        on_startup: "OptionalSequence[LifeSpanHandler]" = None,
-        openapi_config: Optional[OpenAPIConfig] = DEFAULT_OPENAPI_CONFIG,
-        opt: Optional[Mapping[str, Any]] = None,
-        parameters: Optional["ParametersMap"] = None,
-        plugins: "OptionalSequence[PluginProtocol]" = None,
-        request_class: Optional[Type["Request"]] = None,
-        response_class: Optional["ResponseType"] = None,
-        response_cookies: Optional["ResponseCookies"] = None,
-        response_headers: Optional["ResponseHeadersMap"] = None,
-        security: "OptionalSequence[SecurityRequirement]" = None,
-        static_files_config: "OptionalSequence[StaticFilesConfig]" = None,
-        tags: Optional[Sequence[str]] = None,
-        template_config: Optional["TemplateConfig"] = None,
-        type_encoders: Optional["TypeEncodersMap"] = None,
-        websocket_class: Optional[Type["WebSocket"]] = None,
+        on_app_init: OptionalSequence[OnAppInitHandler] = None,
+        on_shutdown: OptionalSequence[LifeSpanHandler] = None,
+        on_startup: OptionalSequence[LifeSpanHandler] = None,
+        openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
+        opt: Mapping[str, Any] | None = None,
+        parameters: ParametersMap | None = None,
+        plugins: OptionalSequence[PluginProtocol] = None,
+        request_class: type[Request] | None = None,
+        response_class: ResponseType | None = None,
+        response_cookies: ResponseCookies | None = None,
+        response_headers: ResponseHeadersMap | None = None,
+        security: OptionalSequence[SecurityRequirement] = None,
+        static_files_config: OptionalSequence[StaticFilesConfig] = None,
+        tags: Sequence[str] | None = None,
+        template_config: TemplateConfig | None = None,
+        type_encoders: TypeEncodersMap | None = None,
+        websocket_class: type[WebSocket] | None = None,
     ) -> None:
         """Initialize a ``Starlite`` application.
 
@@ -300,10 +291,10 @@ class Starlite(Router):
             websocket_class: An optional subclass of :class:`WebSocket <starlite.connection.websocket.WebSocket>` to use for
                 websocket connections.
         """
-        self.openapi_schema: Optional["OpenAPI"] = None
-        self.get_logger: "GetLogger" = get_logger_placeholder
-        self.logger: Optional["Logger"] = None
-        self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
+        self.openapi_schema: OpenAPI | None = None
+        self.get_logger: GetLogger = get_logger_placeholder
+        self.logger: Logger | None = None
+        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.asgi_router = ASGIRouter(app=self)
 
         logging_config = logging_config if logging_config is not Empty else LoggingConfig() if debug else None
@@ -356,7 +347,7 @@ class Starlite(Router):
         for handler in on_app_init or []:
             config = handler(config)
 
-        self.allowed_hosts = cast("Optional[AllowedHostsConfig]", config.allowed_hosts)
+        self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.after_exception = as_async_callable_list(config.after_exception)
         self.after_shutdown = as_async_callable_list(config.after_shutdown)
         self.after_startup = as_async_callable_list(config.after_startup)
@@ -430,9 +421,9 @@ class Starlite(Router):
 
     async def __call__(
         self,
-        scope: Union["Scope", "LifeSpanScope"],
-        receive: Union["Receive", "LifeSpanReceive"],
-        send: Union["Send", "LifeSpanSend"],
+        scope: Scope | LifeSpanScope,
+        receive: Receive | LifeSpanReceive,
+        send: Send | LifeSpanSend,
     ) -> None:
         """Application entry point.
 
@@ -454,7 +445,7 @@ class Starlite(Router):
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
     @classmethod
-    def from_config(cls, config: "AppConfig") -> Self:
+    def from_config(cls, config: AppConfig) -> Self:
         """Initialize a ``Starlite`` application from a configuration instance.
 
         Args:
@@ -466,7 +457,7 @@ class Starlite(Router):
         return cls(**dict(config))
 
     def register(  # type: ignore[override]
-        self, value: "ControllerRouterHandler", add_to_openapi_schema: bool = False
+        self, value: ControllerRouterHandler, add_to_openapi_schema: bool = False
     ) -> None:
         """Register a route handler on the app.
 
@@ -512,7 +503,7 @@ class Starlite(Router):
         if should_add_to_openapi_schema:
             self.update_openapi_schema()
 
-    def get_handler_index_by_name(self, name: str) -> Optional[HandlerIndex]:
+    def get_handler_index_by_name(self, name: str) -> HandlerIndex | None:
         """Receives a route handler name and returns an optional dictionary containing the route handler instance and
         list of paths sorted lexically.
 
@@ -586,7 +577,7 @@ class Starlite(Router):
             raise NoRouteMatchFoundException(f"Route {name} can not be found")
 
         allow_str_instead = {datetime, date, time, timedelta, float, Path}
-        output: List[str] = []
+        output: list[str] = []
 
         routes = sorted(
             self.asgi_router.route_mapping[handler_index["identifier"]],
@@ -656,24 +647,24 @@ class Starlite(Router):
         return join_paths([handler_index["paths"][0], file_path])  # type: ignore[unreachable]
 
     @property
-    def route_handler_method_view(self) -> Dict[str, List[str]]:
+    def route_handler_method_view(self) -> dict[str, list[str]]:
         """Map route handlers to paths.
 
         Returns:
             A dictionary of router handlers and lists of paths as strings
         """
-        route_map: Dict[str, List[str]] = {}
+        route_map: dict[str, list[str]] = {}
         for handler, routes in self.asgi_router.route_mapping.items():
             route_map[handler] = [route.path for route in routes]
 
         return route_map
 
-    def _create_asgi_handler(self) -> "ASGIApp":
+    def _create_asgi_handler(self) -> ASGIApp:
         """Create an ASGIApp that wraps the ASGI router inside an exception handler.
 
         If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
         """
-        asgi_handler: "ASGIApp" = self.asgi_router
+        asgi_handler: ASGIApp = self.asgi_router
         if self.cors_config:
             asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
 
@@ -682,7 +673,7 @@ class Starlite(Router):
         )
 
     @staticmethod
-    def _set_runtime_callables(route_handler: "BaseRouteHandler") -> None:
+    def _set_runtime_callables(route_handler: BaseRouteHandler) -> None:
         """Optimize the 'route_handler.fn' and any 'provider.dependency' callables for runtime by doing the following:
 
         1. ensure that the ``self`` argument is preserved by binding it using partial.
@@ -715,7 +706,7 @@ class Starlite(Router):
                 else:
                     provider.has_sync_callable = True
 
-    def _create_handler_signature_model(self, route_handler: "BaseRouteHandler") -> None:
+    def _create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
         """Create function signature models for all route handler functions and provider dependencies."""
         if not route_handler.signature_model:
             route_handler.signature_model = create_signature_model(
@@ -732,7 +723,7 @@ class Starlite(Router):
                     dependency_name_set=route_handler.dependency_name_set,
                 )
 
-    def _wrap_send(self, send: "Send", scope: "Scope") -> "Send":
+    def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.
 
         Args:
@@ -763,7 +754,7 @@ class Starlite(Router):
         if not self.openapi_config or not self.openapi_schema or self.openapi_schema.paths is None:
             raise ImproperlyConfiguredException("Cannot generate OpenAPI schema without initializing an OpenAPIConfig")
 
-        operation_ids: List[str] = []
+        operation_ids: list[str] = []
 
         for route in self.routes:
             if (

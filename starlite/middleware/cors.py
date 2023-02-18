@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from starlite.datastructures import Headers, MutableScopeHeaders
@@ -14,7 +16,7 @@ class CORSMiddleware(AbstractMiddleware):
 
     __slots__ = ("config",)
 
-    def __init__(self, app: "ASGIApp", config: "CORSConfig"):
+    def __init__(self, app: ASGIApp, config: CORSConfig):
         """Middleware that adds CORS validation to the application.
 
         Args:
@@ -43,7 +45,7 @@ class CORSMiddleware(AbstractMiddleware):
         else:
             await self.app(scope, receive, self.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers))
 
-    def send_wrapper(self, send: "Send", origin: str, has_cookie: bool) -> "Send":
+    def send_wrapper(self, send: Send, origin: str, has_cookie: bool) -> Send:
         """Wrap ``send`` to ensure that state is not disconnected.
 
         Args:

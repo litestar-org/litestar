@@ -22,11 +22,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+from __future__ import annotations
 
 import re
 from collections import defaultdict
 from email.utils import decode_rfc2231
-from typing import Any, DefaultDict, Dict, List, Tuple
+from typing import Any, DefaultDict
 from urllib.parse import unquote
 
 from starlite.datastructures.upload_file import UploadFile
@@ -39,7 +40,7 @@ _param = re.compile(rf";\s*{_token}=(?:{_token}|{_quoted})", re.ASCII)
 _firefox_quote_escape = re.compile(r'\\"(?!; |\s*$)')
 
 
-def parse_content_header(value: str) -> Tuple[str, Dict[str, str]]:
+def parse_content_header(value: str) -> tuple[str, dict[str, str]]:
     """Parse content-type and content-disposition header values.
 
     Args:
@@ -51,7 +52,7 @@ def parse_content_header(value: str) -> Tuple[str, Dict[str, str]]:
     value = _firefox_quote_escape.sub("%22", value)
     pos = value.find(";")
     if pos == -1:
-        options: Dict[str, str] = {}
+        options: dict[str, str] = {}
     else:
         options = {
             m.group(1).lower(): m.group(2) or m.group(3).replace("%22", '"') for m in _param.finditer(value[pos:])
@@ -60,7 +61,7 @@ def parse_content_header(value: str) -> Tuple[str, Dict[str, str]]:
     return value.strip().lower(), options
 
 
-def parse_body(body: bytes, boundary: bytes, multipart_form_part_limit: int) -> List[bytes]:
+def parse_body(body: bytes, boundary: bytes, multipart_form_part_limit: int) -> list[bytes]:
     """Split the body using the boundary
         and validate the number of form parts is within the allowed limit.
 
@@ -84,7 +85,7 @@ def parse_body(body: bytes, boundary: bytes, multipart_form_part_limit: int) -> 
     return form_parts
 
 
-def parse_multipart_form(body: bytes, boundary: bytes, multipart_form_part_limit: int = 1000) -> Dict[str, Any]:
+def parse_multipart_form(body: bytes, boundary: bytes, multipart_form_part_limit: int = 1000) -> dict[str, Any]:
     """Parse multipart form data.
 
     Args:
@@ -96,7 +97,7 @@ def parse_multipart_form(body: bytes, boundary: bytes, multipart_form_part_limit
         A dictionary of parsed results.
     """
 
-    fields: DefaultDict[str, List[Any]] = defaultdict(list)
+    fields: DefaultDict[str, list[Any]] = defaultdict(list)
 
     for form_part in parse_body(body=body, boundary=boundary, multipart_form_part_limit=multipart_form_part_limit):
         file_name = None
@@ -105,7 +106,7 @@ def parse_multipart_form(body: bytes, boundary: bytes, multipart_form_part_limit
         field_name = None
         line_index = 2
         line_end_index = 0
-        headers: List[Tuple[str, str]] = []
+        headers: list[tuple[str, str]] = []
 
         while line_end_index != -1:
             line_end_index = form_part.find(b"\r\n", line_index)

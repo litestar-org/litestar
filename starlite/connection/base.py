@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from starlite.datastructures.headers import Headers
 from starlite.datastructures.multi_dicts import MultiDict
@@ -55,14 +57,14 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
 
     __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_headers", "_cookies")
 
-    scope: "Scope"
+    scope: Scope
     """The ASGI scope attached to the connection."""
-    receive: "Receive"
+    receive: Receive
     """The ASGI receive function."""
-    send: "Send"
+    send: Send
     """The ASGI send function."""
 
-    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
+    def __init__(self, scope: Scope, receive: Receive = empty_receive, send: Send = empty_send) -> None:
         """Initialize ``ASGIConnection``.
 
         Args:
@@ -80,7 +82,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         self._headers: Any = scope.get("_headers", Empty)
 
     @property
-    def app(self) -> "Starlite":
+    def app(self) -> Starlite:
         """Return the ``app`` for this connection.
 
         Returns:
@@ -163,7 +165,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         return MultiDict(self._parsed_query)
 
     @property
-    def path_params(self) -> Dict[str, Any]:
+    def path_params(self) -> dict[str, Any]:
         """Return the ``path_params`` of this connection's ``Scope``.
 
         Returns:
@@ -172,14 +174,14 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         return self.scope["path_params"]
 
     @property
-    def cookies(self) -> Dict[str, str]:
+    def cookies(self) -> dict[str, str]:
         """Return the ``cookies`` of this connection's ``Scope``.
 
         Returns:
             Returns any cookies stored in the header as a parsed dictionary.
         """
         if self._cookies is Empty:
-            cookies: Dict[str, str] = {}
+            cookies: dict[str, str] = {}
             cookie_header = self.headers.get("cookie")
 
             if cookie_header:
@@ -187,10 +189,10 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
 
             self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-item]
 
-        return cast("Dict[str, str]", self._cookies)
+        return cast("dict[str, str]", self._cookies)
 
     @property
-    def client(self) -> Optional[Address]:
+    def client(self) -> Address | None:
         """Return the ``client`` data of this connection's ``Scope``.
 
         Returns:
@@ -230,7 +232,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         return cast("UserT", self.scope["user"])
 
     @property
-    def session(self) -> Dict[str, Any]:
+    def session(self) -> dict[str, Any]:
         """Return the session for this connection if a session was previously set in the ``Scope``
 
         Returns:
@@ -244,10 +246,10 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
                 "'session' is not defined in scope, install a SessionMiddleware to set it"
             )
 
-        return cast("Dict[str, Any]", self.scope["session"])
+        return cast("dict[str, Any]", self.scope["session"])
 
     @property
-    def logger(self) -> "Logger":
+    def logger(self) -> Logger:
         """Return the ``Logger`` instance for this connection.
 
         Returns:
@@ -259,7 +261,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         return self.app.get_logger()
 
     @property
-    def cache(self) -> "Cache":
+    def cache(self) -> Cache:
         """Return the ``Cache`` for this connection.
 
         Returns:
@@ -267,7 +269,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         return self.app.cache
 
-    def set_session(self, value: Union[Dict[str, Any], "BaseModel", "EmptyType"]) -> None:
+    def set_session(self, value: dict[str, Any] | BaseModel | EmptyType) -> None:
         """Set the session in the connection's ``Scope``.
 
         If the :class:`Starlite SessionMiddleware <starlite.middleware.session.SessionMiddleware>` is
@@ -292,7 +294,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         self.scope["session"] = Empty
 
-    def url_for(self, name: str, **path_parameters: Dict[str, Any]) -> str:
+    def url_for(self, name: str, **path_parameters: dict[str, Any]) -> str:
         """Return the url for a given route handler name.
 
         Args:

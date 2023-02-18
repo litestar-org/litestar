@@ -1,18 +1,8 @@
+from __future__ import annotations
+
 from functools import partial
 from itertools import chain
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generic,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-    overload,
-)
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 from starlite.datastructures import Cookie, ETag
 from starlite.enums import MediaType, OpenAPIMediaType
@@ -64,20 +54,20 @@ class Response(Generic[T]):
         "_enc_hook",
     )
 
-    type_encoders: Optional["TypeEncodersMap"] = None
+    type_encoders: TypeEncodersMap | None = None
 
     def __init__(
         self,
         content: T,
         *,
         status_code: int = HTTP_200_OK,
-        media_type: Union[MediaType, "OpenAPIMediaType", str] = MediaType.JSON,
-        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-        cookies: Optional["ResponseCookies"] = None,
+        media_type: MediaType | OpenAPIMediaType | str = MediaType.JSON,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        headers: dict[str, Any] | None = None,
+        cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
         is_head_response: bool = False,
-        type_encoders: Optional["TypeEncodersMap"] = None,
+        type_encoders: TypeEncodersMap | None = None,
     ) -> None:
         """Initialize the response.
 
@@ -121,10 +111,10 @@ class Response(Generic[T]):
             "content-type",
             f"{self.media_type}; charset={self.encoding}" if self.media_type.startswith("text/") else self.media_type,
         )
-        self.raw_headers: List[Tuple[bytes, bytes]] = []
+        self.raw_headers: list[tuple[bytes, bytes]] = []
 
     @classmethod
-    def get_serializer(cls, type_encoders: Optional["TypeEncodersMap"] = None) -> "Serializer":
+    def get_serializer(cls, type_encoders: TypeEncodersMap | None = None) -> Serializer:
         """Get the serializer for this response class."""
 
         type_encoders = {**(cls.type_encoders or {}), **(type_encoders or {})}
@@ -141,11 +131,11 @@ class Response(Generic[T]):
     def set_cookie(
         self,
         key: str,
-        value: Optional[str] = None,
-        max_age: Optional[int] = None,
-        expires: Optional[int] = None,
+        value: str | None = None,
+        max_age: int | None = None,
+        expires: int | None = None,
         path: str = "/",
-        domain: Optional[str] = None,
+        domain: str | None = None,
         secure: bool = False,
         httponly: bool = False,
         samesite: Literal["lax", "strict", "none"] = "lax",
@@ -154,12 +144,12 @@ class Response(Generic[T]):
 
     def set_cookie(  # type: ignore[misc]
         self,
-        key: Union[str, Cookie],
-        value: Optional[str] = None,
-        max_age: Optional[int] = None,
-        expires: Optional[int] = None,
+        key: str | Cookie,
+        value: str | None = None,
+        max_age: int | None = None,
+        expires: int | None = None,
         path: str = "/",
-        domain: Optional[str] = None,
+        domain: str | None = None,
         secure: bool = False,
         httponly: bool = False,
         samesite: Literal["lax", "strict", "none"] = "lax",
@@ -207,7 +197,7 @@ class Response(Generic[T]):
         """
         self.headers[key] = value
 
-    def set_etag(self, etag: Union[str, "ETag"]) -> None:
+    def set_etag(self, etag: str | ETag) -> None:
         """Set an etag header.
 
         Args:
@@ -222,7 +212,7 @@ class Response(Generic[T]):
         self,
         key: str,
         path: str = "/",
-        domain: Optional[str] = None,
+        domain: str | None = None,
     ) -> None:
         """Delete a cookie.
 
@@ -273,7 +263,7 @@ class Response(Generic[T]):
             return len(self.body)
         return 0
 
-    def encode_headers(self) -> List[Tuple[bytes, bytes]]:
+    def encode_headers(self) -> list[tuple[bytes, bytes]]:
         """Encode the response headers as a list of byte tuples.
 
         Notes:
@@ -316,7 +306,7 @@ class Response(Generic[T]):
         if "content-length" not in self.headers and content_length:
             encoded_headers.append((b"content-length", str(content_length).encode("latin-1")))
 
-        event: "HTTPResponseStartEvent" = {
+        event: HTTPResponseStartEvent = {
             "type": "http.response.start",
             "status": self.status_code,
             "headers": encoded_headers,
@@ -337,7 +327,7 @@ class Response(Generic[T]):
         Returns:
             None
         """
-        event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": self.body, "more_body": False}
+        event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": self.body, "more_body": False}
         await send(event)
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
@@ -354,7 +344,7 @@ class Response(Generic[T]):
         await self.start_response(send=send)
 
         if self.is_head_response:
-            event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
+            event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": b"", "more_body": False}
             await send(event)
         else:
             await self.send_body(send=send, receive=receive)

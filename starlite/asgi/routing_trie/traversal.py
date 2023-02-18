@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Pattern, Set, Tuple
+from typing import TYPE_CHECKING, Any, Pattern
 
 from starlite.asgi.routing_trie.types import PathParameterSentinel
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
@@ -12,9 +14,9 @@ if TYPE_CHECKING:
 
 
 def traverse_route_map(
-    root_node: "RouteTrieNode",
+    root_node: RouteTrieNode,
     path: str,
-) -> Tuple["RouteTrieNode", List[str], str]:
+) -> tuple[RouteTrieNode, list[str], str]:
     """Traverses the application route mapping and retrieves the correct node for the request url.
 
     Args:
@@ -28,7 +30,7 @@ def traverse_route_map(
         A tuple containing the target RouteMapNode and a list containing all path parameter values.
     """
     current_node = root_node
-    path_params: List[str] = []
+    path_params: list[str] = []
     path_components = [p for p in path.split("/") if p]
 
     for i, component in enumerate(path_components):
@@ -52,9 +54,9 @@ def traverse_route_map(
 
 
 def parse_node_handlers(
-    node: "RouteTrieNode",
-    method: Optional["Method"],
-) -> "ASGIHandlerTuple":
+    node: RouteTrieNode,
+    method: Method | None,
+) -> ASGIHandlerTuple:
     """Retrieve the handler tuple from the node.
 
     Args:
@@ -77,8 +79,8 @@ def parse_node_handlers(
 
 @lru_cache(1024)
 def parse_path_params(
-    parameter_definitions: Tuple["PathParameterDefinition", ...], path_param_values: Tuple[str, ...]
-) -> Dict[str, Any]:
+    parameter_definitions: tuple[PathParameterDefinition, ...], path_param_values: tuple[str, ...]
+) -> dict[str, Any]:
     """Parse path parameters into a dictionary of values.
 
     Args:
@@ -98,13 +100,13 @@ def parse_path_params(
 
 
 def parse_path_to_route(
-    method: Optional["Method"],
-    mount_paths_regex: Optional[Pattern],
-    mount_routes: Dict[str, "RouteTrieNode"],
+    method: Method | None,
+    mount_paths_regex: Pattern | None,
+    mount_routes: dict[str, RouteTrieNode],
     path: str,
-    plain_routes: Set[str],
-    root_node: "RouteTrieNode",
-) -> Tuple["ASGIApp", "RouteHandlerType", str, dict]:
+    plain_routes: set[str],
+    root_node: RouteTrieNode,
+) -> tuple[ASGIApp, RouteHandlerType, str, dict]:
     """Given a scope object, retrieve the asgi_handlers and is_mount boolean values from correct trie node.
 
     Args:

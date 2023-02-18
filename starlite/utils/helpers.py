@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 T = TypeVar("T")
 
@@ -22,7 +24,7 @@ def get_name(value: Any) -> str:
     return type(value).__name__
 
 
-def get_enum_string_value(value: Union[Enum, str]) -> str:
+def get_enum_string_value(value: Enum | str) -> str:
     """Return the string value of a string enum.
 
     See: https://github.com/starlite-api/starlite/pull/633#issuecomment-1286519267
@@ -46,7 +48,7 @@ class Ref(Generic[T]):
     """The value wrapped by the ref."""
 
 
-def unwrap_partial(value: "MaybePartial[T]") -> T:
+def unwrap_partial(value: MaybePartial[T]) -> T:
     """Unwraps a partial, returning the underlying callable.
 
     Args:

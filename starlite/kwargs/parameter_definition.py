@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, NamedTuple, Set
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from starlite.enums import ParamType
 from starlite.params import ParameterKwarg
@@ -19,9 +21,9 @@ class ParameterDefinition(NamedTuple):
 
 
 def create_parameter_definition(
-    signature_field: "SignatureField",
+    signature_field: SignatureField,
     field_name: str,
-    path_parameters: Set[str],
+    path_parameters: set[str],
 ) -> ParameterDefinition:
     """Create a ParameterDefinition for the given SignatureField.
 
@@ -60,11 +62,11 @@ def create_parameter_definition(
     )
 
 
-def merge_parameter_sets(first: Set[ParameterDefinition], second: Set[ParameterDefinition]) -> Set[ParameterDefinition]:
+def merge_parameter_sets(first: set[ParameterDefinition], second: set[ParameterDefinition]) -> set[ParameterDefinition]:
     """Given two sets of parameter definitions, coming from different dependencies for example, merge them into a single
     set.
     """
-    result: Set[ParameterDefinition] = first.intersection(second)
+    result: set[ParameterDefinition] = first.intersection(second)
     difference = first.symmetric_difference(second)
     for param in difference:
         # add the param if it's either required or no-other param in difference is the same but required

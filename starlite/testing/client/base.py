@@ -1,17 +1,9 @@
+from __future__ import annotations
+
 import warnings
 from contextlib import contextmanager
 from http.cookiejar import CookieJar
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generator,
-    Generic,
-    Mapping,
-    Optional,
-    TypeVar,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Generator, Generic, Mapping, TypeVar, cast
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 
@@ -43,7 +35,7 @@ def fake_http_send_message(headers: MutableScopeHeaders) -> HTTPResponseStartEve
     return HTTPResponseStartEvent(type="http.response.start", status=200, headers=headers.headers)
 
 
-def fake_asgi_connection(app: ASGIApp, cookies: Dict[str, str]) -> ASGIConnection[Any, Any, Any, Any]:
+def fake_asgi_connection(app: ASGIApp, cookies: dict[str, str]) -> ASGIConnection[Any, Any, Any, Any]:
     scope = {
         "type": "http",
         "path": "/",
@@ -69,7 +61,7 @@ def fake_asgi_connection(app: ASGIApp, cookies: Dict[str, str]) -> ASGIConnectio
 
 class BaseTestClient(Generic[T]):
     __test__ = False
-    blocking_portal: "BlockingPortal"
+    blocking_portal: BlockingPortal
 
     __slots__ = (
         "app",
@@ -86,9 +78,9 @@ class BaseTestClient(Generic[T]):
         app: T,
         base_url: str = "http://testserver.local",
         backend: AnyIOBackend = "asyncio",
-        backend_options: Optional[Mapping[str, Any]] = None,
-        session_config: Optional["BaseBackendConfig"] = None,
-        cookies: Optional["CookieTypes"] = None,
+        backend_options: Mapping[str, Any] | None = None,
+        session_config: BaseBackendConfig | None = None,
+        cookies: CookieTypes | None = None,
     ):
         if "." not in base_url:
             warnings.warn(
@@ -96,7 +88,7 @@ class BaseTestClient(Generic[T]):
                 f"'{base_url}.local'",
                 UserWarning,
             )
-        self._session_backend: Optional["BaseSessionBackend"] = None
+        self._session_backend: BaseSessionBackend | None = None
         if session_config:
             self._session_backend = session_config._backend_class(config=session_config)
         self.app = app
@@ -106,7 +98,7 @@ class BaseTestClient(Generic[T]):
         self.cookies = cookies
 
     @property
-    def session_backend(self) -> "BaseSessionBackend":
+    def session_backend(self) -> BaseSessionBackend:
         if not self._session_backend:
             raise ImproperlyConfiguredException(
                 "Session has not been initialized for this TestClient instance. You can"
@@ -115,7 +107,7 @@ class BaseTestClient(Generic[T]):
         return self._session_backend
 
     @contextmanager
-    def portal(self) -> Generator["BlockingPortal", None, None]:
+    def portal(self) -> Generator[BlockingPortal, None, None]:
         """Get a BlockingPortal.
 
         Returns:
@@ -130,11 +122,11 @@ class BaseTestClient(Generic[T]):
                 yield portal
 
     @staticmethod
-    def _create_session_cookies(backend: "CookieBackend", data: Dict[str, Any]) -> Dict[str, str]:
+    def _create_session_cookies(backend: CookieBackend, data: dict[str, Any]) -> dict[str, str]:
         encoded_data = backend.dump_data(data=data)
         return {cookie.key: cast("str", cookie.value) for cookie in backend._create_session_cookies(encoded_data)}
 
-    async def _set_session_data(self, data: Dict[str, Any]) -> None:
+    async def _set_session_data(self, data: dict[str, Any]) -> None:
         mutable_headers = MutableScopeHeaders()
         await self.session_backend.store_in_message(
             scope_session=data,
@@ -150,7 +142,7 @@ class BaseTestClient(Generic[T]):
         cookies.extract_cookies(response)
         self.cookies.update(cookies)  # type: ignore[union-attr]
 
-    async def _get_session_data(self) -> Dict[str, Any]:
+    async def _get_session_data(self) -> dict[str, Any]:
         return await self.session_backend.load_from_connection(
             connection=fake_asgi_connection(
                 app=self.app,

@@ -1,7 +1,9 @@
-from typing import Any, List
+from __future__ import annotations
+
+from typing import Any
 
 
-def resolve_handlers(handlers: List[Any]) -> List[Any]:
+def resolve_handlers(handlers: list[Any]) -> list[Any]:
     """Convert list of string of handlers to the object of respective handler.
 
     Indexing the list performs the evaluation of the object.

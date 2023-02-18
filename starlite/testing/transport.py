@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from io import BytesIO
 from types import GeneratorType
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, Union, cast
 from urllib.parse import unquote
 
 from anyio import Event
@@ -29,17 +31,17 @@ T = TypeVar("T", bound=Union["AsyncTestClient", "TestClient"])
 
 
 class ConnectionUpgradeException(Exception):
-    def __init__(self, session: "WebSocketTestSession") -> None:
+    def __init__(self, session: WebSocketTestSession) -> None:
         self.session = session
 
 
 class SendReceiveContext(TypedDict):
     request_complete: bool
     response_complete: Event
-    raw_kwargs: Dict[str, Any]
+    raw_kwargs: dict[str, Any]
     response_started: bool
-    template: Optional[str]
-    context: Optional[Any]
+    template: str | None
+    context: Any | None
 
 
 class TestClientTransport(Generic[T]):
@@ -54,16 +56,16 @@ class TestClientTransport(Generic[T]):
         self.root_path = root_path
 
     @staticmethod
-    def create_receive(request: "Request", context: SendReceiveContext) -> "Receive":
+    def create_receive(request: Request, context: SendReceiveContext) -> Receive:
         async def receive() -> "ReceiveMessage":
             if context["request_complete"]:
                 if not context["response_complete"].is_set():
                     await context["response_complete"].wait()
-                disconnect_event: "HTTPDisconnectEvent" = {"type": "http.disconnect"}
+                disconnect_event: HTTPDisconnectEvent = {"type": "http.disconnect"}
                 return disconnect_event
 
             body = cast("Union[bytes, str, GeneratorType]", (request.read() or b""))
-            request_event: "HTTPRequestEvent" = {"type": "http.request", "body": b"", "more_body": False}
+            request_event: HTTPRequestEvent = {"type": "http.request", "body": b"", "more_body": False}
             if isinstance(body, GeneratorType):  # pragma: no cover
                 try:
                     chunk = body.send(None)
@@ -79,7 +81,7 @@ class TestClientTransport(Generic[T]):
         return receive
 
     @staticmethod
-    def create_send(request: "Request", context: SendReceiveContext) -> "Send":
+    def create_send(request: Request, context: SendReceiveContext) -> Send:
         async def send(message: "Message") -> None:
             if message["type"] == "http.response.start":
                 assert not context["response_started"], 'Received multiple "http.response.start" messages.'  # noqa
@@ -108,7 +110,7 @@ class TestClientTransport(Generic[T]):
 
         return send
 
-    def parse_request(self, request: "Request") -> Dict[str, Any]:
+    def parse_request(self, request: Request) -> dict[str, Any]:
         scheme = request.url.scheme
         netloc = unquote(request.url.netloc.decode(encoding="ascii"))
         path = request.url.path
@@ -139,7 +141,7 @@ class TestClientTransport(Generic[T]):
             "server": (host, port),
         }
 
-    def handle_request(self, request: "Request") -> "Response":
+    def handle_request(self, request: Request) -> Response:
         scope = self.parse_request(request=request)
         if scope["type"] == "websocket":
             scope.update(
@@ -150,7 +152,7 @@ class TestClientTransport(Generic[T]):
 
         scope.update(method=request.method, http_version="1.1", extensions={"http.response.template": {}})
 
-        raw_kwargs: Dict[str, Any] = {"stream": BytesIO()}
+        raw_kwargs: dict[str, Any] = {"stream": BytesIO()}
 
         try:  # pylint: disable=no-else-return
             with self.client.portal() as portal:

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, Type, Union
+from typing import TYPE_CHECKING, Any
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Empty
@@ -23,12 +25,12 @@ class Provide:
         "value",
     )
 
-    signature_model: "Type[SignatureModel]"
-    dependency: Union[Ref["AnyCallable"], Type]
+    signature_model: type[SignatureModel]
+    dependency: Ref[AnyCallable]
 
     def __init__(
         self,
-        dependency: Union["AnyCallable", Type],
+        dependency: AnyCallable | type,
         use_cache: bool = False,
         sync_to_thread: bool = False,
     ) -> None:

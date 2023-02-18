@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from contextlib import ExitStack
 from queue import Queue
-from typing import TYPE_CHECKING, Any, List, Literal, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 from anyio import sleep
 
@@ -20,33 +22,33 @@ if TYPE_CHECKING:
 
 
 class WebSocketTestSession:
-    exit_stack: "ExitStack"
+    exit_stack: ExitStack
 
     def __init__(
         self,
-        client: "TestClient",
-        scope: "WebSocketScope",
+        client: TestClient,
+        scope: WebSocketScope,
     ) -> None:
         self.client = client
         self.scope = scope
-        self.accepted_subprotocol: Optional[str] = None
-        self.receive_queue: "Queue[WebSocketReceiveMessage]" = Queue()
-        self.send_queue: "Queue[Union[WebSocketSendMessage, BaseException]]" = Queue()
-        self.extra_headers: Optional[List[Tuple[bytes, bytes]]] = None
+        self.accepted_subprotocol: str | None = None
+        self.receive_queue: Queue[WebSocketReceiveMessage] = Queue()
+        self.send_queue: Queue[WebSocketSendMessage | BaseException] = Queue()
+        self.extra_headers: list[tuple[bytes, bytes]] | None = None
 
-    def __enter__(self) -> "WebSocketTestSession":
+    def __enter__(self) -> WebSocketTestSession:
         self.exit_stack = ExitStack()
 
         portal = self.exit_stack.enter_context(self.client.portal())
 
         try:
             portal.start_task_soon(self.do_asgi_call)
-            event: "WebSocketConnectEvent" = {"type": "websocket.connect"}
+            event: WebSocketConnectEvent = {"type": "websocket.connect"}
             self.receive_queue.put(event)
 
             message = self.receive()
-            self.accepted_subprotocol = cast("Optional[str]", message.get("subprotocol", None))
-            self.extra_headers = cast("Optional[List[Tuple[bytes, bytes]]]", message.get("headers", None))
+            self.accepted_subprotocol = cast("str | None", message.get("subprotocol", None))
+            self.extra_headers = cast("list[tuple[bytes, bytes]] | None", message.get("headers", None))
             return self
         except Exception:
             self.exit_stack.close()
@@ -77,7 +79,7 @@ class WebSocketTestSession:
                     headers_list = list(self.scope["headers"])
                     headers_list.extend(headers)
                     self.scope["headers"] = headers_list
-                subprotocols = cast("Optional[str]", message.get("subprotocols"))
+                subprotocols = cast("str | None", message.get("subprotocols"))
                 if subprotocols:  # pragma: no cover
                     self.scope["subprotocols"].append(subprotocols)
             self.send_queue.put(message)
@@ -89,7 +91,7 @@ class WebSocketTestSession:
             self.send_queue.put(exc)
             raise
 
-    def send(self, data: Union[str, bytes], mode: Literal["text", "binary"] = "text", encoding: str = "utf-8") -> None:
+    def send(self, data: str | bytes, mode: Literal["text", "binary"] = "text", encoding: str = "utf-8") -> None:
         """Sends a "receive" event. This is the inverse of the ASGI send method.
 
         Args:
@@ -102,11 +104,11 @@ class WebSocketTestSession:
         """
         if mode == "text":
             data = data.decode(encoding) if isinstance(data, bytes) else data
-            text_event: "WebSocketReceiveMessage" = {"type": "websocket.receive", "text": data}  # type: ignore[assignment]
+            text_event: WebSocketReceiveMessage = {"type": "websocket.receive", "text": data}  # type: ignore[assignment]
             self.receive_queue.put(text_event)
         else:
             data = data if isinstance(data, bytes) else data.encode(encoding)
-            binary_event: "WebSocketReceiveMessage" = {"type": "websocket.receive", "bytes": data}  # type: ignore[assignment]
+            binary_event: WebSocketReceiveMessage = {"type": "websocket.receive", "bytes": data}  # type: ignore[assignment]
             self.receive_queue.put(binary_event)
 
     def send_text(self, data: str, encoding: str = "utf-8") -> None:
@@ -154,10 +156,10 @@ class WebSocketTestSession:
         Returns:
             None.
         """
-        event: "WebSocketDisconnectEvent" = {"type": "websocket.disconnect", "code": code}
+        event: WebSocketDisconnectEvent = {"type": "websocket.disconnect", "code": code}
         self.receive_queue.put(event)
 
-    def receive(self) -> "WebSocketSendMessage":
+    def receive(self) -> WebSocketSendMessage:
         """This is the base receive method.
 
         Notes:
