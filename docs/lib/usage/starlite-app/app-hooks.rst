@@ -4,7 +4,7 @@ ASGI Events & Application Hooks
 In the previous introductory section of the documentations we briefly mentioned about the root
 :class:`Starlite <starlite.app.Starlite>` class. This class accepts several `optional` arguments
 and a couple of those arguments can be configured to control the behavior of your Starlite application
-based on certain ASGI events. This section of the documentations take a more deeper dive into how you
+based on certain ASGI events. This section of the documentations take a deeper dive into how you
 can use those hooks to configure your application throughout its lifespan.
 
 Brief Overview of Application Hooks & Their Respective Events
