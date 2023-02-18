@@ -13,7 +13,7 @@ from starlite.utils.helpers import unwrap_partial
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
-    from starlite.handlers import HTTPRouteHandler
+    from starlite.handlers.http_handlers import HTTPRouteHandler
     from starlite.plugins.base import OpenAPISchemaPluginProtocol
     from starlite.routes import HTTPRoute
     from starlite.types.callable_types import OperationIDCreator

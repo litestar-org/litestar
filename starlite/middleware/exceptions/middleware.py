@@ -4,7 +4,7 @@ from starlite.connection import Request
 from starlite.datastructures import Headers
 from starlite.enums import ScopeType
 from starlite.exceptions import WebSocketException
-from starlite.middleware import CORSMiddleware
+from starlite.middleware.cors import CORSMiddleware
 from starlite.middleware.exceptions.debug_response import create_debug_response
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.utils import create_exception_response

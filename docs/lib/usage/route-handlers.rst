@@ -105,8 +105,8 @@ For example:
 .. code-block:: python
 
    from typing import Any, Dict
-   from starlite import State, Request, get
-   from starlite.datastructures import Headers
+   from starlite import Request, get
+   from starlite.datastructures import Headers, State
 
 
    @get(path="/")
@@ -161,7 +161,8 @@ above:
 
 .. code-block:: python
 
-   from starlite import HttpMethod, HTTPRouteHandler
+   from starlite import HttpMethod
+   from starlite.handlers.http_handlers import HTTPRouteHandler
 
 
    @HTTPRouteHandler(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
@@ -194,7 +195,8 @@ These are used exactly like ``route`` with the sole exception that you cannot co
 
 .. code-block:: python
 
-   from starlite import Partial, delete, get, patch, post, put, head
+   from starlite import delete, get, patch, post, put, head
+   from starlite.partial import Partia
    from pydantic import BaseModel
 
 
@@ -293,7 +295,8 @@ code is equivalent to the one above:
 
 .. code-block:: python
 
-   from starlite import WebSocket, WebsocketRouteHandler
+   from starlite import WebSocket
+   from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 
 
    @WebsocketRouteHandler(path="/socket")
@@ -348,9 +351,10 @@ the code below is equivalent to the one above:
 
 .. code-block:: python
 
-   from starlite.types import Scope, Receive, Send
+   from starlite import Response
+   from starlite.handlers.asgi_handlers import ASGIRouteHandler
    from starlite.status_codes import HTTP_400_BAD_REQUEST
-   from starlite import ASGIRouteHandler, Response
+   from starlite.types import Scope, Receive, Send
 
 
    @ASGIRouteHandler(path="/my-asgi-app")
@@ -399,7 +403,9 @@ it can be used to build a URL path for that handler:
 
 .. code-block:: python
 
-   from starlite import Starlite, Request, Redirect, NotFoundException, get
+   from starlite import Starlite, Request, get
+   from starlite.exceptions import NotFoundException
+   from starlite.response_containers import Redirect
 
 
    @get("/abc", name="one")

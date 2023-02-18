@@ -3,7 +3,8 @@ from typing import Optional, Type
 import pytest
 from pydantic.fields import FieldInfo
 
-from starlite import Parameter, get
+from starlite import get
+from starlite.params import Parameter
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 

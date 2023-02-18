@@ -17,7 +17,7 @@ from starlite.utils.csrf import (
 )
 
 if TYPE_CHECKING:
-    from starlite.config import CSRFConfig
+    from starlite.config.csrf import CSRFConfig
     from starlite.connection import Request
     from starlite.types import (
         ASGIApp,

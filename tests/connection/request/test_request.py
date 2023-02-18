@@ -11,7 +11,8 @@ import pytest
 
 from starlite import MediaType, get
 from starlite.config.static_files import StaticFilesConfig
-from starlite.connection import Request, empty_send
+from starlite.connection.base import empty_send
+from starlite.connection.request import Request
 from starlite.datastructures import Address
 from starlite.exceptions import InternalServerException, SerializationException
 from starlite.response import Response

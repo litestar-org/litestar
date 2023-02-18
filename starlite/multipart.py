@@ -29,8 +29,8 @@ from email.utils import decode_rfc2231
 from typing import Any, DefaultDict, Dict, List, Tuple
 from urllib.parse import unquote
 
+from starlite.datastructures.upload_file import UploadFile
 from starlite.exceptions import SerializationException, ValidationException
-from starlite.upload_file import UploadFile
 from starlite.utils.serialization import decode_json
 
 _token = r"([\w!#$%&'*+\-.^_`|~]+)"

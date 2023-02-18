@@ -29,6 +29,7 @@ class TemplateConfig(Generic[T], GenericModel):
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
+        copy_on_model_validation = "shallow"
 
     directory: Optional[Union[DirectoryPath, List[DirectoryPath]]] = None
     """A directory or list of directories from which to serve templates."""

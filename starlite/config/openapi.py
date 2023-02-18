@@ -15,6 +15,7 @@ from pydantic_openapi_schema.v3_1_0 import (
     Tag,
 )
 
+from starlite.config.base_config import BaseConfigModel
 from starlite.openapi.controller import OpenAPIController
 from starlite.openapi.utils import default_operation_id_creator
 from starlite.types.callable_types import OperationIDCreator
@@ -26,6 +27,9 @@ class OpenAPIConfig(BaseModel):
     To enable OpenAPI schema generation and serving, pass an instance of this class to the
     :class:`Starlite <starlite.app.Starlite>` constructor using the 'openapi_config' kwargs.
     """
+
+    class Config(BaseConfigModel):
+        pass
 
     create_examples: bool = False
     """Generate examples using the pydantic-factories library."""

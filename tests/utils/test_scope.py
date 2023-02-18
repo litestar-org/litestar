@@ -2,8 +2,9 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import BaseRouteHandler, Starlite
+from starlite import Starlite
 from starlite.constants import SCOPE_STATE_NAMESPACE
+from starlite.handlers.base import BaseRouteHandler
 from starlite.utils import (
     get_serializer_from_scope,
     get_starlite_scope_state,

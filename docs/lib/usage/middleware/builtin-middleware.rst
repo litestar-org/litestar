@@ -10,7 +10,8 @@ of :class:`CORSConfig <starlite.config.CORSConfig>` to the :class:`Starlite cons
 
 .. code-block:: python
 
-   from starlite import CORSConfig, Starlite
+   from starlite import Starlite
+   from starlite.config.cors import CORSConfig
 
    cors_config = CORSConfig(allow_origins=["https://www.example.com"])
 
@@ -49,7 +50,8 @@ To enable CSRF protection in a Starlite application simply pass an instance of
 
 .. code-block:: python
 
-    from starlite import Starlite, CSRFConfig
+    from starlite import Starlite
+    from starlite.config.csrf import CSRFConfig
 
     csrf_config = CSRFConfig(secret="my-secret")
 
@@ -86,7 +88,8 @@ list of domains to the :class:`Starlite constructor <starlite.app.Starlite>`:
 
 .. code-block:: python
 
-   from starlite import Starlite, AllowedHostsConfig
+   from starlite import Starlite
+   from starlite.config.allowed_hosts import AllowedHostsConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -129,7 +132,8 @@ You can configure the following additional gzip-specific values:
 
 .. code-block:: python
 
-   from starlite import Starlite, CompressionConfig
+   from starlite import Starlite
+   from starlite.config.compression import CompressionConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -162,7 +166,7 @@ You can configure the following additional brotli-specific values:
 .. code-block:: python
 
    from starlite import Starlite
-   from starlite.config import CompressionConfig
+   from starlite.config.compression import CompressionConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -206,7 +210,7 @@ configuration:
 
 .. code-block:: python
 
-   from starlite.middleware import LoggingMiddlewareConfig
+   from starlite.middleware.logging import LoggingMiddlewareConfig
 
    logging_middleware_config = LoggingMiddlewareConfig(
        request_cookies_to_obfuscate={"my-custom-session-key"},

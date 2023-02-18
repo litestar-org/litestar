@@ -1,10 +1,11 @@
 from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 from urllib.parse import urlencode
 
-from pydantic import BaseConfig, BaseModel
+from pydantic import BaseModel
 
 from starlite.cache.base import Cache, CacheBackendProtocol
 from starlite.cache.simple_cache_backend import SimpleCacheBackend
+from starlite.config.base_config import BaseConfigModel
 from starlite.types import CacheKeyBuilder
 
 if TYPE_CHECKING:
@@ -32,8 +33,8 @@ class CacheConfig(BaseModel):
     using the 'cache_config' key.
     """
 
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
+    class Config(BaseConfigModel):
+        pass
 
     backend: Optional[CacheBackendProtocol] = None
     """Instance conforming to :class:`CacheBackendProtocol <starlite.cache.CacheBackendProtocol>`, default.

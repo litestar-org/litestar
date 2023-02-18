@@ -22,7 +22,7 @@ following methods specified by the:
 .. code-block:: python
 
    from typing import Type, Any, Dict
-   from starlite import SerializationPluginProtocol
+   from starlite.plugins import SerializationPluginProtocol
    from pydantic import BaseModel
 
 

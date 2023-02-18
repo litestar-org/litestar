@@ -37,7 +37,7 @@ class ImmutableState(Mapping[str, Any]):
         Examples:
             .. code-block: python
 
-                from starlite import ImmutableState
+                from starlite.datastructures import ImmutableState
 
                 state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
                 state = ImmutableState(state_dict)
@@ -193,7 +193,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
         Examples:
         .. code-block: python
 
-            from starlite import State
+            from starlite.datastructures import State
 
             state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
             state = State(state_dict)

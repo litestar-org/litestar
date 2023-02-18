@@ -6,7 +6,8 @@ the application:
 
 .. code-block:: python
 
-   from starlite import Controller, Router, Starlite, Provide, get
+   from starlite import Controller, Router, Starlite, get
+   from starlite.di import Provide
 
 
    def bool_fn() -> bool:
@@ -106,7 +107,7 @@ returned:
 
 .. code-block:: python
 
-   from starlite import TestClient
+   from starlite.testing import TestClient
    from dependencies import app, CONNECTION
 
    with TestClient(app=app) as client:
@@ -128,7 +129,7 @@ and committing otherwise.
 
 .. code-block:: python
 
-   from starlite import TestClient
+   from starlite.testing import TestClient
    from dependencies import STATE, app
 
    with TestClient(app=app) as client:
@@ -176,8 +177,9 @@ can :ref:`inject into route handlers <lib/usage/route-handlers:handler function 
 
 .. code-block:: python
 
-   from starlite import Controller, Provide, patch
-   from starlite.types.partial import Partial
+   from starlite import Controller, patch
+   from starlite.di import Provide
+   from starlite.partial import Partial
    from pydantic import BaseModel, UUID4
 
 
@@ -214,7 +216,8 @@ very simple:
 
 .. code-block:: python
 
-   from starlite import Controller, Provide, get
+   from starlite import Controller, get
+   from starlite.di import Provide
 
 
    def bool_fn() -> bool:
@@ -250,8 +253,9 @@ To inject a callable you must wrap it in ``Provide``:
 
 .. code-block:: python
 
-   from starlite import Provide, get
    from random import randint
+   from starlite import get
+   from starlite.di import Provide
 
 
    def my_dependency() -> int:
@@ -286,7 +290,8 @@ You can inject dependencies into other dependencies - exactly like you would int
 
 .. code-block:: python
 
-   from starlite import Starlite, Provide, get
+   from starlite import Starlite, get
+   from starlite.di import Provide
    from random import randint
 
 

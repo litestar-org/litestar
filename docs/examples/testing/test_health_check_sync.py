@@ -1,5 +1,6 @@
 import pytest
-from starlite import Starlite, MediaType, get
+
+from starlite import MediaType, Starlite, get
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient
 
@@ -12,7 +13,7 @@ def health_check() -> str:
 app = Starlite(route_handlers=[health_check])
 
 
-def test_health_check():
+def test_health_check() -> None:
     with TestClient(app=app) as client:
         response = client.get("/health-check")
         assert response.status_code == HTTP_200_OK

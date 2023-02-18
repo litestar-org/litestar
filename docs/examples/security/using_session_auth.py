@@ -3,17 +3,12 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr, SecretStr
 
-from starlite import (
-    ASGIConnection,
-    Request,
-    Starlite,
-    get,
-    post,
-)
+from starlite import Request, Starlite, get, post
 from starlite.config.openapi import OpenAPIConfig
+from starlite.connection import ASGIConnection
+from starlite.exceptions import NotAuthorizedException
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
 from starlite.security.session_auth import SessionAuth
-from starlite.exceptions import NotAuthorizedException
 
 
 # Let's assume we have a User model that is a pydantic model.
@@ -50,7 +45,9 @@ class UserLoginPayload(BaseModel):
 # that holds a user id, for example: { "id": "abcd123" }
 #
 # Note: The callable can be either sync or async - both will work.
-async def retrieve_user_handler(session: Dict[str, Any], connection: ASGIConnection) -> Optional[User]:
+async def retrieve_user_handler(
+    session: Dict[str, Any], connection: "ASGIConnection[Any, Any, Any, Any]"
+) -> Optional[User]:
     # we retrieve the user instance based on session data
     value = await connection.cache.get(session.get("user_id", ""))
     if value:
@@ -59,7 +56,7 @@ async def retrieve_user_handler(session: Dict[str, Any], connection: ASGIConnect
 
 
 @post("/login")
-async def login(data: UserLoginPayload, request: Request) -> User:
+async def login(data: UserLoginPayload, request: "Request[Any, Any, Any]") -> User:
     # we received log-in data via post.
     # our login handler should retrieve from persistence (a db etc.)
     # the user data and verify that the login details
@@ -85,7 +82,7 @@ async def login(data: UserLoginPayload, request: Request) -> User:
 
 
 @post("/signup")
-async def signup(data: UserCreatePayload, request: Request) -> User:
+async def signup(data: UserCreatePayload, request: Request[Any, Any, Any]) -> User:
     # this is similar to the login handler, except here we should
     # insert into persistence - after doing whatever extra
     # validation we might require. We will assume that this is done,

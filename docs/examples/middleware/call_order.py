@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, List, Type
 
-from starlite import Controller, Router, Starlite, State, get
+from starlite import Controller, Router, Starlite, get
+from starlite.datastructures import State
 from starlite.middleware import MiddlewareProtocol
 
 if TYPE_CHECKING:
@@ -30,7 +31,7 @@ class MyController(Controller):
         middleware=[create_test_middleware(6), create_test_middleware(7)],
     )
     async def my_handler(self, state: State) -> List[int]:
-        return state["middleware_calls"]  # type: ignore
+        return state["middleware_calls"]
 
 
 router = Router(

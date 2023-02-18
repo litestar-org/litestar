@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 import pytest
 
 from starlite import Request, get
-from starlite.config import LoggingConfig
 from starlite.config.logging import (
+    LoggingConfig,
     default_handlers,
     default_picologging_handlers,
     get_default_handlers,

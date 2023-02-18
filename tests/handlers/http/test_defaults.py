@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 
 from starlite import HttpMethod
-from starlite.handlers import HTTPRouteHandler
+from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 

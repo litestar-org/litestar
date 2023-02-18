@@ -1,6 +1,7 @@
 from examples.security.using_session_auth import app
-from starlite.testing import TestClient
+
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
+from starlite.testing import TestClient
 
 
 def test_using_session_auth_signup_flow() -> None:

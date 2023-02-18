@@ -1,15 +1,18 @@
-from typing import Any, List
+from typing import TYPE_CHECKING, Any, List
 
 import pytest
 from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
 from pydantic_openapi_schema.v3_1_0.security_scheme import SecurityScheme
 
-from starlite import Controller, HTTPRouteHandler, Router, Starlite, get
+from starlite import Controller, Router, Starlite, get
 from starlite.config.openapi import OpenAPIConfig
+
+if TYPE_CHECKING:
+    from starlite.handlers.http_handlers import HTTPRouteHandler
 
 
 @pytest.fixture()
-def public_route() -> HTTPRouteHandler:
+def public_route() -> "HTTPRouteHandler":
     @get("/handler")
     def _handler() -> Any:
         ...
@@ -18,7 +21,7 @@ def public_route() -> HTTPRouteHandler:
 
 
 @pytest.fixture()
-def protected_route() -> HTTPRouteHandler:
+def protected_route() -> "HTTPRouteHandler":
     @get("/protected", security=[{"BearerToken": []}])
     def _handler() -> Any:
         ...
@@ -26,7 +29,7 @@ def protected_route() -> HTTPRouteHandler:
     return _handler
 
 
-def test_schema_without_security_property(public_route: HTTPRouteHandler) -> None:
+def test_schema_without_security_property(public_route: "HTTPRouteHandler") -> None:
     app = Starlite(route_handlers=[public_route])
     schema = app.openapi_schema
 
@@ -34,7 +37,7 @@ def test_schema_without_security_property(public_route: HTTPRouteHandler) -> Non
     assert schema.components is None
 
 
-def test_schema_with_security_scheme_defined(public_route: HTTPRouteHandler) -> None:
+def test_schema_with_security_scheme_defined(public_route: "HTTPRouteHandler") -> None:
     app = Starlite(
         route_handlers=[public_route],
         openapi_config=OpenAPIConfig(
@@ -74,7 +77,7 @@ def test_schema_with_security_scheme_defined(public_route: HTTPRouteHandler) -> 
     assert schema_dict.get("security", []) == [{"BearerToken": []}]
 
 
-def test_schema_with_route_security_overridden(protected_route: HTTPRouteHandler) -> None:
+def test_schema_with_route_security_overridden(protected_route: "HTTPRouteHandler") -> None:
     app = Starlite(
         route_handlers=[protected_route],
         openapi_config=OpenAPIConfig(

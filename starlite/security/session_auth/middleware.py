@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, Any, Awaitable, Dict, List, Optional, Union
 
 from starlite.exceptions import NotAuthorizedException
-from starlite.middleware import ExceptionHandlerMiddleware
 from starlite.middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
 )
+from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.middleware.session.base import SessionMiddleware
 from starlite.types import Empty, Scopes
 from starlite.utils import AsyncCallable

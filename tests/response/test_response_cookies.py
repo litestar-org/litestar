@@ -1,6 +1,7 @@
 from uuid import uuid4
 
-from starlite import Controller, Cookie, HttpMethod, Response, Router, Starlite, get
+from starlite import Controller, HttpMethod, Response, Router, Starlite, get
+from starlite.datastructures import Cookie
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 

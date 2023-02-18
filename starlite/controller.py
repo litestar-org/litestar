@@ -3,7 +3,9 @@ from copy import copy
 from typing import TYPE_CHECKING, Any, DefaultDict, List, Mapping, Optional, Set, cast
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers import BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
+from starlite.handlers.base import BaseRouteHandler
+from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.utils import AsyncCallable, normalize_path
 from starlite.utils.helpers import unwrap_partial
 

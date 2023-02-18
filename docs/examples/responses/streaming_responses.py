@@ -2,7 +2,8 @@ from asyncio import sleep
 from datetime import datetime
 from typing import AsyncGenerator
 
-from starlite import Starlite, Stream, get
+from starlite import Starlite, get
+from starlite.response_containers import Stream
 from starlite.utils.serialization import encode_json
 
 

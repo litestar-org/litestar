@@ -4,8 +4,8 @@ from uuid import uuid4
 import pytest
 from pydantic import UUID4
 
-from starlite import Parameter, get
-from starlite.params import ParameterKwarg
+from starlite import get
+from starlite.params import Parameter, ParameterKwarg
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 

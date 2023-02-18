@@ -1,5 +1,5 @@
 from starlite import MediaType, Starlite, get
-from starlite.middleware import RateLimitConfig
+from starlite.middleware.rate_limit import RateLimitConfig
 
 rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=["/schema"])
 

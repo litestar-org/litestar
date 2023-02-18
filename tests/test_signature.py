@@ -4,9 +4,10 @@ from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Sequence
 import pytest
 from pydantic import BaseModel
 
-from starlite import Parameter, Provide, get
+from starlite import get
+from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
-from starlite.params import Dependency
+from starlite.params import Dependency, Parameter
 from starlite.signature import create_signature_model
 from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from starlite.testing import RequestFactory, TestClient, create_test_client
@@ -160,8 +161,10 @@ def test_signature_model_resolves_forward_ref_annotations(create_module: "Callab
     module = create_module(
         """
 from __future__ import annotations
+
 from pydantic import BaseModel
-from starlite import Provide, Starlite, get
+from starlite import Starlite, get
+from starlite.di import Provide
 
 class Test(BaseModel):
     hello: str

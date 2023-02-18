@@ -15,7 +15,7 @@ from typing import (
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 
-from starlite import ASGIConnection
+from starlite.connection import ASGIConnection
 from starlite.datastructures import MutableScopeHeaders
 from starlite.exceptions import (
     ImproperlyConfiguredException,

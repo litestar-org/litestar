@@ -3,23 +3,21 @@ from typing import TYPE_CHECKING, Any, Literal, Mapping, Optional, Sequence, Typ
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.controller import Controller
 from starlite.events import SimpleEventEmitter
-from starlite.plugins import PluginProtocol
+from starlite.plugins import PluginProtocol, SerializationPluginProtocol
 from starlite.testing.client import AsyncTestClient, TestClient
 from starlite.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
-    from starlite import Request, SerializationPluginProtocol, WebSocket
-    from starlite.config import (
-        AllowedHostsConfig,
-        BaseLoggingConfig,
-        CacheConfig,
-        CompressionConfig,
-        CORSConfig,
-        CSRFConfig,
-        OpenAPIConfig,
-        StaticFilesConfig,
-        TemplateConfig,
-    )
+    from starlite import Request, WebSocket
+    from starlite.config.allowed_hosts import AllowedHostsConfig
+    from starlite.config.cache import CacheConfig
+    from starlite.config.compression import CompressionConfig
+    from starlite.config.cors import CORSConfig
+    from starlite.config.csrf import CSRFConfig
+    from starlite.config.logging import BaseLoggingConfig
+    from starlite.config.openapi import OpenAPIConfig
+    from starlite.config.static_files import StaticFilesConfig
+    from starlite.config.template import TemplateConfig
     from starlite.events import BaseEventEmitterBackend, EventListener
     from starlite.middleware.session.base import BaseBackendConfig
     from starlite.types import (
@@ -97,7 +95,8 @@ def create_test_client(
     Examples:
         .. code-block: python
 
-            from starlite import get, create_test_client
+            from starlite import get
+            from starlite.testing import create_test_client
 
 
             @get("/some-path")
@@ -291,7 +290,8 @@ def create_async_test_client(
     Examples:
         .. code-block: python
 
-            from starlite import get, create_test_client
+            from starlite import get
+            from starlite.testing import create_test_client
 
 
             @get("/some-path")

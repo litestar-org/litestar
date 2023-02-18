@@ -1,4 +1,5 @@
-from starlite import ImmutableState, Starlite, get
+from starlite import Starlite, get
+from starlite.datastructures import ImmutableState
 
 
 @get("/")

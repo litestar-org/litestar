@@ -2,8 +2,10 @@ from typing import Any, Dict, List, Optional
 
 import pytest
 
-from starlite import Controller, Dependency, Provide, Starlite, get
+from starlite import Controller, Starlite, get
+from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.params import Dependency
 from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 

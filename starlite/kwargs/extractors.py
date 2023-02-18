@@ -15,6 +15,7 @@ from typing import (
     cast,
 )
 
+from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
 from starlite.multipart import parse_multipart_form
@@ -25,7 +26,6 @@ from starlite.parsers import (
     parse_url_encoded_form_data,
 )
 from starlite.types import Empty
-from starlite.upload_file import UploadFile
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection, Request

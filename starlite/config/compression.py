@@ -2,6 +2,7 @@ from typing import List, Literal, Optional, Type, Union
 
 from pydantic import BaseModel, conint
 
+from starlite.config.base_config import BaseConfigModel
 from starlite.middleware.compression import CompressionMiddleware
 
 
@@ -11,6 +12,9 @@ class CompressionConfig(BaseModel):
     To enable response compression, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor
     using the 'compression_config' key.
     """
+
+    class Config(BaseConfigModel):
+        pass
 
     backend: Literal["gzip", "brotli"]
     """Literal of "gzip" or "brotli"."""

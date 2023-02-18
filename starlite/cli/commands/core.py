@@ -3,8 +3,9 @@ import inspect
 from click import command, option
 from rich.tree import Tree
 
-from starlite import HTTPRoute, Starlite, WebSocketRoute
+from starlite import Starlite
 from starlite.cli.utils import StarliteCLIException, StarliteEnv, console, show_app_info
+from starlite.routes import HTTPRoute, WebSocketRoute
 from starlite.utils.helpers import unwrap_partial
 
 

@@ -3,8 +3,9 @@ from typing import Type
 
 import pytest
 
-from starlite import HTTPRouteHandler, Router, Starlite, delete, get, patch, post, put
+from starlite import Router, Starlite, delete, get, patch, post, put
 from starlite.exceptions import NoRouteMatchFoundException
+from starlite.handlers.http_handlers import HTTPRouteHandler
 
 
 @pytest.mark.parametrize("decorator", [get, post, patch, put, delete])

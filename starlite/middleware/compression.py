@@ -10,7 +10,7 @@ from starlite.middleware.base import AbstractMiddleware
 from starlite.utils import Ref, set_starlite_scope_state
 
 if TYPE_CHECKING:
-    from starlite.config import CompressionConfig
+    from starlite.config.compression import CompressionConfig
     from starlite.types import (
         ASGIApp,
         HTTPResponseStartEvent,

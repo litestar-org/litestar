@@ -4,7 +4,8 @@ from pathlib import Path
 import pytest
 from pydantic import BaseModel
 
-from starlite import Cookie, MediaType, Response, ResponseHeader, Starlite, get
+from starlite import MediaType, Response, Starlite, get
+from starlite.datastructures import Cookie, ResponseHeader
 from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,

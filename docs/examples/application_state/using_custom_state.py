@@ -1,4 +1,5 @@
-from starlite import Starlite, State, get
+from starlite import Starlite, get
+from starlite.datastructures import State
 
 
 class MyState(State):

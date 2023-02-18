@@ -19,8 +19,11 @@ from typing_extensions import Self, TypedDict
 
 from starlite.asgi import ASGIRouter
 from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
-from starlite.config import AllowedHostsConfig, AppConfig, CacheConfig, OpenAPIConfig
+from starlite.config.allowed_hosts import AllowedHostsConfig
+from starlite.config.app import AppConfig
+from starlite.config.cache import CacheConfig
 from starlite.config.logging import LoggingConfig, get_logger_placeholder
+from starlite.config.openapi import OpenAPIConfig
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
@@ -53,14 +56,12 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
-    from starlite.config import (
-        BaseLoggingConfig,
-        CompressionConfig,
-        CORSConfig,
-        CSRFConfig,
-        StaticFilesConfig,
-        TemplateConfig,
-    )
+    from starlite.config.compression import CompressionConfig
+    from starlite.config.cors import CORSConfig
+    from starlite.config.csrf import CSRFConfig
+    from starlite.config.logging import BaseLoggingConfig
+    from starlite.config.static_files import StaticFilesConfig
+    from starlite.config.template import TemplateConfig
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler
@@ -453,7 +454,7 @@ class Starlite(Router):
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
     @classmethod
-    def from_config(cls, config: AppConfig) -> Self:
+    def from_config(cls, config: "AppConfig") -> Self:
         """Initialize a ``Starlite`` application from a configuration instance.
 
         Args:
@@ -621,7 +622,8 @@ class Starlite(Router):
         Examples:
             .. code-block: python
 
-                from starlite import Starlite, StaticFilesConfig
+                from starlite import Starlite
+                from starlite.config.static_files import StaticFilesConfig
 
                 app = Starlite(
                     static_files_config=[StaticFilesConfig(directories=["css"], path="/static/css")]

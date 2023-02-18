@@ -16,7 +16,7 @@ from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from starlite.datastructures.cookie import Cookie
-    from starlite.handlers import HTTPRouteHandler
+    from starlite.handlers.http_handlers import HTTPRouteHandler
 
 
 def _create_default_route_handler() -> "HTTPRouteHandler":
@@ -54,7 +54,9 @@ class RequestFactory:
         Examples:
             .. code-block: python
 
-                from starlite import RequestEncodingType, Starlite, RequestFactory
+                from starlite import Starlite
+                from starlite.enums import RequestEncodingType
+                from starlite.testing import RequestFactory
 
                 from tests import PersonFactory
 

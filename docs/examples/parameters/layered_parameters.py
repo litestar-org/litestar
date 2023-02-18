@@ -1,6 +1,7 @@
 from typing import Dict, Union
 
-from starlite import Controller, Parameter, Router, Starlite, get
+from starlite import Controller, Router, Starlite, get
+from starlite.params import Parameter
 
 
 class MyController(Controller):

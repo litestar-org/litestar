@@ -9,14 +9,13 @@ from starlite import (
     HttpMethod,
     MediaType,
     Request,
-    State,
     delete,
     get,
     patch,
     post,
     put,
 )
-from starlite.datastructures.state import ImmutableState
+from starlite.datastructures.state import ImmutableState, State
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,

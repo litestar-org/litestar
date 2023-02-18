@@ -1,11 +1,11 @@
 from examples.parameters.header_and_cookie_parameters import app
-from starlite.testing import TestClient
 
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
 )
+from starlite.testing import TestClient
 
 
 def test_header_and_cookie_parameters() -> None:

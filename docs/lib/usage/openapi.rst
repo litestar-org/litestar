@@ -34,7 +34,8 @@ using the ``openapi_config`` kwarg:
 
 .. code-block:: python
 
-   from starlite import Starlite, OpenAPIConfig
+   from starlite import Starlite
+   from starlite.config.openapi import OpenAPIConfig
 
    app = Starlite(
        route_handlers=[...], openapi_config=OpenAPIConfig(title="My API", version="1.0.0")
@@ -122,7 +123,8 @@ You can also modify the generated schema for the route handler using the followi
 
    from pydantic import BaseModel
 
-   from starlite import ResponseSpec, get
+   from starlite import get
+   from starlite.openapi.datastructures import ResponseSpec
 
 
    class Item(BaseModel):
@@ -150,7 +152,8 @@ app instance itself. For example:
 
 .. code-block:: python
 
-   from starlite import Starlite, OpenAPIConfig, get
+   from starlite import Starlite, get
+   from starlite.config.openapi import OpenAPIConfig
    from pydantic_openapi_schema.v3_1_0 import Components, SecurityScheme, Tag
 
 
@@ -228,7 +231,9 @@ For example, lets say we wanted to change the base path of the OpenAPI related e
 
 .. code-block:: python
 
-   from starlite import Starlite, OpenAPIController, OpenAPIConfig
+   from starlite import Starlite
+   from starlite.config.openapi import OpenAPIConfig
+   from starlite.openapi import OpenAPIController
 
 
    class MyOpenAPIController(OpenAPIController):
@@ -252,7 +257,9 @@ You can change the default download paths for JS and CSS bundles as well as goog
 
 .. code-block:: python
 
-   from starlite import Starlite, OpenAPIController, OpenAPIConfig
+   from starlite import Starlite
+   from starlite.config.openapi import OpenAPIConfig
+   from starlite.openapi import OpenAPIController
 
 
    class MyOpenAPIController(OpenAPIController):
