@@ -1,26 +1,19 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Protocol,
-    TypeVar,
-    Union,
-    runtime_checkable,
-)
+from __future__ import annotations
 
-from pydantic import DirectoryPath, validate_arguments
+from typing import TYPE_CHECKING, Any, Callable, Protocol, TypeVar, runtime_checkable
+
 from typing_extensions import TypedDict
 
 if TYPE_CHECKING:
+    from pydantic import DirectoryPath
+
     from starlite.connection import Request
 
 
 class TemplateContext(TypedDict):
     """Dictionary representing a template context."""
 
-    request: "Request[Any, Any, Any]"
+    request: Request[Any, Any, Any]
     csrf_input: str
 
 
@@ -100,8 +93,7 @@ T_co = TypeVar("T_co", bound=TemplateProtocol, covariant=True)
 class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
     """Protocol for template engines."""
 
-    @validate_arguments
-    def __init__(self, directory: Union[DirectoryPath, List[DirectoryPath]]) -> None:
+    def __init__(self, directory: DirectoryPath | list[DirectoryPath]) -> None:
         """Initialize the template engine with a directory.
 
         Args:
@@ -122,7 +114,7 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
         """
         ...
 
-    def register_template_callable(self, key: str, template_callable: Callable[[Dict[str, Any]], Any]) -> None:
+    def register_template_callable(self, key: str, template_callable: Callable[[dict[str, Any]], Any]) -> None:
         """Register a callable on the template engine.
 
         Args:

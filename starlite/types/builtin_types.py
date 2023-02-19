@@ -1,27 +1,25 @@
-# nopycln: file
+import sys
+from typing import TYPE_CHECKING, Type, Union
 
-from typing import TYPE_CHECKING
+from typing_extensions import TypeAlias  # noqa: TC002
 
 if TYPE_CHECKING:
-    from typing import Type, Union
-
-    from typing_extensions import TypeAlias, TypedDict
+    from typing_extensions import _TypedDictMeta  # type: ignore
 
     from starlite.types.protocols import DataclassProtocol
 
 
-__all__ = [
-    "DataclassClass",
-    "DataclassClassOrInstance",
-    "NoneType",
-    "TypedDictClass",
-]
+if sys.version_info >= (3, 10):
+    from types import NoneType as _NoneType
+    from types import UnionType
 
-DataclassClass: "TypeAlias" = "Type[DataclassProtocol]"
+    NoneType = _NoneType  # type: ignore[valid-type]
 
-DataclassClassOrInstance: "TypeAlias" = "Union[DataclassClass, DataclassProtocol]"
+    UNION_TYPES = {UnionType, Union}
+else:  # pragma: no cover
+    UNION_TYPES = {Union}
+    NoneType = type(None)
 
-NoneType = type(None)
-
-# mypy issue: https://github.com/python/mypy/issues/11030
-TypedDictClass: "TypeAlias" = "Type[TypedDict]"  # type:ignore[valid-type]
+DataclassClass: TypeAlias = "Type[DataclassProtocol]"
+DataclassClassOrInstance: TypeAlias = "Union[DataclassClass, DataclassProtocol]"
+TypedDictClass: TypeAlias = "Type[_TypedDictMeta]"

@@ -1,16 +1,21 @@
-from inspect import Signature
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+from __future__ import annotations
 
-from pydantic import validate_arguments
+from inspect import Signature
+from typing import TYPE_CHECKING, Any
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import Dependencies, ExceptionHandler, Guard, Middleware
 from starlite.utils import Ref, is_async_callable
 
 if TYPE_CHECKING:
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
-    from starlite.types import AsyncAnyCallable
+    from starlite.types import (
+        AsyncAnyCallable,
+        Dependencies,
+        ExceptionHandler,
+        Guard,
+        Middleware,
+    )
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
@@ -19,17 +24,16 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
     Use this decorator to decorate websocket handler functions.
     """
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
+        path: str | None | list[str] | None = None,
         *,
-        dependencies: Optional[Dependencies] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        guards: Optional[List[Guard]] = None,
-        middleware: Optional[List[Middleware]] = None,
-        name: Optional[str] = None,
-        opt: Optional[Dict[str, Any]] = None,
+        dependencies: Dependencies | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        guards: list[Guard] | None = None,
+        middleware: list[Middleware] | None = None,
+        name: str | None = None,
+        opt: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``WebsocketRouteHandler``
@@ -57,7 +61,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             **kwargs,
         )
 
-    def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":
+    def __call__(self, fn: AsyncAnyCallable) -> WebsocketRouteHandler:
         """Replace a function with itself."""
         self.fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
         self.signature = Signature.from_callable(fn)
