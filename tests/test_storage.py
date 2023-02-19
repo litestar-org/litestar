@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import math
 import shutil
+from datetime import timedelta
 from typing import TYPE_CHECKING
 from unittest.mock import Mock, patch
 
@@ -26,6 +28,8 @@ def mock_redis() -> None:
 async def test_get(storage_backend: Storage) -> None:
     key = "key"
     value = b"value"
+    assert await storage_backend.get("foo") is None
+
     await storage_backend.set(key, value, 60)
 
     stored_value = await storage_backend.get(key)
@@ -54,10 +58,11 @@ async def test_expires(storage_backend: Storage) -> None:
     assert stored_value is None
 
 
-async def test_get_and_renew(storage_backend: Storage) -> None:
+@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
+async def test_get_and_renew(storage_backend: Storage, renew_for: int | timedelta) -> None:
     expiry = 0.01 if not isinstance(storage_backend, RedisStorage) else 1  # redis doesn't allow fractional values
     await storage_backend.set("foo", b"bar", expires_in=expiry)  # type: ignore[arg-type]
-    await storage_backend.get("foo", renew_for=10)
+    await storage_backend.get("foo", renew_for=renew_for)
     await anyio.sleep(expiry + 0.01)
 
     stored_value = await storage_backend.get("foo")
@@ -93,6 +98,28 @@ async def test_expires_in_not_set(storage_backend: Storage) -> None:
 
     await storage_backend.set("foo", b"bar")
     assert await storage_backend.expires_in("foo") == -1
+
+
+async def test_delete_all(storage_backend: Storage) -> None:
+    keys = []
+    for i in range(10):
+        key = f"key-{i}"
+        keys.append(key)
+        await storage_backend.set(key, b"value", expires_in=10 if i % 2 else None)
+
+    await storage_backend.delete_all()
+
+    assert not any([await storage_backend.get(key) for key in keys])
+
+
+async def test_expires_in(storage_backend: Storage) -> None:
+    assert await storage_backend.expires_in("foo") is None
+
+    await storage_backend.set("foo", "bar")
+    assert await storage_backend.expires_in("foo") == -1
+
+    await storage_backend.set("foo", "bar", expires_in=10)
+    assert math.ceil(await storage_backend.expires_in("foo") / 10) * 10 == 10  # type: ignore[operator]
 
 
 @patch("starlite.storage.redis.Redis")
