@@ -152,5 +152,7 @@ def test_operation_id_validation() -> None:
     def handler_2() -> None:
         ...
 
+    app = Starlite(route_handlers=[handler_1, handler_2])
+
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[handler_1, handler_2])
+        app.openapi_schema

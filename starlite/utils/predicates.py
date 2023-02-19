@@ -167,14 +167,14 @@ def is_any(annotation: Any) -> TypeGuard[Any]:
     )
 
 
-def is_union(annotation: Any) -> TypeGuard[Any | Any]:
+def is_union(annotation: Any) -> bool:
     """Given a type annotation determine if the annotation infers an optional union.
 
     Args:
         annotation: A type.
 
     Returns:
-        A typeguard determining whether the type is :data:`Union typing.Union>`.
+        A boolean determining whether the type is :data:`Union typing.Union>`.
     """
     return _get_origin(annotation) in UNION_TYPES
 

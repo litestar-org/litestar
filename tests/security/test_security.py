@@ -146,9 +146,9 @@ def test_abstract_security_config_setting_openapi_components(
     security_config = SessionAuth[Any](
         retrieve_user_handler=retrieve_user_handler, exclude=["/"], session_backend_config=session_backend_config_memory
     )
-
     with create_test_client([], on_app_init=[security_config.on_app_init], openapi_config=openapi_config) as client:
         if openapi_config is not None:
+            assert client.app.openapi_schema
             assert client.app.openapi_config
             assert client.app.openapi_config.components
             assert client.app.openapi_config.components.dict(exclude_none=True) == expected
