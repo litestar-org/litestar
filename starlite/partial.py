@@ -2,7 +2,6 @@ from dataclasses import MISSING
 from dataclasses import Field as DataclassField
 from dataclasses import dataclass
 from inspect import getmro
-from types import NoneType
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -21,6 +20,7 @@ from pydantic.typing import is_classvar
 from typing_extensions import TypeAlias, TypedDict, get_args
 
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.types.builtin_types import NoneType
 from starlite.utils.predicates import (
     is_class_and_subclass,
     is_dataclass_class,

@@ -73,6 +73,8 @@ if TYPE_CHECKING:
 
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
 
+HTTP_METHOD_NAMES = {m.value for m in HttpMethod}
+
 
 @lru_cache(1024)
 def _filter_cookies(local_cookies: frozenset[Cookie], layered_cookies: frozenset[Cookie]) -> list[Cookie]:
@@ -247,9 +249,12 @@ def _normalize_http_method(http_methods: HttpMethod | Method | Sequence[HttpMeth
 
     for method in http_methods:
         if isinstance(method, HttpMethod):
-            output.add(method.value.upper())
+            method_name = method.value.upper()
         else:
-            output.add(method.upper())
+            method_name = method.upper()
+        if method_name not in HTTP_METHOD_NAMES:
+            raise ValidationException(f"Invalid HTTP method: {method_name}")
+        output.add(method_name)
 
     return cast("set[Method]", output)
 

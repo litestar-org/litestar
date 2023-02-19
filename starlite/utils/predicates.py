@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import sys
 from collections import defaultdict, deque
 from collections.abc import Iterable as CollectionsIterable
 from dataclasses import is_dataclass
 from inspect import isclass
-from types import NoneType
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -22,7 +20,6 @@ from typing import (
     Set,
     Tuple,
     TypeVar,
-    Union,
 )
 
 from typing_extensions import (
@@ -36,12 +33,7 @@ from typing_extensions import (
     is_typeddict,
 )
 
-if sys.version_info >= (3, 10):
-    from types import UnionType
-
-    UNION_TYPES = {UnionType, Union}
-else:  # pragma: no cover
-    UNION_TYPES = {Union}
+from starlite.types.builtin_types import UNION_TYPES, NoneType
 
 if TYPE_CHECKING:
     from starlite.types.builtin_types import (

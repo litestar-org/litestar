@@ -1,4 +1,5 @@
 from pathlib import Path
+from sys import version_info
 from typing import Dict
 
 import pytest
@@ -22,8 +23,10 @@ def test_route_handler_validation_http_method() -> None:
     for value in (*list(HttpMethod), *list(map(lambda x: x.upper(), list(HttpMethod)))):  # noqa: C417
         assert route(http_method=value)  # type: ignore
 
+    expected_validation_exception = ValidationException if version_info < (3, 9) else ValidationError
+
     # raises for invalid values
-    with pytest.raises(ValidationError):
+    with pytest.raises(expected_validation_exception):
         HTTPRouteHandler(http_method="deleze")  # type: ignore
 
     # also when passing an empty list
@@ -31,10 +34,11 @@ def test_route_handler_validation_http_method() -> None:
         route(http_method=[], status_code=HTTP_200_OK)
 
     # also when passing malformed tokens
-    with pytest.raises(ValidationError):
+    with pytest.raises(expected_validation_exception):
         route(http_method=[HttpMethod.GET, "poft"], status_code=HTTP_200_OK)  # type: ignore
 
 
+@pytest.mark.skipif(version_info < (3, 9), reason="validate_arguments disabled below 3.9")
 def test_route_handler_validation_response_class() -> None:
     # doesn't raise when subclass of starlette response is passed
     class SpecialResponse(Response):
