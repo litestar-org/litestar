@@ -37,4 +37,6 @@ def validate_arguments(fn: C) -> C:
 
     from pydantic import validate_arguments as pydantic_validate_arguments
 
-    return pydantic_validate_arguments(config={"arbitrary_types_allowed": True, "copy_on_model_validation": "none"})(fn)
+    return pydantic_validate_arguments(
+        config={"arbitrary_types_allowed": True, "copy_on_model_validation": "none", "globalns": {"Callable": Callable}}
+    )(fn)

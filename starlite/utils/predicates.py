@@ -5,6 +5,7 @@ from collections import defaultdict, deque
 from collections.abc import Iterable as CollectionsIterable
 from dataclasses import is_dataclass
 from inspect import isclass
+from types import NoneType
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -34,8 +35,6 @@ from typing_extensions import (
     get_origin,
     is_typeddict,
 )
-
-from starlite.types.builtin_types import NoneType
 
 if sys.version_info >= (3, 10):
     from types import UnionType

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import deque
+from types import NoneType
 from typing import (
     Any,
     Deque,
@@ -17,7 +18,6 @@ from typing import (
 
 from typing_extensions import TypeGuard, get_args
 
-from starlite.types.builtin_types import NoneType
 from starlite.utils.predicates import is_class_and_subclass
 
 T = TypeVar("T")

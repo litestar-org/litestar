@@ -2,6 +2,7 @@ from dataclasses import MISSING
 from dataclasses import Field as DataclassField
 from dataclasses import dataclass
 from inspect import getmro
+from types import NoneType
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -11,15 +12,15 @@ from typing import (
     Tuple,
     Type,
     TypeVar,
+    Union,
     get_type_hints,
 )
 
 from pydantic import BaseModel, create_model
 from pydantic.typing import is_classvar
-from typing_extensions import TypedDict, get_args
+from typing_extensions import TypeAlias, TypedDict, get_args
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.types.builtin_types import NoneType
 from starlite.utils.predicates import (
     is_class_and_subclass,
     is_dataclass_class,
@@ -33,13 +34,11 @@ except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 if TYPE_CHECKING:
-    from typing import TypeAlias, Union  # noqa: F401  # nopycln: import
-
     from starlite.types.builtin_types import DataclassClass, TypedDictClass
 
 T = TypeVar("T")
 
-SupportedTypes: "TypeAlias" = "Union[DataclassClass, Type[BaseModel], TypedDictClass]"
+SupportedTypes: TypeAlias = "Union[DataclassClass, Type[BaseModel], TypedDictClass]"
 """Types that are supported by :class:`Partial <starlite.types.partial.Partial>`"""
 
 

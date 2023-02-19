@@ -1,4 +1,5 @@
 import dataclasses
+from types import NoneType
 from typing import Any, Optional, get_type_hints
 
 import pytest
@@ -7,7 +8,6 @@ from typing_extensions import TypedDict, get_args
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.partial import Partial
-from starlite.types.builtin_types import NoneType
 from tests import (
     Person,
     PydanticDataClassPerson,
