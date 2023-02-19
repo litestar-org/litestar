@@ -17,6 +17,7 @@ repos:
     hooks:
       - id: pyupgrade
         args: ["--py38-plus"]
+        exclude: "starlite/storage/base.py"
   - repo: https://github.com/hadialqattan/pycln
     rev: v2.1.3
     hooks:
@@ -91,7 +92,6 @@ repos:
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
-            aiomcache,
             click,
             fast-query-parsers,
             fsspec,
@@ -123,7 +123,6 @@ repos:
         exclude: "test_apps|tools|docs"
         additional_dependencies:
           [
-            aiomcache,
             beanie,
             click,
             fast-query-parsers,
@@ -154,6 +153,7 @@ repos:
             types-redis,
             uvicorn,
             jsbeautifier,
+            fakeredis,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.294
@@ -162,7 +162,6 @@ repos:
         exclude: "tools|piccolo*|examples/plugins/sqlalchemy_plugin*|using_offset_pagination_with_sqlalchemy"
         additional_dependencies:
           [
-            aiomcache,
             beanie,
             beautifulsoup4,
             brotli,
@@ -198,6 +197,8 @@ repos:
             structlog,
             uvicorn,
             jsbeautifier,
+            fakeredis,
+            pytest-lazy-fixture,
           ]
   - repo: local
     hooks:

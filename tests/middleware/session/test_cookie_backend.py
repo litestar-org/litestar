@@ -11,7 +11,7 @@ from pydantic import SecretBytes, ValidationError
 
 from starlite import Request, get, post
 from starlite.middleware.session import SessionMiddleware
-from starlite.middleware.session.cookie_backend import (
+from starlite.middleware.session.client_side import (
     AAD,
     CHUNK_SIZE,
     CookieBackend,

@@ -1,15 +1,20 @@
 from pathlib import Path
 
 from starlite import Starlite
-from starlite.middleware.session.file_backend import FileBackend, FileBackendConfig
+from starlite.middleware.session.server_side import ServerSideSessionConfig
+from starlite.storage.file import FileStorage
 
-session_config = FileBackendConfig(storage_path=Path("/path/to/session/storage"))
-session_backend = FileBackend(config=session_config)
+storage = FileStorage(path=Path(".sessions"))
+session_config = ServerSideSessionConfig(storage=storage)
 
 
 async def clear_expired_sessions() -> None:
     """Delete all expired sessions."""
-    await session_backend.delete_expired()
+    await storage.delete_expired()
 
 
-app = Starlite(middleware=[session_backend.config.middleware])
+app = Starlite(
+    middleware=[session_config.middleware],
+    on_startup=[clear_expired_sessions],
+    on_shutdown=[clear_expired_sessions],
+)

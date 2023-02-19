@@ -3,9 +3,10 @@ from urllib.parse import urlencode
 
 from pydantic import BaseModel
 
-from starlite.cache.base import Cache, CacheBackendProtocol
-from starlite.cache.simple_cache_backend import SimpleCacheBackend
+from starlite.cache import Cache
 from starlite.config.base_config import BaseConfigModel
+from starlite.storage.base import Storage
+from starlite.storage.memory import MemoryStorage
 from starlite.types import CacheKeyBuilder
 
 if TYPE_CHECKING:
@@ -36,10 +37,10 @@ class CacheConfig(BaseModel):
     class Config(BaseConfigModel):
         pass
 
-    backend: Optional[CacheBackendProtocol] = None
+    backend: Optional[Storage] = None
     """Instance conforming to :class:`CacheBackendProtocol <starlite.cache.CacheBackendProtocol>`, default.
 
-    :class:`SimpleCacheBackend() <starlite.cache.SimpleCacheBackend>`
+    :class:`MemoryStorage() <starlite.cache.MemoryStorage>`
     """
     expiration: int = 60
     """Default cache expiration in seconds."""
@@ -56,7 +57,7 @@ class CacheConfig(BaseModel):
             An instance of :class:`Cache <starlite.cache.base.Cache>`
         """
         return Cache(
-            backend=self.backend or SimpleCacheBackend(),
+            backend=self.backend or MemoryStorage(),
             default_expiration=self.expiration,
             cache_key_builder=self.cache_key_builder,
         )

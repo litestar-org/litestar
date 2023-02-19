@@ -113,7 +113,7 @@ class RateLimitMiddleware(AbstractMiddleware):
 
         Args:
             send: The ASGI send function.
-            cache_object: A CacheObject instance.
+            cache_object: A StorageObject instance.
 
         Returns:
             Send wrapper callable.
@@ -164,7 +164,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             key: Cache key.
 
         Returns:
-            An instance of CacheObject.
+            An instance of StorageObject.
         """
         duration = DURATION_VALUES[self.unit]
         now = int(time())
@@ -185,7 +185,7 @@ class RateLimitMiddleware(AbstractMiddleware):
 
         Args:
             key: Cache key.
-            cache_object: An instance of CacheObject.
+            cache_object: An instance of StorageObject.
 
         Returns:
             None

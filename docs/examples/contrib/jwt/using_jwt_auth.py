@@ -1,5 +1,5 @@
 from os import environ
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
@@ -19,6 +19,9 @@ class User(BaseModel):
     email: EmailStr
 
 
+MOCK_DB: Dict[str, User] = {}
+
+
 # JWTAuth requires a retrieve handler callable that receives the JWT token model and the ASGI connection
 # and returns the 'User' instance correlating to it.
 #
@@ -27,10 +30,7 @@ class User(BaseModel):
 # - The callable can be either sync or async - both will work.
 async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, Any, Any, Any]") -> Optional[User]:
     # logic here to retrieve the user instance
-    cached_value = await connection.cache.get(token.sub)
-    if cached_value:
-        return User(**cached_value)
-    return None
+    return MOCK_DB.get(token.sub)
 
 
 jwt_auth = JWTAuth[User](
@@ -44,8 +44,8 @@ jwt_auth = JWTAuth[User](
 
 # Given an instance of 'JWTAuth' we can create a login handler function:
 @post("/login")
-async def login_handler(request: "Request[Any, Any, Any]", data: User) -> Response[User]:
-    await request.cache.set(str(data.id), data.dict())
+async def login_handler(data: User) -> Response[User]:
+    MOCK_DB[str(data.id)] = data
     response = jwt_auth.login(identifier=str(data.id), response_body=data)
 
     # you can do whatever you want to update the response instance here

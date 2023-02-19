@@ -2,7 +2,7 @@ from os import urandom
 from typing import Dict
 
 from starlite import Request, Starlite, delete, get, post
-from starlite.middleware.session.cookie_backend import CookieBackendConfig
+from starlite.middleware.session.client_side import CookieBackendConfig
 
 # we initialize to config with a 16 byte key, i.e. 128 a bit key.
 # in real world usage we should inject the secret from the environment
