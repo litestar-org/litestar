@@ -22,6 +22,7 @@ from tests.cli.conftest import CreateAppFileFixture
 @pytest.mark.parametrize("host", ["0.0.0.0", None])
 @pytest.mark.parametrize("port", [8081, None])
 @pytest.mark.parametrize("reload", [True, False, None])
+@pytest.mark.parametrize("web_concurrency", [2, None])
 def test_run_command(
     mocker: MockerFixture,
     runner: CliRunner,
@@ -30,6 +31,7 @@ def test_run_command(
     reload: Optional[bool],
     port: Optional[int],
     host: Optional[str],
+    web_concurrency: Optional[int],
     custom_app_file: Optional[Path],
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
@@ -65,6 +67,14 @@ def test_run_command(
     else:
         host = "127.0.0.1"
 
+    if web_concurrency is not None:
+        if set_in_env:
+            monkeypatch.setenv("WEB_CONCURRENCY", str(web_concurrency))
+        else:
+            args.extend(["--web-concurrency", str(web_concurrency)])
+    else:
+        web_concurrency = 1
+
     path = create_app_file(custom_app_file or "asgi.py")
 
     result = runner.invoke(cli_command, args)
@@ -73,11 +83,7 @@ def test_run_command(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        f"{path.stem}:app",
-        reload=reload,
-        port=port,
-        host=host,
-        factory=False,
+        f"{path.stem}:app", reload=reload, port=port, host=host, factory=False, workers=web_concurrency
     )
     mock_show_app_info.assert_called_once()
 
@@ -108,11 +114,7 @@ def test_run_command_with_autodiscover_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        f"{path.stem}:{factory_name}",
-        reload=False,
-        port=8000,
-        host="127.0.0.1",
-        factory=True,
+        f"{path.stem}:{factory_name}", reload=False, port=8000, host="127.0.0.1", factory=True, workers=1
     )
 
 
@@ -129,11 +131,7 @@ def test_run_command_with_app_factory(
     assert result.exit_code == 0
 
     mock_uvicorn_run.assert_called_once_with(
-        f"{app_path}",
-        reload=False,
-        port=8000,
-        host="127.0.0.1",
-        factory=True,
+        f"{app_path}", reload=False, port=8000, host="127.0.0.1", factory=True, workers=1
     )
 
 
