@@ -1,11 +1,9 @@
 from pathlib import Path
-from sys import version_info
 from typing import Dict
 
 import pytest
-from pydantic import ValidationError
 
-from starlite import HttpMethod, MediaType, Response, WebSocket, delete, get, route
+from starlite import HttpMethod, MediaType, WebSocket, delete, get, route
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.response_containers import File, Redirect
@@ -23,10 +21,8 @@ def test_route_handler_validation_http_method() -> None:
     for value in (*list(HttpMethod), *list(map(lambda x: x.upper(), list(HttpMethod)))):  # noqa: C417
         assert route(http_method=value)  # type: ignore
 
-    expected_validation_exception = ValidationException if version_info < (3, 9) else ValidationError
-
     # raises for invalid values
-    with pytest.raises(expected_validation_exception):
+    with pytest.raises(ValidationException):
         HTTPRouteHandler(http_method="deleze")  # type: ignore
 
     # also when passing an empty list
@@ -34,21 +30,8 @@ def test_route_handler_validation_http_method() -> None:
         route(http_method=[], status_code=HTTP_200_OK)
 
     # also when passing malformed tokens
-    with pytest.raises(expected_validation_exception):
+    with pytest.raises(ValidationException):
         route(http_method=[HttpMethod.GET, "poft"], status_code=HTTP_200_OK)  # type: ignore
-
-
-@pytest.mark.skipif(version_info < (3, 9), reason="validate_arguments disabled below 3.9")
-def test_route_handler_validation_response_class() -> None:
-    # doesn't raise when subclass of starlette response is passed
-    class SpecialResponse(Response):
-        pass
-
-    assert HTTPRouteHandler(http_method=HttpMethod.GET, response_class=SpecialResponse)
-
-    # raises otherwise
-    with pytest.raises(ValidationError):
-        HTTPRouteHandler(http_method=HttpMethod.GET, response_class={})  # type: ignore
 
 
 async def test_function_validation(anyio_backend: str) -> None:

@@ -14,13 +14,10 @@ from typing import (
     cast,
 )
 
-from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 from typing_extensions import get_args
 
-from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures import CacheControlHeader, Cookie, ETag, ResponseHeader
-from starlite.di import Provide
 from starlite.dto import DTO
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
@@ -29,7 +26,6 @@ from starlite.exceptions import (
     ValidationException,
 )
 from starlite.handlers.base import BaseRouteHandler
-from starlite.openapi.datastructures import ResponseSpec
 from starlite.plugins.base import get_plugin_for_value
 from starlite.response import FileResponse, Response
 from starlite.response_containers import File, Redirect, ResponseContainer
@@ -55,21 +51,25 @@ from starlite.types import (
     ResponseType,
     TypeEncodersMap,
 )
-from starlite.types.composite_types import ResponseHeaders
 from starlite.utils import Ref, annotation_is_iterable_of_type, is_async_callable
-from starlite.utils.compat import validate_arguments
 from starlite.utils.predicates import is_class_and_subclass
 from starlite.utils.sync import AsyncCallable
 
 from .utils import narrow_response_cookies, narrow_response_headers
 
 if TYPE_CHECKING:
+    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
+
     from starlite.app import Starlite
+    from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
     from starlite.datastructures.headers import Header
+    from starlite.di import Provide
+    from starlite.openapi.datastructures import ResponseSpec
     from starlite.plugins import SerializationPluginProtocol
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
     from starlite.types import AnyCallable, AsyncAnyCallable
+    from starlite.types.composite_types import ResponseHeaders
 
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
 
@@ -318,7 +318,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     has_sync_callable: bool
 
-    @validate_arguments
     def __init__(
         self,
         path: str | Sequence[str] | None = None,
@@ -718,7 +717,6 @@ class get(HTTPRouteHandler):
     Use this decorator to decorate an HTTP handler for GET requests.
     """
 
-    @validate_arguments
     def __init__(
         self,
         path: str | None | list[str] | None = None,
@@ -870,7 +868,6 @@ class head(HTTPRouteHandler):
     Use this decorator to decorate an HTTP handler for HEAD requests.
     """
 
-    @validate_arguments
     def __init__(
         self,
         path: str | None | list[str] | None = None,
@@ -1040,7 +1037,6 @@ class post(HTTPRouteHandler):
     Use this decorator to decorate an HTTP handler for POST requests.
     """
 
-    @validate_arguments
     def __init__(
         self,
         path: str | None | list[str] | None = None,
@@ -1191,7 +1187,6 @@ class put(HTTPRouteHandler):
     Use this decorator to decorate an HTTP handler for PUT requests.
     """
 
-    @validate_arguments
     def __init__(
         self,
         path: str | None | list[str] | None = None,
@@ -1342,7 +1337,6 @@ class patch(HTTPRouteHandler):
     Use this decorator to decorate an HTTP handler for PATCH requests.
     """
 
-    @validate_arguments
     def __init__(
         self,
         path: str | None | list[str] | None = None,
@@ -1493,7 +1487,6 @@ class delete(HTTPRouteHandler):
     Use this decorator to decorate an HTTP handler for DELETE requests.
     """
 
-    @validate_arguments
     def __init__(
         self,
         path: str | None | list[str] | None = None,

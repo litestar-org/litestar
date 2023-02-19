@@ -4,11 +4,7 @@ from collections import defaultdict
 from copy import copy
 from typing import TYPE_CHECKING, Any, DefaultDict, Mapping, Sequence, cast
 
-from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-
 from starlite.controller import Controller
-from starlite.datastructures import CacheControlHeader, ETag
-from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi_handlers import ASGIRouteHandler
 from starlite.handlers.base import BaseRouteHandler
@@ -31,7 +27,6 @@ from starlite.types import (
     RouteHandlerType,
     TypeEncodersMap,
 )
-from starlite.types.composite_types import ResponseHeaders
 from starlite.utils import (
     find_index,
     is_class_and_subclass,
@@ -39,11 +34,15 @@ from starlite.utils import (
     normalize_path,
     unique,
 )
-from starlite.utils.compat import validate_arguments
 from starlite.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
+    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
+
+    from starlite.datastructures import CacheControlHeader, ETag
+    from starlite.di import Provide
     from starlite.routes import BaseRoute
+    from starlite.types.composite_types import ResponseHeaders
 
 
 class Router:
@@ -76,7 +75,6 @@ class Router:
         "type_encoders",
     )
 
-    @validate_arguments
     def __init__(
         self,
         path: str,

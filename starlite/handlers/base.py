@@ -17,7 +17,6 @@ from starlite.types import (
 )
 from starlite.types.composite_types import MaybePartial
 from starlite.utils import AsyncCallable, Ref, get_name, normalize_path
-from starlite.utils.compat import validate_arguments
 from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
@@ -61,7 +60,6 @@ class BaseRouteHandler(Generic[T]):
         "type_encoders",
     )
 
-    @validate_arguments
     def __init__(
         self,
         path: str | Sequence[str] | None = None,

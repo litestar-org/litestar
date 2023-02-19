@@ -5,13 +5,17 @@ from typing import TYPE_CHECKING, Any
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import Dependencies, ExceptionHandler, Guard, Middleware
 from starlite.utils import Ref, is_async_callable
-from starlite.utils.compat import validate_arguments
 
 if TYPE_CHECKING:
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
-    from starlite.types import AsyncAnyCallable
+    from starlite.types import (
+        AsyncAnyCallable,
+        Dependencies,
+        ExceptionHandler,
+        Guard,
+        Middleware,
+    )
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
@@ -20,7 +24,6 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
     Use this decorator to decorate websocket handler functions.
     """
 
-    @validate_arguments
     def __init__(
         self,
         path: str | None | list[str] | None = None,

@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, Protocol, TypeVar, runtime_checkable
 
-from pydantic import DirectoryPath
 from typing_extensions import TypedDict
 
-from starlite.utils.compat import validate_arguments
-
 if TYPE_CHECKING:
+    from pydantic import DirectoryPath
+
     from starlite.connection import Request
 
 
@@ -94,7 +93,6 @@ T_co = TypeVar("T_co", bound=TemplateProtocol, covariant=True)
 class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
     """Protocol for template engines."""
 
-    @validate_arguments
     def __init__(self, directory: DirectoryPath | list[DirectoryPath]) -> None:
         """Initialize the template engine with a directory.
 

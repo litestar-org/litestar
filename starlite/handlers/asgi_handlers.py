@@ -5,12 +5,11 @@ from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import AsyncAnyCallable, ExceptionHandlersMap, Guard
 from starlite.utils import Ref, is_async_callable
-from starlite.utils.compat import validate_arguments
 
 if TYPE_CHECKING:
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
+    from starlite.types import AsyncAnyCallable, ExceptionHandlersMap, Guard
 
 
 class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
@@ -21,7 +20,6 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
 
     __slots__ = ("is_mount", "is_static")
 
-    @validate_arguments
     def __init__(
         self,
         path: str | Sequence[str] | None = None,
