@@ -1,18 +1,8 @@
+from __future__ import annotations
+
 from collections import defaultdict
 from copy import copy
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    DefaultDict,
-    Dict,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Set,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, DefaultDict, Mapping, Sequence, cast
 
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
@@ -91,24 +81,24 @@ class Router:
         self,
         path: str,
         *,
-        after_request: Optional[AfterRequestHookHandler] = None,
-        after_response: Optional[AfterResponseHookHandler] = None,
-        before_request: Optional[BeforeRequestHookHandler] = None,
-        cache_control: Optional[CacheControlHeader] = None,
-        dependencies: Optional[Mapping[str, Provide]] = None,
-        etag: Optional[ETag] = None,
-        exception_handlers: Optional[ExceptionHandlersMap] = None,
-        guards: Optional[Sequence[Guard]] = None,
-        middleware: Optional[Sequence[Middleware]] = None,
-        opt: Optional[Mapping[str, Any]] = None,
-        parameters: Optional[ParametersMap] = None,
-        response_class: Optional[ResponseType] = None,
-        response_cookies: Optional[ResponseCookies] = None,
-        response_headers: Optional[ResponseHeaders] = None,
+        after_request: AfterRequestHookHandler | None = None,
+        after_response: AfterResponseHookHandler | None = None,
+        before_request: BeforeRequestHookHandler | None = None,
+        cache_control: CacheControlHeader | None = None,
+        dependencies: Mapping[str, Provide] | None = None,
+        etag: ETag | None = None,
+        exception_handlers: ExceptionHandlersMap | None = None,
+        guards: Sequence[Guard] | None = None,
+        middleware: Sequence[Middleware] | None = None,
+        opt: Mapping[str, Any] | None = None,
+        parameters: ParametersMap | None = None,
+        response_class: ResponseType | None = None,
+        response_cookies: ResponseCookies | None = None,
+        response_headers: ResponseHeaders | None = None,
         route_handlers: Sequence[ControllerRouterHandler],
-        security: Optional[Sequence[SecurityRequirement]] = None,
-        tags: Optional[Sequence[str]] = None,
-        type_encoders: Optional["TypeEncodersMap"] = None,
+        security: Sequence[SecurityRequirement] | None = None,
+        tags: Sequence[str] | None = None,
+        type_encoders: TypeEncodersMap | None = None,
     ) -> None:
         """Initialize a ``Router``.
 
@@ -161,22 +151,22 @@ class Router:
         self.guards = list(guards or [])
         self.middleware = list(middleware or [])
         self.opt = dict(opt or {})
-        self.owner: Optional["Router"] = None
+        self.owner: Router | None = None
         self.parameters = dict(parameters or {})
         self.path = normalize_path(path)
         self.response_class = response_class
         self.response_cookies = narrow_response_cookies(response_cookies)
         self.response_headers = narrow_response_headers(response_headers)
-        self.routes: List[Union["HTTPRoute", "ASGIRoute", "WebSocketRoute"]] = []
+        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.security = list(security or [])
         self.tags = list(tags or [])
-        self.registered_route_handler_ids: Set[int] = set()
+        self.registered_route_handler_ids: set[int] = set()
         self.type_encoders = dict(type_encoders) if type_encoders is not None else None
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
 
-    def register(self, value: ControllerRouterHandler) -> List["BaseRoute"]:
+    def register(self, value: ControllerRouterHandler) -> list[BaseRoute]:
         """Register a Controller, Route instance or RouteHandler on the router.
 
         Args:
@@ -189,7 +179,7 @@ class Router:
         """
         validated_value = self._validate_registration_value(value)
 
-        routes: List["BaseRoute"] = []
+        routes: list[BaseRoute] = []
 
         for route_path, handlers_map in self.get_route_handler_map(value=validated_value).items():
             path = join_paths([self.path, route_path])
@@ -211,7 +201,7 @@ class Router:
                     if existing_route_index == -1:  # pragma: no cover
                         raise ImproperlyConfiguredException("unable to find_index existing route index")
 
-                    route: Union["WebSocketRoute", "ASGIRoute", "HTTPRoute"] = HTTPRoute(
+                    route: WebSocketRoute | ASGIRoute | HTTPRoute = HTTPRoute(
                         path=path,
                         route_handlers=http_handlers,
                     )
@@ -234,13 +224,13 @@ class Router:
         return routes
 
     @property
-    def route_handler_method_map(self) -> Dict[str, RouteHandlerMapItem]:
+    def route_handler_method_map(self) -> dict[str, RouteHandlerMapItem]:
         """Map route paths to :class:`RouteHandlerMapItem <starlite.types.internal_typ es.RouteHandlerMapItem>`
 
         Returns:
              A dictionary mapping paths to route handlers
         """
-        route_map: Dict[str, RouteHandlerMapItem] = defaultdict(dict)
+        route_map: dict[str, RouteHandlerMapItem] = defaultdict(dict)
         for route in self.routes:
             if isinstance(route, HTTPRoute):
                 for route_handler in route.route_handlers:
@@ -255,8 +245,8 @@ class Router:
     @classmethod
     def get_route_handler_map(
         cls,
-        value: Union["Controller", "RouteHandlerType", "Router"],
-    ) -> Dict[str, "RouteHandlerMapItem"]:
+        value: Controller | RouteHandlerType | Router,
+    ) -> dict[str, RouteHandlerMapItem]:
         """Map route handlers to HTTP methods."""
         if isinstance(value, Router):
             return value.route_handler_method_map
@@ -281,13 +271,11 @@ class Router:
                 else:
                     handlers_map[path][
                         "websocket" if isinstance(route_handler, WebsocketRouteHandler) else "asgi"
-                    ] = cast("Union[WebsocketRouteHandler, ASGIRouteHandler]", route_handler)
+                    ] = cast("WebsocketRouteHandler | ASGIRouteHandler", route_handler)
 
         return handlers_map
 
-    def _validate_registration_value(
-        self, value: ControllerRouterHandler
-    ) -> Union["Controller", "RouteHandlerType", "Router"]:
+    def _validate_registration_value(self, value: ControllerRouterHandler) -> Controller | RouteHandlerType | Router:
         """Ensure values passed to the register method are supported."""
         if is_class_and_subclass(value, Controller):
             return value(owner=self)

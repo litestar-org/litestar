@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from inspect import Signature
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
@@ -21,14 +23,14 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
     @validate_arguments
     def __init__(
         self,
-        path: Union[Optional[str], Optional[List[str]]] = None,
+        path: str | None | list[str] | None = None,
         *,
-        dependencies: Optional[Dependencies] = None,
-        exception_handlers: Optional[Dict[Union[int, Type[Exception]], ExceptionHandler]] = None,
-        guards: Optional[List[Guard]] = None,
-        middleware: Optional[List[Middleware]] = None,
-        name: Optional[str] = None,
-        opt: Optional[Dict[str, Any]] = None,
+        dependencies: Dependencies | None = None,
+        exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+        guards: list[Guard] | None = None,
+        middleware: list[Middleware] | None = None,
+        name: str | None = None,
+        opt: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``WebsocketRouteHandler``
@@ -56,7 +58,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             **kwargs,
         )
 
-    def __call__(self, fn: "AsyncAnyCallable") -> "WebsocketRouteHandler":
+    def __call__(self, fn: AsyncAnyCallable) -> WebsocketRouteHandler:
         """Replace a function with itself."""
         self.fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
         self.signature = Signature.from_callable(fn)

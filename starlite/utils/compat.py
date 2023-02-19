@@ -32,7 +32,7 @@ def validate_arguments(fn: C) -> C:
     :param fn: A callable to decorate.
     :return: Either the decorated callable, if python version is 3.8, or the callable itself.
     """
-    if version_info < (3, 9):
+    if version_info < (3, 9):  # pragma: no cover
         return fn
 
     from pydantic import validate_arguments as pydantic_validate_arguments
