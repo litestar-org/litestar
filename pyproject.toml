@@ -220,6 +220,7 @@ addopts = "--ignore=examples"
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
+    "ignore::DeprecationWarning:pkg_resources:2803"
 ]
 
 [tool.pycln]
