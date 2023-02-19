@@ -132,9 +132,9 @@ def create_success_response(
     if response.headers is None:
         response.headers = {}
 
-    for key, value in route_handler.resolve_response_headers().items():
+    for response_header in route_handler.resolve_response_headers():
         header = Header()
-        for attribute_name, attribute_value in value.dict(exclude_none=True).items():
+        for attribute_name, attribute_value in response_header.dict(exclude_none=True).items():
             if attribute_name == "value":
                 header.param_schema = create_schema(
                     field=SignatureField.create(field_type=type(attribute_value)),
@@ -144,7 +144,7 @@ def create_success_response(
 
             elif attribute_name != "documentation_only":
                 setattr(header, attribute_name, attribute_value)
-        response.headers[key] = header
+        response.headers[response_header.name] = header
 
     if cookies := route_handler.resolve_response_cookies():
         response.headers["Set-Cookie"] = Header(

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from functools import partial
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, Mapping, TypeVar, overload
 
 from starlite.datastructures import Cookie, ETag
 from starlite.enums import MediaType, OpenAPIMediaType
@@ -27,6 +27,7 @@ if TYPE_CHECKING:
         HTTPResponseStartEvent,
         Receive,
         ResponseCookies,
+        ResponseHeaders,
         Scope,
         Send,
         Serializer,
@@ -63,7 +64,7 @@ class Response(Generic[T]):
         status_code: int = HTTP_200_OK,
         media_type: MediaType | OpenAPIMediaType | str = MediaType.JSON,
         background: BackgroundTask | BackgroundTasks | None = None,
-        headers: dict[str, Any] | None = None,
+        headers: ResponseHeaders | None = None,
         cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
         is_head_response: bool = False,
@@ -86,9 +87,15 @@ class Response(Generic[T]):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         """
         self.background = background
-        self.cookies = list(cookies or [])
+        self.cookies: list[Cookie] = (
+            [Cookie(key=key, value=value) for key, value in cookies.items()]
+            if isinstance(cookies, Mapping)
+            else list(cookies or [])
+        )
         self.encoding = encoding
-        self.headers = headers or {}
+        self.headers: dict[str, Any] = (
+            dict(headers) if isinstance(headers, Mapping) else {h.name: h.value for h in headers or {}}
+        )
         self.is_head_response = is_head_response
         self.media_type = get_enum_string_value(media_type)
         self.status_allows_body = not (

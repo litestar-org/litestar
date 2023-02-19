@@ -26,7 +26,7 @@ from starlite.utils import default_serializer
 def test_response_headers() -> None:
     @get("/")
     def handler() -> Response:
-        return Response(content="hello world", media_type=MediaType.TEXT, headers={"first": "123", "second": 456})
+        return Response(content="hello world", media_type=MediaType.TEXT, headers={"first": "123", "second": "456"})
 
     with create_test_client(handler) as client:
         response = client.get("/")
