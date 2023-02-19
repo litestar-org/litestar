@@ -1,4 +1,5 @@
 from examples.dependency_injection import dependency_skip_validation
+
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient
 

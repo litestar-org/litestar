@@ -82,7 +82,6 @@ from .internal_types import (
     RouteHandlerMapItem,
     RouteHandlerType,
 )
-from .partial import Partial
 from .protocols import DataclassProtocol, Logger
 
 __all__ = (
@@ -141,7 +140,6 @@ __all__ = (
     "OperationIDCreator",
     "OptionalSequence",
     "ParametersMap",
-    "Partial",
     "PathType",
     "Receive",
     "ReceiveMessage",

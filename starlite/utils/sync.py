@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from asyncio import iscoroutinefunction
 from functools import partial
 from inspect import getfullargspec, ismethod
@@ -9,9 +11,7 @@ from typing import (
     Generic,
     Iterable,
     Iterator,
-    List,
     TypeVar,
-    Union,
 )
 
 from anyio.to_thread import run_sync
@@ -69,7 +69,7 @@ class AsyncCallable(Generic[P, T]):
         return await self.ref.value(*args, **kwargs)
 
 
-def as_async_callable_list(value: Union[Callable, List[Callable]]) -> List[AsyncCallable]:
+def as_async_callable_list(value: Callable | list[Callable]) -> list[AsyncCallable]:
     """Wrap callables in ``AsyncCallable`` s.
 
     Args:
@@ -109,7 +109,7 @@ class AsyncIteratorWrapper(Generic[T]):
 
     __slots__ = ("iterator", "generator")
 
-    def __init__(self, iterator: Union[Iterator[T], Iterable[T]]) -> None:
+    def __init__(self, iterator: Iterator[T] | Iterable[T]) -> None:
         """Take a sync iterator or iterable and yields values from it asynchronously.
 
         Args:
@@ -131,7 +131,7 @@ class AsyncIteratorWrapper(Generic[T]):
             except ValueError:
                 return
 
-    def __aiter__(self) -> "AsyncIteratorWrapper[T]":
+    def __aiter__(self) -> AsyncIteratorWrapper[T]:
         return self
 
     async def __anext__(self) -> T:

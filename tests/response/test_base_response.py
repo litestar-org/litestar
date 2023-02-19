@@ -4,7 +4,9 @@ from typing import Any, Optional
 import pytest
 from pydantic_openapi_schema.v3_1_0 import Info, OpenAPI
 
-from starlite import Cookie, MediaType, OpenAPIMediaType, get
+from starlite import MediaType, get
+from starlite.datastructures import Cookie
+from starlite.enums import OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
 from starlite.status_codes import (

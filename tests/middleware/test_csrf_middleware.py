@@ -6,22 +6,13 @@ from typing import Any, Optional
 import pytest
 from bs4 import BeautifulSoup
 
-from starlite import (
-    Body,
-    MediaType,
-    RequestEncodingType,
-    WebSocket,
-    delete,
-    get,
-    patch,
-    post,
-    put,
-    websocket,
-)
+from starlite import MediaType, WebSocket, delete, get, patch, post, put, websocket
 from starlite.config.csrf import CSRFConfig
 from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
+from starlite.enums import RequestEncodingType
+from starlite.params import Body
 from starlite.response_containers import Template
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
 from starlite.testing import create_test_client

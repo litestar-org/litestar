@@ -3,19 +3,13 @@ from typing import Any, Callable, Dict
 import pytest
 from pydantic.fields import FieldInfo
 
-from starlite import (
-    Body,
-    HTTPRouteHandler,
-    Parameter,
-    Provide,
-    RequestEncodingType,
-    Starlite,
-    get,
-    post,
-    websocket,
-)
+from starlite import Starlite, get, post, websocket
 from starlite.constants import RESERVED_KWARGS, SKIP_VALIDATION_NAMES
+from starlite.di import Provide
+from starlite.enums import RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.params import Body, Parameter
 
 
 def my_dependency() -> int:

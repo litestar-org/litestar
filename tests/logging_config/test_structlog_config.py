@@ -2,7 +2,7 @@ from pytest import CaptureFixture  # noqa: TC002
 from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger
 
-from starlite.config import StructLoggingConfig
+from starlite.config.logging import StructLoggingConfig
 from starlite.testing import create_test_client
 from starlite.utils.serialization import decode_json, encode_json
 

@@ -13,7 +13,7 @@ from starlite.types import Empty
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.schema import Schema
 
-    from starlite.handlers import BaseRouteHandler
+    from starlite.handlers.base import BaseRouteHandler
     from starlite.types import Dependencies
     from starlite.types.internal_types import PathParameterDefinition
 

@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING, Any, Type, cast
 
 import pytest
 
-from starlite import Controller, HTTPRouteHandler, Router, Starlite, get
+from starlite import Controller, Router, Starlite, get
+from starlite.handlers.http_handlers import HTTPRouteHandler
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI

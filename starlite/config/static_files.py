@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
-from pydantic import BaseConfig, BaseModel, DirectoryPath, constr, validator
+from pydantic import BaseModel, DirectoryPath, constr, validator
 
+from starlite.config.base_config import BaseConfigModel
 from starlite.handlers import asgi
 from starlite.static_files.base import StaticFiles
 from starlite.types import ExceptionHandlersMap, Guard
@@ -9,7 +10,7 @@ from starlite.utils import normalize_path
 from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
-    from starlite.handlers import ASGIRouteHandler
+    from starlite.handlers.asgi_handlers import ASGIRouteHandler
     from starlite.types.file_types import FileSystemProtocol
 
 
@@ -20,8 +21,8 @@ class StaticFilesConfig(BaseModel):
     the 'static_files_config' key.
     """
 
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
+    class Config(BaseConfigModel):
+        pass
 
     path: constr(min_length=1)  # type: ignore
     """Path to serve static files from.

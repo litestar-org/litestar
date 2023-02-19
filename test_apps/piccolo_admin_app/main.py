@@ -9,7 +9,7 @@ from starlite.exceptions import MissingDependencyException, NotFoundException
 from starlite.plugins.piccolo_orm import PiccoloORMPlugin
 
 try:
-    from piccolo_admin.endpoints import create_admin
+    from piccolo_admin.endpoints import create_admin  # pyright: ignore
 except ImportError as e:
     raise MissingDependencyException("piccolo_admin is not installed") from e
 

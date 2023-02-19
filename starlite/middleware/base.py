@@ -1,14 +1,7 @@
+from __future__ import annotations
+
 from abc import abstractmethod
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    List,
-    Optional,
-    Protocol,
-    Union,
-    runtime_checkable,
-)
+from typing import TYPE_CHECKING, Any, Callable, Protocol, runtime_checkable
 
 from starlite.enums import ScopeType
 from starlite.middleware.utils import (
@@ -27,7 +20,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
 
     __slots__ = ("app",)
 
-    app: "ASGIApp"
+    app: ASGIApp
 
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
         """Execute the ASGI middleware.
@@ -56,7 +49,7 @@ class DefineMiddleware:
         "kwargs",
     )
 
-    def __init__(self, middleware: Callable[..., "ASGIApp"], *args: Any, **kwargs: Any) -> None:
+    def __init__(self, middleware: Callable[..., ASGIApp], *args: Any, **kwargs: Any) -> None:
         """Initialize ``DefineMiddleware``.
 
         Args:
@@ -72,7 +65,7 @@ class DefineMiddleware:
         self.args = args
         self.kwargs = kwargs
 
-    def __call__(self, app: "ASGIApp") -> "ASGIApp":
+    def __call__(self, app: ASGIApp) -> ASGIApp:
         """Call the middleware constructor or factory.
 
         Args:
@@ -92,16 +85,16 @@ class AbstractMiddleware:
     When implementing new middleware, this class should be used as a base.
     """
 
-    scopes: "Scopes" = {ScopeType.HTTP, ScopeType.WEBSOCKET}
-    exclude: Optional[Union[str, List[str]]] = None
-    exclude_opt_key: Optional[str] = None
+    scopes: Scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
+    exclude: str | list[str] | None = None
+    exclude_opt_key: str | None = None
 
     def __init__(
         self,
-        app: "ASGIApp",
-        exclude: Optional[Union[str, List[str]]] = None,
-        exclude_opt_key: Optional[str] = None,
-        scopes: Optional["Scopes"] = None,
+        app: ASGIApp,
+        exclude: str | list[str] | None = None,
+        exclude_opt_key: str | None = None,
+        scopes: Scopes | None = None,
     ) -> None:
         """Initialize the middleware.
 

@@ -1,7 +1,7 @@
 [flake8]
 max-line-length = 120
 max-complexity = 12
-ignore = E501,E225,W503,B008,E203, B010, B028
+ignore = E501,E225,W503,B008,E203,B010,B028,TC004
 type-checking-pydantic-enabled = true
 type-checking-fastapi-enabled = true
 classmethod-decorators =
@@ -9,8 +9,8 @@ classmethod-decorators =
     validator
     root_validator
 per-file-ignores =
-    examples/*:SCS108
-    examples/contrib/jwt/*:R504, SCS108
+    docs/*:SCS108
+    docs/examples/contrib/jwt/*:R504, SCS108
     starlite/types/builtin_types.py:F401
     tests/*:SCS108
     starlite/testing/test_client/*:SCS108

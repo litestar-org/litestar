@@ -1,7 +1,7 @@
 from examples.middleware.base import app
-from starlite.testing import TestClient
 
 from starlite.status_codes import HTTP_200_OK
+from starlite.testing import TestClient
 
 
 def test_base_middleware_example_websocket() -> None:

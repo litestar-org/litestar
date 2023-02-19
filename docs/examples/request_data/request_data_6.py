@@ -1,4 +1,7 @@
-from starlite import Body, MediaType, RequestEncodingType, Starlite, UploadFile, post
+from starlite import MediaType, Starlite, post
+from starlite.datastructures import UploadFile
+from starlite.enums import RequestEncodingType
+from starlite.params import Body
 
 
 @post(path="/", media_type=MediaType.TEXT)

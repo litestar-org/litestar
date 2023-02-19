@@ -21,12 +21,10 @@ from starlite.controller import Controller
 from starlite.datastructures import CacheControlHeader, ETag
 from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers import (
-    ASGIRouteHandler,
-    BaseRouteHandler,
-    HTTPRouteHandler,
-    WebsocketRouteHandler,
-)
+from starlite.handlers.asgi_handlers import ASGIRouteHandler
+from starlite.handlers.base import BaseRouteHandler
+from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
     AfterRequestHookHandler,

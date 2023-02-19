@@ -1,25 +1,27 @@
-from typing import TYPE_CHECKING, Any, Awaitable, Dict, List, Optional, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Awaitable
 
 from starlite.exceptions import NotAuthorizedException
-from starlite.middleware import ExceptionHandlerMiddleware
 from starlite.middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
 )
+from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.middleware.session.base import SessionMiddleware
 from starlite.types import Empty, Scopes
-from starlite.utils import AsyncCallable
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
     from starlite.security.session_auth.auth import SessionAuth
     from starlite.types import ASGIApp, Receive, Scope, Send
+    from starlite.utils import AsyncCallable
 
 
 class MiddlewareWrapper:
     """Wrapper class that serves as the middleware entry point."""
 
-    def __init__(self, app: "ASGIApp", config: "SessionAuth"):
+    def __init__(self, app: ASGIApp, config: SessionAuth):
         """Wrap the SessionAuthMiddleware inside ExceptionHandlerMiddleware, and it wraps this inside SessionMiddleware.
         This allows the auth middleware to raise exceptions and still have the response handled, while having the
         session cleared.
@@ -70,11 +72,11 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
 
     def __init__(
         self,
-        app: "ASGIApp",
-        exclude: Optional[Union[str, List[str]]],
+        app: ASGIApp,
+        exclude: str | list[str] | None,
         exclude_opt_key: str,
-        scopes: Optional[Scopes],
-        retrieve_user_handler: "AsyncCallable[[Dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]]",
+        scopes: Scopes | None,
+        retrieve_user_handler: AsyncCallable[[dict[str, Any], ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
     ):
         """Session based authentication middleware.
 

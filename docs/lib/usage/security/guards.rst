@@ -50,10 +50,13 @@ allows admin users to access certain route handlers and then add it to a route h
 
 .. code-block:: python
 
-   from starlite import ASGIConnection, BaseRouteHandler, NotAuthorizedException
+   from enum import Enum
+
    from pydantic import BaseModel, UUID4
    from starlite import post
-   from enum import Enum
+   from starlite.connection import ASGIConnection
+   from starlite.exceptions import NotAuthorizedException
+   from starlite.handlers.base import BaseRouteHandler
 
 
    class UserRole(str, Enum):
@@ -90,7 +93,9 @@ handlers:
 
 .. code-block:: python
 
-   from starlite import ASGIConnection, Controller, Router, Starlite, BaseRouteHandler
+   from starlite import Controller, Router, Starlite
+   from starlite.connection import ASGIConnection
+   from starlite.handlers.base import BaseRouteHandler
 
 
    def my_guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None:
@@ -129,7 +134,10 @@ the following guard:
 
 .. code-block:: python
 
-   from starlite import ASGIConnection, BaseRouteHandler, NotAuthorizedException, get
+   from starlite import get
+   from starlite.exceptions import NotAuthorizedException
+   from starlite.connection import ASGIConnection
+   from starlite.handlers.base import BaseRouteHandler
    from os import environ
 
 

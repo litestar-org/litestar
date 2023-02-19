@@ -251,10 +251,12 @@ from the :doc:`route guards </lib/usage/security/guards>` documentation:
 .. code-block:: python
     :caption: my_app/guards.py
 
-    from starlite import Request, RouteHandler, NotAuthorizedException
+    from starlite import Request
+    from starlite.exceptions import NotAuthorizedException
+    from starlite.handlers.base import BaseRouteHandler
 
 
-    def secret_token_guard(request: Request, route_handler: RouteHandler) -> None:
+    def secret_token_guard(request: Request, route_handler: BaseRouteHandler) -> None:
         if (
             route_handler.opt.get("secret")
             and not request.headers.get("Secret-Header", "") == route_handler.opt["secret"]
@@ -284,7 +286,7 @@ We could thus test the guard function like so:
 
     import pytest
 
-    from starlite import NotAuthorizedException
+    from starlite.exceptions import NotAuthorizedException
     from starlite.testing import RequestFactory
 
     from my_app.guards import secret_token_guard
@@ -345,8 +347,9 @@ We could test the ``/item`` route like so:
 
     import pytest
 
+    from starlite.di import Provide
     from starlite.status_codes import HTTP_200_OK
-    from starlite import Provide, create_test_client
+    from starlite.testing import create_test_client
 
     from my_app.main import Service, Item, get_item
 
@@ -382,7 +385,8 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
     from pydantic import BaseModel
     from pydantic_factories import ModelFactory
     from starlite.status_codes import HTTP_200_OK
-    from starlite import Provide, get
+    from starlite import get
+    from starlite.di import Provide
     from starlite.testing import create_test_client
 
 

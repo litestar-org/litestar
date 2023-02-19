@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from mimetypes import guess_type
 from pathlib import PurePath
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any
 
 from starlite.enums import MediaType
 from starlite.response.base import Response
@@ -19,14 +21,14 @@ class TemplateResponse(Response[bytes]):
         self,
         template_name: str,
         *,
-        template_engine: "TemplateEngineProtocol",
-        context: Dict[str, Any],
+        template_engine: TemplateEngineProtocol,
+        context: dict[str, Any],
         status_code: int = HTTP_200_OK,
-        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-        cookies: Optional["ResponseCookies"] = None,
+        background: BackgroundTask | BackgroundTasks | None = None,
+        headers: dict[str, Any] | None = None,
+        cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
-        media_type: Union[MediaType, str] = MediaType.HTML,
+        media_type: MediaType | str = MediaType.HTML,
     ) -> None:
         """Handle the rendering of a given template into a bytes string.
 

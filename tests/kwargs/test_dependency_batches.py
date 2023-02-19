@@ -2,7 +2,7 @@ from typing import List, Set
 
 import pytest
 
-from starlite import Provide
+from starlite.di import Provide
 from starlite.kwargs.dependencies import Dependency, create_dependency_batches
 
 

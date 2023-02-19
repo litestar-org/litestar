@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from starlite import HttpMethod, MediaType, Response, WebSocket, delete, get, route
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
-from starlite.handlers import HTTPRouteHandler
+from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.response_containers import File, Redirect
 from starlite.status_codes import (
     HTTP_100_CONTINUE,

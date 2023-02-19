@@ -4,7 +4,7 @@ from typing import Any
 import pytest
 
 from starlite import MediaType, get
-from starlite.config import TemplateConfig
+from starlite.config.template import TemplateConfig
 from starlite.contrib.htmx.request import HTMXRequest
 from starlite.contrib.htmx.response import (
     ClientRedirect,

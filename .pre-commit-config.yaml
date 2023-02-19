@@ -26,7 +26,6 @@ repos:
     rev: 5.12.0
     hooks:
       - id: isort
-        exclude: "docs"
   - repo: https://github.com/psf/black
     rev: 23.1.0
     hooks:
@@ -45,7 +44,7 @@ repos:
     rev: "v3.0.0-alpha.4"
     hooks:
       - id: prettier
-        exclude: docs
+        exclude: "_templates"
   - repo: https://github.com/pycqa/bandit
     rev: 1.7.4
     hooks:
@@ -79,7 +78,6 @@ repos:
             "flake8-use-fstring",
             "flake8-use-pathlib",
           ]
-        exclude: "docs"
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.16.4
     hooks:
@@ -89,7 +87,7 @@ repos:
     rev: "v2.16.2"
     hooks:
       - id: pylint
-        exclude: "tests|examples|test_apps|docs|tools"
+        exclude: "test*|tools|docs"
         args: ["--unsafe-load-any-extension=y"]
         additional_dependencies:
           [
@@ -122,7 +120,7 @@ repos:
     rev: "v1.0.1"
     hooks:
       - id: mypy
-        exclude: "test_apps|docs|tools"
+        exclude: "test_apps|tools|docs"
         additional_dependencies:
           [
             aiomcache,
@@ -161,7 +159,7 @@ repos:
     rev: v1.1.294
     hooks:
       - id: pyright
-        exclude: "test_apps|tools|docs"
+        exclude: "tools|piccolo*|examples/plugins/sqlalchemy_plugin*|using_offset_pagination_with_sqlalchemy"
         additional_dependencies:
           [
             aiomcache,

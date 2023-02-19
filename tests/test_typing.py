@@ -6,8 +6,8 @@ from pydantic import BaseModel
 from typing_extensions import TypedDict, get_args
 
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.partial import Partial
 from starlite.types.builtin_types import NoneType
-from starlite.types.partial import Partial
 from tests import (
     Person,
     PydanticDataClassPerson,

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
 
 from starlite.connection import ASGIConnection
@@ -19,7 +21,7 @@ class ASGIRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handler: "ASGIRouteHandler",
+        route_handler: ASGIRouteHandler,
     ) -> None:
         """Initialize the route.
 

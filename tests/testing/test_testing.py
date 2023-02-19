@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Union, cast
 import pytest
 from pydantic import BaseModel
 
-from starlite import HttpMethod, Request, RequestEncodingType, Starlite, get, post
+from starlite import HttpMethod, Request, Starlite, get, post
 from starlite.datastructures import Cookie, MultiDict
-from starlite.enums import ParamType
+from starlite.enums import ParamType, RequestEncodingType
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from tests import Pet, PetFactory
 

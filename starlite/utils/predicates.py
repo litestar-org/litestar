@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from collections import defaultdict, deque
 from collections.abc import Iterable as CollectionsIterable
@@ -18,7 +20,6 @@ from typing import (
     Sequence,
     Set,
     Tuple,
-    Type,
     TypeVar,
     Union,
 )
@@ -59,7 +60,7 @@ def _get_origin(annotation: Any) -> Any:
     return origin if origin not in (Annotated, Required, NotRequired) else get_args(annotation)[0]
 
 
-def is_class_and_subclass(value: Any, t_type: Type[T]) -> TypeGuard[Type[T]]:
+def is_class_and_subclass(value: Any, t_type: type[T]) -> TypeGuard[type[T]]:
     """Return ``True`` if ``value`` is a ``class`` and is a subtype of ``t_type``.
 
     See https://github.com/starlite-api/starlite/issues/367
@@ -92,7 +93,7 @@ def is_generic(annotation: Any) -> bool:
     return is_class_and_subclass(annotation, Generic)  # type: ignore
 
 
-def is_mapping(annotation: Any) -> "TypeGuard[Mapping[Any, Any]]":
+def is_mapping(annotation: Any) -> TypeGuard[Mapping[Any, Any]]:
     """Given a type annotation determine if the annotation is a mapping type.
 
     Args:
@@ -105,7 +106,7 @@ def is_mapping(annotation: Any) -> "TypeGuard[Mapping[Any, Any]]":
     return isclass(_type) and issubclass(_type, (dict, defaultdict, DefaultDict, Mapping))
 
 
-def is_non_string_iterable(annotation: Any) -> "TypeGuard[Iterable[Any]]":
+def is_non_string_iterable(annotation: Any) -> TypeGuard[Iterable[Any]]:
     """Given a type annotation determine if the annotation is an iterable.
 
     Args:
@@ -126,7 +127,7 @@ def is_non_string_iterable(annotation: Any) -> "TypeGuard[Iterable[Any]]":
         return False
 
 
-def is_non_string_sequence(annotation: Any) -> "TypeGuard[Sequence[Any]]":
+def is_non_string_sequence(annotation: Any) -> TypeGuard[Sequence[Any]]:
     """Given a type annotation determine if the annotation is a sequence.
 
     Args:
@@ -159,7 +160,7 @@ def is_non_string_sequence(annotation: Any) -> "TypeGuard[Sequence[Any]]":
         return False
 
 
-def is_any(annotation: Any) -> "TypeGuard[Any]":
+def is_any(annotation: Any) -> TypeGuard[Any]:
     """Given a type annotation determine if the annotation is Any.
 
         Args:
@@ -175,7 +176,7 @@ def is_any(annotation: Any) -> "TypeGuard[Any]":
     )
 
 
-def is_union(annotation: Any) -> "TypeGuard[Union[Any, Any]]":
+def is_union(annotation: Any) -> TypeGuard[Any | Any]:
     """Given a type annotation determine if the annotation infers an optional union.
 
     Args:
@@ -187,7 +188,7 @@ def is_union(annotation: Any) -> "TypeGuard[Union[Any, Any]]":
     return _get_origin(annotation) in UNION_TYPES
 
 
-def is_optional_union(annotation: Any) -> "TypeGuard[Union[Any, None]]":
+def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
     """Given a type annotation determine if the annotation infers an optional union.
 
     Args:
@@ -201,7 +202,7 @@ def is_optional_union(annotation: Any) -> "TypeGuard[Union[Any, None]]":
     return origin is Optional or (get_origin(annotation) in UNION_TYPES and NoneType in get_args(annotation))
 
 
-def is_dataclass_class(value: Any) -> "TypeGuard[DataclassClass]":
+def is_dataclass_class(value: Any) -> TypeGuard[DataclassClass]:
     """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`, narrowing to type only, not
         instance.
 
@@ -214,7 +215,7 @@ def is_dataclass_class(value: Any) -> "TypeGuard[DataclassClass]":
     return is_dataclass(value) and isinstance(value, type)
 
 
-def is_dataclass_class_or_instance(value: Any) -> "TypeGuard[DataclassClassOrInstance]":
+def is_dataclass_class_or_instance(value: Any) -> TypeGuard[DataclassClassOrInstance]:
     """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`.
 
     Args:
@@ -226,7 +227,7 @@ def is_dataclass_class_or_instance(value: Any) -> "TypeGuard[DataclassClassOrIns
     return is_dataclass(value)
 
 
-def is_typed_dict(value: Any) -> "TypeGuard[TypedDictClass]":
+def is_typed_dict(value: Any) -> TypeGuard[TypedDictClass]:
     """Wrap :func:`typing.is_typeddict` in a :data:`typing.TypeGuard`.
 
     Args:

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from starlite import Starlite
 from starlite.cli.commands.sessions import get_session_backend
 from starlite.cli.main import starlite_group as cli_command
-from starlite.middleware import RateLimitConfig
+from starlite.middleware.rate_limit import RateLimitConfig
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
 
 if TYPE_CHECKING:

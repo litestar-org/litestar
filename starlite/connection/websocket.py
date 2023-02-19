@@ -1,16 +1,6 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generic,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    Union,
-    cast,
-    overload,
-)
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Generic, Literal, cast, overload
 
 from starlite.connection.base import (
     ASGIConnection,
@@ -48,14 +38,14 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
 
     __slots__ = ("connection_state",)
 
-    scope: "WebSocketScope"
+    scope: WebSocketScope
     """The ASGI scope attached to the connection."""
-    receive: "Receive"
+    receive: Receive
     """The ASGI receive function."""
-    send: "Send"
+    send: Send
     """The ASGI send function."""
 
-    def __init__(self, scope: "Scope", receive: "Receive" = empty_receive, send: "Send" = empty_send) -> None:
+    def __init__(self, scope: Scope, receive: Receive = empty_receive, send: Send = empty_send) -> None:
         """Initialize ``WebSocket``.
 
         Args:
@@ -66,7 +56,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         super().__init__(scope, self.receive_wrapper(receive), self.send_wrapper(send))
         self.connection_state: Literal["init", "connect", "receive", "disconnect"] = "init"
 
-    def receive_wrapper(self, receive: "Receive") -> "Receive":
+    def receive_wrapper(self, receive: Receive) -> Receive:
         """Wrap ``receive`` to set 'self.connection_state' and validate events.
 
         Args:
@@ -90,7 +80,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
 
         return wrapped_receive
 
-    def send_wrapper(self, send: "Send") -> "Send":
+    def send_wrapper(self, send: Send) -> Send:
         """Wrap ``send`` to ensure that state is not disconnected.
 
         Args:
@@ -109,8 +99,8 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
 
     async def accept(
         self,
-        subprotocols: Optional[str] = None,
-        headers: Optional[Union[Headers, Dict[str, Any], List[Tuple[bytes, bytes]]]] = None,
+        subprotocols: str | None = None,
+        headers: Headers | dict[str, Any] | list[tuple[bytes, bytes]] | None = None,
     ) -> None:
         """Accept the incoming connection. This method should be called before receiving data.
 
@@ -123,7 +113,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         """
         if self.connection_state == "init":
             await self.receive()
-            _headers: List[Tuple[bytes, bytes]] = headers if isinstance(headers, list) else []
+            _headers: list[tuple[bytes, bytes]] = headers if isinstance(headers, list) else []
 
             if isinstance(headers, dict):
                 _headers = Headers(headers=headers).to_header_list()
@@ -131,14 +121,14 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
             if isinstance(headers, Headers):
                 _headers = headers.to_header_list()
 
-            event: "WebSocketAcceptEvent" = {
+            event: WebSocketAcceptEvent = {
                 "type": "websocket.accept",
                 "subprotocol": subprotocols,
                 "headers": _headers,
             }
             await self.send(event)
 
-    async def close(self, code: int = WS_1000_NORMAL_CLOSURE, reason: Optional[str] = None) -> None:
+    async def close(self, code: int = WS_1000_NORMAL_CLOSURE, reason: str | None = None) -> None:
         """Send an 'websocket.close' event.
 
         Args:
@@ -148,7 +138,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         Returns:
             None
         """
-        event: "WebSocketCloseEvent" = {"type": "websocket.close", "code": code, "reason": reason or ""}
+        event: WebSocketCloseEvent = {"type": "websocket.close", "code": code, "reason": reason or ""}
         await self.send(event)
 
     @overload
@@ -159,7 +149,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
     async def receive_data(self, mode: Literal["binary"]) -> bytes:
         ...
 
-    async def receive_data(self, mode: Literal["binary", "text"]) -> Union[str, bytes]:
+    async def receive_data(self, mode: Literal["binary", "text"]) -> str | bytes:
         """Receive an 'websocket.receive' event and returns the data stored on it.
 
         Args:
@@ -170,7 +160,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         """
         if self.connection_state == "init":
             await self.accept()
-        event = cast("Union['WebSocketReceiveEvent', 'WebSocketDisconnectEvent']", await self.receive())
+        event = cast("WebSocketReceiveEvent | WebSocketDisconnectEvent", await self.receive())
         if event["type"] == "websocket.disconnect":
             raise WebSocketDisconnect(detail="disconnect event", code=event["code"])
         if self.connection_state == "disconnect":
@@ -209,7 +199,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         return decode_json(data)
 
     async def send_data(
-        self, data: Union[str, bytes], mode: Literal["text", "binary"] = "text", encoding: str = "utf-8"
+        self, data: str | bytes, mode: Literal["text", "binary"] = "text", encoding: str = "utf-8"
     ) -> None:
         """Send a 'websocket.send' event.
 
@@ -223,7 +213,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         """
         if self.connection_state == "init":  # pragma: no cover
             await self.accept()
-        event: "WebSocketSendEvent" = {"type": "websocket.send", "bytes": None, "text": None}
+        event: WebSocketSendEvent = {"type": "websocket.send", "bytes": None, "text": None}
         if mode == "binary":
             event["bytes"] = data if isinstance(data, bytes) else data.encode(encoding)
         else:
@@ -238,7 +228,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
     async def send_text(self, data: str) -> None:
         ...
 
-    async def send_text(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
+    async def send_text(self, data: str | bytes, encoding: str = "utf-8") -> None:
         """Send data using the ``text`` key of the send event.
 
         Args:
@@ -258,7 +248,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
     async def send_bytes(self, data: str, encoding: str = "utf-8") -> None:
         ...
 
-    async def send_bytes(self, data: Union[str, bytes], encoding: str = "utf-8") -> None:
+    async def send_bytes(self, data: str | bytes, encoding: str = "utf-8") -> None:
         """Send data using the ``bytes`` key of the send event.
 
         Args:

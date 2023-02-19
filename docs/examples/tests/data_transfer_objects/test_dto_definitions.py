@@ -1,5 +1,3 @@
-from pydantic import BaseModel
-
 from examples.data_transfer_objects.dto_add_new_fields import (
     MyClassDTO as AddFieldClassDTO,
 )
@@ -11,6 +9,7 @@ from examples.data_transfer_objects.dto_remap_fields import MyClassDTO as RemapC
 from examples.data_transfer_objects.dto_remap_fields_with_types import (
     MyClassDTO as RemapWithTypesClassDTO,
 )
+from pydantic import BaseModel
 
 
 def test_dto_creation() -> None:

@@ -16,8 +16,9 @@ from typing import (
 from pydantic import BaseConfig, validator
 from pydantic.generics import GenericModel
 
-from starlite import Provide, Response
+from starlite import Response
 from starlite.connection import ASGIConnection
+from starlite.di import Provide
 from starlite.middleware.authentication import AbstractAuthenticationMiddleware
 from starlite.types import (
     ControllerRouterHandler,
@@ -31,7 +32,7 @@ from starlite.utils.sync import AsyncCallable
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
 
-    from starlite.config import AppConfig
+    from starlite.config.app import AppConfig
     from starlite.enums import MediaType, OpenAPIMediaType
     from starlite.middleware.base import DefineMiddleware
     from starlite.types import ResponseCookies

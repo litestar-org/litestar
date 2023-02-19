@@ -1,25 +1,28 @@
-from typing import Any, Tuple, cast
+from typing import TYPE_CHECKING, Any, Tuple, cast
 
 import pytest
 
-from starlite import Controller, HTTPRoute, Request, Router, Starlite, get
+from starlite import Controller, Request, Router, Starlite, get
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers import HTTPRouteHandler
+from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.openapi.path_item import create_path_item
 from starlite.openapi.utils import default_operation_id_creator
 from starlite.utils import find_index
 from tests.openapi.utils import PersonController
 
+if TYPE_CHECKING:
+    from starlite.routes import HTTPRoute
+
 
 @pytest.fixture()
-def route() -> HTTPRoute:
+def route() -> "HTTPRoute":
     app = Starlite(route_handlers=[PersonController], openapi_config=None)
     index = find_index(app.routes, lambda x: x.path_format == "/{service_id}/person/{person_id}")
     return cast("HTTPRoute", app.routes[index])
 
 
 @pytest.fixture()
-def routes_with_router() -> Tuple[HTTPRoute, HTTPRoute]:
+def routes_with_router() -> Tuple["HTTPRoute", "HTTPRoute"]:
     class PersonControllerV2(PersonController):
         pass
 
@@ -32,7 +35,7 @@ def routes_with_router() -> Tuple[HTTPRoute, HTTPRoute]:
 
 
 @pytest.fixture()
-def route_with_multiple_methods() -> HTTPRoute:
+def route_with_multiple_methods() -> "HTTPRoute":
     class MultipleMethodsRouteController(Controller):
         path = "/"
 
@@ -45,7 +48,7 @@ def route_with_multiple_methods() -> HTTPRoute:
     return cast("HTTPRoute", app.routes[index])
 
 
-def test_create_path_item(route: HTTPRoute) -> None:
+def test_create_path_item(route: "HTTPRoute") -> None:
     schema, _ = create_path_item(
         route=route,
         create_examples=True,
@@ -67,7 +70,7 @@ def test_create_path_item(route: HTTPRoute) -> None:
     assert schema.put.summary == "UpdatePerson"
 
 
-def test_unique_operation_ids_for_multiple_http_methods(route_with_multiple_methods: HTTPRoute) -> None:
+def test_unique_operation_ids_for_multiple_http_methods(route_with_multiple_methods: "HTTPRoute") -> None:
     schema, _ = create_path_item(
         route=route_with_multiple_methods,
         create_examples=True,
@@ -83,7 +86,7 @@ def test_unique_operation_ids_for_multiple_http_methods(route_with_multiple_meth
 
 
 def test_routes_with_different_paths_should_generate_unique_operation_ids(
-    routes_with_router: Tuple[HTTPRoute, HTTPRoute]
+    routes_with_router: Tuple["HTTPRoute", "HTTPRoute"]
 ) -> None:
     route_v1, route_v2 = routes_with_router
     schema_v1, _ = create_path_item(
@@ -105,7 +108,7 @@ def test_routes_with_different_paths_should_generate_unique_operation_ids(
     assert schema_v1.get.operationId != schema_v2.get.operationId
 
 
-def test_create_path_item_use_handler_docstring_false(route: HTTPRoute) -> None:
+def test_create_path_item_use_handler_docstring_false(route: "HTTPRoute") -> None:
     schema, _ = create_path_item(
         route=route,
         create_examples=True,
@@ -119,7 +122,7 @@ def test_create_path_item_use_handler_docstring_false(route: HTTPRoute) -> None:
     assert schema.patch.description == "Description in decorator"
 
 
-def test_create_path_item_use_handler_docstring_true(route: HTTPRoute) -> None:
+def test_create_path_item_use_handler_docstring_true(route: "HTTPRoute") -> None:
     schema, _ = create_path_item(
         route=route,
         create_examples=True,

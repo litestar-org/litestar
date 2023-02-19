@@ -2,6 +2,7 @@ from typing import List, Optional, Union
 
 from pydantic import BaseModel, validator
 
+from starlite.config.base_config import BaseConfigModel
 from starlite.types import Scopes
 
 
@@ -11,6 +12,9 @@ class AllowedHostsConfig(BaseModel):
     To enable allowed hosts protection, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>`
     constructor using the ``allowed_hosts`` key.
     """
+
+    class Config(BaseConfigModel):
+        pass
 
     allowed_hosts: List[str] = ["*"]
     """A list of trusted hosts.

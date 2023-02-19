@@ -2,7 +2,8 @@ from typing import Optional
 
 import pytest
 
-from starlite import Controller, HTTPRouteHandler, Response, Router, get
+from starlite import Controller, Response, Router, get
+from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.testing import create_test_client
 from starlite.types import AfterRequestHookHandler
 

@@ -1,17 +1,8 @@
+from __future__ import annotations
+
 from dataclasses import asdict
 from inspect import Parameter, Signature
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    NamedTuple,
-    Optional,
-    Set,
-    Tuple,
-    Type,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, List, NamedTuple, cast
 
 from pydantic import create_model
 from pydantic.fields import FieldInfo, Undefined
@@ -44,7 +35,7 @@ class ParsedSignatureParameter(NamedTuple):
     optional: bool
 
     @classmethod
-    def from_parameter(cls, fn_name: str, parameter_name: str, parameter: Parameter) -> "ParsedSignatureParameter":
+    def from_parameter(cls, fn_name: str, parameter_name: str, parameter: Parameter) -> ParsedSignatureParameter:
         """Initialize ParsedSignatureParameter.
 
         Args:
@@ -95,7 +86,7 @@ class ParsedSignatureParameter(NamedTuple):
 def get_type_annotation_from_plugin(
     parameter: ParsedSignatureParameter,
     plugin: SerializationPluginProtocol,
-    field_plugin_mappings: Dict[str, PluginMapping],
+    field_plugin_mappings: dict[str, PluginMapping],
 ) -> Any:
     """Use plugin declared for parameter annotation type to generate a pydantic model.
 
@@ -115,8 +106,8 @@ def get_type_annotation_from_plugin(
 
 
 def parse_fn_signature(
-    fn: "AnyCallable", plugins: List["SerializationPluginProtocol"], dependency_name_set: Set[str]
-) -> Tuple[List[ParsedSignatureParameter], Any, Dict[str, PluginMapping], Set[str]]:
+    fn: AnyCallable, plugins: list[SerializationPluginProtocol], dependency_name_set: set[str]
+) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
 
     Args:
@@ -132,9 +123,9 @@ def parse_fn_signature(
     signature = Signature.from_callable(fn)
     fn_name = getattr(fn, "__name__", "anonymous")
 
-    field_plugin_mappings: Dict[str, PluginMapping] = {}
-    parsed_params: List[ParsedSignatureParameter] = []
-    dependency_names: Set[str] = set()
+    field_plugin_mappings: dict[str, PluginMapping] = {}
+    parsed_params: list[ParsedSignatureParameter] = []
+    dependency_names: set[str] = set()
 
     for parameter in (
         ParsedSignatureParameter.from_parameter(parameter=parameter, parameter_name=name, fn_name=fn_name)
@@ -168,8 +159,8 @@ def parse_fn_signature(
 
 
 def create_signature_model(
-    fn: "AnyCallable", plugins: List["SerializationPluginProtocol"], dependency_name_set: Set[str]
-) -> Type[SignatureModel]:
+    fn: AnyCallable, plugins: list[SerializationPluginProtocol], dependency_name_set: set[str]
+) -> type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
 
@@ -207,12 +198,12 @@ def create_signature_model(
 
 def create_pydantic_signature_model(
     fn_name: str,
-    fn_module: Optional[str],
-    parsed_params: List[ParsedSignatureParameter],
+    fn_module: str | None,
+    parsed_params: list[ParsedSignatureParameter],
     return_annotation: Any,
-    field_plugin_mappings: Dict[str, "PluginMapping"],
-    dependency_names: Set[str],
-) -> Type[PydanticSignatureModel]:
+    field_plugin_mappings: dict[str, PluginMapping],
+    dependency_names: set[str],
+) -> type[PydanticSignatureModel]:
     """Create a pydantic based SignatureModel.
 
     Args:
@@ -226,7 +217,7 @@ def create_pydantic_signature_model(
     Returns:
         The created PydanticSignatureModel.
     """
-    field_definitions: Dict[str, Tuple[Any, Any]] = {}
+    field_definitions: dict[str, tuple[Any, Any]] = {}
 
     for parameter in parsed_params:
         if parameter.should_skip_validation:
@@ -250,7 +241,7 @@ def create_pydantic_signature_model(
         else:
             field_definitions[parameter.name] = (parameter.annotation, None)
 
-    model: Type[PydanticSignatureModel] = create_model(  # type: ignore
+    model: type[PydanticSignatureModel] = create_model(  # type: ignore
         f"{fn_name}_signature_model",
         __base__=PydanticSignatureModel,
         __module__=fn_module or "pydantic.main",

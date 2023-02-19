@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import pickle
 from itertools import chain
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from starlite.connection import Request
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.datastructures.headers import Headers
+from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, MediaType, ScopeType
 from starlite.exceptions import (
     ClientException,
@@ -15,7 +18,6 @@ from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.response import Response
 from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
-from starlite.upload_file import UploadFile
 
 if TYPE_CHECKING:
     from starlite.kwargs import KwargsModel
@@ -35,7 +37,7 @@ class HTTPRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handlers: List["HTTPRouteHandler"],
+        route_handlers: list[HTTPRouteHandler],
     ) -> None:
         """Initialize ``HTTPRoute``.
 
@@ -49,7 +51,7 @@ class HTTPRoute(BaseRoute):
             route_handlers.append(self.create_options_handler(path))
 
         self.route_handlers = route_handlers
-        self.route_handler_map: Dict["Method", Tuple["HTTPRouteHandler", "KwargsModel"]] = {}
+        self.route_handler_map: dict[Method, tuple[HTTPRouteHandler, KwargsModel]] = {}
 
         super().__init__(
             methods=methods,
@@ -70,7 +72,7 @@ class HTTPRoute(BaseRoute):
         Returns:
             None
         """
-        request: "Request[Any, Any, Any]" = scope["app"].request_class(scope=scope, receive=receive, send=send)
+        request: Request[Any, Any, Any] = scope["app"].request_class(scope=scope, receive=receive, send=send)
         route_handler, parameter_model = self.route_handler_map[scope["method"]]
 
         if route_handler.resolve_guards():
@@ -86,7 +88,7 @@ class HTTPRoute(BaseRoute):
             await after_response_handler(request)  # type: ignore
 
         if form_data := scope.get("_form", {}):
-            await self._cleanup_temporary_files(form_data=cast("Dict[str, Any]", form_data))
+            await self._cleanup_temporary_files(form_data=cast("dict[str, Any]", form_data))
 
     def create_handler_map(self) -> None:
         """Parse the ``router_handlers`` of this route and return a mapping of
@@ -151,7 +153,7 @@ class HTTPRoute(BaseRoute):
         it tries to pass it to an appropriate exception handler - if defined.
         """
         response_data: Any = None
-        cleanup_group: Optional["DependencyCleanupGroup"] = None
+        cleanup_group: DependencyCleanupGroup | None = None
 
         if before_request_handler := route_handler.resolve_before_request():
             response_data = await before_request_handler(request)
@@ -161,7 +163,7 @@ class HTTPRoute(BaseRoute):
                 route_handler=route_handler, parameter_model=parameter_model, request=request
             )
 
-        response: "ASGIApp" = (
+        response: ASGIApp = (
             response_data  # type: ignore[assignment]
             if isinstance(response_data, Response)
             else await route_handler.to_response(
@@ -180,10 +182,10 @@ class HTTPRoute(BaseRoute):
     @staticmethod
     async def _get_response_data(
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
-    ) -> Tuple[Any, Optional["DependencyCleanupGroup"]]:
+    ) -> tuple[Any, "DependencyCleanupGroup" | None]:
         """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
-        parsed_kwargs: Dict[str, Any] = {}
-        cleanup_group: Optional["DependencyCleanupGroup"] = None
+        parsed_kwargs: dict[str, Any] = {}
+        cleanup_group: DependencyCleanupGroup | None = None
 
         if parameter_model.has_kwargs and route_handler.signature_model:
             kwargs = parameter_model.to_kwargs(connection=request)
@@ -220,7 +222,7 @@ class HTTPRoute(BaseRoute):
         return data, cleanup_group
 
     @staticmethod
-    async def _get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> Optional["ASGIApp"]:
+    async def _get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> "ASGIApp" | None:
         """Retrieve and un-pickle the cached response, if existing.
 
         Args:
@@ -242,7 +244,7 @@ class HTTPRoute(BaseRoute):
 
     @staticmethod
     async def _set_cached_response(
-        response: Union["Response", "ASGIApp"], request: Request, route_handler: "HTTPRouteHandler"
+        response: "Response" | "ASGIApp", request: Request, route_handler: "HTTPRouteHandler"
     ) -> None:
         """Pickles and caches a response object."""
         cache = request.app.cache
@@ -254,7 +256,7 @@ class HTTPRoute(BaseRoute):
             expiration=route_handler.cache if isinstance(route_handler.cache, int) else None,
         )
 
-    def create_options_handler(self, path: str) -> "HTTPRouteHandler":
+    def create_options_handler(self, path: str) -> HTTPRouteHandler:
         """
 
         Args:
@@ -264,7 +266,7 @@ class HTTPRoute(BaseRoute):
             An HTTP route handler for OPTIONS requests.
         """
 
-        def options_handler(scope: "Scope") -> Response:
+        def options_handler(scope: Scope) -> Response:
             """
             Handler function for OPTIONS requests.
             Args:
@@ -338,7 +340,7 @@ class HTTPRoute(BaseRoute):
         )(options_handler)
 
     @staticmethod
-    async def _cleanup_temporary_files(form_data: Dict[str, Any]) -> None:
+    async def _cleanup_temporary_files(form_data: dict[str, Any]) -> None:
         for v in form_data.values():
             if isinstance(v, UploadFile) and not v.file.closed:
                 await v.close()

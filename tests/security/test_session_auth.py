@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 from uuid import uuid4
 
 from starlette.status import (
@@ -8,16 +8,19 @@ from starlette.status import (
     HTTP_401_UNAUTHORIZED,
 )
 
-from starlite import ASGIConnection, Request, Starlite, delete, get, post
+from starlite import Request, Starlite, delete, get, post
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
 from starlite.security.session_auth import SessionAuth
 from starlite.testing import create_test_client
 from tests import User, UserFactory
 
+if TYPE_CHECKING:
+    from starlite.connection import ASGIConnection
+
 user_instance = UserFactory.build()
 
 
-def retrieve_user_handler(session_data: Dict[str, Any], _: ASGIConnection) -> Optional[User]:
+def retrieve_user_handler(session_data: Dict[str, Any], _: "ASGIConnection") -> Optional[User]:
     if session_data["id"] == str(user_instance.id):
         return User(**session_data)
     return None
@@ -29,15 +32,15 @@ def test_authentication() -> None:
     )
 
     @post("/login")
-    def login_handler(request: Request[Any, Any, Any], data: User) -> None:
+    def login_handler(request: "Request[Any, Any, Any]", data: User) -> None:
         request.set_session(data.dict())
 
     @delete("/user/{user_id:str}")
-    def delete_user_handler(request: Request[User, Any, Any]) -> None:
+    def delete_user_handler(request: "Request[User, Any, Any]") -> None:
         request.clear_session()
 
     @get("/user/{user_id:str}")
-    def get_user_handler(request: Request[User, Any, Any]) -> User:
+    def get_user_handler(request: "Request[User, Any, Any]") -> User:
         return request.user
 
     with create_test_client(

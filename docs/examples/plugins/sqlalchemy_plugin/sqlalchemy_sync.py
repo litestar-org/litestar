@@ -3,13 +3,11 @@ from typing import Optional
 from sqlalchemy import Column, Float, Integer, String, select
 from sqlalchemy.orm import Mapped, Session, declarative_base
 
-from starlite.dto import DTOFactory
-
 from starlite import Starlite, get, post
+from starlite.dto import DTOFactory
+from starlite.exceptions import HTTPException
 from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 from starlite.status_codes import HTTP_404_NOT_FOUND
-from starlite.exceptions import HTTPException
-
 
 Base = declarative_base()
 

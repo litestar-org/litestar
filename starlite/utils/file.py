@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from stat import S_ISDIR
 from typing import TYPE_CHECKING, Any, AnyStr, cast
 
@@ -55,7 +57,7 @@ class BaseLocalFileSystem(FileSystemProtocol):
 class FileSystemAdapter:
     """Wrapper around a ``FileSystemProtocol``, normalising its interface."""
 
-    def __init__(self, file_system: "FileSystemProtocol"):
+    def __init__(self, file_system: FileSystemProtocol):
         """Initialize an adapter from a given ``file_system``
 
         Args:
@@ -130,7 +132,7 @@ class FileSystemAdapter:
         Returns:
             A dictionary of file info.
         """
-        file_info: "FileInfo" = {
+        file_info: FileInfo = {
             "created": result.st_ctime,
             "gid": result.st_gid,
             "ino": result.st_ino,

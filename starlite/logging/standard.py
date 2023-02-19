@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import atexit
 from logging import StreamHandler
 from logging.handlers import QueueHandler, QueueListener
 from queue import Queue
-from typing import Any, List, Optional
+from typing import Any
 
 from starlite.logging.utils import resolve_handlers
 
@@ -10,7 +12,7 @@ from starlite.logging.utils import resolve_handlers
 class QueueListenerHandler(QueueHandler):
     """Configure queue listener and handler to support non-blocking logging configuration."""
 
-    def __init__(self, handlers: Optional[List[Any]] = None) -> None:
+    def __init__(self, handlers: list[Any] | None = None) -> None:
         """Initialize `?QueueListenerHandler`.
 
         Args:

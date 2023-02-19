@@ -1,6 +1,8 @@
 from typing import Dict
 
-from starlite import Body, RequestEncodingType, Starlite, post
+from starlite import Starlite, post
+from starlite.enums import RequestEncodingType
+from starlite.params import Body
 
 
 @post(path="/")

@@ -4,7 +4,6 @@ import pytest
 
 from starlite import (
     Controller,
-    HTTPRouteHandler,
     Router,
     Starlite,
     asgi,
@@ -17,6 +16,7 @@ from starlite import (
 )
 from starlite.config.static_files import StaticFilesConfig
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.handlers.http_handlers import HTTPRouteHandler
 
 if TYPE_CHECKING:
     from pathlib import Path

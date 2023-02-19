@@ -3,8 +3,8 @@ from urllib.parse import urlencode
 
 import pytest
 
-from starlite import Cookie, HttpMethod
-from starlite.datastructures import MultiDict
+from starlite import HttpMethod
+from starlite.datastructures import Cookie, MultiDict
 from starlite.parsers import (
     _parse_headers,
     parse_cookie_string,

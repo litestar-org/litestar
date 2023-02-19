@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable
 
 from starlite.exceptions import MissingDependencyException, TemplateNotFoundException
 from starlite.template.base import (
@@ -23,7 +25,7 @@ if TYPE_CHECKING:
 class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
     """The engine instance."""
 
-    def __init__(self, directory: Union["DirectoryPath", List["DirectoryPath"]]) -> None:
+    def __init__(self, directory: DirectoryPath | list[DirectoryPath]) -> None:
         """Jinja2 based TemplateEngine.
 
         Args:
@@ -36,7 +38,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
         self.register_template_callable(key="csrf_token", template_callable=csrf_token)  # type: ignore
         self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
 
-    def get_template(self, template_name: str) -> "JinjaTemplate":
+    def get_template(self, template_name: str) -> JinjaTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
         Args:
             template_name: A dotted path
@@ -52,7 +54,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
         except JinjaTemplateNotFound as exc:
             raise TemplateNotFoundException(template_name=template_name) from exc
 
-    def register_template_callable(self, key: str, template_callable: Callable[[Dict[str, Any]], Any]) -> None:
+    def register_template_callable(self, key: str, template_callable: Callable[[dict[str, Any]], Any]) -> None:
         """Register a callable on the template engine.
 
         Args:

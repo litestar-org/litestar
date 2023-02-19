@@ -1,18 +1,8 @@
+from __future__ import annotations
+
 from copy import copy, deepcopy
 from threading import RLock
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generator,
-    Iterable,
-    Iterator,
-    Mapping,
-    MutableMapping,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import Any, Callable, Generator, Iterable, Iterator, Mapping, MutableMapping
 
 
 class ImmutableState(Mapping[str, Any]):
@@ -23,10 +13,10 @@ class ImmutableState(Mapping[str, Any]):
 
     __slots__ = ("_state",)
 
-    _state: Dict[str, Any]
+    _state: dict[str, Any]
 
     def __init__(
-        self, state: Union["ImmutableState", Mapping[str, Any], Iterable[Tuple[str, Any]]], deep_copy: bool = True
+        self, state: ImmutableState | Mapping[str, Any] | Iterable[tuple[str, Any]], deep_copy: bool = True
     ) -> None:
         """Initialize an ``ImmutableState`` instance.
 
@@ -37,7 +27,7 @@ class ImmutableState(Mapping[str, Any]):
         Examples:
             .. code-block: python
 
-                from starlite import ImmutableState
+                from starlite.datastructures import ImmutableState
 
                 state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
                 state = ImmutableState(state_dict)
@@ -123,14 +113,14 @@ class ImmutableState(Mapping[str, Any]):
         except KeyError as e:
             raise AttributeError from e
 
-    def __copy__(self) -> "ImmutableState":
+    def __copy__(self) -> ImmutableState:
         """Return a shallow copy of the given state object.
 
         Customizes how the builtin "copy" function will work.
         """
         return self.__class__(deepcopy(self._state))
 
-    def mutable_copy(self) -> "State":
+    def mutable_copy(self) -> State:
         """Return a mutable copy of the state object.
 
         Returns:
@@ -138,7 +128,7 @@ class ImmutableState(Mapping[str, Any]):
         """
         return State(self._state)
 
-    def dict(self) -> Dict[str, Any]:
+    def dict(self) -> dict[str, Any]:
         """Return a shallow copy of the wrapped dict.
 
         Returns:
@@ -149,14 +139,12 @@ class ImmutableState(Mapping[str, Any]):
     @classmethod
     def __get_validators__(
         cls,
-    ) -> Generator[
-        Callable[[Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]], "ImmutableState"], None, None
-    ]:
+    ) -> Generator[Callable[[ImmutableState | dict[str, Any] | Iterable[tuple[str, Any]]], ImmutableState], None, None]:  # type: ignore[valid-type]
         """Pydantic compatible method to allow custom parsing of state instances in a SignatureModel."""
         yield cls.validate
 
     @classmethod
-    def validate(cls, value: Union["ImmutableState", Dict[str, Any], Iterable[Tuple[str, Any]]]) -> "ImmutableState":
+    def validate(cls, value: ImmutableState | dict[str, Any] | Iterable[tuple[str, Any]]) -> ImmutableState:  # type: ignore[valid-type]
         """Parse a value and instantiate state inside a SignatureModel. This allows us to use custom subclasses of
         state, as well as allows users to decide whether state is mutable or immutable.
 
@@ -181,7 +169,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
 
     def __init__(
         self,
-        state: Optional[Union["ImmutableState", Mapping[str, Any], Iterable[Tuple[str, Any]]]] = None,
+        state: ImmutableState | Mapping[str, Any] | Iterable[tuple[str, Any]] | None = None,
         deep_copy: bool = False,
     ) -> None:
         """Initialize a ``State`` instance with an optional value.
@@ -193,7 +181,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
         Examples:
         .. code-block: python
 
-            from starlite import State
+            from starlite.datastructures import State
 
             state_dict = {"first": 1, "second": 2, "third": 3, "fourth": 4}
             state = State(state_dict)
@@ -298,7 +286,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
         except KeyError as e:
             raise AttributeError from e
 
-    def copy(self) -> "State":
+    def copy(self) -> State:
         """Return a shallow copy of the state object.
 
         Returns:
@@ -306,7 +294,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
         """
         return self.__class__(self.dict())
 
-    def immutable_copy(self) -> "ImmutableState":
+    def immutable_copy(self) -> ImmutableState:
         """Return a shallow copy of the state object, setting it to be frozen.
 
         Returns:

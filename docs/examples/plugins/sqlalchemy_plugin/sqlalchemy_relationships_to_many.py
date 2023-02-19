@@ -6,7 +6,6 @@ from sqlalchemy.orm import Mapped, Session, declarative_base, relationship
 
 from starlite import Starlite, get
 from starlite.exceptions import HTTPException
-
 from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 from starlite.status_codes import HTTP_404_NOT_FOUND
 

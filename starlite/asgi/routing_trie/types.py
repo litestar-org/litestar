@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Dict, Literal, NamedTuple, Set, Tuple, Type, Union
+from typing import TYPE_CHECKING, Literal, NamedTuple
 
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Method, RouteHandlerType
@@ -13,9 +15,9 @@ class PathParameterSentinel:
 class ASGIHandlerTuple(NamedTuple):
     """Encapsulation of a route handler node."""
 
-    asgi_app: "ASGIApp"
+    asgi_app: ASGIApp
     """An ASGI stack, composed of a handler function and layers of middleware that wrap it."""
-    handler: "RouteHandlerType"
+    handler: RouteHandlerType
     """The route handler instance."""
 
 
@@ -35,13 +37,13 @@ class RouteTrieNode:
         "path_parameters",
     )
 
-    asgi_handlers: Dict[Union["Method", Literal["websocket", "asgi"]], "ASGIHandlerTuple"]
+    asgi_handlers: dict[Method | Literal["websocket", "asgi"], ASGIHandlerTuple]
     """A mapping of ASGI handlers stored on the node."""
-    child_keys: Set[Union[str, Type[PathParameterSentinel]]]
+    child_keys: set[str | type[PathParameterSentinel]]
     """
     A set containing the child keys, same as the children dictionary - but as a set, which offers faster lookup.
     """
-    children: Dict[Union[str, Type[PathParameterSentinel]], "RouteTrieNode"]
+    children: dict[str | type[PathParameterSentinel], RouteTrieNode]
     """A dictionary mapping path components or using the PathParameterSentinel class to child nodes."""
     is_path_param_node: bool
     """Designates the node as having a path parameter."""
@@ -53,7 +55,7 @@ class RouteTrieNode:
     """Designate the node as being a mount route."""
     is_static: bool
     """Designate the node as being a static mount route."""
-    path_parameters: Dict[Union["Method", Literal["websocket"], Literal["asgi"]], Tuple["PathParameterDefinition", ...]]
+    path_parameters: dict[Method | Literal["websocket"] | Literal["asgi"], tuple[PathParameterDefinition, ...]]
     """A list of tuples containing path parameter definitions.
 
     This is used for parsing extracted path parameter values.

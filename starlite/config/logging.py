@@ -16,6 +16,7 @@ from typing import (
 
 from pydantic import BaseModel, Field, validator
 
+from starlite.config.base_config import BaseConfigModel
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
@@ -102,6 +103,9 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
     Notes:
         - If 'picologging' is installed it will be used by default.
     """
+
+    class Config(BaseConfigModel):
+        pass
 
     version: Literal[1] = 1
     """The only valid value at present is 1."""

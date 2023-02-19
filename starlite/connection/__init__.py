@@ -30,8 +30,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from starlite.connection.base import ASGIConnection, empty_receive, empty_send
+from starlite.connection.base import ASGIConnection
 from starlite.connection.request import Request
 from starlite.connection.websocket import WebSocket
 
-__all__ = ("ASGIConnection", "Request", "WebSocket", "empty_receive", "empty_send")
+__all__ = ("ASGIConnection", "Request", "WebSocket")

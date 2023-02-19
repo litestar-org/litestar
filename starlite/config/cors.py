@@ -2,8 +2,9 @@ import re
 from functools import cached_property
 from typing import Dict, List, Literal, Optional, Pattern, Union
 
-from pydantic import BaseConfig, BaseModel, validator
+from pydantic import BaseModel, validator
 
+from starlite.config.base_config import BaseConfigModel
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.types import Method
 
@@ -15,7 +16,7 @@ class CORSConfig(BaseModel):
     'cors_config' key.
     """
 
-    class Config(BaseConfig):
+    class Config(BaseConfigModel):
         keep_untouched = (cached_property,)
 
     allow_origins: List[str] = ["*"]

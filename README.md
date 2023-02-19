@@ -124,7 +124,8 @@ controllers:
 from typing import List, Optional
 
 from pydantic import UUID4
-from starlite import Controller, Partial, get, post, put, patch, delete
+from starlite import Controller, get, post, put, patch, delete
+from starlite.partial import Partial
 from datetime import datetime
 
 from my_app.models import User
@@ -209,7 +210,8 @@ Starlite has a simple but powerful DI system inspired by pytest. You can define 
 different levels of the application, and then selective use or overwrite them.
 
 ```python
-from starlite import Starlite, Provide, get
+from starlite import Starlite, get
+from starlite.di import Provide
 
 
 async def my_dependency() -> str:
@@ -244,10 +246,10 @@ function.
 from starlite import (
     Starlite,
     get,
-    ASGIConnection,
-    NotAuthorizedException,
-    BaseRouteHandler,
 )
+from starlite.connection import ASGIConnection
+from starlite.handlers.base import BaseRouteHandler
+from starlite.exceptions import NotAuthorizedException
 
 
 async def is_authorized(connection: ASGIConnection, handler: BaseRouteHandler) -> None:

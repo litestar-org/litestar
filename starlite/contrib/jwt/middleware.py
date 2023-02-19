@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Awaitable, List, Optional, Union
+from __future__ import annotations
 
-from starlite.connection import ASGIConnection
+from typing import TYPE_CHECKING, Awaitable
+
 from starlite.contrib.jwt.jwt_token import Token
 from starlite.exceptions import NotAuthorizedException
 from starlite.middleware.authentication import (
@@ -11,6 +12,7 @@ from starlite.middleware.authentication import (
 if TYPE_CHECKING:
     from typing import Any
 
+    from starlite.connection import ASGIConnection
     from starlite.types import ASGIApp, Scopes
     from starlite.utils import AsyncCallable
 
@@ -23,13 +25,13 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
 
     def __init__(
         self,
-        app: "ASGIApp",
+        app: ASGIApp,
         algorithm: str,
         auth_header: str,
-        exclude: Optional[Union[str, List[str]]],
+        exclude: str | list[str] | None,
         exclude_opt_key: str,
-        retrieve_user_handler: "AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]]",
-        scopes: "Scopes",
+        retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
+        scopes: Scopes,
         token_secret: str,
     ):
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
@@ -53,7 +55,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         self.retrieve_user_handler = retrieve_user_handler
         self.token_secret = token_secret
 
-    async def authenticate_request(self, connection: "ASGIConnection[Any,Any,Any, Any]") -> AuthenticationResult:
+    async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
         token from the DB.
 
@@ -73,7 +75,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         return await self.authenticate_token(encoded_token=encoded_token, connection=connection)
 
     async def authenticate_token(
-        self, encoded_token: str, connection: "ASGIConnection[Any, Any, Any, Any]"
+        self, encoded_token: str, connection: ASGIConnection[Any, Any, Any, Any]
     ) -> AuthenticationResult:
         """Given an encoded JWT token, parse, validate and look up sub within token.
 
@@ -107,13 +109,13 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
     def __init__(
         self,
         algorithm: str,
-        app: "ASGIApp",
+        app: ASGIApp,
         auth_cookie_key: str,
         auth_header: str,
-        exclude: Optional[Union[str, List[str]]],
+        exclude: str | list[str] | None,
         exclude_opt_key: str,
-        retrieve_user_handler: "AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]]",
-        scopes: "Scopes",
+        retrieve_user_handler: AsyncCallable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
+        scopes: Scopes,
         token_secret: str,
     ):
         """Check incoming requests for an encoded token in the auth header or cookie name specified, and if present
@@ -144,7 +146,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         )
         self.auth_cookie_key = auth_cookie_key
 
-    async def authenticate_request(self, connection: "ASGIConnection[Any,Any,Any, Any]") -> AuthenticationResult:
+    async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
         token from the DB.
 

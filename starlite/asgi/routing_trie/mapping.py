@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Set, Tuple, Type, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from starlite.asgi.routing_trie.types import (
     ASGIHandlerTuple,
@@ -17,11 +19,11 @@ if TYPE_CHECKING:
 
 
 def add_mount_route(
-    current_node: "RouteTrieNode",
-    mount_routes: Dict[str, "RouteTrieNode"],
-    root_node: "RouteTrieNode",
-    route: "ASGIRoute",
-) -> "RouteTrieNode":
+    current_node: RouteTrieNode,
+    mount_routes: dict[str, RouteTrieNode],
+    root_node: RouteTrieNode,
+    route: ASGIRoute,
+) -> RouteTrieNode:
     """Add a node for a mount route.
 
     Args:
@@ -55,12 +57,12 @@ def add_mount_route(
 
 
 def add_route_to_trie(
-    app: "Starlite",
-    mount_routes: Dict[str, "RouteTrieNode"],
-    plain_routes: Set[str],
-    root_node: "RouteTrieNode",
-    route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
-) -> "RouteTrieNode":
+    app: Starlite,
+    mount_routes: dict[str, RouteTrieNode],
+    plain_routes: set[str],
+    root_node: RouteTrieNode,
+    route: HTTPRoute | WebSocketRoute | ASGIRoute,
+) -> RouteTrieNode:
     """Add a new route path (e.g. '/foo/bar/{param:int}') into the route_map tree.
 
     Inserts non-parameter paths ('plain routes') off the tree's root
@@ -101,7 +103,7 @@ def add_route_to_trie(
         for component in route.path_components:
             if isinstance(component, PathParameterDefinition):
                 current_node.is_path_param_node = True
-                next_node_key: Union[Type[PathParameterSentinel], str] = PathParameterSentinel
+                next_node_key: type[PathParameterSentinel] | str = PathParameterSentinel
 
             else:
                 next_node_key = component
@@ -120,9 +122,9 @@ def add_route_to_trie(
 
 
 def configure_node(
-    app: "Starlite",
-    route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
-    node: "RouteTrieNode",
+    app: Starlite,
+    route: HTTPRoute | WebSocketRoute | ASGIRoute,
+    node: RouteTrieNode,
 ) -> None:
     """Set required attributes and route handlers on route_map tree node.
 
@@ -165,10 +167,10 @@ def configure_node(
 
 
 def build_route_middleware_stack(
-    app: "Starlite",
-    route: Union["HTTPRoute", "WebSocketRoute", "ASGIRoute"],
-    route_handler: "RouteHandlerType",
-) -> "ASGIApp":
+    app: Starlite,
+    route: HTTPRoute | WebSocketRoute | ASGIRoute,
+    route_handler: RouteHandlerType,
+) -> ASGIApp:
     """Construct a middleware stack that serves as the point of entry for each route.
 
     Args:
@@ -198,7 +200,7 @@ def build_route_middleware_stack(
 
     for middleware in route_handler.resolve_middleware():
         if hasattr(middleware, "__iter__"):
-            handler, kwargs = cast("Tuple[Any, Dict[str, Any]]", middleware)
+            handler, kwargs = cast("tuple[Any, dict[str, Any]]", middleware)
             asgi_handler = handler(app=asgi_handler, **kwargs)
         else:
             asgi_handler = middleware(app=asgi_handler)  # type: ignore

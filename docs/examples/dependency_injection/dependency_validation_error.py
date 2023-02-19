@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
-from starlite import Provide, Starlite, get
+from starlite import Starlite, get
+from starlite.di import Provide
 
 
 def provide_str() -> str:

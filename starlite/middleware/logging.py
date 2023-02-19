@@ -325,7 +325,8 @@ class LoggingMiddlewareConfig(BaseModel):
         Examples:
             .. code-block: python
 
-                from starlite import Starlite, Request, LoggingConfig, get
+                from starlite import Starlite, Request, get
+                from starlite.config.logging import LoggingConfig
                 from starlite.middleware.logging import LoggingMiddlewareConfig
 
                 logging_config = LoggingConfig()

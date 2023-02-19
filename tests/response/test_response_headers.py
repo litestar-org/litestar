@@ -3,8 +3,8 @@ from typing import Dict
 import pytest
 from pydantic import ValidationError
 
-from starlite import Controller, HttpMethod, ResponseHeader, Router, Starlite, get, post
-from starlite.datastructures import CacheControlHeader, ETag
+from starlite import Controller, HttpMethod, Router, Starlite, get, post
+from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
 from starlite.datastructures.headers import Header
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import TestClient, create_test_client

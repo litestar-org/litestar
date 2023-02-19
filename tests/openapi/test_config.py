@@ -1,12 +1,15 @@
 from sys import version_info
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from pydantic import BaseModel, Field
 from pydantic_openapi_schema.v3_1_0 import Components, Example, Header
 
-from starlite import HTTPRouteHandler, Starlite, get
+from starlite import Starlite, get
 from starlite.config.openapi import OpenAPIConfig
+
+if TYPE_CHECKING:
+    from starlite.handlers.http_handlers import HTTPRouteHandler
 
 
 @pytest.mark.skipif(version_info < (3, 10), reason="pydantic serialization differences in lower python versions")
@@ -75,7 +78,7 @@ def test_by_alias() -> None:
 
 
 def test_allows_customization_of_operation_id_creator() -> None:
-    def operation_id_creator(handler: HTTPRouteHandler, _: Any, __: Any) -> str:
+    def operation_id_creator(handler: "HTTPRouteHandler", _: Any, __: Any) -> str:
         return handler.name or ""
 
     @get(path="/1", name="x")

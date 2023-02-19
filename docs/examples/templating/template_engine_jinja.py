@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from starlite import Starlite, TemplateConfig
+from starlite import Starlite
+from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 
 app = Starlite(

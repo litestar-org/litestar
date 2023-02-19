@@ -1,4 +1,5 @@
-from starlite import Body, post
+from starlite import post
+from starlite.params import Body
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
 from tests.kwargs import Form

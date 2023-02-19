@@ -277,7 +277,7 @@ class RateLimitConfig(BaseModel):
             .. code-block: python
 
                 from starlite import Starlite, Request, get
-                from starlite.middleware import RateLimitConfig
+                from starlite.middleware.rate_limit import RateLimitConfig
 
                 # limit to 10 requests per minute, excluding the schema path
                 throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])

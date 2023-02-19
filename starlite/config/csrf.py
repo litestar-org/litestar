@@ -2,6 +2,7 @@ from typing import List, Literal, Optional, Set, Union
 
 from pydantic import BaseModel
 
+from starlite.config.base_config import BaseConfigModel
 from starlite.types import Method
 
 
@@ -11,6 +12,9 @@ class CSRFConfig(BaseModel):
     To enable CSRF protection, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor using
     the 'csrf_config' key.
     """
+
+    class Config(BaseConfigModel):
+        pass
 
     secret: str
     """A string that is used to create an HMAC to sign the CSRF token."""

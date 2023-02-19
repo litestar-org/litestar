@@ -1,22 +1,27 @@
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import pytest
 from pydantic_openapi_schema.v3_1_0 import Components, SecurityScheme
 
-from starlite import ASGIConnection, BaseRouteHandler, Provide, get
+from starlite import get
 from starlite.config.openapi import OpenAPIConfig
+from starlite.di import Provide
 from starlite.middleware.session.memory_backend import MemoryBackendConfig
 from starlite.security.session_auth import SessionAuth
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 
+if TYPE_CHECKING:
+    from starlite.connection import ASGIConnection
+    from starlite.handlers.base import BaseRouteHandler
 
-def retrieve_user_handler(_: Dict[str, Any], __: ASGIConnection) -> Any:
+
+def retrieve_user_handler(_: Dict[str, Any], __: "ASGIConnection") -> Any:
     pass
 
 
 def test_abstract_security_config_sets_guards() -> None:
-    async def guard(_: "ASGIConnection", __: BaseRouteHandler) -> None:
+    async def guard(_: "ASGIConnection", __: "BaseRouteHandler") -> None:
         pass
 
     security_config = SessionAuth[Any](
@@ -132,7 +137,7 @@ def test_abstract_security_config_registers_route_handlers() -> None:
     ),
 )
 def test_abstract_security_config_setting_openapi_components(
-    openapi_config: Optional[OpenAPIConfig], expected: dict
+    openapi_config: Optional["OpenAPIConfig"], expected: dict
 ) -> None:
     security_config = SessionAuth[Any](
         retrieve_user_handler=retrieve_user_handler, exclude=["/"], session_backend_config=MemoryBackendConfig()
