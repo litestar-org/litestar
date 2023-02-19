@@ -14,7 +14,6 @@ from typing import (
     cast,
 )
 
-from pydantic import validate_arguments
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
 from starlite.controller import Controller
@@ -50,6 +49,7 @@ from starlite.utils import (
     normalize_path,
     unique,
 )
+from starlite.utils.compat import validate_arguments
 from starlite.utils.sync import AsyncCallable
 
 if TYPE_CHECKING:
@@ -86,7 +86,7 @@ class Router:
         "type_encoders",
     )
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
+    @validate_arguments
     def __init__(
         self,
         path: str,

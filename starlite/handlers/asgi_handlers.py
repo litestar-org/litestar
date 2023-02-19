@@ -1,12 +1,11 @@
 from inspect import Signature
 from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, Union
 
-from pydantic import validate_arguments
-
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.types import AsyncAnyCallable, ExceptionHandlersMap, Guard
 from starlite.utils import Ref, is_async_callable
+from starlite.utils.compat import validate_arguments
 
 if TYPE_CHECKING:
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
@@ -20,7 +19,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
 
     __slots__ = ("is_mount", "is_static")
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
+    @validate_arguments
     def __init__(
         self,
         path: Optional[Union[str, Sequence[str]]] = None,

@@ -15,8 +15,6 @@ from typing import (
     cast,
 )
 
-from pydantic import validate_arguments
-
 from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.signature.models import SignatureField
@@ -31,6 +29,7 @@ from starlite.types import (
 )
 from starlite.types.composite_types import MaybePartial
 from starlite.utils import AsyncCallable, Ref, get_name, normalize_path
+from starlite.utils.compat import validate_arguments
 from starlite.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
@@ -74,7 +73,7 @@ class BaseRouteHandler(Generic[T]):
         "type_encoders",
     )
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
+    @validate_arguments
     def __init__(
         self,
         path: Optional[Union[str, Sequence[str]]] = None,

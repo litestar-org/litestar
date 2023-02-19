@@ -1,12 +1,11 @@
 from inspect import Signature
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
-from pydantic import validate_arguments
-
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.types import Dependencies, ExceptionHandler, Guard, Middleware
 from starlite.utils import Ref, is_async_callable
+from starlite.utils.compat import validate_arguments
 
 if TYPE_CHECKING:
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
@@ -19,7 +18,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
     Use this decorator to decorate websocket handler functions.
     """
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
+    @validate_arguments
     def __init__(
         self,
         path: Union[Optional[str], Optional[List[str]]] = None,

@@ -10,8 +10,10 @@ from typing import (
     runtime_checkable,
 )
 
-from pydantic import DirectoryPath, validate_arguments
+from pydantic import DirectoryPath
 from typing_extensions import TypedDict
+
+from starlite.utils.compat import validate_arguments
 
 if TYPE_CHECKING:
     from starlite.connection import Request
