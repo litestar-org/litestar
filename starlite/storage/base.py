@@ -13,7 +13,7 @@ class Storage(ABC):  # pragma: no cover
     """Thread and process safe asynchronous key/value store."""
 
     @abstractmethod
-    async def set(self, key: str, value: bytes, expires_in: int | timedelta | None = None) -> None:
+    async def set(self, key: str, value: str | bytes, expires_in: int | timedelta | None = None) -> None:
         """Set a value.
 
         Args:

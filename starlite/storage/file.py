@@ -57,7 +57,7 @@ class FileStorage(Storage):
     async def _write(self, target_file: Path, storage_obj: StorageObject) -> None:
         await run_sync(self._write_sync, target_file, storage_obj)
 
-    async def set(self, key: str, value: bytes, expires_in: int | timedelta | None = None) -> None:
+    async def set(self, key: str, value: str | bytes, expires_in: int | timedelta | None = None) -> None:
         """Set a value.
 
         Args:
@@ -70,6 +70,8 @@ class FileStorage(Storage):
         """
         await self.path.mkdir(exist_ok=True)
         path = self.path / key
+        if isinstance(value, str):
+            value = value.encode("utf-8")
         storage_obj = StorageObject.new(data=value, expires_in=expires_in)
         await self._write(path, storage_obj)
 

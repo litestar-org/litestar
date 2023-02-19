@@ -2,7 +2,7 @@ from pathlib import Path
 
 from starlite import Starlite
 from starlite.middleware.session.server_side import ServerSideSessionConfig
-from starlite.storage.file_backend import FileStorage
+from starlite.storage.file import FileStorage
 
 storage = FileStorage(path=Path(".sessions"))
 session_config = ServerSideSessionConfig(storage=storage)

@@ -103,7 +103,7 @@ class RedisStorage(Storage):
         prefix = f"{self.namespace}:" if self.namespace else ""
         return prefix + key
 
-    async def set(self, key: str, value: bytes, expires_in: int | timedelta | None = None) -> None:
+    async def set(self, key: str, value: str | bytes, expires_in: int | timedelta | None = None) -> None:
         """Set a value.
 
         Args:
@@ -114,6 +114,8 @@ class RedisStorage(Storage):
         Returns:
             ``None``
         """
+        if isinstance(value, str):
+            value = value.encode("utf-8")
         await self._redis.set(self._make_key(key), value, ex=expires_in)
 
     async def get(self, key: str, renew_for: int | timedelta | None = None) -> bytes | None:

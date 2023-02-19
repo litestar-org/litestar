@@ -21,7 +21,7 @@ class MemoryStorage(Storage):
         self._store: dict[str, StorageObject] = {}
         self._lock = Lock()
 
-    async def set(self, key: str, value: bytes, expires_in: int | timedelta | None = None) -> None:
+    async def set(self, key: str, value: str | bytes, expires_in: int | timedelta | None = None) -> None:
         """Set a value.
 
         Args:
@@ -32,6 +32,8 @@ class MemoryStorage(Storage):
         Returns:
             ``None``
         """
+        if isinstance(value, str):
+            value = value.encode("utf-8")
         async with self._lock:
             self._store[key] = StorageObject.new(data=value, expires_in=expires_in)
 

@@ -37,6 +37,9 @@ class UserLoginPayload(BaseModel):
     password: SecretStr
 
 
+MOCK_DB: Dict[str, User] = {}
+
+
 # The SessionAuth class requires a handler callable
 # that takes the session dictionary, and returns the
 # 'User' instance correlating to it.
@@ -50,9 +53,11 @@ async def retrieve_user_handler(
     session: Dict[str, Any], connection: "ASGIConnection[Any, Any, Any, Any]"
 ) -> Optional[User]:
     # we retrieve the user instance based on session data
-    value = await connection.cache.get(session.get("user_id", ""))
-    if value:
-        return User(**value)
+
+    user_id = session.get("user_id")
+    if user_id:
+        return MOCK_DB.get(user_id)
+
     return None
 
 
@@ -68,8 +73,7 @@ async def login(data: UserLoginPayload, request: "Request[Any, Any, Any]") -> Us
 
     if not user_id:
         raise NotAuthorizedException
-
-    user_data = await request.cache.get(user_id)
+    user_id = user_id.decode("utf-8")
 
     # once verified we can create a session.
     # to do this we simply need to call the Starlite
@@ -79,7 +83,7 @@ async def login(data: UserLoginPayload, request: "Request[Any, Any, Any]") -> Us
     request.set_session({"user_id": user_id})
 
     # you can do whatever we want here. In this case, we will simply return the user data:
-    return User(**user_data)
+    return MOCK_DB[user_id]
 
 
 @post("/signup")
@@ -91,7 +95,7 @@ async def signup(data: UserCreatePayload, request: Request[Any, Any, Any]) -> Us
     user = User(name=data.name, email=data.email, id=uuid4())
 
     await request.cache.set(data.email, str(user.id))
-    await request.cache.set(str(user.id), user.dict())
+    MOCK_DB[str(user.id)] = user
     # we are creating a session the same as we do in the
     # 'login_handler' above:
     request.set_session({"user_id": str(user.id)})

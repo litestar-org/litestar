@@ -33,14 +33,14 @@ async def test_get(storage_backend: Storage) -> None:
 
 
 async def test_set(storage_backend: Storage) -> None:
-    values = {"key_1": b"value_1", "key_2": b"value_2"}
+    values: dict[str, bytes | str] = {"key_1": b"value_1", "key_2": "value_2"}
 
     for key, value in values.items():
         await storage_backend.set(key, value)
 
     for key, value in values.items():
         stored_value = await storage_backend.get(key)
-        assert stored_value == value
+        assert stored_value == value if isinstance(value, bytes) else value.encode("utf-8")
 
 
 async def test_expires(storage_backend: Storage) -> None:
