@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Tuple
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple
 from urllib.parse import urlencode
 
 from pydantic import BaseModel
@@ -37,7 +37,7 @@ class CacheConfig(BaseModel):
     class Config(BaseConfigModel):
         pass
 
-    backend: Storage | None = None
+    backend: Optional[Storage] = None
     """Instance conforming to :class:`CacheBackendProtocol <starlite.cache.CacheBackendProtocol>`, default.
 
     :class:`MemoryStorage() <starlite.cache.MemoryStorage>`

@@ -1,11 +1,13 @@
 import secrets
-from typing import Any, Dict, Optional, Type
+from typing import TYPE_CHECKING, Any, Dict, Optional, Type
 
-from starlite.connection import ASGIConnection
 from starlite.datastructures import Cookie, MutableScopeHeaders
 from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
 from starlite.storage.base import Storage
 from starlite.types import Empty, Message, ScopeSession
+
+if TYPE_CHECKING:
+    from starlite.connection import ASGIConnection
 
 
 class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
@@ -75,7 +77,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         return secrets.token_hex(self.config.session_id_bytes)
 
     async def store_in_message(
-        self, scope_session: "ScopeSession", message: "Message", connection: ASGIConnection
+        self, scope_session: "ScopeSession", message: "Message", connection: "ASGIConnection"
     ) -> None:
         """Store the necessary information in the outgoing ``Message`` by setting a cookie containing the session-ID.
 
@@ -114,7 +116,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
 
             headers["Set-Cookie"] = Cookie(value=session_id, key=self.config.key, **cookie_params).to_header(header="")
 
-    async def load_from_connection(self, connection: ASGIConnection) -> Dict[str, Any]:
+    async def load_from_connection(self, connection: "ASGIConnection") -> Dict[str, Any]:
         """Load session data from a connection and return it as a dictionary to be used in the current application
         scope.
 
