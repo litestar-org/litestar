@@ -153,8 +153,10 @@ def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> Non
     def handler(a: int, b: int) -> str:
         return "OK"
 
+    app = Starlite(route_handlers=[handler])
+
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[handler])
+        app.openapi_schema
 
 
 def test_dependency_params_in_docs_if_dependency_provided() -> None:
