@@ -4,9 +4,9 @@ from urllib.parse import urlencode
 from pydantic import BaseModel
 
 from starlite.cache import Cache
+from starlite.config.base_config import BaseConfigModel
 from starlite.storage.base import Storage
 from starlite.storage.memory import MemoryStorage
-from starlite.config.base_config import BaseConfigModel
 from starlite.types import CacheKeyBuilder
 
 if TYPE_CHECKING:

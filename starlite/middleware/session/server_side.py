@@ -1,8 +1,8 @@
 import secrets
 from typing import Any, Dict, Optional, Type
 
-from starlite import ASGIConnection, Cookie
-from starlite.datastructures import MutableScopeHeaders
+from starlite.connection import ASGIConnection
+from starlite.datastructures import Cookie, MutableScopeHeaders
 from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
 from starlite.storage.base import Storage
 from starlite.types import Empty, Message, ScopeSession

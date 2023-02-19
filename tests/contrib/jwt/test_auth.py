@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 )
 @settings(deadline=None)
 async def test_jwt_auth(
-    mock_db: MemoryStorage,
+    mock_db: "MemoryStorage",
     algorithm: str,
     auth_header: str,
     default_token_expiration: timedelta,
@@ -137,7 +137,7 @@ async def test_jwt_auth(
 )
 @settings(deadline=None)
 async def test_jwt_cookie_auth(
-    mock_db: MemoryStorage,
+    mock_db: "MemoryStorage",
     algorithm: str,
     auth_header: str,
     auth_cookie: str,

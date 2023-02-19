@@ -8,8 +8,8 @@ from starlite.config.openapi import OpenAPIConfig
 from starlite.connection import ASGIConnection
 from starlite.exceptions import NotAuthorizedException
 from starlite.middleware.session.server_side import ServerSideSessionConfig
-from starlite.storage.memory import MemoryStorage
 from starlite.security.session_auth import SessionAuth
+from starlite.storage.memory import MemoryStorage
 
 
 # Let's assume we have a User model that is a pydantic model.

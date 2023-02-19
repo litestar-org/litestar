@@ -5,8 +5,8 @@ from pydantic_openapi_schema.v3_1_0 import Components, SecurityScheme
 
 from starlite import get
 from starlite.config.openapi import OpenAPIConfig
-from starlite.middleware.session.server_side import ServerSideSessionConfig
 from starlite.di import Provide
+from starlite.middleware.session.server_side import ServerSideSessionConfig
 from starlite.security.session_auth import SessionAuth
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
