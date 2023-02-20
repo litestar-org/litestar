@@ -313,6 +313,7 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
             expires=int((datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)).timestamp()),
             secure=self.secure,
             samesite=self.samesite,
+            domain=self.domain,
         )
 
         if response_body is not Empty:
@@ -442,6 +443,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
             expires=expires_in,
             secure=self.secure,
             samesite=self.samesite,
+            domain=self.domain,
         )
 
         if response_body is not Empty:
