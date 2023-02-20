@@ -238,7 +238,7 @@ Dependency overrides
 ^^^^^^^^^^^^^^^^^^^^
 
 While FastAPI includes a mechanism to override dependencies on an existing application object,
-Starlite promotes architecular solutions to the issue this is aimed to solve. Therefore, overriding
+Starlite promotes architectural solutions to the issue this is aimed to solve. Therefore, overriding
 dependencies in Starlite is strictly supported at definition time, i.e. when you’re defining
 handlers, controllers, routers and applications. Dependency overrides are fundamentally
 the same idea as mocking and should be approached with the same caution and used sparingly
