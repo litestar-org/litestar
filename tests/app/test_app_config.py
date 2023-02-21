@@ -49,7 +49,7 @@ def app_config_object() -> AppConfig:
         request_class=None,
         response_class=None,
         response_cookies=[],
-        response_headers={},
+        response_headers=[],
         route_handlers=[],
         security=[],
         static_files_config=[],

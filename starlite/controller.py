@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, DefaultDict, Mapping, cast
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.handlers.utils import narrow_response_cookies, narrow_response_headers
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.utils import AsyncCallable, normalize_path
 from starlite.utils.helpers import unwrap_partial
@@ -27,10 +28,10 @@ if TYPE_CHECKING:
         OptionalSequence,
         ParametersMap,
         ResponseCookies,
-        ResponseHeadersMap,
         ResponseType,
         TypeEncodersMap,
     )
+    from starlite.types.composite_types import ResponseHeaders
 
 
 class Controller:
@@ -117,7 +118,7 @@ class Controller:
     """
     response_cookies: ResponseCookies | None
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
-    response_headers: ResponseHeadersMap | None
+    response_headers: ResponseHeaders | None
     """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
     tags: OptionalSequence[str]
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""
@@ -144,6 +145,9 @@ class Controller:
         for key in self.__slots__:
             if not hasattr(self, key):
                 setattr(self, key, None)
+
+        self.response_cookies = narrow_response_cookies(self.response_cookies)
+        self.response_headers = narrow_response_headers(self.response_headers)
 
         self.path = normalize_path(self.path or "/")
         self.owner = owner

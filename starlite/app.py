@@ -53,7 +53,7 @@ if TYPE_CHECKING:
     from starlite.config.logging import BaseLoggingConfig
     from starlite.config.static_files import StaticFilesConfig
     from starlite.config.template import TemplateConfig
-    from starlite.datastructures import CacheControlHeader, ETag
+    from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler  # noqa: TC004
     from starlite.plugins import PluginProtocol
@@ -85,7 +85,6 @@ if TYPE_CHECKING:
         ParametersMap,
         Receive,
         ResponseCookies,
-        ResponseHeadersMap,
         ResponseType,
         RouteHandlerType,
         Scope,
@@ -130,6 +129,7 @@ class Starlite(Router):
     """
 
     __slots__ = (
+        "_openapi_schema",
         "after_exception",
         "after_shutdown",
         "after_startup",
@@ -152,7 +152,6 @@ class Starlite(Router):
         "on_shutdown",
         "on_startup",
         "openapi_config",
-        "openapi_schema",
         "request_class",
         "route_map",
         "serialization_plugins",
@@ -202,7 +201,7 @@ class Starlite(Router):
         request_class: type[Request] | None = None,
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
-        response_headers: ResponseHeadersMap | None = None,
+        response_headers: OptionalSequence[ResponseHeader] = None,
         security: OptionalSequence[SecurityRequirement] = None,
         static_files_config: OptionalSequence[StaticFilesConfig] = None,
         tags: Sequence[str] | None = None,
@@ -291,7 +290,7 @@ class Starlite(Router):
             websocket_class: An optional subclass of :class:`WebSocket <starlite.connection.websocket.WebSocket>` to use for
                 websocket connections.
         """
-        self.openapi_schema: OpenAPI | None = None
+        self._openapi_schema: OpenAPI | None = None
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
@@ -335,7 +334,7 @@ class Starlite(Router):
             request_class=request_class,
             response_class=response_class,
             response_cookies=response_cookies or [],
-            response_headers=response_headers or {},
+            response_headers=response_headers or [],
             route_handlers=list(route_handlers) if route_handlers is not None else [],
             security=list(security or []),
             static_files_config=list(static_files_config or []),
@@ -410,8 +409,6 @@ class Starlite(Router):
             self.logger = self.get_logger("starlite")
 
         if self.openapi_config:
-            self.openapi_schema = self.openapi_config.to_openapi_schema()
-            self.update_openapi_schema()
             self.register(self.openapi_config.openapi_controller)
 
         for static_config in self.static_files_config:
@@ -444,6 +441,17 @@ class Starlite(Router):
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
+    @property
+    def openapi_schema(self) -> OpenAPI | None:
+        """Access  the OpenAPI schema of the application.
+
+        :return: The :class:`OpenAPI` <pydantic_openapi_schema.open_api.OpenAPI> instance of the application's.
+        """
+        if self.openapi_config and not self._openapi_schema:
+            self._openapi_schema = self.openapi_config.to_openapi_schema()
+            self.update_openapi_schema()
+        return self._openapi_schema
+
     @classmethod
     def from_config(cls, config: AppConfig) -> Self:
         """Initialize a ``Starlite`` application from a configuration instance.
@@ -456,25 +464,17 @@ class Starlite(Router):
         """
         return cls(**dict(config))
 
-    def register(  # type: ignore[override]
-        self, value: ControllerRouterHandler, add_to_openapi_schema: bool = False
-    ) -> None:
+    def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """Register a route handler on the app.
 
         This method can be used to dynamically add endpoints to an application.
 
-        Args:
-            value: an instance of :class:`Router <starlite.router.Router>`, a subclass of
+        :param value: An instance of :class:`Router <starlite.router.Router>`, a subclass of
                 :class:`Controller <starlite.controller.Controller>` or any function decorated by the route handler decorators.
-            add_to_openapi_schema: Whether to add the registered route to the OpenAPI Schema. This affects only HTTP route
-                handlers.
 
-        Returns:
-            None
+        :return: None
         """
         routes = super().register(value=value)
-
-        should_add_to_openapi_schema = False
 
         for route in routes:
             route_handlers = get_route_handlers(route)
@@ -490,7 +490,6 @@ class Starlite(Router):
                     route_handler.resolve_before_request()
                     route_handler.resolve_after_response()
                     route_handler.resolve_response_handler()
-                    should_add_to_openapi_schema = add_to_openapi_schema
 
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
@@ -500,7 +499,7 @@ class Starlite(Router):
 
         self.asgi_router.construct_routing_trie()
 
-        if should_add_to_openapi_schema:
+        if self._openapi_schema is not None:
             self.update_openapi_schema()
 
     def get_handler_index_by_name(self, name: str) -> HandlerIndex | None:
@@ -751,7 +750,7 @@ class Starlite(Router):
         Returns:
             None
         """
-        if not self.openapi_config or not self.openapi_schema or self.openapi_schema.paths is None:
+        if not self.openapi_config or not self._openapi_schema or self._openapi_schema.paths is None:
             raise ImproperlyConfiguredException("Cannot generate OpenAPI schema without initializing an OpenAPIConfig")
 
         operation_ids: list[str] = []
@@ -760,7 +759,7 @@ class Starlite(Router):
             if (
                 isinstance(route, HTTPRoute)
                 and any(route_handler.include_in_schema for route_handler, _ in route.route_handler_map.values())
-                and (route.path_format or "/") not in self.openapi_schema.paths
+                and (route.path_format or "/") not in self._openapi_schema.paths
             ):
                 path_item, created_operation_ids = create_path_item(
                     route=route,
@@ -769,7 +768,7 @@ class Starlite(Router):
                     use_handler_docstrings=self.openapi_config.use_handler_docstrings,
                     operation_id_creator=self.openapi_config.operation_id_creator,
                 )
-                self.openapi_schema.paths[route.path_format or "/"] = path_item
+                self._openapi_schema.paths[route.path_format or "/"] = path_item
 
                 for operation_id in created_operation_ids:
                     if operation_id in operation_ids:
@@ -778,8 +777,9 @@ class Starlite(Router):
                             f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
                         )
                     operation_ids.append(operation_id)
-        self.openapi_schema = construct_open_api_with_schema_class(
-            open_api_schema=self.openapi_schema, by_alias=self.openapi_config.by_alias
+
+        self._openapi_schema = construct_open_api_with_schema_class(
+            open_api_schema=self._openapi_schema, by_alias=self.openapi_config.by_alias
         )
 
     async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:

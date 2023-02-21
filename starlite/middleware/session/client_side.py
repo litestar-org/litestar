@@ -61,7 +61,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         Returns:
             List of encoded bytes string of a maximum length equal to the ``CHUNK_SIZE`` constant.
         """
-        serialized = self.serlialize_data(data, scope)
+        serialized = self.serialize_data(data, scope)
         associated_data = encode_json({"expires_at": round(time.time()) + self.config.max_age})
         nonce = urandom(NONCE_SIZE)
         encrypted = self.aesgcm.encrypt(nonce, serialized, associated_data=associated_data)

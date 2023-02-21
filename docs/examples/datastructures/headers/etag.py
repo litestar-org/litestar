@@ -45,7 +45,7 @@ def get_population_count_dynamic() -> Response[str]:
     population_count = random.randint(0, 1000)
     return Response(
         content=str(population_count),
-        headers={"etag": ETag(value=str(population_count))},
+        headers={"etag": str(population_count)},
         media_type=MediaType.TEXT,
         status_code=200,
     )

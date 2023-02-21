@@ -13,12 +13,13 @@ class Resource(BaseModel):
 
 @get(
     "/resources",
-    response_headers={
-        "Random-Header": ResponseHeader(
+    response_headers=[
+        ResponseHeader(
+            name="Random-Header",
             description="a random number in the range 100 - 1000",
             documentation_only=True,
         )
-    },
+    ],
 )
 def retrieve_resource() -> Response[Resource]:
     return Response(
@@ -39,12 +40,13 @@ router = Router(
     path="/router-path",
     route_handlers=[retrieve_resource],
     after_request=after_request_handler,
-    response_headers={
-        "Random-Header": ResponseHeader(
+    response_headers=[
+        ResponseHeader(
+            name="Random-Header",
             description="a random number in the range 1 - 100",
             documentation_only=True,
         )
-    },
+    ],
 )
 
 

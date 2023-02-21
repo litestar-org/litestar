@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 if TYPE_CHECKING:
-    from starlite.middleware.session.cookie_backend import CookieBackend
+    from starlite.middleware.session.client_side import CookieBackend
 
 
 @pytest.fixture()

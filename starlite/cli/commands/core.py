@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import inspect
+import multiprocessing
 
+import click
 from click import command, option
 from rich.tree import Tree
 
@@ -21,11 +23,20 @@ def info_command(app: Starlite) -> None:
 @command(name="run")
 @option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True)
 @option("-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True)
+@option(
+    "-wc",
+    "--web-concurrency",
+    help="The number of HTTP workers to launch",
+    type=click.IntRange(min=1, max=multiprocessing.cpu_count() + 1),
+    show_default=True,
+    default=1,
+)
 @option("--host", help="Server under this host", default="127.0.0.1", show_default=True)
 @option("--debug", help="Run app in debug mode", is_flag=True)
 def run_command(
     reload: bool,
     port: int,
+    web_concurrency: int,
     host: str,
     debug: bool,
     env: StarliteEnv,
@@ -57,6 +68,7 @@ def run_command(
         reload=env.reload or reload,
         host=env.host or host,
         port=env.port or port,
+        workers=env.web_concurrency or web_concurrency,
         factory=env.is_app_factory,
     )
 

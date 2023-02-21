@@ -63,6 +63,7 @@ class StarliteEnv:
     host: str | None = None
     port: int | None = None
     reload: bool | None = None
+    web_concurrency: int | None = None
     is_app_factory: bool = False
 
     @classmethod
@@ -89,6 +90,7 @@ class StarliteEnv:
             loaded_app = _load_app_from_path(app_path)
 
         port = getenv("STARLITE_PORT")
+        web_concurrency = getenv("WEB_CONCURRENCY")
 
         return cls(
             app_path=loaded_app.app_path,
@@ -97,6 +99,7 @@ class StarliteEnv:
             host=getenv("STARLITE_HOST"),
             port=int(port) if port else None,
             reload=_bool_from_env("STARLITE_RELOAD"),
+            web_concurrency=int(web_concurrency) if web_concurrency else None,
             is_app_factory=loaded_app.is_factory,
             cwd=cwd,
         )
@@ -313,4 +316,5 @@ def show_app_info(app: Starlite) -> None:  # pragma: no cover
     if middlewares:
         table.add_row("Middlewares", ", ".join(middlewares))
 
+    console.print(table)
     console.print(table)

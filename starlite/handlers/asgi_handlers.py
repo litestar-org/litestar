@@ -1,15 +1,15 @@
-from inspect import Signature
-from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, Union
+from __future__ import annotations
 
-from pydantic import validate_arguments
+from inspect import Signature
+from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types import AsyncAnyCallable, ExceptionHandlersMap, Guard
 from starlite.utils import Ref, is_async_callable
 
 if TYPE_CHECKING:
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
+    from starlite.types import AsyncAnyCallable, ExceptionHandlersMap, Guard
 
 
 class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
@@ -20,15 +20,14 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
 
     __slots__ = ("is_mount", "is_static")
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[Union[str, Sequence[str]]] = None,
+        path: str | Sequence[str] | None = None,
         *,
-        exception_handlers: Optional[ExceptionHandlersMap] = None,
-        guards: Optional[Sequence[Guard]] = None,
-        name: Optional[str] = None,
-        opt: Optional[Mapping[str, Any]] = None,
+        exception_handlers: ExceptionHandlersMap | None = None,
+        guards: Sequence[Guard] | None = None,
+        name: str | None = None,
+        opt: Mapping[str, Any] | None = None,
         is_mount: bool = False,
         is_static: bool = False,
         **kwargs: Any,
@@ -54,7 +53,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         self.is_static = is_static
         super().__init__(path, exception_handlers=exception_handlers, guards=guards, name=name, opt=opt, **kwargs)
 
-    def __call__(self, fn: "AsyncAnyCallable") -> "ASGIRouteHandler":
+    def __call__(self, fn: AsyncAnyCallable) -> ASGIRouteHandler:
         """Replace a function with itself."""
         self.fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
         self.signature = Signature.from_callable(fn)

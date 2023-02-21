@@ -6,7 +6,7 @@ from pydantic_openapi_schema.v3_1_0 import Components, SecurityScheme
 from starlite import get
 from starlite.config.openapi import OpenAPIConfig
 from starlite.di import Provide
-from starlite.middleware.session.memory_backend import MemoryBackendConfig
+from starlite.middleware.session.server_side import ServerSideSessionConfig
 from starlite.security.session_auth import SessionAuth
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
@@ -20,22 +20,24 @@ def retrieve_user_handler(_: Dict[str, Any], __: "ASGIConnection") -> Any:
     pass
 
 
-def test_abstract_security_config_sets_guards() -> None:
+def test_abstract_security_config_sets_guards(session_backend_config_memory: ServerSideSessionConfig) -> None:
     async def guard(_: "ASGIConnection", __: "BaseRouteHandler") -> None:
         pass
 
     security_config = SessionAuth[Any](
-        retrieve_user_handler=retrieve_user_handler, session_backend_config=MemoryBackendConfig(), guards=[guard]
+        retrieve_user_handler=retrieve_user_handler,
+        session_backend_config=session_backend_config_memory,
+        guards=[guard],
     )
 
     with create_test_client([], on_app_init=[security_config.on_app_init]) as client:
         assert client.app.guards
 
 
-def test_abstract_security_config_sets_dependencies() -> None:
+def test_abstract_security_config_sets_dependencies(session_backend_config_memory: ServerSideSessionConfig) -> None:
     security_config = SessionAuth[Any](
         retrieve_user_handler=retrieve_user_handler,
-        session_backend_config=MemoryBackendConfig(),
+        session_backend_config=session_backend_config_memory,
         dependencies={"value": Provide(lambda: 13)},
     )
 
@@ -43,7 +45,9 @@ def test_abstract_security_config_sets_dependencies() -> None:
         assert client.app.dependencies.get("value")
 
 
-def test_abstract_security_config_registers_route_handlers() -> None:
+def test_abstract_security_config_registers_route_handlers(
+    session_backend_config_memory: ServerSideSessionConfig,
+) -> None:
     @get("/")
     def handler() -> dict:
         return {"hello": "world"}
@@ -51,7 +55,7 @@ def test_abstract_security_config_registers_route_handlers() -> None:
     security_config = SessionAuth[Any](
         retrieve_user_handler=retrieve_user_handler,
         exclude=["/"],
-        session_backend_config=MemoryBackendConfig(),
+        session_backend_config=session_backend_config_memory,
         route_handlers=[handler],
     )
 
@@ -137,14 +141,14 @@ def test_abstract_security_config_registers_route_handlers() -> None:
     ),
 )
 def test_abstract_security_config_setting_openapi_components(
-    openapi_config: Optional["OpenAPIConfig"], expected: dict
+    openapi_config: Optional["OpenAPIConfig"], expected: dict, session_backend_config_memory: ServerSideSessionConfig
 ) -> None:
     security_config = SessionAuth[Any](
-        retrieve_user_handler=retrieve_user_handler, exclude=["/"], session_backend_config=MemoryBackendConfig()
+        retrieve_user_handler=retrieve_user_handler, exclude=["/"], session_backend_config=session_backend_config_memory
     )
-
     with create_test_client([], on_app_init=[security_config.on_app_init], openapi_config=openapi_config) as client:
         if openapi_config is not None:
+            assert client.app.openapi_schema
             assert client.app.openapi_config
             assert client.app.openapi_config.components
             assert client.app.openapi_config.components.dict(exclude_none=True) == expected
@@ -164,10 +168,10 @@ def test_abstract_security_config_setting_openapi_components(
     ),
 )
 def test_abstract_security_config_setting_openapi_security_requirements(
-    openapi_config: Optional[OpenAPIConfig], expected: list
+    openapi_config: Optional[OpenAPIConfig], expected: list, session_backend_config_memory: ServerSideSessionConfig
 ) -> None:
     security_config = SessionAuth[Any](
-        retrieve_user_handler=retrieve_user_handler, exclude=["/"], session_backend_config=MemoryBackendConfig()
+        retrieve_user_handler=retrieve_user_handler, exclude=["/"], session_backend_config=session_backend_config_memory
     )
 
     with create_test_client([], on_app_init=[security_config.on_app_init], openapi_config=openapi_config) as client:

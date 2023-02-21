@@ -25,14 +25,11 @@ Installation
     :ref:`Brotli Compression Middleware <lib/usage/middleware/builtin-middleware:brotli>`:
         :code:`pip install starlite[brotli]`
 
-    :ref:`Client-side sessions <lib/usage/middleware/builtin-middleware:client-side sessions>`
+    :ref:`Cookie based sessions <lib/usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install starlite[cryptography]`
 
-    :ref:`Server-side sessions <lib/usage/middleware/builtin-middleware:redis storage>` / :ref:`redis caching <lib/usage/caching:redis>`:
+    :doc:`Redis storage </lib/usage/storage>`:
         :code:`pip install starlite[redis]`
-
-    :ref:`Server-side sessions <lib/usage/middleware/builtin-middleware:memcached storage>` / :ref:`redis caching <lib/usage/caching:memcached>`:
-        :code:`pip install starlite[memcached]`
 
     :ref:`Picologging <lib/usage/the-starlite-app:using picologging>`
         :code:`pip install starlite[picologging]`

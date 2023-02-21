@@ -106,8 +106,10 @@ def test_create_schema_for_generic_type_raises_improper_config() -> None:
     def handler_function(dep: GenericType[int]) -> None:
         ...
 
+    app = Starlite(route_handlers=[handler_function])
+
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[handler_function])
+        app.openapi_schema
 
 
 def test_get_schema_for_field_type_typeddict(monkeypatch: pytest.MonkeyPatch) -> None:

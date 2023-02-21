@@ -8,7 +8,7 @@ API reference
 
     app
     background_tasks
-    cache/index
+    cache
     config
     connection/index
     contrib/index
@@ -28,8 +28,8 @@ API reference
     response_containers
     router
     security/index
+    storage/index
     template
     testing
     types
-    upload_file
     utils/index

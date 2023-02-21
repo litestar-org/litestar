@@ -113,7 +113,7 @@ def test_create_error_responses() -> None:
 def test_create_success_response_with_headers() -> None:
     @get(
         path="/test",
-        response_headers={"special-header": ResponseHeader(value=100, description="super-duper special")},
+        response_headers=[ResponseHeader(name="special-header", value="100", description="super-duper special")],
         response_description="test",
         content_encoding="base64",
         content_media_type="image/png",
@@ -125,7 +125,7 @@ def test_create_success_response_with_headers() -> None:
     assert response.description == "test"
     assert response.content[handler.media_type.value].media_type_schema.contentEncoding == "base64"  # type: ignore
     assert response.content[handler.media_type.value].media_type_schema.contentMediaType == "image/png"  # type: ignore
-    assert response.headers["special-header"].param_schema.type == OpenAPIType.INTEGER  # type: ignore
+    assert response.headers["special-header"].param_schema.type == OpenAPIType.STRING  # type: ignore
     assert response.headers["special-header"].description == "super-duper special"  # type: ignore
 
 

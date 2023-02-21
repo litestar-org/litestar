@@ -1,8 +1,9 @@
 from starlite import Request, Starlite, post
-from starlite.middleware.session.memory_backend import MemoryBackendConfig
+from starlite.middleware.session.server_side import ServerSideSessionConfig
+from starlite.storage.memory import MemoryStorage
 from starlite.testing import AsyncTestClient
 
-session_config = MemoryBackendConfig()
+session_config = ServerSideSessionConfig(storage=MemoryStorage())
 
 
 @post(path="/test")

@@ -40,6 +40,7 @@ from .asgi_types import (
     WebSocketSendEvent,
     WebSocketSendMessage,
 )
+from .builtin_types import DataclassClass, DataclassClassOrInstance, TypedDictClass
 from .callable_types import (
     AfterExceptionHookHandler,
     AfterRequestHookHandler,
@@ -68,7 +69,7 @@ from .composite_types import (
     ParametersMap,
     PathType,
     ResponseCookies,
-    ResponseHeadersMap,
+    ResponseHeaders,
     Scopes,
     TypeEncodersMap,
 )
@@ -99,6 +100,8 @@ __all__ = (
     "BeforeRequestHookHandler",
     "CacheKeyBuilder",
     "ControllerRouterHandler",
+    "DataclassClass",
+    "DataclassClassOrInstance",
     "DataclassProtocol",
     "Dependencies",
     "Empty",
@@ -145,8 +148,8 @@ __all__ = (
     "ReceiveMessage",
     "ReservedKwargs",
     "ResponseCookies",
-    "ResponseHeadersMap",
     "ResponseType",
+    "ResponseHeaders",
     "RouteHandlerMapItem",
     "RouteHandlerType",
     "Scope",
@@ -156,6 +159,7 @@ __all__ = (
     "Serializer",
     "SyncOrAsyncUnion",
     "TypeEncodersMap",
+    "TypedDictClass",
     "WebSocketAcceptEvent",
     "WebSocketCloseEvent",
     "WebSocketConnectEvent",

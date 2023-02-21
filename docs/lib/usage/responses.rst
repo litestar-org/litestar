@@ -339,6 +339,22 @@ application using the given key+value combinations. I.e. it will be a dictionary
 
 The respective descriptions will be used for the OpenAPI documentation.
 
+
+.. tip::
+
+    :class:`ResponseHeader <starlite.datastructures.response_header.ResponseHeader>` is
+    a special class that allows to add OpenAPI attributes such as `description` or `documentation_only`.
+    If you don't need those, you can optionally define `response_headers` using a mapping - such as a dictionary -
+    as well:
+
+    .. code-block:: python
+
+        @get(response_headers={"my-header": "header-value"})
+        async def handler() -> str:
+            ...
+
+
+
 Dynamic Headers
 +++++++++++++++
 
@@ -471,9 +487,24 @@ Of the two declarations of ``my-cookie`` only the route handler one will be used
 
    Set-Cookie: my-cookie=456; Path=/; SameSite=lax
 
+
+
+.. tip::
+
+    If all you need for your cookies are key and value, you can supply them using a :class:`Mapping[str, str] <typing.Mapping>`
+    - like a :class:`dict` - instead:
+
+    .. code-block:: python
+
+        @get(response_cookies={"my-cookie": "cookie-value"})
+        async def handler() -> str:
+            ...
+
+
 .. seealso::
 
     :class:`Cookie reference <starlite.datastructures.cookie.Cookie>`
+
 
 
 Dynamic Cookies

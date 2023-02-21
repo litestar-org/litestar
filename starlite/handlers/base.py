@@ -1,21 +1,7 @@
-from copy import copy
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Generic,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Set,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from __future__ import annotations
 
-from pydantic import validate_arguments
+from copy import copy
+from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
 from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
@@ -52,8 +38,8 @@ class BaseRouteHandler(Generic[T]):
     Serves as a subclass for all route handlers
     """
 
-    fn: "Ref[MaybePartial[AnyCallable]]"
-    signature: "Signature"
+    fn: Ref[MaybePartial[AnyCallable]]
+    signature: Signature
 
     __slots__ = (
         "_resolved_dependencies",
@@ -74,18 +60,17 @@ class BaseRouteHandler(Generic[T]):
         "type_encoders",
     )
 
-    @validate_arguments(config={"arbitrary_types_allowed": True})
     def __init__(
         self,
-        path: Optional[Union[str, Sequence[str]]] = None,
+        path: str | Sequence[str] | None = None,
         *,
-        dependencies: Optional[Dependencies] = None,
-        exception_handlers: Optional[ExceptionHandlersMap] = None,
-        guards: Optional[Sequence[Guard]] = None,
-        middleware: Optional[Sequence[Middleware]] = None,
-        name: Optional[str] = None,
-        opt: Optional[Mapping[str, Any]] = None,
-        type_encoders: Optional[TypeEncodersMap] = None,
+        dependencies: Dependencies | None = None,
+        exception_handlers: ExceptionHandlersMap | None = None,
+        guards: Sequence[Guard] | None = None,
+        middleware: Sequence[Middleware] | None = None,
+        name: str | None = None,
+        opt: Mapping[str, Any] | None = None,
+        type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``HTTPRouteHandler``.
@@ -102,10 +87,10 @@ class BaseRouteHandler(Generic[T]):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
-        self._resolved_dependencies: Union[Dict[str, "Provide"], "EmptyType"] = Empty
-        self._resolved_guards: Union[List[Guard], EmptyType] = Empty
-        self._resolved_layered_parameters: Union[Dict[str, "SignatureField"], "EmptyType"] = Empty
-        self._resolved_type_encoders: Union["TypeEncodersMap", EmptyType] = Empty
+        self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
+        self._resolved_guards: list[Guard] | EmptyType = Empty
+        self._resolved_layered_parameters: dict[str, SignatureField] | EmptyType = Empty
+        self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
 
         self.dependencies = dependencies
         self.exception_handlers = exception_handlers
@@ -113,8 +98,8 @@ class BaseRouteHandler(Generic[T]):
         self.middleware = middleware
         self.name = name
         self.opt = dict(opt or {})
-        self.owner: Optional[Union["Controller", "Router"]] = None
-        self.signature_model: Optional[Type["SignatureModel"]] = None
+        self.owner: Controller | Router | None = None
+        self.signature_model: type[SignatureModel] | None = None
         self.paths = (
             {normalize_path(p) for p in path}
             if path and isinstance(path, list)
@@ -139,13 +124,13 @@ class BaseRouteHandler(Generic[T]):
         return get_name(unwrap_partial(self.fn.value))
 
     @property
-    def dependency_name_set(self) -> Set[str]:
+    def dependency_name_set(self) -> set[str]:
         """Set of all dependency names provided in the handler's ownership layers."""
         layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
         return {name for layer in layered_dependencies for name in layer.keys()}
 
     @property
-    def ownership_layers(self) -> List[Union[T, "Controller", "Router"]]:
+    def ownership_layers(self) -> list[T | Controller | Router]:
         """Return the handler layers from the app down to the route handler.
 
         app -> ... -> route handler
@@ -159,7 +144,7 @@ class BaseRouteHandler(Generic[T]):
 
         return list(reversed(layers))
 
-    def resolve_type_encoders(self) -> "TypeEncodersMap":
+    def resolve_type_encoders(self) -> TypeEncodersMap:
         """Return a merged type_encoders mapping.
 
         This method is memoized so the computation occurs only once.
@@ -175,10 +160,10 @@ class BaseRouteHandler(Generic[T]):
                     self._resolved_type_encoders.update(type_encoders)
         return cast("TypeEncodersMap", self._resolved_type_encoders)
 
-    def resolve_layered_parameters(self) -> Dict[str, "SignatureField"]:
+    def resolve_layered_parameters(self) -> dict[str, SignatureField]:
         """Return all parameters declared above the handler."""
         if self._resolved_layered_parameters is Empty:
-            parameter_kwargs: Dict[str, "ParameterKwarg"] = {}
+            parameter_kwargs: dict[str, ParameterKwarg] = {}
 
             for layer in self.ownership_layers:
                 parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
@@ -190,9 +175,9 @@ class BaseRouteHandler(Generic[T]):
                 for key, parameter in parameter_kwargs.items()
             }
 
-        return cast("Dict[str, SignatureField]", self._resolved_layered_parameters)
+        return cast("dict[str, SignatureField]", self._resolved_layered_parameters)
 
-    def resolve_guards(self) -> List[Guard]:
+    def resolve_guards(self) -> list[Guard]:
         """Return all guards in the handlers scope, starting from highest to current layer."""
         if self._resolved_guards is Empty:
             self._resolved_guards = []
@@ -200,11 +185,11 @@ class BaseRouteHandler(Generic[T]):
             for layer in self.ownership_layers:
                 self._resolved_guards.extend(layer.guards or [])
 
-            self._resolved_guards = cast("List[Guard]", [AsyncCallable(guard) for guard in self._resolved_guards])
+            self._resolved_guards = cast("list[Guard]", [AsyncCallable(guard) for guard in self._resolved_guards])
 
         return self._resolved_guards  # type:ignore
 
-    def resolve_dependencies(self) -> Dict[str, Provide]:
+    def resolve_dependencies(self) -> dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
         if self._resolved_dependencies is Empty:
             self._resolved_dependencies = {}
@@ -216,14 +201,14 @@ class BaseRouteHandler(Generic[T]):
                     )
                     self._resolved_dependencies[key] = value
 
-        return cast("Dict[str, Provide]", self._resolved_dependencies)
+        return cast("dict[str, Provide]", self._resolved_dependencies)
 
-    def resolve_middleware(self) -> List["Middleware"]:
+    def resolve_middleware(self) -> list[Middleware]:
         """Build the middleware stack for the RouteHandler and return it.
 
         The middlewares are added from top to bottom (app -> router -> controller -> route handler) and then reversed.
         """
-        resolved_middleware: List["Middleware"] = []
+        resolved_middleware: list[Middleware] = []
         for layer in self.ownership_layers:
             resolved_middleware.extend(layer.middleware or [])
         return list(reversed(resolved_middleware))
@@ -233,7 +218,7 @@ class BaseRouteHandler(Generic[T]):
 
         This method is memoized so the computation occurs only once.
         """
-        resolved_exception_handlers: Dict[Union[int, Type[Exception]], "ExceptionHandler"] = {}
+        resolved_exception_handlers: dict[int | type[Exception], ExceptionHandler] = {}
         for layer in self.ownership_layers:
             resolved_exception_handlers.update(layer.exception_handlers or {})
         return resolved_exception_handlers
@@ -245,7 +230,7 @@ class BaseRouteHandler(Generic[T]):
         precedence.
         """
 
-        opt: Dict[str, Any] = {}
+        opt: dict[str, Any] = {}
         for layer in self.ownership_layers:
             opt.update(layer.opt or {})
 
@@ -257,7 +242,7 @@ class BaseRouteHandler(Generic[T]):
             await guard(connection, copy(self))  # type: ignore
 
     @staticmethod
-    def _validate_dependency_is_unique(dependencies: Dict[str, Provide], key: str, provider: Provide) -> None:
+    def _validate_dependency_is_unique(dependencies: dict[str, Provide], key: str, provider: Provide) -> None:
         """Validate that a given provider has not been already defined under a different key."""
         for dependency_key, value in dependencies.items():
             if provider == value:

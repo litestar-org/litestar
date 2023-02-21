@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from httpx._types import CookieTypes
 
     from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
-    from starlite.middleware.session.cookie_backend import CookieBackend
+    from starlite.middleware.session.client_side import CookieBackend
 try:
     from httpx import Cookies, Request, Response
 except ImportError as e:

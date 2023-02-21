@@ -4,7 +4,7 @@ from starlite import Starlite
 from starlite.cli.commands.sessions import get_session_backend
 from starlite.cli.main import starlite_group as cli_command
 from starlite.middleware.rate_limit import RateLimitConfig
-from starlite.middleware.session.memory_backend import MemoryBackendConfig
+from starlite.middleware.session.server_side import ServerSideSessionConfig
 
 if TYPE_CHECKING:
     from unittest.mock import MagicMock
@@ -13,9 +13,11 @@ if TYPE_CHECKING:
     from click.testing import CliRunner
     from pytest_mock import MockerFixture
 
+    from starlite.storage.memory import MemoryStorage
 
-def test_get_session_backend() -> None:
-    session_middleware = MemoryBackendConfig().middleware
+
+def test_get_session_backend(memory_storage_backend: "MemoryStorage") -> None:
+    session_middleware = ServerSideSessionConfig(storage=memory_storage_backend).middleware
     app = Starlite(
         [],
         middleware=[
@@ -47,8 +49,8 @@ def test_delete_session_cookie_backend(runner: "CliRunner", monkeypatch: "Monkey
 def test_delete_session(
     runner: "CliRunner", monkeypatch: "MonkeyPatch", mocker: "MockerFixture", mock_confirm_ask: "MagicMock"
 ) -> None:
-    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.memory_backend:app")
-    mock_delete = mocker.patch("starlite.middleware.session.memory_backend.MemoryBackend.delete")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.memory_storage:app")
+    mock_delete = mocker.patch("starlite.storage.memory.MemoryStorage.delete")
 
     result = runner.invoke(cli_command, ["sessions", "delete", "foo"])
 
@@ -77,8 +79,8 @@ def test_clear_sessions_cookie_backend(runner: "CliRunner", monkeypatch: "Monkey
 def test_clear_sessions(
     runner: "CliRunner", monkeypatch: "MonkeyPatch", mocker: "MockerFixture", mock_confirm_ask: "MagicMock"
 ) -> None:
-    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.memory_backend:app")
-    mock_delete = mocker.patch("starlite.middleware.session.memory_backend.MemoryBackend.delete_all")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.memory_storage:app")
+    mock_delete = mocker.patch("starlite.storage.memory.MemoryStorage.delete_all")
 
     result = runner.invoke(cli_command, ["sessions", "clear"])
 

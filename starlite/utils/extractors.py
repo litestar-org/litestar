@@ -25,10 +25,7 @@ def obfuscate(values: dict[str, Any], fields_to_obfuscate: set[str]) -> dict[str
     Returns:
         A dictionary with obfuscated strings
     """
-    for key in values:
-        if key.lower() in fields_to_obfuscate:
-            values[key] = "*****"
-    return values
+    return {key: "*****" if key.lower() in fields_to_obfuscate else value for key, value in values.items()}
 
 
 RequestExtractorField = Literal[
