@@ -1,6 +1,11 @@
 1.x Changelog
 =============
 
+1.51.5
+------
+
+- Fix domain configuration handling in JWT Auth
+
 1.51.4
 ------
 

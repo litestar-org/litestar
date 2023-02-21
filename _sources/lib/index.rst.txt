@@ -31,7 +31,7 @@ Installation
     :ref:`Server-side sessions <lib/usage/middleware/builtin-middleware:redis storage>` / :ref:`redis caching <lib/usage/caching:redis>`:
         :code:`pip install starlite[redis]`
 
-    :ref:`Server-side sessions <lib/usage/middleware/builtin-middleware:memcached storage>` / :ref:`redis caching <lib/usage/caching:memcached>`:
+    :ref:`Server-side sessions <lib/usage/middleware/builtin-middleware:memcached storage>` / :ref:`memcached caching <lib/usage/caching:memcached>`:
         :code:`pip install starlite[memcached]`
 
     :ref:`Picologging <lib/usage/the-starlite-app:using picologging>`
