@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum, EnumMeta
@@ -46,6 +47,7 @@ from starlite.utils.pagination import (
     CursorPagination,
     OffsetPagination,
 )
+from starlite.utils.types import make_non_optional_union
 
 if TYPE_CHECKING:
     from starlite.plugins.base import OpenAPISchemaPluginProtocol
@@ -333,15 +335,13 @@ def create_schema(
     field: "SignatureField",
     generate_examples: bool,
     plugins: List["OpenAPISchemaPluginProtocol"],
-    ignore_optional: bool = False,
 ) -> "Schema":
     """Create a Schema model for a given SignatureField and if needed - recursively traverse its children as well."""
-
-    if field.is_optional and not ignore_optional:
+    if field.is_optional:
+        non_optional_field = replace(field, field_type=make_non_optional_union(field.field_type))
         non_optional_schema = create_schema(
-            field=field,
+            field=non_optional_field,
             generate_examples=False,
-            ignore_optional=True,
             plugins=plugins,
         )
         schema = Schema(
@@ -387,8 +387,7 @@ def create_schema(
     else:
         # value is not a complex typing - hence we can try and get the value schema directly
         schema = get_schema_for_field_type(field=field, plugins=plugins)
-    if not ignore_optional:
-        schema = update_schema_with_signature_field(schema=schema, signature_field=field)
+    schema = update_schema_with_signature_field(schema=schema, signature_field=field)
     if not schema.examples and generate_examples:
         schema.examples = create_examples_for_field(field=field)
     return schema
