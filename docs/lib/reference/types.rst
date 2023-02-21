@@ -170,13 +170,6 @@ Composite Types
 .. autodata:: starlite.types.PathType
 
 
-Partial types
--------------
-
-.. autoclass:: starlite.types.Partial
-    :members:
-
-
 File types
 ----------
 

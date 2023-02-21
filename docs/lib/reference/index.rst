@@ -32,5 +32,4 @@ API reference
     template
     testing
     types
-    upload_file
     utils/index

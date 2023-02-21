@@ -10,3 +10,4 @@ starlite.datastructures
    response_header
    state
    url
+   upload_file
