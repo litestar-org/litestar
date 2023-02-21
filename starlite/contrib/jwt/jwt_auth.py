@@ -310,7 +310,7 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
             path=self.path,
             httponly=True,
             value=self.format_auth_header(encoded_token),
-            expires=int((datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)).timestamp()),
+            max_age=int((token_expiration or self.default_token_expiration).total_seconds()),
             secure=self.secure,
             samesite=self.samesite,
             domain=self.domain,
@@ -434,13 +434,13 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
             token_audience=token_audience,
             token_unique_jwt_id=token_unique_jwt_id,
         )
-        expires_in = int((datetime.now(timezone.utc) + (token_expiration or self.default_token_expiration)).timestamp())
+        expires_in = int((token_expiration or self.default_token_expiration).total_seconds())
         cookie = Cookie(
             key=self.key,
             path=self.path,
             httponly=True,
             value=self.format_auth_header(encoded_token),
-            expires=expires_in,
+            max_age=expires_in,
             secure=self.secure,
             samesite=self.samesite,
             domain=self.domain,
