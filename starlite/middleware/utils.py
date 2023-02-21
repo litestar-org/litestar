@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import re
-from typing import TYPE_CHECKING, List, Optional, Pattern, Union
+from typing import TYPE_CHECKING, Pattern
 
 from starlite.exceptions import ImproperlyConfiguredException
 
@@ -7,7 +9,7 @@ if TYPE_CHECKING:
     from starlite.types import Scope, Scopes
 
 
-def build_exclude_path_pattern(*, exclude: Optional[Union[str, List[str]]] = None) -> Optional[Pattern]:
+def build_exclude_path_pattern(*, exclude: str | list[str] | None = None) -> Pattern | None:
     """Build single path pattern from list of patterns to opt-out from middleware processing.
 
     Args:
@@ -29,10 +31,10 @@ def build_exclude_path_pattern(*, exclude: Optional[Union[str, List[str]]] = Non
 
 def should_bypass_middleware(
     *,
-    scope: "Scope",
-    scopes: "Scopes",
-    exclude_opt_key: Optional[str] = None,
-    exclude_path_pattern: Optional[Pattern] = None,
+    scope: Scope,
+    scopes: Scopes,
+    exclude_opt_key: str | None = None,
+    exclude_path_pattern: Pattern | None = None,
 ) -> bool:
     """Determine weather a middleware should be bypassed.
 

@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, List
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import AsyncCallable
@@ -12,16 +14,16 @@ class EventListener:
 
     __slots__ = ("event_ids", "fn", "listener_id")
 
-    fn: "AsyncCallable[Any, Any]"
+    fn: AsyncCallable[Any, Any]
 
     def __init__(self, *event_ids: str):
         """Create a decorator for event handlers.
 
         :param event_id: The id of the event to listen to or a list of event ids to listen to.
         """
-        self.event_ids: List[str] = list(event_ids)
+        self.event_ids: list[str] = list(event_ids)
 
-    def __call__(self, fn: "AnyCallable") -> "EventListener":
+    def __call__(self, fn: AnyCallable) -> EventListener:
         """Decorate a callable by wrapping it inside an instance of EventListener.
 
         :param fn: Callable to decorate.

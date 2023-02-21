@@ -1,7 +1,8 @@
 from asyncio import sleep
 from typing import TYPE_CHECKING, Any, Dict
 
-from starlite import Controller, Provide, get
+from starlite import Controller, get
+from starlite.di import Provide
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 

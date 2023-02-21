@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Callable, Dict
+from typing import TYPE_CHECKING, Any, Callable
 from urllib.parse import quote
 
 from starlite.utils import encode_json
@@ -43,10 +45,10 @@ class HTMXHeaders(str, Enum):
     TRIGGERING_EVENT = "Triggering-Event"
 
 
-def get_trigger_event_headers(trigger_event: "TriggerEventType") -> Dict[str, Any]:
+def get_trigger_event_headers(trigger_event: TriggerEventType) -> dict[str, Any]:
     """Return headers for trigger event response."""
     params = trigger_event["params"] or {}
-    after_params: Dict[EventAfterType, str] = {
+    after_params: dict[EventAfterType, str] = {
         "receive": HTMXHeaders.TRIGGER_EVENT.value,
         "settle": HTMXHeaders.TRIGGER_AFTER_SETTLE.value,
         "swap": HTMXHeaders.TRIGGER_AFTER_SWAP.value,
@@ -58,12 +60,12 @@ def get_trigger_event_headers(trigger_event: "TriggerEventType") -> Dict[str, An
     return {trigger_header: val}
 
 
-def get_redirect_header(url: str) -> Dict[str, Any]:
+def get_redirect_header(url: str) -> dict[str, Any]:
     """Return headers for redirect response."""
     return {HTMXHeaders.REDIRECT.value: quote(url, safe="/#%[]=:;$&()+,!?*@'~"), "Location": ""}
 
 
-def get_push_url_header(url: "PushUrlType") -> Dict[str, Any]:
+def get_push_url_header(url: PushUrlType) -> dict[str, Any]:
     """Return headers for push url to browser history response."""
     if isinstance(url, str):
         url = url if url != "False" else "false"
@@ -73,7 +75,7 @@ def get_push_url_header(url: "PushUrlType") -> Dict[str, Any]:
     return {HTMXHeaders.PUSH_URL.value: url}
 
 
-def get_replace_url_header(url: "PushUrlType") -> Dict[str, Any]:
+def get_replace_url_header(url: PushUrlType) -> dict[str, Any]:
     """Return headers for replace url in browser tab response."""
     if isinstance(url, str):
         url = url if url != "False" else "false"
@@ -82,7 +84,7 @@ def get_replace_url_header(url: "PushUrlType") -> Dict[str, Any]:
     return {HTMXHeaders.REPLACE_URL: url}
 
 
-def get_refresh_header(refresh: bool) -> Dict[str, Any]:
+def get_refresh_header(refresh: bool) -> dict[str, Any]:
     """Return headers for client refresh response."""
     value = ""
     if refresh:
@@ -90,19 +92,19 @@ def get_refresh_header(refresh: bool) -> Dict[str, Any]:
     return {HTMXHeaders.REFRESH.value: value}
 
 
-def get_reswap_header(method: "ReSwapMethod") -> Dict[str, Any]:
+def get_reswap_header(method: ReSwapMethod) -> dict[str, Any]:
     """Return headers for change swap method response."""
     return {HTMXHeaders.RE_SWAP.value: method}
 
 
-def get_retarget_header(target: str) -> Dict[str, Any]:
+def get_retarget_header(target: str) -> dict[str, Any]:
     """Return headers for change target element response."""
     return {HTMXHeaders.RE_TARGET.value: target}
 
 
-def get_location_headers(location: "LocationType") -> Dict[str, Any]:
+def get_location_headers(location: LocationType) -> dict[str, Any]:
     """Return headers for redirect without page-reload response."""
-    spec: Dict[str, Any] = {}
+    spec: dict[str, Any] = {}
     for key, value in location.items():
         if value:
             spec[key] = value
@@ -111,11 +113,11 @@ def get_location_headers(location: "LocationType") -> Dict[str, Any]:
     return {HTMXHeaders.LOCATION.value: encode_json(spec).decode()}
 
 
-def get_headers(hx_headers: "HtmxHeaderType") -> Dict[str, Any]:
+def get_headers(hx_headers: HtmxHeaderType) -> dict[str, Any]:
     """Return headers for HTMX responses."""
     if not hx_headers:
         raise ValueError("Value for hx_headers cannot be None.")
-    htmx_headers_dict: Dict[str, Callable] = {
+    htmx_headers_dict: dict[str, Callable] = {
         "redirect": get_redirect_header,
         "refresh": get_refresh_header,
         "push_url": get_push_url_header,
@@ -126,8 +128,8 @@ def get_headers(hx_headers: "HtmxHeaderType") -> Dict[str, Any]:
         "location": get_location_headers,
     }
 
-    header: Dict[str, Any] = {}
-    response: Dict[str, Any]
+    header: dict[str, Any] = {}
+    response: dict[str, Any]
     key: str
     value: Any
     for key, value in hx_headers.items():

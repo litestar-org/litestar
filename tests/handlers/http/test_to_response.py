@@ -10,19 +10,9 @@ from pydantic import ValidationError
 from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.responses import Response as StarletteResponse
 
-from starlite import (
-    Cookie,
-    HttpMethod,
-    HTTPRoute,
-    MediaType,
-    Request,
-    Response,
-    ResponseHeader,
-    Starlite,
-    get,
-    route,
-)
+from starlite import HttpMethod, MediaType, Request, Response, Starlite, get, route
 from starlite.background_tasks import BackgroundTask
+from starlite.datastructures import Cookie, ResponseHeader
 from starlite.response import (
     FileResponse,
     RedirectResponse,
@@ -37,6 +27,8 @@ from tests import Person, PersonFactory
 
 if TYPE_CHECKING:
     from typing import AsyncGenerator
+
+    from starlite.routes import HTTPRoute
 
 
 def my_generator() -> Generator[str, None, None]:
@@ -115,7 +107,7 @@ async def test_to_response_returning_starlite_response() -> None:
         return Response(media_type=MediaType.TEXT, content="ok")
 
     with create_test_client(test_function) as client:
-        http_route: HTTPRoute = client.app.routes[0]
+        http_route: "HTTPRoute" = client.app.routes[0]
         route_handler = http_route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
@@ -140,7 +132,7 @@ async def test_to_response_returning_starlette_response(
         return expected_response
 
     with create_test_client(test_function) as client:
-        http_route: HTTPRoute = client.app.routes[0]
+        http_route: "HTTPRoute" = client.app.routes[0]
         route_handler = http_route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
@@ -168,7 +160,7 @@ async def test_to_response_returning_redirect_response(anyio_backend: str) -> No
         )
 
     with create_test_client(test_function) as client:
-        route: HTTPRoute = client.app.routes[0]
+        route: "HTTPRoute" = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
@@ -228,7 +220,7 @@ async def test_to_response_returning_file_response(anyio_backend: str) -> None:
         )
 
     with create_test_client(test_function) as client:
-        route: HTTPRoute = client.app.routes[0]
+        route: "HTTPRoute" = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
@@ -284,7 +276,7 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
             )
 
         with create_test_client(test_function) as client:
-            route: HTTPRoute = client.app.routes[0]
+            route: "HTTPRoute" = client.app.routes[0]
             route_handler = route.route_handlers[0]
             response = await route_handler.to_response(
                 data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()
@@ -321,7 +313,7 @@ async def func_to_response_template_response(anyio_backend: str) -> None:
         )
 
     with create_test_client(test_function) as client:
-        route: HTTPRoute = client.app.routes[0]
+        route: "HTTPRoute" = client.app.routes[0]
         route_handler = route.route_handlers[0]
         response = await route_handler.to_response(
             data=route_handler.fn.value(), plugins=[], app=client.app, request=RequestFactory().get()

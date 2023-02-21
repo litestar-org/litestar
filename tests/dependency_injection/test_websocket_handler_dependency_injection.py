@@ -3,8 +3,9 @@ from typing import Any, Dict
 
 import pytest
 
-from starlite import Controller, Provide, websocket
+from starlite import Controller, websocket
 from starlite.connection import WebSocket
+from starlite.di import Provide
 from starlite.exceptions import WebSocketDisconnect
 from starlite.testing import create_test_client
 

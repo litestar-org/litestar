@@ -1,4 +1,5 @@
-from starlite import Controller, Provide, get
+from starlite import Controller, get
+from starlite.di import Provide
 from starlite.testing import create_test_client
 
 

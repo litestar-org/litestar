@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from tempfile import SpooledTemporaryFile
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any
 
 from anyio.to_thread import run_sync
 
@@ -19,8 +21,8 @@ class UploadFile:
         self,
         content_type: str,
         filename: str,
-        file_data: Optional[bytes] = None,
-        headers: Optional[Dict[str, str]] = None,
+        file_data: bytes | None = None,
+        headers: dict[str, str] | None = None,
         max_spool_size: int = ONE_MEGABYTE,
     ) -> None:
         """Upload file in-memory container.
@@ -103,7 +105,7 @@ class UploadFile:
         return f"{self.filename} - {self.content_type}"
 
     @classmethod
-    def __modify_schema__(cls, field_schema: Dict[str, Any], field: Optional["ModelField"]) -> None:
+    def __modify_schema__(cls, field_schema: dict[str, Any], field: ModelField | None) -> None:
         """Create a pydantic JSON schema.
 
         Args:

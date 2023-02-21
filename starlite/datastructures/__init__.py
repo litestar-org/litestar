@@ -12,7 +12,8 @@ from starlite.datastructures.multi_dicts import (
 )
 from starlite.datastructures.response_header import ResponseHeader
 from starlite.datastructures.state import ImmutableState, State
-from starlite.datastructures.url import URL, Address, make_absolute_url
+from starlite.datastructures.upload_file import UploadFile
+from starlite.datastructures.url import URL, Address
 
 __all__ = (
     "Address",
@@ -28,5 +29,5 @@ __all__ = (
     "ResponseHeader",
     "State",
     "URL",
-    "make_absolute_url",
+    "UploadFile",
 )

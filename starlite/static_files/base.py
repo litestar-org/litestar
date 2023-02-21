@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from os.path import commonpath, join
-from typing import TYPE_CHECKING, Literal, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Literal, Sequence
 
 from starlite.enums import ScopeType
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
@@ -21,8 +23,8 @@ class StaticFiles:
     def __init__(
         self,
         is_html_mode: bool,
-        directories: Sequence["PathType"],
-        file_system: "FileSystemProtocol",
+        directories: Sequence[PathType],
+        file_system: FileSystemProtocol,
         send_as_attachment: bool = False,
     ) -> None:
         """Initialize the Application.
@@ -41,7 +43,7 @@ class StaticFiles:
 
     async def get_fs_info(
         self, directories: Sequence["PathType"], file_path: str
-    ) -> Union[Tuple[str, "FileInfo"], Tuple[None, None]]:
+    ) -> tuple[str, "FileInfo"] | tuple[None, None]:
         """Return the resolved path and a :func:`stat_result <os.stat_result>`.
 
         Args:

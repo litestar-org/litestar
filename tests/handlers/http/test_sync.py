@@ -1,6 +1,7 @@
 import pytest
 
-from starlite import HTTPRouteHandler, MediaType, get
+from starlite import MediaType, get
+from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.testing import create_test_client
 
 

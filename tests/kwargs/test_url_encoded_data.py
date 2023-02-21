@@ -1,4 +1,6 @@
-from starlite import Body, RequestEncodingType, post
+from starlite import post
+from starlite.enums import RequestEncodingType
+from starlite.params import Body
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
 from tests.kwargs import Form

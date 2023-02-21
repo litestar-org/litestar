@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, List, Optional, Union
+from __future__ import annotations
 
-from pydantic import BaseConfig, BaseModel
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
 from starlite.connection import ASGIConnection
 from starlite.enums import ScopeType
@@ -14,16 +15,16 @@ if TYPE_CHECKING:
     from starlite.types import ASGIApp, Receive, Scope, Scopes, Send
 
 
-class AuthenticationResult(BaseModel):
+@dataclass
+class AuthenticationResult:
     """Pydantic model for authentication data."""
+
+    __slots__ = ("user", "auth")
 
     user: Any
     """The user model, this can be any value corresponding to a user of the API."""
-    auth: Any = None
+    auth: Any
     """The auth value, this can for example be a JWT token."""
-
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
 
 
 class AbstractAuthenticationMiddleware(ABC):
@@ -33,10 +34,10 @@ class AbstractAuthenticationMiddleware(ABC):
 
     def __init__(
         self,
-        app: "ASGIApp",
-        exclude: Optional[Union[str, List[str]]] = None,
+        app: ASGIApp,
+        exclude: str | list[str] | None = None,
         exclude_from_auth_key: str = "exclude_from_auth",
-        scopes: Optional["Scopes"] = None,
+        scopes: Scopes | None = None,
     ) -> None:
         """Initialize ``AbstractAuthenticationMiddleware``.
 

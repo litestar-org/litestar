@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, Optional, Set, Tuple, Union
+from typing import Any, ClassVar
 
 from pydantic import BaseConfig, BaseModel, ValidationError
 from pydantic.fields import ModelField
@@ -37,15 +39,15 @@ class SignatureField:
         "name",
     )
 
-    children: Optional[Tuple["SignatureField", ...]]
+    children: tuple[SignatureField, ...] | None
     """A mapping of subtypes, if any."""
     default_value: Any
     """Field name."""
-    extra: Dict[str, Any]
+    extra: dict[str, Any]
     """A mapping of extra values."""
     field_type: Any
     """The type of the kwarg."""
-    kwarg_model: Optional[Union[ParameterKwarg, BodyKwarg, DependencyKwarg]]
+    kwarg_model: ParameterKwarg | BodyKwarg | DependencyKwarg | None
     """Kwarg Parameter."""
     name: str
     """Field name."""
@@ -145,10 +147,10 @@ class SignatureField:
         field_type: Any,
         name: str = "",
         default_value: Any = Empty,
-        children: Optional[Tuple["SignatureField", ...]] = None,
-        kwarg_model: Optional[Union[ParameterKwarg, BodyKwarg, DependencyKwarg]] = None,
-        extra: Optional[Dict[str, Any]] = None,
-    ) -> "SignatureField":
+        children: tuple[SignatureField, ...] | None = None,
+        kwarg_model: ParameterKwarg | BodyKwarg | DependencyKwarg | None = None,
+        extra: dict[str, Any] | None = None,
+    ) -> SignatureField:
         """Create a new SignatureModel instance.
 
         Args:
@@ -178,7 +180,7 @@ class SignatureField:
         )
 
     @classmethod
-    def from_model_field(cls, model_field: ModelField) -> "SignatureField":
+    def from_model_field(cls, model_field: ModelField) -> SignatureField:
         """Create a SignatureField instance from a pydantic ModelField.
 
         Args:
@@ -196,7 +198,7 @@ class SignatureField:
             model_field.field_info.default if model_field.field_info.default not in UNDEFINED_SENTINELS else Empty
         )
 
-        kwarg_model: Optional[Union[ParameterKwarg, DependencyKwarg, BodyKwarg]] = model_field.field_info.extra.pop(
+        kwarg_model: ParameterKwarg | DependencyKwarg | BodyKwarg | None = model_field.field_info.extra.pop(
             "kwargs_model", None
         )
         if kwarg_model:
@@ -218,14 +220,14 @@ class SignatureField:
 class SignatureModel(ABC):
     """Base model for Signature modelling."""
 
-    dependency_name_set: ClassVar[Set[str]]
-    field_plugin_mappings: ClassVar[Dict[str, PluginMapping]]
+    dependency_name_set: ClassVar[set[str]]
+    field_plugin_mappings: ClassVar[dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
-    signature_fields: Dict[str, SignatureField]
+    signature_fields: dict[str, SignatureField]
 
     @classmethod
     @abstractmethod
-    def parse_values_from_connection_kwargs(cls, connection: "ASGIConnection", **kwargs: Any) -> Dict[str, Any]:
+    def parse_values_from_connection_kwargs(cls, connection: ASGIConnection, **kwargs: Any) -> dict[str, Any]:
         """Extract values from the connection instance and return a dict of parsed values.
 
         Args:
@@ -242,7 +244,7 @@ class SignatureModel(ABC):
         raise NotImplementedError
 
     @classmethod
-    def fields(cls) -> Dict[str, SignatureField]:
+    def fields(cls) -> dict[str, SignatureField]:
         """Allow uniform access to the signature models fields, independent of the implementation.
 
         Returns:
@@ -251,7 +253,7 @@ class SignatureModel(ABC):
         return cls.signature_fields
 
     @abstractmethod
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Normalize access to the signature model's dictionary method, because different backends use different methods
         for this.
 
@@ -278,7 +280,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         arbitrary_types_allowed = True
 
     @classmethod
-    def parse_values_from_connection_kwargs(cls, connection: "ASGIConnection", **kwargs: Any) -> Dict[str, Any]:
+    def parse_values_from_connection_kwargs(cls, connection: ASGIConnection, **kwargs: Any) -> dict[str, Any]:
         """Extract values from the connection instance and return a dict of parsed values.
 
         Args:
@@ -319,7 +321,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         mapping = self.field_plugin_mappings.get(key)
         return mapping.get_model_instance_for_value(value) if mapping else value
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Normalize access to the signature model's dictionary method, because different backends use different methods
         for this.
 

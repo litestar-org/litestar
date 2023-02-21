@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, Dict, Type
 import pytest
 from pydantic import BaseModel
 
-from starlite import MediaType, Starlite, State, get
+from starlite import MediaType, Starlite, get
 from starlite.plugins.base import (
     InitPluginProtocol,
     PluginMapping,
@@ -13,6 +13,8 @@ from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from typing_extensions import TypeGuard
+
+    from starlite.datastructures import State
 
 
 class AModel:
@@ -72,7 +74,7 @@ def greet() -> str:
 def test_plugin_on_app_init() -> None:
     tag = "on_app_init_called"
 
-    def on_startup(state: State) -> None:
+    def on_startup(state: "State") -> None:
         state.called = True
 
     class PluginWithInitOnly(InitPluginProtocol):

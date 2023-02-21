@@ -3,7 +3,8 @@ from typing import Generic, Optional, Type, TypeVar
 from pydantic import BaseModel
 from pydantic.generics import GenericModel
 
-from starlite import Provide, get
+from starlite import get
+from starlite.di import Provide
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 

@@ -1,27 +1,27 @@
-from typing import TYPE_CHECKING, Any, Literal, Mapping, Optional, Sequence, Type, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Literal, Mapping, Sequence
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.controller import Controller
 from starlite.events import SimpleEventEmitter
-from starlite.plugins import PluginProtocol
 from starlite.testing.client import AsyncTestClient, TestClient
 from starlite.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
-    from starlite import Request, SerializationPluginProtocol, WebSocket
-    from starlite.config import (
-        AllowedHostsConfig,
-        BaseLoggingConfig,
-        CacheConfig,
-        CompressionConfig,
-        CORSConfig,
-        CSRFConfig,
-        OpenAPIConfig,
-        StaticFilesConfig,
-        TemplateConfig,
-    )
+    from starlite import Request, WebSocket
+    from starlite.config.allowed_hosts import AllowedHostsConfig
+    from starlite.config.cache import CacheConfig
+    from starlite.config.compression import CompressionConfig
+    from starlite.config.cors import CORSConfig
+    from starlite.config.csrf import CSRFConfig
+    from starlite.config.logging import BaseLoggingConfig
+    from starlite.config.openapi import OpenAPIConfig
+    from starlite.config.static_files import StaticFilesConfig
+    from starlite.config.template import TemplateConfig
     from starlite.events import BaseEventEmitterBackend, EventListener
     from starlite.middleware.session.base import BaseBackendConfig
+    from starlite.plugins import PluginProtocol, SerializationPluginProtocol
     from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
@@ -44,48 +44,48 @@ if TYPE_CHECKING:
 
 
 def create_test_client(
-    route_handlers: Optional[Union["ControllerRouterHandler", Sequence["ControllerRouterHandler"]]] = None,
-    after_exception: "OptionalSequence[AfterExceptionHookHandler]" = None,
-    after_request: Optional["AfterRequestHookHandler"] = None,
-    after_response: Optional["AfterResponseHookHandler"] = None,
-    after_shutdown: "OptionalSequence[LifeSpanHookHandler]" = None,
-    after_startup: "OptionalSequence[LifeSpanHookHandler]" = None,
-    allowed_hosts: Optional[Union[Sequence[str], "AllowedHostsConfig"]] = None,
+    route_handlers: ControllerRouterHandler | Sequence[ControllerRouterHandler] | None = None,
+    after_exception: OptionalSequence[AfterExceptionHookHandler] = None,
+    after_request: AfterRequestHookHandler | None = None,
+    after_response: AfterResponseHookHandler | None = None,
+    after_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
+    after_startup: OptionalSequence[LifeSpanHookHandler] = None,
+    allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
     backend: Literal["asyncio", "trio"] = "asyncio",
-    backend_options: Optional[Mapping[str, Any]] = None,
+    backend_options: Mapping[str, Any] | None = None,
     base_url: str = "http://testserver.local",
-    before_request: Optional["BeforeRequestHookHandler"] = None,
-    before_send: "OptionalSequence[BeforeMessageSendHookHandler]" = None,
-    before_shutdown: "OptionalSequence[LifeSpanHookHandler]" = None,
-    before_startup: "OptionalSequence[LifeSpanHookHandler]" = None,
-    cache_config: "CacheConfig" = DEFAULT_CACHE_CONFIG,
-    compression_config: Optional["CompressionConfig"] = None,
-    cors_config: Optional["CORSConfig"] = None,
-    csrf_config: Optional["CSRFConfig"] = None,
-    dependencies: Optional["Dependencies"] = None,
-    event_emitter_backend: Type["BaseEventEmitterBackend"] = SimpleEventEmitter,
-    exception_handlers: Optional["ExceptionHandlersMap"] = None,
-    guards: "OptionalSequence[Guard]" = None,
-    initial_state: Optional["InitialStateType"] = None,
-    listeners: "OptionalSequence[EventListener]" = None,
-    logging_config: Optional["BaseLoggingConfig"] = None,
-    middleware: "OptionalSequence[Middleware]" = None,
+    before_request: BeforeRequestHookHandler | None = None,
+    before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
+    before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
+    before_startup: OptionalSequence[LifeSpanHookHandler] = None,
+    cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+    compression_config: CompressionConfig | None = None,
+    cors_config: CORSConfig | None = None,
+    csrf_config: CSRFConfig | None = None,
+    dependencies: Dependencies | None = None,
+    event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
+    exception_handlers: ExceptionHandlersMap | None = None,
+    guards: OptionalSequence[Guard] = None,
+    initial_state: InitialStateType | None = None,
+    listeners: OptionalSequence[EventListener] = None,
+    logging_config: BaseLoggingConfig | None = None,
+    middleware: OptionalSequence[Middleware] = None,
     multipart_form_part_limit: int = 1000,
-    on_app_init: "OptionalSequence[OnAppInitHandler]" = None,
-    on_shutdown: "OptionalSequence[LifeSpanHandler]" = None,
-    on_startup: "OptionalSequence[LifeSpanHandler]" = None,
-    openapi_config: Optional["OpenAPIConfig"] = None,
-    parameters: Optional["ParametersMap"] = None,
-    plugins: "OptionalSequence[PluginProtocol]" = None,
+    on_app_init: OptionalSequence[OnAppInitHandler] = None,
+    on_shutdown: OptionalSequence[LifeSpanHandler] = None,
+    on_startup: OptionalSequence[LifeSpanHandler] = None,
+    openapi_config: OpenAPIConfig | None = None,
+    parameters: ParametersMap | None = None,
+    plugins: OptionalSequence[PluginProtocol] = None,
     raise_server_exceptions: bool = True,
-    request_class: Optional[Type["Request"]] = None,
-    response_class: Optional["ResponseType"] = None,
+    request_class: type[Request] | None = None,
+    response_class: ResponseType | None = None,
     root_path: str = "",
-    session_config: Optional["BaseBackendConfig"] = None,
-    static_files_config: "OptionalSequence[StaticFilesConfig]" = None,
-    template_config: Optional["TemplateConfig"] = None,
-    websocket_class: Optional[Type["WebSocket"]] = None,
-) -> TestClient["Starlite"]:
+    session_config: BaseBackendConfig | None = None,
+    static_files_config: OptionalSequence[StaticFilesConfig] = None,
+    template_config: TemplateConfig | None = None,
+    websocket_class: type[WebSocket] | None = None,
+) -> TestClient[Starlite]:
     """Create a Starlite app instance and initializes it.
 
     :class:`TestClient <starlite.testing.TestClient>` with it.
@@ -97,7 +97,8 @@ def create_test_client(
     Examples:
         .. code-block: python
 
-            from starlite import get, create_test_client
+            from starlite import get
+            from starlite.testing import create_test_client
 
 
             @get("/some-path")
@@ -238,48 +239,48 @@ def create_test_client(
 
 
 def create_async_test_client(
-    route_handlers: Optional[Union["ControllerRouterHandler", Sequence["ControllerRouterHandler"]]] = None,
-    after_exception: "OptionalSequence[AfterExceptionHookHandler]" = None,
-    after_request: Optional["AfterRequestHookHandler"] = None,
-    after_response: Optional["AfterResponseHookHandler"] = None,
-    after_shutdown: "OptionalSequence[LifeSpanHookHandler]" = None,
-    after_startup: "OptionalSequence[LifeSpanHookHandler]" = None,
-    allowed_hosts: Optional[Union[Sequence[str], "AllowedHostsConfig"]] = None,
+    route_handlers: ControllerRouterHandler | Sequence[ControllerRouterHandler] | None = None,
+    after_exception: OptionalSequence[AfterExceptionHookHandler] = None,
+    after_request: AfterRequestHookHandler | None = None,
+    after_response: AfterResponseHookHandler | None = None,
+    after_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
+    after_startup: OptionalSequence[LifeSpanHookHandler] = None,
+    allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
     backend: Literal["asyncio", "trio"] = "asyncio",
-    backend_options: Optional[Mapping[str, Any]] = None,
+    backend_options: Mapping[str, Any] | None = None,
     base_url: str = "http://testserver.local",
-    before_request: Optional["BeforeRequestHookHandler"] = None,
-    before_send: "OptionalSequence[BeforeMessageSendHookHandler]" = None,
-    before_shutdown: "OptionalSequence[LifeSpanHookHandler]" = None,
-    before_startup: "OptionalSequence[LifeSpanHookHandler]" = None,
-    cache_config: "CacheConfig" = DEFAULT_CACHE_CONFIG,
-    compression_config: Optional["CompressionConfig"] = None,
-    cors_config: Optional["CORSConfig"] = None,
-    csrf_config: Optional["CSRFConfig"] = None,
-    dependencies: Optional["Dependencies"] = None,
-    event_emitter_backend: Type["BaseEventEmitterBackend"] = SimpleEventEmitter,
-    exception_handlers: Optional["ExceptionHandlersMap"] = None,
-    guards: "OptionalSequence[Guard]" = None,
-    initial_state: Optional["InitialStateType"] = None,
-    listeners: "OptionalSequence[EventListener]" = None,
-    logging_config: Optional["BaseLoggingConfig"] = None,
-    middleware: "OptionalSequence[Middleware]" = None,
+    before_request: BeforeRequestHookHandler | None = None,
+    before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
+    before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
+    before_startup: OptionalSequence[LifeSpanHookHandler] = None,
+    cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+    compression_config: CompressionConfig | None = None,
+    cors_config: CORSConfig | None = None,
+    csrf_config: CSRFConfig | None = None,
+    dependencies: Dependencies | None = None,
+    event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
+    exception_handlers: ExceptionHandlersMap | None = None,
+    guards: OptionalSequence[Guard] = None,
+    initial_state: InitialStateType | None = None,
+    listeners: OptionalSequence[EventListener] = None,
+    logging_config: BaseLoggingConfig | None = None,
+    middleware: OptionalSequence[Middleware] = None,
     multipart_form_part_limit: int = 1000,
-    on_app_init: "OptionalSequence[OnAppInitHandler]" = None,
-    on_shutdown: "OptionalSequence[LifeSpanHandler]" = None,
-    on_startup: "OptionalSequence[LifeSpanHandler]" = None,
-    openapi_config: Optional["OpenAPIConfig"] = None,
-    parameters: Optional["ParametersMap"] = None,
-    plugins: "OptionalSequence[SerializationPluginProtocol]" = None,
+    on_app_init: OptionalSequence[OnAppInitHandler] = None,
+    on_shutdown: OptionalSequence[LifeSpanHandler] = None,
+    on_startup: OptionalSequence[LifeSpanHandler] = None,
+    openapi_config: OpenAPIConfig | None = None,
+    parameters: ParametersMap | None = None,
+    plugins: OptionalSequence[SerializationPluginProtocol] = None,
     raise_server_exceptions: bool = True,
-    request_class: Optional[Type["Request"]] = None,
-    response_class: Optional["ResponseType"] = None,
+    request_class: type[Request] | None = None,
+    response_class: ResponseType | None = None,
     root_path: str = "",
-    session_config: Optional["BaseBackendConfig"] = None,
-    static_files_config: "OptionalSequence[StaticFilesConfig]" = None,
-    template_config: Optional["TemplateConfig"] = None,
-    websocket_class: Optional[Type["WebSocket"]] = None,
-) -> AsyncTestClient["Starlite"]:
+    session_config: BaseBackendConfig | None = None,
+    static_files_config: OptionalSequence[StaticFilesConfig] = None,
+    template_config: TemplateConfig | None = None,
+    websocket_class: type[WebSocket] | None = None,
+) -> AsyncTestClient[Starlite]:
     """Create a Starlite app instance and initializes it.
 
     :class:`TestClient <starlite.testing.TestClient>` with it.
@@ -291,7 +292,8 @@ def create_async_test_client(
     Examples:
         .. code-block: python
 
-            from starlite import get, create_test_client
+            from starlite import get
+            from starlite.testing import create_test_client
 
 
             @get("/some-path")

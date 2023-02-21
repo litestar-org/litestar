@@ -1,7 +1,7 @@
 from starlite import Starlite, get
-from starlite.config import LoggingConfig
+from starlite.config.logging import LoggingConfig
 from starlite.exceptions import MissingDependencyException
-from starlite.middleware import LoggingMiddlewareConfig
+from starlite.middleware.logging import LoggingMiddlewareConfig
 
 
 @get("/")

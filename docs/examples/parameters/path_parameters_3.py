@@ -2,7 +2,8 @@ from pydantic import BaseModel, Json, conint
 from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.external_documentation import ExternalDocumentation
 
-from starlite import Parameter, Starlite, get
+from starlite import Starlite, get
+from starlite.params import Parameter
 
 
 class Version(BaseModel):

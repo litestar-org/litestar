@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
 
 from httpx._content import encode_json as httpx_encode_json
@@ -16,10 +18,10 @@ from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from starlite.datastructures.cookie import Cookie
-    from starlite.handlers import HTTPRouteHandler
+    from starlite.handlers.http_handlers import HTTPRouteHandler
 
 
-def _create_default_route_handler() -> "HTTPRouteHandler":
+def _create_default_route_handler() -> HTTPRouteHandler:
     @get("/")
     def _default_route_handler() -> None:
         ...
@@ -36,7 +38,7 @@ class RequestFactory:
 
     def __init__(
         self,
-        app: Optional[Starlite] = None,
+        app: Starlite | None = None,
         server: str = "test.org",
         port: int = 3000,
         root_path: str = "",
@@ -54,7 +56,9 @@ class RequestFactory:
         Examples:
             .. code-block: python
 
-                from starlite import RequestEncodingType, Starlite, RequestFactory
+                from starlite import Starlite
+                from starlite.enums import RequestEncodingType
+                from starlite.testing import RequestFactory
 
                 from tests import PersonFactory
 
@@ -96,14 +100,14 @@ class RequestFactory:
         self,
         path: str,
         http_method: HttpMethod,
-        session: Optional[Dict[str, Any]] = None,
+        session: dict[str, Any] | None = None,
         user: Any = None,
         auth: Any = None,
-        query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
-        state: Optional[Dict[str, Any]] = None,
-        path_params: Optional[Dict[str, str]] = None,
-        http_version: Optional[str] = "1.1",
-        route_handler: Optional[RouteHandlerType] = None,
+        query_params: dict[str, str | list[str]] | None = None,
+        state: dict[str, Any] | None = None,
+        path_params: dict[str, str] | None = None,
+        http_version: str | None = "1.1",
+        route_handler: RouteHandlerType | None = None,
     ) -> HTTPScope:
         """Create the scope for the :class:`Request <starlite.connection.Request>`.
 
@@ -155,9 +159,7 @@ class RequestFactory:
         )
 
     @classmethod
-    def _create_cookie_header(
-        cls, headers: Dict[str, str], cookies: Optional[Union[List["Cookie"], str]] = None
-    ) -> None:
+    def _create_cookie_header(cls, headers: dict[str, str], cookies: list[Cookie] | str | None = None) -> None:
         """Create the cookie header and add it to the ``headers`` dictionary.
 
         Args:
@@ -176,9 +178,9 @@ class RequestFactory:
 
     def _build_headers(
         self,
-        headers: Optional[Dict[str, str]] = None,
-        cookies: Optional[Union[List["Cookie"], str]] = None,
-    ) -> List[Tuple[bytes, bytes]]:
+        headers: dict[str, str] | None = None,
+        cookies: list[Cookie] | str | None = None,
+    ) -> list[tuple[bytes, bytes]]:
         """Build a list of encoded headers that can be passed to the request scope.
 
         Args:
@@ -200,19 +202,19 @@ class RequestFactory:
         self,
         http_method: HttpMethod,
         path: str,
-        headers: Optional[Dict[str, str]] = None,
-        cookies: Optional[Union[List["Cookie"], str]] = None,
-        session: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        cookies: list[Cookie] | str | None = None,
+        session: dict[str, Any] | None = None,
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
-        files: Optional[Union[Dict[str, FileTypes], List[Tuple[str, FileTypes]]]] = None,
-        query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
-        state: Optional[Dict[str, Any]] = None,
-        path_params: Optional[Dict[str, str]] = None,
-        http_version: Optional[str] = "1.1",
-        route_handler: Optional[RouteHandlerType] = None,
+        data: dict[str, Any] | BaseModel | None = None,
+        files: dict[str, FileTypes] | list[tuple[str, FileTypes]] | None = None,
+        query_params: dict[str, str | list[str]] | None = None,
+        state: dict[str, Any] | None = None,
+        path_params: dict[str, str] | None = None,
+        http_version: str | None = "1.1",
+        route_handler: RouteHandlerType | None = None,
     ) -> Request[Any, Any, Any]:
         """Create a :class:`Request <starlite.connection.Request>` instance that has body (data)
 
@@ -272,16 +274,16 @@ class RequestFactory:
     def get(
         self,
         path: str = "/",
-        headers: Optional[Dict[str, str]] = None,
-        cookies: Optional[Union[List["Cookie"], str]] = None,
-        session: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        cookies: list[Cookie] | str | None = None,
+        session: dict[str, Any] | None = None,
         user: Any = None,
         auth: Any = None,
-        query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
-        state: Optional[Dict[str, Any]] = None,
-        path_params: Optional[Dict[str, str]] = None,
-        http_version: Optional[str] = "1.1",
-        route_handler: Optional[RouteHandlerType] = None,
+        query_params: dict[str, str | list[str]] | None = None,
+        state: dict[str, Any] | None = None,
+        path_params: dict[str, str] | None = None,
+        http_version: str | None = "1.1",
+        route_handler: RouteHandlerType | None = None,
     ) -> Request[Any, Any, Any]:
         """Create a GET :class:`Request <starlite.connection.Request>` instance.
 
@@ -321,18 +323,18 @@ class RequestFactory:
     def post(
         self,
         path: str = "/",
-        headers: Optional[Dict[str, str]] = None,
-        cookies: Optional[Union[List["Cookie"], str]] = None,
-        session: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        cookies: list[Cookie] | str | None = None,
+        session: dict[str, Any] | None = None,
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
-        query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
-        state: Optional[Dict[str, Any]] = None,
-        path_params: Optional[Dict[str, str]] = None,
-        http_version: Optional[str] = "1.1",
-        route_handler: Optional[RouteHandlerType] = None,
+        data: dict[str, Any] | BaseModel | None = None,
+        query_params: dict[str, str | list[str]] | None = None,
+        state: dict[str, Any] | None = None,
+        path_params: dict[str, str] | None = None,
+        http_version: str | None = "1.1",
+        route_handler: RouteHandlerType | None = None,
     ) -> Request[Any, Any, Any]:
         """Create a POST :class:`Request <starlite.connection.Request>` instance.
 
@@ -376,18 +378,18 @@ class RequestFactory:
     def put(
         self,
         path: str = "/",
-        headers: Optional[Dict[str, str]] = None,
-        cookies: Optional[Union[List["Cookie"], str]] = None,
-        session: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        cookies: list[Cookie] | str | None = None,
+        session: dict[str, Any] | None = None,
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
-        query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
-        state: Optional[Dict[str, Any]] = None,
-        path_params: Optional[Dict[str, str]] = None,
-        http_version: Optional[str] = "1.1",
-        route_handler: Optional[RouteHandlerType] = None,
+        data: dict[str, Any] | BaseModel | None = None,
+        query_params: dict[str, str | list[str]] | None = None,
+        state: dict[str, Any] | None = None,
+        path_params: dict[str, str] | None = None,
+        http_version: str | None = "1.1",
+        route_handler: RouteHandlerType | None = None,
     ) -> Request[Any, Any, Any]:
         """Create a PUT :class:`Request <starlite.connection.Request>` instance.
 
@@ -431,18 +433,18 @@ class RequestFactory:
     def patch(
         self,
         path: str = "/",
-        headers: Optional[Dict[str, str]] = None,
-        cookies: Optional[Union[List["Cookie"], str]] = None,
-        session: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        cookies: list[Cookie] | str | None = None,
+        session: dict[str, Any] | None = None,
         user: Any = None,
         auth: Any = None,
         request_media_type: RequestEncodingType = RequestEncodingType.JSON,
-        data: Optional[Union[Dict[str, Any], "BaseModel"]] = None,
-        query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
-        state: Optional[Dict[str, Any]] = None,
-        path_params: Optional[Dict[str, str]] = None,
-        http_version: Optional[str] = "1.1",
-        route_handler: Optional[RouteHandlerType] = None,
+        data: dict[str, Any] | BaseModel | None = None,
+        query_params: dict[str, str | list[str]] | None = None,
+        state: dict[str, Any] | None = None,
+        path_params: dict[str, str] | None = None,
+        http_version: str | None = "1.1",
+        route_handler: RouteHandlerType | None = None,
     ) -> Request[Any, Any, Any]:
         """Create a PATCH :class:`Request <starlite.connection.Request>` instance.
 
@@ -486,16 +488,16 @@ class RequestFactory:
     def delete(
         self,
         path: str = "/",
-        headers: Optional[Dict[str, str]] = None,
-        cookies: Optional[Union[List["Cookie"], str]] = None,
-        session: Optional[Dict[str, Any]] = None,
+        headers: dict[str, str] | None = None,
+        cookies: list[Cookie] | str | None = None,
+        session: dict[str, Any] | None = None,
         user: Any = None,
         auth: Any = None,
-        query_params: Optional[Dict[str, Union[str, List[str]]]] = None,
-        state: Optional[Dict[str, Any]] = None,
-        path_params: Optional[Dict[str, str]] = None,
-        http_version: Optional[str] = "1.1",
-        route_handler: Optional[RouteHandlerType] = None,
+        query_params: dict[str, str | list[str]] | None = None,
+        state: dict[str, Any] | None = None,
+        path_params: dict[str, str] | None = None,
+        http_version: str | None = "1.1",
+        route_handler: RouteHandlerType | None = None,
     ) -> Request[Any, Any, Any]:
         """Create a POST :class:`Request <starlite.connection.Request>` instance.
 

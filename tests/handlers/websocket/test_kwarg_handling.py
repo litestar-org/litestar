@@ -1,4 +1,5 @@
-from starlite import Parameter, WebSocket, websocket
+from starlite import WebSocket, websocket
+from starlite.params import Parameter
 from starlite.testing import create_test_client
 
 

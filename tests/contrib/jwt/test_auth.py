@@ -8,7 +8,7 @@ from hypothesis import given, settings
 from hypothesis.strategies import integers, none, one_of, sampled_from, text, timedeltas
 from pydantic import BaseModel, Field
 
-from starlite import ASGIConnection, Request, Response, Starlite, get
+from starlite import Request, Response, Starlite, get
 from starlite.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from starlite.testing import create_test_client
@@ -16,6 +16,7 @@ from tests import User, UserFactory
 
 if TYPE_CHECKING:
     from starlite.cache import SimpleCacheBackend
+    from starlite.connection import ASGIConnection
 
 
 @given(
@@ -52,7 +53,7 @@ async def test_jwt_auth(
 
     await mock_db.set(str(user.id), user, 120)
 
-    async def retrieve_user_handler(token: Token, _: ASGIConnection) -> Any:
+    async def retrieve_user_handler(token: Token, _: "ASGIConnection") -> Any:
         return await mock_db.get(token.sub)
 
     jwt_auth = JWTAuth[Any](
@@ -245,7 +246,7 @@ async def test_jwt_cookie_auth(
 
 
 async def test_path_exclusion() -> None:
-    async def retrieve_user_handler(_: Token, __: ASGIConnection) -> None:
+    async def retrieve_user_handler(_: Token, __: "ASGIConnection") -> None:
         return None
 
     jwt_auth = JWTAuth[Any](
@@ -387,7 +388,7 @@ def test_type_encoders() -> None:
     class User(BaseModel):
         id: str = Field(..., alias="_id")
 
-    async def retrieve_user_handler(token: Token, connection: ASGIConnection[Any, Any, Any, Any]) -> User:
+    async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, Any, Any, Any]") -> User:
         return User(_id=token.sub)
 
     jwt_cookie_auth = JWTCookieAuth[User](
@@ -407,7 +408,7 @@ def test_type_encoders() -> None:
         assert response.status_code == HTTP_201_CREATED
 
 
-async def retrieve_user_handler(token: Token, connection: ASGIConnection[Any, Any, Any, Any]) -> Any:
+async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, Any, Any, Any]") -> Any:
     return User(name="moishe", id=uuid4())
 
 

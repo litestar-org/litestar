@@ -106,7 +106,8 @@ to access the application state:
 
 .. code-block:: python
 
-   from starlite import get, State
+   from starlite import get
+   from starlite.datastructures import State
 
 
    @get("/")
@@ -142,7 +143,8 @@ and the **html files** on the ``/html`` path:
 
 .. code-block:: python
 
-   from starlite import Starlite, StaticFilesConfig
+   from starlite import Starlite
+   from starlite.config.static_files import StaticFilesConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -166,7 +168,8 @@ folders belonging to that config. ``name`` should be a unique string across all 
 
 .. code-block:: python
 
-   from starlite import Starlite, StaticFilesConfig
+   from starlite import Starlite
+   from starlite.config.static_files import StaticFilesConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -189,7 +192,8 @@ To send them as attachments, use the ``send_as_attachment=True`` flag, which wil
 
 .. code-block:: python
 
-   from starlite import Starlite, StaticFilesConfig
+   from starlite import Starlite
+   from starlite.config.static_files import StaticFilesConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -223,7 +227,8 @@ Starlite has builtin pydantic based logging configuration that allows users to e
 
 .. code-block:: python
 
-   from starlite import Starlite, LoggingConfig, Request, get
+   from starlite import Starlite, Request, get
+   from starlite.config.logging import LoggingConfig
 
 
    @get("/")
@@ -264,7 +269,8 @@ logging config for using it:
 
 .. code-block:: python
 
-   from starlite import Starlite, StructLoggingConfig, Request, get
+   from starlite import Starlite, Request, get
+   from starlite.config.logging import StructLoggingConfig
 
 
    @get("/")

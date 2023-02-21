@@ -531,7 +531,8 @@ In Starlite, a redirect response looks like this:
 .. code-block:: python
 
    from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
-   from starlite import Redirect, get
+   from starlite import get
+   from starlite.response_containers import Redirect
 
 
    @get(path="/some-path", status_code=HTTP_307_TEMPORARY_REDIRECT)
@@ -564,7 +565,8 @@ File responses send a file:
 .. code-block:: python
 
    from pathlib import Path
-   from starlite import File, get
+   from starlite import get
+   from starlite.response_containers import File
 
 
    @get(path="/file-download")
@@ -595,7 +597,8 @@ For example:
 .. code-block:: python
 
    from pathlib import Path
-   from starlite import File, get
+   from starlite import get
+   from starlite.response_containers import File
 
 
    @get(path="/file-download", media_type="application/pdf")
@@ -632,7 +635,8 @@ engine is in place, you can use a template response like so:
 
 .. code-block:: python
 
-   from starlite import Template, Request, get
+   from starlite import Request, get
+   from starlite.response_containers import Template
 
 
    @get(path="/info")

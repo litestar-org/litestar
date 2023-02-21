@@ -1,16 +1,18 @@
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import Column, Integer, String, func, select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, declarative_base
 
-from starlite import AbstractAsyncOffsetPaginator, OffsetPagination, Provide, Starlite, get
+from starlite import Starlite, get
+from starlite.di import Provide
 from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
+from starlite.utils.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
 
 Base = declarative_base()
 
 if TYPE_CHECKING:
     from sqlalchemy.engine.result import ScalarResult
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class Person(Base):

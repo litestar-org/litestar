@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from starlite import Starlite
 
 if TYPE_CHECKING:
-    from starlite.config import AppConfig
+    from starlite.config.app import AppConfig
 
 
 async def close_db_connection() -> None:

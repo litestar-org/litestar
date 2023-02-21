@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable
 
 from starlite.exceptions import MissingDependencyException, TemplateNotFoundException
 from starlite.template.base import (
@@ -25,9 +27,7 @@ if TYPE_CHECKING:
 class MakoTemplate(TemplateProtocol):
     """Mako template, implementing ``TemplateProtocol``"""
 
-    def __init__(
-        self, template: "_MakoTemplate", template_callables: List[Tuple[str, Callable[[Dict[str, Any]], Any]]]
-    ):
+    def __init__(self, template: _MakoTemplate, template_callables: list[tuple[str, Callable[[dict[str, Any]], Any]]]):
         """Initialize a template.
 
         Args:
@@ -58,7 +58,7 @@ class MakoTemplate(TemplateProtocol):
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
     """Mako based TemplateEngine."""
 
-    def __init__(self, directory: Union["DirectoryPath", List["DirectoryPath"]]) -> None:
+    def __init__(self, directory: DirectoryPath | list[DirectoryPath]) -> None:
         """Initialize template engine.
 
         Args:
@@ -66,7 +66,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
         """
         super().__init__(directory=directory)
         self.engine = TemplateLookup(directories=directory if isinstance(directory, (list, tuple)) else [directory])
-        self._template_callables: List[Tuple[str, Callable[[Dict[str, Any]], Any]]] = []
+        self._template_callables: list[tuple[str, Callable[[dict[str, Any]], Any]]] = []
         self.register_template_callable(key="url_for_static_asset", template_callable=url_for_static_asset)  # type: ignore
         self.register_template_callable(key="csrf_token", template_callable=csrf_token)  # type: ignore
         self.register_template_callable(key="url_for", template_callable=url_for)  # type: ignore
@@ -89,7 +89,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
         except MakoTemplateNotFound as exc:
             raise TemplateNotFoundException(template_name=template_name) from exc
 
-    def register_template_callable(self, key: str, template_callable: Callable[[Dict[str, Any]], Any]) -> None:
+    def register_template_callable(self, key: str, template_callable: Callable[[dict[str, Any]], Any]) -> None:
         """Register a callable on the template engine.
 
         Args:

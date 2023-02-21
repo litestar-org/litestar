@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from contextlib import ExitStack
-from typing import TYPE_CHECKING, Any, Dict, Generic, Mapping, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Generic, Mapping, TypeVar
 from urllib.parse import urljoin
 
 from httpx import USE_CLIENT_DEFAULT, Client, Response
@@ -34,7 +36,7 @@ T = TypeVar("T", bound=ASGIApp)
 
 class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
     lifespan_handler: LifeSpanHandler
-    exit_stack: "ExitStack"
+    exit_stack: ExitStack
 
     def __init__(
         self,
@@ -43,9 +45,9 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
         raise_server_exceptions: bool = True,
         root_path: str = "",
         backend: AnyIOBackend = "asyncio",
-        backend_options: Optional[Mapping[str, Any]] = None,
-        session_config: Optional["BaseBackendConfig"] = None,
-        cookies: Optional["CookieTypes"] = None,
+        backend_options: Mapping[str, Any] | None = None,
+        session_config: BaseBackendConfig | None = None,
+        cookies: CookieTypes | None = None,
     ) -> None:
         """A client implementation providing a context manager for testing applications.
 
@@ -85,7 +87,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
             ),
         )
 
-    def __enter__(self) -> "TestClient[T]":
+    def __enter__(self) -> TestClient[T]:
         with ExitStack() as stack:
             self.blocking_portal = portal = stack.enter_context(self.portal())
             self.lifespan_handler = LifeSpanHandler(client=self)
@@ -108,19 +110,19 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
     def request(
         self,
         method: str,
-        url: "URLTypes",
+        url: URLTypes,
         *,
-        content: Optional["RequestContent"] = None,
-        data: Optional["RequestData"] = None,
-        files: Optional["RequestFiles"] = None,
-        json: Optional[Any] = None,
-        params: Optional["QueryParamTypes"] = None,
-        headers: Optional["HeaderTypes"] = None,
-        cookies: Optional["CookieTypes"] = None,
-        auth: Optional[Union["AuthTypes", "UseClientDefault"]] = USE_CLIENT_DEFAULT,
-        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Mapping[str, Any]] = None,
+        content: RequestContent | None = None,
+        data: RequestData | None = None,
+        files: RequestFiles | None = None,
+        json: Any | None = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: Mapping[str, Any] | None = None,
     ) -> Response:
         """Sends a request.
 
@@ -161,15 +163,15 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
 
     def get(
         self,
-        url: "URLTypes",
+        url: URLTypes,
         *,
-        params: Optional["QueryParamTypes"] = None,
-        headers: Optional["HeaderTypes"] = None,
-        cookies: Optional["CookieTypes"] = None,
-        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Mapping[str, Any]] = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: Mapping[str, Any] | None = None,
     ) -> Response:
         """Sends a GET request.
 
@@ -200,15 +202,15 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
 
     def options(
         self,
-        url: "URLTypes",
+        url: URLTypes,
         *,
-        params: Optional["QueryParamTypes"] = None,
-        headers: Optional["HeaderTypes"] = None,
-        cookies: Optional["CookieTypes"] = None,
-        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Mapping[str, Any]] = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: Mapping[str, Any] | None = None,
     ) -> Response:
         """Sends an OPTIONS request.
 
@@ -239,15 +241,15 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
 
     def head(
         self,
-        url: "URLTypes",
+        url: URLTypes,
         *,
-        params: Optional["QueryParamTypes"] = None,
-        headers: Optional["HeaderTypes"] = None,
-        cookies: Optional["CookieTypes"] = None,
-        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Mapping[str, Any]] = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: Mapping[str, Any] | None = None,
     ) -> Response:
         """Sends a HEAD request.
 
@@ -278,19 +280,19 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
 
     def post(
         self,
-        url: "URLTypes",
+        url: URLTypes,
         *,
-        content: Optional["RequestContent"] = None,
-        data: Optional["RequestData"] = None,
-        files: Optional["RequestFiles"] = None,
-        json: Optional[Any] = None,
-        params: Optional["QueryParamTypes"] = None,
-        headers: Optional["HeaderTypes"] = None,
-        cookies: Optional["CookieTypes"] = None,
-        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Mapping[str, Any]] = None,
+        content: RequestContent | None = None,
+        data: RequestData | None = None,
+        files: RequestFiles | None = None,
+        json: Any | None = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: Mapping[str, Any] | None = None,
     ) -> Response:
         """Sends a POST request.
 
@@ -329,19 +331,19 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
 
     def put(
         self,
-        url: "URLTypes",
+        url: URLTypes,
         *,
-        content: Optional["RequestContent"] = None,
-        data: Optional["RequestData"] = None,
-        files: Optional["RequestFiles"] = None,
-        json: Optional[Any] = None,
-        params: Optional["QueryParamTypes"] = None,
-        headers: Optional["HeaderTypes"] = None,
-        cookies: Optional["CookieTypes"] = None,
-        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Mapping[str, Any]] = None,
+        content: RequestContent | None = None,
+        data: RequestData | None = None,
+        files: RequestFiles | None = None,
+        json: Any | None = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: Mapping[str, Any] | None = None,
     ) -> Response:
         """Sends a PUT request.
 
@@ -380,19 +382,19 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
 
     def patch(
         self,
-        url: "URLTypes",
+        url: URLTypes,
         *,
-        content: Optional["RequestContent"] = None,
-        data: Optional["RequestData"] = None,
-        files: Optional["RequestFiles"] = None,
-        json: Optional[Any] = None,
-        params: Optional["QueryParamTypes"] = None,
-        headers: Optional["HeaderTypes"] = None,
-        cookies: Optional["CookieTypes"] = None,
-        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Mapping[str, Any]] = None,
+        content: RequestContent | None = None,
+        data: RequestData | None = None,
+        files: RequestFiles | None = None,
+        json: Any | None = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: Mapping[str, Any] | None = None,
     ) -> Response:
         """Sends a PATCH request.
 
@@ -431,15 +433,15 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
 
     def delete(
         self,
-        url: "URLTypes",
+        url: URLTypes,
         *,
-        params: Optional["QueryParamTypes"] = None,
-        headers: Optional["HeaderTypes"] = None,
-        cookies: Optional["CookieTypes"] = None,
-        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Mapping[str, Any]] = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: Mapping[str, Any] | None = None,
     ) -> Response:
         """Sends a DELETE request.
 
@@ -471,15 +473,15 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
     def websocket_connect(
         self,
         url: str,
-        subprotocols: "OptionalSequence[str]" = None,
-        params: Optional["QueryParamTypes"] = None,
-        headers: Optional["HeaderTypes"] = None,
-        cookies: Optional["CookieTypes"] = None,
-        auth: Union["AuthTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        follow_redirects: Union[bool, "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        timeout: Union["TimeoutTypes", "UseClientDefault"] = USE_CLIENT_DEFAULT,
-        extensions: Optional[Mapping[str, Any]] = None,
-    ) -> "WebSocketTestSession":
+        subprotocols: OptionalSequence[str] = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: Mapping[str, Any] | None = None,
+    ) -> WebSocketTestSession:
         """Sends a GET request to establish a websocket connection.
 
         Args:
@@ -497,7 +499,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
             An :class:`WebSocketTestSession <starlite.testing.test_client.WebSocketTestSession>` instance.
         """
         url = urljoin("ws://testserver", url)
-        default_headers: Dict[str, str] = {}
+        default_headers: dict[str, str] = {}
         default_headers.setdefault("connection", "upgrade")
         default_headers.setdefault("sec-websocket-key", "testserver==")
         default_headers.setdefault("sec-websocket-version", "13")
@@ -521,7 +523,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
 
         raise RuntimeError("Expected WebSocket upgrade")  # pragma: no cover
 
-    def set_session_data(self, data: Dict[str, Any]) -> None:
+    def set_session_data(self, data: dict[str, Any]) -> None:
         """Set session data.
 
         Args:
@@ -556,7 +558,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
         with self.portal() as portal:
             portal.call(self._set_session_data, data)
 
-    def get_session_data(self) -> Dict[str, Any]:
+    def get_session_data(self) -> dict[str, Any]:
         """Get session data.
 
         Returns:

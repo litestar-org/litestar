@@ -2,8 +2,10 @@ from typing import Any, List
 
 import pytest
 
-from starlite import Cookie, Request, RequestEncodingType, Response
-from starlite.connection import empty_receive
+from starlite import Request, Response
+from starlite.connection.base import empty_receive
+from starlite.datastructures import Cookie
+from starlite.enums import RequestEncodingType
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import RequestFactory
 from starlite.utils import ConnectionDataExtractor

@@ -1,4 +1,4 @@
-from starlite import TemplateConfig
+from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 
 template_config = TemplateConfig(engine=JinjaTemplateEngine)

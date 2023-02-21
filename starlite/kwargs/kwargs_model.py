@@ -1,15 +1,6 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Type,
-    Union,
-)
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Callable
 
 from anyio import create_task_group
 
@@ -74,15 +65,15 @@ class KwargsModel:
     def __init__(
         self,
         *,
-        expected_cookie_params: Set["ParameterDefinition"],
-        expected_dependencies: Set["Dependency"],
-        expected_form_data: Optional[Tuple[Union["RequestEncodingType", str], "SignatureField"]],
-        expected_msgpack_data: Optional["SignatureField"],
-        expected_header_params: Set["ParameterDefinition"],
-        expected_path_params: Set["ParameterDefinition"],
-        expected_query_params: Set["ParameterDefinition"],
-        expected_reserved_kwargs: Set[str],
-        sequence_query_parameter_names: Set[str],
+        expected_cookie_params: set[ParameterDefinition],
+        expected_dependencies: set[Dependency],
+        expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
+        expected_msgpack_data: SignatureField | None,
+        expected_header_params: set[ParameterDefinition],
+        expected_path_params: set[ParameterDefinition],
+        expected_query_params: set[ParameterDefinition],
+        expected_reserved_kwargs: set[str],
+        sequence_query_parameter_names: set[str],
         is_data_optional: bool,
     ) -> None:
         """Initialize ``KwargsModel``.
@@ -123,8 +114,8 @@ class KwargsModel:
         self.extractors = self._create_extractors()
         self.dependency_batches = create_dependency_batches(expected_dependencies)
 
-    def _create_extractors(self) -> List[Callable[[Dict[str, Any], "ASGIConnection"], None]]:
-        reserved_kwargs_extractors: Dict[str, Callable[[Dict[str, Any], "ASGIConnection"], None]] = {
+    def _create_extractors(self) -> list[Callable[[dict[str, Any], ASGIConnection], None]]:
+        reserved_kwargs_extractors: dict[str, Callable[[dict[str, Any], ASGIConnection], None]] = {
             "data": create_data_extractor(self),
             "state": state_extractor,
             "scope": scope_extractor,
@@ -136,7 +127,7 @@ class KwargsModel:
             "body": body_extractor,  # type: ignore
         }
 
-        extractors: List[Callable[[Dict[str, Any], "ASGIConnection"], None]] = [
+        extractors: list[Callable[[dict[str, Any], ASGIConnection], None]] = [
             reserved_kwargs_extractors[reserved_kwarg] for reserved_kwarg in self.expected_reserved_kwargs
         ]
 
@@ -182,11 +173,11 @@ class KwargsModel:
     @classmethod
     def _get_param_definitions(
         cls,
-        path_parameters: Set[str],
-        layered_parameters: Dict[str, "SignatureField"],
-        dependencies: Dict[str, "Provide"],
-        signature_fields: Dict[str, "SignatureField"],
-    ) -> Tuple[Set["ParameterDefinition"], Set["Dependency"]]:
+        path_parameters: set[str],
+        layered_parameters: dict[str, SignatureField],
+        dependencies: dict[str, Provide],
+        signature_fields: dict[str, SignatureField],
+    ) -> tuple[set[ParameterDefinition], set[Dependency]]:
         """Get parameter_definitions for the construction of KwargsModel instance.
 
         Args:
@@ -255,11 +246,11 @@ class KwargsModel:
     @classmethod
     def create_for_signature_model(
         cls,
-        signature_model: Type["SignatureModel"],
-        dependencies: Dict[str, "Provide"],
-        path_parameters: Set[str],
-        layered_parameters: Dict[str, "SignatureField"],
-    ) -> "KwargsModel":
+        signature_model: type[SignatureModel],
+        dependencies: dict[str, Provide],
+        path_parameters: set[str],
+        layered_parameters: dict[str, SignatureField],
+    ) -> KwargsModel:
         """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
         during the application bootstrap process.
 
@@ -296,8 +287,8 @@ class KwargsModel:
         expected_query_parameters = {p for p in param_definitions if p.param_type == ParamType.QUERY}
         sequence_query_parameter_names = {p.field_alias for p in expected_query_parameters if p.is_sequence}
 
-        expected_form_data: Optional[Tuple[Union["RequestEncodingType", str], "SignatureField"]] = None
-        expected_msgpack_data: Optional["SignatureField"] = None
+        expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None = None
+        expected_msgpack_data: SignatureField | None = None
 
         if (data_signature_field := signature_model.fields().get("data")) and (
             media_type := data_signature_field.kwarg_model.media_type
@@ -355,7 +346,7 @@ class KwargsModel:
             is_data_optional=signature_fields["data"].is_optional if "data" in expected_reserved_kwargs else False,
         )
 
-    def to_kwargs(self, connection: "ASGIConnection") -> Dict[str, Any]:
+    def to_kwargs(self, connection: ASGIConnection) -> dict[str, Any]:
         """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
         sync.
 
@@ -366,7 +357,7 @@ class KwargsModel:
         Returns:
             A string keyed dictionary of kwargs expected by the handler function and its dependencies.
         """
-        output: Dict[str, Any] = {}
+        output: dict[str, Any] = {}
 
         for extractor in self.extractors:
             extractor(output, connection)
@@ -374,7 +365,7 @@ class KwargsModel:
         return output
 
     async def resolve_dependencies(
-        self, connection: "ASGIConnection", kwargs: Dict[str, Any]
+        self, connection: "ASGIConnection", kwargs: dict[str, Any]
     ) -> "DependencyCleanupGroup":
         """Resolve all dependencies into the kwargs, recursively.
 
@@ -394,7 +385,7 @@ class KwargsModel:
         return cleanup_group
 
     @classmethod
-    def _create_dependency_graph(cls, key: str, dependencies: Dict[str, "Provide"]) -> "Dependency":
+    def _create_dependency_graph(cls, key: str, dependencies: dict[str, Provide]) -> Dependency:
         """Create a graph like structure of dependencies, with each dependency including its own dependencies as a
         list.
         """
@@ -409,8 +400,8 @@ class KwargsModel:
     @classmethod
     def _validate_dependency_data(
         cls,
-        expected_form_data: Optional[Tuple[Union["RequestEncodingType", str], "SignatureField"]],
-        dependency_kwargs_model: "KwargsModel",
+        expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
+        dependency_kwargs_model: KwargsModel,
     ) -> None:
         """Validate that the 'data' kwarg is compatible across dependencies."""
         if bool(expected_form_data) != bool(dependency_kwargs_model.expected_form_data):
@@ -428,10 +419,10 @@ class KwargsModel:
     @classmethod
     def _validate_raw_kwargs(
         cls,
-        path_parameters: Set[str],
-        dependencies: Dict[str, "Provide"],
-        signature_fields: Dict[str, "SignatureField"],
-        layered_parameters: Dict[str, "SignatureField"],
+        path_parameters: set[str],
+        dependencies: dict[str, Provide],
+        signature_fields: dict[str, SignatureField],
+        layered_parameters: dict[str, SignatureField],
     ) -> None:
         """Validate that there are no ambiguous kwargs, that is, kwargs declared using the same key in different
         places.

@@ -1,6 +1,7 @@
 import pytest
 
-from starlite import Provide, Starlite, get
+from starlite import Starlite, get
+from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
 
 

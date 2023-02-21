@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING, Any, Hashable, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Hashable
 
 from starlite.enums import RequestEncodingType
 from starlite.types import Empty
@@ -17,22 +19,22 @@ class ParameterKwarg:
 
     value_type: Any = field(default=Empty)
     """The field value - `Empty` by default."""
-    header: Optional[str] = field(default=None)
+    header: str | None = field(default=None)
     """The header parameter key - required for header parameters."""
-    cookie: Optional[str] = field(default=None)
+    cookie: str | None = field(default=None)
     """The cookie parameter key - required for cookie parameters."""
-    query: Optional[str] = field(default=None)
+    query: str | None = field(default=None)
     """The query parameter key for this parameter."""
-    examples: Optional[List["Example"]] = field(default=None)
+    examples: list[Example] | None = field(default=None)
     """A list of Example models."""
-    external_docs: Optional["ExternalDocumentation"] = field(default=None)
+    external_docs: ExternalDocumentation | None = field(default=None)
     """A url pointing at external documentation for the given parameter."""
-    content_encoding: Optional[str] = field(default=None)
+    content_encoding: str | None = field(default=None)
     """The content encoding of the value.
 
     Applicable on to string values. See OpenAPI 3.1 for details.
     """
-    required: Optional[bool] = field(default=None)
+    required: bool | None = field(default=None)
     """A boolean flag dictating whether this parameter is required.
 
     If set to False, None values will be allowed. Defaults to True.
@@ -42,62 +44,62 @@ class ParameterKwarg:
 
     If const is true, this value is required.
     """
-    title: Optional[str] = field(default=None)
+    title: str | None = field(default=None)
     """String value used in the title section of the OpenAPI schema for the given parameter."""
-    description: Optional[str] = field(default=None)
+    description: str | None = field(default=None)
     """String value used in the description section of the OpenAPI schema for the given parameter."""
-    const: Optional[bool] = field(default=None)
+    const: bool | None = field(default=None)
     """A boolean flag dictating whether this parameter is a constant.
 
     If True, the value passed to the parameter must equal its default value. This also causes the OpenAPI const field to
     be populated with the default value.
     """
-    gt: Optional[float] = field(default=None)
+    gt: float | None = field(default=None)
     """Constrict value to be greater than a given float or int.
 
     Equivalent to exclusiveMinimum in the OpenAPI specification.
     """
-    ge: Optional[float] = field(default=None)
+    ge: float | None = field(default=None)
     """Constrict value to be greater or equal to a given float or int.
 
     Equivalent to minimum in the OpenAPI specification.
     """
-    lt: Optional[float] = field(default=None)
+    lt: float | None = field(default=None)
     """Constrict value to be less than a given float or int.
 
     Equivalent to exclusiveMaximum in the OpenAPI specification.
     """
-    le: Optional[float] = field(default=None)
+    le: float | None = field(default=None)
     """Constrict value to be less or equal to a given float or int.
 
     Equivalent to maximum in the OpenAPI specification.
     """
-    multiple_of: Optional[float] = field(default=None)
+    multiple_of: float | None = field(default=None)
     """Constrict value to a multiple of a given float or int.
 
     Equivalent to multipleOf in the OpenAPI specification.
     """
-    min_items: Optional[int] = field(default=None)
+    min_items: int | None = field(default=None)
     """Constrict a set or a list to have a minimum number of items.
 
     Equivalent to minItems in the OpenAPI specification.
     """
-    max_items: Optional[int] = field(default=None)
+    max_items: int | None = field(default=None)
     """Constrict a set or a list to have a maximum number of items.
 
     Equivalent to maxItems in the OpenAPI specification.
     """
-    min_length: Optional[int] = field(default=None)
+    min_length: int | None = field(default=None)
     """Constrict a string or bytes value to have a minimum length.
 
     Equivalent to minLength in the OpenAPI specification.
     """
-    max_length: Optional[int] = field(default=None)
+    max_length: int | None = field(default=None)
     """Constrict a string or bytes value to have a maximum length.
 
     Equivalent to maxLength in the OpenAPI specification.
     """
-    regex: Optional[str] = field(default=None)
+    regex: str | None = field(default=None)
     """A string representing a regex against which the given string will be matched.
 
     Equivalent to pattern in the OpenAPI specification.
@@ -115,27 +117,27 @@ class ParameterKwarg:
 def Parameter(
     value_type: Any = Empty,
     *,
-    header: Optional[str] = None,
-    cookie: Optional[str] = None,
-    query: Optional[str] = None,
-    examples: Optional[List["Example"]] = None,
-    external_docs: Optional["ExternalDocumentation"] = None,
-    content_encoding: Optional[str] = None,
-    required: Optional[bool] = None,
+    header: str | None = None,
+    cookie: str | None = None,
+    query: str | None = None,
+    examples: list[Example] | None = None,
+    external_docs: ExternalDocumentation | None = None,
+    content_encoding: str | None = None,
+    required: bool | None = None,
     default: Any = Empty,
-    title: Optional[str] = None,
-    description: Optional[str] = None,
-    const: Optional[bool] = None,
-    gt: Optional[float] = None,
-    ge: Optional[float] = None,
-    lt: Optional[float] = None,
-    le: Optional[float] = None,
-    multiple_of: Optional[float] = None,
-    min_items: Optional[int] = None,
-    max_items: Optional[int] = None,
-    min_length: Optional[int] = None,
-    max_length: Optional[int] = None,
-    regex: Optional[str] = None
+    title: str | None = None,
+    description: str | None = None,
+    const: bool | None = None,
+    gt: float | None = None,
+    ge: float | None = None,
+    lt: float | None = None,
+    le: float | None = None,
+    multiple_of: float | None = None,
+    min_items: int | None = None,
+    max_items: int | None = None,
+    min_length: int | None = None,
+    max_length: int | None = None,
+    regex: str | None = None,
 ) -> Any:
     """Create an extended parameter kwarg definition.
 
@@ -210,13 +212,13 @@ def Parameter(
 class BodyKwarg:
     """Data container representing a request body."""
 
-    media_type: Union[str, "RequestEncodingType"] = field(default=RequestEncodingType.JSON)
+    media_type: str | RequestEncodingType = field(default=RequestEncodingType.JSON)
     """Media-Type of the body."""
-    examples: Optional[List["Example"]] = field(default=None)
+    examples: list[Example] | None = field(default=None)
     """A list of Example models."""
-    external_docs: Optional["ExternalDocumentation"] = field(default=None)
+    external_docs: ExternalDocumentation | None = field(default=None)
     """A url pointing at external documentation for the given parameter."""
-    content_encoding: Optional[str] = field(default=None)
+    content_encoding: str | None = field(default=None)
     """The content encoding of the value.
 
     Applicable on to string values. See OpenAPI 3.1 for details.
@@ -226,67 +228,67 @@ class BodyKwarg:
 
     If const is true, this value is required.
     """
-    title: Optional[str] = field(default=None)
+    title: str | None = field(default=None)
     """String value used in the title section of the OpenAPI schema for the given parameter."""
-    description: Optional[str] = field(default=None)
+    description: str | None = field(default=None)
     """String value used in the description section of the OpenAPI schema for the given parameter."""
-    const: Optional[bool] = field(default=None)
+    const: bool | None = field(default=None)
     """A boolean flag dictating whether this parameter is a constant.
 
     If True, the value passed to the parameter must equal its default value. This also causes the OpenAPI const field to
     be populated with the default value.
     """
-    gt: Optional[float] = field(default=None)
+    gt: float | None = field(default=None)
     """Constrict value to be greater than a given float or int.
 
     Equivalent to exclusiveMinimum in the OpenAPI specification.
     """
-    ge: Optional[float] = field(default=None)
+    ge: float | None = field(default=None)
     """Constrict value to be greater or equal to a given float or int.
 
     Equivalent to minimum in the OpenAPI specification.
     """
-    lt: Optional[float] = field(default=None)
+    lt: float | None = field(default=None)
     """Constrict value to be less than a given float or int.
 
     Equivalent to exclusiveMaximum in the OpenAPI specification.
     """
-    le: Optional[float] = field(default=None)
+    le: float | None = field(default=None)
     """Constrict value to be less or equal to a given float or int.
 
     Equivalent to maximum in the OpenAPI specification.
     """
-    multiple_of: Optional[float] = field(default=None)
+    multiple_of: float | None = field(default=None)
     """Constrict value to a multiple of a given float or int.
 
     Equivalent to multipleOf in the OpenAPI specification.
     """
-    min_items: Optional[int] = field(default=None)
+    min_items: int | None = field(default=None)
     """Constrict a set or a list to have a minimum number of items.
 
     Equivalent to minItems in the OpenAPI specification.
     """
-    max_items: Optional[int] = field(default=None)
+    max_items: int | None = field(default=None)
     """Constrict a set or a list to have a maximum number of items.
 
     Equivalent to maxItems in the OpenAPI specification.
     """
-    min_length: Optional[int] = field(default=None)
+    min_length: int | None = field(default=None)
     """Constrict a string or bytes value to have a minimum length.
 
     Equivalent to minLength in the OpenAPI specification.
     """
-    max_length: Optional[int] = field(default=None)
+    max_length: int | None = field(default=None)
     """Constrict a string or bytes value to have a maximum length.
 
     Equivalent to maxLength in the OpenAPI specification.
     """
-    regex: Optional[str] = field(default=None)
+    regex: str | None = field(default=None)
     """A string representing a regex against which the given string will be matched.
 
     Equivalent to pattern in the OpenAPI specification.
     """
-    multipart_form_part_limit: Optional[int] = field(default=None)
+    multipart_form_part_limit: int | None = field(default=None)
     """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from DoS attacks."""
 
     def __hash__(self) -> int:  # pragma: no cover
@@ -300,25 +302,25 @@ class BodyKwarg:
 
 def Body(
     *,
-    media_type: Union[str, "RequestEncodingType"] = RequestEncodingType.JSON,
-    examples: Optional[List["Example"]] = None,
-    external_docs: Optional["ExternalDocumentation"] = None,
-    content_encoding: Optional[str] = None,
+    media_type: str | RequestEncodingType = RequestEncodingType.JSON,
+    examples: list[Example] | None = None,
+    external_docs: ExternalDocumentation | None = None,
+    content_encoding: str | None = None,
     default: Any = Empty,
-    title: Optional[str] = None,
-    description: Optional[str] = None,
-    const: Optional[bool] = None,
-    gt: Optional[float] = None,
-    ge: Optional[float] = None,
-    lt: Optional[float] = None,
-    le: Optional[float] = None,
-    multiple_of: Optional[float] = None,
-    min_items: Optional[int] = None,
-    max_items: Optional[int] = None,
-    min_length: Optional[int] = None,
-    max_length: Optional[int] = None,
-    regex: Optional[str] = None,
-    multipart_form_part_limit: Optional[int] = None
+    title: str | None = None,
+    description: str | None = None,
+    const: bool | None = None,
+    gt: float | None = None,
+    ge: float | None = None,
+    lt: float | None = None,
+    le: float | None = None,
+    multiple_of: float | None = None,
+    min_items: int | None = None,
+    max_items: int | None = None,
+    min_length: int | None = None,
+    max_length: int | None = None,
+    regex: str | None = None,
+    multipart_form_part_limit: int | None = None,
 ) -> Any:
     """Create an extended request body kwarg definition.
 

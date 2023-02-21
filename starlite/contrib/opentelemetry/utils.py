@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, Tuple
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from starlite.exceptions import MissingDependencyException
 
@@ -11,7 +13,7 @@ if TYPE_CHECKING:
     from starlite.types import Scope
 
 
-def get_route_details_from_scope(scope: "Scope") -> Tuple[str, Dict[Any, str]]:
+def get_route_details_from_scope(scope: Scope) -> tuple[str, dict[Any, str]]:
     """Retrieve the span name and attributes from the ASGI scope.
 
     Args:

@@ -15,10 +15,11 @@ from .helper_types import SyncOrAsyncUnion
 from .internal_types import PathParameterDefinition, StarliteType
 
 if TYPE_CHECKING:
-    from starlite.config import AppConfig
+    from starlite.config.app import AppConfig
     from starlite.connection import ASGIConnection, Request
     from starlite.datastructures.state import State
-    from starlite.handlers import BaseRouteHandler, HTTPRouteHandler
+    from starlite.handlers.base import BaseRouteHandler
+    from starlite.handlers.http_handlers import HTTPRouteHandler
     from starlite.response import Response
     from starlite.types.protocols import Logger
 else:

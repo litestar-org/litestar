@@ -96,8 +96,8 @@ You can also use dataclasses (standard library and Pydantic),
     from typing import List
 
     from pydantic import UUID4
-    from starlite import Controller, Partial, get, post, put, patch, delete
-
+    from starlite import Controller, get, post, put, patch, delete
+    from starlite.partial import Partial
     from my_app.models import User
 
 

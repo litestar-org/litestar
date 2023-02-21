@@ -37,7 +37,7 @@ from starlite.exceptions import (
 )
 from starlite.handlers.base import BaseRouteHandler
 from starlite.openapi.datastructures import ResponseSpec
-from starlite.plugins import get_plugin_for_value
+from starlite.plugins.base import get_plugin_for_value
 from starlite.response import FileResponse, Response
 from starlite.response_containers import File, Redirect, ResponseContainer
 from starlite.status_codes import (

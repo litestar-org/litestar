@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.responses import Responses
 
     from starlite.datastructures.cookie import Cookie
-    from starlite.handlers import HTTPRouteHandler
+    from starlite.handlers.http_handlers import HTTPRouteHandler
     from starlite.plugins.base import OpenAPISchemaPluginProtocol
 
 

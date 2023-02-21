@@ -1,12 +1,22 @@
 from typing import Any, Dict, List, Optional, Type, Union
 
-from pydantic import BaseConfig, BaseModel, validator
+from pydantic import BaseModel, validator
 from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
+from starlite.config.allowed_hosts import AllowedHostsConfig
+from starlite.config.base_config import BaseConfigModel
+from starlite.config.cache import CacheConfig
+from starlite.config.compression import CompressionConfig
+from starlite.config.cors import CORSConfig
+from starlite.config.csrf import CSRFConfig
+from starlite.config.logging import BaseLoggingConfig
+from starlite.config.openapi import OpenAPIConfig
+from starlite.config.static_files import StaticFilesConfig
+from starlite.config.template import TemplateConfig
 from starlite.connection import Request, WebSocket
 from starlite.datastructures import CacheControlHeader, ETag
 from starlite.di import Provide
-from starlite.events.emitter import SimpleEventEmitter
+from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from starlite.events.listener import EventListener
 from starlite.plugins import PluginProtocol
 from starlite.types import (
@@ -29,17 +39,6 @@ from starlite.types import (
 )
 from starlite.types.composite_types import InitialStateType
 
-from ..events.emitter import BaseEventEmitterBackend
-from . import AllowedHostsConfig
-from .cache import CacheConfig
-from .compression import CompressionConfig
-from .cors import CORSConfig
-from .csrf import CSRFConfig
-from .logging import BaseLoggingConfig
-from .openapi import OpenAPIConfig
-from .static_files import StaticFilesConfig
-from .template import TemplateConfig
-
 
 class AppConfig(BaseModel):
     """The parameters provided to the ``Starlite`` app are used to instantiate an instance, and then the instance is
@@ -48,8 +47,8 @@ class AppConfig(BaseModel):
     The final attribute values are used to instantiate the application object.
     """
 
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
+    class Config(BaseConfigModel):
+        pass
 
     after_exception: List[AfterExceptionHookHandler] = []
     """An application level :class:`exception hook handler <starlite.types.AfterExceptionHookHandler>` or list thereof.

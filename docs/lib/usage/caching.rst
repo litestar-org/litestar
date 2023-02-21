@@ -60,7 +60,7 @@ Here is an example of how to configure a cache backend
 
         .. code-block:: python
 
-           from starlite import CacheConfig
+           from starlite.config.cache import CacheConfig
            from starlite.cache.redis_cache_backend import (
                RedisCacheBackendConfig,
                RedisCacheBackend,
@@ -76,7 +76,7 @@ Here is an example of how to configure a cache backend
 
         .. code-block:: python
 
-           from starlite import CacheConfig
+           from starlite.config.cache import CacheConfig
            from starlite.cache.memcached_cache_backend import (
                MemcachedCacheBackendConfig,
                MemcachedCacheBackend,
@@ -158,7 +158,7 @@ object. For example, you can access the cache in a custom middleware thus:
 
 .. code-block:: python
 
-   from starlite import MiddlewareProtocol
+   from starlite.middleware import MiddlewareProtocol
    from starlite.types import Scope, Receive, Send, ASGIApp
 
 

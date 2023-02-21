@@ -1,10 +1,10 @@
 from time import time
 from typing import TYPE_CHECKING, Dict
 
-from starlite import ScopeType, Starlite, get, websocket
+from starlite import Starlite, get, websocket
 from starlite.datastructures import MutableScopeHeaders
+from starlite.enums import ScopeType
 from starlite.middleware import AbstractMiddleware
-
 
 if TYPE_CHECKING:
     from starlite import WebSocket

@@ -5,7 +5,7 @@ import pytest
 from freezegun import freeze_time
 
 from starlite import Request, get
-from starlite.config import StaticFilesConfig
+from starlite.config.static_files import StaticFilesConfig
 from starlite.middleware.rate_limit import (
     DURATION_VALUES,
     CacheObject,

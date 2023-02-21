@@ -1,22 +1,12 @@
+from __future__ import annotations
+
 from abc import ABC
-from typing import (
-    Any,
-    Dict,
-    Generator,
-    Generic,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import Any, Generator, Generic, Iterable, Mapping, TypeVar
 
 from multidict import MultiDict as BaseMultiDict
 from multidict import MultiDictProxy, MultiMapping
 
-from starlite.upload_file import UploadFile
+from starlite.datastructures.upload_file import UploadFile
 
 T = TypeVar("T")
 
@@ -28,7 +18,7 @@ class MultiMixin(Generic[T], MultiMapping[T], ABC):
     :class:`MultiDict <starlite.datastructures.multi_dicts.MultiDict>`
     """
 
-    def dict(self) -> Dict[str, List[Any]]:
+    def dict(self) -> dict[str, list[Any]]:
         """Return the multi-dict as a dict of lists.
 
         Returns:
@@ -36,7 +26,7 @@ class MultiMixin(Generic[T], MultiMapping[T], ABC):
         """
         return {k: self.getall(k) for k in set(self.keys())}
 
-    def multi_items(self) -> Generator[Tuple[str, T], None, None]:
+    def multi_items(self) -> Generator[tuple[str, T], None, None]:
         """Get all keys and values, including duplicates.
 
         Returns:
@@ -50,7 +40,7 @@ class MultiMixin(Generic[T], MultiMapping[T], ABC):
 class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
     """MultiDict, using :class:`MultiDict <multidict.MultiDictProxy>`."""
 
-    def __init__(self, args: Optional[Union["MultiMapping", Mapping[str, T], Iterable[Tuple[str, T]]]] = None) -> None:
+    def __init__(self, args: MultiMapping | Mapping[str, T] | Iterable[tuple[str, T]] | None = None) -> None:
         """Initialize ``MultiDict`` from a.
 
         :class:`MultiMapping <multidict.MultiMapping>`, ``Mapping`` or an iterable of
@@ -61,7 +51,7 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
         """
         super().__init__(args or {})
 
-    def immutable(self) -> "ImmutableMultiDict[T]":
+    def immutable(self) -> ImmutableMultiDict[T]:
         """Create an.
 
         :class:`ImmutableMultiDict <starlite.datastructures.multi_dicts.ImmutableMultiDict>` view.
@@ -78,9 +68,7 @@ class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
     :class:`MultiDictProxy <multidict.MultiDictProxy>`.
     """
 
-    def __init__(
-        self, args: Optional[Union["MultiMapping", Mapping[str, Any], Iterable[Tuple[str, Any]]]] = None
-    ) -> None:
+    def __init__(self, args: MultiMapping | Mapping[str, Any] | Iterable[tuple[str, Any]] | None = None) -> None:
         """Initialize ``ImmutableMultiDict`` from a.
 
         :class:`MultiMapping <multidict.MultiMapping>`, ``Mapping`` or an iterable of

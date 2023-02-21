@@ -4,8 +4,8 @@ from typing import List
 from pydantic import BaseModel
 from pydantic_factories import ModelFactory
 
-from starlite.utils.pagination import AbstractSyncOffsetPaginator, OffsetPagination
 from starlite import Starlite, get
+from starlite.utils.pagination import AbstractSyncOffsetPaginator, OffsetPagination
 
 
 class Person(BaseModel):

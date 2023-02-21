@@ -2,7 +2,7 @@ from typing import Dict
 
 from starlite import Starlite, get
 from starlite.config.logging import LoggingConfig
-from starlite.middleware import LoggingMiddlewareConfig
+from starlite.middleware.logging import LoggingMiddlewareConfig
 
 logging_middleware_config = LoggingMiddlewareConfig()
 

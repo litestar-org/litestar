@@ -15,8 +15,9 @@ from urllib.parse import urlencode
 
 import pytest
 
-from starlite import Parameter, Request, get
+from starlite import Request, get
 from starlite.datastructures import MultiDict
+from starlite.params import Parameter
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
 

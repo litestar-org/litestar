@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 from collections import deque
 from typing import (
@@ -6,10 +8,8 @@ from typing import (
     Iterable,
     Iterator,
     List,
-    Optional,
     Sequence,
     Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -33,8 +33,8 @@ tuple_types_regex = re.compile(
 
 def annotation_is_iterable_of_type(
     annotation: Any,
-    type_value: Type[T],
-) -> "TypeGuard[Iterable[T]]":
+    type_value: type[T],
+) -> TypeGuard[Iterable[T]]:
     """Determine if a given annotation is an iterable of the given type_value.
 
     Args:
@@ -52,7 +52,7 @@ def annotation_is_iterable_of_type(
     return False
 
 
-def make_non_optional_union(annotation: Optional[UnionT]) -> UnionT:
+def make_non_optional_union(annotation: UnionT | None) -> UnionT:
     """Make a :data:`Union <typing.Union>` type that excludes ``NoneType``.
 
     Args:

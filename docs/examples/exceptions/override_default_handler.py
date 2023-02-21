@@ -1,6 +1,6 @@
 from starlite import MediaType, Request, Response, Starlite, get
-from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.exceptions import HTTPException
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 
 def plain_text_exception_handler(_: Request, exc: Exception) -> Response:

@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
-from starlite import Dependency, Starlite, get
+from starlite import Starlite, get
+from starlite.params import Dependency
 
 
 @get("/")

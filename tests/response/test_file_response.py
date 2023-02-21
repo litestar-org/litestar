@@ -6,7 +6,7 @@ from typing import Any
 import pytest
 
 from starlite import get
-from starlite.connection import empty_send
+from starlite.connection.base import empty_send
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import FileResponse
 from starlite.response.file import async_file_iterator

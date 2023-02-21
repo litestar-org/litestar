@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, NamedTuple, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 from urllib.parse import SplitResult, urlencode, urlsplit, urlunsplit
 
 from starlite.datastructures import MultiDict
@@ -21,7 +23,7 @@ class Address(NamedTuple):
     """Address port."""
 
 
-def make_absolute_url(path: Union[str, "URL"], base: Union[str, "URL"]) -> str:
+def make_absolute_url(path: str | URL, base: str | URL) -> str:
     """Create an absolute URL.
 
     Args:
@@ -54,8 +56,8 @@ class URL:
         "username",
     )
 
-    _query_params: Union["EmptyType", "MultiDict"]
-    _parsed_url: Optional[str]
+    _query_params: EmptyType | MultiDict
+    _parsed_url: str | None
 
     scheme: str
     """URL scheme."""
@@ -67,17 +69,17 @@ class URL:
     """Fragment component."""
     query: str
     """Query string."""
-    username: Optional[str]
+    username: str | None
     """Username if specified."""
-    password: Optional[str]
+    password: str | None
     """Password if specified."""
-    port: Optional[int]
+    port: int | None
     """Port if specified."""
-    hostname: Optional[str]
+    hostname: str | None
     """Hostname if specified."""
 
     @lru_cache  # type: ignore[misc]  # noqa: B019
-    def __new__(cls, url: Union[str, SplitResult]) -> "URL":
+    def __new__(cls, url: str | SplitResult) -> URL:
         """Create a new instance.
 
         Args:
@@ -128,7 +130,7 @@ class URL:
         path: str = "",
         fragment: str = "",
         query: str = "",
-    ) -> "URL":
+    ) -> URL:
         """Create a new URL from components.
 
         Args:
@@ -152,7 +154,7 @@ class URL:
         )
 
     @classmethod
-    def from_scope(cls, scope: "Scope") -> "URL":
+    def from_scope(cls, scope: Scope) -> URL:
         """Construct a URL from a :class:`Scope <starlite.types.Scope>`
 
         Args:
@@ -191,9 +193,9 @@ class URL:
         scheme: str = "",
         netloc: str = "",
         path: str = "",
-        query: Optional[Union[str, "MultiDict"]] = None,
+        query: str | MultiDict | None = None,
         fragment: str = "",
-    ) -> "URL":
+    ) -> URL:
         """Create a new URL, replacing the given components.
 
         Args:
@@ -218,7 +220,7 @@ class URL:
         )
 
     @property
-    def query_params(self) -> "MultiDict":
+    def query_params(self) -> MultiDict:
         """Query parameters of a URL as a :class:`MultiDict <multidict.MultiDict>`
 
         Returns:

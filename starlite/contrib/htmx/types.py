@@ -1,4 +1,6 @@
-from typing import Any, Dict, Literal, Optional, TypedDict, Union
+from __future__ import annotations
+
+from typing import Any, Literal, TypedDict, Union
 
 from typing_extensions import Required
 
@@ -15,30 +17,30 @@ class LocationType(TypedDict):
     """Type for HX-Location header."""
 
     path: Required[str]
-    source: Optional[str]
-    event: Optional[str]
-    target: Optional[str]
-    swap: Optional[ReSwapMethod]
-    values: Optional[Dict[str, str]]
-    hx_headers: Optional[Dict[str, Any]]
+    source: str | None
+    event: str | None
+    target: str | None
+    swap: ReSwapMethod | None
+    values: dict[str, str] | None
+    hx_headers: dict[str, Any] | None
 
 
 class TriggerEventType(TypedDict):
     """Type for HX-Trigger header."""
 
     name: Required[str]
-    params: Optional[Dict[str, Any]]
-    after: Optional[EventAfterType]
+    params: dict[str, Any] | None
+    after: EventAfterType | None
 
 
 class HtmxHeaderType(TypedDict, total=False):
     """Type for hx_headers parameter in get_headers()."""
 
-    location: Optional[LocationType]
-    redirect: Optional[str]
+    location: LocationType | None
+    redirect: str | None
     refresh: bool
-    push_url: Optional[PushUrlType]
-    replace_url: Optional[PushUrlType]
-    re_swap: Optional[ReSwapMethod]
-    re_target: Optional[str]
-    trigger_event: Optional[TriggerEventType]
+    push_url: PushUrlType | None
+    replace_url: PushUrlType | None
+    re_swap: ReSwapMethod | None
+    re_target: str | None
+    trigger_event: TriggerEventType | None

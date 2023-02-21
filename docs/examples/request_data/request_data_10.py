@@ -1,6 +1,9 @@
 from typing import Dict, List
 
-from starlite import Body, RequestEncodingType, Starlite, UploadFile, post
+from starlite import Starlite, post
+from starlite.datastructures import UploadFile
+from starlite.enums import RequestEncodingType
+from starlite.params import Body
 
 
 @post(path="/")

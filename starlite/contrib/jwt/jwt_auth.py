@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Generic, Literal, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Dict, Generic, Literal, Optional, Type, Union
 
 from pydantic import BaseConfig, BaseModel, Extra
 from pydantic_openapi_schema.v3_1_0 import (
@@ -10,17 +10,20 @@ from pydantic_openapi_schema.v3_1_0 import (
     SecurityScheme,
 )
 
-from starlite import Cookie, Response
 from starlite.contrib.jwt.jwt_token import Token
 from starlite.contrib.jwt.middleware import (
     JWTAuthenticationMiddleware,
     JWTCookieAuthenticationMiddleware,
 )
+from starlite.datastructures import Cookie
 from starlite.enums import MediaType
 from starlite.middleware import DefineMiddleware
 from starlite.security.base import AbstractSecurityConfig, UserType
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.types import Empty
+
+if TYPE_CHECKING:
+    from starlite import Response
 
 
 class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
@@ -115,7 +118,7 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         token_audience: Optional[str] = None,
         token_unique_jwt_id: Optional[str] = None,
         send_token_as_response_body: bool = False,
-    ) -> Response[Any]:
+    ) -> "Response[Any]":
         """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
 
         Args:
@@ -276,7 +279,7 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
         token_audience: Optional[str] = None,
         token_unique_jwt_id: Optional[str] = None,
         send_token_as_response_body: bool = False,
-    ) -> Response[Any]:
+    ) -> "Response[Any]":
         """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
 
         Args:
@@ -405,7 +408,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
         token_audience: Optional[str] = None,
         token_unique_jwt_id: Optional[str] = None,
         send_token_as_response_body: bool = True,
-    ) -> Response[Any]:
+    ) -> "Response[Any]":
         """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
 
         Args:

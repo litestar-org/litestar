@@ -1,26 +1,29 @@
-from typing import List
+from typing import TYPE_CHECKING, List
 
-from starlite import Starlite, State
+from starlite.datastructures import State
 from starlite.testing import create_test_client
+
+if TYPE_CHECKING:
+    from starlite import Starlite
 
 
 def test_lifespan() -> None:
     events: List[str] = []
     counter = {"value": 0}
 
-    async def before_startup(app: Starlite) -> None:
+    async def before_startup(app: "Starlite") -> None:
         events.append("before_startup")
         assert app
 
-    async def after_startup(app: Starlite) -> None:
+    async def after_startup(app: "Starlite") -> None:
         events.append("after_startup")
         assert app
 
-    async def before_shutdown(app: Starlite) -> None:
+    async def before_shutdown(app: "Starlite") -> None:
         events.append("before_shutdown")
         assert app
 
-    async def after_shutdown(app: Starlite) -> None:
+    async def after_shutdown(app: "Starlite") -> None:
         events.append("after_shutdown")
         assert app
 
@@ -32,14 +35,14 @@ def test_lifespan() -> None:
         events.append("async_function_without_state")
         counter["value"] += 1
 
-    def sync_function_with_state(state: State) -> None:
+    def sync_function_with_state(state: "State") -> None:
         events.append("sync_function_with_state")
         assert state is not None
         assert isinstance(state, State)
         counter["value"] += 1
         state.x = True
 
-    async def async_function_with_state(state: State) -> None:
+    async def async_function_with_state(state: "State") -> None:
         events.append("async_function_with_state")
         assert state is not None
         assert isinstance(state, State)

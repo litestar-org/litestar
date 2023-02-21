@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from itertools import chain
 from typing import TYPE_CHECKING
 
@@ -7,7 +9,7 @@ if TYPE_CHECKING:
     from starlite.asgi.routing_trie.types import RouteTrieNode
 
 
-def validate_node(node: "RouteTrieNode") -> None:
+def validate_node(node: RouteTrieNode) -> None:
     """Recursively traverses the trie from the given node upwards.
 
     Args:

@@ -1,17 +1,9 @@
+from __future__ import annotations
+
 from email.utils import formatdate
 from inspect import iscoroutine
 from mimetypes import guess_type
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    AsyncGenerator,
-    Coroutine,
-    Dict,
-    Literal,
-    Optional,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Coroutine, Literal, cast
 from urllib.parse import quote
 from zlib import adler32
 
@@ -59,7 +51,7 @@ async def async_file_iterator(
             yield chunk
 
 
-def create_etag_for_file(path: "PathType", modified_time: float, file_size: int) -> str:
+def create_etag_for_file(path: PathType, modified_time: float, file_size: int) -> str:
     """Create an etag.
 
     Notes:
@@ -87,21 +79,21 @@ class FileResponse(StreamingResponse):
 
     def __init__(
         self,
-        path: Union[str, "PathLike", "Path"],
+        path: str | PathLike | Path,
         *,
-        background: Optional[Union["BackgroundTask", "BackgroundTasks"]] = None,
+        background: BackgroundTask | BackgroundTasks | None = None,
         chunk_size: int = ONE_MEGABYTE,
         content_disposition_type: Literal["attachment", "inline"] = "attachment",
-        cookies: Optional["ResponseCookies"] = None,
+        cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
-        etag: Optional["ETag"] = None,
-        file_system: Optional["FileSystemProtocol"] = None,
-        filename: Optional[str] = None,
-        file_info: Optional["FileInfo"] = None,
-        headers: Optional[Dict[str, Any]] = None,
+        etag: ETag | None = None,
+        file_system: FileSystemProtocol | None = None,
+        filename: str | None = None,
+        file_info: FileInfo | None = None,
+        headers: dict[str, Any] | None = None,
         is_head_response: bool = False,
-        media_type: Optional[Union[Literal[MediaType.TEXT], str]] = None,
-        stat_result: Optional["stat_result_type"] = None,
+        media_type: Literal[MediaType.TEXT] | str | None = None,
+        stat_result: stat_result_type | None = None,
         status_code: int = HTTP_200_OK,
     ) -> None:
         """Initialize ``FileResponse``
@@ -156,7 +148,7 @@ class FileResponse(StreamingResponse):
         )
 
         if file_info:
-            self.file_info: Union["FileInfo", "Coroutine[Any, Any, 'FileInfo']"] = file_info
+            self.file_info: FileInfo | Coroutine[Any, Any, FileInfo] = file_info
         elif stat_result:
             self.file_info = self.adapter.parse_stat_result(result=stat_result, path=path)
         else:
@@ -201,7 +193,7 @@ class FileResponse(StreamingResponse):
             return
 
         async with await self.adapter.open(self.file_path) as file:
-            body_event: "HTTPResponseBodyEvent" = {
+            body_event: HTTPResponseBodyEvent = {
                 "type": "http.response.body",
                 "body": await file.read(),
                 "more_body": False,

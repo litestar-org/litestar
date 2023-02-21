@@ -1,15 +1,18 @@
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Type, Union
+from typing import TYPE_CHECKING, Any, Type, Union
 
 import pytest
 
-from starlite import HTTPRouteHandler, get
+from starlite import get
 from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
 from starlite.response_containers import Template
 from starlite.testing import create_test_client
+
+if TYPE_CHECKING:
+    from starlite.handlers.http_handlers import HTTPRouteHandler
 
 
 @dataclass
@@ -38,7 +41,7 @@ def engine_test(request: Any) -> EngineTest:
 
 
 @pytest.fixture()
-def index_handler(engine_test: EngineTest, template_dir: Path) -> HTTPRouteHandler:
+def index_handler(engine_test: EngineTest, template_dir: Path) -> "HTTPRouteHandler":
     Path(template_dir / "index.html").write_text(engine_test.index_template)
 
     @get(path="/")
@@ -49,7 +52,7 @@ def index_handler(engine_test: EngineTest, template_dir: Path) -> HTTPRouteHandl
 
 
 @pytest.fixture()
-def nested_path_handler(engine_test: EngineTest, template_dir: Path) -> HTTPRouteHandler:
+def nested_path_handler(engine_test: EngineTest, template_dir: Path) -> "HTTPRouteHandler":
     nested_path = template_dir / "nested-dir"
     nested_path.mkdir()
     Path(nested_path / "nested.html").write_text(engine_test.nested_template)
@@ -66,7 +69,7 @@ def template_config(engine_test: EngineTest, template_dir: Path) -> TemplateConf
     return TemplateConfig(engine=engine_test.engine, directory=template_dir)
 
 
-def test_template(index_handler: HTTPRouteHandler, template_config: TemplateConfig) -> None:
+def test_template(index_handler: "HTTPRouteHandler", template_config: TemplateConfig) -> None:
     with create_test_client(route_handlers=[index_handler], template_config=template_config) as client:
         response = client.request("GET", "/")
         assert response.status_code == 200, response.text
@@ -74,7 +77,7 @@ def test_template(index_handler: HTTPRouteHandler, template_config: TemplateConf
         assert response.headers["Content-Type"] == "text/html; charset=utf-8"
 
 
-def test_nested_template_directory(nested_path_handler: HTTPRouteHandler, template_config: TemplateConfig) -> None:
+def test_nested_template_directory(nested_path_handler: "HTTPRouteHandler", template_config: TemplateConfig) -> None:
     with create_test_client(route_handlers=[nested_path_handler], template_config=template_config) as client:
         response = client.request("GET", "/nested")
         assert response.status_code == 200, response.text

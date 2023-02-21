@@ -1,6 +1,7 @@
 from typing import Dict, Generator
 
-from starlite import Provide, Starlite, get
+from starlite import Starlite, get
+from starlite.di import Provide
 
 STATE = {"result": None, "connection": "closed"}
 
