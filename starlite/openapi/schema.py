@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum, EnumMeta
@@ -46,6 +47,7 @@ from starlite.utils.pagination import (
     CursorPagination,
     OffsetPagination,
 )
+from starlite.utils.types import make_non_optional_union
 
 if TYPE_CHECKING:
     from starlite.plugins.base import OpenAPISchemaPluginProtocol
@@ -336,10 +338,10 @@ def create_schema(
     ignore_optional: bool = False,
 ) -> "Schema":
     """Create a Schema model for a given SignatureField and if needed - recursively traverse its children as well."""
-
     if field.is_optional and not ignore_optional:
+        non_optional_field = replace(field, field_type=make_non_optional_union(field.field_type))
         non_optional_schema = create_schema(
-            field=field,
+            field=non_optional_field,
             generate_examples=False,
             ignore_optional=True,
             plugins=plugins,
