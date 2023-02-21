@@ -806,6 +806,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "nilsso",
+      "name": "Nils Olsson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/567181?v=4",
+      "profile": "http://nilsso.github.io",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
