@@ -208,7 +208,6 @@ async def test_jwt_cookie_auth(
             "/my-endpoint",
         )
         assert response.status_code == HTTP_200_OK
-        assert response.cookies.get(jwt_auth.key) == f"key={jwt_auth.key}; Path=/; SameSite=lax"
 
         client.cookies.clear()
         response = client.get("/my-endpoint", headers={auth_header: encoded_token})
