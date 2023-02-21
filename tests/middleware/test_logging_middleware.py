@@ -7,14 +7,16 @@ from structlog.testing import capture_logs
 from starlite import Response, get, post
 from starlite.config.compression import CompressionConfig
 from starlite.config.logging import LoggingConfig, StructLoggingConfig
+from starlite.connection import Request
 from starlite.datastructures import Cookie
 from starlite.middleware.logging import LoggingMiddlewareConfig
-from starlite.status_codes import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
 
+    from starlite.middleware.session.server_side import ServerSideSessionConfig
     from starlite.types.callable_types import GetLogger
 
 
@@ -210,3 +212,33 @@ def test_logging_middleware_log_fields(get_logger: "GetLogger", caplog: "LogCapt
 
         assert caplog.messages[0] == "HTTP Request: path=/"
         assert caplog.messages[1] == "HTTP Response: status_code=200"
+
+
+def test_logging_middleware_with_session_middleware(session_backend_config_memory: "ServerSideSessionConfig") -> None:
+    # https://github.com/starlite-api/starlite/issues/1228
+
+    @post("/")
+    async def set_session(request: Request) -> None:
+        request.set_session({"hello": "world"})
+
+    @get("/")
+    async def get_session() -> None:
+        pass
+
+    logging_middleware_config = LoggingMiddlewareConfig()
+
+    with create_test_client(
+        [set_session, get_session],
+        logging_config=LoggingConfig(),
+        middleware=[logging_middleware_config.middleware, session_backend_config_memory.middleware],
+    ) as client:
+        response = client.post("/")
+        assert response.status_code == HTTP_201_CREATED
+        assert "session" in client.cookies
+        assert client.cookies["session"] != "*****"
+        session_id = client.cookies["session"]
+
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert "session" in client.cookies
+        assert client.cookies["session"] == session_id
