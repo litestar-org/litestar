@@ -6,8 +6,10 @@ from structlog.testing import capture_logs
 
 from starlite import Cookie, LoggingConfig, Response, StructLoggingConfig, get, post
 from starlite.config.compression import CompressionConfig
+from starlite.connection import Request
 from starlite.middleware import LoggingMiddlewareConfig
-from starlite.status_codes import HTTP_200_OK
+from starlite.middleware.session.memory_backend import MemoryBackendConfig
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -190,3 +192,34 @@ def test_logging_messages_are_not_doubled(
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert len(caplog.messages) == 2
+
+
+def test_logging_middleware_with_session_middleware() -> None:
+    # https://github.com/starlite-api/starlite/issues/1228
+
+    @post("/")
+    async def set_session(request: Request) -> None:
+        request.set_session({"hello": "world"})
+
+    @get("/")
+    async def get_session() -> None:
+        pass
+
+    logging_middleware_config = LoggingMiddlewareConfig()
+    session_config = MemoryBackendConfig()
+
+    with create_test_client(
+        [set_session, get_session],
+        logging_config=LoggingConfig(),
+        middleware=[logging_middleware_config.middleware, session_config.middleware],
+    ) as client:
+        response = client.post("/")
+        assert response.status_code == HTTP_201_CREATED
+        assert "session" in client.cookies
+        assert client.cookies["session"] != "*****"
+        session_id = client.cookies["session"]
+
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert "session" in client.cookies
+        assert client.cookies["session"] == session_id
