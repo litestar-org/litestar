@@ -2,9 +2,10 @@ from piccolo.apps.user.tables import BaseUser
 from piccolo.columns import Boolean, ForeignKey, Timestamp, Varchar
 from piccolo.columns.readable import Readable
 from piccolo.table import Table
+from piccolo_conf import DB
 
 
-class Task(Table):
+class Task(Table, db=DB):
     """An example table."""
 
     name = Varchar()
