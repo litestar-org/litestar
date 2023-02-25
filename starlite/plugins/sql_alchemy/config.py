@@ -1,41 +1,32 @@
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Set,
-    Type,
-    Union,
-    cast,
-)
+from __future__ import annotations
 
-from pydantic import BaseConfig, BaseModel, root_validator, validator
+from dataclasses import asdict, dataclass, field
+from typing import TYPE_CHECKING, Any, Callable, Literal, Optional, Union, cast
 
 from starlite.config.logging import BaseLoggingConfig, LoggingConfig
 from starlite.datastructures.state import State  # noqa: TC001
-from starlite.exceptions import MissingDependencyException
-from starlite.types import BeforeMessageSendHookHandler
+from starlite.exceptions import (
+    ImproperlyConfiguredException,
+    MissingDependencyException,
+)
 from starlite.utils import AsyncCallable
 from starlite.utils.serialization import decode_json, encode_json
 
-from .types import SessionMakerInstanceProtocol, SessionMakerTypeProtocol
-
 try:
     from sqlalchemy import create_engine
-    from sqlalchemy.engine import Engine
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
-    from sqlalchemy.future import Engine as FutureEngine
     from sqlalchemy.orm import Query, Session, sessionmaker
-    from sqlalchemy.pool import Pool
-
 except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 
 if TYPE_CHECKING:
-    from starlite.types import Message, Scope
+    from sqlalchemy.engine import Engine
+    from sqlalchemy.future import Engine as FutureEngine
+    from sqlalchemy.pool import Pool
+
+    from starlite.types import BeforeMessageSendHookHandler, Message, Scope
+
+    from .types import SessionMakerInstanceProtocol, SessionMakerTypeProtocol
 
 IsolationLevel = Literal["AUTOCOMMIT", "READ COMMITTED", "READ UNCOMMITTED", "REPEATABLE READ", "SERIALIZABLE"]
 
@@ -80,74 +71,68 @@ async def default_before_send_handler(message: "Message", _: "State", scope: "Sc
         del scope[SESSION_SCOPE_KEY]  # type: ignore
 
 
-class SQLAlchemySessionConfig(BaseModel):
+@dataclass
+class SQLAlchemySessionConfig:
     """Configuration for a SQLAlchemy-Session."""
 
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
-
-    autocommit: Optional[bool] = None
-    autoflush: Optional[bool] = None
-    bind: Optional[Any] = None
-    binds: Optional[Any] = None
-    enable_baked_queries: Optional[bool] = None
-    expire_on_commit: bool = False
-    future: Optional[bool] = None
-    info: Optional[Dict[str, Any]] = None
-    query_cls: Optional[Type[Query]] = None
-    twophase: Optional[bool] = None
+    autocommit: bool | None = field(default=None)
+    autoflush: bool | None = field(default=None)
+    bind: Any | None = field(default=None)
+    binds: Any | None = field(default=None)
+    enable_baked_queries: bool | None = field(default=None)
+    expire_on_commit: bool = field(default=False)
+    future: bool | None = field(default=None)
+    info: dict[str, Any] | None = field(default=None)
+    query_cls: type[Query] | None = field(default=None)
+    twophase: bool | None = field(default=None)
 
 
-class SQLAlchemyEngineConfig(BaseModel):
+@dataclass
+class SQLAlchemyEngineConfig:
     """Configuration for SQLAlchemy's :class`Engine <sqlalchemy.engine.Engine>`.
 
     For details see: https://docs.sqlalchemy.org/en/14/core/engines.html
     """
 
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
-
-    connect_args: Optional[Dict[str, Any]] = None
-    echo: Optional[bool] = None
-    echo_pool: Optional[bool] = None
-    enable_from_linting: Optional[bool] = None
-    future: bool = True
-    hide_parameters: Optional[bool] = None
-    isolation_level: Optional[IsolationLevel] = None
-    json_deserializer: Callable[[str], Any] = decode_json
-    json_serializer: Callable[[Any], str] = serializer
-    label_length: Optional[int] = None
-    listeners: Any = None
-    logging_level: Optional[Union[int, str]] = None
-    logging_name: Optional[str] = None
-    max_identifier_length: Optional[int] = None
-    max_overflow: Optional[int] = None
-    module: Any = None
-    paramstyle: Optional[Literal["qmark", "numeric", "named", "format", "pyformat"]] = None
-    plugins: Optional[List[str]] = None
-    pool: Optional[Pool] = None
-    pool_logging_name: Optional[str] = None
-    pool_pre_ping: Optional[bool] = None
-    pool_recycle: Optional[int] = None
-    pool_reset_on_return: Optional[Literal["rollback", "commit"]] = None
-    pool_size: Optional[int] = None
-    pool_timeout: Optional[int] = None
-    pool_use_lifo: Optional[bool] = None
-    poolclass: Optional[Type[Pool]] = None
-    query_cache_size: Optional[int] = None
-    strategy: Optional[str] = None
+    connect_args: dict[str, Any] | None = field(default=None)
+    echo: bool | None = field(default=None)
+    echo_pool: bool | None = field(default=None)
+    enable_from_linting: bool | None = field(default=None)
+    future: bool = field(default=True)
+    hide_parameters: bool | None = field(default=None)
+    isolation_level: IsolationLevel | None = field(default=None)
+    json_deserializer: Callable[[str], Any] = field(default=decode_json)
+    json_serializer: Callable[[Any], str] = field(default=serializer)
+    label_length: int | None = field(default=None)
+    listeners: Any = field(default=None)
+    logging_level: int | str | None = field(default=None)
+    logging_name: str | None = field(default=None)
+    max_identifier_length: int | None = field(default=None)
+    max_overflow: int | None = field(default=None)
+    module: Any = field(default=None)
+    paramstyle: Literal["qmark", "numeric", "named", "format", "pyformat"] | None = field(default=None)
+    plugins: list[str] | None = field(default=None)
+    pool: Pool | None = field(default=None)
+    pool_logging_name: str | None = field(default=None)
+    pool_pre_ping: bool | None = field(default=None)
+    pool_recycle: int | None = field(default=None)
+    pool_reset_on_return: Literal["rollback", "commit"] | None = field(default=None)
+    pool_size: int | None = field(default=None)
+    pool_timeout: int | None = field(default=None)
+    pool_use_lifo: bool | None = field(default=None)
+    poolclass: type[Pool] | None = field(default=None)
+    query_cache_size: int | None = field(default=None)
+    strategy: str | None = field(default=None)
 
 
-class SQLAlchemyConfig(BaseModel):
+@dataclass
+class SQLAlchemyConfig:
     """Configuration for SQLAlchemy's :class:`sessionmaker <sqlalchemy.orm.sessionmaker>`.
 
     For details see: https://docs.sqlalchemy.org/en/14/orm/session_api.html
     """
 
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
-
-    connection_string: Optional[str] = None
+    connection_string: str | None = field(default=None)
     """Database connection string in one of the formats supported by SQLAlchemy.
 
     Notes:
@@ -155,7 +140,7 @@ class SQLAlchemyConfig(BaseModel):
           e.g. ``'postgresql+asyncpg://...'`` instead of ``'postgresql://'``, and for sync connections its the opposite.
 
     """
-    use_async_engine: bool = True
+    use_async_engine: bool = field(default=True)
     """Dictate whether the engine created is an async connection or not.
 
     Notes:
@@ -163,25 +148,25 @@ class SQLAlchemyConfig(BaseModel):
           async connection and vice versa.
 
     """
-    create_async_engine_callable: Callable[[str], AsyncEngine] = create_async_engine
+    create_async_engine_callable: Callable[[str], AsyncEngine] = field(default=create_async_engine)
     """Callable that creates an :class:`AsyncEngine <sqlalchemy.ext.asyncio.AsyncEngine>` instance or instance of its
     subclass.
     """
-    create_engine_callable: Callable[[str], Union[Engine, FutureEngine]] = create_engine
+    create_engine_callable: Callable[[str], Engine | FutureEngine] = field(default=create_engine)
     """Callable that creates an :class:`Engine <sqlalchemy.engine.Engine>` or ``FutureEngine`` instance or instance of its
     subclass."""
-    dependency_key: str = "db_session"
+    dependency_key: str = field(default="db_session")
     """Key to use for the dependency injection of database sessions."""
-    engine_app_state_key: str = "db_engine"
+    engine_app_state_key: str = field(default="db_engine")
     """Key under which to store the SQLAlchemy engine in the application :class:`State <starlite.datastructures.State>`
     instance.
     """
-    engine_config: SQLAlchemyEngineConfig = SQLAlchemyEngineConfig()
+    engine_config: SQLAlchemyEngineConfig = field(default_factory=SQLAlchemyEngineConfig)
     """Configuration for the SQLAlchemy engine.
 
     The configuration options are documented in the SQLAlchemy documentation.
     """
-    set_json_serializers: bool = True
+    set_json_serializers: bool = field(default=True)
     """A boolean flag dictating whether to set ``msgspec`` based serializer/deserializer functions.
 
     Notes:
@@ -189,93 +174,67 @@ class SQLAlchemyConfig(BaseModel):
           SQLite for example. In this case this flag should be false or an error will be raised by SQLAlchemy.
 
     """
-    session_class: Optional[Union[Type[Session], Type[AsyncSession]]] = None
+    session_class: type[Session] | type[AsyncSession] | None = field(default=None)
     """The session class to use.
 
     If not set, the session class will default to :class:`sqlalchemy.orm.Session` for sync connections and
     :class:`sqlalchemy.ext.asyncio.AsyncSession` for async ones.
     """
-    session_config: SQLAlchemySessionConfig = SQLAlchemySessionConfig()
+    session_config: SQLAlchemySessionConfig = field(default_factory=SQLAlchemySessionConfig)
     """Configuration options for the ``sessionmaker``.
 
     The configuration options are documented in the SQLAlchemy documentation.
     """
-    session_maker_class: Type[SessionMakerTypeProtocol] = sessionmaker
+    session_maker_class: type[SessionMakerTypeProtocol] = field(default=sessionmaker)
     """Sessionmaker class to use."""
-    session_maker_app_state_key: str = "session_maker_class"
+    session_maker_app_state_key: str = field(default="session_maker_class")
     """Key under which to store the SQLAlchemy ``sessionmaker`` in the application :class:`State <starlite.datastructures.State>`
     instance.
     """
-    session_maker_instance: Optional[SessionMakerInstanceProtocol] = None
+    session_maker_instance: SessionMakerInstanceProtocol | None = field(default=None)
     """Optional sessionmaker to use.
 
     If set, the plugin will use the provided instance rather than instantiate a sessionmaker.
     """
-    engine_instance: Optional[Union[Engine, FutureEngine, AsyncEngine]] = None
+    engine_instance: Engine | FutureEngine | AsyncEngine | None = field(default=None)
     """Optional engine to use.
 
     If set, the plugin will use the provided instance rather than instantiate an engine.
     """
-    before_send_handler: BeforeMessageSendHookHandler = default_before_send_handler
+    before_send_handler: BeforeMessageSendHookHandler = field(default=default_before_send_handler)
     """Handler to call before the ASGI message is sent.
 
     The handler should handle closing the session stored in the ASGI scope, if its still open, and committing and
     uncommitted data.
     """
 
-    @validator("before_send_handler", always=True)
-    def validate_before_send_handler(  # pylint: disable=no-self-argument
-        cls, value: BeforeMessageSendHookHandler
-    ) -> Any:
-        """Wrap ``before_send_handler`` in an ``AsyncCallable``
+    def __post_init__(self) -> None:
+        if self.connection_string is None and self.engine_instance is None:
+            raise ImproperlyConfiguredException("One of 'connection_string' or 'engine_instance' must be provided.")
 
-        Args:
-            value: A before send handler callable.
+        if self.connection_string is not None and self.engine_instance is not None:
+            raise ImproperlyConfiguredException("Only one of 'connection_string' or 'engine_instance' can be provided.")
 
-        Returns:
-            An ``AsyncCallable``
-        """
-        return AsyncCallable(value)  # type: ignore[arg-type]
-
-    @root_validator
-    def check_connection_string_or_engine_instance(  # pylint: disable=no-self-argument
-        cls, values: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Either ``connection_string`` or ``engine_instance`` must be specified, and not both.
-
-        Args:
-            values: Field values, after validation.
-
-        Returns:
-            Field values.
-        """
-        connection_string = values.get("connection_string")
-        engine_instance = values.get("engine_instance")
-
-        if connection_string is None and engine_instance is None:
-            raise ValueError("One of 'connection_string' or 'engine_instance' must be provided.")
-
-        if connection_string is not None and engine_instance is not None:
-            raise ValueError("Only one of 'connection_string' or 'engine_instance' can be provided.")
-
-        return values
+        self.before_send_handler = AsyncCallable(self.before_send_handler)  # type: ignore
 
     @property
-    def engine_config_dict(self) -> Dict[str, Any]:
+    def engine_config_dict(self) -> dict[str, Any]:
         """Return the engine configuration as a dict.
 
         Returns:
             A string keyed dict of config kwargs for the SQLAlchemy ``create_engine`` function.
         """
-        engine_excluded_fields: Set[str] = {"future", "logging_level"} if self.use_async_engine else {"logging_level"}
+        engine_excluded_fields: set[str] = {"future", "logging_level"} if self.use_async_engine else {"logging_level"}
 
         if not self.set_json_serializers:
             engine_excluded_fields.update({"json_deserializer", "json_serializer"})
 
-        return self.engine_config.dict(exclude_none=True, exclude=engine_excluded_fields)
+        return {
+            k: v for k, v in asdict(self.engine_config).items() if v is not None and k not in engine_excluded_fields
+        }
 
     @property
-    def engine(self) -> Union["Engine", "FutureEngine", "AsyncEngine"]:
+    def engine(self) -> Engine | FutureEngine | AsyncEngine:
         """Return an engine. If none exists yet, create one.
 
         Returns:
@@ -298,16 +257,18 @@ class SQLAlchemyConfig(BaseModel):
             Getter that returns the session_maker instance used by the plugin.
         """
         if not self.session_maker_instance:
-            session_maker_kwargs = self.session_config.dict(
-                exclude_none=True, exclude={"future"} if self.use_async_engine else set()
-            )
+            session_maker_kwargs = {
+                k: v
+                for k, v in asdict(self.session_config).items()
+                if v is not None and ((self.use_async_engine and k != "future") or not self.use_async_engine)
+            }
             session_class = self.session_class or (AsyncSession if self.use_async_engine else Session)
             self.session_maker_instance = self.session_maker_class(
                 self.engine, class_=session_class, **session_maker_kwargs
             )
         return cast("sessionmaker", self.session_maker_instance)
 
-    def create_db_session_dependency(self, state: State, scope: "Scope") -> Union[Session, AsyncSession]:
+    def create_db_session_dependency(self, state: State, scope: Scope) -> Session | AsyncSession:
         """Create a session instance.
 
         Args:
@@ -352,7 +313,7 @@ class SQLAlchemyConfig(BaseModel):
             engine.dispose()
         del state[self.engine_app_state_key]
 
-    def config_sql_alchemy_logging(self, logging_config: Optional[BaseLoggingConfig]) -> None:
+    def config_sql_alchemy_logging(self, logging_config: BaseLoggingConfig | None) -> None:
         """Add the SQLAlchemy loggers to the logging config.
 
         Notes:

@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from urllib.parse import quote
 
 from starlite import MediaType, Request, Response, Starlite
@@ -103,7 +105,7 @@ class TriggerEvent(Generic[T], Response[T]):
         content: T,
         name: str,
         after: EventAfterType,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize TriggerEvent."""
@@ -118,12 +120,12 @@ class HXLocation(Response):
     def __init__(
         self,
         redirect_to: str,
-        source: Optional[str] = None,
-        event: Optional[str] = None,
-        target: Optional[str] = None,
+        source: str | None = None,
+        event: str | None = None,
+        target: str | None = None,
         swap: ReSwapMethod = None,
-        hx_headers: Optional[Dict[str, Any]] = None,
-        values: Optional[Dict[str, str]] = None,
+        hx_headers: dict[str, Any] | None = None,
+        values: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize HXLocation, Set status code to 200 (required by HTMX),
@@ -135,7 +137,7 @@ class HXLocation(Response):
             headers={"Location": quote(redirect_to, safe="/#%[]=:;$&()+,!?*@'~")},
             **kwargs,
         )
-        spec: Dict[str, Any] = get_headers(
+        spec: dict[str, Any] = get_headers(
             hx_headers=HtmxHeaderType(
                 location=LocationType(
                     path=str(self.headers.get("Location")),
@@ -155,35 +157,35 @@ class HXLocation(Response):
 class HTMXTemplate(Template):
     """HTMX template wrapper"""
 
-    push_url: Optional[PushUrlType] = None
+    push_url: PushUrlType | None = None
     """Either a string value specifying a URL to push to browser history or ``False`` to
     prevent HTMX client from pushing a url to browser history."""
     re_swap: ReSwapMethod = None
     """Method value to instruct HTMX which swapping method to use."""
-    re_target: Optional[str] = None
+    re_target: str | None = None
     """Value for 'id of target element' to apply changes to."""
-    trigger_event: Optional[str] = None
+    trigger_event: str | None = None
     """Event name to trigger."""
-    params: Optional[Dict[str, Any]] = None
+    params: dict[str, Any] | None = None
     """Dictionary of parameters if any required with trigger event parameter."""
-    after: Optional[EventAfterType] = None
+    after: EventAfterType | None = None
     """Changes to apply after ``receive``, ``settle`` or ``swap`` event."""
 
     def to_response(
         self,
-        headers: Dict[str, Any],
-        media_type: Union["MediaType", str],
+        headers: dict[str, Any],
+        media_type: MediaType | str,
         status_code: int,
-        app: "Starlite",
-        request: "Request",
-    ) -> "TemplateResponse":
+        app: Starlite,
+        request: Request,
+    ) -> TemplateResponse:
         """Add HTMX headers and return a :class:`.response.TemplateResponse`."""
 
         if self.trigger_event:
             event = TriggerEventType(name=str(self.trigger_event), params=self.params, after=self.after)
         else:
             event = None
-        hx_headers: Dict[str, Any] = get_headers(
+        hx_headers: dict[str, Any] = get_headers(
             hx_headers=HtmxHeaderType(
                 push_url=self.push_url, re_swap=self.re_swap, re_target=self.re_target, trigger_event=event
             )

@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from http.cookies import SimpleCookie
-from typing import Any, Dict, Literal, Optional, Tuple
+from typing import Any, Literal
 
 
 @dataclass
@@ -17,24 +19,24 @@ class Cookie:
 
     Defaults to '/'.
     """
-    value: Optional[str] = None
+    value: str | None = None
     """Value for the cookie, if none given defaults to empty string."""
-    max_age: Optional[int] = None
+    max_age: int | None = None
     """Maximal age of the cookie before its invalidated."""
-    expires: Optional[int] = None
+    expires: int | None = None
     """Expiration date as unix MS timestamp."""
-    domain: Optional[str] = None
+    domain: str | None = None
     """Domain for which the cookie is valid."""
-    secure: Optional[bool] = None
+    secure: bool | None = None
     """Https is required for the cookie."""
-    httponly: Optional[bool] = None
+    httponly: bool | None = None
     """Forbids javascript to access the cookie via 'Document.cookie'."""
     samesite: Literal["lax", "strict", "none"] = "lax"
     """Controls whether or not a cookie is sent with cross-site requests.
 
     Defaults to 'lax'.
     """
-    description: Optional[str] = None
+    description: str | None = None
     """Description of the response cookie header for OpenAPI documentation."""
     documentation_only: bool = False
     """Defines the Cookie instance as for OpenAPI documentation purpose only."""
@@ -68,7 +70,7 @@ class Cookie:
         """
         return self.simple_cookie.output(**kwargs).strip()
 
-    def to_encoded_header(self) -> Tuple[bytes, bytes]:
+    def to_encoded_header(self) -> tuple[bytes, bytes]:
         """Create encoded header for ASGI send.
 
         Returns:
@@ -77,7 +79,7 @@ class Cookie:
         return b"set-cookie", self.to_header(header="").strip().encode("latin-1")
 
     @property
-    def dict(self) -> Dict[str, Any]:
+    def dict(self) -> dict[str, Any]:
         """Get the cookie as a dict.
 
         Returns:

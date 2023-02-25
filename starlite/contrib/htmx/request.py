@@ -49,13 +49,12 @@ class HTMXDetails:
     @cached_property
     def current_url_abs_path(self) -> str | None:
         """Current url abs path value, to get query and path parameter sent by HTMX client."""
-        url = self.current_url
-        if url is not None:
-            split = urlsplit(url)
+        if self.current_url:
+            split = urlsplit(self.current_url)
             if split.scheme == self.request.scope["scheme"] and split.netloc == self.request.headers.get("host"):
-                return urlunsplit(split._replace(scheme="", netloc=""))
+                return str(urlunsplit(split._replace(scheme="", netloc="")))
             return None
-        return url
+        return self.current_url
 
     @cached_property
     def history_restore_request(self) -> bool:

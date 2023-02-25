@@ -1,7 +1,8 @@
-from inspect import getmro
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union, cast
+from __future__ import annotations
 
-from pydantic import BaseModel
+from dataclasses import asdict, dataclass, field
+from inspect import getmro
+from typing import TYPE_CHECKING, Any, cast
 
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
     from starlite.types import ExceptionHandler, ExceptionHandlersMap
 
 
-def get_exception_handler(exception_handlers: "ExceptionHandlersMap", exc: Exception) -> Optional["ExceptionHandler"]:
+def get_exception_handler(exception_handlers: ExceptionHandlersMap, exc: Exception) -> ExceptionHandler | None:
     """Given a dictionary that maps exceptions and status codes to handler functions, and an exception, returns the
     appropriate handler if existing.
 
@@ -33,7 +34,7 @@ def get_exception_handler(exception_handlers: "ExceptionHandlersMap", exc: Excep
     """
     if not exception_handlers:
         return None
-    status_code: Optional[int] = getattr(exc, "status_code", None)
+    status_code: int | None = getattr(exc, "status_code", None)
     if status_code and (exception_handler := exception_handlers.get(status_code)):
         return exception_handler
     for cls in getmro(type(exc)):
@@ -44,19 +45,20 @@ def get_exception_handler(exception_handlers: "ExceptionHandlersMap", exc: Excep
     return None
 
 
-class ExceptionResponseContent(BaseModel):
+@dataclass
+class ExceptionResponseContent:
     """Represent the contents of an exception-response."""
 
     status_code: int
     """Exception status code."""
     detail: str
     """Exception details or message."""
-    headers: Optional[Dict[str, str]] = None
+    headers: dict[str, str] | None = field(default=None)
     """Headers to attach to the response."""
-    extra: Optional[Union[Dict[str, Any], List[Any]]] = None
+    extra: dict[str, Any] | list[Any] | None = field(default=None)
     """An extra mapping to attach to the exception."""
 
-    def to_response(self) -> "Response":
+    def to_response(self) -> Response:
         """Create a response from the model attributes.
 
         Returns:
@@ -65,13 +67,13 @@ class ExceptionResponseContent(BaseModel):
         from starlite.response import Response
 
         return Response(
-            content=self.dict(exclude_none=True, exclude={"headers"}),
+            content={k: v for k, v in asdict(self).items() if k != "headers" and v is not None},
             headers=self.headers,
             status_code=self.status_code,
         )
 
 
-def create_exception_response(exc: Exception) -> "Response":
+def create_exception_response(exc: Exception) -> Response:
     """Construct a response from an exception.
 
     Notes:

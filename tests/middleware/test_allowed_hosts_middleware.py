@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
-from pydantic import ValidationError
 
 from starlite import get
 from starlite.config.allowed_hosts import AllowedHostsConfig
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware import MiddlewareProtocol
 from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
@@ -139,5 +139,5 @@ def test_middleware_does_not_redirect_when_off() -> None:
 
 
 def test_validation_raises_for_wrong_wildcard_domain() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         AllowedHostsConfig(allowed_hosts=["www.moishe.*.com"])

@@ -2,12 +2,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Type, Union
 
 import pytest
-from pydantic import ValidationError
 
 from starlite import MediaType, Starlite, get
 from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response_containers import Template
 from starlite.testing import create_test_client
 
@@ -55,7 +55,7 @@ def test_engine_instance(engine: Type["TemplateEngineProtocol"], template_dir: "
 
 @pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine))
 def test_directory_validation(engine: Type["TemplateEngineProtocol"], template_dir: "Path") -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         TemplateConfig(engine=engine)
 
 

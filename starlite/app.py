@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import asdict
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from pathlib import Path
@@ -33,6 +34,7 @@ from starlite.plugins.base import (
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import create_signature_model
+from starlite.static_files.base import StaticFiles
 from starlite.types import Empty
 from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import (
@@ -296,8 +298,10 @@ class Starlite(Router):
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.asgi_router = ASGIRouter(app=self)
 
-        logging_config = logging_config if logging_config is not Empty else LoggingConfig() if debug else None
-
+        logging_config = cast(
+            "BaseLoggingConfig | None",
+            logging_config if logging_config is not Empty else LoggingConfig() if debug else None,
+        )
         config = AppConfig(
             after_exception=list(after_exception or []),
             after_request=after_request,
@@ -322,7 +326,7 @@ class Starlite(Router):
             guards=list(guards or []),
             initial_state=dict(initial_state or {}),
             listeners=list(listeners or []),
-            logging_config=logging_config,  # type: ignore[arg-type]
+            logging_config=logging_config,
             middleware=list(middleware or []),
             multipart_form_part_limit=multipart_form_part_limit,
             on_shutdown=list(on_shutdown or []),
@@ -462,7 +466,7 @@ class Starlite(Router):
         Returns:
             An instance of ``Starlite`` application.
         """
-        return cls(**dict(config))
+        return cls(**asdict(config))
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """Register a route handler on the app.
@@ -633,7 +637,6 @@ class Starlite(Router):
         Returns:
             A url path to the asset.
         """
-        from starlite.static_files.base import StaticFiles
 
         handler_index = self.get_handler_index_by_name(name)
         if handler_index is None:

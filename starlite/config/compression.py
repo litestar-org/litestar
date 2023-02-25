@@ -1,35 +1,34 @@
-from typing import List, Literal, Optional, Type, Union
+from __future__ import annotations
 
-from pydantic import BaseModel, conint
+from dataclasses import dataclass, field
+from typing import Literal
 
-from starlite.config.base_config import BaseConfigModel
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware.compression import CompressionMiddleware
 
 
-class CompressionConfig(BaseModel):
+@dataclass
+class CompressionConfig:
     """Configuration for response compression.
 
     To enable response compression, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor
     using the 'compression_config' key.
     """
 
-    class Config(BaseConfigModel):
-        pass
-
     backend: Literal["gzip", "brotli"]
     """Literal of "gzip" or "brotli"."""
-    minimum_size: conint(gt=0) = 500  # type: ignore[valid-type]
+    minimum_size: int = field(default=500)
     """Minimum response size (bytes) to enable compression, affects all backends."""
-    gzip_compress_level: conint(ge=0, le=9) = 9  # type: ignore[valid-type]
+    gzip_compress_level: int = field(default=9)
     """Range [0-9], see [official docs](https://docs.python.org/3/library/gzip.html)."""
-    brotli_quality: conint(ge=0, le=11) = 5  # type: ignore[valid-type]
+    brotli_quality: int = field(default=5)
     """Range [0-11], Controls the compression-speed vs compression-density tradeoff.
 
     The higher the quality, the slower the compression.
     """
     brotli_mode: Literal["generic", "text", "font"] = "text"
     """MODE_GENERIC, MODE_TEXT (for UTF-8 format text input, default) or MODE_FONT (for WOFF 2.0)."""
-    brotli_lgwin: conint(ge=10, le=24) = 22  # type: ignore[valid-type]
+    brotli_lgwin: int = field(default=22)
     """Base 2 logarithm of size.
 
     Range is 10 to 24. Defaults to 22.
@@ -41,9 +40,22 @@ class CompressionConfig(BaseModel):
     """
     brotli_gzip_fallback: bool = True
     """Use GZIP if Brotli is not supported."""
-    middleware_class: Type[CompressionMiddleware] = CompressionMiddleware
+    middleware_class: type[CompressionMiddleware] = CompressionMiddleware
     """Middleware class to use, should be a subclass of CompressionMiddleware."""
-    exclude: Optional[Union[str, List[str]]] = None
+    exclude: str | list[str] | None = None
     """A pattern or list of patterns to skip in the compression middleware."""
-    exclude_opt_key: Optional[str] = None
+    exclude_opt_key: str | None = None
     """An identifier to use on routes to disable compression for a particular route."""
+
+    def __post_init__(self) -> None:
+        if self.minimum_size <= 0:
+            raise ImproperlyConfiguredException("minimum_size must be greater than 0")
+
+        if self.gzip_compress_level < 0 or self.gzip_compress_level > 9:
+            raise ImproperlyConfiguredException("gzip_compress_level must be a value between 0 and 9")
+
+        if self.brotli_quality < 0 or self.brotli_quality > 11:
+            raise ImproperlyConfiguredException("brotli_quality must be a value between 0 and 11")
+
+        if self.brotli_lgwin < 10 or self.brotli_quality > 24:
+            raise ImproperlyConfiguredException("brotli_lgwin must be a value between 10 and 24")
