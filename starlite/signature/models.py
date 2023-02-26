@@ -179,43 +179,6 @@ class SignatureField:
             extra=extra or {},
         )
 
-    @classmethod
-    def from_model_field(cls, model_field: ModelField) -> SignatureField:
-        """Create a SignatureField instance from a pydantic ModelField.
-
-        Args:
-            model_field: A pydantic ModelField instance.
-
-        Returns:
-            A SignatureField
-        """
-        children = (
-            tuple(cls.from_model_field(sub_field) for sub_field in model_field.sub_fields)
-            if model_field.sub_fields
-            else None
-        )
-        default_value = (
-            model_field.field_info.default if model_field.field_info.default not in UNDEFINED_SENTINELS else Empty
-        )
-
-        kwarg_model: ParameterKwarg | DependencyKwarg | BodyKwarg | None = model_field.field_info.extra.pop(
-            "kwargs_model", None
-        )
-        if kwarg_model:
-            default_value = kwarg_model.default
-        elif isinstance(default_value, (ParameterKwarg, DependencyKwarg, BodyKwarg)):
-            kwarg_model = default_value
-            default_value = default_value.default
-
-        return SignatureField(
-            children=children,
-            default_value=default_value,
-            extra=model_field.field_info.extra or {},
-            field_type=model_field.annotation if model_field.annotation is not Empty else Any,
-            kwarg_model=kwarg_model,
-            name=model_field.name,
-        )
-
 
 class SignatureModel(ABC):
     """Base model for Signature modelling."""
@@ -332,10 +295,47 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         return {key: self.__getattribute__(key) for key in self.__fields__}  # pylint: disable=unnecessary-dunder-call
 
     @classmethod
+    def signature_field_from_model_field(cls, model_field: ModelField) -> SignatureField:
+        """Create a SignatureField instance from a pydantic ModelField.
+
+        Args:
+            model_field: A pydantic ModelField instance.
+
+        Returns:
+            A SignatureField
+        """
+        children = (
+            tuple(cls.signature_field_from_model_field(sub_field) for sub_field in model_field.sub_fields)
+            if model_field.sub_fields
+            else None
+        )
+        default_value = (
+            model_field.field_info.default if model_field.field_info.default not in UNDEFINED_SENTINELS else Empty
+        )
+
+        kwarg_model: ParameterKwarg | DependencyKwarg | BodyKwarg | None = model_field.field_info.extra.pop(
+            "kwargs_model", None
+        )
+        if kwarg_model:
+            default_value = kwarg_model.default
+        elif isinstance(default_value, (ParameterKwarg, DependencyKwarg, BodyKwarg)):
+            kwarg_model = default_value
+            default_value = default_value.default
+
+        return SignatureField(
+            children=children,
+            default_value=default_value,
+            extra=model_field.field_info.extra or {},
+            field_type=model_field.annotation if model_field.annotation is not Empty else Any,
+            kwarg_model=kwarg_model,
+            name=model_field.name,
+        )
+
+    @classmethod
     def populate_signature_fields(cls) -> None:
         """Populate the class signature fields.
 
         Returns:
             None.
         """
-        cls.signature_fields = {k: SignatureField.from_model_field(v) for k, v in cls.__fields__.items()}
+        cls.signature_fields = {k: cls.signature_field_from_model_field(v) for k, v in cls.__fields__.items()}
