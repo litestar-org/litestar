@@ -134,6 +134,7 @@ full = [
     "click",
     "cryptography",
     "jinja2",
+    "jsbeautifier",
     "opentelemetry-instrumentation-asgi",
     "picologging",
     "python-jose",
