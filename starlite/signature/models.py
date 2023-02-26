@@ -186,7 +186,7 @@ class SignatureModel(ABC):
     dependency_name_set: ClassVar[set[str]]
     field_plugin_mappings: ClassVar[dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
-    signature_fields: dict[str, SignatureField]
+    fields: ClassVar[dict[str, SignatureField]]
 
     @classmethod
     @abstractmethod
@@ -205,15 +205,6 @@ class SignatureModel(ABC):
             A dictionary of parsed values
         """
         raise NotImplementedError
-
-    @classmethod
-    def fields(cls) -> dict[str, SignatureField]:
-        """Allow uniform access to the signature models fields, independent of the implementation.
-
-        Returns:
-            A string keyed mapping of field values.
-        """
-        return cls.signature_fields
 
     @abstractmethod
     def to_dict(self) -> dict[str, Any]:
@@ -338,4 +329,4 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         Returns:
             None.
         """
-        cls.signature_fields = {k: cls.signature_field_from_model_field(v) for k, v in cls.__fields__.items()}
+        cls.fields = {k: cls.signature_field_from_model_field(v) for k, v in cls.__fields__.items()}

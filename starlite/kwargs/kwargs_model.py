@@ -264,12 +264,12 @@ class KwargsModel:
             An instance of KwargsModel
         """
 
-        signature_fields = signature_model.fields()
+        signature_fields = signature_model.fields
 
         cls._validate_raw_kwargs(
             path_parameters=path_parameters,
             dependencies=dependencies,
-            signature_fields=signature_fields,
+            signature_fields=signature_model.fields,
             layered_parameters=layered_parameters,
         )
 
@@ -290,7 +290,7 @@ class KwargsModel:
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None = None
         expected_msgpack_data: SignatureField | None = None
 
-        if (data_signature_field := signature_model.fields().get("data")) and (
+        if (data_signature_field := signature_fields.get("data")) and (
             media_type := data_signature_field.kwarg_model.media_type
             if isinstance(data_signature_field.kwarg_model, BodyKwarg)
             else None
@@ -390,7 +390,7 @@ class KwargsModel:
         list.
         """
         provide = dependencies[key]
-        sub_dependency_keys = [k for k in get_signature_model(provide).fields() if k in dependencies]
+        sub_dependency_keys = [k for k in get_signature_model(provide).fields if k in dependencies]
         return Dependency(
             key=key,
             provide=provide,
