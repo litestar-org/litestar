@@ -148,7 +148,7 @@ def get_recursive_handler_parameters(
                 generate_examples=generate_examples,
             )
         ]
-    dependency_fields = dependencies[field_name].signature_model.fields()
+    dependency_fields = dependencies[field_name].signature_model.fields
     return create_parameter_for_handler(route_handler, dependency_fields, path_parameters, generate_examples)
 
 
