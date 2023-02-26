@@ -20,7 +20,7 @@ from starlite.openapi.schema import (
     update_schema_with_signature_field,
 )
 from starlite.params import Parameter, ParameterKwarg
-from starlite.signature.models import SignatureField
+from starlite.signature.models import PydanticSignatureModel, SignatureField
 from starlite.testing import create_test_client
 from tests import TypedDictPerson
 
@@ -122,7 +122,7 @@ def test_get_schema_for_field_type_typeddict(monkeypatch: pytest.MonkeyPatch) ->
     class M(BaseModel):
         data: TypedDictPerson
 
-    get_schema_for_field_type(SignatureField.from_model_field(M.__fields__["data"]), [])
+    get_schema_for_field_type(PydanticSignatureModel.signature_field_from_model_field(M.__fields__["data"]), [])
     convert_typeddict_to_model_mock.assert_called_once_with(TypedDictPerson)
     openapi_310_pydantic_schema_mock.assert_called_once_with(schema_class=return_value_mock)
 
@@ -135,5 +135,5 @@ def test_get_schema_for_field_type_enum() -> None:
     class M(BaseModel):
         opt: Opts
 
-    schema = get_schema_for_field_type(SignatureField.from_model_field(M.__fields__["opt"]), [])
+    schema = get_schema_for_field_type(PydanticSignatureModel.signature_field_from_model_field(M.__fields__["opt"]), [])
     assert schema.enum == ["opt1", "opt2"]
