@@ -33,12 +33,46 @@ from starlite.utils.serialization import encode_json
         [b"", True],
     ],
 )
-def test_config_validation(secret: bytes, should_raise: bool) -> None:
+def test_secret_validation(secret: bytes, should_raise: bool) -> None:
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
             CookieBackendConfig(secret=secret)
     else:
         CookieBackendConfig(secret=secret)
+
+
+@pytest.mark.parametrize(
+    "key, should_raise",
+    [
+        ["", True],
+        ["a", False],
+        ["a" * 256, False],
+        ["a" * 257, True],
+    ],
+)
+def test_key_validation(key: str, should_raise: bool) -> None:
+    if should_raise:
+        with pytest.raises(ImproperlyConfiguredException):
+            CookieBackendConfig(secret=os.urandom(16), key=key)
+    else:
+        CookieBackendConfig(secret=os.urandom(16), key=key)
+
+
+@pytest.mark.parametrize(
+    "max_age, should_raise",
+    [
+        [0, True],
+        [-1, True],
+        [1, False],
+        [100, False],
+    ],
+)
+def test_max_age_validation(max_age: int, should_raise: bool) -> None:
+    if should_raise:
+        with pytest.raises(ImproperlyConfiguredException):
+            CookieBackendConfig(secret=os.urandom(16), key="a", max_age=max_age)
+    else:
+        CookieBackendConfig(secret=os.urandom(16), key="a", max_age=max_age)
 
 
 def create_session(size: int = 16) -> Dict[str, str]:

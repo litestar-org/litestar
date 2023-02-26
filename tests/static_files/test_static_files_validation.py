@@ -12,6 +12,11 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
+def test_config_validation_of_directories() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        StaticFilesConfig(path="/static", directories=[])
+
+
 def test_config_validation_of_path(tmpdir: "Path") -> None:
     path = tmpdir / "text.txt"
     path.write_text("content", "utf-8")

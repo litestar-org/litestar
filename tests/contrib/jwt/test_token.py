@@ -110,7 +110,7 @@ def test_decode_validation() -> None:
 
 @given(exp=datetimes(max_value=datetime.now() - timedelta(seconds=1)))
 def test_exp_validation(exp: datetime) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ImproperlyConfiguredException):
         Token(
             sub="123",
             exp=exp,
@@ -120,9 +120,18 @@ def test_exp_validation(exp: datetime) -> None:
 
 @given(iat=datetimes(min_value=datetime.now() + timedelta(days=1)))
 def test_iat_validation(iat: datetime) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ImproperlyConfiguredException):
         Token(
             sub="123",
             iat=iat,
             exp=(iat + timedelta(seconds=120)),
+        )
+
+
+def test_sub_validation() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        Token(
+            sub="",
+            iat=(datetime.now() - timedelta(seconds=30)),
+            exp=(datetime.now() + timedelta(seconds=120)),
         )

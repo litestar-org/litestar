@@ -57,5 +57,5 @@ class CompressionConfig:
         if self.brotli_quality < 0 or self.brotli_quality > 11:
             raise ImproperlyConfiguredException("brotli_quality must be a value between 0 and 11")
 
-        if self.brotli_lgwin < 10 or self.brotli_quality > 24:
+        if self.brotli_lgwin < 10 or self.brotli_lgwin > 24:
             raise ImproperlyConfiguredException("brotli_lgwin must be a value between 10 and 24")

@@ -5,6 +5,7 @@ import pytest
 from starlite import MediaType, WebSocket, get, websocket
 from starlite.config.compression import CompressionConfig
 from starlite.enums import CompressionEncoding
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response_containers import Stream
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
@@ -121,3 +122,41 @@ async def test_skips_for_websocket() -> None:
         compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=False),
     ).websocket_connect("/") as ws:
         assert b"content-encoding" not in dict(ws.scope["headers"])
+
+
+@pytest.mark.parametrize("minimum_size, should_raise", ((0, True), (1, False), (-1, True), (100, False)))
+def test_config_minimum_size_validation(minimum_size: int, should_raise: bool) -> None:
+    if should_raise:
+        with pytest.raises(ImproperlyConfiguredException):
+            CompressionConfig(backend="brotli", brotli_gzip_fallback=False, minimum_size=minimum_size)
+    else:
+        CompressionConfig(backend="brotli", brotli_gzip_fallback=False, minimum_size=minimum_size)
+
+
+@pytest.mark.parametrize(
+    "gzip_compress_level, should_raise", ((0, False), (1, False), (-1, True), (10, True), (9, False))
+)
+def test_config_gzip_compress_level_validation(gzip_compress_level: int, should_raise: bool) -> None:
+    if should_raise:
+        with pytest.raises(ImproperlyConfiguredException):
+            CompressionConfig(backend="brotli", brotli_gzip_fallback=False, gzip_compress_level=gzip_compress_level)
+    else:
+        CompressionConfig(backend="brotli", brotli_gzip_fallback=False, gzip_compress_level=gzip_compress_level)
+
+
+@pytest.mark.parametrize("brotli_quality, should_raise", ((0, False), (1, False), (-1, True), (12, True), (11, False)))
+def test_config_brotli_quality_validation(brotli_quality: int, should_raise: bool) -> None:
+    if should_raise:
+        with pytest.raises(ImproperlyConfiguredException):
+            CompressionConfig(backend="brotli", brotli_gzip_fallback=False, brotli_quality=brotli_quality)
+    else:
+        CompressionConfig(backend="brotli", brotli_gzip_fallback=False, brotli_quality=brotli_quality)
+
+
+@pytest.mark.parametrize("brotli_lgwin, should_raise", ((9, True), (10, False), (-1, True), (25, True), (24, False)))
+def test_config_brotli_lgwin_validation(brotli_lgwin: int, should_raise: bool) -> None:
+    if should_raise:
+        with pytest.raises(ImproperlyConfiguredException):
+            CompressionConfig(backend="brotli", brotli_gzip_fallback=False, brotli_lgwin=brotli_lgwin)
+    else:
+        CompressionConfig(backend="brotli", brotli_gzip_fallback=False, brotli_lgwin=brotli_lgwin)

@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 import anyio
 import pytest
 
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.middleware.session.server_side import ServerSideSessionConfig
 from starlite.utils.serialization import encode_json
 
 if TYPE_CHECKING:
@@ -77,3 +79,39 @@ async def test_max_age_expires(server_side_session_backend: "ServerSideSessionBa
     await server_side_session_backend.set("foo", session_data)
     await anyio.sleep(1)
     assert not await server_side_session_backend.get("foo")
+
+
+@pytest.mark.parametrize(
+    "key, should_raise",
+    [
+        ["", True],
+        ["a", False],
+        ["a" * 256, False],
+        ["a" * 257, True],
+    ],
+)
+def test_key_validation(server_side_session_backend: "ServerSideSessionBackend", key: str, should_raise: bool) -> None:
+    if should_raise:
+        with pytest.raises(ImproperlyConfiguredException):
+            ServerSideSessionConfig(key=key, storage=server_side_session_backend.storage)
+    else:
+        ServerSideSessionConfig(key=key, storage=server_side_session_backend.storage)
+
+
+@pytest.mark.parametrize(
+    "max_age, should_raise",
+    [
+        [0, True],
+        [-1, True],
+        [1, False],
+        [100, False],
+    ],
+)
+def test_max_age_validation(
+    server_side_session_backend: "ServerSideSessionBackend", max_age: int, should_raise: bool
+) -> None:
+    if should_raise:
+        with pytest.raises(ImproperlyConfiguredException):
+            ServerSideSessionConfig(key="a", max_age=max_age, storage=server_side_session_backend.storage)
+    else:
+        ServerSideSessionConfig(key="a", max_age=max_age, storage=server_side_session_backend.storage)

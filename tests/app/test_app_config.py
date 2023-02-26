@@ -140,3 +140,7 @@ def test_set_initial_state() -> None:
 
     app = Starlite(initial_state={"a": "b", "c": "d"}, on_app_init=[set_initial_state_in_hook])
     assert app.state._state == {"a": "b", "c": "D", "e": "f"}
+
+
+def test_app_from_config(app_config_object: AppConfig) -> None:
+    Starlite.from_config(app_config_object)
