@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from inspect import Parameter, Signature
-from typing import TYPE_CHECKING, Any, List, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, List, cast
 
 from pydantic import create_model
 from pydantic.fields import FieldInfo, Undefined
