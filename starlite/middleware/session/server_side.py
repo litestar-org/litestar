@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import secrets
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal
 
 from starlite.datastructures import Cookie, MutableScopeHeaders
@@ -14,6 +14,7 @@ from starlite.middleware.session.base import (
 )
 from starlite.storage.base import Storage
 from starlite.types import Empty, Message, Scopes, ScopeSession
+from starlite.utils.dataclass import extract_dataclass_fields
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
@@ -108,7 +109,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         if not session_id or session_id == "null":
             session_id = self.generate_session_id()
 
-        cookie_params = {k: v for k, v in asdict(self.config).items() if v is not None and k in Cookie.__dict__}
+        cookie_params = dict(extract_dataclass_fields(self.config, exclude_none=True, include=Cookie.__dict__))
 
         if scope_session is Empty:
             await self.delete(session_id)

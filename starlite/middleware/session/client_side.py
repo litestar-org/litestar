@@ -5,7 +5,7 @@ import contextlib
 import re
 import time
 from base64 import b64decode, b64encode
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from os import urandom
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -19,6 +19,7 @@ from starlite.types import Empty, Scopes
 from starlite.utils.serialization import decode_json, encode_json
 
 from ...enums import ScopeType
+from ...utils.dataclass import extract_dataclass_fields
 from .base import ONE_DAY_IN_SECONDS, BaseBackendConfig, BaseSessionBackend
 
 try:
@@ -106,16 +107,16 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
     def _create_session_cookies(self, data: list[bytes], cookie_params: dict[str, Any] | None = None) -> list[Cookie]:
         """Create a list of cookies containing the session data."""
         if cookie_params is None:
-            cookie_params = {
-                k: v
-                for k, v in asdict(self.config).items()
-                if v is not None and k in Cookie.__dict__ and k not in ("key", "secret")
-            }
+            cookie_params = dict(
+                extract_dataclass_fields(
+                    self.config, exclude_none=True, include=(f for f in Cookie.__dict__ if f not in ("key", "secret"))
+                )
+            )
         return [
             Cookie(
                 value=datum.decode("utf-8"),
                 key=f"{self.config.key}-{i}",
-                **{k: v for k, v in cookie_params.items() if k in Cookie.__dict__},
+                **cookie_params,
             )
             for i, datum in enumerate(data)
         ]
@@ -143,11 +144,11 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
 
         if scope_session and scope_session is not Empty:
             data = self.dump_data(scope_session, scope=scope)
-            cookie_params = {
-                k: v
-                for k, v in asdict(self.config).items()
-                if v is not None and k in Cookie.__dict__ and k not in ("key", "secret")
-            }
+            cookie_params = dict(
+                extract_dataclass_fields(
+                    self.config, exclude_none=True, include=(f for f in Cookie.__dict__ if f not in ("key", "secret"))
+                )
+            )
             for cookie in self._create_session_cookies(data, cookie_params):
                 headers.add("Set-Cookie", cookie.to_header(header=""))
             # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
@@ -159,11 +160,13 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
             cookies_to_clear = cookie_keys
 
         for cookie_key in cookies_to_clear:
-            cookie_params = {
-                k: v
-                for k, v in asdict(self.config).items()
-                if v is not None and k in Cookie.__dict__ and k not in ("key", "max_age", "secer")
-            }
+            cookie_params = dict(
+                extract_dataclass_fields(
+                    self.config,
+                    exclude_none=True,
+                    include=(f for f in Cookie.__dict__ if f not in ("key", "secret", "max_age")),
+                )
+            )
             headers.add(
                 "Set-Cookie",
                 Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
