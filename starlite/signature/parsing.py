@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from inspect import Parameter, Signature
 from typing import TYPE_CHECKING, Any, List, NamedTuple, cast
 
@@ -26,7 +26,8 @@ if TYPE_CHECKING:
     from starlite.types import AnyCallable
 
 
-class ParsedSignatureParameter(NamedTuple):
+@dataclass
+class ParsedSignatureParameter:
     """Represents the parameters of a callable for purpose of signature model generation."""
 
     annotation: Any
@@ -142,18 +143,13 @@ def parse_fn_signature(
                 )
             dependency_names.add(parameter.name)
 
-        annotation = parameter.annotation
         if isinstance(parameter.default, ParameterKwarg) and parameter.default.value_type is not Empty:
-            annotation = parameter.default.value_type
+            parameter.annotation = parameter.default.value_type
 
-        if plugin := get_plugin_for_value(value=annotation, plugins=plugins):
-            annotation = get_type_annotation_from_plugin(parameter, plugin, field_plugin_mappings)
+        if plugin := get_plugin_for_value(value=parameter.annotation, plugins=plugins):
+            parameter.annotation = get_type_annotation_from_plugin(parameter, plugin, field_plugin_mappings)
 
-        parsed_params.append(
-            ParsedSignatureParameter(
-                annotation=annotation, default=parameter.default, optional=parameter.optional, name=parameter.name
-            )
-        )
+        parsed_params.append(parameter)
 
     return parsed_params, signature.return_annotation, field_plugin_mappings, dependency_names
 
