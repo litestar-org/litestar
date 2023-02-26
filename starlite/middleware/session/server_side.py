@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
 
 
-class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
+class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
     """Base class for server-side backends.
 
     Implements :class:`BaseSessionBackend` and defines and interface which subclasses can
@@ -29,7 +29,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
     __slots__ = ("storage",)
 
     def __init__(self, config: ServerSideSessionConfig) -> None:
-        """Initialize ``ServerSideBackend``
+        """Initialize ``ServerSideSessionBackend``
 
         Args:
             config: A subclass of ``ServerSideSessionConfig``
@@ -91,8 +91,8 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         """Store the necessary information in the outgoing ``Message`` by setting a cookie containing the session-ID.
 
         If the session is empty, a null-cookie will be set. Otherwise, the serialised
-        data will be stored using :meth:`set <ServerSideBackend.set>`, under the current session-id. If no session-ID
-        exists, a new ID will be generated using :meth:`generate_session_id <ServerSideBackend.generate_session_id>`.
+        data will be stored using :meth:`set <ServerSideSessionBackend.set>`, under the current session-id. If no session-ID
+        exists, a new ID will be generated using :meth:`generate_session_id <ServerSideSessionBackend.generate_session_id>`.
 
         Args:
             scope_session: Current session to store
@@ -127,7 +127,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
 
         The session-ID will be gathered from a cookie with the key set in
         :attr:`BaseBackendConfig.key`. If a cookie is found, its value will be used as the session-ID and data associated
-        with this ID will be loaded using :meth:`get <ServerSideBackend.get>`.
+        with this ID will be loaded using :meth:`get <ServerSideSessionBackend.get>`.
         If no cookie was found or no data was loaded from the store, this will return an
         empty dictionary.
 
@@ -146,10 +146,10 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
 
 
 @dataclass
-class ServerSideSessionConfig(BaseBackendConfig[ServerSideBackend]):
+class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):
     """Base configuration for server side backends."""
 
-    _backend_class = ServerSideBackend
+    _backend_class = ServerSideSessionBackend
 
     storage: Storage
     """:class:`.storage.base.Storage <Storage>` to use"""
@@ -166,7 +166,7 @@ class ServerSideSessionConfig(BaseBackendConfig[ServerSideBackend]):
           ``session-{segment number}``.
 
     """
-    max_age: int | float = field(default=ONE_DAY_IN_SECONDS * 14)
+    max_age: int = field(default=ONE_DAY_IN_SECONDS * 14)
     """Maximal age of the cookie before its invalidated."""
     scopes: Scopes = field(default_factory=lambda: {ScopeType.HTTP, ScopeType.WEBSOCKET})
     """Scopes for the middleware - options are ``http`` and ``websocket`` with the default being both"""

@@ -554,6 +554,25 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
     """
 
     @property
+    def middleware(self) -> DefineMiddleware:
+        """Create ``JWTCookieAuthenticationMiddleware`` wrapped in Starlite's ``DefineMiddleware``.
+
+        Returns:
+            An instance of :class:`DefineMiddleware <starlite.middleware.base.DefineMiddleware>`.
+        """
+        return DefineMiddleware(
+            self.authentication_middleware_class,
+            algorithm=self.algorithm,
+            auth_cookie_key=self.key,
+            auth_header=self.auth_header,
+            exclude=self.exclude,
+            exclude_opt_key=self.exclude_opt_key,
+            retrieve_user_handler=self.retrieve_user_handler,
+            scopes=self.scopes,
+            token_secret=self.token_secret,
+        )
+
+    @property
     def oauth_flow(self) -> OAuthFlow:
         """Create an OpenAPI OAuth2 flow for the password bearer authentication scheme.
 

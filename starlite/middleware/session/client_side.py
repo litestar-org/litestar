@@ -9,8 +9,6 @@ from dataclasses import asdict, dataclass, field
 from os import urandom
 from typing import TYPE_CHECKING, Any, Literal
 
-from pydantic import SecretBytes
-
 from starlite.datastructures import MutableScopeHeaders
 from starlite.datastructures.cookie import Cookie
 from starlite.exceptions import (
@@ -38,19 +36,19 @@ CHUNK_SIZE = 4096 - 64
 AAD = b"additional_authenticated_data="
 
 
-class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
+class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
     """Cookie backend for SessionMiddleware."""
 
     __slots__ = ("aesgcm", "cookie_re")
 
     def __init__(self, config: CookieBackendConfig) -> None:
-        """Initialize ``CookieBackend``.
+        """Initialize ``ClientSideSessionBackend``.
 
         Args:
             config: SessionCookieConfig instance.
         """
         super().__init__(config)
-        self.aesgcm = AESGCM(config.secret.get_secret_value())
+        self.aesgcm = AESGCM(config.secret)
         self.cookie_re = re.compile(rf"{self.config.key}(?:-\d+)?")
 
     def dump_data(self, data: Any, scope: Scope | None = None) -> list[bytes]:
@@ -190,12 +188,12 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
 
 
 @dataclass
-class CookieBackendConfig(BaseBackendConfig[CookieBackend]):
+class CookieBackendConfig(BaseBackendConfig[ClientSideSessionBackend]):
     """Configuration for [SessionMiddleware] middleware."""
 
-    _backend_class = CookieBackend
+    _backend_class = ClientSideSessionBackend
 
-    secret: SecretBytes
+    secret: bytes
     """A secret key to use for generating an encryption key.
 
     Must have a length of 16 (128 bits), 24 (192 bits) or 32 (256 bits) characters.
@@ -239,5 +237,5 @@ class CookieBackendConfig(BaseBackendConfig[CookieBackend]):
             raise ImproperlyConfiguredException("key must be a string with a length between 1-256")
         if self.max_age < 1:
             raise ImproperlyConfiguredException("max_age must be greater than 0")
-        if len(self.secret.get_secret_value()) not in {16, 24, 32}:
-            raise ValueError("secret length must be 16 (128 bit), 24 (192 bit) or 32 (256 bit)")
+        if len(self.secret) not in {16, 24, 32}:
+            raise ImproperlyConfiguredException("secret length must be 16 (128 bit), 24 (192 bit) or 32 (256 bit)")

@@ -265,12 +265,12 @@ add its middleware to your application's middleware stack:
 Client-side sessions
 ^^^^^^^^^^^^^^^^^^^^
 
-Client side sessions are available through the :class:`CookieBackend <starlite.middleware.session.client_side.CookieBackend>`,
+Client side sessions are available through the :class:`ClientSideSessionBackend <starlite.middleware.session.client_side.ClientSideSessionBackend>`,
 which offers strong AES-CGM encryption security best practices while support cookie splitting.
 
 .. important::
 
-    ``CookieBackend`` requires the `cryptography <https://cryptography.io/en/latest/>`_ library,
+    ``ClientSideSessionBackend`` requires the `cryptography <https://cryptography.io/en/latest/>`_ library,
     which can be installed together with starlite as an extra using ``pip install starlite[cryptography]``
 
 .. literalinclude:: /examples/middleware/session/cookie_backend.py

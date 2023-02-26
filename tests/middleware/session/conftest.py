@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 import pytest
 
 if TYPE_CHECKING:
-    from starlite.middleware.session.client_side import CookieBackend
+    from starlite.middleware.session.client_side import ClientSideSessionBackend
 
 
 @pytest.fixture()
-def session_test_cookies(cookie_session_backend: "CookieBackend") -> str:
+def session_test_cookies(cookie_session_backend: "ClientSideSessionBackend") -> str:
     # Put random data. If you are also handling session management then use session_middleware fixture and create
     # session cookies with your own data.
     _session = {"key": secrets.token_hex(16)}

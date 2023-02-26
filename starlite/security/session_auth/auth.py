@@ -12,7 +12,7 @@ from pydantic_openapi_schema.v3_1_0 import (
 from starlite.connection import ASGIConnection
 from starlite.di import Provide
 from starlite.middleware.base import DefineMiddleware
-from starlite.middleware.session.base import BaseSessionBackend, BaseSessionBackendT
+from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackendT
 from starlite.security.base import AbstractSecurityConfig, UserType
 from starlite.security.session_auth.middleware import (
     MiddlewareWrapper,
@@ -31,7 +31,7 @@ from starlite.types import (
 class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig[UserType, Dict[str, Any]]):
     """Session Based Security Backend."""
 
-    session_backend_config: BaseSessionBackendT
+    session_backend_config: BaseBackendConfig[BaseSessionBackendT]
     """A session backend config."""
     retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Any | None]]
     """Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.
@@ -105,7 +105,7 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
         return DefineMiddleware(MiddlewareWrapper, config=self)
 
     @property
-    def session_backend(self) -> BaseSessionBackend:
+    def session_backend(self) -> BaseSessionBackendT:
         """Create a session backend.
 
         Returns:

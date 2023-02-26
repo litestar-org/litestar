@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from httpx._types import CookieTypes
 
     from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
-    from starlite.middleware.session.client_side import CookieBackend
+    from starlite.middleware.session.client_side import ClientSideSessionBackend
 try:
     from httpx import Cookies, Request, Response
 except ImportError as e:
@@ -122,7 +122,7 @@ class BaseTestClient(Generic[T]):
                 yield portal
 
     @staticmethod
-    def _create_session_cookies(backend: CookieBackend, data: dict[str, Any]) -> dict[str, str]:
+    def _create_session_cookies(backend: ClientSideSessionBackend, data: dict[str, Any]) -> dict[str, str]:
         encoded_data = backend.dump_data(data=data)
         return {cookie.key: cast("str", cookie.value) for cookie in backend._create_session_cookies(encoded_data)}
 

@@ -42,7 +42,7 @@ class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):
           ``session-{segment number}``.
 
     """
-    max_age: int | float
+    max_age: int
     """Maximal age of the cookie before its invalidated."""
     scopes: Scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     """Scopes for the middleware - options are ``http`` and ``websocket`` with the default being both"""

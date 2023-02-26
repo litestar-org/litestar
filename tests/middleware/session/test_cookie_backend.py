@@ -7,7 +7,6 @@ from unittest import mock
 
 import pytest
 from cryptography.exceptions import InvalidTag
-from pydantic import SecretBytes
 
 from starlite import Request, get, post
 from starlite.exceptions import ImproperlyConfiguredException
@@ -15,7 +14,7 @@ from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.client_side import (
     AAD,
     CHUNK_SIZE,
-    CookieBackend,
+    ClientSideSessionBackend,
     CookieBackendConfig,
 )
 from starlite.testing import create_test_client
@@ -37,9 +36,9 @@ from starlite.utils.serialization import encode_json
 def test_config_validation(secret: bytes, should_raise: bool) -> None:
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
-            CookieBackendConfig(secret=SecretBytes(secret))
+            CookieBackendConfig(secret=secret)
     else:
-        CookieBackendConfig(secret=SecretBytes(secret))
+        CookieBackendConfig(secret=secret)
 
 
 def create_session(size: int = 16) -> Dict[str, str]:
@@ -47,7 +46,7 @@ def create_session(size: int = 16) -> Dict[str, str]:
 
 
 @pytest.mark.parametrize("session", [create_session(), create_session(size=4096)])
-def test_dump_and_load_data(session: dict, cookie_session_backend: CookieBackend) -> None:
+def test_dump_and_load_data(session: dict, cookie_session_backend: ClientSideSessionBackend) -> None:
     ciphertext = cookie_session_backend.dump_data(session)
     assert isinstance(ciphertext, list)
 
@@ -60,7 +59,7 @@ def test_dump_and_load_data(session: dict, cookie_session_backend: CookieBackend
 
 @mock.patch("time.time", return_value=round(time.time()))
 def test_load_data_should_return_empty_if_session_expired(
-    time_mock: mock.MagicMock, cookie_session_backend: CookieBackend
+    time_mock: mock.MagicMock, cookie_session_backend: ClientSideSessionBackend
 ) -> None:
     """Should return empty dict if session is expired."""
     ciphertext = cookie_session_backend.dump_data(create_session())
@@ -114,7 +113,7 @@ def test_session_cookie_name_matching(cookie_session_backend_config: "CookieBack
 
 @pytest.mark.parametrize("mutate", [False, True])
 def test_load_session_cookies_and_expire_previous(
-    mutate: bool, cookie_session_middleware: SessionMiddleware[CookieBackend]
+    mutate: bool, cookie_session_middleware: SessionMiddleware[ClientSideSessionBackend]
 ) -> None:
     """Should load session cookies into session from request and overwrite the previously set cookies with the upcoming
     response.
@@ -155,7 +154,7 @@ def test_load_session_cookies_and_expire_previous(
     assert response.headers["set-cookie"].count("session") >= response.request.headers["Cookie"].count("session")
 
 
-def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backend: CookieBackend) -> None:
+def test_load_data_should_raise_invalid_tag_if_tampered_aad(cookie_session_backend: ClientSideSessionBackend) -> None:
     """If AAD has been tampered with, the integrity of the data cannot be verified and InavlidTag exception is
     raised.
     """

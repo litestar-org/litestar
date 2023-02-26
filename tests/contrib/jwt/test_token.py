@@ -1,4 +1,5 @@
 import string
+from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from uuid import uuid4
@@ -35,14 +36,14 @@ def test_token(
 ) -> None:
     token = Token(
         sub=token_sub,
-        exp=(datetime.now(timezone.utc) + timedelta(seconds=30)),
+        exp=(datetime.now(timezone.utc) + timedelta(minutes=30)),
         aud=token_audience,
         iss=token_issuer,
         jti=token_unique_jwt_id,
     )
     encoded_token = token.encode(secret=token_secret, algorithm=algorithm)
     decoded_token = token.decode(encoded_token=encoded_token, secret=token_secret, algorithm=algorithm)
-    assert token.dict() == decoded_token.dict()
+    assert asdict(token) == asdict(decoded_token)
 
 
 @pytest.mark.parametrize(

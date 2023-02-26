@@ -139,8 +139,8 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
             type_encoders=self.type_encoders,
         )
 
-    def __post_init__(self):
-        self.retrieve_user_handler = AsyncCallable(self.retrieve_user_handler)  # type: ignore
+    def __post_init__(self) -> None:
+        self.retrieve_user_handler = AsyncCallable(self.retrieve_user_handler)
 
     @property
     @abstractmethod

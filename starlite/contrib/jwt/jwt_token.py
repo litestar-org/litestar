@@ -20,6 +20,7 @@ def _normalize_datetime(value: datetime) -> datetime:
     """
     if value.tzinfo is not None:
         value.astimezone(timezone.utc)
+
     return value.replace(microsecond=0)
 
 
@@ -44,16 +45,18 @@ class Token:
         if len(self.sub) < 1:
             raise ImproperlyConfiguredException("sub must be a string with a length greater than 0")
 
-        if (exp := _normalize_datetime(self.exp)) and exp.timestamp() >= _normalize_datetime(
-            datetime.now(timezone.utc)
-        ).timestamp():
+        if isinstance(self.exp, datetime) and (
+            (exp := _normalize_datetime(self.exp))
+            and exp.timestamp() >= _normalize_datetime(datetime.now(timezone.utc)).timestamp()
+        ):
             self.exp = exp
         else:
             raise ImproperlyConfiguredException("exp value must be a datetime in the future")
 
-        if (iat := _normalize_datetime(self.iat)) and iat.timestamp() <= _normalize_datetime(
-            datetime.now(timezone.utc)
-        ).timestamp():
+        if isinstance(self.iat, datetime) and (
+            (iat := _normalize_datetime(self.iat))
+            and iat.timestamp() <= _normalize_datetime(datetime.now(timezone.utc)).timestamp()
+        ):
             self.iat = iat
         else:
             raise ImproperlyConfiguredException("iat must be a current or past time")
@@ -75,8 +78,10 @@ class Token:
         """
         try:
             payload = jwt.decode(token=encoded_token, key=secret, algorithms=[algorithm], options={"verify_aud": False})
-            return Token(**payload)
-        except (JWTError, ImproperlyConfiguredException) as e:
+            exp = datetime.fromtimestamp(payload.pop("exp"), tz=timezone.utc)
+            iat = datetime.fromtimestamp(payload.pop("iat"), tz=timezone.utc)
+            return Token(exp=exp, iat=iat, **payload)
+        except (KeyError, JWTError, ImproperlyConfiguredException) as e:
             raise NotAuthorizedException("Invalid token") from e
 
     def encode(self, secret: str, algorithm: str) -> str:
