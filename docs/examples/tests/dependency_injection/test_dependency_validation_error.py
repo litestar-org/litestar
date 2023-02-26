@@ -1,4 +1,5 @@
 from examples.dependency_injection import dependency_validation_error
+
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import TestClient
 
