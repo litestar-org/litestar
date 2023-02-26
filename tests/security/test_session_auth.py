@@ -29,7 +29,7 @@ def retrieve_user_handler(session_data: Dict[str, Any], _: "ASGIConnection") -> 
 
 
 def test_authentication(session_backend_config_memory: "ServerSideSessionConfig") -> None:
-    session_auth = SessionAuth[Any](
+    session_auth = SessionAuth[Any, ServerSideSessionConfig](
         retrieve_user_handler=retrieve_user_handler,
         exclude=["login"],
         session_backend_config=session_backend_config_memory,
@@ -74,7 +74,7 @@ def test_authentication(session_backend_config_memory: "ServerSideSessionConfig"
 
 
 def test_session_auth_openapi(session_backend_config_memory: "ServerSideSessionConfig") -> None:
-    session_auth = SessionAuth[Any](
+    session_auth = SessionAuth[Any, ServerSideSessionConfig](
         retrieve_user_handler=retrieve_user_handler,
         session_backend_config=session_backend_config_memory,
     )

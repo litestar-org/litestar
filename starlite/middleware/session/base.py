@@ -1,21 +1,16 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from typing import (
     TYPE_CHECKING,
     Any,
     Awaitable,
     Callable,
-    Dict,
     Generic,
-    List,
     Literal,
-    Optional,
-    Type,
     TypeVar,
-    Union,
     cast,
 )
-
-from pydantic import BaseConfig, BaseModel, PrivateAttr, conint, constr
 
 from starlite.connection import ASGIConnection
 from starlite.enums import ScopeType
@@ -33,15 +28,12 @@ ConfigT = TypeVar("ConfigT", bound="BaseBackendConfig")
 BaseSessionBackendT = TypeVar("BaseSessionBackendT", bound="BaseSessionBackend")
 
 
-class BaseBackendConfig(BaseModel):
+class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):
     """Configuration for Session middleware backends."""
 
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
+    _backend_class: type[BaseSessionBackendT]
 
-    _backend_class: Type["BaseSessionBackend"] = PrivateAttr()
-
-    key: constr(min_length=1, max_length=256) = "session"  # type: ignore[valid-type]
+    key: str
     """Key to use for the cookie inside the header, e.g. ``session=<data>`` where ``session`` is the cookie key and
     ``<data>`` is the session data.
 
@@ -50,29 +42,29 @@ class BaseBackendConfig(BaseModel):
           ``session-{segment number}``.
 
     """
-    max_age: conint(ge=1) = ONE_DAY_IN_SECONDS * 14  # type: ignore[valid-type]
+    max_age: int | float
     """Maximal age of the cookie before its invalidated."""
     scopes: Scopes = {ScopeType.HTTP, ScopeType.WEBSOCKET}
     """Scopes for the middleware - options are ``http`` and ``websocket`` with the default being both"""
-    path: str = "/"
+    path: str
     """Path fragment that must exist in the request url for the cookie to be valid.
 
     Defaults to ``'/'``.
     """
-    domain: Optional[str] = None
+    domain: str | None
     """Domain for which the cookie is valid."""
-    secure: bool = False
+    secure: bool
     """Https is required for the cookie."""
-    httponly: bool = True
+    httponly: bool
     """Forbids javascript to access the cookie via 'Document.cookie'."""
-    samesite: Literal["lax", "strict", "none"] = "lax"
+    samesite: Literal["lax", "strict", "none"]
     """Controls whether or not a cookie is sent with cross-site requests.
 
     Defaults to ``lax``.
     """
-    exclude: Optional[Union[str, List[str]]] = None
+    exclude: str | list[str] | None
     """A pattern or list of patterns to skip in the session middleware."""
-    exclude_opt_key: str = "skip_session"
+    exclude_opt_key: str
     """An identifier to use on routes to disable the session middleware for a particular route."""
 
     @property
@@ -122,7 +114,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         self.config = config
 
     @staticmethod
-    def serialize_data(data: "ScopeSession", scope: Optional["Scope"] = None) -> bytes:
+    def serialize_data(data: ScopeSession, scope: Scope | None = None) -> bytes:
         """Serialize data into bytes for storage in the backend.
 
         Args:
@@ -140,7 +132,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         return encode_json(data, serializer)
 
     @staticmethod
-    def deserialize_data(data: Any) -> Dict[str, Any]:
+    def deserialize_data(data: Any) -> dict[str, Any]:
         """Deserialize data into a dictionary for use in the application scope.
 
         Args:
@@ -149,7 +141,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         Returns:
             Deserialized data as a dictionary
         """
-        return cast("Dict[str, Any]", decode_json(data))
+        return cast("dict[str, Any]", decode_json(data))
 
     @abstractmethod
     async def store_in_message(
@@ -167,7 +159,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         """
 
     @abstractmethod
-    async def load_from_connection(self, connection: ASGIConnection) -> Dict[str, Any]:
+    async def load_from_connection(self, connection: ASGIConnection) -> dict[str, Any]:
         """Load session data from a connection and return it as a dictionary to be used in the current application
         scope.
 
@@ -187,7 +179,7 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
 class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
     """Starlite session middleware for storing session data."""
 
-    def __init__(self, app: "ASGIApp", backend: BaseSessionBackendT) -> None:
+    def __init__(self, app: ASGIApp, backend: BaseSessionBackendT) -> None:
         """Initialize ``SessionMiddleware``
 
         Args:
@@ -203,7 +195,7 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
         )
         self.backend = backend
 
-    def create_send_wrapper(self, connection: ASGIConnection) -> Callable[["Message"], Awaitable[None]]:
+    def create_send_wrapper(self, connection: ASGIConnection) -> Callable[[Message], Awaitable[None]]:
         """Create a wrapper for the ASGI send function, which handles setting the cookies on the outgoing response.
 
         Args:

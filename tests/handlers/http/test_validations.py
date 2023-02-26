@@ -67,7 +67,7 @@ async def test_function_validation(anyio_backend: str) -> None:
 
     @get(path="/", status_code=HTTP_307_TEMPORARY_REDIRECT)
     def redirect_method() -> Redirect:
-        return Redirect("/test")  # type: ignore
+        return Redirect("/test")
 
     @get(path="/")
     def file_method() -> File:

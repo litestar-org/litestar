@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, field
 from http.cookies import SimpleCookie
 from typing import Any, Literal
 
@@ -19,26 +19,26 @@ class Cookie:
 
     Defaults to '/'.
     """
-    value: str | None = None
+    value: str | None = field(default=None)
     """Value for the cookie, if none given defaults to empty string."""
-    max_age: int | None = None
+    max_age: int | None = field(default=None)
     """Maximal age of the cookie before its invalidated."""
-    expires: int | None = None
+    expires: int | None = field(default=None)
     """Expiration date as unix MS timestamp."""
-    domain: str | None = None
+    domain: str | None = field(default=None)
     """Domain for which the cookie is valid."""
-    secure: bool | None = None
+    secure: bool | None = field(default=None)
     """Https is required for the cookie."""
-    httponly: bool | None = None
+    httponly: bool | None = field(default=None)
     """Forbids javascript to access the cookie via 'Document.cookie'."""
-    samesite: Literal["lax", "strict", "none"] = "lax"
+    samesite: Literal["lax", "strict", "none"] = field(default="lax")
     """Controls whether or not a cookie is sent with cross-site requests.
 
     Defaults to 'lax'.
     """
-    description: str | None = None
+    description: str | None = field(default=None)
     """Description of the response cookie header for OpenAPI documentation."""
-    documentation_only: bool = False
+    documentation_only: bool = field(default=False)
     """Defines the Cookie instance as for OpenAPI documentation purpose only."""
 
     @property
@@ -87,7 +87,7 @@ class Cookie:
         """
         return {
             k: v
-            for k, v in self.__dict__.items()
+            for k, v in asdict(self).items()
             if k not in {"documentation_only", "description", "__pydantic_initialised__"}
         }
 

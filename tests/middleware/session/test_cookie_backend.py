@@ -7,9 +7,10 @@ from unittest import mock
 
 import pytest
 from cryptography.exceptions import InvalidTag
-from pydantic import SecretBytes, ValidationError
+from pydantic import SecretBytes
 
 from starlite import Request, get, post
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.client_side import (
     AAD,
@@ -35,7 +36,7 @@ from starlite.utils.serialization import encode_json
 )
 def test_config_validation(secret: bytes, should_raise: bool) -> None:
     if should_raise:
-        with pytest.raises(ValidationError):
+        with pytest.raises(ImproperlyConfiguredException):
             CookieBackendConfig(secret=SecretBytes(secret))
     else:
         CookieBackendConfig(secret=SecretBytes(secret))

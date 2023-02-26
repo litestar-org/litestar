@@ -1,16 +1,10 @@
+from __future__ import annotations
+
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from typing import Dict, Optional, Union, cast
+from typing import cast
 
 from jose import JWSError, JWTError, jwt
-from pydantic import (
-    BaseConfig,
-    BaseModel,
-    Extra,
-    Field,
-    ValidationError,
-    constr,
-    validator,
-)
 
 from starlite.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
@@ -29,64 +23,43 @@ def _normalize_datetime(value: datetime) -> datetime:
     return value.replace(microsecond=0)
 
 
-class Token(BaseModel):
+@dataclass
+class Token:
     """JWT Token DTO."""
-
-    class Config(BaseConfig):
-        extra = Extra.allow
 
     exp: datetime
     """Expiration - datetime for token expiration."""
-    iat: datetime = Field(default_factory=lambda: _normalize_datetime(datetime.now(timezone.utc)))
-    """Issued at - should always be current now."""
-    sub: constr(min_length=1)  # type: ignore[valid-type]
+    sub: str
     """Subject - usually a unique identifier of the user or equivalent entity."""
-    iss: Optional[str] = None
+    iat: datetime = field(default_factory=lambda: _normalize_datetime(datetime.now(timezone.utc)))
+    """Issued at - should always be current now."""
+    iss: str | None = field(default=None)
     """Issuer - optional unique identifier for the issuer."""
-    aud: Optional[str] = None
+    aud: str | None = field(default=None)
     """Audience - intended audience."""
-    jti: Optional[str] = None
+    jti: str | None = field(default=None)
     """JWT ID - a unique identifier of the JWT between different issuers."""
 
-    @validator("exp", always=True)
-    def validate_exp(cls, value: datetime) -> datetime:  # pylint: disable=no-self-argument
-        """Ensure that ``exp`` value is a future datetime.
+    def __post_init__(self) -> None:
+        if len(self.sub) < 1:
+            raise ImproperlyConfiguredException("sub must be a string with a length greater than 0")
 
-        Args:
-            value: A datetime instance.
+        if (exp := _normalize_datetime(self.exp)) and exp.timestamp() >= _normalize_datetime(
+            datetime.now(timezone.utc)
+        ).timestamp():
+            self.exp = exp
+        else:
+            raise ImproperlyConfiguredException("exp value must be a datetime in the future")
 
-        Raises:
-            ValueError: if value is not a future datetime instance.
-
-        Returns:
-            The validated datetime.
-        """
-
-        value = _normalize_datetime(value)
-        if value.timestamp() >= _normalize_datetime(datetime.now(timezone.utc)).timestamp():
-            return value
-        raise ValueError("exp value must be a datetime in the future")
-
-    @validator("iat", always=True)
-    def validate_iat(cls, value: datetime) -> datetime:  # pylint: disable=no-self-argument
-        """Ensure that ``iat`` value is a past or current datetime.
-
-        Args:
-            value: A datetime instance.
-
-        Raises:
-            ValueError: if value is not a past or current datetime instance.
-
-        Returns:
-            The validated datetime.
-        """
-        value = _normalize_datetime(value)
-        if value.timestamp() <= _normalize_datetime(datetime.now(timezone.utc)).timestamp():
-            return value
-        raise ValueError("iat must be a current or past time")
+        if (iat := _normalize_datetime(self.iat)) and iat.timestamp() <= _normalize_datetime(
+            datetime.now(timezone.utc)
+        ).timestamp():
+            self.iat = iat
+        else:
+            raise ImproperlyConfiguredException("iat must be a current or past time")
 
     @staticmethod
-    def decode(encoded_token: str, secret: Union[str, Dict[str, str]], algorithm: str) -> "Token":
+    def decode(encoded_token: str, secret: str | dict[str, str], algorithm: str) -> Token:
         """Decode a passed in token string and returns a Token instance.
 
         Args:
@@ -103,7 +76,7 @@ class Token(BaseModel):
         try:
             payload = jwt.decode(token=encoded_token, key=secret, algorithms=[algorithm], options={"verify_aud": False})
             return Token(**payload)
-        except (JWTError, ValidationError) as e:
+        except (JWTError, ImproperlyConfiguredException) as e:
             raise NotAuthorizedException("Invalid token") from e
 
     def encode(self, secret: str, algorithm: str) -> str:
@@ -120,6 +93,11 @@ class Token(BaseModel):
             :class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>`: If encoding fails.
         """
         try:
-            return cast("str", jwt.encode(claims=self.dict(exclude_none=True), key=secret, algorithm=algorithm))
+            return cast(
+                "str",
+                jwt.encode(
+                    claims={k: v for k, v in asdict(self).items() if v is not None}, key=secret, algorithm=algorithm
+                ),
+            )
         except (JWTError, JWSError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e

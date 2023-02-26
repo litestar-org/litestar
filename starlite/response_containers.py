@@ -1,6 +1,8 @@
-# pylint: disable=unused-argument
+from __future__ import annotations
+
 import os
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
@@ -8,20 +10,12 @@ from typing import (
     AsyncIterable,
     AsyncIterator,
     Callable,
-    Dict,
     Generic,
     Iterable,
     Iterator,
-    List,
     Literal,
-    Optional,
     TypeVar,
-    Union,
-    cast,
 )
-
-from pydantic import BaseConfig, FilePath, validator
-from pydantic.generics import GenericModel
 
 from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.constants import DEFAULT_CHUNK_SIZE
@@ -35,53 +29,50 @@ from starlite.response import (
     StreamingResponse,
     TemplateResponse,
 )
-from starlite.types import FileInfo, FileSystemProtocol
-from starlite.types.composite_types import StreamType
+from starlite.types import FileInfo
+from starlite.types.composite_types import PathType, StreamType
 from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.connection import Request
 
-R = TypeVar("R")
+R_co = TypeVar("R_co", covariant=True)
 
 
-class ResponseContainer(ABC, GenericModel, Generic[R]):
+class ResponseContainer(ABC, Generic[R_co]):
     """Generic response container."""
 
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
-
-    background: Optional[Union[BackgroundTask, BackgroundTasks]] = None
+    background: BackgroundTask | BackgroundTasks | None
     """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
 
     :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
     Defaults to None.
     """
-    headers: Dict[str, Any] = {}
+    headers: dict[str, Any]
     """A string/string dictionary of response headers.
 
     Header keys are insensitive. Defaults to None.
     """
-    cookies: List[Cookie] = []
+    cookies: list[Cookie]
     """A list of Cookie instances to be set under the response 'Set-Cookie' header.
 
     Defaults to None.
     """
-    media_type: Optional[Union[MediaType, str]] = None
+    media_type: MediaType | str | None
     """If defined, overrides the media type configured in the route decorator."""
-    encoding: str = "utf-8"
+    encoding: str
     """The encoding to be used for the response headers."""
 
     @abstractmethod
     def to_response(
         self,
-        headers: Dict[str, Any],
-        media_type: Union["MediaType", str],
+        headers: dict[str, Any],
+        media_type: MediaType | str,
         status_code: int,
-        app: "Starlite",
-        request: "Request",
-    ) -> "R":  # pragma: no cover
+        app: Starlite,
+        request: Request,
+    ) -> R_co:  # pragma: no cover
         """Abstract method that should be implemented by subclasses.
 
         Args:
@@ -97,31 +88,52 @@ class ResponseContainer(ABC, GenericModel, Generic[R]):
         raise NotImplementedError("not implemented")
 
 
+@dataclass
 class File(ResponseContainer[FileResponse]):
     """Container type for returning File responses."""
 
-    path: FilePath
+    path: PathType
     """Path to the file to send."""
-    filename: Optional[str] = None
+    background: BackgroundTask | BackgroundTasks | None = field(default=None)
+    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
+
+    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+    Defaults to None.
+    """
+    headers: dict[str, Any] = field(default_factory=dict)
+    """A string/string dictionary of response headers.
+
+    Header keys are insensitive. Defaults to None.
+    """
+    cookies: list[Cookie] = field(default_factory=list)
+    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
+
+    Defaults to None.
+    """
+    media_type: MediaType | str | None = field(default=None)
+    """If defined, overrides the media type configured in the route decorator."""
+    encoding: str = field(default="utf-8")
+    """The encoding to be used for the response headers."""
+    filename: str | None = field(default=None)
     """An optional filename to set in the header."""
-    stat_result: Optional[os.stat_result] = None
+    stat_result: os.stat_result | None = field(default=None)
     """An optional result of calling 'os.stat'.
 
     If not provided, this will be done by the response constructor.
     """
-    chunk_size: int = DEFAULT_CHUNK_SIZE
+    chunk_size: int = field(default=DEFAULT_CHUNK_SIZE)
     """The size of chunks to use when streaming the file."""
-    content_disposition_type: Literal["attachment", "inline"] = "attachment"
+    content_disposition_type: Literal["attachment", "inline"] = field(default="attachment")
     """The type of the 'Content-Disposition'.
 
     Either 'inline' or 'attachment'.
     """
-    etag: Optional[ETag] = None
+    etag: ETag | None = field(default=None)
     """An optional :class:`ETag <starlite.datastructures.ETag>` instance.
 
     If not provided, an etag will be automatically generated.
     """
-    file_system: Any = BaseLocalFileSystem()
+    file_system: Any = field(default_factory=BaseLocalFileSystem)
     """The file_system spec to use loading the file.
 
     Notes:
@@ -130,47 +142,25 @@ class File(ResponseContainer[FileResponse]):
         - You can use any of the file systems exported from the
             [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
     """
-    file_info: Optional[FileInfo] = None
+    file_info: FileInfo | None = field(default=None)
     """The output of calling `file_system.info(..)`, equivalent to providing a ``stat_result``."""
 
-    @validator("stat_result", always=True)
-    def validate_status_code(  # pylint: disable=no-self-argument
-        cls, value: Optional[os.stat_result], values: Dict[str, Any]
-    ) -> os.stat_result:
-        """Set the stat_result value for the given filepath.
+    def __post_init__(self) -> None:
+        if not (
+            callable(getattr(self.file_system, "info", None)) and callable(getattr(self.file_system, "open", None))
+        ):
+            raise ImproperlyConfiguredException("file_system must adhere to the FileSystemProtocol type")
 
-        Args:
-            value: An optional result :func:`stat <os.stat>` result.
-            values: The dict of values.
-
-        Returns:
-            A stat_result
-        """
-        return value or Path(cast("str", values.get("path"))).stat()
-
-    @validator("file_system", always=True)
-    def validate_file_system(  # pylint: disable=no-self-argument
-        cls, value: "FileSystemProtocol"
-    ) -> "FileSystemProtocol":
-        """Ensure the value is a file system spec.
-
-        Args:
-            value: A file system spec.
-
-        Returns:
-            A file system spec.
-        """
-        if not (callable(getattr(value, "info", None)) and callable(getattr(value, "open", None))):
-            raise ValueError("file_system must adhere to the FileSystemProtocol type")
-        return value
+        if not self.stat_result:
+            self.stat_result = Path(self.path).stat()
 
     def to_response(
         self,
-        headers: Dict[str, Any],
-        media_type: Optional[Union["MediaType", str]],
+        headers: dict[str, Any],
+        media_type: MediaType | str | None,
         status_code: int,
-        app: "Starlite",
-        request: "Request",
+        app: Starlite,
+        request: Request,
     ) -> FileResponse:
         """Create a FileResponse instance.
 
@@ -201,21 +191,42 @@ class File(ResponseContainer[FileResponse]):
         )
 
 
+@dataclass
 class Redirect(ResponseContainer[RedirectResponse]):
     """Container type for returning Redirect responses."""
 
     path: str
     """Redirection path."""
+    background: BackgroundTask | BackgroundTasks | None = field(default=None)
+    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
+
+    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+    Defaults to None.
+    """
+    headers: dict[str, Any] = field(default_factory=dict)
+    """A string/string dictionary of response headers.
+
+    Header keys are insensitive. Defaults to None.
+    """
+    cookies: list[Cookie] = field(default_factory=list)
+    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
+
+    Defaults to None.
+    """
+    media_type: MediaType | str | None = field(default=None)
+    """If defined, overrides the media type configured in the route decorator."""
+    encoding: str = field(default="utf-8")
+    """The encoding to be used for the response headers."""
 
     def to_response(  # type: ignore[override]
         self,
-        headers: Dict[str, Any],
+        headers: dict[str, Any],
         # TODO: update the redirect response to support HTML as well.
         #   This argument is currently ignored.
-        media_type: Union["MediaType", str],
+        media_type: MediaType | str,
         status_code: Literal[301, 302, 303, 307, 308],
-        app: "Starlite",
-        request: "Request",
+        app: Starlite,
+        request: Request,
     ) -> RedirectResponse:
         """Create a RedirectResponse instance.
 
@@ -238,17 +249,34 @@ class Redirect(ResponseContainer[RedirectResponse]):
         )
 
 
+@dataclass
 class Stream(ResponseContainer[StreamingResponse]):
     """Container type for returning Stream responses."""
 
-    iterator: Union[StreamType[Union[str, bytes]], Callable[[], StreamType[Union[str, bytes]]]]
+    iterator: StreamType[str | bytes] | Callable[[], StreamType[str | bytes]]
     """Iterator, Iterable,Generator or async Iterator, Iterable or Generator returning chunks to stream."""
+    background: BackgroundTask | BackgroundTasks | None = field(default=None)
+    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
 
-    @validator("iterator", always=True)
-    def validate_iterator(  # pylint: disable=no-self-argument
-        cls,
-        value: Union[StreamType[Union[str, bytes]], Callable[[], StreamType[Union[str, bytes]]]],
-    ) -> StreamType[Union[str, bytes]]:
+    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+    Defaults to None.
+    """
+    headers: dict[str, Any] = field(default_factory=dict)
+    """A string/string dictionary of response headers.
+
+    Header keys are insensitive. Defaults to None.
+    """
+    cookies: list[Cookie] = field(default_factory=list)
+    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
+
+    Defaults to None.
+    """
+    media_type: MediaType | str | None = field(default=None)
+    """If defined, overrides the media type configured in the route decorator."""
+    encoding: str = field(default="utf-8")
+    """The encoding to be used for the response headers."""
+
+    def __post_init__(self) -> None:
         """Set the iterator value by ensuring that the return value is iterable.
 
         Args:
@@ -257,15 +285,24 @@ class Stream(ResponseContainer[StreamingResponse]):
         Returns:
             A sync or async iterable.
         """
-        return value if isinstance(value, (Iterable, Iterator, AsyncIterable, AsyncIterator)) else value()
+
+        if not isinstance(self.iterator, (Iterable, Iterator, AsyncIterable, AsyncIterator)) and callable(
+            self.iterator
+        ):
+            self.iterator = self.iterator()
+
+        if not isinstance(self.iterator, (Iterable, Iterator, AsyncIterable, AsyncIterator)):
+            raise ImproperlyConfiguredException(
+                "iterator must be either an iterator or a callable that returns an iterator"
+            )
 
     def to_response(
         self,
-        headers: Dict[str, Any],
-        media_type: Union["MediaType", str],
+        headers: dict[str, Any],
+        media_type: MediaType | str,
         status_code: int,
-        app: "Starlite",
-        request: "Request",
+        app: Starlite,
+        request: Request,
     ) -> StreamingResponse:
         """Create a StreamingResponse instance.
 
@@ -290,25 +327,46 @@ class Stream(ResponseContainer[StreamingResponse]):
         )
 
 
+@dataclass
 class Template(ResponseContainer[TemplateResponse]):
     """Container type for returning Template responses."""
 
     name: str
     """Path-like name for the template to be rendered, e.g. "index.html"."""
-    context: Dict[str, Any] = {}
+    context: dict[str, Any] = field(default_factory=dict)
     """A dictionary of key/value pairs to be passed to the temple engine's render method.
 
     Defaults to None.
     """
+    background: BackgroundTask | BackgroundTasks | None = field(default=None)
+    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
+
+    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+    Defaults to None.
+    """
+    headers: dict[str, Any] = field(default_factory=dict)
+    """A string/string dictionary of response headers.
+
+    Header keys are insensitive. Defaults to None.
+    """
+    cookies: list[Cookie] = field(default_factory=list)
+    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
+
+    Defaults to None.
+    """
+    media_type: MediaType | str | None = field(default=None)
+    """If defined, overrides the media type configured in the route decorator."""
+    encoding: str = field(default="utf-8")
+    """The encoding to be used for the response headers."""
 
     def to_response(
         self,
-        headers: Dict[str, Any],
-        media_type: Union["MediaType", str],
+        headers: dict[str, Any],
+        media_type: MediaType | str,
         status_code: int,
-        app: "Starlite",
-        request: "Request",
-    ) -> "TemplateResponse":
+        app: Starlite,
+        request: Request,
+    ) -> TemplateResponse:
         """Create a TemplateResponse instance.
 
         Args:
@@ -339,7 +397,7 @@ class Template(ResponseContainer[TemplateResponse]):
             media_type=media_type,
         )
 
-    def create_template_context(self, request: "Request") -> Dict[str, Any]:
+    def create_template_context(self, request: Request) -> dict[str, Any]:
         """Create a context object for the template.
 
         Args:

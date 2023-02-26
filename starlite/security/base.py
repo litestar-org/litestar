@@ -1,21 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from copy import copy
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    Generic,
-    Iterable,
-    List,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-)
-
-from pydantic import BaseConfig, validator
-from pydantic.generics import GenericModel
+from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, TypeVar
 
 from starlite import Response
 from starlite.connection import ASGIConnection
@@ -43,34 +30,31 @@ UserType = TypeVar("UserType")
 AuthType = TypeVar("AuthType")
 
 
-class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
+class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     """A base class for Security Configs - this class can be used on the application level
     or be manually configured on the router / controller level to provide auth.
     """
 
-    class Config(BaseConfig):
-        arbitrary_types_allowed = True
-
-    authentication_middleware_class: Type[AbstractAuthenticationMiddleware]
+    authentication_middleware_class: type[AbstractAuthenticationMiddleware]
     """The authentication middleware class to use.
 
     Must inherit from
     :class:`AbstractAuthenticationMiddleware <starlite.middleware.authentication.AbstractAuthenticationMiddleware>`
     """
-    guards: Optional[Iterable[Guard]] = None
+    guards: Iterable[Guard] | None = None
     """An iterable of guards to call for requests, providing authorization functionalities."""
-    exclude: Optional[Union[str, List[str]]] = None
+    exclude: str | list[str] | None = None
     """A pattern or list of patterns to skip in the authentication middleware."""
     exclude_opt_key: str = "exclude_from_auth"
     """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
-    scopes: Optional[Scopes] = None
+    scopes: Scopes | None = None
     """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
     processed."""
-    route_handlers: Optional[Iterable[ControllerRouterHandler]] = None
+    route_handlers: Iterable[ControllerRouterHandler] | None = None
     """An optional iterable of route handlers to register."""
-    dependencies: Optional[Dict[str, Provide]] = None
+    dependencies: dict[str, Provide] | None = None
     """An optional dictionary of dependency providers."""
-    retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Optional[Any]]]
+    retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Any | None]]
     """Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.
 
     Notes:
@@ -80,10 +64,10 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
         - The callable can be sync or async. If it is sync, it will be wrapped to support async.
 
     """
-    type_encoders: Optional[TypeEncodersMap] = None
+    type_encoders: TypeEncodersMap | None = None
     """A mapping of types to callables that transform them into types supported for serialization."""
 
-    def on_app_init(self, app_config: "AppConfig") -> "AppConfig":
+    def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Handle app init by injecting middleware, guards etc. into the app. This method can be used only on the app
         level.
 
@@ -125,11 +109,11 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
 
     def create_response(
         self,
-        content: Optional[Any],
+        content: Any | None,
         status_code: int,
-        media_type: "Union[MediaType, OpenAPIMediaType, str]",
-        headers: Optional[Dict[str, Any]] = None,
-        cookies: "Optional[ResponseCookies]" = None,
+        media_type: MediaType | OpenAPIMediaType | str,
+        headers: dict[str, Any] | None = None,
+        cookies: ResponseCookies | None = None,
     ) -> Response[Any]:
         """Create a response object.
 
@@ -155,23 +139,12 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
             type_encoders=self.type_encoders,
         )
 
-    @validator("retrieve_user_handler")
-    def validate_retrieve_user_handler(  # pylint: disable=no-self-argument
-        cls, value: Callable[[AuthType], SyncOrAsyncUnion[UserType]]
-    ) -> Any:
-        """Ensure that the passed in value does not get bound.
-
-        Args:
-            value: A callable fulfilling the RetrieveUserHandler type.
-
-        Returns:
-            An instance of AsyncCallable wrapping the callable.
-        """
-        return AsyncCallable(value)
+    def __post_init__(self):
+        self.retrieve_user_handler = AsyncCallable(self.retrieve_user_handler)  # type: ignore
 
     @property
     @abstractmethod
-    def openapi_components(self) -> "Components":  # pragma: no cover
+    def openapi_components(self) -> Components:  # pragma: no cover
         """Create OpenAPI documentation for the JWT auth schema used.
 
         Returns:
@@ -181,7 +154,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
 
     @property
     @abstractmethod
-    def security_requirement(self) -> "SecurityRequirement":  # pragma: no cover
+    def security_requirement(self) -> SecurityRequirement:  # pragma: no cover
         """Return OpenAPI 3.1.
 
         :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
@@ -194,7 +167,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType], GenericModel):
 
     @property
     @abstractmethod
-    def middleware(self) -> "DefineMiddleware":  # pragma: no cover
+    def middleware(self) -> DefineMiddleware:  # pragma: no cover
         """Create an instance of the config's ``authentication_middleware_class`` attribute and any required kwargs,
         wrapping it in Starlite's ``DefineMiddleware``.
 

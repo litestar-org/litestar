@@ -1,10 +1,19 @@
+from __future__ import annotations
+
 import secrets
-from typing import TYPE_CHECKING, Any, Dict, Optional, Type
+from dataclasses import asdict, dataclass, field
+from typing import TYPE_CHECKING, Any, Literal
 
 from starlite.datastructures import Cookie, MutableScopeHeaders
-from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
+from starlite.enums import ScopeType
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.middleware.session.base import (
+    ONE_DAY_IN_SECONDS,
+    BaseBackendConfig,
+    BaseSessionBackend,
+)
 from starlite.storage.base import Storage
-from starlite.types import Empty, Message, ScopeSession
+from starlite.types import Empty, Message, Scopes, ScopeSession
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
@@ -19,7 +28,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
 
     __slots__ = ("storage",)
 
-    def __init__(self, config: "ServerSideSessionConfig") -> None:
+    def __init__(self, config: ServerSideSessionConfig) -> None:
         """Initialize ``ServerSideBackend``
 
         Args:
@@ -28,7 +37,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         super().__init__(config=config)
         self.storage = config.storage
 
-    async def get(self, session_id: str) -> Optional[bytes]:
+    async def get(self, session_id: str) -> bytes | None:
         """Retrieve data associated with ``session_id``.
 
         Args:
@@ -37,9 +46,8 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Returns:
             The session data, if existing, otherwise ``None``.
         """
-        return await self.storage.get(
-            session_id, renew_for=self.config.max_age if self.config.renew_on_access else None
-        )
+        max_age = int(self.config.max_age) if self.config.max_age is not None else None
+        return await self.storage.get(session_id, renew_for=max_age if self.config.renew_on_access else None)
 
     async def set(self, session_id: str, data: bytes) -> None:
         """Store ``data`` under the ``session_id`` for later retrieval.
@@ -54,7 +62,8 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Returns:
             None
         """
-        await self.storage.set(session_id, data, expires_in=self.config.max_age)
+        expires_in = int(self.config.max_age) if self.config.max_age is not None else None
+        await self.storage.set(session_id, data, expires_in=expires_in)
 
     async def delete(self, session_id: str) -> None:
         """Delete the data associated with ``session_id``. Fails silently if no such session-ID exists.
@@ -99,10 +108,7 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         if not session_id or session_id == "null":
             session_id = self.generate_session_id()
 
-        cookie_params = self.config.dict(
-            exclude_none=True,
-            exclude={"secret", "key"} | set(self.config.__fields__) - set(BaseBackendConfig.__fields__),
-        )
+        cookie_params = {k: v for k, v in asdict(self.config).items() if v is not None and k in Cookie.__dict__}
 
         if scope_session is Empty:
             await self.delete(session_id)
@@ -113,10 +119,9 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         else:
             serialised_data = self.serialize_data(scope_session, scope)
             await self.set(session_id=session_id, data=serialised_data)
-
             headers["Set-Cookie"] = Cookie(value=session_id, key=self.config.key, **cookie_params).to_header(header="")
 
-    async def load_from_connection(self, connection: "ASGIConnection") -> Dict[str, Any]:
+    async def load_from_connection(self, connection: "ASGIConnection") -> dict[str, Any]:
         """Load session data from a connection and return it as a dictionary to be used in the current application
         scope.
 
@@ -140,13 +145,54 @@ class ServerSideBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         return {}
 
 
-class ServerSideSessionConfig(BaseBackendConfig):
+@dataclass
+class ServerSideSessionConfig(BaseBackendConfig[ServerSideBackend]):
     """Base configuration for server side backends."""
 
-    session_id_bytes: int = 32
-    """Number of bytes used to generate a random session-ID."""
+    _backend_class = ServerSideBackend
+
     storage: Storage
     """:class:`.storage.base.Storage <Storage>` to use"""
-    renew_on_access: bool = False
+    session_id_bytes: int = field(default=32)
+    """Number of bytes used to generate a random session-ID."""
+    renew_on_access: bool = field(default=False)
     """Renew expiry times of sessions when they're being accessed"""
-    _backend_class: Type[ServerSideBackend] = ServerSideBackend
+    key: str = field(default="session")
+    """Key to use for the cookie inside the header, e.g. ``session=<data>`` where ``session`` is the cookie key and
+    ``<data>`` is the session data.
+
+    Notes:
+        - If a session cookie exceeds 4KB in size it is split. In this case the key will be of the format
+          ``session-{segment number}``.
+
+    """
+    max_age: int | float = field(default=ONE_DAY_IN_SECONDS * 14)
+    """Maximal age of the cookie before its invalidated."""
+    scopes: Scopes = field(default_factory=lambda: {ScopeType.HTTP, ScopeType.WEBSOCKET})
+    """Scopes for the middleware - options are ``http`` and ``websocket`` with the default being both"""
+    path: str = field(default="/")
+    """Path fragment that must exist in the request url for the cookie to be valid.
+
+    Defaults to ``'/'``.
+    """
+    domain: str | None = field(default=None)
+    """Domain for which the cookie is valid."""
+    secure: bool = field(default=False)
+    """Https is required for the cookie."""
+    httponly: bool = field(default=True)
+    """Forbids javascript to access the cookie via 'Document.cookie'."""
+    samesite: Literal["lax", "strict", "none"] = field(default="lax")
+    """Controls whether or not a cookie is sent with cross-site requests.
+
+    Defaults to ``lax``.
+    """
+    exclude: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the session middleware."""
+    exclude_opt_key: str = field(default="skip_session")
+    """An identifier to use on routes to disable the session middleware for a particular route."""
+
+    def __post_init__(self) -> None:
+        if len(self.key) < 1 or len(self.key) > 256:
+            raise ImproperlyConfiguredException("key must be a string with a length between 1-256")
+        if self.max_age < 1:
+            raise ImproperlyConfiguredException("max_age must be greater than 0")
