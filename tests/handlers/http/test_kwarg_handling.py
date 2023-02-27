@@ -6,7 +6,8 @@ from hypothesis import strategies as st
 
 from starlite import HttpMethod, MediaType, Response, delete, get, patch, post, put
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers.http_handlers import HTTPRouteHandler, _get_default_status_code
+from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.handlers.http_handlers._utils import get_default_status_code
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.types import ResponseType
 from starlite.utils import normalize_path
@@ -60,7 +61,7 @@ def test_route_handler_kwarg_handling(
             assert result.paths == {"/"}
         else:
             assert list(result.paths)[0] == normalize_path(path)
-        assert result.status_code == status_code or _get_default_status_code(http_methods=result.http_methods)
+        assert result.status_code == status_code or get_default_status_code(http_methods=result.http_methods)
 
 
 @pytest.mark.parametrize(
