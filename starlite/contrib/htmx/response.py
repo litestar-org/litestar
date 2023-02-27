@@ -1,7 +1,11 @@
-from typing import TYPE_CHECKING, Any, Dict, Generic, Optional, TypeVar, Union
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any, Generic, TypeVar
 from urllib.parse import quote
 
 from starlite import MediaType, Request, Response, Starlite
+from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.contrib.htmx.types import (
     EventAfterType,
     HtmxHeaderType,
@@ -11,11 +15,10 @@ from starlite.contrib.htmx.types import (
     TriggerEventType,
 )
 from starlite.contrib.htmx.utils import HTMX_STOP_POLLING, get_headers
-from starlite.response_containers import Template
+from starlite.datastructures import Cookie
+from starlite.response import TemplateResponse
+from starlite.response_containers import ResponseContainer, Template
 from starlite.status_codes import HTTP_200_OK
-
-if TYPE_CHECKING:
-    from starlite.response import TemplateResponse
 
 # HTMX defined HTTP status code.
 # Response carrying this status code will ask client to stop Polling.
@@ -103,7 +106,7 @@ class TriggerEvent(Generic[T], Response[T]):
         content: T,
         name: str,
         after: EventAfterType,
-        params: Optional[Dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize TriggerEvent."""
@@ -118,12 +121,12 @@ class HXLocation(Response):
     def __init__(
         self,
         redirect_to: str,
-        source: Optional[str] = None,
-        event: Optional[str] = None,
-        target: Optional[str] = None,
+        source: str | None = None,
+        event: str | None = None,
+        target: str | None = None,
         swap: ReSwapMethod = None,
-        hx_headers: Optional[Dict[str, Any]] = None,
-        values: Optional[Dict[str, str]] = None,
+        hx_headers: dict[str, Any] | None = None,
+        values: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize HXLocation, Set status code to 200 (required by HTMX),
@@ -131,11 +134,10 @@ class HXLocation(Response):
         """
         super().__init__(
             content=None,
-            status_code=HTTP_200_OK,
             headers={"Location": quote(redirect_to, safe="/#%[]=:;$&()+,!?*@'~")},
             **kwargs,
         )
-        spec: Dict[str, Any] = get_headers(
+        spec: dict[str, Any] = get_headers(
             hx_headers=HtmxHeaderType(
                 location=LocationType(
                     path=str(self.headers.get("Location")),
@@ -152,42 +154,77 @@ class HXLocation(Response):
         self.headers.update(spec)
 
 
-class HTMXTemplate(Template):
+@dataclass
+class HTMXTemplate(ResponseContainer[TemplateResponse]):
     """HTMX template wrapper"""
 
-    push_url: Optional[PushUrlType] = None
+    name: str
+    """Path-like name for the template to be rendered, e.g. "index.html"."""
+    context: dict[str, Any] = field(default_factory=dict)
+    """A dictionary of key/value pairs to be passed to the temple engine's render method.
+
+    Defaults to None.
+    """
+    background: BackgroundTask | BackgroundTasks | None = field(default=None)
+    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
+
+    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+    Defaults to None.
+    """
+    headers: dict[str, Any] = field(default_factory=dict)
+    """A string/string dictionary of response headers.
+
+    Header keys are insensitive. Defaults to None.
+    """
+    cookies: list[Cookie] = field(default_factory=list)
+    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
+
+    Defaults to None.
+    """
+    media_type: MediaType | str | None = field(default=None)
+    """If defined, overrides the media type configured in the route decorator."""
+    encoding: str = field(default="utf-8")
+    """The encoding to be used for the response headers."""
+    push_url: PushUrlType | None = field(default=None)
     """Either a string value specifying a URL to push to browser history or ``False`` to
     prevent HTMX client from pushing a url to browser history."""
-    re_swap: ReSwapMethod = None
+    re_swap: ReSwapMethod | None = field(default=None)
     """Method value to instruct HTMX which swapping method to use."""
-    re_target: Optional[str] = None
+    re_target: str | None = field(default=None)
     """Value for 'id of target element' to apply changes to."""
-    trigger_event: Optional[str] = None
+    trigger_event: str | None = field(default=None)
     """Event name to trigger."""
-    params: Optional[Dict[str, Any]] = None
+    params: dict[str, Any] | None = field(default=None)
     """Dictionary of parameters if any required with trigger event parameter."""
-    after: Optional[EventAfterType] = None
+    after: EventAfterType | None = field(default=None)
     """Changes to apply after ``receive``, ``settle`` or ``swap`` event."""
 
     def to_response(
         self,
-        headers: Dict[str, Any],
-        media_type: Union["MediaType", str],
+        headers: dict[str, Any],
+        media_type: MediaType | str,
         status_code: int,
-        app: "Starlite",
-        request: "Request",
-    ) -> "TemplateResponse":
+        app: Starlite,
+        request: Request,
+    ) -> TemplateResponse:
         """Add HTMX headers and return a :class:`.response.TemplateResponse`."""
 
+        event: TriggerEventType | None = None
         if self.trigger_event:
             event = TriggerEventType(name=str(self.trigger_event), params=self.params, after=self.after)
-        else:
-            event = None
-        hx_headers: Dict[str, Any] = get_headers(
+
+        hx_headers: dict[str, Any] = get_headers(
             hx_headers=HtmxHeaderType(
                 push_url=self.push_url, re_swap=self.re_swap, re_target=self.re_target, trigger_event=event
             )
         )
-        return super().to_response(
-            headers=hx_headers, status_code=status_code, media_type=media_type, app=app, request=request
+
+        template = Template(
+            name=self.name,
+            background=self.background,
+            encoding=self.encoding,
+        )
+
+        return template.to_response(
+            headers=hx_headers, media_type=media_type, app=app, status_code=status_code, request=request
         )

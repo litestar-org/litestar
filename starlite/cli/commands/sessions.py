@@ -5,18 +5,18 @@ from starlite import Starlite
 from starlite.cli.utils import StarliteCLIException, StarliteGroup, console
 from starlite.middleware import DefineMiddleware
 from starlite.middleware.session import SessionMiddleware
-from starlite.middleware.session.server_side import ServerSideBackend
+from starlite.middleware.session.server_side import ServerSideSessionBackend
 from starlite.utils import is_class_and_subclass
 
 
-def get_session_backend(app: Starlite) -> ServerSideBackend:
+def get_session_backend(app: Starlite) -> ServerSideSessionBackend:
     """Get the session backend used by a ``Starlite`` app."""
     for middleware in app.middleware:
         if isinstance(middleware, DefineMiddleware):
             if not is_class_and_subclass(middleware.middleware, SessionMiddleware):
                 continue
             backend = middleware.kwargs["backend"]
-            if not isinstance(backend, ServerSideBackend):
+            if not isinstance(backend, ServerSideSessionBackend):
                 raise StarliteCLIException("Only server-side backends are supported")
             return backend
     raise StarliteCLIException("Session middleware not installed")

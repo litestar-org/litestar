@@ -1,4 +1,5 @@
 import inspect
+from dataclasses import fields
 from typing import List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
 
@@ -62,13 +63,13 @@ def app_config_object() -> AppConfig:
 def test_app_params_defined_on_app_config_object() -> None:
     """Ensures that all parameters to the `Starlite` constructor are present on the `AppConfig` object."""
     starlite_signature = inspect.signature(Starlite)
-    app_config_fields = AppConfig.__fields__
+    app_config_fields = {f.name for f in fields(AppConfig)}
     for name in starlite_signature.parameters:
         if name in ("on_app_init", "initial_state"):
             continue
         assert name in app_config_fields
     # ensure there are not fields defined on AppConfig that aren't in the Starlite signature
-    assert not (app_config_fields.keys() - starlite_signature.parameters.keys())
+    assert not (app_config_fields - set(starlite_signature.parameters.keys()))
 
 
 def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -83,18 +84,18 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # replace each field on the `AppConfig` object with a `PropertyMock`, this allows us to assert that the properties
     # have been accessed during app instantiation.
     property_mocks: List[Tuple[str, Mock]] = []
-    for name in AppConfig.__fields__:
-        if name == "cache_config":
+    for field in fields(AppConfig):
+        if field.name == "cache_config":
             property_mock = PropertyMock(return_value=DEFAULT_CACHE_CONFIG)
-        if name in ["event_emitter_backend", "cache_config"]:
+        if field.name in ["event_emitter_backend", "cache_config"]:
             property_mock = PropertyMock(return_value=Mock())
         else:
             # default iterable return value allows the mock properties that need to be iterated over in
             # `Starlite.__init__()` to not blow up, for other properties it shouldn't matter what the value is for the
             # sake of this test.
             property_mock = PropertyMock(return_value=[])
-        property_mocks.append((name, property_mock))
-        monkeypatch.setattr(type(app_config_object), name, property_mock, raising=False)
+        property_mocks.append((field.name, property_mock))
+        monkeypatch.setattr(type(app_config_object), field.name, property_mock, raising=False)
 
     # Things that we don't actually need to call for this test
     monkeypatch.setattr(Starlite, "register", MagicMock())
@@ -139,3 +140,7 @@ def test_set_initial_state() -> None:
 
     app = Starlite(initial_state={"a": "b", "c": "d"}, on_app_init=[set_initial_state_in_hook])
     assert app.state._state == {"a": "b", "c": "D", "e": "f"}
+
+
+def test_app_from_config(app_config_object: AppConfig) -> None:
+    Starlite.from_config(app_config_object)

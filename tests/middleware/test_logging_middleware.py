@@ -9,6 +9,7 @@ from starlite.config.compression import CompressionConfig
 from starlite.config.logging import LoggingConfig, StructLoggingConfig
 from starlite.connection import Request
 from starlite.datastructures import Cookie
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware.logging import LoggingMiddlewareConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.testing import create_test_client
@@ -27,6 +28,14 @@ def handler() -> Response:
         headers={"token": "123", "regular": "abc"},
         cookies=[Cookie(key="first-cookie", value="abc"), Cookie(key="second-cookie", value="xxx")],
     )
+
+
+def test_logging_middleware_config_validation() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        LoggingMiddlewareConfig(response_log_fields=None)  # type: ignore
+
+    with pytest.raises(ImproperlyConfiguredException):
+        LoggingMiddlewareConfig(request_log_fields=None)  # type: ignore
 
 
 def test_logging_middleware_regular_logger(get_logger: "GetLogger", caplog: "LogCaptureFixture") -> None:

@@ -1,42 +1,40 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from __future__ import annotations
 
-from pydantic import BaseModel, DirectoryPath, constr, validator
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
-from starlite.config.base_config import BaseConfigModel
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers import asgi
 from starlite.static_files.base import StaticFiles
-from starlite.types import ExceptionHandlersMap, Guard
 from starlite.utils import normalize_path
 from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
     from starlite.handlers.asgi_handlers import ASGIRouteHandler
-    from starlite.types.file_types import FileSystemProtocol
+    from starlite.types import ExceptionHandlersMap, Guard, PathType
 
 
-class StaticFilesConfig(BaseModel):
+@dataclass
+class StaticFilesConfig:
     """Configuration for static file service.
 
     To enable static files, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor using
     the 'static_files_config' key.
     """
 
-    class Config(BaseConfigModel):
-        pass
-
-    path: constr(min_length=1)  # type: ignore
+    path: str
     """Path to serve static files from.
 
     Note that the path cannot contain path parameters.
     """
-    directories: List[DirectoryPath]
+    directories: list[PathType]
     """A list of directories to serve files from."""
     html_mode: bool = False
     """Flag dictating whether serving html.
 
     If true, the default file will be 'index.html'.
     """
-    name: Optional[str] = None
+    name: str | None = None
     """An optional string identifying the static files handler."""
     file_system: Any = BaseLocalFileSystem()
     """The file_system spec to use for serving files.
@@ -47,46 +45,33 @@ class StaticFilesConfig(BaseModel):
         - You can use any of the file systems exported from the
             [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
     """
-    opt: Optional[Dict[str, Any]] = None
+    opt: dict[str, Any] | None = None
     """A string key dictionary of arbitrary values that will be added to the static files handler."""
-    guards: Optional[List[Guard]] = None
+    guards: list[Guard] | None = None
     """A list of :class:`Guard <starlite.types.Guard>` callables."""
-    exception_handlers: Optional[ExceptionHandlersMap] = None
+    exception_handlers: ExceptionHandlersMap | None = None
     """A dictionary that maps handler functions to status codes and/or exception types."""
     send_as_attachment: bool = False
     """Whether to send the file as an attachment."""
 
-    @validator("path", always=True)
-    def validate_path(cls, value: str) -> str:  # pylint: disable=no-self-argument
-        """Ensure the path has no path parameters.
+    def __post_init__(self) -> None:
+        if not self.path:
+            raise ImproperlyConfiguredException("path must be a non-zero length string,")
 
-        Args:
-            value: A path string
+        if not self.directories or not any(bool(d) for d in self.directories):
+            raise ImproperlyConfiguredException("directories must include at least one path.")
 
-        Returns:
-            The passed in value
-        """
-        if "{" in value:
-            raise ValueError("path parameters are not supported for static files")
-        return normalize_path(value)
+        if "{" in self.path:
+            raise ImproperlyConfiguredException("path parameters are not supported for static files")
 
-    @validator("file_system", always=True)
-    def validate_file_system(  # pylint: disable=no-self-argument
-        cls, value: "FileSystemProtocol"
-    ) -> "FileSystemProtocol":
-        """Ensure the value is a file system spec.
+        if not (
+            callable(getattr(self.file_system, "info", None)) and callable(getattr(self.file_system, "open", None))
+        ):
+            raise ImproperlyConfiguredException("file_system must adhere to the FileSystemProtocol type")
 
-        Args:
-            value: A file system spec.
+        self.path = normalize_path(self.path)
 
-        Returns:
-            A file system spec.
-        """
-        if not (callable(getattr(value, "info", None)) and callable(getattr(value, "open", None))):
-            raise ValueError("file_system must adhere to the FileSystemProtocol type")
-        return value
-
-    def to_static_files_app(self) -> "ASGIRouteHandler":
+    def to_static_files_app(self) -> ASGIRouteHandler:
         """Return an ASGI app serving static files based on the config.
 
         Returns:

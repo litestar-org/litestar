@@ -1,4 +1,5 @@
 import string
+from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from uuid import uuid4
@@ -35,14 +36,14 @@ def test_token(
 ) -> None:
     token = Token(
         sub=token_sub,
-        exp=(datetime.now(timezone.utc) + timedelta(seconds=30)),
+        exp=(datetime.now(timezone.utc) + timedelta(minutes=30)),
         aud=token_audience,
         iss=token_issuer,
         jti=token_unique_jwt_id,
     )
     encoded_token = token.encode(secret=token_secret, algorithm=algorithm)
     decoded_token = token.decode(encoded_token=encoded_token, secret=token_secret, algorithm=algorithm)
-    assert token.dict() == decoded_token.dict()
+    assert asdict(token) == asdict(decoded_token)
 
 
 @pytest.mark.parametrize(
@@ -109,7 +110,7 @@ def test_decode_validation() -> None:
 
 @given(exp=datetimes(max_value=datetime.now() - timedelta(seconds=1)))
 def test_exp_validation(exp: datetime) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ImproperlyConfiguredException):
         Token(
             sub="123",
             exp=exp,
@@ -119,9 +120,18 @@ def test_exp_validation(exp: datetime) -> None:
 
 @given(iat=datetimes(min_value=datetime.now() + timedelta(days=1)))
 def test_iat_validation(iat: datetime) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ImproperlyConfiguredException):
         Token(
             sub="123",
             iat=iat,
             exp=(iat + timedelta(seconds=120)),
+        )
+
+
+def test_sub_validation() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        Token(
+            sub="",
+            iat=(datetime.now() - timedelta(seconds=30)),
+            exp=(datetime.now() + timedelta(seconds=120)),
         )

@@ -1,7 +1,8 @@
-from inspect import isawaitable
-from typing import TYPE_CHECKING, Any, Dict, Iterable, List, Optional, Set, Type, Union
+from __future__ import annotations
 
-from pydantic import BaseModel, validator
+from dataclasses import dataclass, field
+from inspect import isawaitable
+from typing import TYPE_CHECKING, Any, Iterable
 
 from starlite.constants import (
     HTTP_RESPONSE_BODY,
@@ -9,6 +10,7 @@ from starlite.constants import (
     SCOPE_STATE_RESPONSE_COMPRESSED,
 )
 from starlite.enums import ScopeType
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.utils import (
     default_serializer,
@@ -50,9 +52,9 @@ class LoggingMiddleware(AbstractMiddleware):
 
     __slots__ = ("config", "logger", "request_extractor", "response_extractor", "is_struct_logger")
 
-    logger: "Logger"
+    logger: Logger
 
-    def __init__(self, app: "ASGIApp", config: "LoggingMiddlewareConfig") -> None:
+    def __init__(self, app: ASGIApp, config: LoggingMiddlewareConfig) -> None:
         """Initialize ``LoggingMiddleware``.
 
         Args:
@@ -125,7 +127,7 @@ class LoggingMiddleware(AbstractMiddleware):
         extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope, receive=receive))
         self.log_message(values=extracted_data)
 
-    def log_response(self, scope: "Scope") -> None:
+    def log_response(self, scope: Scope) -> None:
         """Extract the response data and log the message.
 
         Args:
@@ -137,7 +139,7 @@ class LoggingMiddleware(AbstractMiddleware):
         extracted_data = self.extract_response_data(scope=scope)
         self.log_message(values=extracted_data)
 
-    def log_message(self, values: Dict[str, Any]) -> None:
+    def log_message(self, values: dict[str, Any]) -> None:
         """Log a message.
 
         Args:
@@ -152,14 +154,14 @@ class LoggingMiddleware(AbstractMiddleware):
         else:
             self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))
 
-    def _serialize_value(self, serializer: Optional["Serializer"], value: Any) -> Any:
+    def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
         if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
             value = encode_json(value, serializer)
         if isinstance(value, bytes):
             return value.decode("utf-8")
         return value
 
-    async def extract_request_data(self, request: "Request") -> Dict[str, Any]:
+    async def extract_request_data(self, request: "Request") -> dict[str, Any]:
         """Create a dictionary of values for the message.
 
         Args:
@@ -169,7 +171,7 @@ class LoggingMiddleware(AbstractMiddleware):
             An dict.
         """
 
-        data: Dict[str, Any] = {"message": self.config.request_log_message}
+        data: dict[str, Any] = {"message": self.config.request_log_message}
         serializer = get_serializer_from_scope(request.scope)
         extracted_data = self.request_extractor(connection=request)
         for key in self.config.request_log_fields:
@@ -179,7 +181,7 @@ class LoggingMiddleware(AbstractMiddleware):
             data[key] = self._serialize_value(serializer, value)
         return data
 
-    def extract_response_data(self, scope: "Scope") -> Dict[str, Any]:
+    def extract_response_data(self, scope: Scope) -> dict[str, Any]:
         """Extract data from the response.
 
         Args:
@@ -188,7 +190,7 @@ class LoggingMiddleware(AbstractMiddleware):
         Returns:
             An dict.
         """
-        data: Dict[str, Any] = {"message": self.config.response_log_message}
+        data: dict[str, Any] = {"message": self.config.response_log_message}
         serializer = get_serializer_from_scope(scope) or default_serializer
         extracted_data = self.response_extractor(
             messages=(
@@ -207,7 +209,7 @@ class LoggingMiddleware(AbstractMiddleware):
             data[key] = self._serialize_value(serializer, value)
         return data
 
-    def create_send_wrapper(self, scope: "Scope", send: "Send") -> "Send":
+    def create_send_wrapper(self, scope: Scope, send: Send) -> Send:
         """Create a ``send`` wrapper, which handles logging response data.
 
         Args:
@@ -229,52 +231,55 @@ class LoggingMiddleware(AbstractMiddleware):
         return send_wrapper
 
 
-class LoggingMiddlewareConfig(BaseModel):
+@dataclass
+class LoggingMiddlewareConfig:
     """Configuration for ``LoggingMiddleware``"""
 
-    exclude: Optional[Union[str, List[str]]] = None
+    exclude: str | list[str] | None = field(default=None)
     """List of paths to exclude from logging."""
-    exclude_opt_key: Optional[str] = None
+    exclude_opt_key: str | None = field(default=None)
     """An identifier to use on routes to disable logging for a particular route."""
-    include_compressed_body: bool = False
+    include_compressed_body: bool = field(default=False)
     """Include body of compressed response in middleware. If `"body"` not set in.
     :attr:`response_log_fields <LoggingMiddlewareConfig.response_log_fields>` this config value is ignored.
     """
-    logger_name: str = "starlite"
+    logger_name: str = field(default="starlite")
     """Name of the logger to retrieve using `app.get_logger("<name>")`."""
-    request_cookies_to_obfuscate: Set[str] = {"session"}
+    request_cookies_to_obfuscate: set[str] = field(default_factory=lambda: {"session"})
     """Request cookie keys to obfuscate.
 
     Obfuscated values are replaced with '*****'.
     """
-    request_headers_to_obfuscate: Set[str] = {"Authorization", "X-API-KEY"}
+    request_headers_to_obfuscate: set[str] = field(default_factory=lambda: {"Authorization", "X-API-KEY"})
     """Request header keys to obfuscate.
 
     Obfuscated values are replaced with '*****'.
     """
-    response_cookies_to_obfuscate: Set[str] = {"session"}
+    response_cookies_to_obfuscate: set[str] = field(default_factory=lambda: {"session"})
     """Response cookie keys to obfuscate.
 
     Obfuscated values are replaced with '*****'.
     """
-    response_headers_to_obfuscate: Set[str] = {"Authorization", "X-API-KEY"}
+    response_headers_to_obfuscate: set[str] = field(default_factory=lambda: {"Authorization", "X-API-KEY"})
     """Response header keys to obfuscate.
 
     Obfuscated values are replaced with '*****'.
     """
-    request_log_message: str = "HTTP Request"
+    request_log_message: str = field(default="HTTP Request")
     """Log message to prepend when logging a request."""
-    response_log_message: str = "HTTP Response"
+    response_log_message: str = field(default="HTTP Response")
     """Log message to prepend when logging a response."""
-    request_log_fields: Iterable[RequestExtractorField] = (
-        "path",
-        "method",
-        "content_type",
-        "headers",
-        "cookies",
-        "query",
-        "path_params",
-        "body",
+    request_log_fields: Iterable[RequestExtractorField] = field(
+        default_factory=lambda: (
+            "path",
+            "method",
+            "content_type",
+            "headers",
+            "cookies",
+            "query",
+            "path_params",
+            "body",
+        )
     )
     """Fields to extract and log from the request.
 
@@ -283,11 +288,13 @@ class LoggingMiddlewareConfig(BaseModel):
             Thus, re-arranging the log-message is as simple as changing the iterable.
         -  To turn off logging of requests, use and empty iterable.
     """
-    response_log_fields: Iterable[ResponseExtractorField] = (
-        "status_code",
-        "cookies",
-        "headers",
-        "body",
+    response_log_fields: Iterable[ResponseExtractorField] = field(
+        default_factory=lambda: (
+            "status_code",
+            "cookies",
+            "headers",
+            "body",
+        )
     )
     """Fields to extract and log from the response. The order of fields in the iterable determines the order of the log
     message logged out.
@@ -297,9 +304,13 @@ class LoggingMiddlewareConfig(BaseModel):
             Thus, re-arranging the log-message is as simple as changing the iterable.
         -  To turn off logging of responses, use and empty iterable.
     """
+    middleware_class: type[LoggingMiddleware] = field(default_factory=lambda: LoggingMiddleware)
+    """Middleware class to use.
 
-    @validator("response_log_fields", "request_log_fields")
-    def iterable_to_tuple(cls, value: Iterable) -> tuple:  # pylint: disable=no-self-argument
+    Should be a subclass of [starlite.middleware.LoggingMiddleware].
+    """
+
+    def __post_init__(self) -> None:
         """Override default Pydantic type conversion for iterables.
 
         Args:
@@ -308,15 +319,14 @@ class LoggingMiddlewareConfig(BaseModel):
         Returns:
             The `value` argument cast as a tuple.
         """
-        if not isinstance(value, Iterable):
-            raise ValueError("The value must be a valid Iterable")
-        return tuple(value)
+        if not isinstance(self.response_log_fields, Iterable):
+            raise ImproperlyConfiguredException("response_log_fields must be a valid Iterable")
 
-    middleware_class: Type[LoggingMiddleware] = LoggingMiddleware
-    """Middleware class to use.
+        if not isinstance(self.request_log_fields, Iterable):
+            raise ImproperlyConfiguredException("request_log_fields must be a valid Iterable")
 
-    Should be a subclass of [starlite.middleware.LoggingMiddleware].
-    """
+        self.response_log_fields = tuple(self.response_log_fields)
+        self.request_log_fields = tuple(self.request_log_fields)
 
     @property
     def middleware(self) -> DefineMiddleware:

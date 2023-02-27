@@ -21,7 +21,7 @@ from starlite.contrib.htmx.response import (
 from starlite.contrib.htmx.utils import HTMXHeaders
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
-from starlite.status_codes import HTTP_200_OK
+from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import create_test_client
 
 
@@ -190,12 +190,7 @@ async def test_trigger_event_response_invalid_after() -> None:
 
     with create_test_client(route_handlers=[handler], request_class=HTMXRequest) as client:
         response = client.get("/")
-        detail = response.json()
-        assert detail["status_code"] == 500
-        assert (
-            detail["detail"]
-            == "ValueError(\"Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.\")"
-        )
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
 
 
 async def test_hx_location_response_success() -> None:
@@ -347,7 +342,7 @@ def test_HTMXTemplate_response_push_url_set_to_false(
         (MakoTemplateEngine, "path: ${request.scope['path']}", "path: /"),
     ),
 )
-def test_HTMXTemplate_response_bad_trigger_params(
+def test_htmx_template_response_bad_trigger_params(
     engine: Any, template: str, expected: str, template_dir: Path
 ) -> None:
     Path(template_dir / "abc.html").write_text(template)
@@ -370,9 +365,7 @@ def test_HTMXTemplate_response_bad_trigger_params(
         ),
     ) as client:
         response = client.get("/")
-        error = response.json()["detail"]
-        assert "ValidationError" in error
-        assert "unexpected value; permitted: 'receive', 'settle', 'swap', None" in error
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert response.headers.get(HTMXHeaders.PUSH_URL) is None
         assert response.headers.get(HTMXHeaders.RE_SWAP) is None
         assert response.headers.get(HTMXHeaders.RE_TARGET) is None

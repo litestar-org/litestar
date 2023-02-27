@@ -1,7 +1,9 @@
-from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Dict, Generic, Literal, Optional, Type, Union
+from __future__ import annotations
 
-from pydantic import BaseConfig, BaseModel, Extra
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Literal
+
 from pydantic_openapi_schema.v3_1_0 import (
     Components,
     OAuthFlow,
@@ -10,49 +12,64 @@ from pydantic_openapi_schema.v3_1_0 import (
     SecurityScheme,
 )
 
+from starlite.connection import ASGIConnection
 from starlite.contrib.jwt.jwt_token import Token
 from starlite.contrib.jwt.middleware import (
     JWTAuthenticationMiddleware,
     JWTCookieAuthenticationMiddleware,
 )
 from starlite.datastructures import Cookie
+from starlite.di import Provide
 from starlite.enums import MediaType
 from starlite.middleware import DefineMiddleware
 from starlite.security.base import AbstractSecurityConfig, UserType
 from starlite.status_codes import HTTP_201_CREATED
-from starlite.types import Empty
+from starlite.types import (
+    ControllerRouterHandler,
+    Empty,
+    Guard,
+    Scopes,
+    SyncOrAsyncUnion,
+    TypeEncodersMap,
+)
 
 if TYPE_CHECKING:
     from starlite import Response
 
 
-class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
-    """JWT Authentication Configuration.
+class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
+    """Base class for JWT Auth backends"""
 
-    This class is the main entry point to the library, and it includes methods to create the middleware, provide login
-    functionality, and create OpenAPI documentation.
-    """
-
-    algorithm: str = "HS256"
-    """Algorithm to use for JWT hashing."""
-    auth_header: str = "Authorization"
-    """Request header key from which to retrieve the token.
-
-    E.g. ``Authorization`` or 'X-Api-Key'.
-    """
-    default_token_expiration: timedelta = timedelta(days=1)
-    """The default value for token expiration."""
     token_secret: str
     """Key with which to generate the token hash.
 
     Notes:
         - This value should be kept as a secret and the standard practice is to inject it into the environment.
     """
-    openapi_security_scheme_name: str = "BearerToken"
+    retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Any | None]]
+    """Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.
+
+    Notes:
+        - User and Auth can be any arbitrary values specified by the security backend.
+        - The User and Auth values will be set by the middleware as ``scope["user"]`` and ``scope["auth"]`` respectively.
+          Once provided, they can access via the ``connection.user`` and ``connection.auth`` properties.
+        - The callable can be sync or async. If it is sync, it will be wrapped to support async.
+
+    """
+    algorithm: str
+    """Algorithm to use for JWT hashing."""
+    auth_header: str
+    """Request header key from which to retrieve the token.
+
+    E.g. ``Authorization`` or 'X-Api-Key'.
+    """
+    default_token_expiration: timedelta
+    """The default value for token expiration."""
+    openapi_security_scheme_name: str
     """The value to use for the OpenAPI security scheme and security requirements."""
-    description: str = "JWT api-key authentication and authorization."
+    description: str
     """Description for the OpenAPI security scheme."""
-    authentication_middleware_class: Type[JWTAuthenticationMiddleware] = JWTAuthenticationMiddleware
+    authentication_middleware_class: type[JWTAuthenticationMiddleware]
     """The authentication middleware class to use.
 
     Must inherit from :class:`JWTAuthenticationMiddleware`
@@ -111,14 +128,14 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         identifier: str,
         *,
         response_body: Any = Empty,
-        response_media_type: Union[str, MediaType] = MediaType.JSON,
+        response_media_type: str | MediaType = MediaType.JSON,
         response_status_code: int = HTTP_201_CREATED,
-        token_expiration: Optional[timedelta] = None,
-        token_issuer: Optional[str] = None,
-        token_audience: Optional[str] = None,
-        token_unique_jwt_id: Optional[str] = None,
+        token_expiration: timedelta | None = None,
+        token_issuer: str | None = None,
+        token_audience: str | None = None,
+        token_unique_jwt_id: str | None = None,
         send_token_as_response_body: bool = False,
-    ) -> "Response[Any]":
+    ) -> Response[Any]:
         """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
 
         Args:
@@ -161,10 +178,10 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
     def create_token(
         self,
         identifier: str,
-        token_expiration: Optional[timedelta] = None,
-        token_issuer: Optional[str] = None,
-        token_audience: Optional[str] = None,
-        token_unique_jwt_id: Optional[str] = None,
+        token_expiration: timedelta | None = None,
+        token_issuer: str | None = None,
+        token_audience: str | None = None,
+        token_unique_jwt_id: str | None = None,
     ) -> str:
         """Create a Token instance from the passed in parameters, persists and returns it.
 
@@ -200,29 +217,137 @@ class JWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         return f"{security.scheme} {encoded_token}" if isinstance(security, SecurityScheme) else encoded_token
 
 
-class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
+@dataclass
+class JWTAuth(Generic[UserType], BaseJWTAuth[UserType]):
+    """JWT Authentication Configuration.
+
+    This class is the main entry point to the library, and it includes methods to create the middleware, provide login
+    functionality, and create OpenAPI documentation.
+    """
+
+    token_secret: str
+    """Key with which to generate the token hash.
+
+    Notes:
+        - This value should be kept as a secret and the standard practice is to inject it into the environment.
+    """
+    retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Any | None]]
+    """Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.
+
+    Notes:
+        - User and Auth can be any arbitrary values specified by the security backend.
+        - The User and Auth values will be set by the middleware as ``scope["user"]`` and ``scope["auth"]`` respectively.
+          Once provided, they can access via the ``connection.user`` and ``connection.auth`` properties.
+        - The callable can be sync or async. If it is sync, it will be wrapped to support async.
+
+    """
+    guards: Iterable[Guard] | None = field(default=None)
+    """An iterable of guards to call for requests, providing authorization functionalities."""
+    exclude: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the authentication middleware."""
+    exclude_opt_key: str = field(default="exclude_from_auth")
+    """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
+    scopes: Scopes | None = field(default=None)
+    """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
+    processed."""
+    route_handlers: Iterable[ControllerRouterHandler] | None = field(default=None)
+    """An optional iterable of route handlers to register."""
+    dependencies: dict[str, Provide] | None = field(default=None)
+    """An optional dictionary of dependency providers."""
+
+    type_encoders: TypeEncodersMap | None = field(default=None)
+    """A mapping of types to callables that transform them into types supported for serialization."""
+
+    algorithm: str = field(default="HS256")
+    """Algorithm to use for JWT hashing."""
+    auth_header: str = field(default="Authorization")
+    """Request header key from which to retrieve the token.
+
+    E.g. ``Authorization`` or 'X-Api-Key'.
+    """
+    default_token_expiration: timedelta = field(default_factory=lambda: timedelta(days=1))
+    """The default value for token expiration."""
+    openapi_security_scheme_name: str = field(default="BearerToken")
+    """The value to use for the OpenAPI security scheme and security requirements."""
+    description: str = field(default="JWT api-key authentication and authorization.")
+    """Description for the OpenAPI security scheme."""
+    authentication_middleware_class: type[JWTAuthenticationMiddleware] = field(default=JWTAuthenticationMiddleware)
+    """The authentication middleware class to use.
+
+    Must inherit from :class:`JWTAuthenticationMiddleware`
+    """
+
+
+@dataclass
+class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
     """JWT Cookie Authentication Configuration.
 
     This class is an alternate entry point to the library, and it includes all the functionality of the ``JWTAuth`` class
     and adds support for passing JWT tokens ``HttpOnly`` cookies.
     """
 
-    key: str = "token"
+    token_secret: str
+    """Key with which to generate the token hash.
+
+    Notes:
+        - This value should be kept as a secret and the standard practice is to inject it into the environment.
+    """
+    retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Any | None]]
+    """Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.
+
+    Notes:
+        - User and Auth can be any arbitrary values specified by the security backend.
+        - The User and Auth values will be set by the middleware as ``scope["user"]`` and ``scope["auth"]`` respectively.
+          Once provided, they can access via the ``connection.user`` and ``connection.auth`` properties.
+        - The callable can be sync or async. If it is sync, it will be wrapped to support async.
+
+    """
+    guards: Iterable[Guard] | None = field(default=None)
+    """An iterable of guards to call for requests, providing authorization functionalities."""
+    exclude: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the authentication middleware."""
+    exclude_opt_key: str = field(default="exclude_from_auth")
+    """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
+    scopes: Scopes | None = field(default=None)
+    """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
+    processed."""
+    route_handlers: Iterable[ControllerRouterHandler] | None = field(default=None)
+    """An optional iterable of route handlers to register."""
+    dependencies: dict[str, Provide] | None = field(default=None)
+    """An optional dictionary of dependency providers."""
+
+    type_encoders: TypeEncodersMap | None = field(default=None)
+    """A mapping of types to callables that transform them into types supported for serialization."""
+
+    algorithm: str = field(default="HS256")
+    """Algorithm to use for JWT hashing."""
+    auth_header: str = field(default="Authorization")
+    """Request header key from which to retrieve the token.
+
+    E.g. ``Authorization`` or 'X-Api-Key'.
+    """
+    default_token_expiration: timedelta = field(default_factory=lambda: timedelta(days=1))
+    """The default value for token expiration."""
+    openapi_security_scheme_name: str = field(default="BearerToken")
+    """The value to use for the OpenAPI security scheme and security requirements."""
+    key: str = field(default="token")
     """Key for the cookie."""
-    path: str = "/"
+    path: str = field(default="/")
     """Path fragment that must exist in the request url for the cookie to be valid.
 
     Defaults to '/'.
     """
-    domain: Optional[str] = None
+    domain: str | None = field(default=None)
     """Domain for which the cookie is valid."""
-    secure: Optional[bool] = None
+    secure: bool | None = field(default=None)
     """Https is required for the cookie."""
-    samesite: Literal["lax", "strict", "none"] = "lax"
+    samesite: Literal["lax", "strict", "none"] = field(default="lax")
     """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``. """
-    description: str = "JWT cookie-based authentication and authorization."
+    description: str = field(default="JWT cookie-based authentication and authorization.")
     """Description for the OpenAPI security scheme."""
-    authentication_middleware_class: Type[JWTCookieAuthenticationMiddleware] = JWTCookieAuthenticationMiddleware
+    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(
+        default=JWTCookieAuthenticationMiddleware
+    )
     """The authentication middleware class to use.
 
     Must inherit from :class:`JWTCookieAuthenticationMiddleware`
@@ -272,14 +397,14 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
         identifier: str,
         *,
         response_body: Any = Empty,
-        response_media_type: Union[str, MediaType] = MediaType.JSON,
+        response_media_type: str | MediaType = MediaType.JSON,
         response_status_code: int = HTTP_201_CREATED,
-        token_expiration: Optional[timedelta] = None,
-        token_issuer: Optional[str] = None,
-        token_audience: Optional[str] = None,
-        token_unique_jwt_id: Optional[str] = None,
+        token_expiration: timedelta | None = None,
+        token_issuer: str | None = None,
+        token_audience: str | None = None,
+        token_unique_jwt_id: str | None = None,
         send_token_as_response_body: bool = False,
-    ) -> "Response[Any]":
+    ) -> Response[Any]:
         """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
 
         Args:
@@ -332,22 +457,22 @@ class JWTCookieAuth(Generic[UserType], JWTAuth[UserType]):
         )
 
 
-class OAuth2Login(BaseModel):
+@dataclass
+class OAuth2Login:
     """OAuth2 Login DTO"""
-
-    class Config(BaseConfig):
-        extra = Extra.allow
 
     access_token: str
     """Valid JWT access token"""
-    refresh_token: Optional[str] = None
-    """Optional valid refresh token JWT"""
-    expires_in: Optional[int] = None
-    """Expiration time of the token in seconds. """
     token_type: str
+    """Type of the OAuth token used"""
+    refresh_token: str | None = field(default=None)
+    """Optional valid refresh token JWT"""
+    expires_in: int | None = field(default=None)
+    """Expiration time of the token in seconds. """
 
 
-class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
+@dataclass
+class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
     """OAUTH2 Schema for Password Bearer Authentication.
 
     This class implements an OAUTH2 authentication flow entry point to the library, and it
@@ -357,12 +482,95 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
     ``token_url`` is the only additional argument that is required, and it should point at your login route
     """
 
+    token_secret: str
+    """Key with which to generate the token hash.
+
+    Notes:
+        - This value should be kept as a secret and the standard practice is to inject it into the environment.
+    """
     token_url: str
     """The URL for retrieving a new token."""
-    oauth_scopes: Optional[Dict[str, str]] = None
+    retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Any | None]]
+    """Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.
+
+    Notes:
+        - User and Auth can be any arbitrary values specified by the security backend.
+        - The User and Auth values will be set by the middleware as ``scope["user"]`` and ``scope["auth"]`` respectively.
+          Once provided, they can access via the ``connection.user`` and ``connection.auth`` properties.
+        - The callable can be sync or async. If it is sync, it will be wrapped to support async.
+
+    """
+    guards: Iterable[Guard] | None = field(default=None)
+    """An iterable of guards to call for requests, providing authorization functionalities."""
+    exclude: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the authentication middleware."""
+    exclude_opt_key: str = field(default="exclude_from_auth")
+    """An identifier to use on routes to disable authentication and authorization checks for a particular route."""
+    scopes: Scopes | None = field(default=None)
+    """ASGI scopes processed by the authentication middleware, if ``None``, both ``http`` and ``websocket`` will be
+    processed."""
+    route_handlers: Iterable[ControllerRouterHandler] | None = field(default=None)
+    """An optional iterable of route handlers to register."""
+    dependencies: dict[str, Provide] | None = field(default=None)
+    """An optional dictionary of dependency providers."""
+
+    type_encoders: TypeEncodersMap | None = field(default=None)
+    """A mapping of types to callables that transform them into types supported for serialization."""
+
+    algorithm: str = field(default="HS256")
+    """Algorithm to use for JWT hashing."""
+    auth_header: str = field(default="Authorization")
+    """Request header key from which to retrieve the token.
+
+    E.g. ``Authorization`` or 'X-Api-Key'.
+    """
+    default_token_expiration: timedelta = field(default_factory=lambda: timedelta(days=1))
+    """The default value for token expiration."""
+    openapi_security_scheme_name: str = field(default="BearerToken")
+    """The value to use for the OpenAPI security scheme and security requirements."""
+    oauth_scopes: dict[str, str] | None = field(default=None)
     """Oauth Scopes available for the token."""
-    description: str = "OAUTH2 password bearer authentication and authorization."
+    key: str = field(default="token")
+    """Key for the cookie."""
+    path: str = field(default="/")
+    """Path fragment that must exist in the request url for the cookie to be valid.
+
+    Defaults to '/'.
+    """
+    domain: str | None = field(default=None)
+    """Domain for which the cookie is valid."""
+    secure: bool | None = field(default=None)
+    """Https is required for the cookie."""
+    samesite: Literal["lax", "strict", "none"] = field(default="lax")
+    """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``. """
+    description: str = field(default="OAUTH2 password bearer authentication and authorization.")
     """Description for the OpenAPI security scheme."""
+    authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(
+        default=JWTCookieAuthenticationMiddleware
+    )
+    """The authentication middleware class to use.
+
+    Must inherit from :class:`JWTCookieAuthenticationMiddleware`
+    """
+
+    @property
+    def middleware(self) -> DefineMiddleware:
+        """Create ``JWTCookieAuthenticationMiddleware`` wrapped in Starlite's ``DefineMiddleware``.
+
+        Returns:
+            An instance of :class:`DefineMiddleware <starlite.middleware.base.DefineMiddleware>`.
+        """
+        return DefineMiddleware(
+            self.authentication_middleware_class,
+            algorithm=self.algorithm,
+            auth_cookie_key=self.key,
+            auth_header=self.auth_header,
+            exclude=self.exclude,
+            exclude_opt_key=self.exclude_opt_key,
+            retrieve_user_handler=self.retrieve_user_handler,
+            scopes=self.scopes,
+            token_secret=self.token_secret,
+        )
 
     @property
     def oauth_flow(self) -> OAuthFlow:
@@ -402,14 +610,14 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
         identifier: str,
         *,
         response_body: Any = Empty,
-        response_media_type: Union[str, MediaType] = MediaType.JSON,
+        response_media_type: str | MediaType = MediaType.JSON,
         response_status_code: int = HTTP_201_CREATED,
-        token_expiration: Optional[timedelta] = None,
-        token_issuer: Optional[str] = None,
-        token_audience: Optional[str] = None,
-        token_unique_jwt_id: Optional[str] = None,
+        token_expiration: timedelta | None = None,
+        token_issuer: str | None = None,
+        token_audience: str | None = None,
+        token_unique_jwt_id: str | None = None,
         send_token_as_response_body: bool = True,
-    ) -> "Response[Any]":
+    ) -> Response[Any]:
         """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
 
         Args:
@@ -454,7 +662,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], JWTCookieAuth[UserType]):
                 expires_in=expires_in,
                 token_type="bearer",
             )
-            body = token_dto.dict()
+            body = asdict(token_dto)
         else:
             body = None
 

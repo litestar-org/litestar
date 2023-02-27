@@ -16,14 +16,16 @@ from uuid import uuid4
 
 from piccolo.conf.apps import Finder
 from piccolo.table import create_db_tables, drop_db_tables
-from pydantic import SecretBytes
 from pytest_lazyfixture import lazy_fixture
 
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.base import BaseSessionBackend
-from starlite.middleware.session.client_side import CookieBackend, CookieBackendConfig
+from starlite.middleware.session.client_side import (
+    ClientSideSessionBackend,
+    CookieBackendConfig,
+)
 from starlite.middleware.session.server_side import (
-    ServerSideBackend,
+    ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
 from starlite.storage.base import Storage
@@ -133,12 +135,12 @@ def storage_backend(request: FixtureRequest) -> Storage:
 
 @pytest.fixture
 def cookie_session_backend_config() -> CookieBackendConfig:
-    return CookieBackendConfig(secret=SecretBytes(urandom(16)))
+    return CookieBackendConfig(secret=urandom(16))
 
 
 @pytest.fixture()
-def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -> CookieBackend:
-    return CookieBackend(config=cookie_session_backend_config)
+def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -> ClientSideSessionBackend:
+    return ClientSideSessionBackend(config=cookie_session_backend_config)
 
 
 @pytest.fixture(
@@ -157,8 +159,8 @@ def server_side_session_config(storage_backend: Storage) -> ServerSideSessionCon
 
 
 @pytest.fixture()
-def server_side_session_backend(server_side_session_config: ServerSideSessionConfig) -> ServerSideBackend:
-    return ServerSideBackend(config=server_side_session_config)
+def server_side_session_backend(server_side_session_config: ServerSideSessionConfig) -> ServerSideSessionBackend:
+    return ServerSideSessionBackend(config=server_side_session_config)
 
 
 @pytest.fixture(
@@ -182,7 +184,9 @@ def session_middleware(session_backend: BaseSessionBackend) -> SessionMiddleware
 
 
 @pytest.fixture
-def cookie_session_middleware(cookie_session_backend: CookieBackend) -> SessionMiddleware[CookieBackend]:
+def cookie_session_middleware(
+    cookie_session_backend: ClientSideSessionBackend,
+) -> SessionMiddleware[ClientSideSessionBackend]:
     return SessionMiddleware(app=mock_asgi_app, backend=cookie_session_backend)
 
 

@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
 import pytest
-from pydantic import ValidationError
 
 from starlite import HttpMethod, MediaType, Starlite, get
 from starlite.config.static_files import StaticFilesConfig
@@ -13,14 +12,19 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
+def test_config_validation_of_directories() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        StaticFilesConfig(path="/static", directories=[])
+
+
 def test_config_validation_of_path(tmpdir: "Path") -> None:
     path = tmpdir / "text.txt"
     path.write_text("content", "utf-8")
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         StaticFilesConfig(path="", directories=[tmpdir])
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         StaticFilesConfig(path="/{param:int}", directories=[tmpdir])
 
 
@@ -29,14 +33,14 @@ def test_config_validation_of_file_system(tmpdir: "Path") -> None:
         def info(self) -> None:
             return
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         StaticFilesConfig(path="/static", directories=[tmpdir], file_system=FSWithoutOpen())
 
     class FSWithoutInfo:
         def open(self) -> None:
             return
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         StaticFilesConfig(path="/static", directories=[tmpdir], file_system=FSWithoutInfo())
 
     class ImplementedFS:
