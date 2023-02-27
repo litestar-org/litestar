@@ -9,6 +9,10 @@ from starlette.status import (
 )
 
 from starlite import Request, Starlite, delete, get, post
+from starlite.middleware.session.server_side import (
+    ServerSideSessionBackend,
+    ServerSideSessionConfig,
+)
 from starlite.security.session_auth import SessionAuth
 from starlite.testing import create_test_client
 from tests import User, UserFactory
@@ -18,9 +22,6 @@ if TYPE_CHECKING:
 
 user_instance = UserFactory.build()
 
-if TYPE_CHECKING:
-    from starlite.middleware.session.server_side import ServerSideSessionConfig
-
 
 def retrieve_user_handler(session_data: Dict[str, Any], _: "ASGIConnection") -> Optional[User]:
     if session_data["id"] == str(user_instance.id):
@@ -28,8 +29,8 @@ def retrieve_user_handler(session_data: Dict[str, Any], _: "ASGIConnection") -> 
     return None
 
 
-def test_authentication(session_backend_config_memory: "ServerSideSessionConfig") -> None:
-    session_auth = SessionAuth[Any](
+def test_authentication(session_backend_config_memory: ServerSideSessionConfig) -> None:
+    session_auth = SessionAuth[Any, ServerSideSessionBackend](
         retrieve_user_handler=retrieve_user_handler,
         exclude=["login"],
         session_backend_config=session_backend_config_memory,
@@ -74,7 +75,7 @@ def test_authentication(session_backend_config_memory: "ServerSideSessionConfig"
 
 
 def test_session_auth_openapi(session_backend_config_memory: "ServerSideSessionConfig") -> None:
-    session_auth = SessionAuth[Any](
+    session_auth = SessionAuth[Any, ServerSideSessionBackend](
         retrieve_user_handler=retrieve_user_handler,
         session_backend_config=session_backend_config_memory,
     )

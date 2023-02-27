@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 from fsspec.implementations.local import LocalFileSystem
-from pydantic import ValidationError
 
 from starlite import get
 from starlite.datastructures import ETag
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response_containers import File
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import RequestFactory, create_test_client
@@ -54,7 +54,7 @@ def test_file_with_passed_in_file_info(tmpdir: "Path") -> None:
 
     with create_test_client(handler) as client:
         response = client.get("/")
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == HTTP_200_OK, response.text
         assert response.text == "content"
         assert response.headers.get("content-disposition") == 'attachment; filename="text.txt"'
 
@@ -125,7 +125,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
         def info(self) -> None:
             return
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         File(
             filename="text.txt",
             path=path,
@@ -136,7 +136,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
         def open(self) -> None:
             return
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         File(
             filename="text.txt",
             path=path,

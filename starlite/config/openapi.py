@@ -1,6 +1,8 @@
-from typing import Dict, List, Literal, Optional, Set, Type, Union, cast
+from __future__ import annotations
 
-from pydantic import AnyUrl, BaseModel
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Literal, cast
+
 from pydantic_openapi_schema.v3_1_0 import (
     Components,
     Contact,
@@ -15,82 +17,84 @@ from pydantic_openapi_schema.v3_1_0 import (
     Tag,
 )
 
-from starlite.config.base_config import BaseConfigModel
 from starlite.openapi.controller import OpenAPIController
 from starlite.openapi.utils import default_operation_id_creator
-from starlite.types.callable_types import OperationIDCreator
+
+if TYPE_CHECKING:
+    from starlite.types.callable_types import OperationIDCreator
 
 
-class OpenAPIConfig(BaseModel):
+@dataclass
+class OpenAPIConfig:
     """Configuration for OpenAPI.
 
     To enable OpenAPI schema generation and serving, pass an instance of this class to the
     :class:`Starlite <starlite.app.Starlite>` constructor using the 'openapi_config' kwargs.
     """
 
-    class Config(BaseConfigModel):
-        pass
-
-    create_examples: bool = False
-    """Generate examples using the pydantic-factories library."""
-    openapi_controller: Type[OpenAPIController] = OpenAPIController
-    """Controller for generating OpenAPI routes.
-
-    Must be subclass of :class:`OpenAPIController <starlite.openapi.controller.OpenAPIController>`.
-    """
     title: str
     """Title of API documentation."""
     version: str
     """API version, e.g. '1.0.0'."""
-    contact: Optional[Contact] = None
+
+    create_examples: bool = field(default=False)
+    """Generate examples using the pydantic-factories library."""
+    openapi_controller: type[OpenAPIController] = field(default_factory=lambda: OpenAPIController)
+    """Controller for generating OpenAPI routes.
+
+    Must be subclass of :class:`OpenAPIController <starlite.openapi.controller.OpenAPIController>`.
+    """
+    contact: Contact | None = field(default=None)
     """API contact information, should be an :class:`Contact <pydantic_openapi_schema.v3_1_0.contact.Contact>` instance."""
-    description: Optional[str] = None
+    description: str | None = field(default=None)
     """API description."""
-    external_docs: Optional[ExternalDocumentation] = None
+    external_docs: ExternalDocumentation | None = field(default=None)
     """Links to external documentation.
 
     Should be an instance of :class:`ExternalDocumentation <pydantic_openapi_schema.v3_1_0.external_documentation.ExternalDocumentation>`.
     """
-    license: Optional[License] = None
+    license: License | None = field(default=None)
     """API Licensing information.
 
     Should be an instance of :class:`License <pydantic_openapi_schema.v3_1_0.license.License>`.
     """
-    security: Optional[List[SecurityRequirement]] = None
+    security: list[SecurityRequirement] | None = field(default=None)
     """API Security requirements information.
 
     Should be an instance of :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>`.
     """
-    components: Optional[Union[Components, List[Components]]] = None
+    components: Components | list[Components] | None = field(default=None)
     """API Components information.
 
     Should be an instance of :class:`Components <pydantic_openapi_schema.v3_10_0.components.Components>` or a list thereof.
     """
-    servers: List[Server] = [Server(url="/")]
+    servers: list[Server] = field(default_factory=lambda: [Server(url="/")])
     """A list of :class:`Server <pydantic_openapi_schema.v3_1_0.server.Server>` instances."""
-    summary: Optional[str] = None
+    summary: str | None = field(default=None)
     """A summary text."""
-    tags: Optional[List[Tag]] = None
+    tags: list[Tag] | None = field(default=None)
     """A list of :class:`Tag <pydantic_openapi_schema.v3_1_0.tag.Tag>` instances."""
-    terms_of_service: Optional[AnyUrl] = None
+    terms_of_service: str | None = field(default=None)
     """URL to page that contains terms of service."""
-    use_handler_docstrings: bool = False
+    use_handler_docstrings: bool = field(default=False)
     """Draw operation description from route handler docstring if not otherwise provided."""
-    webhooks: Optional[Dict[str, Union[PathItem, Reference]]] = None
+    webhooks: dict[str, PathItem | Reference] | None = field(default=None)
     """A mapping of key to either :class:`PathItem <pydantic_openapi_schema.v3_1_0.path_item.PathItem>` or.
 
     :class:`Reference <pydantic_openapi_schema.v3_1_0.reference.Reference>` objects.
     """
     root_schema_site: Literal["redoc", "swagger", "elements"] = "redoc"
     """The static schema generator to use for the "root" path of `/schema/`."""
-    enabled_endpoints: Set[str] = {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml"}
+    enabled_endpoints: set[str] = field(
+        default_factory=lambda: {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml"}
+    )
     """A set of the enabled documentation sites and schema download endpoints."""
     by_alias: bool = True
     """Render pydantic model schema using field aliases, if defined."""
     operation_id_creator: OperationIDCreator = default_operation_id_creator
     """A callable that generates unique operation ids"""
 
-    def to_openapi_schema(self) -> "OpenAPI":
+    def to_openapi_schema(self) -> OpenAPI:
         """Return an ``OpenAPI`` instance from the values stored in ``self``.
 
         Returns:
@@ -122,7 +126,7 @@ class OpenAPIConfig(BaseModel):
                 contact=self.contact,
                 license=self.license,
                 summary=self.summary,
-                termsOfService=self.terms_of_service,
+                termsOfService=self.terms_of_service,  # type: ignore
             ),
             paths={},
         )

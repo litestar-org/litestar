@@ -6,13 +6,13 @@ from time import sleep
 from typing import TYPE_CHECKING, Any, Dict, Generator, Iterator
 
 import pytest
-from pydantic import ValidationError
 from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.responses import Response as StarletteResponse
 
 from starlite import HttpMethod, MediaType, Request, Response, Starlite, get, route
 from starlite.background_tasks import BackgroundTask
 from starlite.datastructures import Cookie, ResponseHeader
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import (
     FileResponse,
     RedirectResponse,
@@ -295,7 +295,7 @@ async def test_to_response_streaming_response(iterator: Any, should_raise: bool,
             }
             assert response.background == background_task
     else:
-        with pytest.raises(ValidationError):
+        with pytest.raises(ImproperlyConfiguredException):
             Stream(iterator=iterator)
 
 

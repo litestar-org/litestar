@@ -1,27 +1,13 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, field
 from time import time
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    Type,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
-from pydantic import BaseModel, validator
-
-from starlite.connection import Request
 from starlite.datastructures import MutableScopeHeaders
 from starlite.enums import ScopeType
 from starlite.exceptions import TooManyRequestsException
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
-from starlite.types import Message, SyncOrAsyncUnion
 from starlite.utils import AsyncCallable
 from starlite.utils.serialization import decode_json, encode_json
 
@@ -29,11 +15,12 @@ if TYPE_CHECKING:
     from typing import Awaitable
 
     from starlite.cache import Cache
-    from starlite.types import ASGIApp, Receive, Scope, Send
+    from starlite.connection import Request
+    from starlite.types import ASGIApp, Message, Receive, Scope, Send, SyncOrAsyncUnion
 
 DurationUnit = Literal["second", "minute", "hour", "day"]
 
-DURATION_VALUES: Dict[DurationUnit, int] = {"second": 1, "minute": 60, "hour": 3600, "day": 86400}
+DURATION_VALUES: dict[DurationUnit, int] = {"second": 1, "minute": 60, "hour": 3600, "day": 86400}
 
 
 @dataclass
@@ -42,7 +29,7 @@ class CacheObject:
 
     __slots__ = ("history", "reset")
 
-    history: List[int]
+    history: list[int]
     reset: int
 
 
@@ -59,9 +46,9 @@ class RateLimitMiddleware(AbstractMiddleware):
         "config",
     )
 
-    cache: "Cache"
+    cache: Cache
 
-    def __init__(self, app: "ASGIApp", config: "RateLimitConfig") -> None:
+    def __init__(self, app: ASGIApp, config: RateLimitConfig) -> None:
         """Initialize ``RateLimitMiddleware``.
 
         Args:
@@ -71,9 +58,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         super().__init__(
             app=app, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key, scopes={ScopeType.HTTP}
         )
-        self.check_throttle_handler = cast(
-            "Optional[Callable[[Request], Awaitable[bool]]]", config.check_throttle_handler
-        )
+        self.check_throttle_handler = cast("Callable[[Request], Awaitable[bool]] | None", config.check_throttle_handler)
         self.config = config
         self.max_requests: int = config.rate_limit[1]
         self.unit: DurationUnit = config.rate_limit[0]
@@ -92,7 +77,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         if not hasattr(self, "cache"):
             self.cache = scope["app"].cache
 
-        request: "Request[Any, Any, Any]" = scope["app"].request_class(scope)
+        request: Request[Any, Any, Any] = scope["app"].request_class(scope)
         if await self.should_check_request(request=request):
             key = self.cache_key_from_request(request=request)
             cache_object = await self.retrieve_cached_history(key)
@@ -108,7 +93,7 @@ class RateLimitMiddleware(AbstractMiddleware):
 
         await self.app(scope, receive, send)
 
-    def create_send_wrapper(self, send: "Send", cache_object: CacheObject) -> "Send":
+    def create_send_wrapper(self, send: Send, cache_object: CacheObject) -> Send:
         """Create a ``send`` function that wraps the original send to inject response headers.
 
         Args:
@@ -137,7 +122,7 @@ class RateLimitMiddleware(AbstractMiddleware):
 
         return send_wrapper
 
-    def cache_key_from_request(self, request: "Request[Any, Any, Any]") -> str:
+    def cache_key_from_request(self, request: Request[Any, Any, Any]) -> str:
         """Get a cache-key from a ``Request``
 
         Args:
@@ -206,7 +191,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             return await self.check_throttle_handler(request)
         return True
 
-    def create_response_headers(self, cache_object: CacheObject) -> Dict[str, str]:
+    def create_response_headers(self, cache_object: CacheObject) -> dict[str, str]:
         """Create ratelimit response headers.
 
         Notes:
@@ -230,44 +215,37 @@ class RateLimitMiddleware(AbstractMiddleware):
         }
 
 
-class RateLimitConfig(BaseModel):
+@dataclass
+class RateLimitConfig:
     """Configuration for ``RateLimitMiddleware``"""
 
-    rate_limit: Tuple[DurationUnit, int]
+    rate_limit: tuple[DurationUnit, int]
     """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
-    exclude: Optional[Union[str, List[str]]] = None
+    exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the rate limiting middleware."""
-    exclude_opt_key: Optional[str] = None
+    exclude_opt_key: str | None = field(default=None)
     """An identifier to use on routes to disable rate limiting for a particular route."""
-    check_throttle_handler: Optional[Callable[[Request[Any, Any, Any]], SyncOrAsyncUnion[bool]]] = None
+    check_throttle_handler: Callable[[Request[Any, Any, Any]], SyncOrAsyncUnion[bool]] | None = field(default=None)
     """Handler callable that receives the request instance, returning a boolean dictating whether or not the request
     should be checked for rate limiting.
     """
-    middleware_class: Type[RateLimitMiddleware] = RateLimitMiddleware
+    middleware_class: type[RateLimitMiddleware] = field(default=RateLimitMiddleware)
     """The middleware class to use."""
-    set_rate_limit_headers: bool = True
+    set_rate_limit_headers: bool = field(default=True)
     """Boolean dictating whether to set the rate limit headers on the response."""
-    rate_limit_policy_header_key: str = "RateLimit-Policy"
+    rate_limit_policy_header_key: str = field(default="RateLimit-Policy")
     """Key to use for the rate limit policy header."""
-    rate_limit_remaining_header_key: str = "RateLimit-Remaining"
+    rate_limit_remaining_header_key: str = field(default="RateLimit-Remaining")
     """Key to use for the rate limit remaining header."""
-    rate_limit_reset_header_key: str = "RateLimit-Reset"
+    rate_limit_reset_header_key: str = field(default="RateLimit-Reset")
     """Key to use for the rate limit reset header."""
-    rate_limit_limit_header_key: str = "RateLimit-Limit"
+    rate_limit_limit_header_key: str = field(default="RateLimit-Limit")
     """Key to use for the rate limit limit header."""
-    cache_key_builder: Optional[Callable[[Request], str]] = None
+    cache_key_builder: Callable[[Request], str] | None = field(default=None)
 
-    @validator("check_throttle_handler")
-    def validate_check_throttle_handler(cls, value: Callable) -> Callable:  # pylint: disable=no-self-argument
-        """Wrap ``check_throttle_handler`` in an ``AsyncCallable``
-
-        Args:
-            value: A callable.
-
-        Returns:
-            An instance of AsyncCallable
-        """
-        return AsyncCallable(value)
+    def __post_init__(self) -> None:
+        if self.check_throttle_handler:
+            self.check_throttle_handler = AsyncCallable(self.check_throttle_handler)  # type: ignore
 
     @property
     def middleware(self) -> DefineMiddleware:

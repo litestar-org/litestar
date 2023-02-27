@@ -1,20 +1,26 @@
+from __future__ import annotations
+
 import binascii
 import contextlib
 import re
 import time
 from base64 import b64decode, b64encode
+from dataclasses import dataclass, field
 from os import urandom
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Type
-
-from pydantic import SecretBytes, validator
+from typing import TYPE_CHECKING, Any, Literal
 
 from starlite.datastructures import MutableScopeHeaders
 from starlite.datastructures.cookie import Cookie
-from starlite.exceptions import MissingDependencyException
-from starlite.types import Empty
+from starlite.exceptions import (
+    ImproperlyConfiguredException,
+    MissingDependencyException,
+)
+from starlite.types import Empty, Scopes
 from starlite.utils.serialization import decode_json, encode_json
 
-from .base import BaseBackendConfig, BaseSessionBackend
+from ...enums import ScopeType
+from ...utils.dataclass import extract_dataclass_fields
+from .base import ONE_DAY_IN_SECONDS, BaseBackendConfig, BaseSessionBackend
 
 try:
     from cryptography.exceptions import InvalidTag
@@ -31,22 +37,22 @@ CHUNK_SIZE = 4096 - 64
 AAD = b"additional_authenticated_data="
 
 
-class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
+class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
     """Cookie backend for SessionMiddleware."""
 
     __slots__ = ("aesgcm", "cookie_re")
 
-    def __init__(self, config: "CookieBackendConfig") -> None:
-        """Initialize ``CookieBackend``.
+    def __init__(self, config: CookieBackendConfig) -> None:
+        """Initialize ``ClientSideSessionBackend``.
 
         Args:
             config: SessionCookieConfig instance.
         """
         super().__init__(config)
-        self.aesgcm = AESGCM(config.secret.get_secret_value())
+        self.aesgcm = AESGCM(config.secret)
         self.cookie_re = re.compile(rf"{self.config.key}(?:-\d+)?")
 
-    def dump_data(self, data: Any, scope: Optional["Scope"] = None) -> List[bytes]:
+    def dump_data(self, data: Any, scope: Scope | None = None) -> list[bytes]:
         """Given serializable data, including pydantic models and numpy types, dump it into a bytes string, encrypt,
         encode and split it into chunks of the desirable size.
 
@@ -68,7 +74,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         encoded = b64encode(nonce + encrypted + AAD + associated_data)
         return [encoded[i : i + CHUNK_SIZE] for i in range(0, len(encoded), CHUNK_SIZE)]
 
-    def load_data(self, data: List[bytes]) -> Dict[str, Any]:
+    def load_data(self, data: list[bytes]) -> dict[str, Any]:
         """Given a list of strings, decodes them into the session object.
 
         Args:
@@ -87,7 +93,7 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
             return self.deserialize_data(decrypted)
         return {}
 
-    def get_cookie_keys(self, connection: "ASGIConnection") -> List[str]:
+    def get_cookie_keys(self, connection: ASGIConnection) -> list[str]:
         """Return a list of cookie-keys from the connection if they match the session-cookie pattern.
 
         Args:
@@ -98,14 +104,20 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         """
         return sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
 
-    def _create_session_cookies(
-        self, data: List[bytes], cookie_params: Optional[Dict[str, Any]] = None
-    ) -> List[Cookie]:
+    def _create_session_cookies(self, data: list[bytes], cookie_params: dict[str, Any] | None = None) -> list[Cookie]:
         """Create a list of cookies containing the session data."""
         if cookie_params is None:
-            cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
+            cookie_params = dict(
+                extract_dataclass_fields(
+                    self.config, exclude_none=True, include=(f for f in Cookie.__dict__ if f not in ("key", "secret"))
+                )
+            )
         return [
-            Cookie(value=datum.decode("utf-8"), key=f"{self.config.key}-{i}", **cookie_params)
+            Cookie(
+                value=datum.decode("utf-8"),
+                key=f"{self.config.key}-{i}",
+                **cookie_params,
+            )
             for i, datum in enumerate(data)
         ]
 
@@ -132,7 +144,11 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
 
         if scope_session and scope_session is not Empty:
             data = self.dump_data(scope_session, scope=scope)
-            cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "key"})
+            cookie_params = dict(
+                extract_dataclass_fields(
+                    self.config, exclude_none=True, include=(f for f in Cookie.__dict__ if f not in ("key", "secret"))
+                )
+            )
             for cookie in self._create_session_cookies(data, cookie_params):
                 headers.add("Set-Cookie", cookie.to_header(header=""))
             # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
@@ -144,13 +160,19 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
             cookies_to_clear = cookie_keys
 
         for cookie_key in cookies_to_clear:
-            cookie_params = self.config.dict(exclude_none=True, exclude={"secret", "max_age", "key"})
+            cookie_params = dict(
+                extract_dataclass_fields(
+                    self.config,
+                    exclude_none=True,
+                    include=(f for f in Cookie.__dict__ if f not in ("key", "secret", "max_age")),
+                )
+            )
             headers.add(
                 "Set-Cookie",
                 Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
             )
 
-    async def load_from_connection(self, connection: "ASGIConnection") -> Dict[str, Any]:
+    async def load_from_connection(self, connection: "ASGIConnection") -> dict[str, Any]:
         """Load session data from a connection's session-cookies and return it as a dictionary.
 
         Args:
@@ -168,30 +190,55 @@ class CookieBackend(BaseSessionBackend["CookieBackendConfig"]):
         return {}
 
 
-class CookieBackendConfig(BaseBackendConfig):
+@dataclass
+class CookieBackendConfig(BaseBackendConfig[ClientSideSessionBackend]):
     """Configuration for [SessionMiddleware] middleware."""
 
-    _backend_class: Type[CookieBackend] = CookieBackend
+    _backend_class = ClientSideSessionBackend
 
-    secret: SecretBytes
+    secret: bytes
     """A secret key to use for generating an encryption key.
 
     Must have a length of 16 (128 bits), 24 (192 bits) or 32 (256 bits) characters.
     """
+    key: str = field(default="session")
+    """Key to use for the cookie inside the header, e.g. ``session=<data>`` where ``session`` is the cookie key and
+    ``<data>`` is the session data.
 
-    @validator("secret", always=True)
-    def validate_secret(cls, value: SecretBytes) -> SecretBytes:  # pylint: disable=no-self-argument
-        """Ensure that the ``secret`` value is 128, 192 or 256 bits.
+    Notes:
+        - If a session cookie exceeds 4KB in size it is split. In this case the key will be of the format
+          ``session-{segment number}``.
 
-        Args:
-            value: A bytes string.
+    """
+    max_age: int = field(default=ONE_DAY_IN_SECONDS * 14)
+    """Maximal age of the cookie before its invalidated."""
+    scopes: Scopes = field(default_factory=lambda: {ScopeType.HTTP, ScopeType.WEBSOCKET})
+    """Scopes for the middleware - options are ``http`` and ``websocket`` with the default being both"""
+    path: str = field(default="/")
+    """Path fragment that must exist in the request url for the cookie to be valid.
 
-        Raises:
-            ValueError: if the bytes string is of incorrect length.
+    Defaults to ``'/'``.
+    """
+    domain: str | None = field(default=None)
+    """Domain for which the cookie is valid."""
+    secure: bool = field(default=False)
+    """Https is required for the cookie."""
+    httponly: bool = field(default=True)
+    """Forbids javascript to access the cookie via 'Document.cookie'."""
+    samesite: Literal["lax", "strict", "none"] = field(default="lax")
+    """Controls whether or not a cookie is sent with cross-site requests.
 
-        Returns:
-            A bytes string.
-        """
-        if len(value.get_secret_value()) not in {16, 24, 32}:
-            raise ValueError("secret length must be 16 (128 bit), 24 (192 bit) or 32 (256 bit)")
-        return value
+    Defaults to ``lax``.
+    """
+    exclude: str | list[str] | None = field(default=None)
+    """A pattern or list of patterns to skip in the session middleware."""
+    exclude_opt_key: str = field(default="skip_session")
+    """An identifier to use on routes to disable the session middleware for a particular route."""
+
+    def __post_init__(self) -> None:
+        if len(self.key) < 1 or len(self.key) > 256:
+            raise ImproperlyConfiguredException("key must be a string with a length between 1-256")
+        if self.max_age < 1:
+            raise ImproperlyConfiguredException("max_age must be greater than 0")
+        if len(self.secret) not in {16, 24, 32}:
+            raise ImproperlyConfiguredException("secret length must be 16 (128 bit), 24 (192 bit) or 32 (256 bit)")

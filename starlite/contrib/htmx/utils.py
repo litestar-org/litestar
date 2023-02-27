@@ -4,6 +4,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any, Callable
 from urllib.parse import quote
 
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import encode_json
 
 if TYPE_CHECKING:
@@ -53,11 +54,13 @@ def get_trigger_event_headers(trigger_event: TriggerEventType) -> dict[str, Any]
         "settle": HTMXHeaders.TRIGGER_AFTER_SETTLE.value,
         "swap": HTMXHeaders.TRIGGER_AFTER_SWAP.value,
     }
-    trigger_header = after_params.get(trigger_event["after"])
-    if trigger_header is None:
-        raise ValueError("Invalid value for after param. Value must be either 'receive', 'settle' or 'swap'.")
-    val = encode_json({trigger_event["name"]: params}).decode()
-    return {trigger_header: val}
+
+    if trigger_header := after_params.get(trigger_event["after"]):
+        return {trigger_header: encode_json({trigger_event["name"]: params}).decode()}
+
+    raise ImproperlyConfiguredException(
+        "invalid value for 'after' param- allowed values are 'receive', 'settle' or 'swap'."
+    )
 
 
 def get_redirect_header(url: str) -> dict[str, Any]:
