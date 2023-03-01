@@ -1,16 +1,16 @@
- name: Test
+name: Test
 
- on:
-   workflow_call:
-     inputs:
-       python-version:
-         required: true
-         type: string
-       coverage:
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: true
+        type: string
+      coverage:
         required: false
         type: boolean
         default: false
-       os:
+      os:
         required: false
         type: string
         default: "ubuntu-latest"
@@ -18,11 +18,9 @@
 jobs:
   test:
     runs-on: ${{ inputs.os }}
-
     defaults:
       run:
         shell: bash
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -55,7 +53,7 @@ jobs:
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Test
-        if: !inputs.coverage
+        if: ${{ !inputs.coverage }}
         run: |
           source $VENV
           pytest

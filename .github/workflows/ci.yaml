@@ -45,7 +45,6 @@ jobs:
       python-version: "3.11"
       os: ${{ matrix.os }}
 
-
   sonar:
     needs:
       - test
