@@ -2,10 +2,10 @@ from typing import Any, Optional
 
 import pytest
 
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.dto import DTOFactory
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
-from tests.plugins.sql_alchemy_plugin import Activity, Pet
+from tests.contrib.sqlalchemy_1.sql_alchemy_plugin import Activity, Pet
 
 
 @pytest.mark.parametrize(
