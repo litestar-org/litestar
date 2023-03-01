@@ -39,6 +39,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
+alembic = { version = "*", optional = true }
 anyio = ">=3"
 brotli = { version = "*", optional = true }
 click = {version = "*", optional = true}
@@ -60,6 +61,7 @@ python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
 rich = {version = ">=13.0.0", optional = true}
+sqlalchemy = { version = "^2.0", optional = true }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
 
@@ -92,7 +94,7 @@ python-dotenv = "*"
 python-jose = "*"
 redis = "*"
 rich = "*"
-sqlalchemy = "<2.0.0"
+sqlalchemy = "^2.0"
 starlette = "*"
 structlog = "*"
 tortoise-orm = ">=0.17.0"
@@ -126,6 +128,7 @@ jwt = ["python-jose", "cryptography"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
+sqlalchemy = ["sqlalchemy", "alembic"]
 standard = ["click", "jinja2", "jsbeautifier", "picologging", "rich",]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
@@ -230,11 +233,13 @@ all = true
 [tool.pyright]
 include = ["starlite", "tests", "examples"]
 exclude = [
-    "starlite/plugins",
-    "tests/plugins",
+    "examples/plugins/sqlalchemy_plugin",
+    "starlite/contrib/sqlalchemy_1",
     "starlite/openapi",
+    "starlite/plugins",
+    "tests/contrib/sqlalchemy_1",
     "tests/openapi",
-    "examples/plugins/sqlalchemy_plugin"
+    "tests/plugins",
 ]
 
 [tool.slotscheck]

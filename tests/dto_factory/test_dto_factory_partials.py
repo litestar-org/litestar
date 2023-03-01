@@ -1,6 +1,6 @@
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.dto import DTOFactory
 from starlite.partial import Partial
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from tests import Car, Person
 
 dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])

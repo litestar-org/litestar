@@ -7,7 +7,8 @@ from sqlalchemy.orm import Mapped, declarative_base
 from starlite import Starlite, get, post
 from starlite.dto import DTOFactory
 from starlite.exceptions import HTTPException
-from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
+from starlite.contrib.sqlalchemy_1.config import SQLAlchemyConfig
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.status_codes import HTTP_404_NOT_FOUND
 
 Base = declarative_base()
