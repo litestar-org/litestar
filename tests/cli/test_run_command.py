@@ -17,6 +17,11 @@ from tests.cli import (
 from tests.cli.conftest import CreateAppFileFixture
 
 
+@pytest.fixture()
+def mock_subprocess_run(mocker: MockerFixture) -> MagicMock:
+    return mocker.patch("starlite.cli.commands.core.subprocess.run")
+
+
 @pytest.mark.parametrize("set_in_env", [True, False])
 @pytest.mark.parametrize("custom_app_file", [Path("my_app.py"), None])
 @pytest.mark.parametrize("host", ["0.0.0.0", None])
@@ -27,7 +32,6 @@ def test_run_command(
     mocker: MockerFixture,
     runner: CliRunner,
     monkeypatch: MonkeyPatch,
-    mock_uvicorn_run: MagicMock,
     reload: Optional[bool],
     port: Optional[int],
     host: Optional[str],
@@ -35,6 +39,7 @@ def test_run_command(
     custom_app_file: Optional[Path],
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
+    mock_subprocess_run: MagicMock,
 ) -> None:
     mock_show_app_info = mocker.patch("starlite.cli.commands.core.show_app_info")
 
@@ -82,9 +87,14 @@ def test_run_command(
     assert result.exception is None
     assert result.exit_code == 0
 
-    mock_uvicorn_run.assert_called_once_with(
-        f"{path.stem}:app", reload=reload, port=port, host=host, factory=False, workers=web_concurrency
-    )
+    expected_args = ["uvicorn", f"{path.stem}:app", f"--host={host}", f"--port={port}"]
+    if reload:
+        expected_args.append("--reload")
+    if web_concurrency:
+        expected_args.append(f"--workers={web_concurrency}")
+
+    mock_subprocess_run.assert_called_once()
+    assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
     mock_show_app_info.assert_called_once()
 
 
@@ -99,7 +109,7 @@ def test_run_command(
 )
 def test_run_command_with_autodiscover_app_factory(
     runner: CliRunner,
-    mock_uvicorn_run: MagicMock,
+    mock_subprocess_run: MagicMock,
     file_name: str,
     file_content: str,
     factory_name: str,
@@ -113,14 +123,21 @@ def test_run_command_with_autodiscover_app_factory(
     assert result.exception is None
     assert result.exit_code == 0
 
-    mock_uvicorn_run.assert_called_once_with(
-        f"{path.stem}:{factory_name}", reload=False, port=8000, host="127.0.0.1", factory=True, workers=1
-    )
+    expected_args = [
+        "uvicorn",
+        f"{path.stem}:{factory_name}",
+        "--host=127.0.0.1",
+        "--port=8000",
+        "--factory",
+        "--workers=1",
+    ]
+    mock_subprocess_run.assert_called_once()
+    assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
 
 
 def test_run_command_with_app_factory(
     runner: CliRunner,
-    mock_uvicorn_run: MagicMock,
+    mock_subprocess_run: MagicMock,
     create_app_file: CreateAppFileFixture,
 ) -> None:
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
@@ -130,12 +147,24 @@ def test_run_command_with_app_factory(
     assert result.exception is None
     assert result.exit_code == 0
 
-    mock_uvicorn_run.assert_called_once_with(
-        f"{app_path}", reload=False, port=8000, host="127.0.0.1", factory=True, workers=1
-    )
+    expected_args = [
+        "uvicorn",
+        str(app_path),
+        "--host=127.0.0.1",
+        "--port=8000",
+        "--factory",
+        "--workers=1",
+    ]
+    mock_subprocess_run.assert_called_once()
+    assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
 
 
-def test_run_command_force_debug(app_file: Path, mocker: MockerFixture, runner: CliRunner) -> None:
+def test_run_command_force_debug(
+    app_file: Path,
+    mocker: MockerFixture,
+    runner: CliRunner,
+    mock_subprocess_run: MagicMock,
+) -> None:
     mock_app = MagicMock()
     mocker.patch(
         "starlite.cli.utils._autodiscover_app",

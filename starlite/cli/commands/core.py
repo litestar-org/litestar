@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import inspect
 import multiprocessing
+import subprocess
+from typing import Any
 
 import click
 from click import command, option
@@ -11,6 +13,18 @@ from starlite import Starlite
 from starlite.cli.utils import StarliteCLIException, StarliteEnv, console, show_app_info
 from starlite.routes import HTTPRoute, WebSocketRoute
 from starlite.utils.helpers import unwrap_partial
+
+
+def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
+    process_args = []
+    for arg, value in args.items():
+        if isinstance(value, bool):
+            if value:
+                process_args.append(f"--{arg}")
+        else:
+            process_args.append(f"--{arg}={value}")
+
+    return process_args
 
 
 @command(name="info")
@@ -52,7 +66,7 @@ def run_command(
     """
 
     try:
-        import uvicorn
+        pass
     except ImportError:
         raise StarliteCLIException("Uvicorn needs to be installed to run an app")  # pylint: disable=W0707
 
@@ -63,14 +77,18 @@ def run_command(
 
     console.rule("[yellow]Starting server process", align="left")
 
-    uvicorn.run(
-        env.app_path,
-        reload=env.reload or reload,
-        host=env.host or host,
-        port=env.port or port,
-        workers=env.web_concurrency or web_concurrency,
-        factory=env.is_app_factory,
-    )
+    # invoke uvicorn in a subprocess to be able to use the --reload flag. see
+    # https://github.com/starlite-api/starlite/issues/1191 and https://github.com/encode/uvicorn/issues/1045
+
+    process_args = {
+        "reload": env.reload or reload,
+        "host": env.host or host,
+        "port": env.port or port,
+        "workers": env.web_concurrency or web_concurrency,
+        "factory": env.is_app_factory,
+    }
+
+    subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)
 
 
 @command(name="routes")
