@@ -2,6 +2,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from examples.application_hooks import startup_hooks
+
 from starlite.testing import TestClient
 
 if TYPE_CHECKING:
