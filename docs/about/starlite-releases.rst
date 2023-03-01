@@ -74,20 +74,12 @@ Current version
 
 Maintenance versions
     When a new major version is released, the last *minor* version before it enters
-    maintenance mode. It will receive bugfixes and other critical patches at least until
-    the next major version is released.
-
-LTS versions
-    The *last minor* release of every other *major version* will be an LTS release,
-    guaranteed to be supported for the duration of the next 2 major versions
+    maintenance mode. It will receive bugfixes and other critical patches during the
+    next two release cycles
 
 
 In practice this means that, at any given time, there may be up to 3 currently supported
-releases:
-
-- The current major version
-- The major version preceding the current one
-- The last LTS release
+releases: The current version and the two major versions preceding it.
 
 
 Deprecation policy
