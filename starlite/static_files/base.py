@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from os.path import commonpath, join
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Sequence
 
 from starlite.enums import ScopeType
@@ -37,7 +38,7 @@ class StaticFiles:
              ``attachment`` or ``inline``
         """
         self.adapter = FileSystemAdapter(file_system)
-        self.directories = directories
+        self.directories = tuple(Path(p).resolve() for p in directories)
         self.is_html_mode = is_html_mode
         self.send_as_attachment = send_as_attachment
 

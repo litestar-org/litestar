@@ -1,4 +1,5 @@
 import mimetypes
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -11,8 +12,6 @@ from starlite.testing import create_test_client
 from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from starlite.types import FileSystemProtocol
 
 
@@ -173,3 +172,29 @@ def test_static_files_content_disposition(tmpdir: "Path", send_as_attachment: bo
         response = client.get("/static/static_part/static/test.txt")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-disposition"].startswith(disposition)
+
+
+def test_service_from_relative_path_using_string(tmpdir: "Path") -> None:
+    sub_dir = Path(tmpdir.mkdir("low")).resolve()  # type: ignore
+
+    path = tmpdir / "test.txt"
+    path.write_text("content", "utf-8")
+
+    static_files_config = StaticFilesConfig(path="/static", directories=[f"{sub_dir}/.."])
+    with create_test_client([], static_files_config=[static_files_config]) as client:
+        response = client.get("/static/test.txt")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "content"
+
+
+def test_service_from_relative_path_using_path(tmpdir: "Path") -> None:
+    sub_dir = Path(tmpdir.mkdir("low")).resolve()  # type: ignore
+
+    path = tmpdir / "test.txt"
+    path.write_text("content", "utf-8")
+
+    static_files_config = StaticFilesConfig(path="/static", directories=[Path(f"{sub_dir}/..")])
+    with create_test_client([], static_files_config=[static_files_config]) as client:
+        response = client.get("/static/test.txt")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "content"
