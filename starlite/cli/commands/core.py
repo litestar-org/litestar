@@ -10,7 +10,7 @@ from click import command, option
 from rich.tree import Tree
 
 from starlite import Starlite
-from starlite.cli.utils import StarliteCLIException, StarliteEnv, console, show_app_info
+from starlite.cli.utils import StarliteEnv, console, show_app_info
 from starlite.routes import HTTPRoute, WebSocketRoute
 from starlite.utils.helpers import unwrap_partial
 
@@ -64,11 +64,6 @@ def run_command(
     functions with the name ``create_app`` are considered, or functions that are annotated as returning a ``Starlite``
     instance.
     """
-
-    try:
-        pass
-    except ImportError:
-        raise StarliteCLIException("Uvicorn needs to be installed to run an app")  # pylint: disable=W0707
 
     if debug or env.debug:
         app.debug = True
