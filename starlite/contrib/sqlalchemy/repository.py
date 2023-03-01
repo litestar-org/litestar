@@ -136,15 +136,14 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The list of instances, after filtering applied.
         """
         for filter_ in filters:
-            match filter_:
-                case LimitOffset(limit, offset):
-                    self._apply_limit_offset_pagination(limit, offset)
-                case BeforeAfter(field_name, before, after):
-                    self._filter_on_datetime_field(field_name, before, after)
-                case CollectionFilter(field_name, values):
-                    self._filter_in_collection(field_name, values)
-                case _:
-                    raise RepositoryError(f"Unexpected filter: {filter}")
+            if isinstance(filter_, LimitOffset):
+                self._apply_limit_offset_pagination(filter_.limit, filter_.offset)
+            elif isinstance(filter_, BeforeAfter):
+                self._filter_on_datetime_field(filter_.field_name, filter_.before, filter_.after)
+            elif isinstance(filter_, CollectionFilter):
+                self._filter_in_collection(filter_.field_name, filter_.values)
+            else:
+                raise RepositoryError(f"Unexpected filter: {filter_}")
         self._filter_select_by_kwargs(**kwargs)
 
         with wrap_sqlalchemy_exception():
@@ -244,14 +243,12 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             Instance attached to the session - if `"merge"` strategy, may not be same instance
             that was provided.
         """
-        match strategy:  # noqa: R503
-            case "add":
-                self.session.add(model)
-                return model
-            case "merge":
-                return await self.session.merge(model)
-            case _:
-                raise ValueError("Unexpected value for `strategy`, must be `'add'` or `'merge'`")
+        if strategy == "add":
+            self.session.add(model)
+            return model
+        if strategy == "merge":
+            return await self.session.merge(model)
+        raise ValueError("Unexpected value for `strategy`, must be `'add'` or `'merge'`")
 
     async def _execute(self) -> Result[tuple[ModelT, ...]]:
         return await self.session.execute(self._select)

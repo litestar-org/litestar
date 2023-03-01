@@ -7,12 +7,7 @@ import msgspec
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from pydantic_factories import ModelFactory
-from sqlalchemy import Column
-from sqlalchemy.dialects.postgresql import INTEGER, JSONB, TEXT
-from sqlalchemy.orm import declarative_base
 from typing_extensions import TypedDict
-
-Base = declarative_base()
 
 
 class Species(str, Enum):
@@ -81,17 +76,6 @@ class MsgSpecStructPerson(msgspec.Struct):
     optional: Optional[str]
     complex: Dict[str, List[Dict[str, str]]]
     pets: Optional[List[Pet]]
-
-
-class Car(Base):  # pyright: ignore
-    __tablename__ = "db_cars"
-
-    id = Column(INTEGER, primary_key=True)
-    year = Column(INTEGER)
-    make = Column(TEXT)
-    model = Column(TEXT)
-    horsepower = Column(INTEGER)
-    color_codes = Column(JSONB)
 
 
 class User(BaseModel):

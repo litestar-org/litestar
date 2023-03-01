@@ -1,7 +1,7 @@
 """Repository type definitions."""
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Union
 
 from starlite.contrib.repository.filters import (
     BeforeAfter,
@@ -9,5 +9,5 @@ from starlite.contrib.repository.filters import (
     LimitOffset,
 )
 
-FilterTypes = BeforeAfter | CollectionFilter[Any] | LimitOffset
+FilterTypes = Union[BeforeAfter, CollectionFilter[Any], LimitOffset]
 """Aggregate type alias of the types supported for collection filtering."""
