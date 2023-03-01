@@ -57,7 +57,7 @@ from sqlalchemy.sql.sqltypes import TupleType
 from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.exceptions import ImproperlyConfiguredException
 from tests import Species
-from tests.contrib.sqlalchemy_1.sql_alchemy_plugin import SQLAlchemyBase
+from tests.contrib.sqlalchemy_1.sql_alchemy_plugin.models import SQLAlchemyBase
 
 plugin = SQLAlchemyPlugin()
 
