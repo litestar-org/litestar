@@ -1,5 +1,5 @@
 import json
-from pathlib import PosixPath
+from pathlib import Path
 from typing import Any
 
 import pydantic
@@ -66,7 +66,7 @@ class CustomTuple(tuple):
 
 
 class Model(BaseModel):
-    path: PosixPath = PosixPath("example")
+    path: Path = Path("example")
 
     email_str: pydantic.EmailStr = EmailStr("info@example.org")
     name_email: NameEmail = NameEmail("info", "info@example.org")
