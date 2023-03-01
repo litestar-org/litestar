@@ -2,10 +2,8 @@ from typing import Any, Optional
 
 import pytest
 
-from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.dto import DTOFactory
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
-from tests.contrib.sqlalchemy_1.sql_alchemy_plugin import Activity, Pet
 
 
 @pytest.mark.parametrize(
@@ -14,8 +12,6 @@ from tests.contrib.sqlalchemy_1.sql_alchemy_plugin import Activity, Pet
         [Person, [], {"complex": "ultra"}, [], None],
         [VanillaDataClassPerson, [], {"complex": "ultra"}, [], None],
         [TypedDictPerson, [], {"complex": "ultra"}, [], None],
-        [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()], SQLAlchemyPlugin],
-        [Activity, [], {}, [SQLAlchemyPlugin()], SQLAlchemyPlugin],
     ],
 )
 def test_plugin_registration(

@@ -1,27 +1,18 @@
 from starlite import Starlite, get, post
-from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.dto import DTOFactory
-from tests.contrib.sqlalchemy_1.sql_alchemy_plugin import User
+from tests import Person
 
 
 def test_dto_openapi_generation() -> None:
-    SQLAlchemyDTOFactory = DTOFactory(plugins=[SQLAlchemyPlugin()])
-
-    UserCreateDTO = SQLAlchemyDTOFactory(
-        "UserCreateDTO",
-        User,
-        field_mapping={"hashed_password": ("password", str)},
-    )
-
-    UserReadDTO = SQLAlchemyDTOFactory("UserRead", User, exclude=["hashed_password"])
+    DTO = DTOFactory()("UserCreateDTO", Person, field_mapping={"last_name": ("surname", str)}, exclude=["optional"])
 
     @get(path="/user")
-    def get_user() -> UserReadDTO:  # type: ignore
+    def get_user() -> DTO:  # type: ignore
         ...
 
     @post(path="/user")
-    def create_user(data: UserCreateDTO) -> UserReadDTO:  # type: ignore
+    def create_user(data: DTO) -> DTO:  # type: ignore
         ...
 
-    app = Starlite(route_handlers=[get_user, create_user], plugins=[SQLAlchemyPlugin()])
+    app = Starlite(route_handlers=[get_user, create_user])
     assert app.openapi_schema

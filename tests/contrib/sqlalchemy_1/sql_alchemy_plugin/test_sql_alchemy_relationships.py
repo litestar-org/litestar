@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing_extensions import get_args
 
 from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from tests.contrib.sqlalchemy_1.sql_alchemy_plugin import Company, Pet, User
+from tests.contrib.sqlalchemy_1.sql_alchemy_plugin.models import Company, Pet, User
 
 
 def test_relationship() -> None:

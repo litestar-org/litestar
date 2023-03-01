@@ -1,6 +1,6 @@
 from starlite import Starlite, get, post
 from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from tests.contrib.sqlalchemy_1.sql_alchemy_plugin import User
+from tests.contrib.sqlalchemy_1.sql_alchemy_plugin.models import User
 
 
 @get(path="/user")

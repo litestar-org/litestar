@@ -6,12 +6,10 @@ from typing import Any, Callable, Dict, List
 import pytest
 from pydantic_factories import ModelFactory
 
-from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.dto import DTOFactory
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins.tortoise_orm import TortoiseORMPlugin
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
-from tests.contrib.sqlalchemy_1.sql_alchemy_plugin import Pet
 from tests.plugins.tortoise_orm import Tournament
 
 
@@ -29,7 +27,6 @@ def _get_attribute_value(model_instance: Any, key: str) -> Any:
         [Person, [], {"complex": "ultra"}, []],
         [VanillaDataClassPerson, [], {"complex": "ultra"}, []],
         [TypedDictPerson, [], {"complex": "ultra"}, []],
-        [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()]],
     ],
 )
 def test_conversion_to_model_instance(model: Any, exclude: list, field_mapping: dict, plugins: list) -> None:

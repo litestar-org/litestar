@@ -6,12 +6,10 @@ from pydantic import BaseModel
 from pydantic_factories import ModelFactory
 
 from starlite import post
-from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.dto import DTOFactory
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
-from tests.contrib.sqlalchemy_1.sql_alchemy_plugin import Pet, WildAnimal
 
 
 @pytest.mark.parametrize(
@@ -20,8 +18,6 @@ from tests.contrib.sqlalchemy_1.sql_alchemy_plugin import Pet, WildAnimal
         [Person, ["id"], {"complex": "ultra"}, []],
         [VanillaDataClassPerson, ["id"], {"complex": "ultra"}, []],
         [TypedDictPerson, ["id"], {"complex": "ultra"}, []],
-        [Pet, ["owner"], {"species": "kind"}, [SQLAlchemyPlugin()]],
-        [WildAnimal, None, None, [SQLAlchemyPlugin()]],
     ],
 )
 def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins: list) -> None:
@@ -54,7 +50,6 @@ def test_dto_integration(model: Any, exclude: list, field_mapping: dict, plugins
         [Person, ["id"], {"complex": "ultra"}, {"special": (str, ...)}, []],
         [VanillaDataClassPerson, ["id"], {"complex": "ultra"}, {"special": (str, ...)}, []],
         [TypedDictPerson, ["id"], {"complex": "ultra"}, {"special": (str, ...)}, []],
-        [Pet, ["age"], {"species": "kind"}, {"special": (str, ...)}, [SQLAlchemyPlugin()]],
     ],
 )
 def test_dto_factory(model: Any, exclude: list, field_mapping: dict, field_definitions: dict, plugins: list) -> None:

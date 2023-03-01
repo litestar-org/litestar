@@ -4,9 +4,9 @@ from sqlalchemy import Column, Float, ForeignKey, Integer, String, create_engine
 from sqlalchemy.orm import Mapped, Session, declarative_base, relationship
 
 from starlite import Starlite, get
-from starlite.exceptions import HTTPException
 from starlite.contrib.sqlalchemy_1.config import SQLAlchemyConfig
 from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from starlite.exceptions import HTTPException
 from starlite.status_codes import HTTP_404_NOT_FOUND
 
 engine = create_engine("sqlite+pysqlite://")
