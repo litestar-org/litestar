@@ -207,7 +207,7 @@ no-docstring-rgx = "(__.*__|main|test.*|.*test|.*Test|^_.*)$"
 logging-modules = ["logging", "picologging", "structlog"]
 
 [tool.coverage.run]
-omit = ["*/tests/*"]
+omit = ["*/tests/*", "starlite/contrib/sqlalchemy_1/*"]
 
 [tool.coverage.report]
 exclude_lines = [
