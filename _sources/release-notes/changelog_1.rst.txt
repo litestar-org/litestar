@@ -1,6 +1,11 @@
 1.x Changelog
 =============
 
+1.51.6
+------
+
+- Fix optional query parameter openapi schema generation
+
 1.51.5
 ------
 
@@ -30,7 +35,7 @@
 -------
 
 - fix optional sequence query param
-- fix emory leak in logging middleware
+- fix memory leak in logging middleware
 - add missing CORS headers on exception responses
 - configure logger and force "DEBUG" level in debug mode
 - allow on-app-init hooks to modify initial state
