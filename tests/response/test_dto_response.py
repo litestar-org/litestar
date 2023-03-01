@@ -7,9 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, declarative_base
 
 from starlite import get, post
+from starlite.contrib.sqlalchemy_1.config import SQLAlchemyConfig
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.dto import DTOFactory
 from starlite.exceptions import HTTPException
-from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
 from starlite.testing import create_test_client
 from tests import Person, PersonFactory
@@ -121,13 +122,13 @@ def test_dto_response_with_the_sqla_plugin() -> None:
                 detail=f"User with ID {user_id} not found",
                 status_code=HTTP_404_NOT_FOUND,
             )
-        return user  # type: ignore
+        return user
 
     @get(path="/users/")
     async def get_users(async_session: AsyncSession) -> List[ReadUserDTO]:  # type: ignore
         """Get all users."""
         result = await async_session.scalars(select(User))
-        return result.all()
+        return [ReadUserDTO.from_model_instance(m) for m in result.all()]
 
     with create_test_client(
         route_handlers=[create_user, get_user, get_users],
