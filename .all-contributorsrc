@@ -619,7 +619,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/45509143?v=4",
       "profile": "https://github.com/Alc-Alc",
       "contributions": [
-        "doc"
+        "doc",
+        "code"
       ]
     },
     {
@@ -803,6 +804,15 @@
       "name": "wassaf shahzad",
       "avatar_url": "https://avatars.githubusercontent.com/u/25094157?v=4",
       "profile": "https://github.com/wassafshahzad",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "nilsso",
+      "name": "Nils Olsson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/567181?v=4",
+      "profile": "http://nilsso.github.io",
       "contributions": [
         "code"
       ]

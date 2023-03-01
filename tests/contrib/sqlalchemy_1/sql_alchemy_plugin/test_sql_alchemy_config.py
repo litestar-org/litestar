@@ -1,21 +1,21 @@
 from typing import Any, Optional
 
 import pytest
-from pydantic import ValidationError
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session, sessionmaker
 
 from starlite import Starlite, get
 from starlite.config.logging import LoggingConfig
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
-from starlite.plugins.sql_alchemy.config import (
+from starlite.contrib.sqlalchemy_1.config import (
     SESSION_SCOPE_KEY,
     SESSION_TERMINUS_ASGI_EVENTS,
     SQLAlchemyConfig,
     SQLAlchemyEngineConfig,
     serializer,
 )
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import RequestFactory, create_test_client
 from starlite.types import Scope
@@ -105,13 +105,13 @@ def test_default_serializer_returns_string() -> None:
 
 
 def test_config_connection_string_or_engine_instance_validation() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         SQLAlchemyConfig(connection_string=None, engine_instance=None)
 
     connection_string = "sqlite:///"
     engine = create_engine(connection_string)
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         SQLAlchemyConfig(connection_string=connection_string, engine_instance=engine)
 
     # these should be OK

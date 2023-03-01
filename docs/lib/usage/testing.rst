@@ -142,7 +142,7 @@ across requests, then you might want to inject or inspect session data outside a
 .. attention::
 
     - The Session Middleware must be enabled in Starlite app provided to the TestClient to use sessions.
-    - If you are using the :class:`CookieBackend <starlite.middleware.session.cookie_backend.CookieBackend>` you need
+    - If you are using the :class:`ClientSideSessionBackend <starlite.middleware.session.cookie_backend.ClientSideSessionBackend>` you need
       to install the ``cryptography`` package. You can do so by installing starlite with e.g. ``pip install starlite[cryptography]``
       or ``poetry add starlite[cryptography]``
 

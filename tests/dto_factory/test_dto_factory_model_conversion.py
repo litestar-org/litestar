@@ -1,18 +1,15 @@
 import sys
 import warnings
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Type, cast
+from typing import Any, Callable, Dict, List
 
 import pytest
 from pydantic_factories import ModelFactory
-from typing_extensions import is_typeddict
 
 from starlite.dto import DTOFactory
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
 from starlite.plugins.tortoise_orm import TortoiseORMPlugin
-from tests import Person, Species, TypedDictPerson, VanillaDataClassPerson
-from tests.plugins.sql_alchemy_plugin import Pet
+from tests import Person, TypedDictPerson, VanillaDataClassPerson
 from tests.plugins.tortoise_orm import Tournament
 
 
@@ -30,7 +27,6 @@ def _get_attribute_value(model_instance: Any, key: str) -> Any:
         [Person, [], {"complex": "ultra"}, []],
         [VanillaDataClassPerson, [], {"complex": "ultra"}, []],
         [TypedDictPerson, [], {"complex": "ultra"}, []],
-        [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()]],
     ],
 )
 def test_conversion_to_model_instance(model: Any, exclude: list, field_mapping: dict, plugins: list) -> None:
@@ -60,7 +56,6 @@ def test_conversion_to_model_instance(model: Any, exclude: list, field_mapping: 
         [Person, ["id"], {"complex": "ultra"}, []],
         [VanillaDataClassPerson, ["id"], {"complex": "ultra"}, []],
         [TypedDictPerson, ["id"], {"complex": "ultra"}, []],
-        [Pet, ["age"], {"species": "kind"}, [SQLAlchemyPlugin()]],
     ],
 )
 def test_conversion_from_model_instance(
@@ -68,23 +63,14 @@ def test_conversion_from_model_instance(
 ) -> None:
     DTO = DTOFactory(plugins=plugins)("MyDTO", model, exclude=exclude, field_mapping=field_mapping)
 
-    if issubclass(model, (Person, VanillaDataClassPerson)) or is_typeddict(model):
-        model_instance = model(
-            first_name="moishe",
-            last_name="zuchmir",
-            id="1",
-            optional="some-value",
-            complex={"key": [{"key": "value"}]},
-            pets=None,
-        )
-    else:
-        model_instance = cast("Type[Pet]", model)(  # pyright: ignore
-            id=1,
-            species=Species.MONKEY,
-            name="Mike",
-            age=3,
-            owner_id=1,
-        )
+    model_instance = model(
+        first_name="moishe",
+        last_name="zuchmir",
+        id="1",
+        optional="some-value",
+        complex={"key": [{"key": "value"}]},
+        pets=None,
+    )
     dto_instance = DTO.from_model_instance(model_instance=model_instance)
     for key in dto_instance.__fields__:
         if key not in DTO.dto_field_mapping:

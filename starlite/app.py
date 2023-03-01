@@ -33,6 +33,7 @@ from starlite.plugins.base import (
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.signature import create_signature_model
+from starlite.static_files.base import StaticFiles
 from starlite.types import Empty
 from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import (
@@ -42,6 +43,7 @@ from starlite.utils import (
     join_paths,
     unique,
 )
+from starlite.utils.dataclass import extract_dataclass_fields
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -296,7 +298,8 @@ class Starlite(Router):
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.asgi_router = ASGIRouter(app=self)
 
-        logging_config = logging_config if logging_config is not Empty else LoggingConfig() if debug else None
+        if logging_config is Empty:
+            logging_config = LoggingConfig()
 
         config = AppConfig(
             after_exception=list(after_exception or []),
@@ -322,7 +325,7 @@ class Starlite(Router):
             guards=list(guards or []),
             initial_state=dict(initial_state or {}),
             listeners=list(listeners or []),
-            logging_config=logging_config,  # type: ignore[arg-type]
+            logging_config=cast("BaseLoggingConfig | None", logging_config),
             middleware=list(middleware or []),
             multipart_form_part_limit=multipart_form_part_limit,
             on_shutdown=list(on_shutdown or []),
@@ -462,7 +465,7 @@ class Starlite(Router):
         Returns:
             An instance of ``Starlite`` application.
         """
-        return cls(**dict(config))
+        return cls(**dict(extract_dataclass_fields(config)))
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """Register a route handler on the app.
@@ -633,7 +636,6 @@ class Starlite(Router):
         Returns:
             A url path to the asset.
         """
-        from starlite.static_files.base import StaticFiles
 
         handler_index = self.get_handler_index_by_name(name)
         if handler_index is None:

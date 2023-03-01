@@ -6,10 +6,10 @@ from pydantic_factories.value_generators.primitives import (
 )
 
 from starlite import get, post
-from starlite.plugins.sql_alchemy import SQLAlchemyPlugin
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.testing import create_test_client
-from tests.plugins.sql_alchemy_plugin import Company
+from tests.contrib.sqlalchemy_1.sql_alchemy_plugin.models import Company
 
 companies = [
     Company(id=i, name=create_random_string(min_length=5, max_length=20), worth=create_random_float(minimum=1))

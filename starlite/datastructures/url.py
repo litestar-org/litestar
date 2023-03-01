@@ -110,13 +110,15 @@ class URL:
     @property
     def _url(self) -> str:
         if not self._parsed_url:
-            self._parsed_url = urlunsplit(
-                SplitResult(
-                    scheme=self.scheme,
-                    netloc=self.netloc,
-                    path=self.path,
-                    fragment=self.fragment,
-                    query=self.query,
+            self._parsed_url = str(
+                urlunsplit(
+                    SplitResult(
+                        scheme=self.scheme,
+                        netloc=self.netloc,
+                        path=self.path,
+                        fragment=self.fragment,
+                        query=self.query,
+                    )
                 )
             )
         return self._parsed_url

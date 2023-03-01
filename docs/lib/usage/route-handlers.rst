@@ -244,7 +244,7 @@ code clearer and simpler.
 
 Furthermore, in the OpenAPI specification each unique combination of http verb (e.g. "GET", "POST" etc.) and path is
 regarded as a distinct `operation <https://spec.openapis.org/oas/latest.html#operation-object>`_\ , and each operation
-should be distinguished by a unique ``operationId`` and optimally also have a ``summary`` and ``description`` sections.
+should be distinguished by a unique ``operation_id`` and optimally also have a ``summary`` and ``description`` sections.
 
 As such, using the ``route`` decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.

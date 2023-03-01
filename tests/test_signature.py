@@ -68,7 +68,7 @@ def test_create_function_signature_model_parameter_parsing() -> None:
         pass
 
     model = create_signature_model(my_fn.fn.value, [], set())
-    fields = model.fields()
+    fields = model.fields
     assert fields["a"].field_type is int
     assert not fields["a"].is_optional
     assert fields["b"].field_type is str
@@ -204,8 +204,8 @@ def test_signature_field_is_non_string_iterable() -> None:
 
     model = create_signature_model(fn, plugins=[], dependency_name_set=set())
 
-    assert model.signature_fields["a"].is_non_string_iterable
-    assert model.signature_fields["b"].is_non_string_iterable
+    assert model.fields["a"].is_non_string_iterable
+    assert model.fields["b"].is_non_string_iterable
 
 
 def test_signature_field_is_non_string_sequence() -> None:
@@ -214,5 +214,5 @@ def test_signature_field_is_non_string_sequence() -> None:
 
     model = create_signature_model(fn, plugins=[], dependency_name_set=set())
 
-    assert model.signature_fields["a"].is_non_string_sequence
-    assert model.signature_fields["b"].is_non_string_sequence
+    assert model.fields["a"].is_non_string_sequence
+    assert model.fields["b"].is_non_string_sequence

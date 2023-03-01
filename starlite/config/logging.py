@@ -1,22 +1,11 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+from dataclasses import asdict, dataclass, field
 from importlib.util import find_spec
 from logging import INFO
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Type,
-    Union,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
-from pydantic import BaseModel, Field, validator
-
-from starlite.config.base_config import BaseConfigModel
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
@@ -37,7 +26,7 @@ except ImportError:
     WrappedLogger = Any  # type: ignore
 
 
-default_handlers: Dict[str, Dict[str, Any]] = {
+default_handlers: dict[str, dict[str, Any]] = {
     "console": {
         "class": "logging.StreamHandler",
         "level": "DEBUG",
@@ -50,7 +39,7 @@ default_handlers: Dict[str, Dict[str, Any]] = {
     },
 }
 
-default_picologging_handlers: Dict[str, Dict[str, Any]] = {
+default_picologging_handlers: dict[str, dict[str, Any]] = {
     "console": {
         "class": "picologging.StreamHandler",
         "level": "DEBUG",
@@ -64,7 +53,7 @@ default_picologging_handlers: Dict[str, Dict[str, Any]] = {
 }
 
 
-def get_default_handlers() -> Dict[str, Dict[str, Any]]:
+def get_default_handlers() -> dict[str, dict[str, Any]]:
     """Return the default logging handlers for the config.
 
     Returns:
@@ -75,7 +64,7 @@ def get_default_handlers() -> Dict[str, Dict[str, Any]]:
     return default_handlers
 
 
-def get_logger_placeholder(_: str) -> "NoReturn":  # pragma: no cover
+def get_logger_placeholder(_: str) -> NoReturn:  # pragma: no cover
     """Raise an `ImproperlyConfiguredException."""
     raise ImproperlyConfiguredException(
         "To use 'app.get_logger', 'request.get_logger' or 'socket.get_logger' pass 'logging_config' to the Starlite constructor"
@@ -88,7 +77,7 @@ class BaseLoggingConfig(ABC):  # pragma: no cover
     __slots__ = ()
 
     @abstractmethod
-    def configure(self) -> "GetLogger":
+    def configure(self) -> GetLogger:
         """Return logger with the given configuration.
 
         Returns:
@@ -97,92 +86,70 @@ class BaseLoggingConfig(ABC):  # pragma: no cover
         raise NotImplementedError("abstract method")
 
 
-class LoggingConfig(BaseLoggingConfig, BaseModel):
+@dataclass
+class LoggingConfig(BaseLoggingConfig):
     """Configuration class for standard logging.
 
     Notes:
         - If 'picologging' is installed it will be used by default.
     """
 
-    class Config(BaseConfigModel):
-        pass
-
-    version: Literal[1] = 1
+    version: Literal[1] = field(default=1)
     """The only valid value at present is 1."""
-    incremental: bool = False
+    incremental: bool = field(default=False)
     """Whether the configuration is to be interpreted as incremental to the existing configuration.
 
     Notes:
         - This option is ignored for 'picologging'
     """
-    disable_existing_loggers: bool = False
+    disable_existing_loggers: bool = field(default=False)
     """Whether any existing non-root loggers are to be disabled."""
-    filters: Optional[Dict[str, Dict[str, Any]]] = None
+    filters: dict[str, dict[str, Any]] | None = field(default=None)
     """A dict in which each key is a filter id and each value is a dict describing how to configure the corresponding
     Filter instance.
     """
-    propagate: bool = True
+    propagate: bool = field(default=True)
     """If messages must propagate to handlers higher up the logger hierarchy from this logger."""
-    formatters: Dict[str, Dict[str, Any]] = {
-        "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
-    }
-    handlers: Dict[str, Dict[str, Any]] = Field(default_factory=get_default_handlers)
+    formatters: dict[str, dict[str, Any]] = field(
+        default_factory=lambda: {
+            "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
+        }
+    )
+    handlers: dict[str, dict[str, Any]] = field(default_factory=get_default_handlers)
     """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding
     Handler instance.
     """
-    loggers: Dict[str, Dict[str, Any]] = {
-        "starlite": {"level": "INFO", "handlers": ["queue_listener"], "propagate": False},
-    }
+    loggers: dict[str, dict[str, Any]] = field(
+        default_factory=lambda: {
+            "starlite": {"level": "INFO", "handlers": ["queue_listener"], "propagate": False},
+        }
+    )
     """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding
     Logger instance.
     """
-    root: Dict[str, Union[Dict[str, Any], List[Any], str]] = {
-        "handlers": ["queue_listener"],
-        "level": "INFO",
-    }
+    root: dict[str, dict[str, Any] | list[Any] | str] = field(
+        default_factory=lambda: {
+            "handlers": ["queue_listener"],
+            "level": "INFO",
+        }
+    )
     """This will be the configuration for the root logger.
 
     Processing of the configuration will be as for any logger, except that the propagate setting will not be applicable.
     """
 
-    @validator("handlers", always=True)
-    def validate_handlers(  # pylint: disable=no-self-argument
-        cls, value: Dict[str, Dict[str, Any]]
-    ) -> Dict[str, Dict[str, Any]]:
-        """Ensure that 'queue_listener' is always set.
+    def __post_init__(self) -> None:
+        if "queue_listener" not in self.handlers:
+            self.handlers["queue_listener"] = get_default_handlers()["queue_listener"]
 
-        Args:
-            value: A dict of route handlers.
-
-        Returns:
-            A dict of route handlers.
-        """
-        if "queue_listener" not in value:
-            value["queue_listener"] = get_default_handlers()["queue_listener"]
-        return value
-
-    @validator("loggers", always=True)
-    def validate_loggers(  # pylint: disable=no-self-argument
-        cls, value: Dict[str, Dict[str, Any]]
-    ) -> Dict[str, Dict[str, Any]]:
-        """Ensure that the 'starlite' logger is always set.
-
-        Args:
-            value: A dict of loggers.
-
-        Returns:
-            A dict of loggers.
-        """
-
-        if "starlite" not in value:
-            value["starlite"] = {
+        if "starlite" not in self.loggers:
+            self.loggers["starlite"] = {
                 "level": "INFO",
                 "handlers": ["queue_listener"],
                 "propagate": False,
             }
-        return value
 
-    def configure(self) -> "GetLogger":
+    def configure(self) -> GetLogger:
         """Return logger with the given configuration.
 
         Returns:
@@ -195,17 +162,17 @@ class LoggingConfig(BaseLoggingConfig, BaseModel):
             except ImportError as e:  # pragma: no cover
                 raise MissingDependencyException("picologging is not installed") from e
 
-            values = self.dict(exclude_none=True, exclude={"incremental"})
+            values = {k: v for k, v in asdict(self).items() if v is not None and k != "incremental"}
         else:
             from logging import config, getLogger  # type: ignore[no-redef, assignment]
 
-            values = self.dict(exclude_none=True)
+            values = {k: v for k, v in asdict(self).items() if v is not None}
 
         config.dictConfig(values)
         return cast("Callable[[str], Logger]", getLogger)
 
 
-def default_structlog_processors() -> Optional[List[Processor]]:  # pyright: ignore
+def default_structlog_processors() -> list[Processor] | None:  # pyright: ignore
     """Set the default processors for structlog.
 
     Returns:
@@ -225,7 +192,7 @@ def default_structlog_processors() -> Optional[List[Processor]]:  # pyright: ign
         return None
 
 
-def default_wrapper_class() -> Optional[Type[BindableLogger]]:  # pyright: ignore
+def default_wrapper_class() -> type[BindableLogger] | None:  # pyright: ignore
     """Set the default wrapper class for structlog.
 
     Returns:
@@ -240,7 +207,7 @@ def default_wrapper_class() -> Optional[Type[BindableLogger]]:  # pyright: ignor
         return None
 
 
-def default_logger_factory() -> Optional[Callable[..., WrappedLogger]]:
+def default_logger_factory() -> Callable[..., WrappedLogger] | None:
     """Set the default logger factory for structlog.
 
     Returns:
@@ -254,25 +221,26 @@ def default_logger_factory() -> Optional[Callable[..., WrappedLogger]]:
         return None
 
 
-class StructLoggingConfig(BaseLoggingConfig, BaseModel):
+@dataclass
+class StructLoggingConfig(BaseLoggingConfig):
     """Configuration class for structlog.
 
     Notes:
         - requires 'structlog' to be installed.
     """
 
-    processors: Optional[List[Processor]] = Field(default_factory=default_structlog_processors)  # pyright: ignore
+    processors: list[Processor] | None = field(default_factory=default_structlog_processors)  # pyright: ignore
     """Iterable of structlog logging processors."""
-    wrapper_class: Optional[Type[BindableLogger]] = Field(default_factory=default_wrapper_class)  # pyright: ignore
+    wrapper_class: type[BindableLogger] | None = field(default_factory=default_wrapper_class)  # pyright: ignore
     """Structlog bindable logger."""
-    context_class: Optional[Dict[str, Any]] = None
+    context_class: dict[str, Any] | None = None
     """Context class (a 'contextvar' context) for the logger."""
-    logger_factory: Optional[Callable[..., WrappedLogger]] = Field(default_factory=default_logger_factory)
+    logger_factory: Callable[..., WrappedLogger] | None = field(default_factory=default_logger_factory)
     """Logger factory to use."""
-    cache_logger_on_first_use: bool = True
+    cache_logger_on_first_use: bool = field(default=True)
     """Whether to cache the logger configuration and reuse."""
 
-    def configure(self) -> "GetLogger":
+    def configure(self) -> GetLogger:
         """Return logger with the given configuration.
 
         Returns:
@@ -282,7 +250,7 @@ class StructLoggingConfig(BaseLoggingConfig, BaseModel):
             from structlog import configure, get_logger
 
             # we now configure structlog
-            configure(**self.dict(exclude={"standard_lib_logging_config"}))
+            configure(**{k: v for k, v in asdict(self).items() if k != "standard_lib_logging_config"})
             return get_logger
         except ImportError as e:  # pragma: no cover
             raise MissingDependencyException("structlog is not installed") from e

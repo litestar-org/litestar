@@ -1,40 +1,39 @@
-from typing import List, Literal, Optional, Set, Union
+from __future__ import annotations
 
-from pydantic import BaseModel
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Literal
 
-from starlite.config.base_config import BaseConfigModel
-from starlite.types import Method
+if TYPE_CHECKING:
+    from starlite.types import Method
 
 
-class CSRFConfig(BaseModel):
+@dataclass
+class CSRFConfig:
     """Configuration for CSRF (Cross Site Request Forgery) protection.
 
     To enable CSRF protection, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor using
     the 'csrf_config' key.
     """
 
-    class Config(BaseConfigModel):
-        pass
-
     secret: str
     """A string that is used to create an HMAC to sign the CSRF token."""
-    cookie_name: str = "csrftoken"
+    cookie_name: str = field(default="csrftoken")
     """The CSRF cookie name."""
-    cookie_path: str = "/"
+    cookie_path: str = field(default="/")
     """The CSRF cookie path."""
-    header_name: str = "x-csrftoken"
+    header_name: str = field(default="x-csrftoken")
     """The header that will be expected in each request."""
-    cookie_secure: bool = False
+    cookie_secure: bool = field(default=False)
     """A boolean value indicating whether to set the ``Secure`` attribute on the cookie."""
-    cookie_httponly: bool = False
+    cookie_httponly: bool = field(default=False)
     """A boolean value indicating whether to set the ``HttpOnly`` attribute on the cookie."""
-    cookie_samesite: Literal["lax", "strict", "none"] = "lax"
+    cookie_samesite: Literal["lax", "strict", "none"] = field(default="lax")
     """The value to set in the ``SameSite`` attribute of the cookie."""
-    cookie_domain: Optional[str] = None
+    cookie_domain: str | None = field(default=None)
     """Specifies which hosts can receive the cookie."""
-    safe_methods: Set[Method] = {"GET", "HEAD"}
+    safe_methods: set[Method] = field(default_factory=lambda: {"GET", "HEAD"})
     """A set of "safe methods" that can set the cookie."""
-    exclude: Optional[Union[str, List[str]]] = None
+    exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the CSRF middleware."""
     exclude_from_csrf_key: str = "exclude_from_csrf"
     """An identifier to use on routes to disable CSRF for a particular route."""

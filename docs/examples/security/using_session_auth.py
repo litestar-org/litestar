@@ -7,7 +7,10 @@ from starlite import Request, Starlite, get, post
 from starlite.config.openapi import OpenAPIConfig
 from starlite.connection import ASGIConnection
 from starlite.exceptions import NotAuthorizedException
-from starlite.middleware.session.server_side import ServerSideSessionConfig
+from starlite.middleware.session.server_side import (
+    ServerSideSessionBackend,
+    ServerSideSessionConfig,
+)
 from starlite.security.session_auth import SessionAuth
 from starlite.storage.memory import MemoryStorage
 
@@ -121,7 +124,7 @@ openapi_config = OpenAPIConfig(
     version="1.0.0",
 )
 
-session_auth = SessionAuth[User](
+session_auth = SessionAuth[User, ServerSideSessionBackend](
     retrieve_user_handler=retrieve_user_handler,
     # we must pass a config for a session backend.
     # all session backends are supported

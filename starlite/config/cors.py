@@ -1,61 +1,53 @@
+from __future__ import annotations
+
 import re
+from dataclasses import dataclass, field
 from functools import cached_property
-from typing import Dict, List, Literal, Optional, Pattern, Union
+from typing import TYPE_CHECKING, Literal, Pattern
 
-from pydantic import BaseModel, validator
-
-from starlite.config.base_config import BaseConfigModel
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
-from starlite.types import Method
+
+if TYPE_CHECKING:
+    from starlite.types import Method
 
 
-class CORSConfig(BaseModel):
+@dataclass
+class CORSConfig:
     """Configuration for CORS (Cross-Origin Resource Sharing).
 
     To enable CORS, pass an instance of this class to the :class:`Starlite <starlite.app.Starlite>` constructor using the
     'cors_config' key.
     """
 
-    class Config(BaseConfigModel):
-        keep_untouched = (cached_property,)
-
-    allow_origins: List[str] = ["*"]
+    allow_origins: list[str] = field(default_factory=lambda: ["*"])
     """List of origins that are allowed.
 
     Can use '*' in any component of the path, e.g. 'domain.*'. Sets the 'Access-Control-Allow-Origin' header.
     """
-    allow_methods: List[Union[Literal["*"], Method]] = ["*"]
+    allow_methods: list[Literal["*"] | Method] = field(default_factory=lambda: ["*"])
     """List of allowed HTTP methods.
 
     Sets the 'Access-Control-Allow-Methods' header.
     """
-    allow_headers: List[str] = ["*"]
+    allow_headers: list[str] = field(default_factory=lambda: ["*"])
     """List of allowed headers.
 
     Sets the 'Access-Control-Allow-Headers' header.
     """
-    allow_credentials: bool = False
+    allow_credentials: bool = field(default=False)
     """Boolean dictating whether or not to set the 'Access-Control-Allow-Credentials' header."""
-    allow_origin_regex: Optional[str] = None
+    allow_origin_regex: str | None = field(default=None)
     """Regex to match origins against."""
-    expose_headers: List[str] = []
+    expose_headers: list[str] = field(default_factory=list)
     """List of headers that are exposed via the 'Access-Control-Expose-Headers' header."""
-    max_age: int = 600
+    max_age: int = field(default=600)
     """Response caching TTL in seconds, defaults to 600.
 
     Sets the 'Access-Control-Max-Age' header.
     """
 
-    @validator("allow_headers", always=True)
-    def validate_allow_headers(cls, value: List[str]) -> List[str]:  # pylint: disable=no-self-argument
-        """Ensure that allow headers are all lower cased.
-        Args:
-            value: A list of headers.
-
-        Returns:
-            A list of lower-cased headers.
-        """
-        return [v.lower() for v in value]
+    def __post_init__(self) -> None:
+        self.allow_headers = [v.lower() for v in self.allow_headers]
 
     @cached_property
     def allowed_origins_regex(self) -> Pattern:
@@ -97,13 +89,13 @@ class CORSConfig(BaseModel):
         return "*" in self.allow_headers
 
     @cached_property
-    def preflight_headers(self) -> Dict[str, str]:
+    def preflight_headers(self) -> dict[str, str]:
         """Get cached pre-flight headers.
 
         Returns:
             A dictionary of headers to set on the response object.
         """
-        headers: Dict[str, str] = {"Access-Control-Max-Age": str(self.max_age)}
+        headers: dict[str, str] = {"Access-Control-Max-Age": str(self.max_age)}
         if self.is_allow_all_origins:
             headers["Access-Control-Allow-Origin"] = "*"
         else:
@@ -125,7 +117,7 @@ class CORSConfig(BaseModel):
         return headers
 
     @cached_property
-    def simple_headers(self) -> Dict[str, str]:
+    def simple_headers(self) -> dict[str, str]:
         """Get cached simple headers.
 
         Returns:

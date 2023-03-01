@@ -1,8 +1,10 @@
+import asyncio
 from typing import TYPE_CHECKING, List
 
 from home.piccolo_app import APP_CONFIG
 from home.tables import Task
-from piccolo.engine import engine_finder
+from piccolo.apps.user.tables import BaseUser
+from piccolo_api.session_auth.tables import SessionsBase
 
 from starlite import Starlite, asgi, delete, get, patch, post
 from starlite.exceptions import MissingDependencyException, NotFoundException
@@ -18,7 +20,7 @@ if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
 
 
-@asgi("/admin", is_mount=True)
+@asgi("/admin/", is_mount=True)
 async def admin(scope: "Scope", receive: "Receive", send: "Send") -> None:
     await create_admin(tables=APP_CONFIG.table_classes)(scope, receive, send)
 
@@ -55,14 +57,23 @@ async def delete_task(task_id: int) -> None:
         await task.remove()
 
 
-async def open_database_connection_pool():
-    engine = engine_finder()
-    await engine.start_connection_pool()
+async def main():
+    # Creating tables
+    await BaseUser.create_table(if_not_exists=True)
+    await SessionsBase.create_table(if_not_exists=True)
+    await Task.create_table(if_not_exists=True)
 
-
-async def close_database_connection_pool():
-    engine = engine_finder()
-    await engine.close_connection_pool()
+    # Creating admin user
+    if not await BaseUser.exists().where(BaseUser.email == "admin@test.com"):
+        user = BaseUser(
+            username="piccolo",
+            password="piccolo123",
+            email="admin@test.com",
+            admin=True,
+            active=True,
+            superuser=True,
+        )
+        await user.save()
 
 
 app = Starlite(
@@ -74,11 +85,11 @@ app = Starlite(
         delete_task,
     ],
     plugins=[PiccoloORMPlugin()],
-    on_startup=[open_database_connection_pool],
-    on_shutdown=[close_database_connection_pool],
 )
 
 if __name__ == "__main__":
+    asyncio.run(main())
+
     try:
         import uvicorn
 
