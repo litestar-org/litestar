@@ -23,67 +23,29 @@ jobs:
           key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Execute Pre-Commit
         run: pre-commit run --show-diff-on-failure --color=always --all-files
+
   test:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.11"]
-        include:
-          - os: ubuntu-latest
-            python-version: "3.8"
-          - os: ubuntu-latest
-            python-version: "3.9"
-          - os: ubuntu-latest
-            python-version: "3.10"
-    defaults:
-      run:
-        shell: bash
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-      - name: Set up python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      - name: Load cached venv
-        if: runner.os != 'Windows'
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: .venv
-          key: v1-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Load cached pip wheels
-        if: runner.os == 'Windows'
-        id: cached-pip-wheels
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache
-          key: cache-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
-      - name: Install dependencies
-        run: poetry install --no-interaction
-      - name: Set pythonpath
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
-      - name: Test
-        if: matrix.python-version != '3.11' || runner.os != 'Linux'
-        run: |
-          source $VENV
-          pytest
-      - name: Test with Coverage
-        if: matrix.python-version == '3.11' && runner.os == 'Linux'
-        run: poetry run pytest docs/examples tests --cov=starlite --cov-report=xml
-      - uses: actions/upload-artifact@v3
-        if: matrix.python-version == '3.11'
-        with:
-          name: coverage-xml
-          path: coverage.xml
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+    uses: ./.github/workflows/test.yaml
+    with:
+      python-version: ${{ matrix.python-version }}
+      coverage: ${{ matrix.python-version == '3.11' }}
+
+  test-platform-compat:
+    if: github.event_name == 'push'
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ["macos-latest", "windows-latest"]
+    uses: ./.github/workflows/test.yaml
+    with:
+      python-version: "3.11"
+      os: ${{ matrix.os }}
+
+
   sonar:
     needs:
       - test
