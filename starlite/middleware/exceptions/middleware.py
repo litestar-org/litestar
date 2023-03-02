@@ -4,7 +4,6 @@ from dataclasses import asdict, dataclass, field
 from inspect import getmro
 from typing import TYPE_CHECKING, Any, Type, cast
 
-from starlite import Response
 from starlite.connection import Request
 from starlite.datastructures import Headers
 from starlite.enums import ScopeType
@@ -14,6 +13,7 @@ from starlite.middleware.exceptions.debug_response import create_debug_response
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 if TYPE_CHECKING:
+    from starlite import Response
     from starlite.app import Starlite
     from starlite.types import (
         ASGIApp,
