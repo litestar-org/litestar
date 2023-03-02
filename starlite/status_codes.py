@@ -115,7 +115,7 @@ WS_1014_BAD_GATEWAY: Literal[1014] = 1014
 WS_1015_TLS_HANDSHAKE: Literal[1015] = 1015
 
 
-__all__ = [
+__all__ = (
     "HTTP_100_CONTINUE",
     "HTTP_101_SWITCHING_PROTOCOLS",
     "HTTP_102_PROCESSING",
@@ -194,4 +194,4 @@ __all__ = [
     "WS_1013_TRY_AGAIN_LATER",
     "WS_1014_BAD_GATEWAY",
     "WS_1015_TLS_HANDSHAKE",
-]
+)

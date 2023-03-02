@@ -26,10 +26,10 @@ if TYPE_CHECKING:
     from starlite.contrib.repository.types import FilterTypes
     from starlite.contrib.sqlalchemy import base
 
-__all__ = [
+__all__ = (
     "SQLAlchemyRepository",
     "ModelT",
-]
+)
 
 T = TypeVar("T")
 ModelT = TypeVar("ModelT", bound="base.Base | base.AuditBase")

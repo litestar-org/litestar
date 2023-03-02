@@ -9,7 +9,7 @@ from .exceptions import NotFoundError
 if TYPE_CHECKING:
     from .types import FilterTypes
 
-__all__ = ["AbstractRepository"]
+__all__ = ("AbstractRepository",)
 
 T = TypeVar("T")
 RepoT = TypeVar("RepoT", bound="AbstractRepository")

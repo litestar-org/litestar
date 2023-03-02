@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from . import abc, filters, types
 
-__all__ = [
+__all__ = (
     "abc",
     "filters",
     "types",
-]
+)
