@@ -34,14 +34,10 @@ from starlite.openapi.constants import (
 )
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.utils import get_openapi_type_for_complex_type
+from starlite.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from starlite.signature.models import SignatureField
 from starlite.types import Empty
 from starlite.utils import is_dataclass_class_or_instance, is_typed_dict
-from starlite.utils.pagination import (
-    ClassicPagination,
-    CursorPagination,
-    OffsetPagination,
-)
 from starlite.utils.pydantic import (
     convert_dataclass_to_model,
     convert_typeddict_to_model,
