@@ -67,7 +67,6 @@ typing-extensions = "*"
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
-beanie = "*"
 beautifulsoup4 = "*"
 brotli = "*"
 click = "*"
