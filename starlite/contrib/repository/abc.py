@@ -153,7 +153,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         return getattr(item, cls.id_attribute)
 
     @classmethod
-    def set_id_attribute_value(cls, item_id: Any, item: T) -> Any:
+    def set_id_attribute_value(cls, item_id: Any, item: T) -> T:
         """Return the `item` after the ID is set to the appropriate attribute.
 
         Args:

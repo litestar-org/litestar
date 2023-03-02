@@ -33,7 +33,7 @@ def mock_repo() -> SQLAlchemyRepository:
 
         model_type = MagicMock()  # pyright:ignore[reportGeneralTypeIssues]
 
-    return Repo(session=AsyncMock(spec=AsyncSession), select_=MagicMock())
+    return Repo(session=AsyncMock(spec=AsyncSession), base_select=MagicMock())
 
 
 def test_wrap_sqlalchemy_integrity_error() -> None:

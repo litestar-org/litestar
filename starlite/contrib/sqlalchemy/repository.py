@@ -60,16 +60,18 @@ def wrap_sqlalchemy_exception() -> Any:
 class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
     """SQLAlchemy based implementation of the repository interface."""
 
-    def __init__(self, *, session: AsyncSession, select_: Select[tuple[ModelT]] | None = None, **kwargs: Any) -> None:
+    def __init__(
+        self, *, session: AsyncSession, base_select: Select[tuple[ModelT]] | None = None, **kwargs: Any
+    ) -> None:
         """Repository pattern for SQLAlchemy models.
 
         Args:
             session: Session managing the unit-of-work for the operation.
-            select_: To facilitate customization of the underlying select query.
+            base_select: To facilitate customization of the underlying select query.
         """
         super().__init__(**kwargs)
         self.session = session
-        self._select = select(self.model_type) if select_ is None else select_
+        self._select = select(self.model_type) if base_select is None else base_select
 
     async def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
