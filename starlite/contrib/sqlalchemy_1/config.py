@@ -9,8 +9,8 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
+from starlite.serialization import decode_json, encode_json
 from starlite.utils import AsyncCallable
-from starlite.utils.serialization import decode_json, encode_json
 
 try:
     from sqlalchemy import create_engine

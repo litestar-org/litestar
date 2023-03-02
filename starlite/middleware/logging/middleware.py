@@ -18,13 +18,12 @@ from starlite.middleware.logging.extractors import (
     ResponseDataExtractor,
     ResponseExtractorField,
 )
+from starlite.serialization import default_serializer, encode_json
 from starlite.utils import (
-    default_serializer,
     get_serializer_from_scope,
     get_starlite_scope_state,
     set_starlite_scope_state,
 )
-from starlite.utils.serialization import encode_json
 
 if TYPE_CHECKING:
     from starlite.connection import Request

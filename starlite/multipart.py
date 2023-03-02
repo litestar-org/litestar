@@ -32,7 +32,7 @@ from urllib.parse import unquote
 
 from starlite.datastructures.upload_file import UploadFile
 from starlite.exceptions import SerializationException, ValidationException
-from starlite.utils.serialization import decode_json
+from starlite.serialization import decode_json
 
 _token = r"([\w!#$%&'*+\-.^_`|~]+)"
 _quoted = r'"([^"]*)"'

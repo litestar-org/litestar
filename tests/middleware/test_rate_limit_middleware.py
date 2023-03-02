@@ -12,9 +12,9 @@ from starlite.middleware.rate_limit import (
     DurationUnit,
     RateLimitConfig,
 )
+from starlite.serialization import decode_json, encode_json
 from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 from starlite.testing import create_test_client
-from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from pathlib import Path

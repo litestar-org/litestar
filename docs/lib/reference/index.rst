@@ -28,6 +28,7 @@ API reference
     response_containers
     router
     security/index
+    serialization
     storage/index
     template
     testing

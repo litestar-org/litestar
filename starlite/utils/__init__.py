@@ -23,13 +23,6 @@ from .scope import (
     set_starlite_scope_state,
 )
 from .sequence import find_index, unique
-from .serialization import (
-    decode_json,
-    decode_msgpack,
-    default_serializer,
-    encode_json,
-    encode_msgpack,
-)
 from .sync import (
     AsyncCallable,
     AsyncIteratorWrapper,
@@ -49,12 +42,7 @@ __all__ = (
     "convert_dataclass_to_model",
     "convert_typeddict_to_model",
     "create_parsed_model_field",
-    "decode_json",
-    "decode_msgpack",
-    "default_serializer",
     "deprecated",
-    "encode_json",
-    "encode_msgpack",
     "find_index",
     "get_enum_string_value",
     "get_name",

@@ -7,5 +7,4 @@ starlite.utils
     pagination
     predicates
     scope
-    serialization
     sync

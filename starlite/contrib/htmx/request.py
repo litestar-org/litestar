@@ -7,7 +7,7 @@ from urllib.parse import unquote, urlsplit, urlunsplit
 from starlite import Request
 from starlite.contrib.htmx.utils import HTMXHeaders
 from starlite.exceptions import SerializationException
-from starlite.utils import decode_json
+from starlite.serialization import decode_json
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
