@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Type, Union
 
@@ -89,6 +90,7 @@ def test_media_type(media_type: Union[MediaType, str], template_dir: Path) -> No
         ("", MediaType.TEXT),
     ],
 )
+@pytest.mark.skipif(sys.platform == "win32", reason="mimetypes.guess_types is unreliable on windows")
 def test_media_type_inferred(extension: str, expected_type: MediaType, template_dir: Path) -> None:
     tpl_name = "hello" + extension
     (template_dir / tpl_name).write_text("hello")
