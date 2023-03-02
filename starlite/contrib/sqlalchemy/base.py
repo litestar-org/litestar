@@ -5,8 +5,7 @@ from datetime import datetime
 from typing import Any, TypeVar
 from uuid import UUID, uuid4
 
-from sqlalchemy import MetaData
-from sqlalchemy.dialects import postgresql as pg
+from sqlalchemy import MetaData, Uuid
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -77,7 +76,7 @@ class AuditColumns:
 
 
 meta = MetaData(naming_convention=convention)
-registry_ = registry(metadata=meta, type_annotation_map={UUID: pg.UUID, dict: pg.JSONB})
+registry_ = registry(metadata=meta, type_annotation_map={UUID: Uuid})
 
 
 class Base(CommonColumns, DeclarativeBase):
