@@ -12,17 +12,17 @@ from starlite.constants import (
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
+from starlite.middleware.logging.extractors import (
+    ConnectionDataExtractor,
+    RequestExtractorField,
+    ResponseDataExtractor,
+    ResponseExtractorField,
+)
 from starlite.utils import (
     default_serializer,
     get_serializer_from_scope,
     get_starlite_scope_state,
     set_starlite_scope_state,
-)
-from starlite.utils.extractors import (
-    ConnectionDataExtractor,
-    RequestExtractorField,
-    ResponseDataExtractor,
-    ResponseExtractorField,
 )
 from starlite.utils.serialization import encode_json
 

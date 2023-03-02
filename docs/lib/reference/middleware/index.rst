@@ -11,6 +11,6 @@ starlite.middleware
     compression
     cors
     csrf
-    logging
+    logging/index
     rate_limit
     session/index

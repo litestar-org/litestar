@@ -7,9 +7,9 @@ from starlite.exceptions import (
     InternalServerException,
     ValidationException,
 )
+from starlite.middleware.exceptions.middleware import get_exception_handler
 from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.types import ExceptionHandlersMap
-from starlite.utils.exception import get_exception_handler
 
 
 def handler(_: Any, __: Any) -> Any:
