@@ -1,4 +1,5 @@
 import string
+import sys
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 from typing import Optional
@@ -110,6 +111,10 @@ def test_decode_validation() -> None:
 
 @given(exp=datetimes(max_value=datetime.now() - timedelta(seconds=1)))
 def test_exp_validation(exp: datetime) -> None:
+    if sys.platform == "win32" and exp == datetime(1970, 1, 1, 0, 0):
+        # this does not work on windows. see https://bugs.python.org/issue29097
+        pytest.skip("Skipping because .timestamp is weird on windows sometimes")
+
     with pytest.raises(ImproperlyConfiguredException):
         Token(
             sub="123",
@@ -120,6 +125,10 @@ def test_exp_validation(exp: datetime) -> None:
 
 @given(iat=datetimes(min_value=datetime.now() + timedelta(days=1)))
 def test_iat_validation(iat: datetime) -> None:
+    if sys.platform == "win32" and iat >= datetime(3000, 1, 1, 0, 0):
+        # this does not work on windows. see https://bugs.python.org/issue29097
+        pytest.skip("Skipping because .timestamp is weird on windows sometimes")
+
     with pytest.raises(ImproperlyConfiguredException):
         Token(
             sub="123",

@@ -1,16 +1,11 @@
+import sys
+
 import pytest
 from beanie import Document, Indexed, init_beanie
-from mongomock_motor import AsyncMongoMockClient
-import sys
 
 from starlite import post
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
-
-
-async def initialize_beanie() -> None:
-    client = AsyncMongoMockClient()
-    await init_beanie(document_models=[Widget], database=client.get_database(name="db"))  # type: ignore
 
 
 class Widget(Document):
@@ -36,6 +31,12 @@ async def create_widget_handler(data: Widget) -> Widget:
 @pytest.mark.xfail(reason="beanie does not support serialization via '.dict'")
 @pytest.mark.skipif(sys.platform == "win32", reason="mongomock_motor does not work on windows")
 def test_beanie_serialization() -> None:
+    from mongomock_motor import AsyncMongoMockClient
+
+    async def initialize_beanie() -> None:
+        client = AsyncMongoMockClient()
+        await init_beanie(document_models=[Widget], database=client.get_database(name="db"))  # type: ignore
+
     with create_test_client(create_widget_handler, on_startup=[initialize_beanie]) as client:
         response = client.post("widget", json={"name": "moishe zuchmir"})
         assert response.status_code == HTTP_201_CREATED

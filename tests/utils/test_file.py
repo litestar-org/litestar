@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from stat import S_IRWXO
 from typing import TYPE_CHECKING
@@ -23,6 +24,7 @@ async def test_file_adapter_open(tmpdir: Path, file_system: "FileSystemProtocol"
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
+@pytest.mark.xfail(sys.platform == "win32", reason="permissions equivalent missing on windows")
 async def test_file_adapter_open_handles_permission_exception(tmpdir: Path, file_system: "FileSystemProtocol") -> None:
     file = Path(tmpdir / "test.txt")
     file.write_bytes(b"test")
@@ -79,6 +81,7 @@ async def test_file_adapter_info_handles_file_not_found_exception(file_system: "
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
+@pytest.mark.xfail(sys.platform == "win32", reason="permissions equivalent missing on windows")
 async def test_file_adapter_info_handles_permission_exception(tmpdir: Path, file_system: "FileSystemProtocol") -> None:
     file = Path(tmpdir / "test.txt")
     file.write_bytes(b"test")
