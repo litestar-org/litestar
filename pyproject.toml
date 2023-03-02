@@ -67,7 +67,6 @@ typing-extensions = "*"
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
-beanie = "*"
 beautifulsoup4 = "*"
 brotli = "*"
 click = "*"
@@ -80,7 +79,7 @@ hypothesis = "*"
 jinja2 = "*"
 jsbeautifier = "*"
 mako = "*"
-mongomock-motor = "*"
+mongomock-motor = { version = "*", markers = "sys_platform != 'win32'" }
 opentelemetry-instrumentation-asgi = "*"
 opentelemetry-sdk = "*"
 piccolo = "*"

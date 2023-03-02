@@ -146,7 +146,7 @@ def test_path_param_type_resolution(param_type_name: str, param_type_class: Any,
         elif isinstance(test, Decimal):
             assert str(test) == str(value)
         elif isinstance(test, Path):
-            assert str(test) == "/1/2/3/4/some-file.txt"
+            assert str(test) == str(Path("/1/2/3/4/some-file.txt"))
         else:
             assert test == value
 
