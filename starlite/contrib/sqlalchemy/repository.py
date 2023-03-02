@@ -87,39 +87,39 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             self.session.expunge(instance)
             return instance
 
-    async def delete(self, id_: Any) -> ModelT:
-        """Delete instance identified by `id_`.
+    async def delete(self, item_id: Any) -> ModelT:
+        """Delete instance identified by `item_id`.
 
         Args:
-            id_: Identifier of instance to be deleted.
+            item_id: Identifier of instance to be deleted.
 
         Returns:
             The deleted instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `id_`.
+            RepositoryNotFoundException: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
-            instance = await self.get(id_)
+            instance = await self.get(item_id)
             await self.session.delete(instance)
             await self.session.flush()
             self.session.expunge(instance)
             return instance
 
-    async def get(self, id_: Any) -> ModelT:
-        """Get instance identified by `id_`.
+    async def get(self, item_id: Any) -> ModelT:
+        """Get instance identified by `item_id`.
 
         Args:
-            id_: Identifier of the instance to be retrieved.
+            item_id: Identifier of the instance to be retrieved.
 
         Returns:
             The retrieved instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `id_`.
+            RepositoryNotFoundException: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
-            self._filter_select_by_kwargs(**{self.id_attribute: id_})
+            self._filter_select_by_kwargs(**{self.id_attribute: item_id})
             instance = (await self._execute()).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self.session.expunge(instance)

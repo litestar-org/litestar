@@ -71,36 +71,36 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         self.collection[data.id] = data
         return data
 
-    async def delete(self, id_: Any) -> ModelT:
-        """Delete instance identified by `id_`.
+    async def delete(self, item_id: Any) -> ModelT:
+        """Delete instance identified by `item_id`.
 
         Args:
-            id_: Identifier of instance to be deleted.
+            item_id: Identifier of instance to be deleted.
 
         Returns:
             The deleted instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `id_`.
+            RepositoryNotFoundException: If no instance found identified by `item_id`.
         """
         try:
-            return self._find_or_raise_not_found(id_)
+            return self._find_or_raise_not_found(item_id)
         finally:
-            del self.collection[id_]
+            del self.collection[item_id]
 
-    async def get(self, id_: Any) -> ModelT:
-        """Get instance identified by `id_`.
+    async def get(self, item_id: Any) -> ModelT:
+        """Get instance identified by `item_id`.
 
         Args:
-            id_: Identifier of the instance to be retrieved.
+            item_id: Identifier of the instance to be retrieved.
 
         Returns:
             The retrieved instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `id_`.
+            RepositoryNotFoundException: If no instance found identified by `item_id`.
         """
-        return self._find_or_raise_not_found(id_)
+        return self._find_or_raise_not_found(item_id)
 
     async def list(self, *filters: "FilterTypes", **kwargs: Any) -> list[ModelT]:
         """Get a list of instances, optionally filtered.

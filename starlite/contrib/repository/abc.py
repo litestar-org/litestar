@@ -39,31 +39,31 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def delete(self, id_: Any) -> T:
-        """Delete instance identified by `id_`.
+    async def delete(self, item_id: Any) -> T:
+        """Delete instance identified by `item_id`.
 
         Args:
-            id_: Identifier of instance to be deleted.
+            item_id: Identifier of instance to be deleted.
 
         Returns:
             The deleted instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `id_`.
+            RepositoryNotFoundException: If no instance found identified by `item_id`.
         """
 
     @abstractmethod
-    async def get(self, id_: Any) -> T:
-        """Get instance identified by `id_`.
+    async def get(self, item_id: Any) -> T:
+        """Get instance identified by `item_id`.
 
         Args:
-            id_: Identifier of the instance to be retrieved.
+            item_id: Identifier of the instance to be retrieved.
 
         Returns:
             The retrieved instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `id_`.
+            RepositoryNotFoundException: If no instance found identified by `item_id`.
         """
 
     @abstractmethod
@@ -153,15 +153,15 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         return getattr(item, cls.id_attribute)
 
     @classmethod
-    def set_id_attribute_value(cls, id_: Any, item: T) -> Any:
+    def set_id_attribute_value(cls, item_id: Any, item: T) -> Any:
         """Return the `item` after the ID is set to the appropriate attribute.
 
         Args:
-            id_: Value of ID to be set on instance
+            item_id: Value of ID to be set on instance
             item: Anything that should have an attribute named as `self.id_attribute` value.
 
         Returns:
-            Item with `id_` set to `cls.id_attribute`
+            Item with `item_id` set to `cls.id_attribute`
         """
-        setattr(item, cls.id_attribute, id_)
+        setattr(item, cls.id_attribute, item_id)
         return item
