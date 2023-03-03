@@ -12,6 +12,7 @@ from starlite.connection import ASGIConnection, Request
 from starlite.constants import UNDEFINED_SENTINELS
 from starlite.enums import ScopeType
 from starlite.exceptions import InternalServerException, ValidationException
+from starlite.new_dto import AbstractDTO
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.plugins import PluginMapping
 from starlite.types import Empty
@@ -140,6 +141,11 @@ class SignatureField:
             return self.kwarg_model.required
 
         return not (self.is_optional or self.is_any) and (self.is_empty or self.default_value is None)
+
+    @property
+    def has_dto_annotation(self) -> bool:
+        """Field is annotated with a DTO type."""
+        return any(issubclass(t, AbstractDTO) for t in (get_args(self.field_type) or (self.field_type,)))
 
     @classmethod
     def create(

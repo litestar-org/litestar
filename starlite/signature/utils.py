@@ -41,11 +41,12 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
         raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
 
 
-def get_fn_type_hints(fn: Any) -> dict[str, Any]:
+def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
     """Resolve type hints for ``fn``.
 
     Args:
         fn: Thing that is having its signature modelled.
+        namespace: Extra names for resolution of forward references.
 
     Returns:
         Mapping of names to types.
@@ -65,6 +66,6 @@ def get_fn_type_hints(fn: Any) -> dict[str, Any]:
 
     # Order important. If a starlite name has been overridden in the function module, we want
     # to use that instead of the starlite one.
-    namespace = {**STARLITE_GLOBAL_NAMES, **vars(sys.modules[fn_to_inspect.__module__])}
+    namespace = {**STARLITE_GLOBAL_NAMES, **vars(sys.modules[fn_to_inspect.__module__]), **(namespace or {})}
     with py_38_safe_annotations(fn_to_inspect):
         return get_type_hints(fn_to_inspect, globalns=namespace)

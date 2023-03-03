@@ -115,7 +115,10 @@ def get_type_annotation_from_plugin(
 
 
 def parse_fn_signature(
-    fn: AnyCallable, plugins: list[SerializationPluginProtocol], dependency_name_set: set[str]
+    fn: AnyCallable,
+    plugins: list[SerializationPluginProtocol],
+    dependency_name_set: set[str],
+    namespace: dict[str, Any] | None = None,
 ) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
 
@@ -123,6 +126,7 @@ def parse_fn_signature(
         fn: A callable.
         plugins: A list of plugins.
         dependency_name_set: A set of dependency names
+        namespace: Extra names for resolution of forward references.
 
     Returns:
         A tuple containing the following values for generating a signature model: a mapping of field definitions, the
@@ -134,7 +138,7 @@ def parse_fn_signature(
     field_plugin_mappings: dict[str, PluginMapping] = {}
     parsed_params: list[ParsedSignatureParameter] = []
     dependency_names: set[str] = set()
-    fn_type_hints = get_fn_type_hints(fn)
+    fn_type_hints = get_fn_type_hints(fn, namespace)
 
     parameters = (
         ParsedSignatureParameter.from_parameter(
@@ -166,7 +170,10 @@ def parse_fn_signature(
 
 
 def create_signature_model(
-    fn: AnyCallable, plugins: list[SerializationPluginProtocol], dependency_name_set: set[str]
+    fn: AnyCallable,
+    plugins: list[SerializationPluginProtocol],
+    dependency_name_set: set[str],
+    namespace: dict[str, Any] | None = None,
 ) -> type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
@@ -175,6 +182,7 @@ def create_signature_model(
         fn: A callable.
         plugins: A list of plugins.
         dependency_name_set: A set of dependency names
+        namespace: Extra names for resolution of forward references.
 
     Returns:
         A signature model.
@@ -188,6 +196,7 @@ def create_signature_model(
         fn=unwrapped_fn,
         plugins=plugins,
         dependency_name_set=dependency_name_set,
+        namespace=namespace or {},
     )
 
     # TODO: we will implement logic here to determine what kind of SignatureModel we are creating.
