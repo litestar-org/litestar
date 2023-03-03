@@ -44,7 +44,7 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
 
 
 def get_fn_type_hints(fn: Any) -> dict[str, Any]:
-    """Resolve type hits for ``fn``.
+    """Resolve type hints for ``fn``.
 
     Args:
         fn: Thing that is having its signature modelled.
