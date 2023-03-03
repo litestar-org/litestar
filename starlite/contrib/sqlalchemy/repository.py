@@ -32,7 +32,7 @@ __all__ = (
 )
 
 T = TypeVar("T")
-ModelT = TypeVar("ModelT", bound="base.Base | base.AuditBase")
+ModelT = TypeVar("ModelT", bound="base.ModelBase | base.AuditModelBase")
 SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyRepository")
 
 
@@ -214,17 +214,19 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             self._select.filter_by(**kwargs)
 
     @classmethod
-    async def check_health(cls, session: AsyncSession) -> bool:
+    async def check_health(cls, session: AsyncSession, query: str | None) -> bool:
         """Perform a health check on the database.
 
         Args:
-            session: through which we runa check statement
+            session: through which we run a check statement
+            query: override the default health check SQL statement
 
         Returns:
             `True` if healthy.
         """
+        query = query or "SELECT 1"
         return (  # type:ignore[no-any-return]  # pragma: no cover
-            await session.execute(text("SELECT 1"))
+            await session.execute(text(query))
         ).scalar_one() == 1
 
     # the following is all sqlalchemy implementation detail, and shouldn't be directly accessed

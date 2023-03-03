@@ -13,6 +13,7 @@ __all__ = ("AbstractRepository",)
 
 T = TypeVar("T")
 RepoT = TypeVar("RepoT", bound="AbstractRepository")
+OneOrMoreT = T | list[T]
 
 
 class AbstractRepository(Generic[T], metaclass=ABCMeta):
@@ -28,18 +29,18 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         super().__init__(**kwargs)
 
     @abstractmethod
-    async def add(self, data: T) -> T:
-        """Add `data` to the collection.
+    async def add(self, data: OneOrMoreT) -> OneOrMoreT:
+        """Add one or more `data` to the collection.
 
         Args:
-            data: Instance to be added to the collection.
+            data: Instance or list of instances to be added to the collection.
 
         Returns:
             The added instance.
         """
 
     @abstractmethod
-    async def delete(self, item_id: Any) -> T:
+    async def delete(self, item_id: Any) -> OneOrMoreT:
         """Delete instance identified by `item_id`.
 
         Args:
@@ -53,11 +54,11 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def get(self, item_id: Any) -> T:
+    async def get(self, **kwargs: Any) -> T:
         """Get instance identified by `item_id`.
 
         Args:
-            item_id: Identifier of the instance to be retrieved.
+            **kwargs: Instance attribute value filters.
 
         Returns:
             The retrieved instance.
@@ -79,7 +80,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def update(self, data: T) -> T:
+    async def update(self, data: OneOrMoreT) -> OneOrMoreT:
         """Update instance with the attribute values present on `data`.
 
         Args:
@@ -94,7 +95,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def upsert(self, data: T) -> T:
+    async def upsert(self, data: OneOrMoreT) -> OneOrMoreT:
         """Update or create instance.
 
         Updates instance with the attribute values present on `data`, or creates a new instance if
