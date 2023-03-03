@@ -4,7 +4,10 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar
 
-from sqlalchemy import select, text
+from sqlalchemy import func as sql_func
+from sqlalchemy import insert, over
+from sqlalchemy import select as sql_select
+from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from starlite.contrib.repository.abc import AbstractRepository
@@ -34,6 +37,7 @@ __all__ = (
 T = TypeVar("T")
 ModelT = TypeVar("ModelT", bound="base.ModelBase | base.AuditModelBase")
 SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyRepository")
+StatementT = TypeVar("StatementT", bound="Select[Any]")
 
 
 @contextmanager
@@ -71,7 +75,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         super().__init__(**kwargs)
         self.session = session
-        self._select = select(self.model_type) if base_select is None else base_select
+        self.select = sql_select(self.model_type) if base_select is None else base_select
 
     async def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
@@ -88,6 +92,27 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             await self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
+
+    async def add_many(self, data: list[ModelT]) -> list[ModelT]:
+        """Add Many `data` to the collection.
+
+        Args:
+            data: list of Instances to be added to the collection.
+
+        Returns:
+            The added instances.
+        """
+        with wrap_sqlalchemy_exception():
+            instances: list[ModelT] = await self._execute(
+                insert(
+                    self.model_type,
+                )
+                .values([v.to_dict() if isinstance(v, self.model_type) else v for v in data])
+                .returning(self.model_type),
+            )
+            for instance in instances:
+                self.session.expunge(instance)
+            return instances
 
     async def delete(self, item_id: Any) -> ModelT:
         """Delete instance identified by `item_id`.
@@ -121,11 +146,76 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             RepositoryNotFoundException: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
-            self._filter_select_by_kwargs(**{self.id_attribute: item_id})
-            instance = (await self._execute()).scalar_one_or_none()
+            _select = self._filter_select_by_kwargs(select=self.select, **{self.id_attribute: item_id})
+            instance = (await self._execute(_select)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self.session.expunge(instance)
             return instance
+
+    async def get_one(self, **kwargs: Any) -> ModelT:
+        """Get instance identified by `item_id`.
+
+        Args:
+            item_id: Identifier of the instance to be retrieved.
+
+        Returns:
+            The retrieved instance.
+
+        Raises:
+            RepositoryNotFoundException: If no instance found identified by `item_id`.
+        """
+        with wrap_sqlalchemy_exception():
+            select = self._filter_select_by_kwargs(select=self.select, **{self.id_attribute: item_id})
+            instance = (await self._execute(select)).scalar_one_or_none()
+            instance = self.check_not_found(instance)
+            self.session.expunge(instance)
+            return instance
+
+    async def get_one_or_none(self, **kwargs: Any) -> ModelT | None:
+        """Get instance identified by `item_id`.
+
+        Args:
+            item_id: Identifier of the instance to be retrieved.
+
+        Returns:
+            The retrieved instance.
+
+        Raises:
+            RepositoryNotFoundException: If no instance found identified by `item_id`.
+        """
+        with wrap_sqlalchemy_exception():
+            select = self._filter_select_by_kwargs(select=self.select, **{self.id_attribute: item_id})
+            instance = (await self._execute(select)).scalar_one_or_none()
+            instance = self.check_not_found(instance)
+            self.session.expunge(instance)
+            return instance
+
+    async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
+        """
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query, ignoring pagination.
+        """
+        select = self.select.with_only_columns(
+            [sql_func.count(self.model_type.id)], maintain_column_froms=True
+        ).order_by(None)
+        for filter_ in filters:
+            if isinstance(filter_, LimitOffset):
+                pass
+                # we do not apply this filter to the count since we need the total rows
+            elif isinstance(filter_, BeforeAfter):
+                select = self._filter_on_datetime_field(select, filter_.field_name, filter_.before, filter_.after)
+            elif isinstance(filter_, CollectionFilter):
+                select = self._filter_in_collection(select, filter_.field_name, filter_.values)
+            else:
+                raise RepositoryError(f"Unexpected filter: {filter_}")
+        select = self._filter_select_by_kwargs(select, **kwargs)
+        results = await self._execute(select)
+        return results.scalar_one()
 
     async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:
         """Get a list of instances, optionally filtered.
@@ -137,23 +227,68 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             The list of instances, after filtering applied.
         """
+        select = self.select
         for filter_ in filters:
             if isinstance(filter_, LimitOffset):
-                self._apply_limit_offset_pagination(filter_.limit, filter_.offset)
+                select = self._apply_limit_offset_pagination(select, filter_.limit, filter_.offset)
             elif isinstance(filter_, BeforeAfter):
-                self._filter_on_datetime_field(filter_.field_name, filter_.before, filter_.after)
+                select = self._filter_on_datetime_field(select, filter_.field_name, filter_.before, filter_.after)
             elif isinstance(filter_, CollectionFilter):
-                self._filter_in_collection(filter_.field_name, filter_.values)
+                select = self._filter_in_collection(select, filter_.field_name, filter_.values)
             else:
                 raise RepositoryError(f"Unexpected filter: {filter_}")
-        self._filter_select_by_kwargs(**kwargs)
+        select = self._filter_select_by_kwargs(select, **kwargs)
 
         with wrap_sqlalchemy_exception():
-            result = await self._execute()
+            result = await self._execute(select)
             instances = list(result.scalars())
             for instance in instances:
                 self.session.expunge(instance)
             return instances
+
+    async def list_and_count(
+        self,
+        *filters: FilterTypes,
+        **kwargs: Any,
+    ) -> tuple[abc.Sequence[ModelT], int]:
+        """
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query, ignoring pagination.
+        """
+        select = self.select.add_columns(
+            [
+                over(
+                    sql_func.count(
+                        self.model_type.id,
+                    ),
+                )
+            ]
+        )
+        for filter_ in filters:
+            if isinstance(filter_, LimitOffset):
+                select = self._apply_limit_offset_pagination(select, filter_.limit, filter_.offset)
+            elif isinstance(filter_, BeforeAfter):
+                select = self._filter_on_datetime_field(select, filter_.field_name, filter_.before, filter_.after)
+            elif isinstance(filter_, CollectionFilter):
+                select = self._filter_in_collection(select, filter_.field_name, filter_.values)
+            else:
+                raise RepositoryError(f"Unexpected filter: {filter_}")
+        select = self._filter_select_by_kwargs(select, **kwargs)
+        with wrap_sqlalchemy_exception():
+            result = await self._execute(select)
+            count: int = 0
+            instances: list[ModelT] = []
+            for i, (instance, count_value) in enumerate(result):
+                self.session.expunge(instance)
+                instances.append(instance)
+                if i == 0:
+                    count = count_value
+            return instances, count
 
     async def update(self, data: ModelT) -> ModelT:
         """Update instance with the attribute values present on `data`.
@@ -203,7 +338,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             self.session.expunge(instance)
             return instance
 
-    def filter_collection_by_kwargs(self, **kwargs: Any) -> None:
+    def filter_collection_by_kwargs(self, select: Select[tuple[ModelT]], **kwargs: Any) -> Select[tuple[ModelT]]:
         """Filter the collection by kwargs.
 
         Args:
@@ -211,7 +346,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
                 have the property that their attribute named `key` has value equal to `value`.
         """
         with wrap_sqlalchemy_exception():
-            self._select.filter_by(**kwargs)
+            return select.filter_by(**kwargs)
 
     @classmethod
     async def check_health(cls, session: AsyncSession, query: str | None) -> bool:
@@ -230,9 +365,9 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         ).scalar_one() == 1
 
     # the following is all sqlalchemy implementation detail, and shouldn't be directly accessed
-
-    def _apply_limit_offset_pagination(self, limit: int, offset: int) -> None:
-        self._select = self._select.limit(limit).offset(offset)
+    @staticmethod
+    def _apply_limit_offset_pagination(select: Select[tuple[ModelT]], limit: int, offset: int) -> Select[tuple[ModelT]]:
+        return select.limit(limit).offset(offset)
 
     async def _attach_to_session(self, model: ModelT, strategy: Literal["add", "merge"] = "add") -> ModelT:
         """Attach detached instance to the session.
@@ -254,21 +389,27 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             return await self.session.merge(model)
         raise ValueError("Unexpected value for `strategy`, must be `'add'` or `'merge'`")
 
-    async def _execute(self) -> Result[tuple[ModelT, ...]]:
-        return await self.session.execute(self._select)
+    async def _execute(self, select: Select[tuple[ModelT]]) -> Result[tuple[ModelT, ...]]:
+        return await self.session.execute(select)
 
-    def _filter_in_collection(self, field_name: str, values: abc.Collection[Any]) -> None:
+    def _filter_in_collection(
+        self, select: Select[tuple[ModelT]], field_name: str, values: abc.Collection[Any]
+    ) -> Select[tuple[ModelT]]:
         if not values:
-            return
-        self._select = self._select.where(getattr(self.model_type, field_name).in_(values))
+            return select
+        return select.where(getattr(self.model_type, field_name).in_(values))
 
-    def _filter_on_datetime_field(self, field_name: str, before: datetime | None, after: datetime | None) -> None:
+    def _filter_on_datetime_field(
+        self, select: Select[tuple[ModelT]], field_name: str, before: datetime | None, after: datetime | None
+    ) -> Select[tuple[ModelT]]:
         field = getattr(self.model_type, field_name)
         if before is not None:
-            self._select = self._select.where(field < before)
+            select = select.where(field < before)
         if after is not None:
-            self._select = self._select.where(field > before)
+            select = select.where(field > before)
+        return select
 
-    def _filter_select_by_kwargs(self, **kwargs: Any) -> None:
+    def _filter_select_by_kwargs(self, select: Select[tuple[ModelT]], **kwargs: Any) -> Select[tuple[ModelT]]:
         for key, val in kwargs.items():
-            self._select = self._select.where(getattr(self.model_type, key) == val)
+            select = select.where(getattr(self.model_type, key) == val)
+        return select

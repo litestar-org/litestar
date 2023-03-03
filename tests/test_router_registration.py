@@ -28,7 +28,7 @@ class MyController(Controller):
         pass
 
     @get(path="/{id:int}")
-    def get_by_id_method(self) -> None:
+    def get_method(self) -> None:
         pass
 
     @websocket(path="/socket")

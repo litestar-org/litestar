@@ -29,18 +29,41 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         super().__init__(**kwargs)
 
     @abstractmethod
-    async def add(self, data: OneOrMoreT) -> OneOrMoreT:
-        """Add one or more `data` to the collection.
+    async def add(self, data: T) -> T:
+        """Add `data` to the collection.
 
         Args:
-            data: Instance or list of instances to be added to the collection.
+            data: Instance to be added to the collection.
 
         Returns:
             The added instance.
         """
 
     @abstractmethod
-    async def delete(self, item_id: Any) -> OneOrMoreT:
+    async def add_many(self, data: list[T]) -> list[T]:
+        """Add multiple `data` to the collection.
+
+        Args:
+            data: Instances to be added to the collection.
+
+        Returns:
+            The added instances.
+        """
+
+    @abstractmethod
+    async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
+        """Get the count of records returned by a query.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The count of instances
+        """
+
+    @abstractmethod
+    async def delete(self, item_id: Any) -> T:
         """Delete instance identified by `item_id`.
 
         Args:
@@ -54,17 +77,29 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def get(self, **kwargs: Any) -> T:
+    async def get(self, item_id: Any, **kwargs: Any) -> T:
         """Get instance identified by `item_id`.
 
         Args:
-            **kwargs: Instance attribute value filters.
+            item_id: Identifier of the instance to be retrieved.
 
         Returns:
             The retrieved instance.
 
         Raises:
             RepositoryNotFoundException: If no instance found identified by `item_id`.
+        """
+
+    @abstractmethod
+    async def get_one_or_none(self, *filters: FilterTypes, **kwargs: Any) -> T | None:
+        """Get an instance if it exists or None.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The list of instances, after filtering applied.
         """
 
     @abstractmethod
@@ -80,7 +115,19 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def update(self, data: OneOrMoreT) -> OneOrMoreT:
+    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[T], int]:
+        """List records with total count.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query, ignoring pagination.
+        """
+
+    @abstractmethod
+    async def update(self, data: T) -> T:
         """Update instance with the attribute values present on `data`.
 
         Args:
@@ -95,7 +142,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def upsert(self, data: OneOrMoreT) -> OneOrMoreT:
+    async def upsert(self, data: T) -> T:
         """Update or create instance.
 
         Updates instance with the attribute values present on `data`, or creates a new instance if

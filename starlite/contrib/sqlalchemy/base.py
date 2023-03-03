@@ -4,9 +4,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, TypeVar
 from uuid import UUID, uuid4
-from pydantic import AnyHttpUrl, AnyUrl, EmailStr
 
-from sqlalchemy import MetaData, Uuid, String, JSON
+from pydantic import AnyHttpUrl, AnyUrl, EmailStr
+from sqlalchemy import JSON, MetaData, String, Uuid
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -81,6 +81,9 @@ class CommonTableAttributes:
     def __tablename__(cls) -> str:  # pylint: disable=no-self-argument
         """Infer table name from class name."""
         return cls.__name__.lower()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {field.name: getattr(self, field.name) for field in self.__table__.columns}
 
 
 meta = MetaData(naming_convention=convention)
