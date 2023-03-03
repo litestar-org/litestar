@@ -50,6 +50,7 @@ async def test_file_adapter_open_handles_file_not_found_exception(file_system: "
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
+@pytest.mark.xfail(sys.platform == "win32", reason="Suspected fsspec issue")
 async def test_file_adapter_info(tmpdir: Path, file_system: "FileSystemProtocol") -> None:
     file = Path(tmpdir / "test.txt")
     file.write_bytes(b"test")
