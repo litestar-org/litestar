@@ -783,7 +783,7 @@ Classic Pagination
 
 In classic pagination the dataset is divided into pages of a specific size and the consumer then requests a specific page.
 
-.. literalinclude:: /examples/datastructures/pagination/using_classic_pagination.py
+.. literalinclude:: /examples/pagination/using_classic_pagination.py
     :caption: Classic Pagination
     :language: python
 
@@ -802,7 +802,7 @@ Offset Pagination
 In offset pagination the consumer requests a number of items specified by ``limit`` and the ``offset`` from the beginning of the dataset.
 For example, given a list of 50 items, you could request ``limit=10``, ``offset=39`` to request items 40-50.
 
-.. literalinclude:: /examples/datastructures/pagination/using_offset_pagination.py
+.. literalinclude:: /examples/pagination/using_offset_pagination.py
     :caption: Offset Pagination
     :language: python
 
@@ -822,7 +822,7 @@ When retrieving paginated data from the database using SQLAlchemy, the Paginator
 instance to make queries. This can be achieved with :ref:`dependency injection <lib/usage/dependency-injection:dependency
 kwargs>`
 
-.. literalinclude:: /examples/datastructures/pagination/using_offset_pagination_with_sqlalchemy.py
+.. literalinclude:: /examples/pagination/using_offset_pagination_with_sqlalchemy.py
     :caption: Offset Pagination With SQLAlchemy
     :language: python
 
@@ -835,7 +835,7 @@ Cursor Pagination
 In cursor pagination the consumer requests a number of items specified by ``results_per_page`` and a ``cursor`` after which results are given.
 Cursor is unique identifier within the dataset that serves as a way to point the starting position.
 
-.. literalinclude:: /examples/datastructures/pagination/using_cursor_pagination.py
+.. literalinclude:: /examples/pagination/using_cursor_pagination.py
     :caption: Cursor Pagination
     :language: python
 
