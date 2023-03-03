@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 from anyio import sleep
 
 from starlite.exceptions import WebSocketDisconnect
+from starlite.serialization import decode_json, encode_json
 from starlite.status_codes import WS_1000_NORMAL_CLOSURE
-from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from starlite.testing.client.sync_client import TestClient

@@ -8,11 +8,11 @@ import pytest
 from starlite import get
 from starlite.connection.base import empty_send
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.file_system import BaseLocalFileSystem, FileSystemAdapter
 from starlite.response import FileResponse
 from starlite.response.file import async_file_iterator
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
-from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
 
 
 @pytest.mark.parametrize("content_disposition_type", ("inline", "attachment"))

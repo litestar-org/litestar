@@ -11,8 +11,8 @@ from starlite.exceptions import (
     StarliteException,
     ValidationException,
 )
+from starlite.middleware.exceptions.middleware import create_exception_response
 from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
-from starlite.utils.exception import create_exception_response
 
 
 @given(detail=st.one_of(st.none(), st.text()))

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import hashlib
+import hmac
+import secrets
 from secrets import compare_digest
 from typing import TYPE_CHECKING, Any
 
@@ -11,11 +14,6 @@ from starlite.middleware.base import MiddlewareProtocol
 from starlite.middleware.utils import (
     build_exclude_path_pattern,
     should_bypass_middleware,
-)
-from starlite.utils.csrf import (
-    CSRF_SECRET_BYTES,
-    generate_csrf_hash,
-    generate_csrf_token,
 )
 
 if TYPE_CHECKING:
@@ -31,7 +29,35 @@ if TYPE_CHECKING:
         Send,
     )
 
+CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
+
+
+def generate_csrf_hash(token: str, secret: str) -> str:
+    """Generate an HMAC that signs the CSRF token.
+
+    Args:
+        token: A hashed token.
+        secret: A secret value.
+
+    Returns:
+        A CSRF hash.
+    """
+    return hmac.new(secret.encode(), token.encode(), hashlib.sha256).hexdigest()
+
+
+def generate_csrf_token(secret: str) -> str:
+    """Generate a CSRF token that includes a randomly generated string signed by an HMAC.
+
+    Args:
+        secret: A secret string.
+
+    Returns:
+        A unique CSRF token.
+    """
+    token = secrets.token_hex(CSRF_SECRET_BYTES)
+    token_hash = generate_csrf_hash(token=token, secret=secret)
+    return token + token_hash
 
 
 class CSRFMiddleware(MiddlewareProtocol):

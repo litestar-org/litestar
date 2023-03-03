@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from pydantic_factories import ModelFactory
 
 from starlite import Starlite, get
-from starlite.utils.pagination import AbstractSyncClassicPaginator, ClassicPagination
+from starlite.pagination import AbstractSyncClassicPaginator, ClassicPagination
 
 
 class Person(BaseModel):
