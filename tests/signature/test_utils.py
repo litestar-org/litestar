@@ -4,11 +4,11 @@ from typing import Any
 
 import pytest
 
+from starlite.file_system import BaseLocalFileSystem
 from starlite.signature.utils import get_fn_type_hints
 from starlite.static_files import StaticFiles
 from starlite.types.asgi_types import Receive, Scope, Send
 from starlite.types.builtin_types import NoneType
-from starlite.utils.file import BaseLocalFileSystem
 
 
 def test_get_fn_type_hints_asgi_app() -> None:

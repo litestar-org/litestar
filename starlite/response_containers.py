@@ -23,6 +23,7 @@ from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.headers import ETag
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.file_system import BaseLocalFileSystem
 from starlite.response import (
     FileResponse,
     RedirectResponse,
@@ -31,7 +32,6 @@ from starlite.response import (
 )
 from starlite.types import FileInfo
 from starlite.types.composite_types import PathType, StreamType
-from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
     from starlite.app import Starlite

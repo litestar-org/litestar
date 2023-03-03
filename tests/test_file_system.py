@@ -7,7 +7,7 @@ import pytest
 from fsspec.implementations.local import LocalFileSystem
 
 from starlite.exceptions import InternalServerException, NotAuthorizedException
-from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
+from starlite.file_system import BaseLocalFileSystem, FileSystemAdapter
 
 if TYPE_CHECKING:
     from starlite.types import FileSystemProtocol

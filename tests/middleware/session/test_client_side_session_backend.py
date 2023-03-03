@@ -17,8 +17,8 @@ from starlite.middleware.session.client_side import (
     ClientSideSessionBackend,
     CookieBackendConfig,
 )
+from starlite.serialization import encode_json
 from starlite.testing import create_test_client
-from starlite.utils.serialization import encode_json
 
 
 @pytest.mark.parametrize(

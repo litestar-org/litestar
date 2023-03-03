@@ -8,8 +8,8 @@ from starlite.datastructures import MutableScopeHeaders
 from starlite.enums import ScopeType
 from starlite.exceptions import TooManyRequestsException
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
+from starlite.serialization import decode_json, encode_json
 from starlite.utils import AsyncCallable
-from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from typing import Awaitable
