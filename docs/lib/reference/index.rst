@@ -13,6 +13,7 @@ API reference
     connection/index
     contrib/index
     controller
+    data_extractors
     datastructures/index
     di
     dto
@@ -22,12 +23,14 @@ API reference
     handlers/index
     middleware/index
     openapi
+    pagination
     params
     plugins/index
     response
     response_containers
     router
     security/index
+    serialization
     storage/index
     template
     testing

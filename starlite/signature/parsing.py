@@ -10,6 +10,7 @@ from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
 from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
+from starlite.datastructures import ImmutableState
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.plugins.base import (
@@ -148,6 +149,13 @@ def parse_fn_signature(
         if name not in ("self", "cls")
     )
     for parameter in parameters:
+        if parameter.name == "state" and not issubclass(parameter.annotation, ImmutableState):
+            raise ImproperlyConfiguredException(
+                f"The type annotation `{parameter.annotation}` is an invalid type for the 'state' reserved kwarg. "
+                "It must be typed to a subclass of `starlite.datastructures.ImmutableState` or "
+                "`starlite.datastructures.State`."
+            )
+
         if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
             if not parameter.optional and (
                 isinstance(parameter.default, DependencyKwarg) and parameter.default.default is Empty

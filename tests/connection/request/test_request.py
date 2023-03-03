@@ -16,8 +16,8 @@ from starlite.connection.request import Request
 from starlite.datastructures import Address
 from starlite.exceptions import InternalServerException, SerializationException
 from starlite.response import Response
+from starlite.serialization import encode_msgpack
 from starlite.testing import TestClient, create_test_client
-from starlite.utils.serialization import encode_msgpack
 
 if TYPE_CHECKING:
     from pathlib import Path

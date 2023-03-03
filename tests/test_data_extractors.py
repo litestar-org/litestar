@@ -4,12 +4,11 @@ import pytest
 
 from starlite import Request, Response
 from starlite.connection.base import empty_receive
+from starlite.data_extractors import ConnectionDataExtractor, ResponseDataExtractor
 from starlite.datastructures import Cookie
 from starlite.enums import RequestEncodingType
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import RequestFactory
-from starlite.utils import ConnectionDataExtractor
-from starlite.utils.extractors import ResponseDataExtractor
 
 factory = RequestFactory()
 

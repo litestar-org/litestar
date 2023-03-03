@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable
 from urllib.parse import quote
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.utils import encode_json
+from starlite.serialization import encode_json
 
 if TYPE_CHECKING:
     from starlite.contrib.htmx.types import (

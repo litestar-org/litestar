@@ -4,9 +4,9 @@ import pytest
 from fsspec.implementations.local import LocalFileSystem
 
 from starlite.config.static_files import StaticFilesConfig
+from starlite.file_system import BaseLocalFileSystem
 from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from starlite.testing import create_test_client
-from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
     from pathlib import Path

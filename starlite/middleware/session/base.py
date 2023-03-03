@@ -15,9 +15,9 @@ from typing import (
 from starlite.connection import ASGIConnection
 from starlite.enums import ScopeType
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
+from starlite.serialization import decode_json, encode_json
 from starlite.types import Scopes
 from starlite.utils import get_serializer_from_scope
-from starlite.utils.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Message, Receive, Scope, ScopeSession, Send

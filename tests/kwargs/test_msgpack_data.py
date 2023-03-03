@@ -1,9 +1,9 @@
 from starlite import post
 from starlite.enums import RequestEncodingType
 from starlite.params import Body
+from starlite.serialization import encode_msgpack
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
-from starlite.utils.serialization import encode_msgpack
 
 
 def test_request_body_msgpack() -> None:

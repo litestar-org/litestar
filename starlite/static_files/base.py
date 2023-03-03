@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING, Literal, Sequence
 
 from starlite.enums import ScopeType
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
+from starlite.file_system import FileSystemAdapter
 from starlite.response import FileResponse
 from starlite.status_codes import HTTP_404_NOT_FOUND
-from starlite.utils.file import FileSystemAdapter
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send

@@ -15,8 +15,8 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
+from starlite.serialization import decode_json, encode_json
 from starlite.types import Empty, Scopes
-from starlite.utils.serialization import decode_json, encode_json
 
 from ...enums import ScopeType
 from ...utils.dataclass import extract_dataclass_fields

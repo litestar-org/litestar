@@ -4,10 +4,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.file_system import BaseLocalFileSystem
 from starlite.handlers import asgi
 from starlite.static_files.base import StaticFiles
 from starlite.utils import normalize_path
-from starlite.utils.file import BaseLocalFileSystem
 
 if TYPE_CHECKING:
     from starlite.handlers.asgi_handlers import ASGIRouteHandler

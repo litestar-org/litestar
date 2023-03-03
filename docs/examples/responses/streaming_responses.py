@@ -4,7 +4,7 @@ from typing import AsyncGenerator
 
 from starlite import Starlite, get
 from starlite.response_containers import Stream
-from starlite.utils.serialization import encode_json
+from starlite.serialization import encode_json
 
 
 async def my_generator() -> AsyncGenerator[bytes, None]:

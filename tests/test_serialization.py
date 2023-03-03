@@ -25,7 +25,7 @@ from pydantic import (
 from pydantic.color import Color
 
 from starlite.exceptions import SerializationException
-from starlite.utils.serialization import (
+from starlite.serialization import (
     decode_json,
     decode_msgpack,
     default_serializer,

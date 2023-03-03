@@ -3,8 +3,8 @@ from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger
 
 from starlite.config.logging import StructLoggingConfig
+from starlite.serialization import decode_json, encode_json
 from starlite.testing import create_test_client
-from starlite.utils.serialization import decode_json, encode_json
 
 # structlog.testing.capture_logs changes the processors
 # Because we want to test processors, use capsys instead
