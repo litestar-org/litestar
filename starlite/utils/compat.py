@@ -28,7 +28,7 @@ except NameError:  # pragma: no cover
 
 @contextmanager
 def py_38_safe_annotations(annotated: Any) -> Generator[Any, None, None]:
-    """Ensure annotations that are backward compatible with Python 3.8.
+    """Ensure annotations are backward compatible with Python 3.8.
 
     If detected python version is < 3.9, converts forward referenced annotations like `"A | B"` into `"Union[A, B]"`.
 

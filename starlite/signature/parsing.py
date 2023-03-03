@@ -135,10 +135,11 @@ def parse_fn_signature(
     field_plugin_mappings: dict[str, PluginMapping] = {}
     parsed_params: list[ParsedSignatureParameter] = []
     dependency_names: set[str] = set()
+    fn_type_hints = get_fn_type_hints(fn)
 
     parameters = (
         ParsedSignatureParameter.from_parameter(
-            parameter=parameter, parameter_name=name, fn_name=fn_name, fn_type_hints=get_fn_type_hints(fn)
+            parameter=parameter, parameter_name=name, fn_name=fn_name, fn_type_hints=fn_type_hints
         )
         for name, parameter in signature.parameters.items()
         if name not in ("self", "cls")

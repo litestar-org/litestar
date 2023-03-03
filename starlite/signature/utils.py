@@ -9,7 +9,7 @@ from typing_extensions import get_type_hints
 from starlite.connection import Request, WebSocket
 from starlite.datastructures import Headers, ImmutableState, State
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.types import ASGIApp, HTTPScope, Receive, Scope, Send, WebSocketScope
+from starlite.types import Receive, Scope, Send, WebSocketScope
 from starlite.utils.compat import py_38_safe_annotations
 
 if TYPE_CHECKING:
@@ -17,8 +17,6 @@ if TYPE_CHECKING:
 
 
 STARLITE_GLOBAL_NAMES = {
-    "ASGIApp": ASGIApp,
-    "HTTPScope": HTTPScope,
     "Headers": Headers,
     "ImmutableState": ImmutableState,
     "Receive": Receive,
@@ -44,7 +42,7 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
 
 
 def get_fn_type_hints(fn: Any) -> dict[str, Any]:
-    """Resolve type hits for ``fn``.
+    """Resolve type hints for ``fn``.
 
     Args:
         fn: Thing that is having its signature modelled.
