@@ -165,7 +165,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             RepositoryNotFoundException: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
-            select = self._filter_select_by_kwargs(select=self.select, **{self.id_attribute: item_id})
+            select = self._filter_select_by_kwargs(select=self.select, **kwargs)
             instance = (await self._execute(select)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self.session.expunge(instance)
@@ -184,7 +184,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             RepositoryNotFoundException: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
-            select = self._filter_select_by_kwargs(select=self.select, **{self.id_attribute: item_id})
+            select = self._filter_select_by_kwargs(select=self.select, **kwargs)
             instance = (await self._execute(select)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self.session.expunge(instance)
