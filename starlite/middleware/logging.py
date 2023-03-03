@@ -9,15 +9,15 @@ from starlite.constants import (
     HTTP_RESPONSE_START,
     SCOPE_STATE_RESPONSE_COMPRESSED,
 )
-from starlite.enums import ScopeType
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
-from starlite.middleware.logging.extractors import (
+from starlite.data_extractors import (
     ConnectionDataExtractor,
     RequestExtractorField,
     ResponseDataExtractor,
     ResponseExtractorField,
 )
+from starlite.enums import ScopeType
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.serialization import default_serializer, encode_json
 from starlite.utils import (
     get_serializer_from_scope,

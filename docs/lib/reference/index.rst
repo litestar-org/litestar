@@ -13,6 +13,7 @@ API reference
     connection/index
     contrib/index
     controller
+    data_extractors
     datastructures/index
     di
     dto
