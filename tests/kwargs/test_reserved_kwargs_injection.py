@@ -9,6 +9,7 @@ from starlite import (
     HttpMethod,
     MediaType,
     Request,
+    Starlite,
     delete,
     get,
     patch,
@@ -16,6 +17,7 @@ from starlite import (
     put,
 )
 from starlite.datastructures.state import ImmutableState, State
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -296,3 +298,18 @@ def test_body(decorator: Any, http_method: Any, expected_status_code: Any) -> No
     with create_test_client(MyController) as client:
         response = client.request(http_method, test_path)
         assert response.status_code == expected_status_code
+
+
+def test_improper_use_of_state_kwarg() -> None:
+    """Test error condition of State kwarg with unexpected type.."""
+    test_path = "/bad-state"
+
+    class MyController(Controller):
+        path = test_path
+
+        @get()
+        async def test_method(self, state: str) -> None:
+            return None
+
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[MyController], openapi_config=None)
