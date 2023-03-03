@@ -1,6 +1,6 @@
 import pytest
-from examples.dependency_injection import dependency_non_optional_not_provided
 
+from examples.dependency_injection import dependency_non_optional_not_provided
 from starlite import Starlite
 from starlite.exceptions import ImproperlyConfiguredException
 
