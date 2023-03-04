@@ -11,7 +11,6 @@ from starlite.types import Empty
 __all__ = (
     "Address",
     "URL",
-    "make_absolute_url",
 )
 
 
