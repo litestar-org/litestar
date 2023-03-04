@@ -8,8 +8,9 @@ from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 from pydantic_openapi_schema import construct_open_api_with_schema_class
 from typing_extensions import Self, TypedDict
 
-from starlite.asgi import ASGIRouter
-from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
+from starlite._asgi import ASGIRouter
+from starlite._asgi.utils import get_route_handlers, wrap_in_exception_handler
+from starlite._signature import create_signature_model
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
 from starlite.config.cache import CacheConfig
@@ -32,7 +33,6 @@ from starlite.plugins.base import (
 )
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-from starlite.signature import create_signature_model
 from starlite.static_files.base import StaticFiles
 from starlite.types import Empty
 from starlite.types.internal_types import PathParameterDefinition
@@ -711,7 +711,7 @@ class Starlite(Router):
                     provider.has_sync_callable = True
 
     def _create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
-        """Create function signature models for all route handler functions and provider dependencies."""
+        """Create function _signature models for all route handler functions and provider dependencies."""
         if not route_handler.signature_model:
             route_handler.signature_model = create_signature_model(
                 fn=cast("AnyCallable", route_handler.fn.value),
@@ -792,7 +792,7 @@ class Starlite(Router):
 
         :param event_id: The ID of the event to emit, e.g 'my_event'.
         :param args: args to pass to the listener(s).
-        :param kwargs: kwargs to pass to the listener(s)
+        :param kwargs: _kwargs to pass to the listener(s)
         :return: None
         """
         await self.event_emitter.emit(event_id, *args, **kwargs)

@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 @pytest.fixture
 def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[List[str]], None]:
     def patcher(paths: List[str]) -> None:
-        from starlite.cli.utils import AUTODISCOVER_PATHS
+        from starlite.cli._utils import AUTODISCOVER_PATHS
 
         old_paths = AUTODISCOVER_PATHS[::]
         AUTODISCOVER_PATHS[:] = paths
@@ -77,7 +77,7 @@ def create_app_file(
 
 @pytest.fixture
 def app_file(create_app_file: CreateAppFileFixture) -> Path:
-    return create_app_file("asgi.py")
+    return create_app_file("_asgi.py")
 
 
 @pytest.fixture

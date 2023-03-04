@@ -5,7 +5,7 @@ from queue import Queue
 from typing import Any
 
 from starlite.exceptions import MissingDependencyException
-from starlite.logging.utils import resolve_handlers
+from starlite.logging._utils import resolve_handlers
 
 __all__ = ("QueueListenerHandler",)
 

@@ -9,6 +9,8 @@ from pydantic.fields import FieldInfo, Undefined
 from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
+from starlite._signature.models import PydanticSignatureModel, SignatureModel
+from starlite._signature.utils import get_fn_type_hints
 from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
 from starlite.datastructures import ImmutableState
 from starlite.exceptions import ImproperlyConfiguredException
@@ -18,8 +20,6 @@ from starlite.plugins.base import (
     SerializationPluginProtocol,
     get_plugin_for_value,
 )
-from starlite.signature.models import PydanticSignatureModel, SignatureModel
-from starlite.signature.utils import get_fn_type_hints
 from starlite.types import Empty
 from starlite.utils import is_optional_union
 from starlite.utils.helpers import unwrap_partial
@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class ParsedSignatureParameter:
-    """Represents the parameters of a callable for purpose of signature model generation."""
+    """Represents the parameters of a callable for purpose of _signature model generation."""
 
     annotation: Any
     default: Any
@@ -127,7 +127,7 @@ def get_type_annotation_from_plugin(
 def parse_fn_signature(
     fn: AnyCallable, plugins: list[SerializationPluginProtocol], dependency_name_set: set[str]
 ) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
-    """Parse a function signature into data used for the generation of a signature model.
+    """Parse a function _signature into data used for the generation of a _signature model.
 
     Args:
         fn: A callable.
@@ -135,7 +135,7 @@ def parse_fn_signature(
         dependency_name_set: A set of dependency names
 
     Returns:
-        A tuple containing the following values for generating a signature model: a mapping of field definitions, the
+        A tuple containing the following values for generating a _signature model: a mapping of field definitions, the
         callable's return annotation, a mapping of field names to plugins - if any, and an updated dependency name set.
     """
     signature = Signature.from_callable(fn)
@@ -185,7 +185,7 @@ def parse_fn_signature(
 def create_signature_model(
     fn: AnyCallable, plugins: list[SerializationPluginProtocol], dependency_name_set: set[str]
 ) -> type[SignatureModel]:
-    """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
+    """Create a model for a callable's _signature. The model can than be used to parse and validate before passing it to
     the callable.
 
     Args:
@@ -194,7 +194,7 @@ def create_signature_model(
         dependency_name_set: A set of dependency names
 
     Returns:
-        A signature model.
+        A _signature model.
     """
 
     unwrapped_fn = cast("AnyCallable", unwrap_partial(fn))
@@ -233,7 +233,7 @@ def create_pydantic_signature_model(
     Args:
         fn_name: Name of the callable.
         fn_module: Name of the function's module, if any.
-        parsed_params: A list of parsed signature parameters.
+        parsed_params: A list of parsed _signature parameters.
         return_annotation: Annotation for the callable's return value.
         field_plugin_mappings: A mapping of field names to plugin mappings.
         dependency_names: A set of dependency names.

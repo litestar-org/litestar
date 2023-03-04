@@ -5,6 +5,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 from pydantic import conlist, conset
 
+from starlite._signature.models import SignatureField
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.schema import (
     create_collection_constrained_field_schema,
@@ -13,7 +14,6 @@ from starlite.openapi.schema import (
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
-from starlite.signature.models import SignatureField
 from tests.openapi.utils import (
     constrained_collection,
     constrained_dates,

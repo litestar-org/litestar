@@ -2,12 +2,12 @@ from typing import TYPE_CHECKING, Dict, List, Tuple
 
 from pydantic_openapi_schema.v3_1_0.parameter import Parameter
 
+from starlite._signature.models import SignatureField
 from starlite.constants import RESERVED_KWARGS
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.schema import create_schema
 from starlite.params import DependencyKwarg, ParameterKwarg
-from starlite.signature.models import SignatureField
 from starlite.types import Empty
 
 __all__ = (
@@ -169,7 +169,7 @@ def get_layered_parameter(
     path_parameters: Tuple["PathParameterDefinition", ...],
     generate_examples: bool,
 ) -> Parameter:
-    """Create a layered parameter for a given signature model field.
+    """Create a layered parameter for a given _signature model field.
 
     Layer info is extracted from the provided ``layered_parameters`` dict and set as the field's ``field_info`` attribute.
     """

@@ -197,7 +197,7 @@ class SignatureModel(ABC):
 
         Args:
             connection: The ASGI connection instance.
-            **kwargs: A dictionary of kwargs.
+            **kwargs: A dictionary of _kwargs.
 
         Raises:
             ValidationException: If validation failed.
@@ -210,7 +210,7 @@ class SignatureModel(ABC):
 
     @abstractmethod
     def to_dict(self) -> dict[str, Any]:
-        """Normalize access to the signature model's dictionary method, because different backends use different methods
+        """Normalize access to the _signature model's dictionary method, because different backends use different methods
         for this.
 
         Returns: A dictionary of string keyed values.
@@ -220,7 +220,7 @@ class SignatureModel(ABC):
     @classmethod
     @abstractmethod
     def populate_signature_fields(cls) -> None:
-        """Populate the class signature fields.
+        """Populate the class _signature fields.
 
         Returns:
             None.
@@ -229,7 +229,7 @@ class SignatureModel(ABC):
 
 
 class PydanticSignatureModel(SignatureModel, BaseModel):
-    """Model that represents a function signature that uses a pydantic specific type or types."""
+    """Model that represents a function _signature that uses a pydantic specific type or types."""
 
     class Config(BaseConfig):
         copy_on_model_validation = "none"
@@ -241,7 +241,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
 
         Args:
             connection: The ASGI connection instance.
-            **kwargs: A dictionary of kwargs.
+            **kwargs: A dictionary of _kwargs.
 
         Raises:
             ValidationException: If validation failed.
@@ -278,7 +278,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         return mapping.get_model_instance_for_value(value) if mapping else value
 
     def to_dict(self) -> dict[str, Any]:
-        """Normalize access to the signature model's dictionary method, because different backends use different methods
+        """Normalize access to the _signature model's dictionary method, because different backends use different methods
         for this.
 
         Returns: A dictionary of string keyed values.
@@ -326,7 +326,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
 
     @classmethod
     def populate_signature_fields(cls) -> None:
-        """Populate the class signature fields.
+        """Populate the class _signature fields.
 
         Returns:
             None.

@@ -4,12 +4,12 @@ from collections import defaultdict
 from copy import copy
 from typing import TYPE_CHECKING, Any, DefaultDict, Mapping, Sequence, cast
 
+from starlite._layers.utils import narrow_response_cookies, narrow_response_headers
 from starlite.controller import Controller
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi_handlers import ASGIRouteHandler
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
-from starlite.handlers.utils import narrow_response_cookies, narrow_response_headers
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.types import (
@@ -217,7 +217,7 @@ class Router:
                 self.routes.append(route)
                 routes.append(route)
 
-            if asgi_handler := handlers_map.get("asgi"):
+            if asgi_handler := handlers_map.get("_asgi"):
                 route = ASGIRoute(path=path, route_handler=cast("ASGIRouteHandler", asgi_handler))
                 self.routes.append(route)
                 routes.append(route)
@@ -239,7 +239,7 @@ class Router:
                         route_map[route.path][method] = route_handler
             else:
                 route_map[route.path][
-                    "websocket" if isinstance(route, WebSocketRoute) else "asgi"
+                    "websocket" if isinstance(route, WebSocketRoute) else "_asgi"
                 ] = route.route_handler
         return route_map
 
@@ -258,7 +258,7 @@ class Router:
                 return {path: {http_method: copied_value for http_method in value.http_methods} for path in value.paths}
 
             return {
-                path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": copied_value}
+                path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "_asgi": copied_value}
                 for path in value.paths
             }
 
@@ -271,7 +271,7 @@ class Router:
                         handlers_map[path][http_method] = route_handler
                 else:
                     handlers_map[path][
-                        "websocket" if isinstance(route_handler, WebsocketRouteHandler) else "asgi"
+                        "websocket" if isinstance(route_handler, WebsocketRouteHandler) else "_asgi"
                     ] = cast("WebsocketRouteHandler | ASGIRouteHandler", route_handler)
 
         return handlers_map

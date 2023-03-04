@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Pattern
 
-from starlite.asgi.routing_trie.types import PathParameterSentinel
+from starlite._asgi.routing_trie.types import PathParameterSentinel
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
 from starlite.utils import normalize_path
 
@@ -11,7 +11,7 @@ __all__ = ("parse_node_handlers", "parse_path_params", "parse_path_to_route", "t
 
 
 if TYPE_CHECKING:
-    from starlite.asgi.routing_trie.types import ASGIHandlerTuple, RouteTrieNode
+    from starlite._asgi.routing_trie.types import ASGIHandlerTuple, RouteTrieNode
     from starlite.types import ASGIApp, Method, RouteHandlerType
     from starlite.types.internal_types import PathParameterDefinition
 
@@ -74,7 +74,7 @@ def parse_node_handlers(
     """
 
     if node.is_asgi:
-        return node.asgi_handlers["asgi"]
+        return node.asgi_handlers["_asgi"]
     if method:
         return node.asgi_handlers[method]
     return node.asgi_handlers["websocket"]
@@ -151,7 +151,7 @@ def parse_path_to_route(
             path=path,
         )
         asgi_app, handler = parse_node_handlers(node=node, method=method)
-        key = method or ("asgi" if node.is_asgi else "websocket")
+        key = method or ("_asgi" if node.is_asgi else "websocket")
         parsed_path_parameters = parse_path_params(node.path_parameters[key], tuple(path_parameters))
 
         return (

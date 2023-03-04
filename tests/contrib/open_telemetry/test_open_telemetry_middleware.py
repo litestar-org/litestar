@@ -22,7 +22,7 @@ def create_config(**kwargs: Any) -> Tuple[OpenTelemetryConfig, InMemoryMetricRea
     """Create OpenTelemetryConfig, an InMemoryMetricReader and InMemorySpanExporter.
 
     Args:
-        **kwargs: Any config kwargs to pass to the OpenTelemetryConfig constructor.
+        **kwargs: Any config _kwargs to pass to the OpenTelemetryConfig constructor.
 
     Returns:
         A tuple containing an OpenTelemetryConfig, an InMemoryMetricReader and InMemorySpanExporter.

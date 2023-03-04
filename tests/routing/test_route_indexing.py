@@ -28,7 +28,7 @@ def test_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
     def handler() -> None:
         return None
 
-    @asgi("/asgi-path", name="asgi-name")
+    @asgi("/_asgi-path", name="_asgi-name")
     async def asgi_handler(scope: Any, receive: Any, send: Any) -> None:
         pass
 
@@ -44,9 +44,9 @@ def test_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
     assert handler_index["paths"] == ["/router-path/path-one/{param:str}"]
     assert str(handler_index["handler"]) == str(handler)
 
-    handler_index = app.get_handler_index_by_name("asgi-name")
+    handler_index = app.get_handler_index_by_name("_asgi-name")
     assert handler_index
-    assert handler_index["paths"] == ["/asgi-path"]
+    assert handler_index["paths"] == ["/_asgi-path"]
     assert str(handler_index["handler"]) == str(asgi_handler)
 
     handler_index = app.get_handler_index_by_name("websocket-name")

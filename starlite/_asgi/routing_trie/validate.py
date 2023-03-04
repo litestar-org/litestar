@@ -9,7 +9,7 @@ __all__ = ("validate_node",)
 
 
 if TYPE_CHECKING:
-    from starlite.asgi.routing_trie.types import RouteTrieNode
+    from starlite._asgi.routing_trie.types import RouteTrieNode
 
 
 def validate_node(node: RouteTrieNode) -> None:
@@ -24,7 +24,7 @@ def validate_node(node: RouteTrieNode) -> None:
     Returns:
         None
     """
-    if node.is_asgi and bool(set(node.asgi_handlers).difference({"asgi"})):
+    if node.is_asgi and bool(set(node.asgi_handlers).difference({"_asgi"})):
         raise ImproperlyConfiguredException("ASGI handlers must have a unique path not shared by other route handlers.")
 
     if (

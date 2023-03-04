@@ -32,7 +32,7 @@ class OpenAPIConfig:
     """Configuration for OpenAPI.
 
     To enable OpenAPI schema generation and serving, pass an instance of this class to the
-    :class:`Starlite <starlite.app.Starlite>` constructor using the 'openapi_config' kwargs.
+    :class:`Starlite <starlite.app.Starlite>` constructor using the 'openapi_config' _kwargs.
     """
 
     title: str

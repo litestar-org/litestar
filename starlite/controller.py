@@ -4,10 +4,10 @@ from collections import defaultdict
 from copy import copy
 from typing import TYPE_CHECKING, Any, DefaultDict, Mapping, cast
 
+from starlite._layers.utils import narrow_response_cookies, narrow_response_headers
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
-from starlite.handlers.utils import narrow_response_cookies, narrow_response_headers
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.utils import AsyncCallable, normalize_path
 from starlite.utils.helpers import unwrap_partial
@@ -197,7 +197,7 @@ class Controller:
             elif isinstance(route_handler, WebsocketRouteHandler):
                 methods = {"websocket"}
             else:
-                methods = {"asgi"}
+                methods = {"_asgi"}
 
             for path in route_handler.paths:
                 if (entry := paths[path]) and (intersection := entry.intersection(methods)):

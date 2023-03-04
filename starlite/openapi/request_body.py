@@ -13,8 +13,8 @@ __all__ = ("create_request_body",)
 
 
 if TYPE_CHECKING:
+    from starlite._signature.models import SignatureField
     from starlite.plugins.base import OpenAPISchemaPluginProtocol
-    from starlite.signature.models import SignatureField
 
 
 def create_request_body(

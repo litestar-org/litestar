@@ -6,11 +6,11 @@ from functools import lru_cache
 from traceback import format_exc
 from typing import TYPE_CHECKING, Pattern
 
-from starlite.asgi.routing_trie import validate_node
-from starlite.asgi.routing_trie.mapping import add_route_to_trie
-from starlite.asgi.routing_trie.traversal import parse_path_to_route
-from starlite.asgi.routing_trie.types import create_node
-from starlite.asgi.utils import get_route_handlers
+from starlite._asgi.routing_trie import validate_node
+from starlite._asgi.routing_trie.mapping import add_route_to_trie
+from starlite._asgi.routing_trie.traversal import parse_path_to_route
+from starlite._asgi.routing_trie.types import create_node
+from starlite._asgi.utils import get_route_handlers
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import AsyncCallable, normalize_path
 
@@ -18,8 +18,8 @@ __all__ = ("ASGIRouter",)
 
 
 if TYPE_CHECKING:
+    from starlite._asgi.routing_trie.types import RouteTrieNode
     from starlite.app import Starlite
-    from starlite.asgi.routing_trie.types import RouteTrieNode
     from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from starlite.routes.base import BaseRoute
     from starlite.types import (
@@ -140,7 +140,7 @@ class ASGIRouter:
     def construct_routing_trie(self) -> None:
         """Create a map of the app's routes.
 
-        This map is used in the asgi router to route requests.
+        This map is used in the _asgi router to route requests.
         """
         new_routes = [route for route in self.app.routes if route not in self._registered_routes]
         for route in new_routes:

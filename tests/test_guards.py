@@ -59,7 +59,7 @@ def test_guards_with_asgi_handler() -> None:
         response = client.get("/secret", headers={"Authorization": "yes"})
         assert response.status_code == HTTP_403_FORBIDDEN
         assert response.json().get("detail") == "local"
-        client.app.asgi_router.root_route_map_node.children["/secret"].asgi_handlers["asgi"][1].opt["allow_all"] = True
+        client.app.asgi_router.root_route_map_node.children["/secret"].asgi_handlers["_asgi"][1].opt["allow_all"] = True
         response = client.get("/secret", headers={"Authorization": "yes"})
         assert response.status_code == HTTP_200_OK
 

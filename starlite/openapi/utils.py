@@ -9,8 +9,8 @@ __all__ = ("default_operation_id_creator", "get_openapi_type_for_complex_type", 
 
 
 if TYPE_CHECKING:
+    from starlite._signature.models import SignatureField
     from starlite.handlers.http_handlers import HTTPRouteHandler
-    from starlite.signature.models import SignatureField
     from starlite.types import Method
 
 CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")

@@ -16,7 +16,7 @@ def test_handle_asgi() -> None:
         await response(scope, receive, send)
 
     class MyController(Controller):
-        path = "/asgi"
+        path = "/_asgi"
 
         @asgi()
         async def root_asgi_handler(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -29,6 +29,6 @@ def test_handle_asgi() -> None:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.text == "Hello World"
-        response = client.get("/asgi")
+        response = client.get("/_asgi")
         assert response.status_code == HTTP_200_OK
         assert response.text == "Hello World"

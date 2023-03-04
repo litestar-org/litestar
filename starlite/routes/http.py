@@ -20,8 +20,8 @@ from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 
 if TYPE_CHECKING:
-    from starlite.kwargs import KwargsModel
-    from starlite.kwargs.cleanup import DependencyCleanupGroup
+    from starlite._kwargs import KwargsModel
+    from starlite._kwargs.cleanup import DependencyCleanupGroup
     from starlite.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
 
@@ -183,7 +183,7 @@ class HTTPRoute(BaseRoute):
     async def _get_response_data(
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
     ) -> tuple[Any, "DependencyCleanupGroup" | None]:
-        """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
+        """Determine what _kwargs are required for the given route handler's ``fn`` and calls it."""
         parsed_kwargs: dict[str, Any] = {}
         cleanup_group: DependencyCleanupGroup | None = None
 

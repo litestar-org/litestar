@@ -11,7 +11,7 @@ __all__ = ("Provide",)
 
 
 if TYPE_CHECKING:
-    from starlite.signature import SignatureModel
+    from starlite._signature import SignatureModel
     from starlite.types import AnyCallable
 
 

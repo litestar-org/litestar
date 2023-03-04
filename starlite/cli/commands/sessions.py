@@ -2,7 +2,7 @@ from click import argument, group
 from rich.prompt import Confirm
 
 from starlite import Starlite
-from starlite.cli.utils import StarliteCLIException, StarliteGroup, console
+from starlite.cli._utils import StarliteCLIException, StarliteGroup, console
 from starlite.middleware import DefineMiddleware
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.server_side import ServerSideSessionBackend

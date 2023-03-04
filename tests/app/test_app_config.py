@@ -68,7 +68,7 @@ def test_app_params_defined_on_app_config_object() -> None:
         if name in ("on_app_init", "initial_state"):
             continue
         assert name in app_config_fields
-    # ensure there are not fields defined on AppConfig that aren't in the Starlite signature
+    # ensure there are not fields defined on AppConfig that aren't in the Starlite _signature
     assert not (app_config_fields - set(starlite_signature.parameters.keys()))
 
 
@@ -77,7 +77,7 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
 
     In the test we replace every field on the `AppConfig` type with a property mock so that we can check that it has at
     least been accessed. It doesn't actually check that we do the right thing with it, but is a guard against the case
-    of adding a parameter to the `Starlite` signature and to the `AppConfig` object, and using the value from the
+    of adding a parameter to the `Starlite` _signature and to the `AppConfig` object, and using the value from the
     parameter downstream from construction of the `AppConfig` object.
     """
 

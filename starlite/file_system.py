@@ -30,7 +30,7 @@ class BaseLocalFileSystem(FileSystemProtocol):
 
         Args:
             path: A file path.
-            **kwargs: Any additional kwargs.
+            **kwargs: Any additional _kwargs.
 
         Returns:
             A dictionary of file info.

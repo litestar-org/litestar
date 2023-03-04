@@ -4,8 +4,8 @@ from functools import lru_cache
 from typing import TYPE_CHECKING, Any, NamedTuple, cast
 from urllib.parse import SplitResult, urlencode, urlsplit, urlunsplit
 
+from starlite._parsers import parse_query_string
 from starlite.datastructures import MultiDict
-from starlite.parsers import parse_query_string
 from starlite.types import Empty
 
 __all__ = (

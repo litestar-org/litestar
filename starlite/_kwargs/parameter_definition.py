@@ -9,7 +9,7 @@ __all__ = ("ParameterDefinition", "create_parameter_definition", "merge_paramete
 
 
 if TYPE_CHECKING:
-    from starlite.signature.models import SignatureField
+    from starlite._signature.models import SignatureField
 
 
 class ParameterDefinition(NamedTuple):

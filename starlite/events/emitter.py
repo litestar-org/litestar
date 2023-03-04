@@ -40,7 +40,7 @@ class BaseEventEmitterBackend(ABC):
 
         :param event_id: The ID of the event to emit, e.g 'my_event'.
         :param args: args to pass to the listener(s).
-        :param kwargs: kwargs to pass to the listener(s)
+        :param kwargs: _kwargs to pass to the listener(s)
         :return: None
         """
         raise NotImplementedError("not implemented")
@@ -54,7 +54,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
 
         :param event_id: The ID of the event to emit, e.g 'my_event'.
         :param args: args to pass to the listener(s).
-        :param kwargs: kwargs to pass to the listener(s)
+        :param kwargs: _kwargs to pass to the listener(s)
         :return: None
         """
         if listeners := self.listeners.get(event_id):

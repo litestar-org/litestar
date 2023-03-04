@@ -44,7 +44,7 @@ T = TypeVar("T")
 
 
 AUTODISCOVER_PATHS = [
-    "asgi.py",
+    "_asgi.py",
     "app.py",
     "application.py",
     "app/__init__.py",
@@ -125,7 +125,7 @@ class LoadedApp:
 
 
 class StarliteGroup(Group):
-    """:class:`click.Group` subclass that automatically injects ``app`` and ``env` kwargs into commands that request it.
+    """:class:`click.Group` subclass that automatically injects ``app`` and ``env` _kwargs into commands that request it.
 
     Use this as the ``cls`` for :class:`click.Group` if you're extending the internal CLI with a group. For ``command``s
     added directly to the root group this is not needed.
@@ -144,17 +144,17 @@ class StarliteGroup(Group):
     def add_command(self, cmd: Command, name: str | None = None) -> None:
         """Add command.
 
-        If necessary, inject ``app`` and ``env`` kwargs
+        If necessary, inject ``app`` and ``env`` _kwargs
         """
         if cmd.callback:
             cmd.callback = _inject_args(cmd.callback)
         super().add_command(cmd)
 
     def command(self, *args: Any, **kwargs: Any) -> Callable[[AnyCallable], Command] | Command:  # type: ignore[override]
-        # For some reason, even when copying the overloads + signature from click 1:1, mypy goes haywire
+        # For some reason, even when copying the overloads + _signature from click 1:1, mypy goes haywire
         """Add a function as a command.
 
-        If necessary, inject ``app`` and ``env`` kwargs
+        If necessary, inject ``app`` and ``env`` _kwargs
         """
 
         def decorator(f: AnyCallable) -> Command:

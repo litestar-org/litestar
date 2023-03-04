@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from click import Context, group, option, pass_context
 
+from ._utils import StarliteEnv, StarliteExtensionGroup
 from .commands import core, schema, sessions
-from .utils import StarliteEnv, StarliteExtensionGroup
 
 __all__ = ("starlite_group",)
 

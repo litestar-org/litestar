@@ -25,6 +25,7 @@ from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 from typing_extensions import get_origin
 
+from starlite._signature.models import SignatureField
 from starlite.constants import UNDEFINED_SENTINELS
 from starlite.datastructures.upload_file import UploadFile
 from starlite.exceptions import ImproperlyConfiguredException
@@ -35,7 +36,6 @@ from starlite.openapi.constants import (
 from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.utils import get_openapi_type_for_complex_type
 from starlite.pagination import ClassicPagination, CursorPagination, OffsetPagination
-from starlite.signature.models import SignatureField
 from starlite.types import Empty
 from starlite.utils import is_dataclass_class_or_instance, is_typed_dict
 from starlite.utils.pydantic import (

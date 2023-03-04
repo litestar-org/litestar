@@ -44,7 +44,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
 
 
 class DefineMiddleware:
-    """Container enabling passing ``*args`` and ``**kwargs`` to Middleware class constructors and factory functions."""
+    """Container enabling passing ``*args`` and ``**_kwargs`` to Middleware class constructors and factory functions."""
 
     __slots__ = (
         "middleware",

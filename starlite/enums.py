@@ -54,12 +54,12 @@ class ScopeType(str, Enum):
     """An Enum for the 'http' key stored under Scope.
 
     Notes:
-        - ``asgi`` is used by Starlite internally and is not part of the specification.
+        - ``_asgi`` is used by Starlite internally and is not part of the specification.
     """
 
     HTTP = "http"
     WEBSOCKET = "websocket"
-    ASGI = "asgi"
+    ASGI = "_asgi"
 
 
 class ParamType(str, Enum):

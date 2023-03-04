@@ -17,7 +17,7 @@ def narrow_response_headers(headers: ResponseHeaders | None) -> Sequence[Respons
     :class:`.datastructures.response_header.ResponseHeader` from it, otherwise return ``headers`` unchanged
     """
     return (
-        [ResponseHeader(name=name, value=value) for name, value in headers.items()]
+        tuple(ResponseHeader(name=name, value=value) for name, value in headers.items())
         if isinstance(headers, Mapping)
         else headers
     )
@@ -27,4 +27,8 @@ def narrow_response_cookies(cookies: ResponseCookies | None) -> Sequence[Cookie]
     """Given :class:`.types.ResponseCookies` as a :class:`typing.Mapping`, create a list of
     :class:`.datastructures.cookie.Cookie` from it, otherwise return ``cookies`` unchanged
     """
-    return [Cookie(key=key, value=value) for key, value in cookies.items()] if isinstance(cookies, Mapping) else cookies
+    return (
+        tuple(Cookie(key=key, value=value) for key, value in cookies.items())
+        if isinstance(cookies, Mapping)
+        else cookies
+    )

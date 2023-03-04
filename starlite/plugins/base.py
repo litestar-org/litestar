@@ -141,7 +141,7 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
         """Create a data container class corresponding to the given model class.
 
         :param model_class: The model class that serves as a basis.
-        :param kwargs: Any kwargs.
+        :param kwargs: Any _kwargs.
         :return: The generated data container class.
         """
         raise NotImplementedError()

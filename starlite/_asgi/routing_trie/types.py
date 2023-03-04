@@ -40,7 +40,7 @@ class RouteTrieNode:
         "path_parameters",
     )
 
-    asgi_handlers: dict[Method | Literal["websocket", "asgi"], ASGIHandlerTuple]
+    asgi_handlers: dict[Method | Literal["websocket", "_asgi"], ASGIHandlerTuple]
     """A mapping of ASGI handlers stored on the node."""
     child_keys: set[str | type[PathParameterSentinel]]
     """
@@ -53,12 +53,12 @@ class RouteTrieNode:
     is_path_type: bool
     """Designates the node as having a 'path' type path parameter."""
     is_asgi: bool
-    """Designate the node as having an `@asgi` type handler."""
+    """Designate the node as having an `@_asgi` type handler."""
     is_mount: bool
     """Designate the node as being a mount route."""
     is_static: bool
     """Designate the node as being a static mount route."""
-    path_parameters: dict[Method | Literal["websocket"] | Literal["asgi"], tuple[PathParameterDefinition, ...]]
+    path_parameters: dict[Method | Literal["websocket"] | Literal["_asgi"], tuple[PathParameterDefinition, ...]]
     """A list of tuples containing path parameter definitions.
 
     This is used for parsing extracted path parameter values.

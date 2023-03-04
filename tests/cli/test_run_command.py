@@ -7,8 +7,8 @@ from _pytest.monkeypatch import MonkeyPatch
 from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
+from starlite.cli._utils import LoadedApp
 from starlite.cli.main import starlite_group as cli_command
-from starlite.cli.utils import LoadedApp
 from tests.cli import (
     CREATE_APP_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT,
@@ -80,7 +80,7 @@ def test_run_command(
     else:
         web_concurrency = 1
 
-    path = create_app_file(custom_app_file or "asgi.py")
+    path = create_app_file(custom_app_file or "_asgi.py")
 
     result = runner.invoke(cli_command, args)
 
@@ -167,7 +167,7 @@ def test_run_command_force_debug(
 ) -> None:
     mock_app = MagicMock()
     mocker.patch(
-        "starlite.cli.utils._autodiscover_app",
+        "starlite.cli._utils._autodiscover_app",
         return_value=LoadedApp(app=mock_app, app_path=str(app_file), is_factory=False),
     )
 

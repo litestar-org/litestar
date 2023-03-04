@@ -9,6 +9,7 @@ from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
 from starlite import Controller, MediaType, Starlite, get
+from starlite._signature.models import PydanticSignatureModel, SignatureField
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.di import Provide
 from starlite.enums import ParamType
@@ -20,7 +21,6 @@ from starlite.openapi.schema import (
     update_schema_with_signature_field,
 )
 from starlite.params import Parameter, ParameterKwarg
-from starlite.signature.models import PydanticSignatureModel, SignatureField
 from starlite.testing import create_test_client
 from tests import TypedDictPerson
 

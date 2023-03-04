@@ -16,7 +16,7 @@ __all__ = ("get_fn_type_hints", "get_signature_model")
 
 
 if TYPE_CHECKING:
-    from starlite.signature.models import SignatureModel
+    from starlite._signature.models import SignatureModel
 
 
 STARLITE_GLOBAL_NAMES = {
@@ -30,14 +30,14 @@ STARLITE_GLOBAL_NAMES = {
     "WebSocket": WebSocket,
     "WebSocketScope": WebSocketScope,
 }
-"""A mapping of names used for handler signature forward-ref resolution.
+"""A mapping of names used for handler _signature forward-ref resolution.
 
 This allows users to include these names within an `if TYPE_CHECKING:` block in their handler module.
 """
 
 
 def get_signature_model(value: Any) -> type[SignatureModel]:
-    """Retrieve and validate the signature model from a provider or handler."""
+    """Retrieve and validate the _signature model from a provider or handler."""
     try:
         return cast("type[SignatureModel]", value.signature_model)
     except AttributeError as e:  # pragma: no cover
@@ -48,7 +48,7 @@ def get_fn_type_hints(fn: Any) -> dict[str, Any]:
     """Resolve type hints for ``fn``.
 
     Args:
-        fn: Thing that is having its signature modelled.
+        fn: Thing that is having its _signature modelled.
 
     Returns:
         Mapping of names to types.

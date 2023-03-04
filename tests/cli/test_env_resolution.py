@@ -5,7 +5,7 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 from starlite import Starlite
-from starlite.cli.utils import AUTODISCOVER_PATHS, StarliteEnv, _path_to_dotted_path
+from starlite.cli._utils import AUTODISCOVER_PATHS, StarliteEnv, _path_to_dotted_path
 from tests.cli import (
     APP_FILE_CONTENT,
     CREATE_APP_FILE_CONTENT,

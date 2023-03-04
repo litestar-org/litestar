@@ -4,14 +4,14 @@ from urllib.parse import urlencode
 import pytest
 
 from starlite import HttpMethod
-from starlite.datastructures import Cookie, MultiDict
-from starlite.parsers import (
+from starlite._parsers import (
     _parse_headers,
     parse_cookie_string,
     parse_headers,
     parse_query_string,
     parse_url_encoded_form_data,
 )
+from starlite.datastructures import Cookie, MultiDict
 from starlite.testing import RequestFactory, create_test_client
 
 

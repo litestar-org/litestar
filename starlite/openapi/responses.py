@@ -11,6 +11,7 @@ from pydantic_openapi_schema.v3_1_0.media_type import (
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 from typing_extensions import get_args, get_origin
 
+from starlite._signature.models import SignatureField
 from starlite.enums import MediaType
 from starlite.exceptions import (
     HTTPException,
@@ -22,7 +23,6 @@ from starlite.openapi.schema import create_schema
 from starlite.openapi.utils import pascal_case_to_text
 from starlite.response import Response as StarliteResponse
 from starlite.response_containers import File, Redirect, Stream, Template
-from starlite.signature.models import SignatureField
 from starlite.utils import get_enum_string_value, get_name, is_class_and_subclass
 
 __all__ = (

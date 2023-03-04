@@ -3,20 +3,20 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
-from starlite.asgi.routing_trie.types import (
+from starlite._asgi.routing_trie.types import (
     ASGIHandlerTuple,
     PathParameterSentinel,
     create_node,
 )
-from starlite.asgi.utils import wrap_in_exception_handler
+from starlite._asgi.utils import wrap_in_exception_handler
 from starlite.types.internal_types import PathParameterDefinition
 
 __all__ = ("add_mount_route", "add_route_to_trie", "build_route_middleware_stack", "configure_node")
 
 
 if TYPE_CHECKING:
+    from starlite._asgi.routing_trie.types import RouteTrieNode
     from starlite.app import Starlite
-    from starlite.asgi.routing_trie.types import RouteTrieNode
     from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from starlite.types import ASGIApp, RouteHandlerType
 
@@ -161,11 +161,11 @@ def configure_node(
         node.path_parameters["websocket"] = route.path_parameters
 
     else:
-        node.asgi_handlers["asgi"] = ASGIHandlerTuple(
+        node.asgi_handlers["_asgi"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),
             handler=route.route_handler,
         )
-        node.path_parameters["asgi"] = route.path_parameters
+        node.path_parameters["_asgi"] = route.path_parameters
         node.is_asgi = True
 
 

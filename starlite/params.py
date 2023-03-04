@@ -411,6 +411,6 @@ def Dependency(*, default: Any = Empty, skip_validation: bool = False) -> Any:
 
     Args:
         default: A default value to use in case a dependency is not provided.
-        skip_validation: If `True` provided dependency values are not validated by signature model.
+        skip_validation: If `True` provided dependency values are not validated by _signature model.
     """
     return DependencyKwarg(default=default, skip_validation=skip_validation)

@@ -4,16 +4,13 @@ from typing import TYPE_CHECKING, Any, Callable
 
 from anyio import create_task_group
 
-from starlite.constants import RESERVED_KWARGS
-from starlite.enums import ParamType, RequestEncodingType
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.kwargs.cleanup import DependencyCleanupGroup
-from starlite.kwargs.dependencies import (
+from starlite._kwargs.cleanup import DependencyCleanupGroup
+from starlite._kwargs.dependencies import (
     Dependency,
     create_dependency_batches,
     resolve_dependency,
 )
-from starlite.kwargs.extractors import (
+from starlite._kwargs.extractors import (
     body_extractor,
     cookies_extractor,
     create_connection_value_extractor,
@@ -27,14 +24,17 @@ from starlite.kwargs.extractors import (
     socket_extractor,
     state_extractor,
 )
-from starlite.kwargs.parameter_definition import (
+from starlite._kwargs.parameter_definition import (
     ParameterDefinition,
     create_parameter_definition,
     merge_parameter_sets,
 )
+from starlite._signature import SignatureModel, get_signature_model
+from starlite._signature.models import SignatureField
+from starlite.constants import RESERVED_KWARGS
+from starlite.enums import ParamType, RequestEncodingType
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, ParameterKwarg
-from starlite.signature import SignatureModel, get_signature_model
-from starlite.signature.models import SignatureField
 
 __all__ = ("KwargsModel",)
 
@@ -45,7 +45,7 @@ if TYPE_CHECKING:
 
 
 class KwargsModel:
-    """Model required kwargs for a given RouteHandler and its dependencies.
+    """Model required _kwargs for a given RouteHandler and its dependencies.
 
     This is done once and is memoized during application bootstrap, ensuring minimal runtime overhead.
     """
@@ -82,14 +82,14 @@ class KwargsModel:
         """Initialize ``KwargsModel``.
 
         Args:
-            expected_cookie_params: Any expected cookie parameter kwargs
-            expected_dependencies: Any expected dependency kwargs
-            expected_form_data: Any expected form data kwargs
-            expected_msgpack_data: Any expected MessagePack data kwargs
-            expected_header_params: Any expected header parameter kwargs
-            expected_path_params: Any expected path parameter kwargs
-            expected_query_params: Any expected query parameter kwargs
-            expected_reserved_kwargs: Any expected reserved kwargs, e.g. 'state'
+            expected_cookie_params: Any expected cookie parameter _kwargs
+            expected_dependencies: Any expected dependency _kwargs
+            expected_form_data: Any expected form data _kwargs
+            expected_msgpack_data: Any expected MessagePack data _kwargs
+            expected_header_params: Any expected header parameter _kwargs
+            expected_path_params: Any expected path parameter _kwargs
+            expected_query_params: Any expected query parameter _kwargs
+            expected_reserved_kwargs: Any expected reserved _kwargs, e.g. 'state'
             sequence_query_parameter_names: Any query parameters that are sequences
             is_data_optional: Treat data as optional
         """
@@ -258,7 +258,7 @@ class KwargsModel:
         during the application bootstrap process.
 
         Args:
-            signature_model: A :class:`SignatureModel <starlite.signature.SignatureModel>` subclass.
+            signature_model: A :class:`SignatureModel <starlite._signature.SignatureModel>` subclass.
             dependencies: A string keyed dictionary mapping dependency providers.
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
@@ -350,7 +350,7 @@ class KwargsModel:
         )
 
     def to_kwargs(self, connection: ASGIConnection) -> dict[str, Any]:
-        """Return a dictionary of kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
+        """Return a dictionary of _kwargs. Async values, i.e. CoRoutines, are not resolved to ensure this function is
         sync.
 
         Args:
@@ -358,7 +358,7 @@ class KwargsModel:
                 :class:`WebSocket <starlite.connection.WebSocket>`.
 
         Returns:
-            A string keyed dictionary of kwargs expected by the handler function and its dependencies.
+            A string keyed dictionary of _kwargs expected by the handler function and its dependencies.
         """
         output: dict[str, Any] = {}
 
@@ -370,7 +370,7 @@ class KwargsModel:
     async def resolve_dependencies(
         self, connection: "ASGIConnection", kwargs: dict[str, Any]
     ) -> "DependencyCleanupGroup":
-        """Resolve all dependencies into the kwargs, recursively.
+        """Resolve all dependencies into the _kwargs, recursively.
 
         Args:
             connection: An instance of :class:`Request <starlite.connection.Request>` or
@@ -427,7 +427,7 @@ class KwargsModel:
         signature_fields: dict[str, SignatureField],
         layered_parameters: dict[str, SignatureField],
     ) -> None:
-        """Validate that there are no ambiguous kwargs, that is, kwargs declared using the same key in different
+        """Validate that there are no ambiguous _kwargs, that is, _kwargs declared using the same key in different
         places.
         """
         dependency_keys = set(dependencies.keys())
@@ -456,6 +456,6 @@ class KwargsModel:
         used_reserved_kwargs = {*parameter_names, *path_parameters, *dependency_keys}.intersection(RESERVED_KWARGS)
         if used_reserved_kwargs:
             raise ImproperlyConfiguredException(
-                f"Reserved kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter arguments. "
-                f"The following kwargs have been used: {', '.join(used_reserved_kwargs)}"
+                f"Reserved _kwargs ({', '.join(RESERVED_KWARGS)}) cannot be used for dependencies and parameter arguments. "
+                f"The following _kwargs have been used: {', '.join(used_reserved_kwargs)}"
             )

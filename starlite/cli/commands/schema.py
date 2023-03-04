@@ -7,7 +7,7 @@ from jsbeautifier import Beautifier
 from yaml import dump as dump_yaml
 
 from starlite import Starlite
-from starlite.cli.utils import StarliteCLIException, StarliteGroup
+from starlite.cli._utils import StarliteCLIException, StarliteGroup
 from starlite.openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )

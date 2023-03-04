@@ -434,7 +434,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
         return pydantic_model.from_orm(model_instance).dict()  # type:ignore[pydantic-unexpected]
 
     def from_dict(self, model_class: "Type[DeclarativeMeta]", **kwargs: Any) -> DeclarativeMeta:
-        """Given a dictionary of kwargs, return an instance of the given model_class.
+        """Given a dictionary of _kwargs, return an instance of the given model_class.
 
         Args:
             model_class: A declarative table class.

@@ -3,9 +3,9 @@ from __future__ import annotations
 from copy import copy
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
+from starlite._signature.models import SignatureField
 from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.signature.models import SignatureField
 from starlite.types import (
     Dependencies,
     Empty,
@@ -25,11 +25,11 @@ __all__ = ("BaseRouteHandler",)
 if TYPE_CHECKING:
     from inspect import Signature
 
+    from starlite._signature.models import SignatureModel
     from starlite.connection import ASGIConnection
     from starlite.controller import Controller
     from starlite.params import ParameterKwarg
     from starlite.router import Router
-    from starlite.signature.models import SignatureModel
     from starlite.types import AnyCallable, ExceptionHandler
 
 T = TypeVar("T", bound="BaseRouteHandler")
@@ -193,7 +193,7 @@ class BaseRouteHandler(Generic[T]):
         return self._resolved_guards  # type:ignore
 
     def resolve_dependencies(self) -> dict[str, Provide]:
-        """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
+        """Return all dependencies correlating to handler function's _kwargs that exist in the handler's scope."""
         if self._resolved_dependencies is Empty:
             self._resolved_dependencies = {}
 

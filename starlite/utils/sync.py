@@ -45,7 +45,7 @@ def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[
 class AsyncCallable(Generic[P, T]):
     """Wrap a callable into an asynchronous callable."""
 
-    __slots__ = ("args", "kwargs", "ref", "is_method", "num_expected_args")
+    __slots__ = ("args", "_kwargs", "ref", "is_method", "num_expected_args")
 
     def __init__(self, fn: Callable[P, T]) -> None:
         """Initialize the wrapper from any callable.
@@ -89,7 +89,7 @@ def as_async_callable_list(value: Callable | list[Callable]) -> list[AsyncCallab
 def async_partial(fn: Callable) -> Callable:
     """Wrap a given sync function making it async.
 
-    In difference to the :func:`asyncio.run_sync` function, it allows for passing kwargs.
+    In difference to the :func:`asyncio.run_sync` function, it allows for passing _kwargs.
 
     Args:
         fn: A sync callable to wrap.

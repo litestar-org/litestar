@@ -224,7 +224,7 @@ class DTOFactory:
                 are either a ``str`` to rename an attribute, or tuple `(str, Any)` to remap both name and type of the
                 attribute.
             field_definitions (dict[str, tuple[Any, Any]] | None): Add fields to the model that don't exist on ``source``.
-                These are passed as kwargs to `pydantic.create_model()`.
+                These are passed as _kwargs to `pydantic.create_model()`.
 
         Returns:
             Type[DTO[T]]

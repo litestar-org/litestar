@@ -7,7 +7,7 @@ from hypothesis import strategies as st
 from starlite import HttpMethod, MediaType, Response, delete, get, patch, post, put
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http_handlers import HTTPRouteHandler
-from starlite.handlers.http_handlers.base import get_default_status_code
+from starlite.handlers.http_handlers._utils import get_default_status_code
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.types import ResponseType
 from starlite.utils import normalize_path

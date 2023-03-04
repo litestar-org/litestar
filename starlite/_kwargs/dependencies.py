@@ -3,16 +3,16 @@ from __future__ import annotations
 from inspect import isasyncgen, isgenerator
 from typing import TYPE_CHECKING, Any
 
-from starlite.signature.utils import get_signature_model
+from starlite._signature.utils import get_signature_model
 from starlite.utils.compat import async_next
 
 __all__ = ("Dependency", "create_dependency_batches", "map_dependencies_recursively", "resolve_dependency")
 
 
 if TYPE_CHECKING:
+    from starlite._kwargs.cleanup import DependencyCleanupGroup
     from starlite.connection import ASGIConnection
     from starlite.di import Provide
-    from starlite.kwargs.cleanup import DependencyCleanupGroup
 
 
 class Dependency:
@@ -46,16 +46,16 @@ async def resolve_dependency(
     kwargs: dict[str, Any],
     cleanup_group: "DependencyCleanupGroup",
 ) -> None:
-    """Resolve a given instance of :class:`Dependency <starlite.kwargs.Dependency>`.
+    """Resolve a given instance of :class:`Dependency <starlite._kwargs.Dependency>`.
 
     All required sub dependencies must already
-    be resolved into the kwargs. The result of the dependency will be stored in the kwargs.
+    be resolved into the _kwargs. The result of the dependency will be stored in the _kwargs.
 
     Args:
-        dependency: An instance of :class:`Dependency <starlite.kwargs.Dependency>`
+        dependency: An instance of :class:`Dependency <starlite._kwargs.Dependency>`
         connection: An instance of :class:`Request <starlite.connection.Request>` or
             :class:`WebSocket <starlite.connection.WebSocket>`.
-        kwargs: Any kwargs to pass to the dependency, the result will be stored here as well.
+        kwargs: Any _kwargs to pass to the dependency, the result will be stored here as well.
         cleanup_group: DependencyCleanupGroup to which generators returned by ``dependency`` will be added
     """
     signature_model = get_signature_model(dependency.provide)
@@ -80,7 +80,7 @@ def create_dependency_batches(expected_dependencies: set[Dependency]) -> list[se
     """Calculate batches for all dependencies, recursively.
 
     Args:
-        expected_dependencies: A set of all direct :class:`Dependencies <starlite.kwargs.Dependency>`.
+        expected_dependencies: A set of all direct :class:`Dependencies <starlite._kwargs.Dependency>`.
 
     Returns:
         A list of batches.

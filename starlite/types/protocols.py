@@ -12,7 +12,7 @@ class Logger(Protocol):  # pragma: no cover
         Args:
              event: Log message.
              *args: Any args.
-             **kwargs: Any kwargs.
+             **kwargs: Any _kwargs.
         """
 
     def info(self, event: str, *args: Any, **kwargs: Any) -> Any:
@@ -21,7 +21,7 @@ class Logger(Protocol):  # pragma: no cover
         Args:
              event: Log message.
              *args: Any args.
-             **kwargs: Any kwargs.
+             **kwargs: Any _kwargs.
         """
 
     def warning(self, event: str, *args: Any, **kwargs: Any) -> Any:
@@ -30,7 +30,7 @@ class Logger(Protocol):  # pragma: no cover
         Args:
              event: Log message.
              *args: Any args.
-             **kwargs: Any kwargs.
+             **kwargs: Any _kwargs.
         """
 
     def warn(self, event: str, *args: Any, **kwargs: Any) -> Any:
@@ -39,7 +39,7 @@ class Logger(Protocol):  # pragma: no cover
         Args:
              event: Log message.
              *args: Any args.
-             **kwargs: Any kwargs.
+             **kwargs: Any _kwargs.
         """
 
     def error(self, event: str, *args: Any, **kwargs: Any) -> Any:
@@ -48,7 +48,7 @@ class Logger(Protocol):  # pragma: no cover
         Args:
              event: Log message.
              *args: Any args.
-             **kwargs: Any kwargs.
+             **kwargs: Any _kwargs.
         """
 
     def fatal(self, event: str, *args: Any, **kwargs: Any) -> Any:
@@ -57,7 +57,7 @@ class Logger(Protocol):  # pragma: no cover
         Args:
              event: Log message.
              *args: Any args.
-             **kwargs: Any kwargs.
+             **kwargs: Any _kwargs.
         """
 
     def exception(self, event: str, *args: Any, **kwargs: Any) -> Any:
@@ -67,7 +67,7 @@ class Logger(Protocol):  # pragma: no cover
         Args:
              event: Log message.
              *args: Any args.
-             **kwargs: Any kwargs.
+             **kwargs: Any _kwargs.
         """
 
     def critical(self, event: str, *args: Any, **kwargs: Any) -> Any:
@@ -76,7 +76,7 @@ class Logger(Protocol):  # pragma: no cover
         Args:
              event: Log message.
              *args: Any args.
-             **kwargs: Any kwargs.
+             **kwargs: Any _kwargs.
         """
 
 

@@ -231,7 +231,7 @@ class SQLAlchemyConfig:
         """Return the engine configuration as a dict.
 
         Returns:
-            A string keyed dict of config kwargs for the SQLAlchemy ``create_engine`` function.
+            A string keyed dict of config _kwargs for the SQLAlchemy ``create_engine`` function.
         """
         engine_excluded_fields: set[str] = {"future", "logging_level"} if self.use_async_engine else {"logging_level"}
 
