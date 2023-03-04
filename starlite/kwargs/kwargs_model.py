@@ -50,6 +50,7 @@ class KwargsModel:
     __slots__ = (
         "dependency_batches",
         "expected_cookie_params",
+        "expected_dto_data",
         "expected_form_data",
         "expected_msgpack_data",
         "expected_header_params",
@@ -66,6 +67,7 @@ class KwargsModel:
         self,
         *,
         expected_cookie_params: set[ParameterDefinition],
+        expected_dto_data: SignatureField | None,
         expected_dependencies: set[Dependency],
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
         expected_msgpack_data: SignatureField | None,
@@ -81,6 +83,7 @@ class KwargsModel:
         Args:
             expected_cookie_params: Any expected cookie parameter kwargs
             expected_dependencies: Any expected dependency kwargs
+            expected_dto_data: Any expected DTO data kwargs
             expected_form_data: Any expected form data kwargs
             expected_msgpack_data: Any expected MessagePack data kwargs
             expected_header_params: Any expected header parameter kwargs
@@ -91,6 +94,7 @@ class KwargsModel:
             is_data_optional: Treat data as optional
         """
         self.expected_cookie_params = expected_cookie_params
+        self.expected_dto_data = expected_dto_data
         self.expected_form_data = expected_form_data
         self.expected_msgpack_data = expected_msgpack_data
         self.expected_header_params = expected_header_params
@@ -269,7 +273,7 @@ class KwargsModel:
         cls._validate_raw_kwargs(
             path_parameters=path_parameters,
             dependencies=dependencies,
-            signature_fields=signature_model.fields,
+            signature_fields=signature_fields,
             layered_parameters=layered_parameters,
         )
 
@@ -289,12 +293,15 @@ class KwargsModel:
 
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None = None
         expected_msgpack_data: SignatureField | None = None
+        expected_dto_data: SignatureField | None = None
 
-        if (data_signature_field := signature_fields.get("data")) and (
-            media_type := data_signature_field.kwarg_model.media_type
-            if isinstance(data_signature_field.kwarg_model, BodyKwarg)
-            else None
-        ):
+        data_signature_field = signature_fields.get("data")
+
+        media_type: RequestEncodingType | str | None = None
+        if data_signature_field and isinstance(data_signature_field.kwarg_model, BodyKwarg):
+            media_type = data_signature_field.kwarg_model.media_type
+
+        if data_signature_field and media_type:
             if media_type in (
                 RequestEncodingType.MULTI_PART,
                 RequestEncodingType.URL_ENCODED,
@@ -303,6 +310,9 @@ class KwargsModel:
 
             elif media_type == RequestEncodingType.MESSAGEPACK:
                 expected_msgpack_data = data_signature_field
+
+        elif data_signature_field and data_signature_field.has_dto_annotation:
+            expected_dto_data = data_signature_field
 
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
@@ -334,16 +344,17 @@ class KwargsModel:
             sequence_query_parameter_names.update(dependency_kwargs_model.sequence_query_parameter_names)
 
         return KwargsModel(
-            expected_form_data=expected_form_data,
-            expected_msgpack_data=expected_msgpack_data,
+            expected_cookie_params=expected_cookie_parameters,
             expected_dependencies=expected_dependencies,
+            expected_dto_data=expected_dto_data,
+            expected_form_data=expected_form_data,
+            expected_header_params=expected_header_parameters,
+            expected_msgpack_data=expected_msgpack_data,
             expected_path_params=expected_path_parameters,
             expected_query_params=expected_query_parameters,
-            expected_cookie_params=expected_cookie_parameters,
-            expected_header_params=expected_header_parameters,
             expected_reserved_kwargs=expected_reserved_kwargs,
-            sequence_query_parameter_names=sequence_query_parameter_names,
             is_data_optional=signature_fields["data"].is_optional if "data" in expected_reserved_kwargs else False,
+            sequence_query_parameter_names=sequence_query_parameter_names,
         )
 
     def to_kwargs(self, connection: ASGIConnection) -> dict[str, Any]:

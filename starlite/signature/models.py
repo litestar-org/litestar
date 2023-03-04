@@ -18,6 +18,7 @@ from starlite.plugins import PluginMapping
 from starlite.types import Empty
 from starlite.utils import is_any, is_optional_union, is_union, make_non_optional_union
 from starlite.utils.predicates import (
+    is_class_and_subclass,
     is_generic,
     is_mapping,
     is_non_string_iterable,
@@ -145,7 +146,13 @@ class SignatureField:
     @property
     def has_dto_annotation(self) -> bool:
         """Field is annotated with a DTO type."""
-        return any(issubclass(t, AbstractDTO) for t in (get_args(self.field_type) or (self.field_type,)))
+        # MyPY error:
+        # Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
+        # https://github.com/python/mypy/issues/4717
+        return any(
+            is_class_and_subclass(t, AbstractDTO)  # type:ignore[type-abstract]
+            for t in (get_args(self.field_type) or (self.field_type,))
+        )
 
     @classmethod
     def create(
