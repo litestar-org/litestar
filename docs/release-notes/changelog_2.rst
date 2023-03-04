@@ -168,3 +168,53 @@ Cleanup of the ``starlite`` namespace  **[Breaking]**
     :ref:`migration guide <release-notes/migration_guide_2:Changed module paths>`
 
     Reference: https://github.com/starlite-api/starlite/issues/1135
+
+
+Bugfixes
++++++++++
+
+Fix https://github.com/starlite-api/starlite/issues/1256: Resolving of relative paths in ``StaticFilesConfig``
+    Using a relative :class:`pathlib.Path` did not resolve correctly and result in a ``NotFoundException``
+
+    Reference: https://github.com/starlite-api/starlite/issues/1256
+
+Fix https://github.com/starlite-api/starlite/issues/1191: ``--reload`` flag to ``starlite run`` not working correctly
+    Passing the ``--reload`` flag to the ``starlite run`` command did not work correctly in all circumstances due to an
+    issue with uvicorn. This was resolved by invoking uvicorn in a subprocess.
+
+    Reference: https://github.com/starlite-api/starlite/issues/1191
+
+Fix https://github.com/starlite-api/starlite/issues/1210: Optional types generate incorrect OpenAPI schemas
+    An optional query parameter was incorrectly represented as
+
+    .. code-block:: json
+
+        { "oneOf": [
+          { "type": null" },
+          { "oneOf": [] }
+         ]}
+
+    Reference: https://github.com/starlite-api/starlite/issues/1210
+
+Fix https://github.com/starlite-api/starlite/issues/1228: ``LoggingMiddleware`` is sending obfuscated session id to client
+    ``LoggingMiddleware`` would in some cases send obfuscated data to the client, due to a bug in the obfuscation function
+    which obfuscated values in the input dictionary in-place.
+
+    Reference: https://github.com/starlite-api/starlite/issues/1228
+
+Fix missing ``domain`` configuration value for JWT cookie auth
+    :class:`starlite.contrib.jwt.jwt_auth.JWTCookieAuth` didn't set the ``domain`` configuration value on the response
+    cookie.
+
+    Reference: https://github.com/starlite-api/starlite/pull/1223/files
+
+Fix https://github.com/starlite-api/starlite/issues/1201: Can not serve static file in ``/`` path
+    A validation error made it impossible to serve static files from the root path ``/``.
+
+    Reference: https://github.com/starlite-api/starlite/issues/1201
+
+Fix https://github.com/starlite-api/starlite/issues/1149: Middleware not excluding static path
+    A middleware's ``exclude`` parameter would sometimes not be honoured if the path was used to serve static files
+    using ``StaticFilesConfig``.
+
+    Reference: https://github.com/starlite-api/starlite/issues/1149
