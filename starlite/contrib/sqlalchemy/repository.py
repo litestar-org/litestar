@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, Literal, Tuple, TypeVar, cast
 
 from sqlalchemy import func as sql_func
 from sqlalchemy import insert, over
@@ -38,7 +38,7 @@ T = TypeVar("T")
 ModelT = TypeVar("ModelT", bound="base.Base | base.AuditBase")
 SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyRepository")
 SelectT = TypeVar("SelectT", bound="Select[Any]")
-RowT = TypeVar("RowT", bound=tuple[Any, ...])
+RowT = TypeVar("RowT", bound=Tuple[Any, ...])
 
 
 @contextmanager
