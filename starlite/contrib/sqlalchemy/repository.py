@@ -371,11 +371,12 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         return cast("Result[RowT]", await self.session.execute(select))
 
     def _apply_filters(self, *filters: FilterTypes, apply_pagination: bool = True, select: SelectT) -> SelectT:
-        """
+        """Apply filters to a select statement.
+
         Args:
             *filters: filter types to apply to the query
-            apply_pagination:
-            select:
+            apply_pagination: applies pagination filters if true
+            select: select statement to apply filters
 
         Keyword Args:
             select: select to apply filters against
@@ -416,7 +417,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             select = select.where(field < before)
         if after is not None:
             select = select.where(field > before)
-        return select
+        return select  # noqa: R504
 
     def _filter_select_by_kwargs(self, select: SelectT, **kwargs: Any) -> SelectT:
         for key, val in kwargs.items():

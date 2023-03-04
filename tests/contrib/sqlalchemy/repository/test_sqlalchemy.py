@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock, call
+
 import pytest
 from sqlalchemy.exc import IntegrityError, InvalidRequestError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,11 +15,11 @@ from starlite.contrib.repository.filters import (
     CollectionFilter,
     LimitOffset,
 )
+from starlite.contrib.sqlalchemy import base
 from starlite.contrib.sqlalchemy.repository import (
     SQLAlchemyRepository,
     wrap_sqlalchemy_exception,
 )
-from starlite.contrib.sqlalchemy import base
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
