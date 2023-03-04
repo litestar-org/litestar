@@ -7,6 +7,9 @@ from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.cache import CacheConfig
 from starlite.events.emitter import SimpleEventEmitter
 
+__all__ = ("AppConfig",)
+
+
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 

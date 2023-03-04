@@ -19,6 +19,9 @@ from starlite.types.composite_types import MaybePartial
 from starlite.utils import AsyncCallable, Ref, get_name, normalize_path
 from starlite.utils.helpers import unwrap_partial
 
+__all__ = ("BaseRouteHandler",)
+
+
 if TYPE_CHECKING:
     from inspect import Signature
 

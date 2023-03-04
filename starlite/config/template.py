@@ -9,6 +9,9 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.template import TemplateEngineProtocol
 from starlite.types import PathType
 
+__all__ = ("TemplateConfig",)
+
+
 T = TypeVar("T", bound=TemplateEngineProtocol)
 
 

@@ -9,6 +9,9 @@ from starlite.enums import RequestEncodingType
 from starlite.openapi.schema import create_schema, update_schema_with_signature_field
 from starlite.params import BodyKwarg
 
+__all__ = ("create_request_body",)
+
+
 if TYPE_CHECKING:
     from starlite.plugins.base import OpenAPISchemaPluginProtocol
     from starlite.signature.models import SignatureField

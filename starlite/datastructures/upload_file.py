@@ -8,6 +8,9 @@ from anyio.to_thread import run_sync
 from starlite.constants import ONE_MEGABYTE
 from starlite.openapi.enums import OpenAPIType
 
+__all__ = ("UploadFile",)
+
+
 if TYPE_CHECKING:
     from pydantic.fields import ModelField
 

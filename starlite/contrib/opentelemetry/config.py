@@ -10,6 +10,9 @@ from starlite.contrib.opentelemetry.utils import get_route_details_from_scope
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import DefineMiddleware
 
+__all__ = ("OpenTelemetryConfig",)
+
+
 try:
     from opentelemetry.trace import Span, TracerProvider  # pyright: ignore
 except ImportError as e:

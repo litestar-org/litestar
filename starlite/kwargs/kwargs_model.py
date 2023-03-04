@@ -36,6 +36,9 @@ from starlite.params import BodyKwarg, ParameterKwarg
 from starlite.signature import SignatureModel, get_signature_model
 from starlite.signature.models import SignatureField
 
+__all__ = ("KwargsModel",)
+
+
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
     from starlite.di import Provide

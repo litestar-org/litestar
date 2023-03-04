@@ -7,6 +7,9 @@ from anyio import Lock
 
 from .base import Storage, StorageObject
 
+__all__ = ("MemoryStorage",)
+
+
 if TYPE_CHECKING:
     from datetime import timedelta
 

@@ -27,6 +27,9 @@ from starlite.utils.predicates import (
     is_typed_dict,
 )
 
+__all__ = ("Partial",)
+
+
 try:
     # python 3.9 changed these variable
     from typing import _UnionGenericAlias as GenericAlias  # type: ignore

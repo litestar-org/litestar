@@ -20,6 +20,9 @@ from pydantic_openapi_schema.v3_1_0 import (
 from starlite.openapi.controller import OpenAPIController
 from starlite.openapi.utils import default_operation_id_creator
 
+__all__ = ("OpenAPIConfig",)
+
+
 if TYPE_CHECKING:
     from starlite.types.callable_types import OperationIDCreator
 

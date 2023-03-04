@@ -2,6 +2,23 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Literal, Tuple, Union
 
+__all__ = (
+    "TypeScriptAnonymousInterface",
+    "TypeScriptArray",
+    "TypeScriptConst",
+    "TypeScriptContainer",
+    "TypeScriptElement",
+    "TypeScriptEnum",
+    "TypeScriptInterface",
+    "TypeScriptIntersection",
+    "TypeScriptLiteral",
+    "TypeScriptNamespace",
+    "TypeScriptPrimitive",
+    "TypeScriptProperty",
+    "TypeScriptType",
+    "TypeScriptUnion",
+)
+
 
 def _as_string(value: Any) -> str:
     if isinstance(value, str):

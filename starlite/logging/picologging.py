@@ -7,6 +7,9 @@ from typing import Any
 from starlite.exceptions import MissingDependencyException
 from starlite.logging.utils import resolve_handlers
 
+__all__ = ("QueueListenerHandler",)
+
+
 try:
     from picologging import StreamHandler
     from picologging.handlers import QueueHandler, QueueListener

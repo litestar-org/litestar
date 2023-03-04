@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING
 
 from starlite.enums import MediaType
 
+__all__ = ("ResponseSpec",)
+
+
 if TYPE_CHECKING:
     from pydantic import BaseModel
 

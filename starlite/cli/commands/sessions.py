@@ -8,6 +8,8 @@ from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.server_side import ServerSideSessionBackend
 from starlite.utils import is_class_and_subclass
 
+__all__ = ("clear_sessions_command", "delete_session_command", "get_session_backend", "sessions_group")
+
 
 def get_session_backend(app: Starlite) -> ServerSideSessionBackend:
     """Get the session backend used by a ``Starlite`` app."""

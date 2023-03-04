@@ -14,6 +14,9 @@ from starlite.asgi.utils import get_route_handlers
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import AsyncCallable, normalize_path
 
+__all__ = ("ASGIRouter",)
+
+
 if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.asgi.routing_trie.types import RouteTrieNode

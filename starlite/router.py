@@ -36,6 +36,9 @@ from starlite.utils import (
 )
 from starlite.utils.sync import AsyncCallable
 
+__all__ = ("Router",)
+
+
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 

@@ -7,6 +7,12 @@ from urllib.parse import urlencode
 from starlite.cache import Cache
 from starlite.storage.memory import MemoryStorage
 
+__all__ = (
+    "CacheConfig",
+    "default_cache_key_builder",
+)
+
+
 if TYPE_CHECKING:
     from starlite.connection import Request
     from starlite.storage.base import Storage

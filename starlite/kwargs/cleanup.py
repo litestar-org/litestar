@@ -8,6 +8,9 @@ from anyio import create_task_group
 from starlite.utils import AsyncCallable
 from starlite.utils.compat import async_next
 
+__all__ = ("DependencyCleanupGroup",)
+
+
 if TYPE_CHECKING:
     from starlite.types import AnyGenerator
 

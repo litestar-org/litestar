@@ -18,6 +18,9 @@ from starlite.parsers import parse_url_encoded_form_data
 from starlite.serialization import decode_json, decode_msgpack
 from starlite.types import Empty
 
+__all__ = ("Request",)
+
+
 if TYPE_CHECKING:
     from starlite.handlers.http_handlers import HTTPRouteHandler  # noqa: F401
     from starlite.types.asgi_types import HTTPScope, Method, Receive, Scope, Send

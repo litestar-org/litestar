@@ -3,6 +3,8 @@ from typing import Any, Dict, Optional
 from pydantic import validator
 from pydantic_openapi_schema.v3_1_0 import Header
 
+__all__ = ("ResponseHeader",)
+
 
 class ResponseHeader(Header):
     """Container type for a response header."""

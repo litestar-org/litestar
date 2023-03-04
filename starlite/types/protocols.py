@@ -1,5 +1,7 @@
 from typing import Any, Dict, Protocol, runtime_checkable
 
+__all__ = ("DataclassProtocol", "Logger")
+
 
 class Logger(Protocol):  # pragma: no cover
     """Logger protocol."""

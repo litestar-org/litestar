@@ -42,7 +42,7 @@ repos:
     hooks:
       - id: blacken-docs
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v3.0.0-alpha.5"
+    rev: "v3.0.0-alpha.6"
     hooks:
       - id: prettier
         exclude: "_templates"
@@ -59,6 +59,11 @@ repos:
         exclude: "test*|examples*|tools"
         additional_dependencies:
           - pydocstyle[toml]
+  - repo: https://github.com/python-formate/flake8-dunder-all
+    rev: v0.2.2
+    hooks:
+      - id: ensure-dunder-all
+        exclude: "test*|examples*|tools"
   - repo: https://github.com/PyCQA/flake8
     rev: 6.0.0
     hooks:
@@ -67,15 +72,15 @@ repos:
           [
             "flake8-bugbear",
             "flake8-comprehensions",
-            "flake8-mutable",
-            "flake8-print",
-            "flake8-simplify",
-            "flake8-type-checking",
+            "flake8-encodings",
             "flake8-implicit-str-concat",
+            "flake8-mutable",
             "flake8-noqa",
+            "flake8-print",
             "flake8-return",
             "flake8-secure-coding-standard",
-            "flake8-encodings",
+            "flake8-simplify",
+            "flake8-type-checking",
             "flake8-use-fstring",
             "flake8-use-pathlib",
           ]
@@ -85,7 +90,7 @@ repos:
       - id: slotscheck
         exclude: "test_*|docs"
   - repo: https://github.com/pycqa/pylint
-    rev: "v2.16.2"
+    rev: "v2.16.3"
     hooks:
       - id: pylint
         exclude: "test*|tools|docs"

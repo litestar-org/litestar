@@ -12,6 +12,15 @@ from starlite.exceptions import (
 from starlite.serialization import decode_json, encode_json
 from starlite.utils import AsyncCallable
 
+__all__ = (
+    "SQLAlchemyConfig",
+    "SQLAlchemyEngineConfig",
+    "SQLAlchemySessionConfig",
+    "default_before_send_handler",
+    "serializer",
+)
+
+
 try:
     from sqlalchemy import create_engine
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine

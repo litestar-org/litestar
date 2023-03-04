@@ -45,6 +45,9 @@ from starlite.utils import (
 )
 from starlite.utils.dataclass import extract_dataclass_fields
 
+__all__ = ("HandlerIndex", "Starlite")
+
+
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI

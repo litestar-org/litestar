@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING, Pattern
 
 from starlite.exceptions import ImproperlyConfiguredException
 
+__all__ = ("build_exclude_path_pattern", "should_bypass_middleware")
+
+
 if TYPE_CHECKING:
     from starlite.types import Scope, Scopes
 

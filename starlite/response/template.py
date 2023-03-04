@@ -8,6 +8,9 @@ from starlite.enums import MediaType
 from starlite.response.base import Response
 from starlite.status_codes import HTTP_200_OK
 
+__all__ = ("TemplateResponse",)
+
+
 if TYPE_CHECKING:
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.template import TemplateEngineProtocol

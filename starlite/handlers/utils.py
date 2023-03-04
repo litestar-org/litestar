@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING, Mapping, Sequence
 from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.response_header import ResponseHeader
 
+__all__ = ("narrow_response_cookies", "narrow_response_headers")
+
+
 if TYPE_CHECKING:
     from starlite.types.composite_types import ResponseCookies, ResponseHeaders
 

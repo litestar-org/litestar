@@ -5,6 +5,8 @@ from click import Context, group, option, pass_context
 from .commands import core, schema, sessions
 from .utils import StarliteEnv, StarliteExtensionGroup
 
+__all__ = ("starlite_group",)
+
 
 @group(cls=StarliteExtensionGroup)
 @option("--app", "app_path", help="Module path to a Starlite application")

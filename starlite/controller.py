@@ -12,6 +12,9 @@ from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.utils import AsyncCallable, normalize_path
 from starlite.utils.helpers import unwrap_partial
 
+__all__ = ("Controller",)
+
+
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 

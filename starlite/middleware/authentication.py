@@ -11,6 +11,9 @@ from starlite.middleware.utils import (
     should_bypass_middleware,
 )
 
+__all__ = ("AbstractAuthenticationMiddleware", "AuthenticationResult")
+
+
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Receive, Scope, Scopes, Send
 

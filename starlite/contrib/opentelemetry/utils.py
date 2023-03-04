@@ -4,6 +4,9 @@ from typing import TYPE_CHECKING, Any
 
 from starlite.exceptions import MissingDependencyException
 
+__all__ = ("get_route_details_from_scope",)
+
+
 try:
     from opentelemetry.semconv.trace import SpanAttributes
 except ImportError as e:

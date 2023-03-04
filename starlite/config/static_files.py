@@ -9,6 +9,9 @@ from starlite.handlers import asgi
 from starlite.static_files.base import StaticFiles
 from starlite.utils import normalize_path
 
+__all__ = ("StaticFilesConfig",)
+
+
 if TYPE_CHECKING:
     from starlite.handlers.asgi_handlers import ASGIRouteHandler
     from starlite.types import ExceptionHandlersMap, Guard, PathType

@@ -1,5 +1,7 @@
 from enum import Enum
 
+__all__ = ("OpenAPIFormat", "OpenAPIType")
+
 
 class OpenAPIFormat(str, Enum):
     """Formats extracted from:

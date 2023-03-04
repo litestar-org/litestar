@@ -16,6 +16,9 @@ from starlite.middleware.utils import (
     should_bypass_middleware,
 )
 
+__all__ = ("CSRFMiddleware", "generate_csrf_hash", "generate_csrf_token")
+
+
 if TYPE_CHECKING:
     from starlite.config.csrf import CSRFConfig
     from starlite.connection import Request

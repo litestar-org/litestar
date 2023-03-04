@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING
 
 from starlite.exceptions import ImproperlyConfiguredException
 
+__all__ = ("validate_node",)
+
+
 if TYPE_CHECKING:
     from starlite.asgi.routing_trie.types import RouteTrieNode
 

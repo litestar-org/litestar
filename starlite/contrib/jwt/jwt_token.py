@@ -8,6 +8,8 @@ from jose import JWSError, JWTError, jwt
 
 from starlite.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
+__all__ = ("Token",)
+
 
 def _normalize_datetime(value: datetime) -> datetime:
     """Convert the given value into UTC and strip microseconds.

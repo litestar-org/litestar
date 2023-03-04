@@ -31,6 +31,9 @@ from starlite.utils import (
     is_typed_dict,
 )
 
+__all__ = ("DTO", "DTOFactory", "get_field_type")
+
+
 if TYPE_CHECKING:
     from typing import Awaitable
 

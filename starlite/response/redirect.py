@@ -9,6 +9,9 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response.base import Response
 from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
 
+__all__ = ("RedirectResponse",)
+
+
 if TYPE_CHECKING:
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.types import ResponseCookies

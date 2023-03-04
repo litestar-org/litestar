@@ -8,6 +8,8 @@ from typing import Any
 
 from starlite.logging.utils import resolve_handlers
 
+__all__ = ("QueueListenerHandler",)
+
 
 class QueueListenerHandler(QueueHandler):
     """Configure queue listener and handler to support non-blocking logging configuration."""

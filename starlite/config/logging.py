@@ -12,6 +12,18 @@ from starlite.exceptions import (
 )
 from starlite.serialization import encode_json
 
+__all__ = (
+    "BaseLoggingConfig",
+    "LoggingConfig",
+    "StructLoggingConfig",
+    "default_logger_factory",
+    "default_structlog_processors",
+    "default_wrapper_class",
+    "get_default_handlers",
+    "get_logger_placeholder",
+)
+
+
 if TYPE_CHECKING:
     from typing import NoReturn
 

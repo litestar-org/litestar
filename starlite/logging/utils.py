@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+__all__ = ("resolve_handlers",)
+
 
 def resolve_handlers(handlers: list[Any]) -> list[Any]:
     """Convert list of string of handlers to the object of respective handler.

@@ -12,6 +12,9 @@ from starlite.openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
 
+__all__ = ("generate_openapi_schema", "generate_typescript_specs", "schema_group")
+
+
 beautifier = Beautifier()
 
 

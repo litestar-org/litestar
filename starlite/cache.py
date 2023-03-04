@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+__all__ = ("Cache",)
+
+
 if TYPE_CHECKING:
     from starlite import Request
     from starlite.storage.base import Storage

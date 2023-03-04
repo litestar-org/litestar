@@ -9,6 +9,9 @@ from starlite.middleware.utils import (
     should_bypass_middleware,
 )
 
+__all__ = ("AbstractMiddleware", "DefineMiddleware", "MiddlewareProtocol")
+
+
 if TYPE_CHECKING:
     from starlite.types import Scopes
     from starlite.types.asgi_types import ASGIApp, Receive, Scope, Send
