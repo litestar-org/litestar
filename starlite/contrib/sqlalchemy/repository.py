@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, Tuple, TypeVar, cast
 from sqlalchemy import func as sql_func
 from sqlalchemy import insert, over
 from sqlalchemy import select as sql_select
-from sqlalchemy import text
+from sqlalchemy import text, update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from starlite.contrib.repository.abc import AbstractRepository
@@ -280,15 +280,35 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             RepositoryNotFoundException: If no instance found with same identifier as `data`.
         """
         with wrap_sqlalchemy_exception():
-            id_ = self.get_id_attribute_value(data)
+            item_id = self.get_id_attribute_value(data)
             # this will raise for not found, and will put the item in the session
-            await self.get(id_)
+            await self.get(item_id)
             # this will merge the inbound data to the instance we just put in the session
             instance = await self._attach_to_session(data, strategy="merge")
             await self.session.flush()
             await self.session.refresh(instance)
             self.session.expunge(instance)
             return instance
+
+    async def update_many(self, data: abc.Sequence[ModelT]) -> abc.Sequence[ModelT]:
+        """Update one or more instances with the attribute values present on `data`.
+
+        Args:
+            data: A list of instances to update.  Each should have a value for `self.id_attribute` that exists in the
+                collection.
+
+        Returns:
+            The updated instances.
+
+        Raises:
+            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+        """
+        with wrap_sqlalchemy_exception():
+            await self.session.execute(
+                update(self.model_type), [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
+            )
+            await self.session.flush()
+            return data
 
     async def upsert(self, data: ModelT) -> ModelT:
         """Update or create instance.

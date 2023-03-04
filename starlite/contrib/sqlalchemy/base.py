@@ -83,13 +83,14 @@ class CommonTableAttributes:
         """Infer table name from class name."""
         return cls.__name__.lower()
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self, exclude: set[str] | None = None) -> dict[str, Any]:
         """Convert model to dictionary.
 
         Returns:
             dict[str, Any]: A dict representation of the model
         """
-        return {field.name: getattr(self, field.name) for field in self.__table__.columns}
+        exclude = set(exclude) if exclude else set()
+        return {field.name: getattr(self, field.name) for field in self.__table__.columns if field.name not in exclude}
 
 
 meta = MetaData(naming_convention=convention)

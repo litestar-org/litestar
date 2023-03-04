@@ -155,6 +155,21 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
+    async def update_many(self, data: Sequence[T]) -> Sequence[T]:
+        """Update multiple instances with the attribute values present on instances in `data`.
+
+        Args:
+            data: A list of instance that should have a value for `self.id_attribute` that exists in the
+                collection.
+
+        Returns:
+            The updated instances.
+
+        Raises:
+            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+        """
+
+    @abstractmethod
     async def upsert(self, data: T) -> T:
         """Update or create instance.
 
