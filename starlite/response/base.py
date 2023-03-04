@@ -7,18 +7,18 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, Mapping, TypeVar, overl
 from starlite.datastructures import Cookie, ETag
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.serialization import (
+    DEFAULT_TYPE_ENCODERS,
+    default_serializer,
+    encode_json,
+    encode_msgpack,
+)
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
     HTTP_304_NOT_MODIFIED,
 )
 from starlite.utils.helpers import get_enum_string_value
-from starlite.utils.serialization import (
-    DEFAULT_TYPE_ENCODERS,
-    default_serializer,
-    encode_json,
-    encode_msgpack,
-)
 
 if TYPE_CHECKING:
     from starlite.background_tasks import BackgroundTask, BackgroundTasks

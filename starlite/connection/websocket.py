@@ -12,8 +12,8 @@ from starlite.connection.base import (
 )
 from starlite.datastructures.headers import Headers
 from starlite.exceptions import WebSocketDisconnect, WebSocketException
+from starlite.serialization import decode_json, default_serializer, encode_json
 from starlite.status_codes import WS_1000_NORMAL_CLOSURE
-from starlite.utils.serialization import decode_json, default_serializer, encode_json
 
 if TYPE_CHECKING:
     from starlite.handlers.websocket_handlers import WebsocketRouteHandler  # noqa: F401

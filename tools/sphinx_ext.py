@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Generator
 
 import httpx
 import uvicorn
-from auto_pytabs.sphinx_ext import LiteralIncludeOverride
+from auto_pytabs.sphinx_ext import CodeBlockOverride, LiteralIncludeOverride
 from docutils.nodes import Node, admonition, literal_block, title
 from sphinx.addnodes import highlightlang
 
@@ -174,6 +174,7 @@ def on_env_before_read_docs(app: Sphinx, env: BuildEnvironment, docnames: set[st
 
 def setup(app: Sphinx) -> dict[str, bool]:
     app.add_directive("literalinclude", LiteralInclude, override=True)
+    app.add_directive("code-block", CodeBlockOverride, override=True)
     app.connect("env-before-read-docs", on_env_before_read_docs)
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}

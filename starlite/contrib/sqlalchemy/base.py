@@ -5,7 +5,8 @@ from datetime import datetime
 from typing import Any, TypeVar
 from uuid import UUID, uuid4
 
-from sqlalchemy import MetaData, Uuid
+from pydantic import AnyHttpUrl, AnyUrl, EmailStr
+from sqlalchemy import JSON, MetaData, String, Uuid
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -47,20 +48,13 @@ def touch_updated_timestamp(session: Session, *_: Any) -> None:
 
 
 @declarative_mixin
-class CommonColumns:
-    """Common functionality shared between all declarative models."""
+class UUIDPrimaryKey:
+    """UUID Primary Key Field Mixin."""
 
     __abstract__ = True
-    __name__: str
 
     id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
-    """Primary key column."""
-
-    # noinspection PyMethodParameters
-    @declared_attr.directive
-    def __tablename__(cls) -> str:  # pylint: disable=no-self-argument
-        """Infer table name from class name."""
-        return cls.__name__.lower()
+    """UUID Primary key column."""
 
 
 @declarative_mixin
@@ -75,17 +69,43 @@ class AuditColumns:
     """Date/time of instance last update."""
 
 
+@declarative_mixin
+class CommonTableAttributes:
+    """Common attributes for SQLALchemy tables."""
+
+    __abstract__ = True
+    __name__: str
+    __table__: Any
+
+    # noinspection PyMethodParameters
+    @declared_attr.directive
+    def __tablename__(cls) -> str:  # pylint: disable=no-self-argument
+        """Infer table name from class name."""
+        return cls.__name__.lower()
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert model to dictionary.
+
+        Returns:
+            dict[str, Any]: A dict representation of the model
+        """
+        return {field.name: getattr(self, field.name) for field in self.__table__.columns}
+
+
 meta = MetaData(naming_convention=convention)
-registry_ = registry(metadata=meta, type_annotation_map={UUID: Uuid})
+registry_ = registry(
+    metadata=meta,
+    type_annotation_map={UUID: Uuid, EmailStr: String, AnyUrl: String, AnyHttpUrl: String, dict: JSON},
+)
 
 
-class Base(CommonColumns, DeclarativeBase):
+class Base(CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase):
     """Base for all SQLAlchemy declarative models."""
 
     registry = registry_
 
 
-class AuditBase(AuditColumns, CommonColumns, DeclarativeBase):
+class AuditBase(CommonTableAttributes, UUIDPrimaryKey, AuditColumns, DeclarativeBase):
     """Base for declarative models with audit columns."""
 
     registry = registry_

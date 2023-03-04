@@ -1,3 +1,4 @@
+import inspect
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Sequence
 
@@ -9,6 +10,7 @@ from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.params import Dependency, Parameter
 from starlite.signature import create_signature_model
+from starlite.signature.parsing import ParsedSignatureParameter
 from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from starlite.types.helper_types import OptionalSequence  # noqa: TC001
@@ -216,3 +218,13 @@ def test_signature_field_is_non_string_sequence() -> None:
 
     assert model.fields["a"].is_non_string_sequence
     assert model.fields["b"].is_non_string_sequence
+
+
+def test_parsed_signature_model_from_parameter_resolves_forward_ref() -> None:
+    def func(a: "int") -> None:
+        ...
+
+    signature = inspect.Signature.from_callable(func)
+    obj = object()
+    parsed_param = ParsedSignatureParameter.from_parameter("func", "a", signature.parameters["a"], {"a": obj})
+    assert parsed_param.annotation is obj

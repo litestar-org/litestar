@@ -9,6 +9,7 @@ from starlite.datastructures import Cookie
 from starlite.enums import OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
+from starlite.serialization import default_serializer
 from starlite.status_codes import (
     HTTP_100_CONTINUE,
     HTTP_101_SWITCHING_PROTOCOLS,
@@ -20,7 +21,6 @@ from starlite.status_codes import (
 )
 from starlite.testing import create_test_client
 from starlite.types import Empty
-from starlite.utils import default_serializer
 
 
 def test_response_headers() -> None:

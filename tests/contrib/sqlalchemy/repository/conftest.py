@@ -19,10 +19,10 @@ def _patch_bases(monkeypatch: MonkeyPatch) -> None:
 
     from starlite.contrib.sqlalchemy import base
 
-    class NewBase(base.CommonColumns, DeclarativeBase):
+    class NewBase(base.UUIDPrimaryKey, base.CommonTableAttributes, DeclarativeBase):
         ...
 
-    class NewAuditBase(base.AuditColumns, base.CommonColumns, DeclarativeBase):
+    class NewAuditBase(base.UUIDPrimaryKey, base.CommonTableAttributes, base.AuditColumns, DeclarativeBase):
         ...
 
     monkeypatch.setattr(base, "Base", NewBase)

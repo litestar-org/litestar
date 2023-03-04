@@ -7,12 +7,16 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from .exceptions import NotFoundError
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from .types import FilterTypes
+
 
 __all__ = ("AbstractRepository",)
 
 T = TypeVar("T")
 RepoT = TypeVar("RepoT", bound="AbstractRepository")
+CollectionT = TypeVar("CollectionT")
 
 
 class AbstractRepository(Generic[T], metaclass=ABCMeta):
@@ -39,6 +43,29 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
+    async def add_many(self, data: Sequence[T]) -> Sequence[T]:
+        """Add multiple `data` to the collection.
+
+        Args:
+            data: Instances to be added to the collection.
+
+        Returns:
+            The added instances.
+        """
+
+    @abstractmethod
+    async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
+        """Get the count of records returned by a query.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The count of instances
+        """
+
+    @abstractmethod
     async def delete(self, item_id: Any) -> T:
         """Delete instance identified by `item_id`.
 
@@ -53,7 +80,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def get(self, item_id: Any) -> T:
+    async def get(self, item_id: Any, **kwargs: Any) -> T:
         """Get instance identified by `item_id`.
 
         Args:
@@ -67,7 +94,29 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[T]:
+    async def get_one(self, **kwargs: Any) -> T:
+        """Get an instance if it exists or None.
+
+        Args:
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The list of instances, after filtering applied.
+        """
+
+    @abstractmethod
+    async def get_one_or_none(self, **kwargs: Any) -> T | None:
+        """Get an instance if it exists or None.
+
+        Args:
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The list of instances, after filtering applied.
+        """
+
+    @abstractmethod
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> Sequence[T]:
         """Get a list of instances, optionally filtered.
 
         Args:
@@ -76,6 +125,18 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
         Returns:
             The list of instances, after filtering applied.
+        """
+
+    @abstractmethod
+    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[Sequence[T], int]:
+        """List records with total count.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query, ignoring pagination.
         """
 
     @abstractmethod
@@ -113,12 +174,13 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def filter_collection_by_kwargs(self, **kwargs: Any) -> None:
+    def filter_collection_by_kwargs(self, collection: CollectionT, /, **kwargs: Any) -> CollectionT:
         """Filter the collection by kwargs.
 
         Has `AND` semantics where multiple kwargs name/value pairs are provided.
 
         Args:
+            collection: the collection to be filtered
             **kwargs: key/value pairs such that objects remaining in the collection after filtering
                 have the property that their attribute named `key` has value equal to `value`.
 

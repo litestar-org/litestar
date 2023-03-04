@@ -10,7 +10,7 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
-from starlite.utils.serialization import encode_json
+from starlite.serialization import encode_json
 
 if TYPE_CHECKING:
     from typing import NoReturn

@@ -10,9 +10,9 @@ from zlib import adler32
 from starlite.constants import ONE_MEGABYTE
 from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.file_system import BaseLocalFileSystem, FileSystemAdapter
 from starlite.response.streaming import StreamingResponse
 from starlite.status_codes import HTTP_200_OK
-from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter
 
 if TYPE_CHECKING:
     from os import PathLike

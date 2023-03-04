@@ -15,8 +15,8 @@ from starlite.enums import RequestEncodingType
 from starlite.exceptions import InternalServerException
 from starlite.multipart import parse_content_header, parse_multipart_form
 from starlite.parsers import parse_url_encoded_form_data
+from starlite.serialization import decode_json, decode_msgpack
 from starlite.types import Empty
-from starlite.utils.serialization import decode_json, decode_msgpack
 
 if TYPE_CHECKING:
     from starlite.handlers.http_handlers import HTTPRouteHandler  # noqa: F401

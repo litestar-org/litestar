@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING, Literal, Sequence
 
 from starlite.enums import ScopeType
 from starlite.exceptions import MethodNotAllowedException, NotFoundException
+from starlite.file_system import FileSystemAdapter
 from starlite.response import FileResponse
 from starlite.status_codes import HTTP_404_NOT_FOUND
-from starlite.utils.file import FileSystemAdapter
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
@@ -43,8 +43,8 @@ class StaticFiles:
         self.send_as_attachment = send_as_attachment
 
     async def get_fs_info(
-        self, directories: Sequence["PathType"], file_path: str
-    ) -> tuple[str, "FileInfo"] | tuple[None, None]:
+        self, directories: Sequence[PathType], file_path: str
+    ) -> tuple[str, FileInfo] | tuple[None, None]:
         """Return the resolved path and a :func:`stat_result <os.stat_result>`.
 
         Args:
@@ -65,7 +65,7 @@ class StaticFiles:
                 continue
         return None, None
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         Args:

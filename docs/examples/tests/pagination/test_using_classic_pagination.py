@@ -1,4 +1,4 @@
-from examples.datastructures.pagination.using_classic_pagination import app
+from examples.pagination.using_classic_pagination import app
 
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient

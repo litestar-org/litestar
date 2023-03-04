@@ -12,7 +12,7 @@ from starlite.contrib.repository.abc import AbstractRepository
 from starlite.contrib.repository.exceptions import ConflictError, RepositoryError
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Hashable, Iterable, MutableMapping
+    from collections.abc import Callable, Hashable, Iterable, MutableMapping, Sequence
     from typing import Any
 
     from starlite.contrib.repository.types import FilterTypes
@@ -46,8 +46,8 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             f"{cls.__name__}[{item.__name__}]", (cls,), {"collection": {}, "model_type": item}
         )
 
-    def _find_or_raise_not_found(self, id_: Any) -> ModelT:
-        return self.check_not_found(self.collection.get(id_))
+    def _find_or_raise_not_found(self, item_id: Any) -> ModelT:
+        return self.check_not_found(self.collection.get(item_id))
 
     async def add(self, data: ModelT, allow_id: bool = False) -> ModelT:
         """Add `data` to the collection.
@@ -71,6 +71,30 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         self.collection[data.id] = data
         return data
 
+    async def add_many(self, data: Sequence[ModelT], allow_id: bool = False) -> Sequence[ModelT]:
+        """Add multiple `data` to the collection.
+
+        Args:
+            data: Instance to be added to the collection.
+            allow_id: disable the identified object check.
+
+        Returns:
+            The added instance.
+        """
+        now = datetime.now()
+        for data_row in data:
+            if allow_id is False and self.get_id_attribute_value(data_row) is not None:
+                raise ConflictError("`add()` received identified item.")
+
+            if hasattr(data, "updated") and hasattr(data, "created"):
+                # maybe the @declarative_mixin decorator doesn't play nice with pyright?
+                data.updated = data.created = now  # pyright: ignore
+            if allow_id is False:
+                id_ = self._id_factory()
+                self.set_id_attribute_value(id_, data_row)
+                self.collection[data_row.id] = data_row
+        return data
+
     async def delete(self, item_id: Any) -> ModelT:
         """Delete instance identified by `item_id`.
 
@@ -88,7 +112,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         finally:
             del self.collection[item_id]
 
-    async def get(self, item_id: Any) -> ModelT:
+    async def get(self, item_id: Any, **kwargs: Any) -> ModelT:
         """Get instance identified by `item_id`.
 
         Args:
@@ -102,7 +126,45 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         return self._find_or_raise_not_found(item_id)
 
-    async def list(self, *filters: "FilterTypes", **kwargs: Any) -> list[ModelT]:
+    async def get_one(self, **kwargs: Any) -> ModelT:
+        """Get instance identified by query filters.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The retrieved instance or None
+        """
+        data = await self.list(**kwargs)
+        return self.check_not_found(data[0] if len(data) > 0 else None)
+
+    async def get_one_or_none(self, **kwargs: Any) -> ModelT | None:
+        """Get instance identified by query filters.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The retrieved instance or None
+        """
+        data = await self.list(**kwargs)
+        return data[0] if len(data) > 0 else None
+
+    async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
+        """Count of rows returned by query.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of instances in collection, ignoring pagination.
+        """
+        return len(await self.list(*filters, **kwargs))
+
+    async def list(self, *filters: "FilterTypes", **kwargs: Any) -> Sequence[ModelT]:
         """Get a list of instances, optionally filtered.
 
         Args:
@@ -113,6 +175,22 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The list of instances, after filtering applied.
         """
         return list(self.collection.values())
+
+    async def list_and_count(
+        self,
+        *filters: FilterTypes,
+        **kwargs: Any,
+    ) -> tuple[Sequence[ModelT], int]:
+        """Get a list of instances, optionally filtered with a total row count.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query, ignoring pagination.
+        """
+        return await self.list(*filters, **kwargs), await self.count(*filters, **kwargs)
 
     async def update(self, data: ModelT) -> ModelT:
         """Update instance with the attribute values present on `data`.
@@ -138,6 +216,31 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             setattr(item, key, val)
         return item
 
+    async def update_many(self, data: Sequence[ModelT]) -> Sequence[ModelT]:
+        """Update instances with the attribute values present on `data`.
+
+        Args:
+            data: A list of instances that should have a value for `self.id_attribute` that exists in the
+                collection.
+
+        Returns:
+            The updated instances.
+
+        Raises:
+            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+        """
+        items = [self._find_or_raise_not_found(self.get_id_attribute_value(row)) for row in data]
+        # should never be modifiable
+        for item in items:
+            if hasattr(data, "updated"):
+                # maybe the @declarative_mixin decorator doesn't play nice with pyright?
+                data.updated = datetime.now()  # pyright: ignore
+            for key, val in data.__dict__.items():
+                if key.startswith("_"):
+                    continue
+                setattr(item, key, val)
+        return items
+
     async def upsert(self, data: ModelT) -> ModelT:
         """Update or create instance.
 
@@ -155,12 +258,14 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Raises:
             RepositoryNotFoundException: If no instance found with same identifier as `data`.
         """
-        id_ = self.get_id_attribute_value(data)
-        if id_ in self.collection:
+        item_id = self.get_id_attribute_value(data)
+        if item_id in self.collection:
             return await self.update(data)
         return await self.add(data, allow_id=True)
 
-    def filter_collection_by_kwargs(self, **kwargs: Any) -> None:
+    def filter_collection_by_kwargs(  # type:ignore[override]
+        self, collection: MutableMapping[Hashable, ModelT], /, **kwargs: Any
+    ) -> MutableMapping[Hashable, ModelT]:
         """Filter the collection by kwargs.
 
         Args:
@@ -175,6 +280,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             except AttributeError as orig:
                 raise RepositoryError from orig
         self.collection = new_collection
+        return self.collection
 
     @classmethod
     def seed_collection(cls, instances: Iterable[ModelT]) -> None:

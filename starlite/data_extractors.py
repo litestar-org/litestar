@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from starlite.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
 
-def obfuscate(values: dict[str, Any], fields_to_obfuscate: set[str]) -> dict[str, Any]:
+def _obfuscate(values: dict[str, Any], fields_to_obfuscate: set[str]) -> dict[str, Any]:
     """Obfuscate values in a dictionary, replacing values with `******`
 
     Args:
@@ -191,7 +191,7 @@ class ConnectionDataExtractor:
             A dictionary with the connection's headers.
         """
         headers = {k.decode("latin-1"): v.decode("latin-1") for k, v in connection.scope["headers"]}
-        return obfuscate(headers, self.obfuscate_headers) if self.obfuscate_headers else headers
+        return _obfuscate(headers, self.obfuscate_headers) if self.obfuscate_headers else headers
 
     def extract_cookies(self, connection: ASGIConnection[Any, Any, Any, Any]) -> dict[str, str]:
         """Extract cookies from an ``ASGIConnection``
@@ -202,7 +202,7 @@ class ConnectionDataExtractor:
         Returns:
             A dictionary with the connection's cookies.
         """
-        return obfuscate(connection.cookies, self.obfuscate_cookies) if self.obfuscate_cookies else connection.cookies
+        return _obfuscate(connection.cookies, self.obfuscate_cookies) if self.obfuscate_cookies else connection.cookies
 
     def extract_query(self, connection: ASGIConnection[Any, Any, Any, Any]) -> Any:
         """Extract query from an ``ASGIConnection``
@@ -379,7 +379,7 @@ class ResponseDataExtractor:
             for key, value in filter(lambda x: x[0].lower() != b"set-cookie", messages[0]["headers"])
         }
         return (
-            obfuscate(
+            _obfuscate(
                 headers,
                 self.obfuscate_headers,
             )
@@ -408,5 +408,5 @@ class ResponseDataExtractor:
         )
         if cookie_string:
             parsed_cookies = parse_cookie_string(cookie_string)
-            return obfuscate(parsed_cookies, self.obfuscate_cookies) if self.obfuscate_cookies else parsed_cookies
+            return _obfuscate(parsed_cookies, self.obfuscate_cookies) if self.obfuscate_cookies else parsed_cookies
         return {}

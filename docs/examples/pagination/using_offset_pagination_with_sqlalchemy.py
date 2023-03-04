@@ -5,8 +5,8 @@ from sqlalchemy.orm import Mapped, declarative_base
 
 from starlite import Starlite, get
 from starlite.di import Provide
+from starlite.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
 from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
-from starlite.utils.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
 
 Base = declarative_base()
 

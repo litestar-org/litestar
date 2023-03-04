@@ -6,7 +6,7 @@ import pytest
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware.session.server_side import ServerSideSessionConfig
-from starlite.utils.serialization import encode_json
+from starlite.serialization import encode_json
 
 if TYPE_CHECKING:
     from starlite.middleware.session.server_side import ServerSideSessionBackend

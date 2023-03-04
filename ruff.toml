@@ -1,0 +1,118 @@
+
+[tool.ruff]
+exclude = [
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".hg",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "venv",
+  '__pycache__',
+]
+fix = true
+ignore = [
+  'B008',
+  'EM102',
+  'A002',
+  'A003',
+  'B009',
+  'C408',
+  'C417',
+  "D100",
+  "D203",
+  "D204",
+  "D213",
+  "D215",
+  "D400",
+  "D404",
+  "D406",
+  "D407",
+  "D408",
+  "D409",
+  "D413",
+  'E501',
+  "N818",
+  'EM101',
+  'T201',
+  'ERA001',
+  "E999",
+  'PLR0913',
+  'TRY003',
+]
+line-length = 120
+select = [
+  'B',
+  'C',
+  'D',
+  'E',
+  'F',
+  'N',
+  'W',
+  'I',
+  'C90',
+  'UP',
+  'S', # 'ANN', BLE
+  'YTT', # 'FBT',
+  'COM',
+  'DJ',
+  'A',
+  'C4',
+  'T10',
+  'EM',
+  'T20',
+  'ICN', # 'ISC',
+  'Q',
+  'DTZ', # 'ARG',
+  'RET',
+  'SIM',
+  'PD',
+  'ERA',
+  'PLC',
+  'PLE',
+  'PLR',
+  'PLW', # 'PIE',
+  'RUF',
+  'EXE',
+  'G',
+  'RSE',
+  'PTH',
+  'PD',
+  'NPY',
+  'TCH',
+  'TID',
+  'TRY',
+]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+src = ["."]
+target-version = "py39"
+[tool.ruff.mccabe]
+# Unlike Flake8, default to a complexity level of 10.
+max-complexity = 10
+[tool.ruff.pep8-naming]
+classmethod-decorators = [
+  'classmethod',
+  'pydantic.validator',
+  'pydantic.root_validator',
+  'sqlalchemy.ext.declarative.declared_attr',
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ['F401', 'D104']
+"tests/*.py" = ['D103', 'S101', 'D104', 'D107', 'D205']
+
+[tool.ruff.isort]
+known-first-party = ['starlite', 'test_apps', 'tests', "tools", "docs"]

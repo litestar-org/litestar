@@ -10,6 +10,7 @@ from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
 from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
+from starlite.datastructures import ImmutableState
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.plugins.base import (
@@ -18,6 +19,7 @@ from starlite.plugins.base import (
     get_plugin_for_value,
 )
 from starlite.signature.models import PydanticSignatureModel, SignatureModel
+from starlite.signature.utils import get_fn_type_hints
 from starlite.types import Empty
 from starlite.utils import is_optional_union
 from starlite.utils.helpers import unwrap_partial
@@ -36,13 +38,16 @@ class ParsedSignatureParameter:
     optional: bool
 
     @classmethod
-    def from_parameter(cls, fn_name: str, parameter_name: str, parameter: Parameter) -> ParsedSignatureParameter:
+    def from_parameter(
+        cls, fn_name: str, parameter_name: str, parameter: Parameter, fn_type_hints: dict[str, Any]
+    ) -> ParsedSignatureParameter:
         """Initialize ParsedSignatureParameter.
 
         Args:
             fn_name: Name of function.
             parameter_name: Name of parameter.
             parameter: inspect.Parameter
+            fn_type_hints: mapping of names to types for resolution of forward references.
 
         Returns:
             ParsedSignatureParameter.
@@ -53,8 +58,12 @@ class ParsedSignatureParameter:
                 f"should receive any value, use the 'Any' type."
             )
 
+        annotation: Any = parameter.annotation
+        if isinstance(annotation, str) and parameter_name in fn_type_hints:
+            annotation = fn_type_hints[parameter_name]
+
         return ParsedSignatureParameter(
-            annotation=parameter.annotation,
+            annotation=annotation,
             default=parameter.default,
             name=parameter_name,
             optional=is_optional_union(parameter.annotation),
@@ -120,19 +129,29 @@ def parse_fn_signature(
         A tuple containing the following values for generating a signature model: a mapping of field definitions, the
         callable's return annotation, a mapping of field names to plugins - if any, and an updated dependency name set.
     """
-
     signature = Signature.from_callable(fn)
     fn_name = getattr(fn, "__name__", "anonymous")
 
     field_plugin_mappings: dict[str, PluginMapping] = {}
     parsed_params: list[ParsedSignatureParameter] = []
     dependency_names: set[str] = set()
+    fn_type_hints = get_fn_type_hints(fn)
 
-    for parameter in (
-        ParsedSignatureParameter.from_parameter(parameter=parameter, parameter_name=name, fn_name=fn_name)
+    parameters = (
+        ParsedSignatureParameter.from_parameter(
+            parameter=parameter, parameter_name=name, fn_name=fn_name, fn_type_hints=fn_type_hints
+        )
         for name, parameter in signature.parameters.items()
         if name not in ("self", "cls")
-    ):
+    )
+    for parameter in parameters:
+        if parameter.name == "state" and not issubclass(parameter.annotation, ImmutableState):
+            raise ImproperlyConfiguredException(
+                f"The type annotation `{parameter.annotation}` is an invalid type for the 'state' reserved kwarg. "
+                "It must be typed to a subclass of `starlite.datastructures.ImmutableState` or "
+                "`starlite.datastructures.State`."
+            )
+
         if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
             if not parameter.optional and (
                 isinstance(parameter.default, DependencyKwarg) and parameter.default.default is Empty
