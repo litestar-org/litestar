@@ -446,6 +446,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../controller.html">starlite.controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/headers.html">headers</a></li>
@@ -491,6 +492,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../params.html">starlite.params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/base.html">base</a></li>
@@ -507,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../storage/file.html">file</a></li>
@@ -518,12 +521,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../types.html">starlite.types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/pagination.html">pagination</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/predicates.html">predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/serialization.html">serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/sync.html">sync</a></li>
 </ul>
 </li>
@@ -575,7 +574,7 @@
 <p>A unified facade offering a uniform interface for different compression libraries.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.compression.CompressionFacade.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BytesIO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../enums.html#starlite.enums.CompressionEncoding" title="starlite.enums.CompressionEncoding"><span class="pre">CompressionEncoding</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CompressionConfig</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.compression.CompressionFacade.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BytesIO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../enums.html#starlite.enums.CompressionEncoding" title="starlite.enums.CompressionEncoding"><span class="pre">CompressionEncoding</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../config.html#starlite.config.compression.CompressionConfig" title="starlite.config.compression.CompressionConfig"><span class="pre">CompressionConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.compression.CompressionFacade.__init__" title="Permalink to this definition">#</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">CompressionFacade</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -623,7 +622,7 @@
 <p>This is a wrapper allowing for generic compression configuration / handler middleware</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.compression.CompressionMiddleware.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ASGIApp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CompressionConfig</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.compression.CompressionMiddleware.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ASGIApp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../config.html#starlite.config.compression.CompressionConfig" title="starlite.config.compression.CompressionConfig"><span class="pre">CompressionConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.compression.CompressionMiddleware.__init__" title="Permalink to this definition">#</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">CompressionMiddleware</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

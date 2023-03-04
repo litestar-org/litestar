@@ -446,6 +446,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">starlite.controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="datastructures/headers.html">headers</a></li>
@@ -491,6 +492,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="params.html">starlite.params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="plugins/base.html">base</a></li>
@@ -507,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="serialization.html">serialization</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="storage/file.html">file</a></li>
@@ -518,12 +521,8 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="types.html">starlite.types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/pagination.html">pagination</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils/predicates.html">predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/serialization.html">serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils/sync.html">sync</a></li>
 </ul>
 </li>
@@ -1346,12 +1345,12 @@ defined Compression middleware.</p></li>
 <li><p><strong>guards</strong> – A sequence of <a class="reference internal" href="types.html#starlite.types.Guard" title="starlite.types.Guard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Guard</span></code></a> callables.</p></li>
 <li><p><strong>initial_state</strong> – An object from which to initialize the app state.</p></li>
 <li><p><strong>listeners</strong> – A sequence of <a class="reference internal" href="events.html#starlite.events.EventListener" title="starlite.events.listener.EventListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventListener</span></code></a>.</p></li>
-<li><p><strong>logging_config</strong> – A subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoggingConfig</span></code>.</p></li>
+<li><p><strong>logging_config</strong> – A subclass of <a class="reference internal" href="config.html#starlite.config.logging.BaseLoggingConfig" title="starlite.config.logging.BaseLoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoggingConfig</span></code></a>.</p></li>
 <li><p><strong>middleware</strong> – A sequence of <a class="reference internal" href="types.html#starlite.types.Middleware" title="starlite.types.Middleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Middleware</span></code></a>.</p></li>
 <li><p><strong>multipart_form_part_limit</strong> – The maximal number of allowed parts in a multipart/formdata request.
 This limit is intended to protect from DoS attacks.</p></li>
 <li><p><strong>on_app_init</strong> – A sequence of <a class="reference internal" href="types.html#starlite.types.OnAppInitHandler" title="starlite.types.OnAppInitHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">OnAppInitHandler</span></code></a> instances. Handlers receive
-an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code> that will have been initially populated with
+an instance of <a class="reference internal" href="config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> that will have been initially populated with
 the parameters passed to <a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a>, and must return an instance of same. If more
 than one handler is registered they are called in the order they are provided.</p></li>
 <li><p><strong>on_shutdown</strong> – A sequence of <a class="reference internal" href="types.html#starlite.types.LifeSpanHandler" title="starlite.types.LifeSpanHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">LifeSpanHandler</span></code></a> called during
@@ -1445,12 +1444,12 @@ defined Compression middleware.</p></li>
 <li><p><strong>guards</strong> – A sequence of <a class="reference internal" href="types.html#starlite.types.Guard" title="starlite.types.Guard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Guard</span></code></a> callables.</p></li>
 <li><p><strong>initial_state</strong> – An object from which to initialize the app state.</p></li>
 <li><p><strong>listeners</strong> – A sequence of <a class="reference internal" href="events.html#starlite.events.EventListener" title="starlite.events.listener.EventListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventListener</span></code></a>.</p></li>
-<li><p><strong>logging_config</strong> – A subclass of <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoggingConfig</span></code>.</p></li>
+<li><p><strong>logging_config</strong> – A subclass of <a class="reference internal" href="config.html#starlite.config.logging.BaseLoggingConfig" title="starlite.config.logging.BaseLoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoggingConfig</span></code></a>.</p></li>
 <li><p><strong>middleware</strong> – A sequence of <a class="reference internal" href="types.html#starlite.types.Middleware" title="starlite.types.Middleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Middleware</span></code></a>.</p></li>
 <li><p><strong>multipart_form_part_limit</strong> – The maximal number of allowed parts in a multipart/formdata request.
 This limit is intended to protect from DoS attacks.</p></li>
 <li><p><strong>on_app_init</strong> – A sequence of <a class="reference internal" href="types.html#starlite.types.OnAppInitHandler" title="starlite.types.OnAppInitHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">OnAppInitHandler</span></code></a> instances. Handlers receive
-an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code> that will have been initially populated with
+an instance of <a class="reference internal" href="config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> that will have been initially populated with
 the parameters passed to <a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a>, and must return an instance of same. If more
 than one handler is registered they are called in the order they are provided.</p></li>
 <li><p><strong>on_shutdown</strong> – A sequence of <a class="reference internal" href="types.html#starlite.types.LifeSpanHandler" title="starlite.types.LifeSpanHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">LifeSpanHandler</span></code></a> called during

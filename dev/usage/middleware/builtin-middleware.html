@@ -446,6 +446,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">starlite.controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/headers.html">headers</a></li>
@@ -491,6 +492,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">starlite.params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/base.html">base</a></li>
@@ -507,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/storage/file.html">file</a></li>
@@ -518,12 +521,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../reference/testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/types.html">starlite.types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/pagination.html">pagination</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/utils/predicates.html">predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/serialization.html">serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/utils/sync.html">sync</a></li>
 </ul>
 </li>
@@ -830,7 +829,7 @@ configuration:</p>
 </section>
 <section id="compression-and-logging-of-response-body">
 <h3>Compression and Logging of Response Body<a class="headerlink" href="#compression-and-logging-of-response-body" title="Permalink to this heading">#</a></h3>
-<p>If both <code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code> and
+<p>If both <a class="reference internal" href="../../reference/config.html#starlite.config.compression.CompressionConfig" title="starlite.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> and
 <a class="reference internal" href="../../reference/middleware/logging.html#starlite.middleware.logging.LoggingMiddleware" title="starlite.middleware.logging.LoggingMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code></a> have been defined for the application, the response
 body will be omitted from response logging if it has been compressed, even if <code class="docutils literal notranslate"><span class="pre">&quot;body&quot;</span></code> has been included in
 <a class="reference internal" href="../../reference/middleware/logging.html#starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields" title="starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields"><code class="xref py py-class docutils literal notranslate"><span class="pre">response_log_fields</span></code></a>. To force the body of
@@ -954,11 +953,11 @@ A complete reference of the cookie configuration can be found at <a class="refer
 </section>
 <section id="client-side-sessions">
 <h3>Client-side sessions<a class="headerlink" href="#client-side-sessions" title="Permalink to this heading">#</a></h3>
-<p>Client side sessions are available through the <a class="reference internal" href="../../reference/middleware/session/client_side.html#starlite.middleware.session.client_side.CookieBackend" title="starlite.middleware.session.client_side.CookieBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">CookieBackend</span></code></a>,
+<p>Client side sessions are available through the <a class="reference internal" href="../../reference/middleware/session/client_side.html#starlite.middleware.session.client_side.ClientSideSessionBackend" title="starlite.middleware.session.client_side.ClientSideSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code></a>,
 which offers strong AES-CGM encryption security best practices while support cookie splitting.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p><code class="docutils literal notranslate"><span class="pre">CookieBackend</span></code> requires the <a class="reference external" href="https://cryptography.io/en/latest/">cryptography</a> library,
+<p><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code> requires the <a class="reference external" href="https://cryptography.io/en/latest/">cryptography</a> library,
 which can be installed together with starlite as an extra using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[cryptography]</span></code></p>
 </div>
 <div class="literal-block-wrapper docutils container" id="id3">

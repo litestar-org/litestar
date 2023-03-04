@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="base" href="base.html" />
-    <link rel="prev" title="session_auth" href="../security/session_auth.html" />
+    <link rel="prev" title="serialization" href="../serialization.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -446,6 +446,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../controller.html">starlite.controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/headers.html">headers</a></li>
@@ -491,6 +492,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../params.html">starlite.params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/base.html">base</a></li>
@@ -507,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
 <li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">storage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="file.html">file</a></li>
@@ -518,12 +521,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../types.html">starlite.types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/pagination.html">pagination</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/predicates.html">predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/serialization.html">serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/sync.html">sync</a></li>
 </ul>
 </li>
@@ -645,11 +644,11 @@
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="../security/session_auth.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="../serialization.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">session_auth</p>
+          <p class="prev-next-title">serialization</p>
       </div>
   </a>
   <a class='right-next' id="next-link" href="base.html" title="next page">

@@ -446,6 +446,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">starlite.controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/headers.html">headers</a></li>
@@ -491,6 +492,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">starlite.params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/base.html">base</a></li>
@@ -507,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/storage/file.html">file</a></li>
@@ -518,12 +521,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../reference/testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/types.html">starlite.types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/pagination.html">pagination</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/utils/predicates.html">predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/utils/serialization.html">serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/utils/sync.html">sync</a></li>
 </ul>
 </li>
@@ -569,7 +568,7 @@
   <section id="sqlalchemy-plugin">
 <h1>SQLAlchemy Plugin<a class="headerlink" href="#sqlalchemy-plugin" title="Permalink to this heading">#</a></h1>
 <p>Starlite comes with built-in support for <a class="reference external" href="https://docs.sqlalchemy.org/">SQLAlchemy</a> via
-the <a class="reference internal" href="../../reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin" title="starlite.plugins.sql_alchemy.SQLAlchemyPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code></a>.</p>
+the <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code>.</p>
 <section id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
@@ -587,7 +586,7 @@ comparing the ORM usage</p>
 </div>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
-<p>The <a class="reference internal" href="../../reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyPlugin" title="starlite.plugins.sql_alchemy.SQLAlchemyPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code></a> supports only
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code> supports only
 <a class="reference external" href="https://docs.sqlalchemy.org/en/14/tutorial/metadata.html#declaring-mapped-classes">mapped classes</a>.
 <a class="reference external" href="https://docs.sqlalchemy.org/en/14/tutorial/metadata.html#setting-up-metadata-with-table-objects">Tables</a> are
 currently not supported since they are not easy to convert to pydantic models.</p>
@@ -614,9 +613,10 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">declarative_base</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.config</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.plugin</span> <span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.dto</span> <span class="kn">import</span> <span class="n">DTOFactory</span>
 <span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">starlite.plugins.sql_alchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_404_NOT_FOUND</span>
 
 <span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
@@ -688,9 +688,10 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">declarative_base</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.config</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.plugin</span> <span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.dto</span> <span class="kn">import</span> <span class="n">DTOFactory</span>
 <span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">starlite.plugins.sql_alchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_404_NOT_FOUND</span>
 
 <span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
@@ -769,9 +770,10 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">declarative_base</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.config</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.plugin</span> <span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.dto</span> <span class="kn">import</span> <span class="n">DTOFactory</span>
 <span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">starlite.plugins.sql_alchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_404_NOT_FOUND</span>
 
 <span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
@@ -838,9 +840,10 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">declarative_base</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.config</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.plugin</span> <span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.dto</span> <span class="kn">import</span> <span class="n">DTOFactory</span>
 <span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">starlite.plugins.sql_alchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_404_NOT_FOUND</span>
 
 <span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
@@ -948,8 +951,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">declarative_base</span><span class="p">,</span> <span class="n">relationship</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.config</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.plugin</span> <span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">starlite.plugins.sql_alchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_404_NOT_FOUND</span>
 
 <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s2">&quot;sqlite+pysqlite://&quot;</span><span class="p">)</span>
@@ -1013,8 +1017,9 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">declarative_base</span><span class="p">,</span> <span class="n">relationship</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.config</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.plugin</span> <span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">starlite.plugins.sql_alchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_404_NOT_FOUND</span>
 
 <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s2">&quot;sqlite+pysqlite://&quot;</span><span class="p">)</span>
@@ -1105,8 +1110,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">declarative_base</span><span class="p">,</span> <span class="n">relationship</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.config</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.plugin</span> <span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">starlite.plugins.sql_alchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_404_NOT_FOUND</span>
 
 <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s2">&quot;sqlite+pysqlite:///test.sqlite&quot;</span><span class="p">)</span>
@@ -1190,8 +1196,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">declarative_base</span><span class="p">,</span> <span class="n">relationship</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.config</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.plugin</span> <span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">starlite.plugins.sql_alchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_404_NOT_FOUND</span>
 
 <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s2">&quot;sqlite+pysqlite:///test.sqlite&quot;</span><span class="p">)</span>
@@ -1273,8 +1280,9 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">declarative_base</span><span class="p">,</span> <span class="n">relationship</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.config</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.contrib.sqlalchemy_1.plugin</span> <span class="kn">import</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">starlite.plugins.sql_alchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_404_NOT_FOUND</span>
 
 <span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s2">&quot;sqlite+pysqlite:///test.sqlite&quot;</span><span class="p">)</span>
@@ -1368,7 +1376,7 @@ and you will see:</p>
 </section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h2>
-<p>You can configure the Plugin using the <a class="reference internal" href="../../reference/plugins/sql_alchemy.html#starlite.plugins.sql_alchemy.SQLAlchemyConfig" title="starlite.plugins.sql_alchemy.SQLAlchemyConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyConfig</span></code></a> object.</p>
+<p>You can configure the Plugin using the <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyConfig</span></code> object.</p>
 </section>
 </section>
 

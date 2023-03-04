@@ -446,6 +446,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../controller.html">starlite.controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/headers.html">headers</a></li>
@@ -491,6 +492,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../params.html">starlite.params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/base.html">base</a></li>
@@ -507,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../storage/file.html">file</a></li>
@@ -518,12 +521,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../types.html">starlite.types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/pagination.html">pagination</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/predicates.html">predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/serialization.html">serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../utils/sync.html">sync</a></li>
 </ul>
 </li>
@@ -575,13 +574,13 @@
 <p>CORS Middleware.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.cors.CORSMiddleware.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ASGIApp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CORSConfig</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.middleware.cors.CORSMiddleware.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ASGIApp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../config.html#starlite.config.cors.CORSConfig" title="starlite.config.cors.CORSConfig"><span class="pre">CORSConfig</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.middleware.cors.CORSMiddleware.__init__" title="Permalink to this definition">#</a></dt>
 <dd><p>Middleware that adds CORS validation to the application.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>app</strong> – The <code class="docutils literal notranslate"><span class="pre">next</span></code> ASGI app to call.</p></li>
-<li><p><strong>config</strong> – An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">CORSConfig</span></code></p></li>
+<li><p><strong>config</strong> – An instance of <a class="reference internal" href="../config.html#starlite.config.cors.CORSConfig" title="starlite.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CORSConfig</span></code></a></p></li>
 </ul>
 </dd>
 </dl>

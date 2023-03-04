@@ -446,6 +446,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">starlite.controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/headers.html">headers</a></li>
@@ -491,6 +492,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">starlite.params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/base.html">base</a></li>
@@ -507,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/storage/file.html">file</a></li>
@@ -518,12 +521,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">starlite.types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/pagination.html">pagination</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/utils/predicates.html">predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/serialization.html">serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/utils/sync.html">sync</a></li>
 </ul>
 </li>
@@ -630,7 +629,7 @@ Mako</label><div class="sd-tab-content docutils">
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">directory</span></code> parameter passed to <code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateConfig</span></code>
+<p>The <code class="docutils literal notranslate"><span class="pre">directory</span></code> parameter passed to <a class="reference internal" href="../reference/config.html#starlite.config.template.TemplateConfig" title="starlite.config.template.TemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateConfig</span></code></a>
 can be either a directory or list of directories to use for loading templates.</p>
 </div>
 </section>
@@ -709,7 +708,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <section id="accessing-the-template-engine-instance">
 <h3>Accessing the template engine instance<a class="headerlink" href="#accessing-the-template-engine-instance" title="Permalink to this heading">#</a></h3>
 <p>If you need to access the template engine instance, you can do so via the
-<code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateConfig.engine</span></code> attribute:</p>
+<a class="reference internal" href="../reference/config.html#starlite.config.template.TemplateConfig" title="starlite.config.template.TemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateConfig.engine</span></code></a> attribute:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-5">

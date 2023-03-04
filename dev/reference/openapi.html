@@ -51,7 +51,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="starlite.params" href="params.html" />
+    <link rel="next" title="pagination" href="pagination.html" />
     <link rel="prev" title="server_side" href="middleware/session/server_side.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
@@ -446,6 +446,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">starlite.controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="datastructures/headers.html">headers</a></li>
@@ -491,6 +492,7 @@
 </ul>
 </li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="params.html">starlite.params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="plugins/base.html">base</a></li>
@@ -507,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="serialization.html">serialization</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="storage/file.html">file</a></li>
@@ -518,12 +521,8 @@
 <li class="toctree-l2"><a class="reference internal" href="testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="types.html">starlite.types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/pagination.html">pagination</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils/predicates.html">predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/serialization.html">serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils/sync.html">sync</a></li>
 </ul>
 </li>
@@ -894,29 +893,34 @@ the controller.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="starlite.openapi.datastructures.ResponseSpec">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.openapi.datastructures.</span></span><span class="sig-name descname"><span class="pre">ResponseSpec</span></span><a class="headerlink" href="#starlite.openapi.datastructures.ResponseSpec" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Container type of additional responses.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.openapi.datastructures.ResponseSpec.model">
-<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BaseModel</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.openapi.datastructures.ResponseSpec.model" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BaseModel</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.openapi.datastructures.ResponseSpec.model" title="Permalink to this definition">#</a></dt>
 <dd><p>A model that describes the content of the response.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.openapi.datastructures.ResponseSpec.generate_examples">
-<span class="sig-name descname"><span class="pre">generate_examples</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><a class="headerlink" href="#starlite.openapi.datastructures.ResponseSpec.generate_examples" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">generate_examples</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#starlite.openapi.datastructures.ResponseSpec.generate_examples" title="Permalink to this definition">#</a></dt>
 <dd><p>Generate examples for the response content.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.openapi.datastructures.ResponseSpec.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BaseModel</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generate_examples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Additional</span> <span class="pre">response'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">media_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="enums.html#starlite.enums.MediaType" title="starlite.enums.MediaType"><span class="pre">MediaType</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MediaType.JSON</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.openapi.datastructures.ResponseSpec.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.openapi.datastructures.ResponseSpec.description">
-<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.openapi.datastructures.ResponseSpec.description" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Additional</span> <span class="pre">response'</span></em><a class="headerlink" href="#starlite.openapi.datastructures.ResponseSpec.description" title="Permalink to this definition">#</a></dt>
 <dd><p>A description of the response.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.openapi.datastructures.ResponseSpec.media_type">
-<span class="sig-name descname"><span class="pre">media_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="enums.html#starlite.enums.MediaType" title="starlite.enums.MediaType"><span class="pre">MediaType</span></a></em><a class="headerlink" href="#starlite.openapi.datastructures.ResponseSpec.media_type" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">media_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="enums.html#starlite.enums.MediaType" title="starlite.enums.MediaType"><span class="pre">MediaType</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'application/json'</span></em><a class="headerlink" href="#starlite.openapi.datastructures.ResponseSpec.media_type" title="Permalink to this definition">#</a></dt>
 <dd><p>Response media type.</p>
 </dd></dl>
 
@@ -939,10 +943,10 @@ the controller.</p>
           <p class="prev-next-title">server_side</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="params.html" title="next page">
+  <a class='right-next' id="next-link" href="pagination.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">starlite.params</p>
+      <p class="prev-next-title">pagination</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
@@ -1338,6 +1342,15 @@ the controller.</p>
      <code class="docutils literal notranslate">
       <span class="pre">
        ResponseSpec.generate_examples
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.openapi.datastructures.ResponseSpec.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ResponseSpec.__init__()
       </span>
      </code>
     </a>

@@ -446,6 +446,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">starlite.controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/headers.html">headers</a></li>
@@ -491,6 +492,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">starlite.params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/base.html">base</a></li>
@@ -507,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/storage/file.html">file</a></li>
@@ -518,12 +521,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">starlite.types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/pagination.html">pagination</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/utils/predicates.html">predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/serialization.html">serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/utils/sync.html">sync</a></li>
 </ul>
 </li>
@@ -593,8 +592,6 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
-
-<span class="c1"># run: /</span>
 </pre></div>
 </div>
 </div>
@@ -614,11 +611,16 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
-
-<span class="c1"># run: /</span>
 </pre></div>
 </div>
 </div>
+</div>
+</div>
+<div class="admonition">
+<p class="admonition-title">Run it</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
+<span class="o">{</span><span class="s2">&quot;hello&quot;</span>:<span class="s2">&quot;world&quot;</span><span class="o">}</span>
+</pre></div>
 </div>
 </div>
 <p>The app instance is the root level of the app - it has the base path of <code class="docutils literal notranslate"><span class="pre">/</span></code> and all root level Controllers, Routers
@@ -818,7 +820,7 @@ ensure that no mutation of state is allowed:</p>
 <section id="static-files">
 <h2>Static Files<a class="headerlink" href="#static-files" title="Permalink to this heading">#</a></h2>
 <p>Static files are served by the app from predefined locations. To configure static file serving, either pass an
-instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code> or a list
+instance of <a class="reference internal" href="../reference/config.html#starlite.config.static_files.StaticFilesConfig" title="starlite.config.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> or a list
 thereof to the <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span> <span class="pre">constructor</span></code></a> using the <code class="docutils literal notranslate"><span class="pre">static_files_config</span></code> kwarg.</p>
 <p>For example, lets say our Starlite app is going to serve <strong>regular files</strong> from the <code class="docutils literal notranslate"><span class="pre">my_app/static</span></code> folder and <strong>html
 documents</strong> from the <code class="docutils literal notranslate"><span class="pre">my_app/html</span></code> folder, and we would like to serve the <strong>static files</strong> on the <code class="docutils literal notranslate"><span class="pre">/files</span></code> path,
@@ -884,7 +886,7 @@ To send them as attachments, use the <code class="docutils literal notranslate">
 </section>
 <section id="file-system-support-and-cloud-files">
 <h3>File System support and Cloud Files<a class="headerlink" href="#file-system-support-and-cloud-files" title="Permalink to this heading">#</a></h3>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code> class accepts a value called <code class="docutils literal notranslate"><span class="pre">file_system</span></code>,
+<p>The <a class="reference internal" href="../reference/config.html#starlite.config.static_files.StaticFilesConfig" title="starlite.config.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> class accepts a value called <code class="docutils literal notranslate"><span class="pre">file_system</span></code>,
 which can be any class adhering to the Starlite <a class="reference internal" href="../reference/types.html#starlite.types.FileSystemProtocol" title="starlite.types.FileSystemProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileSystemProtocol</span></code></a>.</p>
 <p>This protocol is similar to the file systems defined by <a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a>,
 which cover all major cloud providers and a wide range of other use cases (e.g. HTTP based file service, <code class="docutils literal notranslate"><span class="pre">ftp</span></code> etc.).</p>
@@ -953,7 +955,7 @@ logging config for using it:</p>
 <section id="subclass-logging-configs">
 <h3>Subclass Logging Configs<a class="headerlink" href="#subclass-logging-configs" title="Permalink to this heading">#</a></h3>
 <p>You can easily create you own <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code> class by subclassing
-<code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoggingConfig</span></code> and
+<a class="reference internal" href="../reference/config.html#starlite.config.logging.BaseLoggingConfig" title="starlite.config.logging.BaseLoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoggingConfig</span></code></a> and
 implementing the <code class="docutils literal notranslate"><span class="pre">configure</span></code> method.</p>
 </section>
 </section>
@@ -1205,7 +1207,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>Starlite includes a hook for intercepting the arguments passed to the <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span> <span class="pre">constructor</span></code></a>,
 before they are used to instantiate the application.</p>
 <p>Handlers can be passed to the <code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> parameter on construction of the application, and in turn, each will receive
-an instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code> and must return an instance of same.</p>
+an instance of <a class="reference internal" href="../reference/config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> and must return an instance of same.</p>
 <p>This hook is useful for applying common configuration between applications, and for use by developers who may wish to
 develop third-party application configuration systems.</p>
 <div class="admonition note">

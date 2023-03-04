@@ -446,6 +446,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">starlite.controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/headers.html">headers</a></li>
@@ -491,6 +492,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">starlite.params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/base.html">base</a></li>
@@ -507,6 +509,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/storage/file.html">file</a></li>
@@ -518,12 +521,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">starlite.testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">starlite.types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/pagination.html">pagination</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/utils/predicates.html">predicates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/serialization.html">serialization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/utils/sync.html">sync</a></li>
 </ul>
 </li>
@@ -805,7 +804,7 @@ that pre-set the <code class="docutils literal notranslate"><span class="pre">ht
 code clearer and simpler.</p>
 <p>Furthermore, in the OpenAPI specification each unique combination of http verb (e.g. “GET”, “POST” etc.) and path is
 regarded as a distinct <a class="reference external" href="https://spec.openapis.org/oas/latest.html#operation-object">operation</a>, and each operation
-should be distinguished by a unique <code class="docutils literal notranslate"><span class="pre">operationId</span></code> and optimally also have a <code class="docutils literal notranslate"><span class="pre">summary</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code> sections.</p>
+should be distinguished by a unique <code class="docutils literal notranslate"><span class="pre">operation_id</span></code> and optimally also have a <code class="docutils literal notranslate"><span class="pre">summary</span></code> and <code class="docutils literal notranslate"><span class="pre">description</span></code> sections.</p>
 <p>As such, using the <code class="docutils literal notranslate"><span class="pre">route</span></code> decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.</p>
 </section>
