@@ -4,6 +4,8 @@ from collections import defaultdict
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Callable, Coroutine, DefaultDict, Dict, cast
 
+from typing_extensions import get_args
+
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
@@ -20,6 +22,7 @@ if TYPE_CHECKING:
     from starlite.connection import ASGIConnection, Request
     from starlite.kwargs import KwargsModel
     from starlite.kwargs.parameter_definition import ParameterDefinition
+    from starlite.new_dto.abc import AbstractDTO
     from starlite.signature.models import SignatureField
 
 
@@ -235,9 +238,7 @@ def body_extractor(
     values["body"] = connection.body()
 
 
-async def json_extractor(
-    connection: "Request[Any, Any, Any]",
-) -> Any:
+async def json_extractor(connection: Request[Any, Any, Any]) -> Any:
     """Extract the data from request and insert it into the kwargs injected to the handler.
 
     Notes:
@@ -252,7 +253,7 @@ async def json_extractor(
     return await connection.json()
 
 
-async def msgpack_extractor(connection: "Request[Any, Any, Any]") -> Any:
+async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
     """Extract the data from request and insert it into the kwargs injected to the handler.
 
     Notes:
@@ -265,6 +266,34 @@ async def msgpack_extractor(connection: "Request[Any, Any, Any]") -> Any:
         The MessagePack value.
     """
     return await connection.msgpack()
+
+
+def create_dto_extractor(
+    signature_field: SignatureField,
+) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
+    """Create a DTO data extractor.
+
+    Args:
+        signature_field: A SignatureField instance.
+
+    Returns:
+        An extractor function.
+    """
+    if signature_field.is_non_string_iterable:
+        # what about fixed sized, heterogeneous tuples?
+        dto_type = cast("type[AbstractDTO[Any]]", get_args(signature_field.field_type)[0])
+
+        async def collection_dto_extractor(connection: Request[Any, Any, Any]) -> list[AbstractDTO[Any]]:
+            return dto_type.list_from_bytes(await connection.body())
+
+        return collection_dto_extractor  # type:ignore[return-value]
+
+    dto_type = cast("type[AbstractDTO[Any]]", signature_field.field_type)
+
+    async def scalar_dto_extractor(connection: Request[Any, Any, Any]) -> AbstractDTO[Any]:
+        return dto_type.from_bytes(await connection.body())
+
+    return scalar_dto_extractor  # type:ignore[return-value]
 
 
 def create_multipart_extractor(

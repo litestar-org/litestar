@@ -27,5 +27,9 @@ class ConcreteDTO(AbstractDTO[Model]):
         return cls()
 
     @classmethod
+    def list_from_bytes(cls, raw: bytes) -> list[Self]:
+        return [cls(), cls()]
+
+    @classmethod
     def from_model(cls, model: Model) -> Self:
         return cls()

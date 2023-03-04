@@ -26,11 +26,11 @@ class AbstractDTO(ABC, Generic[T]):
 
     @classmethod
     @abstractmethod
-    def from_model(cls, model: T) -> Self:
-        """Construct DTO instance from model instance.
+    def from_bytes(cls, raw: bytes) -> Self:
+        """Construct an instance from bytes.
 
         Args:
-            model: A model instance.
+            raw: A byte representation of the DTO model.
 
         Returns:
             AbstractDTO instance.
@@ -38,11 +38,23 @@ class AbstractDTO(ABC, Generic[T]):
 
     @classmethod
     @abstractmethod
-    def from_bytes(cls, raw: bytes) -> Self:
-        """Construct an instance from bytes.
+    def list_from_bytes(cls, raw: bytes) -> list[Self]:
+        """Construct a list of instances from bytes.
 
         Args:
-            raw: A byte representation of the DTO model.
+            raw: A byte representation of an array of DTO models.
+
+        Returns:
+            List of AbstractDTO instances.
+        """
+
+    @classmethod
+    @abstractmethod
+    def from_model(cls, model: T) -> Self:
+        """Construct DTO instance from model instance.
+
+        Args:
+            model: A model instance.
 
         Returns:
             AbstractDTO instance.

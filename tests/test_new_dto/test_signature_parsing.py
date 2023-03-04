@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, FrozenSet, List, Set, Tuple
+from typing import TYPE_CHECKING, FrozenSet, List, Optional, Set, Tuple, Union
 
 import pytest
 
@@ -21,6 +21,8 @@ if TYPE_CHECKING:
         Set[ConcreteDTO],
         Tuple[ConcreteDTO, ...],
         Tuple[ConcreteDTO, ConcreteDTO],
+        Optional[ConcreteDTO],
+        Union[ConcreteDTO, None],  # noqa: SIM907
     ],
 )
 def test_create_signature_model(annotation: type[Any]) -> None:

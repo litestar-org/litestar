@@ -147,8 +147,8 @@ class SignatureField:
     def has_dto_annotation(self) -> bool:
         """Field is annotated with a DTO type."""
         # MyPY error:
-        # Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
-        # https://github.com/python/mypy/issues/4717
+        #   Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
+        #   https://github.com/python/mypy/issues/4717
         return any(
             is_class_and_subclass(t, AbstractDTO)  # type:ignore[type-abstract]
             for t in (get_args(self.field_type) or (self.field_type,))
