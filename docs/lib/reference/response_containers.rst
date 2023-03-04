@@ -2,6 +2,9 @@ response_containers
 --------------------
 
 
+.. autoclass:: starlite.response_containers.ResponseContainer
+    :members:
+
 .. autoclass:: starlite.response_containers.File
     :members:
 
