@@ -61,6 +61,7 @@ python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
 rich = {version = ">=13.0.0", optional = true}
+saq ={ version = "*", optional = true, extras = ["hiredis"] }
 sqlalchemy = { version = "^2.0", optional = true }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
@@ -91,8 +92,9 @@ pytest-cov = "*"
 pytest-mock = "*"
 python-dotenv = "*"
 python-jose = "*"
-redis = "*"
+redis = { version = "*", extras = ["hiredis"] }
 rich = "*"
+saq = "*"
 sqlalchemy = "^2.0"
 starlette = "*"
 structlog = "*"
@@ -127,8 +129,9 @@ jwt = ["python-jose", "cryptography"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
+saq = ["saq", "redis"]
 sqlalchemy = ["sqlalchemy", "alembic"]
-standard = ["click", "jinja2", "jsbeautifier", "picologging", "rich",]
+standard = ["click", "jinja2", "jsbeautifier", "rich",]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
 full = [
@@ -142,6 +145,8 @@ full = [
     "python-jose",
     "redis",
     "rich",
+    "saq",
+    "sqlalchemy",
     "structlog",
     "tortoise-orm",
 ]
