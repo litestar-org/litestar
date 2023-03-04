@@ -4,7 +4,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock, call
-
 import pytest
 from sqlalchemy.exc import IntegrityError, InvalidRequestError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,6 +18,7 @@ from starlite.contrib.sqlalchemy.repository import (
     SQLAlchemyRepository,
     wrap_sqlalchemy_exception,
 )
+from starlite.contrib.sqlalchemy import base
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
@@ -60,6 +60,28 @@ async def test_sqlalchemy_repo_add(mock_repo: SQLAlchemyRepository) -> None:
     mock_repo.session.commit.assert_not_called()
 
 
+async def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
+    """Test expected method calls for add operation."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    mock_instances = [MagicMock(), MagicMock(), MagicMock()]
+
+    monkeypatch.setattr(mock_repo, "model_type", Model)
+    monkeypatch.setattr(mock_repo, "_execute", AsyncMock(return_value=mock_instances))
+
+    instances = await mock_repo.add_many(mock_instances)
+
+    #
+    assert instances is mock_instances
+    mock_repo.session.expunge.assert_called()
+    mock_repo.session.commit.assert_not_called()
+
+
 async def test_sqlalchemy_repo_delete(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for delete operation."""
     mock_instance = MagicMock()
@@ -95,6 +117,35 @@ async def test_sqlalchemy_repo_list(mock_repo: SQLAlchemyRepository, monkeypatch
     instances = await mock_repo.list()
     assert instances == mock_instances
     mock_repo.session.expunge.assert_has_calls(*mock_instances)
+    mock_repo.session.commit.assert_not_called()
+
+
+async def test_sqlalchemy_repo_list_and_count(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
+    """Test expected method calls for list operation."""
+    mock_instances = [MagicMock(), MagicMock()]
+    mock_count = len(mock_instances)
+    result_mock = MagicMock()
+    result_mock.__iter__.return_value = iter([(mock, mock_count) for mock in mock_instances])
+    execute_mock = AsyncMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    instances, instance_count = await mock_repo.list_and_count()
+    assert instances == mock_instances
+    assert instance_count == mock_count
+    mock_repo.session.expunge.assert_has_calls(*mock_instances)
+    mock_repo.session.commit.assert_not_called()
+
+
+async def test_sqlalchemy_repo_count(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
+    """Test expected method calls for list operation."""
+    result_mock = MagicMock()
+    count_mock = MagicMock()
+    execute_mock = AsyncMock(return_value=result_mock)
+    execute_count_mock = AsyncMock(return_value=count_mock)
+    monkeypatch.setattr(mock_repo, "count", execute_count_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    mock_repo.count.return_value = 1
+    count = await mock_repo.count()
+    assert count == 1
     mock_repo.session.commit.assert_not_called()
 
 
@@ -195,7 +246,7 @@ async def testexecute(mock_repo: SQLAlchemyRepository) -> None:
 
 def test_filter_in_collection_noop_if_collection_empty(mock_repo: SQLAlchemyRepository) -> None:
     """Ensures we don't filter on an empty collection."""
-    mock_repo._filter_in_collection(mock_repo.select, "id", [])
+    mock_repo._filter_in_collection("id", [], select=mock_repo.select)
     mock_repo.select.where.assert_not_called()
 
 
@@ -212,7 +263,7 @@ def test__filter_on_datetime_field(before: datetime, after: datetime, mock_repo:
     field_mock = MagicMock()
     field_mock.__gt__ = field_mock.__lt__ = lambda self, other: True
     mock_repo.model_type.updated = field_mock
-    mock_repo._filter_on_datetime_field(mock_repo.select, "updated", before, after)
+    mock_repo._filter_on_datetime_field("updated", before, after, select=mock_repo.select)
 
 
 def test_filter_collection_by_kwargs(mock_repo: SQLAlchemyRepository) -> None:

@@ -12,7 +12,7 @@ from starlite.contrib.repository.abc import AbstractRepository
 from starlite.contrib.repository.exceptions import ConflictError, RepositoryError
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Hashable, Iterable, MutableMapping
+    from collections.abc import Callable, Hashable, Iterable, MutableMapping, Sequence
     from typing import Any
 
     from starlite.contrib.repository.types import FilterTypes
@@ -71,7 +71,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         self.collection[data.id] = data
         return data
 
-    async def add_many(self, data: list[ModelT], allow_id: bool = False) -> list[ModelT]:
+    async def add_many(self, data: Sequence[ModelT], allow_id: bool = False) -> Sequence[ModelT]:
         """Add multiple `data` to the collection.
 
         Args:
@@ -112,7 +112,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         finally:
             del self.collection[item_id]
 
-    async def get(self, item_id: Any) -> ModelT:
+    async def get(self, item_id: Any, **kwargs: Any) -> ModelT:
         """Get instance identified by `item_id`.
 
         Args:
@@ -164,7 +164,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         return len(await self.list(*filters, **kwargs))
 
-    async def list(self, *filters: "FilterTypes", **kwargs: Any) -> list[ModelT]:
+    async def list(self, *filters: "FilterTypes", **kwargs: Any) -> Sequence[ModelT]:
         """Get a list of instances, optionally filtered.
 
         Args:
@@ -180,7 +180,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         self,
         *filters: FilterTypes,
         **kwargs: Any,
-    ) -> tuple[list[ModelT], int]:
+    ) -> tuple[Sequence[ModelT], int]:
         """Get a list of instances, optionally filtered with a total row count.
 
         Args:
@@ -216,7 +216,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             setattr(item, key, val)
         return item
 
-    async def update_many(self, data: list[ModelT]) -> list[ModelT]:
+    async def update_many(self, data: Sequence[ModelT]) -> Sequence[ModelT]:
         """Update instances with the attribute values present on `data`.
 
         Args:

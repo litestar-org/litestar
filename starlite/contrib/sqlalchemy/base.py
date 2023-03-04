@@ -75,6 +75,7 @@ class CommonTableAttributes:
 
     __abstract__ = True
     __name__: str
+    __table__: Any
 
     # noinspection PyMethodParameters
     @declared_attr.directive
@@ -83,6 +84,11 @@ class CommonTableAttributes:
         return cls.__name__.lower()
 
     def to_dict(self) -> dict[str, Any]:
+        """Convert model to dictionary.
+
+        Returns:
+            dict[str, Any]: A dict representation of the model
+        """
         return {field.name: getattr(self, field.name) for field in self.__table__.columns}
 
 

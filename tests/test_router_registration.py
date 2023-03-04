@@ -28,7 +28,7 @@ class MyController(Controller):
         pass
 
     @get(path="/{id:int}")
-    def get_method(self) -> None:
+    def get_method(self) -> None:  # noqa: F811 # pyright:ignore[reportGeneralTypeIssues]
         pass
 
     @websocket(path="/socket")
