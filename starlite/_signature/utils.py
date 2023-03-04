@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import typing
 from inspect import isclass, ismethod
 from typing import TYPE_CHECKING, Any, cast
 
@@ -68,6 +69,7 @@ def get_fn_type_hints(fn: Any) -> dict[str, Any]:
 
     # Order important. If a starlite name has been overridden in the function module, we want
     # to use that instead of the starlite one.
-    namespace = {**STARLITE_GLOBAL_NAMES, **vars(sys.modules[fn_to_inspect.__module__])}
+    types = vars(typing)
+    namespace = {**STARLITE_GLOBAL_NAMES, **vars(sys.modules[fn_to_inspect.__module__]), **types}
     with py_39_safe_annotations(fn_to_inspect):
         return get_type_hints(fn_to_inspect, globalns=namespace)
