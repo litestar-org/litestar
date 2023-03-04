@@ -62,7 +62,7 @@ async def test_sqlalchemy_repo_add(mock_repo: SQLAlchemyRepository) -> None:
 
 
 async def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
-    """Test expected method calls for add operation."""
+    """Test expected method calls for add many operation."""
 
     class Model(base.AuditBase):
         """Inheriting from AuditBase gives the model 'created' and 'updated'
@@ -80,6 +80,27 @@ async def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemyRepository, monkeyp
     #
     assert instances is mock_instances
     mock_repo.session.expunge.assert_called()
+    mock_repo.session.commit.assert_not_called()
+
+
+async def test_sqlalchemy_repo_update_many(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
+    """Test expected method calls for update many operation."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    mock_instances = [MagicMock(), MagicMock(), MagicMock()]
+
+    monkeypatch.setattr(mock_repo, "model_type", Model)
+    monkeypatch.setattr(mock_repo, "_execute", AsyncMock(return_value=mock_instances))
+
+    instances = await mock_repo.update_many(mock_instances)
+
+    assert instances is mock_instances
+    mock_repo.session.flush.assert_called_once()
     mock_repo.session.commit.assert_not_called()
 
 
@@ -103,6 +124,34 @@ async def test_sqlalchemy_repo_get_member(mock_repo: SQLAlchemyRepository, monke
     execute_mock = AsyncMock(return_value=result_mock)
     monkeypatch.setattr(mock_repo, "_execute", execute_mock)
     instance = await mock_repo.get("instance-id")
+    assert instance is mock_instance
+    mock_repo.session.expunge.assert_called_once_with(mock_instance)
+    mock_repo.session.commit.assert_not_called()
+
+
+async def test_sqlalchemy_repo_get_one_member(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
+    """Test expected method calls for member get operation."""
+    mock_instance = MagicMock()
+    result_mock = MagicMock()
+    result_mock.scalar_one_or_none = MagicMock(return_value=mock_instance)
+    execute_mock = AsyncMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    instance = await mock_repo.get_one(id="instance-id")
+    assert instance is mock_instance
+    mock_repo.session.expunge.assert_called_once_with(mock_instance)
+    mock_repo.session.commit.assert_not_called()
+
+
+async def test_sqlalchemy_repo_get_one_or_none_member(
+    mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test expected method calls for member get operation."""
+    mock_instance = MagicMock()
+    result_mock = MagicMock()
+    result_mock.scalar_one_or_none = MagicMock(return_value=mock_instance)
+    execute_mock = AsyncMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    instance = await mock_repo.get_one_or_none(id="instance-id")
     assert instance is mock_instance
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
     mock_repo.session.commit.assert_not_called()
