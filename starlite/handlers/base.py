@@ -193,7 +193,7 @@ class BaseRouteHandler(Generic[T]):
         return self._resolved_guards  # type:ignore
 
     def resolve_dependencies(self) -> dict[str, Provide]:
-        """Return all dependencies correlating to handler function's _kwargs that exist in the handler's scope."""
+        """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
         if self._resolved_dependencies is Empty:
             self._resolved_dependencies = {}
 

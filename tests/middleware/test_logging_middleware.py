@@ -6,10 +6,10 @@ from structlog.testing import capture_logs
 
 from starlite import Response, get, post
 from starlite.config.compression import CompressionConfig
-from starlite.config.logging import LoggingConfig, StructLoggingConfig
 from starlite.connection import Request
 from starlite.datastructures import Cookie
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.logging.config import LoggingConfig, StructLoggingConfig
 from starlite.middleware.logging import LoggingMiddlewareConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.testing import create_test_client

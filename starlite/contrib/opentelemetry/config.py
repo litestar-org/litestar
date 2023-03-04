@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable
 
+from starlite.contrib.opentelemetry._utils import get_route_details_from_scope
 from starlite.contrib.opentelemetry.middleware import (
     OpenTelemetryInstrumentationMiddleware,
 )
-from starlite.contrib.opentelemetry.utils import get_route_details_from_scope
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import DefineMiddleware
 

@@ -77,7 +77,7 @@ def create_app_file(
 
 @pytest.fixture
 def app_file(create_app_file: CreateAppFileFixture) -> Path:
-    return create_app_file("_asgi.py")
+    return create_app_file("asgi.py")
 
 
 @pytest.fixture

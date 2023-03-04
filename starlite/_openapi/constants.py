@@ -40,7 +40,7 @@ from pydantic import (
 )
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
-from starlite.openapi.enums import OpenAPIFormat, OpenAPIType
+from starlite._openapi.enums import OpenAPIFormat, OpenAPIType
 
 TYPE_MAP: Dict[Union[Type[Any], None, Any], Schema] = {
     str: Schema(type=OpenAPIType.STRING),

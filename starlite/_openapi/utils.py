@@ -1,8 +1,8 @@
 import re
 from typing import TYPE_CHECKING, List, Union
 
+from starlite._openapi.enums import OpenAPIType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.openapi.enums import OpenAPIType
 from starlite.types.internal_types import PathParameterDefinition
 
 __all__ = ("default_operation_id_creator", "get_openapi_type_for_complex_type", "pascal_case_to_text")

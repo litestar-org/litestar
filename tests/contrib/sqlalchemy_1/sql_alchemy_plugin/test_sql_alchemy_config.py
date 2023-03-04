@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session, sessionmaker
 
 from starlite import Starlite, get
-from starlite.config.logging import LoggingConfig
 from starlite.contrib.sqlalchemy_1.config import (
     SESSION_SCOPE_KEY,
     SESSION_TERMINUS_ASGI_EVENTS,
@@ -16,6 +15,7 @@ from starlite.contrib.sqlalchemy_1.config import (
 )
 from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.logging.config import LoggingConfig
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import RequestFactory, create_test_client
 from starlite.types import Scope

@@ -6,6 +6,7 @@ from urllib.parse import quote
 
 from starlite import MediaType, Request, Response, Starlite
 from starlite.background_tasks import BackgroundTask, BackgroundTasks
+from starlite.contrib.htmx._utils import HTMX_STOP_POLLING, get_headers
 from starlite.contrib.htmx.types import (
     EventAfterType,
     HtmxHeaderType,
@@ -14,7 +15,6 @@ from starlite.contrib.htmx.types import (
     ReSwapMethod,
     TriggerEventType,
 )
-from starlite.contrib.htmx.utils import HTMX_STOP_POLLING, get_headers
 from starlite.datastructures import Cookie
 from starlite.response import TemplateResponse
 from starlite.response_containers import ResponseContainer, Template

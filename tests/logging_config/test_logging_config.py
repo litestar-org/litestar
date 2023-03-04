@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from starlite import Request, get
-from starlite.config.logging import (
+from starlite.logging.config import (
     LoggingConfig,
     default_handlers,
     default_picologging_handlers,
@@ -47,7 +47,7 @@ def test_correct_dict_config_called(
 
 @pytest.mark.parametrize("picologging_exists", [True, False])
 def test_correct_default_handlers_set(picologging_exists: bool) -> None:
-    with patch("starlite.config.logging.find_spec") as find_spec_mock:
+    with patch("starlite.logging.config.find_spec") as find_spec_mock:
         find_spec_mock.return_value = picologging_exists
         log_config = LoggingConfig()
 

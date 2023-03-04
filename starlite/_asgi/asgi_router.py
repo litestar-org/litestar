@@ -140,7 +140,7 @@ class ASGIRouter:
     def construct_routing_trie(self) -> None:
         """Create a map of the app's routes.
 
-        This map is used in the _asgi router to route requests.
+        This map is used in the asgi router to route requests.
         """
         new_routes = [route for route in self.app.routes if route not in self._registered_routes]
         for route in new_routes:

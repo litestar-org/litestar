@@ -17,8 +17,8 @@ from pydantic_openapi_schema.v3_1_0 import (
     Tag,
 )
 
+from starlite._openapi.utils import default_operation_id_creator
 from starlite.openapi.controller import OpenAPIController
-from starlite.openapi.utils import default_operation_id_creator
 
 __all__ = ("OpenAPIConfig",)
 
@@ -32,7 +32,7 @@ class OpenAPIConfig:
     """Configuration for OpenAPI.
 
     To enable OpenAPI schema generation and serving, pass an instance of this class to the
-    :class:`Starlite <starlite.app.Starlite>` constructor using the 'openapi_config' _kwargs.
+    :class:`Starlite <starlite.app.Starlite>` constructor using the 'openapi_config' kwargs.
     """
 
     title: str

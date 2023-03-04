@@ -183,7 +183,7 @@ class HTTPRoute(BaseRoute):
     async def _get_response_data(
         route_handler: "HTTPRouteHandler", parameter_model: "KwargsModel", request: Request
     ) -> tuple[Any, "DependencyCleanupGroup" | None]:
-        """Determine what _kwargs are required for the given route handler's ``fn`` and calls it."""
+        """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
         parsed_kwargs: dict[str, Any] = {}
         cleanup_group: DependencyCleanupGroup | None = None
 

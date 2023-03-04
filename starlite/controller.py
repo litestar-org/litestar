@@ -197,7 +197,7 @@ class Controller:
             elif isinstance(route_handler, WebsocketRouteHandler):
                 methods = {"websocket"}
             else:
-                methods = {"_asgi"}
+                methods = {"asgi"}
 
             for path in route_handler.paths:
                 if (entry := paths[path]) and (intersection := entry.intersection(methods)):

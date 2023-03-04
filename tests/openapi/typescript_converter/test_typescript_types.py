@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from starlite.openapi.typescript_converter.types import (
+from starlite._openapi.typescript_converter.types import (
     TypeScriptAnonymousInterface,
     TypeScriptArray,
     TypeScriptConst,

@@ -217,7 +217,7 @@ class Router:
                 self.routes.append(route)
                 routes.append(route)
 
-            if asgi_handler := handlers_map.get("_asgi"):
+            if asgi_handler := handlers_map.get("asgi"):
                 route = ASGIRoute(path=path, route_handler=cast("ASGIRouteHandler", asgi_handler))
                 self.routes.append(route)
                 routes.append(route)
@@ -239,7 +239,7 @@ class Router:
                         route_map[route.path][method] = route_handler
             else:
                 route_map[route.path][
-                    "websocket" if isinstance(route, WebSocketRoute) else "_asgi"
+                    "websocket" if isinstance(route, WebSocketRoute) else "asgi"
                 ] = route.route_handler
         return route_map
 
@@ -258,7 +258,7 @@ class Router:
                 return {path: {http_method: copied_value for http_method in value.http_methods} for path in value.paths}
 
             return {
-                path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "_asgi": copied_value}
+                path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": copied_value}
                 for path in value.paths
             }
 
@@ -271,7 +271,7 @@ class Router:
                         handlers_map[path][http_method] = route_handler
                 else:
                     handlers_map[path][
-                        "websocket" if isinstance(route_handler, WebsocketRouteHandler) else "_asgi"
+                        "websocket" if isinstance(route_handler, WebsocketRouteHandler) else "asgi"
                     ] = cast("WebsocketRouteHandler | ASGIRouteHandler", route_handler)
 
         return handlers_map

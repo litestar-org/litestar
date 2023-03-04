@@ -15,12 +15,12 @@ if TYPE_CHECKING:
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
-    from starlite.config.logging import BaseLoggingConfig
-    from starlite.config.openapi import OpenAPIConfig
     from starlite.config.static_files import StaticFilesConfig
     from starlite.config.template import TemplateConfig
     from starlite.events import BaseEventEmitterBackend, EventListener
+    from starlite.logging.config import BaseLoggingConfig
     from starlite.middleware.session.base import BaseBackendConfig
+    from starlite.openapi.config import OpenAPIConfig
     from starlite.plugins import PluginProtocol, SerializationPluginProtocol
     from starlite.types import (
         AfterExceptionHookHandler,

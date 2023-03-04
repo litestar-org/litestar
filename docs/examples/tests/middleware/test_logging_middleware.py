@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 from examples.middleware.logging_middleware import app
 
-from starlite.config.logging import LoggingConfig, default_handlers
+from starlite.logging.config import LoggingConfig, default_handlers
 from starlite.testing import TestClient
 
 

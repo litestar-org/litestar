@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from starlite.connection import ASGIConnection
 from starlite.enums import ScopeType
-from starlite.middleware.utils import (
+from starlite.middleware._utils import (
     build_exclude_path_pattern,
     should_bypass_middleware,
 )

@@ -5,8 +5,8 @@ from pydantic_openapi_schema.v3_1_0.media_type import (
 )
 from pydantic_openapi_schema.v3_1_0.request_body import RequestBody
 
+from starlite._openapi.schema import create_schema, update_schema_with_signature_field
 from starlite.enums import RequestEncodingType
-from starlite.openapi.schema import create_schema, update_schema_with_signature_field
 from starlite.params import BodyKwarg
 
 __all__ = ("create_request_body",)

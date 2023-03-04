@@ -10,12 +10,11 @@ from typing_extensions import Self, TypedDict
 
 from starlite._asgi import ASGIRouter
 from starlite._asgi.utils import get_route_handlers, wrap_in_exception_handler
+from starlite._openapi.path_item import create_path_item
 from starlite._signature import create_signature_model
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
 from starlite.config.cache import CacheConfig
-from starlite.config.logging import LoggingConfig, get_logger_placeholder
-from starlite.config.openapi import OpenAPIConfig
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
@@ -24,8 +23,9 @@ from starlite.exceptions import (
     NoRouteMatchFoundException,
 )
 from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.logging.config import LoggingConfig, get_logger_placeholder
 from starlite.middleware.cors import CORSMiddleware
-from starlite.openapi.path_item import create_path_item
+from starlite.openapi.config import OpenAPIConfig
 from starlite.plugins.base import (
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
@@ -55,18 +55,18 @@ if TYPE_CHECKING:
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
-    from starlite.config.logging import BaseLoggingConfig
     from starlite.config.static_files import StaticFilesConfig
     from starlite.config.template import TemplateConfig
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler  # noqa: TC004
+    from starlite.logging.config import BaseLoggingConfig
     from starlite.plugins import PluginProtocol
+    from starlite.types import AnyCallable  # nopycln: import
     from starlite.types import (  # noqa: TC004
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
-        AnyCallable,
         ASGIApp,
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
@@ -711,7 +711,7 @@ class Starlite(Router):
                     provider.has_sync_callable = True
 
     def _create_handler_signature_model(self, route_handler: BaseRouteHandler) -> None:
-        """Create function _signature models for all route handler functions and provider dependencies."""
+        """Create function signature models for all route handler functions and provider dependencies."""
         if not route_handler.signature_model:
             route_handler.signature_model = create_signature_model(
                 fn=cast("AnyCallable", route_handler.fn.value),
@@ -792,7 +792,7 @@ class Starlite(Router):
 
         :param event_id: The ID of the event to emit, e.g 'my_event'.
         :param args: args to pass to the listener(s).
-        :param kwargs: _kwargs to pass to the listener(s)
+        :param kwargs: kwargs to pass to the listener(s)
         :return: None
         """
         await self.event_emitter.emit(event_id, *args, **kwargs)

@@ -50,13 +50,13 @@ if TYPE_CHECKING:
 
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
+    from starlite._openapi.datastructures import ResponseSpec
     from starlite.app import Starlite
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.datastructures.headers import Header
     from starlite.di import Provide
-    from starlite.openapi.datastructures import ResponseSpec
     from starlite.plugins import SerializationPluginProtocol
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
 

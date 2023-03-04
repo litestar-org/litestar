@@ -3,8 +3,8 @@ from typing import List
 import pytest
 
 from starlite.app import DEFAULT_OPENAPI_CONFIG
-from starlite.config.openapi import OpenAPIConfig
 from starlite.enums import MediaType
+from starlite.openapi.config import OpenAPIConfig
 from starlite.openapi.controller import OpenAPIController
 from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from starlite.testing import create_test_client

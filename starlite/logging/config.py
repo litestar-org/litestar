@@ -16,11 +16,6 @@ __all__ = (
     "BaseLoggingConfig",
     "LoggingConfig",
     "StructLoggingConfig",
-    "default_logger_factory",
-    "default_structlog_processors",
-    "default_wrapper_class",
-    "get_default_handlers",
-    "get_logger_placeholder",
 )
 
 

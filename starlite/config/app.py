@@ -7,17 +7,12 @@ from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.cache import CacheConfig
 from starlite.events.emitter import SimpleEventEmitter
 
-__all__ = ("AppConfig",)
-
-
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
-    from starlite.config.logging import BaseLoggingConfig
-    from starlite.config.openapi import OpenAPIConfig
     from starlite.config.static_files import StaticFilesConfig
     from starlite.config.template import TemplateConfig
     from starlite.connection import Request, WebSocket
@@ -25,6 +20,8 @@ if TYPE_CHECKING:
     from starlite.di import Provide
     from starlite.events.emitter import BaseEventEmitterBackend
     from starlite.events.listener import EventListener
+    from starlite.logging.config import BaseLoggingConfig
+    from starlite.openapi.config import OpenAPIConfig
     from starlite.plugins import PluginProtocol
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -44,6 +41,8 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from starlite.types.composite_types import InitialStateType
+
+__all__ = ("AppConfig",)
 
 
 @dataclass

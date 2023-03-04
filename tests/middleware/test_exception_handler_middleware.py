@@ -5,12 +5,12 @@ import pytest
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from starlite import Request, Response, Starlite, get
-from starlite.config.logging import LoggingConfig
 from starlite.exceptions import (
     HTTPException,
     InternalServerException,
     ValidationException,
 )
+from starlite.logging.config import LoggingConfig
 from starlite.middleware.exceptions import ExceptionHandlerMiddleware
 from starlite.middleware.exceptions.middleware import get_exception_handler
 from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR

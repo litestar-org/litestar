@@ -10,11 +10,11 @@ from starlite.datastructures import MutableScopeHeaders
 from starlite.datastructures.cookie import Cookie
 from starlite.enums import RequestEncodingType, ScopeType
 from starlite.exceptions import PermissionDeniedException
-from starlite.middleware.base import MiddlewareProtocol
-from starlite.middleware.utils import (
+from starlite.middleware._utils import (
     build_exclude_path_pattern,
     should_bypass_middleware,
 )
+from starlite.middleware.base import MiddlewareProtocol
 
 __all__ = ("CSRFMiddleware", "generate_csrf_hash", "generate_csrf_token")
 

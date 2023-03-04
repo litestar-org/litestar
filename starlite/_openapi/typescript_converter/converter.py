@@ -13,12 +13,11 @@ from pydantic_openapi_schema.v3_1_0 import (
     Schema,
 )
 
-from starlite.enums import HttpMethod, ParamType
-from starlite.openapi.typescript_converter.schema_parsing import (
+from starlite._openapi.typescript_converter.schema_parsing import (
     normalize_typescript_namespace,
     parse_schema,
 )
-from starlite.openapi.typescript_converter.types import (
+from starlite._openapi.typescript_converter.types import (
     TypeScriptInterface,
     TypeScriptNamespace,
     TypeScriptPrimitive,
@@ -26,6 +25,7 @@ from starlite.openapi.typescript_converter.types import (
     TypeScriptType,
     TypeScriptUnion,
 )
+from starlite.enums import HttpMethod, ParamType
 
 __all__ = (
     "convert_openapi_to_typescript",

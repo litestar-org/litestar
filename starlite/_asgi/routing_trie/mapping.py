@@ -161,11 +161,11 @@ def configure_node(
         node.path_parameters["websocket"] = route.path_parameters
 
     else:
-        node.asgi_handlers["_asgi"] = ASGIHandlerTuple(
+        node.asgi_handlers["asgi"] = ASGIHandlerTuple(
             asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=route.route_handler),
             handler=route.route_handler,
         )
-        node.path_parameters["_asgi"] = route.path_parameters
+        node.path_parameters["asgi"] = route.path_parameters
         node.is_asgi = True
 
 

@@ -4,13 +4,13 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, EmailStr, SecretStr
 
 from starlite import Request, Starlite, get, post
-from starlite.config.openapi import OpenAPIConfig
 from starlite.connection import ASGIConnection
 from starlite.exceptions import NotAuthorizedException
 from starlite.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
+from starlite.openapi.config import OpenAPIConfig
 from starlite.security.session_auth import SessionAuth
 from starlite.storage.memory import MemoryStorage
 

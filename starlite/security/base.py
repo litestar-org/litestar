@@ -171,7 +171,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     @property
     @abstractmethod
     def middleware(self) -> DefineMiddleware:  # pragma: no cover
-        """Create an instance of the config's ``authentication_middleware_class`` attribute and any required _kwargs,
+        """Create an instance of the config's ``authentication_middleware_class`` attribute and any required kwargs,
         wrapping it in Starlite's ``DefineMiddleware``.
 
         Returns:

@@ -9,17 +9,17 @@ from pydantic_openapi_schema.v3_1_0.example import Example
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 
 from starlite import Controller, MediaType, Starlite, get
+from starlite._openapi import schema
+from starlite._openapi.constants import KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP
+from starlite._openapi.schema import (
+    get_schema_for_field_type,
+    update_schema_with_signature_field,
+)
 from starlite._signature.models import PydanticSignatureModel, SignatureField
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.di import Provide
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.openapi import schema
-from starlite.openapi.constants import KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP
-from starlite.openapi.schema import (
-    get_schema_for_field_type,
-    update_schema_with_signature_field,
-)
 from starlite.params import Parameter, ParameterKwarg
 from starlite.testing import create_test_client
 from tests import TypedDictPerson

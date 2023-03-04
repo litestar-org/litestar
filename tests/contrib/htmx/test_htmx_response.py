@@ -5,6 +5,7 @@ import pytest
 
 from starlite import MediaType, get
 from starlite.config.template import TemplateConfig
+from starlite.contrib.htmx._utils import HTMXHeaders
 from starlite.contrib.htmx.request import HTMXRequest
 from starlite.contrib.htmx.response import (
     ClientRedirect,
@@ -18,7 +19,6 @@ from starlite.contrib.htmx.response import (
     Retarget,
     TriggerEvent,
 )
-from starlite.contrib.htmx.utils import HTMXHeaders
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
 from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR

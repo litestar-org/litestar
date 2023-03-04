@@ -49,13 +49,13 @@ async def resolve_dependency(
     """Resolve a given instance of :class:`Dependency <starlite._kwargs.Dependency>`.
 
     All required sub dependencies must already
-    be resolved into the _kwargs. The result of the dependency will be stored in the _kwargs.
+    be resolved into the kwargs. The result of the dependency will be stored in the kwargs.
 
     Args:
         dependency: An instance of :class:`Dependency <starlite._kwargs.Dependency>`
         connection: An instance of :class:`Request <starlite.connection.Request>` or
             :class:`WebSocket <starlite.connection.WebSocket>`.
-        kwargs: Any _kwargs to pass to the dependency, the result will be stored here as well.
+        kwargs: Any kwargs to pass to the dependency, the result will be stored here as well.
         cleanup_group: DependencyCleanupGroup to which generators returned by ``dependency`` will be added
     """
     signature_model = get_signature_model(dependency.provide)

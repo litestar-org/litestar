@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Callable, Protocol, runtime_checkable
 
 from starlite.enums import ScopeType
-from starlite.middleware.utils import (
+from starlite.middleware._utils import (
     build_exclude_path_pattern,
     should_bypass_middleware,
 )
@@ -44,7 +44,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
 
 
 class DefineMiddleware:
-    """Container enabling passing ``*args`` and ``**_kwargs`` to Middleware class constructors and factory functions."""
+    """Container enabling passing ``*args`` and ``**kwargs`` to Middleware class constructors and factory functions."""
 
     __slots__ = (
         "middleware",
