@@ -385,23 +385,19 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The select with filters applied.
         """
         for filter_ in filters:
-            match filter_:
-                case LimitOffset(limit, offset):
-                    if apply_pagination:
-                        select = self._apply_limit_offset_pagination(limit, offset, select=select)
-                    else:
-                        pass
-                case BeforeAfter(field_name, before, after):
-                    select = self._filter_on_datetime_field(
-                        field_name,
-                        before,
-                        after,
-                        select=select,
-                    )
-                case CollectionFilter(field_name, values):
-                    select = self._filter_in_collection(field_name, values, select=select)
-                case _:
-                    raise RepositoryError(f"Unexpected filter: {filter}")
+            if isinstance(filter_, LimitOffset):
+                if apply_pagination:
+                    select = self._apply_limit_offset_pagination(filter_.limit, filter_.offset, select=select)
+                else:
+                    pass
+            elif isinstance(filter_, BeforeAfter):
+                select = self._filter_on_datetime_field(
+                    filter_.field_name, filter_.before, filter_.after, select=select
+                )
+            elif isinstance(filter_, CollectionFilter):
+                select = self._filter_in_collection(filter_.field_name, filter_.values, select=select)
+            else:
+                raise RepositoryError(f"Unexpected filter: {filter_}")
         return select
 
     def _filter_in_collection(self, field_name: str, values: abc.Collection[Any], select: SelectT) -> SelectT:

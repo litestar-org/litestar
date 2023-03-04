@@ -263,7 +263,9 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             return await self.update(data)
         return await self.add(data, allow_id=True)
 
-    def filter_collection_by_kwargs(self, **kwargs: Any) -> None:
+    def filter_collection_by_kwargs(  # type:ignore[override]
+        self, collection: MutableMapping[Hashable, ModelT], /, **kwargs: Any
+    ) -> MutableMapping[Hashable, ModelT]:
         """Filter the collection by kwargs.
 
         Args:
@@ -278,6 +280,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             except AttributeError as orig:
                 raise RepositoryError from orig
         self.collection = new_collection
+        return self.collection
 
     @classmethod
     def seed_collection(cls, instances: Iterable[ModelT]) -> None:

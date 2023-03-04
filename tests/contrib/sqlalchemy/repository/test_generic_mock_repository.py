@@ -77,9 +77,9 @@ def test_generic_mock_repository_filter_collection_by_kwargs(
     author_repository: GenericMockRepository[Author],
 ) -> None:
     """Test filtering the repository collection by kwargs."""
-    author_repository.filter_collection_by_kwargs(name="Leo Tolstoy")
-    assert len(author_repository.collection) == 1
-    assert list(author_repository.collection.values())[0].name == "Leo Tolstoy"
+    collection = author_repository.filter_collection_by_kwargs(author_repository.collection, name="Leo Tolstoy")
+    assert len(collection) == 1
+    assert list(collection.values())[0].name == "Leo Tolstoy"
 
 
 def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(
@@ -87,8 +87,10 @@ def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(
 ) -> None:
     """Test that filtering by kwargs has `AND` semantics when multiple kwargs,
     not `OR`."""
-    author_repository.filter_collection_by_kwargs(name="Agatha Christie", dob="1828-09-09")
-    assert len(author_repository.collection) == 0
+    collection = author_repository.filter_collection_by_kwargs(
+        author_repository.collection, name="Agatha Christie", dob="1828-09-09"
+    )
+    assert len(collection) == 0
 
 
 def test_generic_mock_repository_raises_repository_exception_if_named_attribute_doesnt_exist(
@@ -97,7 +99,7 @@ def test_generic_mock_repository_raises_repository_exception_if_named_attribute_
     """Test that a repo exception is raised if a named attribute doesn't
     exist."""
     with pytest.raises(RepositoryError):
-        author_repository.filter_collection_by_kwargs(cricket="ball")
+        _ = author_repository.filter_collection_by_kwargs(author_repository.collection, cricket="ball")
 
 
 async def test_sets_created_updated_on_add() -> None:
