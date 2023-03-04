@@ -185,7 +185,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
                 have the property that their attribute named `key` has value equal to `value`.
 
         Raises:
-            RepositoryException: if a named attribute doesn't exist on `self.model_type`.
+            RepositoryError: if a named attribute doesn't exist on `self.model_type`.
         """
 
     @staticmethod
