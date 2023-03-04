@@ -67,3 +67,104 @@ Unified storage interfaces **[Breaking]**
         This is a breaking change and you need to change your session / cache configuration accordingly
 
     Reference: https://github.com/starlite-api/starlite/pull/1184
+
+
+Changes
++++++++
+
+Relaxed type annotations
+    Type annotations across the library have been relaxed to more generic forms, for example
+    ``Iterable[str]`` instead of ``List[str]`` or ``Mapping[str, str]`` instead of ``Dict[str, str]``.
+
+    Reference: https://github.com/starlite-api/starlite/pull/1140
+
+``type_encoders`` support in ``AbstractSecurityConfig``
+    ``type_encoders`` support has been added to
+    :class:`AbstractSecurityConfig <starlite.security.base.AbstractSecurityConfig>`, enabling support for customized
+    ``type_encoders`` for example in :class:`JWTAuth <starlite.contrib.jwt_auth.JWTAuth>`.
+
+    Reference: https://github.com/starlite-api/starlite/pull/1167
+
+Renamed handler module names **[Breaking]**
+    The modules containing route handlers have been renamed to prevent ambiguity between module and handler names.
+
+    ``starlite.handlers.asgi`` > ``starlite.handlers.asgi_handlers``
+    ``starlite.handlers.http`` > ``starlite.handlers.http_handlers``
+    ``starlite.handlers.websocket`` > ``starlite.handlers.websocket_handlers``
+
+    Reference: https://github.com/starlite-api/starlite/pull/1170
+
+New plugin protocols **[Breaking]**
+    The plugin protocol has been split into three distinct protocols, covering different use cases:
+
+    :class:`InitPluginProtocol <starlite.plugins.InitPluginProtocol>`
+        Hook into an application's initialization process
+
+    :class:`SerializationPluginProtocol <starlite.plugins.SerializationPluginProtocol>`
+        Extend the serialization and deserialization capabilities of an application
+
+    :class:`OpenAPISchemaPluginProtocol <starlite.plugins.OpenAPISchemaPluginProtocol>`
+        Extend OpenAPI schema generation
+
+    Reference: https://github.com/starlite-api/starlite/pull/1176
+
+Unify response headers and cookies **[Breaking]**
+    :ref:`lib/usage/responses:response headers` and :ref:`lib/usage/response:response cookies` now have the same
+    interface, along with the ``headers`` and ``cookies`` keyword arguments to
+    :class:`Response <starlite.responses.Response>`. They each allow to pass either a ``Mapping[str, str]``, e.g. a
+    dictionary, or a sequence of :class:`ResponseHeaders <starlite.datastructures.response_headers.ResponseHeader>` or
+    :class:`Cookies <starlite.datastructures.cookie.Cookie>` respectively.
+
+    Reference: https://github.com/starlite-api/starlite/pull/1209
+
+Replace Pydantic models with dataclasses **[Breaking]**
+    Several Pydantic models used for configuration have been replaced with dataclasses or plain classes. This change
+    should be mostly non-breaking, unless you relied on those configuration objects being Pydantic models. The changed
+    models are:
+
+    - :class:`starlite.config.allowed_hosts.AllowedHostsConfig`
+    - :class:`starlite.config.app.AppConfig`
+    - :class:`starlite.config.cache.CacheConfig`
+    - :class:`starlite.config.compression.CompressionConfig`
+    - :class:`starlite.config.cors.CORSConfig`
+    - :class:`starlite.config.csrf.CSRFConfig`
+    - :class:`starlite.config.logging.LoggingConfig`
+    - :class:`starlite.config.openapi.OpenAPIConfig`
+    - :class:`starlite.config.static_files.StaticFilesConfig`
+    - :class:`starlite.config.template.TemplateConfig`
+    - :class:`starlite.contrib.jwt.jwt_token.Token`
+    - :class:`starlite.contrib.jwt.jwt_auth.JWTAuth`
+    - :class:`starlite.contrib.jwt.jwt_auth.JWTCookieAuth`
+    - :class:`starlite.contrib.jwt.jwt_auth.OAuth2Login`
+    - :class:`starlite.contrib.jwt.jwt_auth.OAuth2PasswordBearerAuth`
+    - :class:`starlite.contrib.opentelemetry.config.OpenTelemetryConfig`
+    - :class:`starlite.middleware.logging.LoggingMiddlewareConfig`
+    - :class:`starlite.middleware.rate_limit.RateLimitConfig`
+    - :class:`starlite.middleware.session.base.BaseBackendConfig`
+    - :class:`starlite.middleware.session.client_side.CookieBackendConfig`
+    - :class:`starlite.middleware.session.server_side.ServerSideSessionConfig`
+    - :class:`starlite.openapi.ResponseSpec`
+    - :class:`starlite.response_containers.ResponseContainer`
+    - :class:`starlite.response_containers.File`
+    - :class:`starlite.response_containers.Redirect`
+    - :class:`starlite.response_containers.Stream`
+    - :class:`starlite.security.AbstractSecurityConfig`
+    - :class:`starlite.security.session_auth.SessionAuth`
+
+    Reference: https://github.com/starlite-api/starlite/pull/1242
+
+SQLAlchemy plugin moved to ``contrib`` **[Breaking]**
+    The :class:`SQLAlchemyPlugin` has moved to ``starlite.contrib.sqlalchemy_1.plugin`` and will only be compatible with
+    the SQLAlchemy 1.4 release line. The newer SQLAlchemy 2.x releases will be supported by the ``contrib.sqlalchemy``
+    module.
+
+    Reference: https://github.com/starlite-api/starlite/pull/1252
+
+Cleanup of the ``starlite`` namespace  **[Breaking]**
+    The ``starlite`` namespace has been cleared up, removing many names from it, which now have to be imported from
+    their respective submodules individually. This was both done to improve developer experience as well as reduce
+    the time it takes to ``import starlite``.
+    An overview of the changed import paths can be found in the
+    :ref:`migration guide <release-notes/migration_guide_2:Changed module paths>`
+
+    Reference: https://github.com/starlite-api/starlite/issues/1135
