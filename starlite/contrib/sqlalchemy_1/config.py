@@ -16,8 +16,6 @@ __all__ = (
     "SQLAlchemyConfig",
     "SQLAlchemyEngineConfig",
     "SQLAlchemySessionConfig",
-    "default_before_send_handler",
-    "serializer",
 )
 
 
