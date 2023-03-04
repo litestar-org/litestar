@@ -1,4 +1,3 @@
-# pyright: reportGeneralTypeIssues=false
 import pytest
 
 from starlite import (
@@ -28,8 +27,8 @@ class MyController(Controller):
     def get_method(self) -> None:
         pass
 
-    @get(path="/{id:int}")  # type: ignore[no-redef]
-    def get_method(self) -> None:  # noqa: F811
+    @get(path="/{id:int}")
+    def get_by_id_method(self) -> None:
         pass
 
     @websocket(path="/socket")
