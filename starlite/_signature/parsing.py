@@ -233,7 +233,7 @@ def create_pydantic_signature_model(
     Args:
         fn_name: Name of the callable.
         fn_module: Name of the function's module, if any.
-        parsed_params: A list of parsed _signature parameters.
+        parsed_params: A list of parsed signature parameters.
         return_annotation: Annotation for the callable's return value.
         field_plugin_mappings: A mapping of field names to plugin mappings.
         dependency_names: A set of dependency names.
