@@ -244,19 +244,19 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
     async def upsert(self, data: ModelT) -> ModelT:
         """Update or create instance.
 
-        Updates instance with the attribute values present on `data`, or creates a new instance if
+        Updates instance with the attribute values present on ``data``, or creates a new instance if
         one doesn't exist.
 
         Args:
             data: Instance to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on `data` named as value of
-                `self.id_attribute`.
+                :attr:`id_attribute <GenericMockRepository.id_attribute>`.
 
         Returns:
             The updated or created instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
         """
         item_id = self.get_id_attribute_value(data)
         if item_id in self.collection:
