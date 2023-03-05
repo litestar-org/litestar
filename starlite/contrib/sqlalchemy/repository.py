@@ -94,7 +94,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             self.session.expunge(instance)
             return instance
 
-    async def add_many(self, data: abc.Sequence[ModelT]) -> abc.Sequence[ModelT]:
+    async def add_many(self, data: list[ModelT]) -> list[ModelT]:
         """Add Many `data` to the collection.
 
         Args:
@@ -223,7 +223,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         results = await self._execute(select)
         return results.scalar_one()  # type: ignore
 
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> abc.Sequence[ModelT]:
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:
         """Get a list of instances, optionally filtered.
 
         Args:
@@ -247,7 +247,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         self,
         *filters: FilterTypes,
         **kwargs: Any,
-    ) -> tuple[abc.Sequence[ModelT], int]:
+    ) -> tuple[list[ModelT], int]:
         """List records with total count.
 
         Args:
@@ -301,7 +301,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             self.session.expunge(instance)
             return instance
 
-    async def update_many(self, data: abc.Sequence[ModelT]) -> abc.Sequence[ModelT]:
+    async def update_many(self, data: list[ModelT]) -> list[ModelT]:
         """Update one or more instances with the attribute values present on `data`.
 
         Args:

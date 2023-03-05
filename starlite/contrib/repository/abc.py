@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from .exceptions import NotFoundError
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     from .types import FilterTypes
 
 
@@ -43,7 +41,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def add_many(self, data: Sequence[T]) -> Sequence[T]:
+    async def add_many(self, data: list[T]) -> list[T]:
         """Add multiple ``data`` to the collection.
 
         Args:
@@ -130,7 +128,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> Sequence[T]:
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[T]:
         """Get a list of instances, optionally filtered.
 
         Args:
@@ -142,7 +140,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[Sequence[T], int]:
+    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[T], int]:
         """List records with total count.
 
         Args:
@@ -169,7 +167,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def update_many(self, data: Sequence[T]) -> Sequence[T]:
+    async def update_many(self, data: list[T]) -> list[T]:
         """Update multiple instances with the attribute values present on instances in ``data``.
 
         Args:
@@ -177,7 +175,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
                 collection.
 
         Returns:
-            The updated instances.
+            a list of the updated instances.
 
         Raises:
             RepositoryNotFoundException: If no instance found with same identifier as ``data``.
