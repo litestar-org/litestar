@@ -50,7 +50,7 @@ class Controller:
         "after_request",
         "after_response",
         "before_request",
-        "data_dto_type",
+        "data_dto",
         "dependencies",
         "etag",
         "exception_handlers",
@@ -90,7 +90,7 @@ class Controller:
 
     Can be overridden by route handlers.
     """
-    data_dto_type: type[AbstractDTO] | EmptyType | None
+    data_dto: type[AbstractDTO] | EmptyType | None
     """DTO type to use for deserializing and validating inbound request data."""
     dependencies: Dependencies | None
     """A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances."""
@@ -153,8 +153,8 @@ class Controller:
 
         for key in self.__slots__:
             if not hasattr(self, key):
-                if key == "data_dto_type":
-                    self.data_dto_type = Empty
+                if key == "data_dto":
+                    self.data_dto = Empty
                     continue
                 setattr(self, key, None)
 

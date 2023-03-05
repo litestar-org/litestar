@@ -122,7 +122,7 @@ class AppConfig:
     """If set this enables the builtin CORS middleware."""
     csrf_config: CSRFConfig | None = field(default=None)
     """If set this enables the builtin CSRF middleware."""
-    data_dto_type: type[AbstractDTO] | EmptyType | None = field(default=Empty)
+    data_dto: type[AbstractDTO] | EmptyType | None = field(default=Empty)
     """DTO type to use for deserializing and validating inbound request data."""
     debug: bool = field(default=False)
     """If ``True``, app errors rendered as HTML with a stack trace."""

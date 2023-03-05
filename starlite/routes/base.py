@@ -124,9 +124,7 @@ class BaseRoute(ABC):
             dependencies=route_handler.resolve_dependencies(),
             path_parameters=path_parameters,
             layered_parameters=route_handler.resolve_layered_parameters(),
-            data_dto_type=route_handler.resolve_data_dto_type()
-            if isinstance(route_handler, HTTPRouteHandler)
-            else None,
+            data_dto=route_handler.resolve_data_dto() if isinstance(route_handler, HTTPRouteHandler) else None,
         )
 
     @staticmethod

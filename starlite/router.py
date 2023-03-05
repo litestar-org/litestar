@@ -62,7 +62,7 @@ class Router:
         "after_response",
         "before_request",
         "cache_control",
-        "data_dto_type",
+        "data_dto",
         "dependencies",
         "etag",
         "exception_handlers",
@@ -90,7 +90,7 @@ class Router:
         after_response: AfterResponseHookHandler | None = None,
         before_request: BeforeRequestHookHandler | None = None,
         cache_control: CacheControlHeader | None = None,
-        data_dto_type: type[AbstractDTO] | None | EmptyType = Empty,
+        data_dto: type[AbstractDTO] | None | EmptyType = Empty,
         dependencies: Mapping[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -120,7 +120,7 @@ class Router:
             cache_control: A ``cache-control`` header of type
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` to add to route handlers of
                 this router. Can be overridden by route handlers.
-            data_dto_type: DTO type to use for deserializing and validating inbound request data.
+            data_dto: DTO type to use for deserializing and validating inbound request data.
             dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <datastructures.ETag>` to add to route handlers of this app.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -152,7 +152,7 @@ class Router:
         self.after_response = AsyncCallable(after_response) if after_response else None
         self.before_request = AsyncCallable(before_request) if before_request else None
         self.cache_control = cache_control
-        self.data_dto_type = data_dto_type
+        self.data_dto = data_dto
         self.etag = etag
         self.dependencies = dict(dependencies or {})
         self.exception_handlers = dict(exception_handlers or {})

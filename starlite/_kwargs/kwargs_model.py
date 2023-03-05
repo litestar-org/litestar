@@ -265,7 +265,7 @@ class KwargsModel:
         dependencies: dict[str, Provide],
         path_parameters: set[str],
         layered_parameters: dict[str, SignatureField],
-        data_dto_type: type[AbstractDTO] | None = None,
+        data_dto: type[AbstractDTO] | None = None,
     ) -> KwargsModel:
         """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
         during the application bootstrap process.
@@ -275,7 +275,7 @@ class KwargsModel:
             dependencies: A string keyed dictionary mapping dependency providers.
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
-            data_dto_type: An AbstractDTO subclass for deserializing and validating requests data.
+            data_dto: An AbstractDTO subclass for deserializing and validating requests data.
 
         Returns:
             An instance of KwargsModel
@@ -330,13 +330,13 @@ class KwargsModel:
 
         elif (
             data_signature_field
-            and data_dto_type
+            and data_dto
             and any(
-                data_dto_type.supports(type_)
+                data_dto.supports(type_)
                 for type_ in get_args(data_signature_field.field_type) or (data_signature_field.field_type,)
             )
         ):
-            expected_dto_supported_data = data_signature_field, data_dto_type
+            expected_dto_supported_data = data_signature_field, data_dto
 
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(

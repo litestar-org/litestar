@@ -21,7 +21,7 @@ def test_dto_data() -> None:
 
 
 def test_dto_supported_data() -> None:
-    @post(path="/", data_dto_type=ConcreteDTO)
+    @post(path="/", data_dto=ConcreteDTO)
     def post_handler(data: Model) -> None:
         assert isinstance(data, Model)
         # TODO: test return type
