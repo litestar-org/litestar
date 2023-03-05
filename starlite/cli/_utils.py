@@ -5,7 +5,6 @@ import inspect
 import sys
 from dataclasses import dataclass
 from functools import wraps
-from importlib.metadata import version
 from os import getenv
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence, TypeVar, cast
@@ -15,7 +14,7 @@ from rich.console import Console
 from rich.table import Table
 from typing_extensions import Concatenate, ParamSpec
 
-from starlite import Starlite
+from starlite import Starlite, __version__
 from starlite.middleware import DefineMiddleware
 from starlite.utils import get_name
 
@@ -284,7 +283,7 @@ def show_app_info(app: Starlite) -> None:  # pragma: no cover
     table.add_column("title", style="cyan")
     table.add_column("value", style="bright_blue")
 
-    table.add_row("Starlite version", version("starlite"))
+    table.add_row("Starlite version", f"{__version__.major}.{__version__.minor}.{__version__.patch}")
     table.add_row("Debug mode", _format_is_enabled(app.debug))
     table.add_row("CORS", _format_is_enabled(app.cors_config))
     table.add_row("CSRF", _format_is_enabled(app.csrf_config))
