@@ -14,6 +14,7 @@ from starlite.exceptions import (
 )
 from starlite.response import FileResponse, Response
 from starlite.response_containers import File, Redirect, ResponseContainer
+from starlite.signature.utils import get_signature_model
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from starlite.types import (
     AfterRequestHookHandler,
@@ -405,7 +406,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             cookies = self.resolve_response_cookies()
             type_encoders = self.resolve_type_encoders()
 
-            if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):  # type: ignore
+            return_annotation = get_signature_model(self).return_annotation
+
+            if is_class_and_subclass(return_annotation, ResponseContainer):  # type: ignore
                 handler = create_response_container_handler(
                     after_request=after_request,
                     cookies=cookies,
@@ -414,13 +417,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     status_code=self.status_code,
                 )
 
-            elif is_class_and_subclass(self.signature.return_annotation, Response):
+            elif is_class_and_subclass(return_annotation, Response):
                 handler = create_response_handler(cookies=cookies, after_request=after_request)
 
-            elif is_async_callable(self.signature.return_annotation) or self.signature.return_annotation in {
-                ASGIApp,
-                "ASGIApp",
-            }:
+            elif is_async_callable(return_annotation) or return_annotation is ASGIApp:
                 handler = create_generic_asgi_response_handler(cookies=cookies, after_request=after_request)
 
             else:
@@ -431,7 +431,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     headers=headers,
                     media_type=media_type,
                     response_class=response_class,
-                    return_annotation=self.signature.return_annotation,
+                    return_annotation=return_annotation,
                     status_code=self.status_code,
                     type_encoders=type_encoders,
                 )
