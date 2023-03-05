@@ -1,5 +1,5 @@
 piccolo_orm
 ===========
 
-.. automodule:: starlite.plugins.piccolo_orm
+.. automodule:: starlite.contrib.piccolo_orm
     :members:

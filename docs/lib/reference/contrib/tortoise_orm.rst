@@ -1,5 +1,5 @@
 tortoise_orm
 ============
 
-.. automodule:: starlite.plugins.tortoise_orm
+.. automodule:: starlite.contrib.tortoise_orm
     :members:
