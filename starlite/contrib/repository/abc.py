@@ -231,14 +231,14 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @classmethod
     def set_id_attribute_value(cls, item_id: Any, item: T) -> T:
-        """Return the `item` after the ID is set to the appropriate attribute.
+        """Return the ``item`` after the ID is set to the appropriate attribute.
 
         Args:
             item_id: Value of ID to be set on instance
-            item: Anything that should have an attribute named as `self.id_attribute` value.
+            item: Anything that should have an attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` value.
 
         Returns:
-            Item with `item_id` set to `cls.id_attribute`
+            Item with ``item_id`` set to :attr:`id_attribute <AbstractRepository.id_attribute>`
         """
         setattr(item, cls.id_attribute, item_id)
         return item
