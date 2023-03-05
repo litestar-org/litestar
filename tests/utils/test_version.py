@@ -7,8 +7,10 @@ from starlite.utils.version import Version, parse_version
     "raw_version,expected",
     [
         ("2.0.0alpha1", Version(2, 0, 0, "alpha", 1)),
+        ("2.0.0a1", Version(2, 0, 0, "alpha", 1)),  # test importlib.metadata.version coercion
         ("2.0.0alpha2", Version(2, 0, 0, "alpha", 2)),
         ("2.0.0beta1", Version(2, 0, 0, "beta", 1)),
+        ("2.0.0b1", Version(2, 0, 0, "beta", 1)),  # test importlib.metadata.version coercion
         ("2.0.0beta2", Version(2, 0, 0, "beta", 2)),
         ("2.0.0rc1", Version(2, 0, 0, "rc", 1)),
         ("2.0.0rc2", Version(2, 0, 0, "rc", 2)),

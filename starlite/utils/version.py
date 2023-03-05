@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 import sys
 from typing import Literal, NamedTuple
@@ -11,9 +13,11 @@ else:
     import importlib_metadata  # pragma: no cover
 
 
-_PRE_RELEASE_TAGS = {"alpha", "beta", "rc"}
-_VERSION_PARTS_RE = re.compile(r"(\d+|[a-z]+|\.)")
 _ReleaseLevel = Literal["alpha", "beta", "rc", "final"]
+_PRE_RELEASE_TAGS = {"alpha", "a", "beta", "b", "rc"}
+_PRE_RELEASE_TAGS_CONVERSIONS: dict[str, _ReleaseLevel] = {"a": "alpha", "b": "beta"}
+
+_VERSION_PARTS_RE = re.compile(r"(\d+|[a-z]+|\.)")
 
 
 class Version(NamedTuple):
@@ -38,6 +42,7 @@ def parse_version(raw_version: str) -> Version:
         major, minor, patch, release_level, serial = parts  # type: ignore[assignment]
         if release_level not in _PRE_RELEASE_TAGS:
             raise ValueError(f"Invalid release level: {release_level}")
+        release_level = _PRE_RELEASE_TAGS_CONVERSIONS.get(release_level, release_level)
     else:
         raise ValueError(f"Invalid version: {raw_version}")
 
