@@ -1,5 +1,5 @@
-starlite.types
-==============
+types
+=====
 
 .. py:currentmodule:: starlite.types
 

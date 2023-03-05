@@ -1,5 +1,5 @@
-starlite.events
-================
+events
+======
 
 
 .. automodule:: starlite.events
