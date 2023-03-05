@@ -18,6 +18,9 @@ from starlite.status_codes import HTTP_200_OK
 from starlite.types.composite_types import StreamType
 from starlite.utils.sync import AsyncIteratorWrapper
 
+__all__ = ("StreamingResponse",)
+
+
 if TYPE_CHECKING:
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.enums import OpenAPIMediaType

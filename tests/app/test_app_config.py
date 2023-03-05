@@ -7,8 +7,8 @@ import pytest
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.config.app import AppConfig
-from starlite.config.logging import LoggingConfig
 from starlite.events.emitter import SimpleEventEmitter
+from starlite.logging.config import LoggingConfig
 from starlite.router import Router
 
 

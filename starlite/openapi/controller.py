@@ -12,6 +12,9 @@ from starlite.response import Response
 from starlite.serialization import encode_json
 from starlite.status_codes import HTTP_404_NOT_FOUND
 
+__all__ = ("OpenAPIController", "OpenAPISchemaResponse")
+
+
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 

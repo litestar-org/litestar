@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
+from starlite.template.config import TemplateConfig
 
 if TYPE_CHECKING:
     from pathlib import Path

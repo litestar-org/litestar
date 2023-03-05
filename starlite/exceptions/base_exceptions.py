@@ -1,5 +1,7 @@
 from typing import Any
 
+__all__ = ("MissingDependencyException", "SerializationException", "StarliteException")
+
 
 class StarliteException(Exception):
     """Base exception class from which all Starlite exceptions inherit."""

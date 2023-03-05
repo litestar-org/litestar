@@ -8,6 +8,9 @@ from starlite.middleware.base import AbstractMiddleware
 from starlite.response import RedirectResponse, Response
 from starlite.status_codes import HTTP_400_BAD_REQUEST
 
+__all__ = ("AllowedHostsMiddleware",)
+
+
 if TYPE_CHECKING:
     from starlite.config.allowed_hosts import AllowedHostsConfig
     from starlite.types import ASGIApp, Receive, Scope, Send

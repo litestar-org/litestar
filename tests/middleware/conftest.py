@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite.config.logging import LoggingConfig, default_handlers
+from starlite.logging.config import LoggingConfig, default_handlers
 
 if TYPE_CHECKING:
     from starlite.types.callable_types import GetLogger

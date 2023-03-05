@@ -6,6 +6,8 @@ from typing import Literal
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware.compression import CompressionMiddleware
 
+__all__ = ("CompressionConfig",)
+
 
 @dataclass
 class CompressionConfig:

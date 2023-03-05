@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from starlite import Starlite, get
-from starlite.config.static_files import StaticFilesConfig
 from starlite.exceptions import MissingDependencyException
+from starlite.static_files.config import StaticFilesConfig
 
 
 @get("/")

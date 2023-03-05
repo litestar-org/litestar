@@ -2,11 +2,13 @@ from click import argument, group
 from rich.prompt import Confirm
 
 from starlite import Starlite
-from starlite.cli.utils import StarliteCLIException, StarliteGroup, console
+from starlite.cli._utils import StarliteCLIException, StarliteGroup, console
 from starlite.middleware import DefineMiddleware
 from starlite.middleware.session import SessionMiddleware
 from starlite.middleware.session.server_side import ServerSideSessionBackend
 from starlite.utils import is_class_and_subclass
+
+__all__ = ("clear_sessions_command", "delete_session_command", "get_session_backend", "sessions_group")
 
 
 def get_session_backend(app: Starlite) -> ServerSideSessionBackend:

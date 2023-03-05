@@ -3,6 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal
 
+__all__ = ("CSRFConfig",)
+
+
 if TYPE_CHECKING:
     from starlite.types import Method
 

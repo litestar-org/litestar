@@ -7,10 +7,13 @@ from jsbeautifier import Beautifier
 from yaml import dump as dump_yaml
 
 from starlite import Starlite
-from starlite.cli.utils import StarliteCLIException, StarliteGroup
-from starlite.openapi.typescript_converter.converter import (
+from starlite._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
+from starlite.cli._utils import StarliteCLIException, StarliteGroup
+
+__all__ = ("generate_openapi_schema", "generate_typescript_specs", "schema_group")
+
 
 beautifier = Beautifier()
 

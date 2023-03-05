@@ -28,6 +28,9 @@ from starlite.plugins.base import InitPluginProtocol, SerializationPluginProtoco
 
 from .types import SQLAlchemyBinaryType
 
+__all__ = ("SQLAlchemyPlugin",)
+
+
 try:
     from sqlalchemy import inspect
     from sqlalchemy import types as sqlalchemy_type

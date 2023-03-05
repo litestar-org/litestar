@@ -11,6 +11,8 @@ from starlite.types import Empty, EmptyType
 
 from .base import Storage
 
+__all__ = ("RedisStorage",)
+
 
 class RedisStorage(Storage):
     """Redis based, thread and process safe asynchronous key/value store."""

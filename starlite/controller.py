@@ -4,13 +4,16 @@ from collections import defaultdict
 from copy import copy
 from typing import TYPE_CHECKING, Any, DefaultDict, Mapping, cast
 
+from starlite._layers.utils import narrow_response_cookies, narrow_response_headers
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
-from starlite.handlers.utils import narrow_response_cookies, narrow_response_headers
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.utils import AsyncCallable, normalize_path
 from starlite.utils.helpers import unwrap_partial
+
+__all__ = ("Controller",)
+
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement

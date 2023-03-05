@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, Optional, Type, Union
 import pytest
 
 from starlite import MediaType, Starlite, get
-from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response_containers import Template
+from starlite.template.config import TemplateConfig
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:

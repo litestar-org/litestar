@@ -3,7 +3,7 @@ from sys import version_info
 import pytest
 
 from starlite import Starlite
-from starlite.openapi.typescript_converter.converter import (
+from starlite._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
 from tests.openapi.utils import PersonController, PetController

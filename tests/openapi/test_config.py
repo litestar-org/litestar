@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 from pydantic_openapi_schema.v3_1_0 import Components, Example, Header
 
 from starlite import Starlite, get
-from starlite.config.openapi import OpenAPIConfig
+from starlite.openapi.config import OpenAPIConfig
 
 if TYPE_CHECKING:
     from starlite.handlers.http_handlers import HTTPRouteHandler

@@ -4,12 +4,12 @@ from typing import Optional
 import pytest
 
 from starlite import get
-from starlite.config.static_files import StaticFilesConfig
-from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
 from starlite.response_containers import Template
+from starlite.static_files.config import StaticFilesConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
+from starlite.template.config import TemplateConfig
 from starlite.testing import create_test_client
 
 

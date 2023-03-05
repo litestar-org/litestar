@@ -13,6 +13,9 @@ from typing import (
 
 from typing_extensions import NotRequired, TypedDict
 
+__all__ = ("FileInfo", "FileSystemProtocol")
+
+
 if TYPE_CHECKING:
     from _typeshed import OpenBinaryMode, OpenTextMode
     from anyio import AsyncFile

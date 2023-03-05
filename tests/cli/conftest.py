@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 @pytest.fixture
 def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[List[str]], None]:
     def patcher(paths: List[str]) -> None:
-        from starlite.cli.utils import AUTODISCOVER_PATHS
+        from starlite.cli._utils import AUTODISCOVER_PATHS
 
         old_paths = AUTODISCOVER_PATHS[::]
         AUTODISCOVER_PATHS[:] = paths

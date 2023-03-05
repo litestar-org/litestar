@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING, Any, Tuple, cast
 import pytest
 
 from starlite import Controller, Request, Router, Starlite, get
+from starlite._openapi.path_item import create_path_item
+from starlite._openapi.utils import default_operation_id_creator
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http_handlers import HTTPRouteHandler
-from starlite.openapi.path_item import create_path_item
-from starlite.openapi.utils import default_operation_id_creator
 from starlite.utils import find_index
 from tests.openapi.utils import PersonController
 

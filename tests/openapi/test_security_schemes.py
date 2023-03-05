@@ -5,7 +5,7 @@ from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
 from pydantic_openapi_schema.v3_1_0.security_scheme import SecurityScheme
 
 from starlite import Controller, Router, Starlite, get
-from starlite.config.openapi import OpenAPIConfig
+from starlite.openapi.config import OpenAPIConfig
 
 if TYPE_CHECKING:
     from starlite.handlers.http_handlers import HTTPRouteHandler
