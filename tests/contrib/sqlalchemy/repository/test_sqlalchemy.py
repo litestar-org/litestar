@@ -130,7 +130,7 @@ async def test_sqlalchemy_repo_get_member(mock_repo: SQLAlchemyRepository, monke
 
 
 async def test_sqlalchemy_repo_get_one_member(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
-    """Test expected method calls for member get operation."""
+    """Test expected method calls for member get one operation."""
     mock_instance = MagicMock()
     result_mock = MagicMock()
     result_mock.scalar_one_or_none = MagicMock(return_value=mock_instance)
@@ -142,10 +142,41 @@ async def test_sqlalchemy_repo_get_one_member(mock_repo: SQLAlchemyRepository, m
     mock_repo.session.commit.assert_not_called()
 
 
+async def test_sqlalchemy_repo_get_or_create_member_existing(
+    mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test expected method calls for member get or create operation (existing)."""
+    mock_instance = MagicMock()
+    result_mock = MagicMock()
+    result_mock.scalar_one_or_none = MagicMock(return_value=mock_instance)
+    execute_mock = AsyncMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    instance, created = await mock_repo.get_or_create(id="instance-id")
+    assert instance is mock_instance
+    assert created is False
+    mock_repo.session.expunge.assert_called_once_with(mock_instance)
+    mock_repo.session.add.assert_not_called()
+
+
+async def test_sqlalchemy_repo_get_or_create_member_created(
+    mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test expected method calls for member get or create operation (created)."""
+    result_mock = MagicMock()
+    result_mock.scalar_one_or_none = MagicMock(return_value=None)
+    execute_mock = AsyncMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    instance, created = await mock_repo.get_or_create(id="new-id")
+    assert instance is not None
+    assert created is True
+    mock_repo.session.expunge.assert_called_once_with(instance)
+    mock_repo.session.add.assert_called_once_with(instance)
+
+
 async def test_sqlalchemy_repo_get_one_or_none_member(
     mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch
 ) -> None:
-    """Test expected method calls for member get operation."""
+    """Test expected method calls for member get one or none operation (found)."""
     mock_instance = MagicMock()
     result_mock = MagicMock()
     result_mock.scalar_one_or_none = MagicMock(return_value=mock_instance)
@@ -154,6 +185,21 @@ async def test_sqlalchemy_repo_get_one_or_none_member(
     instance = await mock_repo.get_one_or_none(id="instance-id")
     assert instance is mock_instance
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
+    mock_repo.session.commit.assert_not_called()
+
+
+async def test_sqlalchemy_repo_get_one_or_none_not_found(
+    mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch
+) -> None:
+    """Test expected method calls for member get one or none operation (Not found)."""
+
+    result_mock = MagicMock()
+    result_mock.scalar_one_or_none = MagicMock(return_value=None)
+    execute_mock = AsyncMock(return_value=result_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    instance = await mock_repo.get_one_or_none(id="instance-id")
+    assert instance is None
+    mock_repo.session.expunge.assert_not_called()
     mock_repo.session.commit.assert_not_called()
 
 

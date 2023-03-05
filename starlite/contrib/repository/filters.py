@@ -31,8 +31,7 @@ class BeforeAfter:
 
 @dataclass
 class CollectionFilter(Generic[T]):
-    """Data required to construct a ``WHERE ... IN (...)`` clause.
-    """
+    """Data required to construct a ``WHERE ... IN (...)`` clause."""
 
     field_name: str
     """Name of the model attribute to filter on."""

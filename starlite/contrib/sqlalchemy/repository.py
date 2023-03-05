@@ -154,10 +154,10 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             return instance
 
     async def get_one(self, **kwargs: Any) -> ModelT:
-        """Get instance identified by `item_id`.
+        """Get instance identified by ``kwargs``.
 
         Args:
-            item_id: Identifier of the instance to be retrieved.
+            **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
             The retrieved instance.
@@ -173,23 +173,34 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             return instance
 
     async def get_one_or_none(self, **kwargs: Any) -> ModelT | None:
-        """Get instance identified by `item_id`.
+        """Get instance identified by ``kwargs`` or None if not found.
 
         Args:
-            item_id: Identifier of the instance to be retrieved.
+            **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
-            The retrieved instance.
-
-        Raises:
-            RepositoryNotFoundException: If no instance found identified by `item_id`.
+            The retrieved instance or None
         """
         with wrap_sqlalchemy_exception():
             select = self._filter_select_by_kwargs(select=self.select, **kwargs)
             instance = (await self._execute(select)).scalar_one_or_none()
-            instance = self.check_not_found(instance)
-            self.session.expunge(instance)
-            return instance
+            if instance:
+                self.session.expunge(instance)
+            return instance or None
+
+    async def get_or_create(self, **kwargs: Any) -> tuple[ModelT, bool]:
+        """Get instance identified by ``kwargs`` or create if it doesn't exist.
+
+        Args:
+            **kwargs: Identifier of the instance to be retrieved.
+
+        Returns:
+            a tuple that includes the instance and whether or not it needed to be created.
+        """
+        existing = await self.get_one_or_none(**kwargs)
+        if existing:
+            return (existing, False)
+        return (await self.add(self.model_type(**kwargs)), True)  # type: ignore[arg-type]
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
         """Get the count of records returned by a query.

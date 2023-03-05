@@ -95,13 +95,27 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @abstractmethod
     async def get_one(self, **kwargs: Any) -> T:
-        """Get an instance if it exists or None.
+        """Get an instance specified by the ``kwargs`` filters if it exists.
 
         Args:
             **kwargs: Instance attribute value filters.
 
         Returns:
-            The list of instances, after filtering applied.
+            The retrieved instance.
+
+        Raises:
+            RepositoryNotFoundException: If no instance found identified by ``kwargs``.
+        """
+
+    @abstractmethod
+    async def get_or_create(self, **kwargs: Any) -> tuple[T, bool]:
+        """Get an instance if it exists or create it.
+
+        Args:
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            A tuple that includes the retrieved or created instance, and a boolean on whether the record was created or not
         """
 
     @abstractmethod

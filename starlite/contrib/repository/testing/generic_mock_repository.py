@@ -126,24 +126,39 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         return self._find_or_raise_not_found(item_id)
 
+    async def get_or_create(self, **kwargs: Any) -> tuple[ModelT, bool]:
+        """Get instance identified by ``kwargs`` or create if it doesn't exist.
+
+        Args:
+            **kwargs: Identifier of the instance to be retrieved.
+
+        Returns:
+            a tuple that includes the instance and whether or not it needed to be created.
+        """
+        existing = await self.get_one_or_none(**kwargs)
+        if existing:
+            return (existing, False)
+        return (await self.add(self.model_type(**kwargs)), True)  # type: ignore[arg-type]
+
     async def get_one(self, **kwargs: Any) -> ModelT:
         """Get instance identified by query filters.
 
         Args:
-            *filters: Types for specific filtering operations.
             **kwargs: Instance attribute value filters.
 
         Returns:
             The retrieved instance or None
+
+        Raises:
+            RepositoryNotFoundException: If no instance found identified by ``kwargs``.
         """
         data = await self.list(**kwargs)
         return self.check_not_found(data[0] if len(data) > 0 else None)
 
     async def get_one_or_none(self, **kwargs: Any) -> ModelT | None:
-        """Get instance identified by query filters.
+        """Get instance identified by query filters or None if not found.
 
         Args:
-            *filters: Types for specific filtering operations.
             **kwargs: Instance attribute value filters.
 
         Returns:
