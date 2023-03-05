@@ -14,7 +14,7 @@ from starlite.params import Dependency, Parameter
 from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from starlite.types.helper_types import OptionalSequence  # noqa: TC001
-from tests.plugins.test_base import AModel, APlugin
+from tests.test_plugins import AModel, APlugin
 
 if TYPE_CHECKING:
     from types import ModuleType

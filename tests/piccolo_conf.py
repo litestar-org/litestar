@@ -3,8 +3,4 @@ from piccolo.engine import SQLiteEngine
 
 DB = SQLiteEngine(path="test.sqlite")
 
-APP_REGISTRY = AppRegistry(
-    apps=[
-        "tests.plugins.piccolo_orm.piccolo_app",
-    ],
-)
+APP_REGISTRY = AppRegistry(apps=["tests.contrib.piccolo_orm.piccolo_app"])
