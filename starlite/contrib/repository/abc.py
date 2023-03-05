@@ -141,7 +141,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @abstractmethod
     async def update(self, data: T) -> T:
-        """Update instance with the attribute values present on `data`.
+        """Update instance with the attribute values present on ``data``.
 
         Args:
             data: An instance that should have a value for `self.id_attribute` that exists in the
