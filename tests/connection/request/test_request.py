@@ -10,13 +10,13 @@ from unittest.mock import patch
 import pytest
 
 from starlite import MediaType, get
-from starlite.config.static_files import StaticFilesConfig
 from starlite.connection.base import empty_send
 from starlite.connection.request import Request
 from starlite.datastructures import Address
 from starlite.exceptions import InternalServerException, SerializationException
 from starlite.response import Response
 from starlite.serialization import encode_msgpack
+from starlite.static_files.config import StaticFilesConfig
 from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:

@@ -5,7 +5,6 @@ import pytest
 from freezegun import freeze_time
 
 from starlite import Request, get
-from starlite.config.static_files import StaticFilesConfig
 from starlite.middleware.rate_limit import (
     DURATION_VALUES,
     CacheObject,
@@ -13,6 +12,7 @@ from starlite.middleware.rate_limit import (
     RateLimitConfig,
 )
 from starlite.serialization import decode_json, encode_json
+from starlite.static_files.config import StaticFilesConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 from starlite.testing import create_test_client
 

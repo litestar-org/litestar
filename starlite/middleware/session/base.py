@@ -19,6 +19,9 @@ from starlite.serialization import decode_json, encode_json
 from starlite.types import Scopes
 from starlite.utils import get_serializer_from_scope
 
+__all__ = ("BaseBackendConfig", "BaseSessionBackend", "SessionMiddleware")
+
+
 if TYPE_CHECKING:
     from starlite.types import ASGIApp, Message, Receive, Scope, ScopeSession, Send
 

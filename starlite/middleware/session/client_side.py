@@ -22,6 +22,9 @@ from ...enums import ScopeType
 from ...utils.dataclass import extract_dataclass_fields
 from .base import ONE_DAY_IN_SECONDS, BaseBackendConfig, BaseSessionBackend
 
+__all__ = ("ClientSideSessionBackend", "CookieBackendConfig")
+
+
 try:
     from cryptography.exceptions import InvalidTag
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM

@@ -3,7 +3,7 @@ from asyncio import sleep
 import pytest
 
 from starlite.cache import Cache
-from starlite.config.cache import default_cache_key_builder
+from starlite.cache.config import default_cache_key_builder
 from starlite.storage.memory import MemoryStorage
 
 

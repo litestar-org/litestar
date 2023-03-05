@@ -25,6 +25,9 @@ from starlite.utils import (
     set_starlite_scope_state,
 )
 
+__all__ = ("LoggingMiddleware", "LoggingMiddlewareConfig")
+
+
 if TYPE_CHECKING:
     from starlite.connection import Request
     from starlite.types import (

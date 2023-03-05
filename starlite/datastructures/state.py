@@ -4,6 +4,8 @@ from copy import copy, deepcopy
 from threading import RLock
 from typing import Any, Callable, Generator, Iterable, Iterator, Mapping, MutableMapping
 
+__all__ = ("ImmutableState", "State")
+
 
 class ImmutableState(Mapping[str, Any]):
     """An object meant to store arbitrary state.

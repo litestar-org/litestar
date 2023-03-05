@@ -10,18 +10,18 @@ from starlite.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
     from starlite import Request, WebSocket
+    from starlite.cache.config import CacheConfig
     from starlite.config.allowed_hosts import AllowedHostsConfig
-    from starlite.config.cache import CacheConfig
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
-    from starlite.config.logging import BaseLoggingConfig
-    from starlite.config.openapi import OpenAPIConfig
-    from starlite.config.static_files import StaticFilesConfig
-    from starlite.config.template import TemplateConfig
     from starlite.events import BaseEventEmitterBackend, EventListener
+    from starlite.logging.config import BaseLoggingConfig
     from starlite.middleware.session.base import BaseBackendConfig
+    from starlite.openapi.config import OpenAPIConfig
     from starlite.plugins import PluginProtocol, SerializationPluginProtocol
+    from starlite.static_files.config import StaticFilesConfig
+    from starlite.template.config import TemplateConfig
     from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,

@@ -1,16 +1,23 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Literal, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
-from starlite.config.logging import BaseLoggingConfig, LoggingConfig
 from starlite.datastructures.state import State  # noqa: TC001
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
+from starlite.logging.config import BaseLoggingConfig, LoggingConfig
 from starlite.serialization import decode_json, encode_json
 from starlite.utils import AsyncCallable
+
+__all__ = (
+    "SQLAlchemyConfig",
+    "SQLAlchemyEngineConfig",
+    "SQLAlchemySessionConfig",
+)
+
 
 try:
     from sqlalchemy import create_engine
@@ -62,7 +69,7 @@ async def default_before_send_handler(message: "Message", _: "State", scope: "Sc
     Returns:
         None
     """
-    session = cast("Optional[Union[Session, AsyncSession]]", scope.get(SESSION_SCOPE_KEY))
+    session = cast("Session | AsyncSession | None", scope.get(SESSION_SCOPE_KEY))
     if session and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
         if isinstance(session, AsyncSession):
             await session.close()
@@ -247,7 +254,7 @@ class SQLAlchemyConfig:
             self.engine_instance = create_engine_callable(
                 self.connection_string, **self.engine_config_dict  # type:ignore[arg-type]
             )
-        return cast("Union[Engine, FutureEngine, AsyncEngine]", self.engine_instance)
+        return cast("Engine | FutureEngine | AsyncEngine", self.engine_instance)
 
     @property
     def session_maker(self) -> sessionmaker:
@@ -282,7 +289,7 @@ class SQLAlchemyConfig:
         if not session:
             session_maker = cast("sessionmaker", state[self.session_maker_app_state_key])
             session = scope[SESSION_SCOPE_KEY] = session_maker()  # type: ignore
-        return cast("Union[Session, AsyncSession]", session)
+        return cast("Session | AsyncSession", session)
 
     def update_app_state(self, state: State) -> None:
         """Create a DB engine and stores it in the application state.
@@ -306,7 +313,7 @@ class SQLAlchemyConfig:
         Returns:
             None
         """
-        engine = cast("Union[Engine, AsyncEngine]", state[self.engine_app_state_key])
+        engine = cast("Engine | AsyncEngine", state[self.engine_app_state_key])
         if isinstance(engine, AsyncEngine):
             await engine.dispose()
         else:

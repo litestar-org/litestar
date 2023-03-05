@@ -3,9 +3,9 @@ from typing import Any, List
 import pytest
 from pydantic_openapi_schema.v3_1_0 import Schema
 
-from starlite.openapi.enums import OpenAPIType
-from starlite.openapi.typescript_converter.schema_parsing import parse_schema
-from starlite.openapi.typescript_converter.types import TypeScriptIntersection
+from starlite._openapi.enums import OpenAPIType
+from starlite._openapi.typescript_converter.schema_parsing import parse_schema
+from starlite._openapi.typescript_converter.types import TypeScriptIntersection
 
 object_schema_1 = Schema(
     type=OpenAPIType.OBJECT,

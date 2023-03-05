@@ -12,6 +12,9 @@ from starlite.plugins.base import (
     SerializationPluginProtocol,
 )
 
+__all__ = ("TortoiseORMPlugin",)
+
+
 try:
     from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
     from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]

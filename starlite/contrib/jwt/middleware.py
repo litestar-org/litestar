@@ -9,6 +9,9 @@ from starlite.middleware.authentication import (
     AuthenticationResult,
 )
 
+__all__ = ("JWTAuthenticationMiddleware", "JWTCookieAuthenticationMiddleware")
+
+
 if TYPE_CHECKING:
     from typing import Any
 

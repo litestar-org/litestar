@@ -4,15 +4,15 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite.kwargs.kwargs_model import KwargsModel
-from starlite.signature.parsing import create_signature_model
+from starlite._kwargs.kwargs_model import KwargsModel
+from starlite._signature.parsing import create_signature_model
 
 from . import ConcreteDTO
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
 
-    from starlite.signature.models import SignatureModel
+    from starlite._signature.models import SignatureModel
 
 
 @pytest.fixture

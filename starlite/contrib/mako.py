@@ -12,6 +12,9 @@ from starlite.template.base import (
     url_for_static_asset,
 )
 
+__all__ = ("MakoTemplate", "MakoTemplateEngine")
+
+
 try:
     from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
     from mako.lookup import TemplateLookup

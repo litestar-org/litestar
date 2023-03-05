@@ -4,6 +4,8 @@ from dataclasses import asdict, dataclass, field
 from http.cookies import SimpleCookie
 from typing import Any, Literal
 
+__all__ = ("Cookie",)
+
 
 @dataclass
 class Cookie:

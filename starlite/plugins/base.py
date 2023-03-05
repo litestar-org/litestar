@@ -20,6 +20,15 @@ from typing_extensions import TypeGuard, get_args
 
 from starlite.types.protocols import DataclassProtocol
 
+__all__ = (
+    "InitPluginProtocol",
+    "OpenAPISchemaPluginProtocol",
+    "PluginMapping",
+    "SerializationPluginProtocol",
+    "get_plugin_for_value",
+)
+
+
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import Schema
 

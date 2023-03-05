@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from starlite.enums import MediaType
 
+__all__ = ("AbstractDTO",)
+
+
 if TYPE_CHECKING:
     from typing_extensions import Self
 

@@ -7,8 +7,11 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Empty
 from starlite.utils import Ref, is_async_callable
 
+__all__ = ("Provide",)
+
+
 if TYPE_CHECKING:
-    from starlite.signature import SignatureModel
+    from starlite._signature import SignatureModel
     from starlite.types import AnyCallable
 
 

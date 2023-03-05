@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, FrozenSet, List, Optional, Set, Tuple, Union
 
 import pytest
 
-from starlite.signature.parsing import create_signature_model
+from starlite._signature.parsing import create_signature_model
 
 from . import ConcreteDTO
 

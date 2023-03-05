@@ -33,6 +33,9 @@ from starlite.types import (
     TypeEncodersMap,
 )
 
+__all__ = ("BaseJWTAuth", "JWTAuth", "JWTCookieAuth", "OAuth2Login", "OAuth2PasswordBearerAuth")
+
+
 if TYPE_CHECKING:
     from starlite import Response
 

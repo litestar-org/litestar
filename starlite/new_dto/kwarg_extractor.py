@@ -7,10 +7,12 @@ from typing_extensions import get_args
 if TYPE_CHECKING:
     from typing import Any, Callable, Coroutine
 
+    from starlite._signature.models import SignatureField
     from starlite.connection import ASGIConnection, Request
-    from starlite.signature.models import SignatureField
 
     from .abc import AbstractDTO
+
+__all__ = ("create_dto_extractor",)
 
 
 def create_dto_extractor(

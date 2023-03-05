@@ -1,5 +1,15 @@
 from enum import Enum
 
+__all__ = (
+    "CompressionEncoding",
+    "HttpMethod",
+    "MediaType",
+    "OpenAPIMediaType",
+    "ParamType",
+    "RequestEncodingType",
+    "ScopeType",
+)
+
 
 class HttpMethod(str, Enum):
     """An Enum for HTTP methods."""

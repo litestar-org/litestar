@@ -10,6 +10,9 @@ from starlite.file_system import FileSystemAdapter
 from starlite.response import FileResponse
 from starlite.status_codes import HTTP_404_NOT_FOUND
 
+__all__ = ("StaticFiles",)
+
+
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
     from starlite.types.composite_types import PathType
