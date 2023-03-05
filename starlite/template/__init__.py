@@ -32,7 +32,7 @@ def __getattr__(name: str) -> Any:
     warn_deprecation(
         deprecated_name=f"{name} from {__package__}",
         kind="import",
-        alternative=f"'from startlite.contrib.{module} import {name}'",
+        alternative=f"'from starlite.contrib.{module} import {name}'",
         version="1.46.0",
     )
 
