@@ -27,7 +27,9 @@ from pydantic import (
 from pydantic.color import Color
 from pydantic.json import decimal_encoder
 
+from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
+from starlite.new_dto import AbstractDTO
 from starlite.types import Empty
 
 if TYPE_CHECKING:
@@ -237,3 +239,23 @@ def decode_msgpack(raw: bytes, type_: Any = Empty) -> Any:
         return msgspec.msgpack.decode(raw, dec_hook=dec_hook, type=type_)
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
+
+
+def encode_for_media_type(
+    media_type: MediaType | str, obj: Any, enc_hook: Callable[[Any], Any] | None = default_serializer
+) -> bytes:
+    """Encode ``obj`` into ``media_type``.
+
+    Args:
+        media_type: Serialization format.
+        obj: Object to be serialized.
+        enc_hook: Optional callable to support non-natively supported types (ignored for DTO types).
+
+    Returns:
+        ``media_type`` as bytes.
+    """
+    if isinstance(obj, AbstractDTO):
+        return obj.to_bytes(media_type=media_type)
+    if media_type == MediaType.MESSAGEPACK:
+        return encode_msgpack(obj, enc_hook)
+    return encode_json(obj, enc_hook)

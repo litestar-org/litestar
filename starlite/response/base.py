@@ -10,8 +10,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.serialization import (
     DEFAULT_TYPE_ENCODERS,
     default_serializer,
-    encode_json,
-    encode_msgpack,
+    encode_for_media_type,
 )
 from starlite.status_codes import (
     HTTP_200_OK,
@@ -250,11 +249,7 @@ class Response(Generic[T]):
                     return b""
 
                 return content.encode(self.encoding)  # type: ignore
-
-            if self.media_type == MediaType.MESSAGEPACK:
-                return encode_msgpack(content, self._enc_hook)
-
-            return encode_json(content, self._enc_hook)
+            return encode_for_media_type(self.media_type, content, self._enc_hook)
         except (AttributeError, ValueError, TypeError) as e:
             raise ImproperlyConfiguredException("Unable to serialize response content") from e
 

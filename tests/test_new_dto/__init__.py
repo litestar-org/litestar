@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from starlite.enums import MediaType
+from starlite.exceptions import SerializationException
 from starlite.new_dto import AbstractDTO
 
 if TYPE_CHECKING:
@@ -16,8 +18,12 @@ class Model:
 
 
 class ConcreteDTO(AbstractDTO[Model]):
-    def to_bytes(self) -> bytes:
-        return b'{"a":1,"b":"two"}'
+    def to_bytes(self, media_type: MediaType | str = MediaType.JSON) -> bytes:
+        if media_type == MediaType.JSON:
+            return b'{"a":1,"b":"two"}'
+        if media_type == MediaType.MESSAGEPACK:
+            return b"\x82\xa1a\x01\xa1b\xa3two"
+        raise SerializationException(f"Media type '{media_type}' not supported by DTO.")
 
     def to_model(self) -> Model:
         return Model(a=1, b="two")

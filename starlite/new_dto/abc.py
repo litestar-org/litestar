@@ -3,6 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
+from starlite.enums import MediaType
+
 if TYPE_CHECKING:
     from typing_extensions import Self
 
@@ -13,8 +15,15 @@ class AbstractDTO(ABC, Generic[T]):
     """Required interface for supported DTO types."""
 
     @abstractmethod
-    def to_bytes(self) -> bytes:
-        """Bytes representation of the data held by the DTO type."""
+    def to_bytes(self, media_type: MediaType | str = MediaType.JSON) -> bytes:
+        """Encode data held by the DTO type to bytes.
+
+        Args:
+            media_type: serialization format.
+
+        Raises:
+            SerializationException: if media type is not supported.
+        """
 
     @abstractmethod
     def to_model(self) -> T:
