@@ -26,7 +26,7 @@ from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.logging.config import LoggingConfig, get_logger_placeholder
 from starlite.middleware.cors import CORSMiddleware
 from starlite.openapi.config import OpenAPIConfig
-from starlite.plugins.base import (
+from starlite.plugins import (
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
     SerializationPluginProtocol,

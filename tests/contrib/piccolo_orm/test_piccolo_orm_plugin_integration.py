@@ -2,7 +2,7 @@ from typing import Callable
 
 from piccolo.testing.model_builder import ModelBuilder
 
-from starlite.plugins.piccolo_orm import PiccoloORMPlugin
+from starlite.contrib.piccolo_orm import PiccoloORMPlugin
 from starlite.serialization import encode_json
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.testing import create_test_client

@@ -1,6 +1,6 @@
 from starlite import Starlite
-from starlite.plugins.piccolo_orm import PiccoloORMPlugin
-from tests.plugins.piccolo_orm.endpoints import (
+from starlite.contrib.piccolo_orm import PiccoloORMPlugin
+from tests.contrib.piccolo_orm.endpoints import (
     create_concert,
     retrieve_studio,
     retrieve_venues,

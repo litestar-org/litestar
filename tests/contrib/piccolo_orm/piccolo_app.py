@@ -7,7 +7,7 @@ from pathlib import Path
 
 from piccolo.conf.apps import AppConfig
 
-from tests.plugins.piccolo_orm.tables import (
+from tests.contrib.piccolo_orm.tables import (
     Band,
     Concert,
     Manager,

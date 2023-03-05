@@ -7,8 +7,8 @@ from piccolo.apps.user.tables import BaseUser
 from piccolo_api.session_auth.tables import SessionsBase
 
 from starlite import Starlite, asgi, delete, get, patch, post
+from starlite.contrib.piccolo_orm import PiccoloORMPlugin
 from starlite.exceptions import MissingDependencyException, NotFoundException
-from starlite.plugins.piccolo_orm import PiccoloORMPlugin
 
 try:
     from piccolo_admin.endpoints import create_admin  # pyright: ignore
