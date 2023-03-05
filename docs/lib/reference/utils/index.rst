@@ -1,5 +1,5 @@
-starlite.utils
-==============
+utils
+=====
 
 .. toctree::
     :maxdepth: 1

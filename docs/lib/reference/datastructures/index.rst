@@ -1,5 +1,5 @@
-starlite.datastructures
-=======================
+datastructures
+==============
 
 .. toctree::
    :maxdepth: 1

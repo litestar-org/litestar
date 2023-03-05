@@ -1,5 +1,5 @@
-starlite.handlers
-=================
+handlers
+========
 
 
 .. toctree::

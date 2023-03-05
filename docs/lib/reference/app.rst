@@ -1,5 +1,5 @@
-starlite.app
-============
+app
+===
 
 .. autoclass:: starlite.app.Starlite
     :members:

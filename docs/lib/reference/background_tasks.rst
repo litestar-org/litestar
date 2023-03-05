@@ -1,5 +1,5 @@
-starlite.background_tasks
-=========================
+background_tasks
+================
 
 .. automodule:: starlite.background_tasks
     :members:
