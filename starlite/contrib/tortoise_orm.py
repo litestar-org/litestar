@@ -14,10 +14,16 @@ __all__ = ("TortoiseORMPlugin",)
 
 try:
     from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
-    from tortoise.contrib.pydantic import PydanticModel  # type: ignore[attr-defined]
+
+    # isort: off
+    # See https://github.com/PyCQA/isort/issues/1950
     from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
+        PydanticModel,  # pyright: ignore
         pydantic_model_creator,  # pyright: ignore
     )
+
+    # isort: on
+
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
 
