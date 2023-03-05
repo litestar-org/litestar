@@ -1,7 +1,7 @@
 from typing import Callable
 
 from starlite import Starlite
-from starlite.plugins.tortoise_orm import TortoiseORMPlugin
+from starlite.contrib.tortoise_orm import TortoiseORMPlugin
 from tests.plugins.tortoise_orm import (
     create_tournament,
     get_tournament,

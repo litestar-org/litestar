@@ -10,3 +10,5 @@ contrib
     mako
     opentelemetry
     sqlalchemy_1/index
+    piccolo_orm
+    tortoise_orm
