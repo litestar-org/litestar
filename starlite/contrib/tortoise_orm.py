@@ -14,9 +14,9 @@ __all__ = ("TortoiseORMPlugin",)
 
 try:
     from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
-    from tortoise.contrib.pydantic import PydanticModel  # pyright: ignore
-    from tortoise.contrib.pydantic import (
-        pydantic_model_creator,  # type: ignore[attr-defined]; pyright: ignore
+    from tortoise.contrib.pydantic import PydanticModel  # type: ignore[attr-defined]
+    from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
+        pydantic_model_creator,  # pyright: ignore
     )
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
