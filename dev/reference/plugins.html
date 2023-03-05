@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>template &#8212; Starlite Framework</title>
+    <title>plugins &#8212; Starlite Framework</title>
   
   
   
@@ -46,13 +46,13 @@
     <script src="../../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lib/reference/template';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lib/reference/plugins';</script>
     <script src="../../_static/versioning.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="testing" href="testing.html" />
-    <link rel="prev" title="redis" href="storage/redis.html" />
+    <link rel="next" title="response" href="response.html" />
+    <link rel="prev" title="params" href="params.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -503,7 +503,7 @@
 <li class="toctree-l2"><a class="reference internal" href="openapi.html">openapi</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="plugins.html">plugins</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">plugins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="response.html">response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="router.html">router</a></li>
@@ -520,7 +520,7 @@
 <li class="toctree-l3"><a class="reference internal" href="storage/redis.html">redis</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="types.html">types</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="utils/index.html">utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -568,49 +568,24 @@
             
             <article class="bd-article" role="main">
               
-  <section id="module-starlite.template">
-<span id="template"></span><h1>template<a class="headerlink" href="#module-starlite.template" title="Permalink to this heading">#</a></h1>
+  <section id="module-starlite.plugins">
+<span id="plugins"></span><h1>plugins<a class="headerlink" href="#module-starlite.plugins" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="starlite.template.TemplateEngineProtocol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.template.</span></span><span class="sig-name descname"><span class="pre">TemplateEngineProtocol</span></span><a class="headerlink" href="#starlite.template.TemplateEngineProtocol" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T_co</span></code>]</p>
-<p>Protocol for template engines.</p>
+<dt class="sig sig-object py" id="starlite.plugins.InitPluginProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.plugins.</span></span><span class="sig-name descname"><span class="pre">InitPluginProtocol</span></span><a class="headerlink" href="#starlite.plugins.InitPluginProtocol" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Protocol used to define plugins that affect the application’s init process.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.template.TemplateEngineProtocol.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DirectoryPath</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DirectoryPath</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.template.TemplateEngineProtocol.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize the template engine with a directory.</p>
+<dt class="sig sig-object py" id="starlite.plugins.InitPluginProtocol.on_app_init">
+<span class="sig-name descname"><span class="pre">on_app_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><span class="pre">Starlite</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.plugins.InitPluginProtocol.on_app_init" title="Permalink to this definition">#</a></dt>
+<dd><p>Receive the Starlite application instance before <code class="docutils literal notranslate"><span class="pre">init</span></code> is finalized and allow the plugin to update various
+attributes.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>directory</strong> – Direct path or list of directory paths from which to serve templates.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.template.TemplateEngineProtocol.get_template">
-<span class="sig-name descname"><span class="pre">get_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T_co</span></span></span><a class="headerlink" href="#starlite.template.TemplateEngineProtocol.get_template" title="Permalink to this definition">#</a></dt>
-<dd><p>Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
-:param template_name: A dotted path</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Template instance</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>TemplateNotFoundException &lt;starlite.exceptions.TemplateNotFoundException&gt;</strong> – if no template is found.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.template.TemplateEngineProtocol.register_template_callable">
-<span class="sig-name descname"><span class="pre">register_template_callable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_callable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.template.TemplateEngineProtocol.register_template_callable" title="Permalink to this definition">#</a></dt>
-<dd><p>Register a callable on the template engine.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – The callable key, i.e. the value to use inside the template to call the callable.</p></li>
-<li><p><strong>template_callable</strong> – A callable to register.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>app</strong> – The <a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -618,83 +593,208 @@
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.InitPluginProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.plugins.InitPluginProtocol.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="starlite.template.TemplateProtocol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.template.</span></span><span class="sig-name descname"><span class="pre">TemplateProtocol</span></span><a class="headerlink" href="#starlite.template.TemplateProtocol" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
-<p>Protocol Defining a <code class="docutils literal notranslate"><span class="pre">Template</span></code>.</p>
-<p>Template is a class that has a render method which renders the template into a string.</p>
+<dt class="sig sig-object py" id="starlite.plugins.OpenAPISchemaPluginProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.plugins.</span></span><span class="sig-name descname"><span class="pre">OpenAPISchemaPluginProtocol</span></span><a class="headerlink" href="#starlite.plugins.OpenAPISchemaPluginProtocol" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelT</span></code>]</p>
+<p>Plugin to extend the support of OpenAPI schema generation for non-library types.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.template.TemplateProtocol.render">
-<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#starlite.template.TemplateProtocol.render" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the rendered template as a string.</p>
+<dt class="sig sig-object py" id="starlite.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_plugin_supported_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ModelT</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – A string keyed mapping of values passed to the TemplateEngine</p>
+<dd class="field-odd"><p><strong>value</strong> – An arbitrary value.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The rendered template string</p>
+<dd class="field-even"><p>A typeguard dictating whether the value is supported by the plugin.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.template.TemplateProtocol.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.template.TemplateProtocol.__init__" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="starlite.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema">
+<span class="sig-name descname"><span class="pre">to_openapi_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ModelT</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Schema</span></span></span><a class="headerlink" href="#starlite.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a model class, transform it into an OpenAPI schema class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_class</strong> – A model class.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPI</span></code> instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.OpenAPISchemaPluginProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.plugins.OpenAPISchemaPluginProtocol.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="starlite.template.TemplateConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.template.</span></span><span class="sig-name descname"><span class="pre">TemplateConfig</span></span><a class="headerlink" href="#starlite.template.TemplateConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
-<p>Configuration for Templating.</p>
-<p>To enable templating, pass an instance of this class to the <a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> constructor using the
-‘template_config’ key.</p>
+<dt class="sig sig-object py" id="starlite.plugins.PluginMapping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.plugins.</span></span><span class="sig-name descname"><span class="pre">PluginMapping</span></span><a class="headerlink" href="#starlite.plugins.PluginMapping" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a></p>
+<p>Named tuple, mapping plugins &gt; models.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.template.TemplateConfig.engine">
-<span class="sig-name descname"><span class="pre">engine</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.template.TemplateConfig.engine" title="Permalink to this definition">#</a></dt>
-<dd><p>A template engine adhering to the <a class="reference internal" href="#starlite.template.TemplateEngineProtocol" title="starlite.template.base.TemplateEngineProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateEngineProtocol</span></code></a>.</p>
+<dt class="sig sig-object py" id="starlite.plugins.PluginMapping.plugin">
+<span class="sig-name descname"><span class="pre">plugin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#starlite.plugins.SerializationPluginProtocol" title="starlite.plugins.SerializationPluginProtocol"><span class="pre">SerializationPluginProtocol</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.plugins.PluginMapping.plugin" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.template.TemplateConfig.directory">
-<span class="sig-name descname"><span class="pre">directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><span class="pre">Path</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.11)"><span class="pre">PathLike</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><span class="pre">pathlib.Path</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.11)"><span class="pre">os.PathLike</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#starlite.template.TemplateConfig.directory" title="Permalink to this definition">#</a></dt>
-<dd><p>A directory or list of directories from which to serve templates.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.template.TemplateConfig.engine_callback">
-<span class="sig-name descname"><span class="pre">engine_callback</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#starlite.template.TemplateConfig.engine_callback" title="Permalink to this definition">#</a></dt>
-<dd><p>A callback function that allows modifying the instantiated templating protocol.</p>
+<dt class="sig sig-object py" id="starlite.plugins.PluginMapping.model_class">
+<span class="sig-name descname"><span class="pre">model_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></em><a class="headerlink" href="#starlite.plugins.PluginMapping.model_class" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.template.TemplateConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><span class="pre">Path</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.11)"><span class="pre">PathLike</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><span class="pre">pathlib.Path</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.11)"><span class="pre">os.PathLike</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine_callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.template.TemplateConfig.__init__" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="starlite.plugins.PluginMapping.get_model_instance_for_value">
+<span class="sig-name descname"><span class="pre">get_model_instance_for_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DataContainerT</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DataContainerT</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.11)"><span class="pre">Tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DataContainerT</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.plugins.PluginMapping.get_model_instance_for_value" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a value generated by plugin, return an instance of the original class.</p>
+<p>Can also accept a list or tuple of values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – A pydantic model instance or sequence of instances.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.PluginMapping.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.plugins.SerializationPluginProtocol" title="starlite.plugins.SerializationPluginProtocol"><span class="pre">SerializationPluginProtocol</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.plugins.PluginMapping.__new__" title="Permalink to this definition">#</a></dt>
+<dd><p>Create new instance of PluginMapping(plugin, model_class)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.plugins.SerializationPluginProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.plugins.</span></span><span class="sig-name descname"><span class="pre">SerializationPluginProtocol</span></span><a class="headerlink" href="#starlite.plugins.SerializationPluginProtocol" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelT</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">DataContainerT</span></code>]</p>
+<p>Protocol used to define a serialization plugin.
+Serialization plugins are used to extend serialization and deserialization support.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.SerializationPluginProtocol.is_plugin_supported_type">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_plugin_supported_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ModelT</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.plugins.SerializationPluginProtocol.is_plugin_supported_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – An arbitrary value.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A typeguard dictating whether the value is supported by the plugin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.SerializationPluginProtocol.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelT</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.plugins.SerializationPluginProtocol.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Given an instance of a model supported by the plugin, return a dictionary of serializable values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_instance</strong> – A model instance of the type supported by the plugin.</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><p>This method can be async as well.</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string keyed dictionary of values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.SerializationPluginProtocol.from_dict">
+<span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ModelT</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ModelT</span></span></span><a class="headerlink" href="#starlite.plugins.SerializationPluginProtocol.from_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a class supported by this plugin and a dict of values, create an instance of the class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_class</strong> – A model class supported by the plugin.</p></li>
+<li><p><strong>**kwargs</strong> – A string keyed mapping of values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A model instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.SerializationPluginProtocol.to_data_container_class">
+<span class="sig-name descname"><span class="pre">to_data_container_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ModelT</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">DataContainerT</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.plugins.SerializationPluginProtocol.to_data_container_class" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a data container class corresponding to the given model class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_class</strong> – The model class that serves as a basis.</p></li>
+<li><p><strong>kwargs</strong> – Any kwargs.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The generated data container class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.SerializationPluginProtocol.from_data_container_instance">
+<span class="sig-name descname"><span class="pre">from_data_container_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ModelT</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_container_instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataContainerT</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ModelT</span></span></span><a class="headerlink" href="#starlite.plugins.SerializationPluginProtocol.from_data_container_instance" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a model instance from the given data container instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_class</strong> – The model class to be instantiated.</p></li>
+<li><p><strong>data_container_instance</strong> – The data container instance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A model instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.plugins.SerializationPluginProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.plugins.SerializationPluginProtocol.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.template.TemplateConfig.__post_init__">
-<span class="sig-name descname"><span class="pre">__post_init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.template.TemplateConfig.__post_init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Ensure that directory is set if engine is a class.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.template.TemplateConfig.to_engine">
-<span class="sig-name descname"><span class="pre">to_engine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="headerlink" href="#starlite.template.TemplateConfig.to_engine" title="Permalink to this definition">#</a></dt>
-<dd><p>Instantiate the template engine.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="starlite.template.TemplateConfig.engine_instance">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">engine_instance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T</span></em><a class="headerlink" href="#starlite.template.TemplateConfig.engine_instance" title="Permalink to this definition">#</a></dt>
-<dd><p>Return the template engine instance.</p>
-</dd></dl>
-
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.plugins.get_plugin_for_value">
+<span class="sig-prename descclassname"><span class="pre">starlite.plugins.</span></span><span class="sig-name descname"><span class="pre">get_plugin_for_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.plugins.SerializationPluginProtocol" title="starlite.plugins.SerializationPluginProtocol"><span class="pre">SerializationPluginProtocol</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.plugins.SerializationPluginProtocol" title="starlite.plugins.SerializationPluginProtocol"><span class="pre">SerializationPluginProtocol</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.plugins.get_plugin_for_value" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a plugin for handling the given value, if any plugin supports it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – An arbitrary value.</p></li>
+<li><p><strong>plugins</strong> – A list of plugins</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A plugin supporting the given value, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -707,17 +807,17 @@
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="storage/redis.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="params.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">redis</p>
+          <p class="prev-next-title">params</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="testing.html" title="next page">
+  <a class='right-next' id="next-link" href="response.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">testing</p>
+      <p class="prev-next-title">response</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
@@ -738,37 +838,28 @@
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.template.TemplateEngineProtocol">
+  <a class="reference internal nav-link" href="#starlite.plugins.InitPluginProtocol">
    <code class="docutils literal notranslate">
     <span class="pre">
-     TemplateEngineProtocol
+     InitPluginProtocol
     </span>
    </code>
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateEngineProtocol.__init__">
+    <a class="reference internal nav-link" href="#starlite.plugins.InitPluginProtocol.on_app_init">
      <code class="docutils literal notranslate">
       <span class="pre">
-       TemplateEngineProtocol.__init__()
+       InitPluginProtocol.on_app_init()
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateEngineProtocol.get_template">
+    <a class="reference internal nav-link" href="#starlite.plugins.InitPluginProtocol.__init__">
      <code class="docutils literal notranslate">
       <span class="pre">
-       TemplateEngineProtocol.get_template()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateEngineProtocol.register_template_callable">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       TemplateEngineProtocol.register_template_callable()
+       InitPluginProtocol.__init__()
       </span>
      </code>
     </a>
@@ -776,28 +867,37 @@
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.template.TemplateProtocol">
+  <a class="reference internal nav-link" href="#starlite.plugins.OpenAPISchemaPluginProtocol">
    <code class="docutils literal notranslate">
     <span class="pre">
-     TemplateProtocol
+     OpenAPISchemaPluginProtocol
     </span>
    </code>
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateProtocol.render">
+    <a class="reference internal nav-link" href="#starlite.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type">
      <code class="docutils literal notranslate">
       <span class="pre">
-       TemplateProtocol.render()
+       OpenAPISchemaPluginProtocol.is_plugin_supported_type()
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateProtocol.__init__">
+    <a class="reference internal nav-link" href="#starlite.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema">
      <code class="docutils literal notranslate">
       <span class="pre">
-       TemplateProtocol.__init__()
+       OpenAPISchemaPluginProtocol.to_openapi_schema()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.plugins.OpenAPISchemaPluginProtocol.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       OpenAPISchemaPluginProtocol.__init__()
       </span>
      </code>
     </a>
@@ -805,78 +905,125 @@
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.template.TemplateConfig">
+  <a class="reference internal nav-link" href="#starlite.plugins.PluginMapping">
    <code class="docutils literal notranslate">
     <span class="pre">
-     TemplateConfig
+     PluginMapping
     </span>
    </code>
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateConfig.engine">
+    <a class="reference internal nav-link" href="#starlite.plugins.PluginMapping.plugin">
      <code class="docutils literal notranslate">
       <span class="pre">
-       TemplateConfig.engine
+       PluginMapping.plugin
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateConfig.directory">
+    <a class="reference internal nav-link" href="#starlite.plugins.PluginMapping.model_class">
      <code class="docutils literal notranslate">
       <span class="pre">
-       TemplateConfig.directory
+       PluginMapping.model_class
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateConfig.engine_callback">
+    <a class="reference internal nav-link" href="#starlite.plugins.PluginMapping.get_model_instance_for_value">
      <code class="docutils literal notranslate">
       <span class="pre">
-       TemplateConfig.engine_callback
+       PluginMapping.get_model_instance_for_value()
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateConfig.__init__">
+    <a class="reference internal nav-link" href="#starlite.plugins.PluginMapping.__new__">
      <code class="docutils literal notranslate">
       <span class="pre">
-       TemplateConfig.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateConfig.__post_init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       TemplateConfig.__post_init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateConfig.to_engine">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       TemplateConfig.to_engine()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.template.TemplateConfig.engine_instance">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       TemplateConfig.engine_instance
+       PluginMapping.__new__()
       </span>
      </code>
     </a>
    </li>
   </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.plugins.SerializationPluginProtocol">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     SerializationPluginProtocol
+    </span>
+   </code>
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.plugins.SerializationPluginProtocol.is_plugin_supported_type">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       SerializationPluginProtocol.is_plugin_supported_type()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.plugins.SerializationPluginProtocol.to_dict">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       SerializationPluginProtocol.to_dict()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.plugins.SerializationPluginProtocol.from_dict">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       SerializationPluginProtocol.from_dict()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.plugins.SerializationPluginProtocol.to_data_container_class">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       SerializationPluginProtocol.to_data_container_class()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.plugins.SerializationPluginProtocol.from_data_container_instance">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       SerializationPluginProtocol.from_data_container_instance()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.plugins.SerializationPluginProtocol.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       SerializationPluginProtocol.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.plugins.get_plugin_for_value">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     get_plugin_for_value()
+    </span>
+   </code>
+  </a>
  </li>
 </ul>
 
