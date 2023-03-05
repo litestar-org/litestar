@@ -1,5 +1,5 @@
-starlite.plugins
-================
+plugins
+=======
 
 .. toctree::
     :maxdepth: 1

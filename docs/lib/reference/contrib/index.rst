@@ -1,5 +1,5 @@
-starlite.contrib
-================
+contrib
+=======
 
 .. toctree::
     :maxdepth: 1
