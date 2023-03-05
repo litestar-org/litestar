@@ -13,7 +13,7 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://starliteproject.dev/"
 repository = "https://github.com/starlite-api/starlite"
-documentation = "https://starliteproject.dev/"
+documentation = "https://starliteproject.dev/lib/"
 keywords = ["api", "rest", "http", "asgi", "pydantic", "starlite", "framework", "websocket"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
