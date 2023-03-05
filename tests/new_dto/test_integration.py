@@ -1,0 +1,20 @@
+from __future__ import annotations
+
+from starlite import post
+from starlite.status_codes import HTTP_201_CREATED
+from starlite.testing import create_test_client
+
+from . import ConcreteDTO, Model
+
+
+def test_dto_data() -> None:
+    @post(path="/")
+    def post_handler(data: ConcreteDTO) -> ConcreteDTO:  # type: ignore
+        assert isinstance(data, ConcreteDTO)
+        assert data.to_model() == Model(a=1, b="two")
+        return data
+
+    with create_test_client(route_handlers=[post_handler]) as client:
+        post_response = client.post("/", content=b'{"a":1,"b":"two"}')
+        assert post_response.status_code == HTTP_201_CREATED
+        assert post_response.json() == {"a": 1, "b": "two"}

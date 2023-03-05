@@ -9,6 +9,8 @@ __all__ = ("AbstractDTO",)
 
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from typing_extensions import Self
 
 T = TypeVar("T")
@@ -70,4 +72,16 @@ class AbstractDTO(ABC, Generic[T]):
 
         Returns:
             AbstractDTO instance.
+        """
+
+    @classmethod
+    @abstractmethod
+    def supports(cls, value: Any) -> bool:
+        """Is ``value`` supported by the DTO type?
+
+        Args:
+            value: Any object.
+
+        Returns:
+            Boolean, indicating if ``value`` is of a type supported by the DTO.
         """

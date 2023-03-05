@@ -6,8 +6,11 @@ from typing import TYPE_CHECKING
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
 from starlite.new_dto import AbstractDTO
+from starlite.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from typing_extensions import Self
 
 
@@ -39,3 +42,7 @@ class ConcreteDTO(AbstractDTO[Model]):
     @classmethod
     def from_model(cls, model: Model) -> Self:
         return cls()
+
+    @classmethod
+    def supports(cls, value: Any) -> bool:
+        return is_class_and_subclass(value, Model) or isinstance(value, Model)
