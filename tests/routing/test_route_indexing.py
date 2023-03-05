@@ -14,9 +14,9 @@ from starlite import (
     put,
     websocket,
 )
-from starlite.config.static_files import StaticFilesConfig
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.static_files.config import StaticFilesConfig
 
 if TYPE_CHECKING:
     from pathlib import Path

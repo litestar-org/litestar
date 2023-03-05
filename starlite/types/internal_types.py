@@ -12,7 +12,7 @@ from typing import (
 
 from starlite.types import Method
 
-__all__ = ["PathParameterDefinition"]
+__all__ = ("PathParameterDefinition",)
 
 
 if TYPE_CHECKING:

@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from starlite import Starlite
-from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
+from starlite.template.config import TemplateConfig
 
 app = Starlite(
     route_handlers=[],

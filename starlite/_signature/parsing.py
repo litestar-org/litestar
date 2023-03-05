@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class ParsedSignatureParameter:
-    """Represents the parameters of a callable for purpose of _signature model generation."""
+    """Represents the parameters of a callable for purpose of signature model generation."""
 
     annotation: Any
     default: Any
@@ -127,7 +127,7 @@ def get_type_annotation_from_plugin(
 def parse_fn_signature(
     fn: AnyCallable, plugins: list[SerializationPluginProtocol], dependency_name_set: set[str]
 ) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
-    """Parse a function _signature into data used for the generation of a _signature model.
+    """Parse a function signature into data used for the generation of a signature model.
 
     Args:
         fn: A callable.
@@ -135,7 +135,7 @@ def parse_fn_signature(
         dependency_name_set: A set of dependency names
 
     Returns:
-        A tuple containing the following values for generating a _signature model: a mapping of field definitions, the
+        A tuple containing the following values for generating a signature model: a mapping of field definitions, the
         callable's return annotation, a mapping of field names to plugins - if any, and an updated dependency name set.
     """
     signature = Signature.from_callable(fn)
@@ -185,7 +185,7 @@ def parse_fn_signature(
 def create_signature_model(
     fn: AnyCallable, plugins: list[SerializationPluginProtocol], dependency_name_set: set[str]
 ) -> type[SignatureModel]:
-    """Create a model for a callable's _signature. The model can than be used to parse and validate before passing it to
+    """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
 
     Args:

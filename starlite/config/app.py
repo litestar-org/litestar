@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Sequence
 
+from starlite.cache.config import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
-from starlite.config.cache import CacheConfig
 from starlite.events.emitter import SimpleEventEmitter
 
 if TYPE_CHECKING:
@@ -13,8 +13,6 @@ if TYPE_CHECKING:
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
-    from starlite.config.static_files import StaticFilesConfig
-    from starlite.config.template import TemplateConfig
     from starlite.connection import Request, WebSocket
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.di import Provide
@@ -23,6 +21,8 @@ if TYPE_CHECKING:
     from starlite.logging.config import BaseLoggingConfig
     from starlite.openapi.config import OpenAPIConfig
     from starlite.plugins import PluginProtocol
+    from starlite.static_files.config import StaticFilesConfig
+    from starlite.template.config import TemplateConfig
     from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,

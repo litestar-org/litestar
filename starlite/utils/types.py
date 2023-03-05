@@ -20,7 +20,7 @@ from typing_extensions import TypeGuard, get_args
 from starlite.types.builtin_types import NoneType
 from starlite.utils.predicates import is_class_and_subclass
 
-__all__ = ["annotation_is_iterable_of_type", "make_non_optional_union"]
+__all__ = ("annotation_is_iterable_of_type", "make_non_optional_union")
 
 
 T = TypeVar("T")

@@ -19,7 +19,7 @@ from typing_extensions import ParamSpec, TypeGuard
 
 from starlite.utils.helpers import Ref
 
-__all__ = ["AsyncCallable", "AsyncIteratorWrapper", "as_async_callable_list", "async_partial", "is_async_callable"]
+__all__ = ("AsyncCallable", "AsyncIteratorWrapper", "as_async_callable_list", "async_partial", "is_async_callable")
 
 
 P = ParamSpec("P")

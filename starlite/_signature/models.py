@@ -210,7 +210,7 @@ class SignatureModel(ABC):
 
     @abstractmethod
     def to_dict(self) -> dict[str, Any]:
-        """Normalize access to the _signature model's dictionary method, because different backends use different methods
+        """Normalize access to the signature model's dictionary method, because different backends use different methods
         for this.
 
         Returns: A dictionary of string keyed values.

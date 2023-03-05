@@ -13,7 +13,7 @@ from typing import (
 
 from typing_extensions import NotRequired, TypedDict
 
-__all__ = ["FileInfo", "FileSystemProtocol"]
+__all__ = ("FileInfo", "FileSystemProtocol")
 
 
 if TYPE_CHECKING:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Iterable, cast
 
-__all__ = ["extract_dataclass_fields"]
+__all__ = ("extract_dataclass_fields",)
 
 
 if TYPE_CHECKING:

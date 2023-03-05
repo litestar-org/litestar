@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from starlite.constants import SCOPE_STATE_NAMESPACE
 
-__all__ = ["get_serializer_from_scope", "get_starlite_scope_state", "set_starlite_scope_state"]
+__all__ = ("get_serializer_from_scope", "get_starlite_scope_state", "set_starlite_scope_state")
 
 
 if TYPE_CHECKING:

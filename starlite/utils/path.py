@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Iterable
 
-__all__ = ["join_paths", "normalize_path"]
+__all__ = ("join_paths", "normalize_path")
 
 
 multi_slash_pattern = re.compile("//+")

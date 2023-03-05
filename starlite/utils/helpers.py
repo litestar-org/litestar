@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-__all__ = ["Ref", "get_enum_string_value", "get_name", "unwrap_partial"]
+__all__ = ("Ref", "get_enum_string_value", "get_name", "unwrap_partial")
 
 
 T = TypeVar("T")

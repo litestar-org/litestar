@@ -12,9 +12,9 @@ from starlite._asgi import ASGIRouter
 from starlite._asgi.utils import get_route_handlers, wrap_in_exception_handler
 from starlite._openapi.path_item import create_path_item
 from starlite._signature import create_signature_model
+from starlite.cache.config import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
-from starlite.config.cache import CacheConfig
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
@@ -55,13 +55,13 @@ if TYPE_CHECKING:
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
-    from starlite.config.static_files import StaticFilesConfig
-    from starlite.config.template import TemplateConfig
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler  # noqa: TC004
     from starlite.logging.config import BaseLoggingConfig
     from starlite.plugins import PluginProtocol
+    from starlite.static_files.config import StaticFilesConfig
+    from starlite.template.config import TemplateConfig
     from starlite.types import AnyCallable  # nopycln: import
     from starlite.types import (  # noqa: TC004
         AfterExceptionHookHandler,
