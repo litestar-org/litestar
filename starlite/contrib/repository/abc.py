@@ -76,7 +76,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
             The deleted instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `item_id`.
+            RepositoryNotFoundException: If no instance found identified by ``item_id``.
         """
 
     @abstractmethod
