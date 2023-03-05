@@ -81,7 +81,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @abstractmethod
     async def get(self, item_id: Any, **kwargs: Any) -> T:
-        """Get instance identified by `item_id`.
+        """Get instance identified by ``item_id``.
 
         Args:
             item_id: Identifier of the instance to be retrieved.
