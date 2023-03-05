@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from .exceptions import NotFoundError
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
-
     from .types import FilterTypes
 
 
@@ -43,7 +41,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def add_many(self, data: Sequence[T]) -> Sequence[T]:
+    async def add_many(self, data: list[T]) -> list[T]:
         """Add multiple ``data`` to the collection.
 
         Args:
@@ -130,35 +128,11 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> "Sequence[T]":
-        """Get a list of instances, optionally filtered.
-
-        Args:
-            *filters: Types for specific filtering operations.
-            **kwargs: Instance attribute value filters.
-
-        Returns:
-            The list of instances, after filtering applied.
-        """
-
-    @abstractmethod
-    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[Sequence[T], int]:
-        """List records with total count.
-
-        Args:
-            *filters: Types for specific filtering operations.
-            **kwargs: Instance attribute value filters.
-
-        Returns:
-            a tuple containing The list of instances, after filtering applied, and a count of records returned by query, ignoring pagination.
-        """
-
-    @abstractmethod
     async def update(self, data: T) -> T:
         """Update instance with the attribute values present on ``data``.
 
         Args:
-            data: An instance that should have a value for `self.id_attribute` that exists in the
+            data: An instance that should have a value for :attr:`id_attribute <AbstractRepository.id_attribute>` that exists in the
                 collection.
 
         Returns:
@@ -169,7 +143,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def update_many(self, data: "Sequence[T]") -> Sequence[T]:
+    async def update_many(self, data: "list[T]") -> list[T]:
         """Update multiple instances with the attribute values present on instances in ``data``.
 
         Args:
@@ -200,6 +174,30 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
         Raises:
             RepositoryNotFoundException: If no instance found with same identifier as ``data``.
+        """
+
+    @abstractmethod
+    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[T], int]:
+        """List records with total count.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            a tuple containing The list of instances, after filtering applied, and a count of records returned by query, ignoring pagination.
+        """
+
+    @abstractmethod
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> "list[T]":
+        """Get a list of instances, optionally filtered.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The list of instances, after filtering applied.
         """
 
     @abstractmethod
