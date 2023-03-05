@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from .exceptions import NotFoundError
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from .types import FilterTypes
 
 
@@ -107,7 +109,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @abstractmethod
     async def get_or_create(self, **kwargs: Any) -> tuple[T, bool]:
-        """Get an instance if it exists or create it.
+        """Get an instance specified by the ``kwargs`` filters if it exists or create it.
 
         Args:
             **kwargs: Instance attribute value filters.
@@ -124,11 +126,11 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
             **kwargs: Instance attribute value filters.
 
         Returns:
-            The list of instances, after filtering applied.
+            The retrieved instance or None.
         """
 
     @abstractmethod
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[T]:
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> "Sequence[T]":
         """Get a list of instances, optionally filtered.
 
         Args:
@@ -140,7 +142,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[list[T], int]:
+    async def list_and_count(self, *filters: FilterTypes, **kwargs: Any) -> tuple[Sequence[T], int]:
         """List records with total count.
 
         Args:
@@ -148,7 +150,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
             **kwargs: Instance attribute value filters.
 
         Returns:
-            Count of records returned by query, ignoring pagination.
+            a tuple containing The list of instances, after filtering applied, and a count of records returned by query, ignoring pagination.
         """
 
     @abstractmethod
@@ -167,7 +169,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def update_many(self, data: list[T]) -> list[T]:
+    async def update_many(self, data: "Sequence[T]") -> Sequence[T]:
         """Update multiple instances with the attribute values present on instances in ``data``.
 
         Args:

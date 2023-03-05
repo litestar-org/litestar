@@ -37,6 +37,25 @@ def mock_repo() -> SQLAlchemyRepository:
     return Repo(session=AsyncMock(spec=AsyncSession), base_select=MagicMock())
 
 
+async def test_sqlalchemy_tablename(monkeypatch: MonkeyPatch) -> None:
+    """Test the snake case conversion for table names."""
+
+    class BigModel(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    class TESTModel(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    assert BigModel.__tablename__ == "big_model"
+    assert TESTModel.__tablename__ == "test_model"
+
+
 def test_wrap_sqlalchemy_integrity_error() -> None:
     """Test to ensure we wrap IntegrityError."""
     with pytest.raises(ConflictError), wrap_sqlalchemy_exception():

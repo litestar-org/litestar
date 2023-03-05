@@ -1,6 +1,7 @@
 """Application ORM configuration."""
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from typing import Any, TypeVar
 from uuid import UUID, uuid4
@@ -81,7 +82,8 @@ class CommonTableAttributes:
     @declared_attr.directive
     def __tablename__(cls) -> str:  # pylint: disable=no-self-argument
         """Infer table name from class name."""
-        return cls.__name__.lower()
+        regexp = re.compile("((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))")
+        return regexp.sub(r"_\1", cls.__name__).lower()
 
     def to_dict(self, exclude: set[str] | None = None) -> dict[str, Any]:
         """Convert model to dictionary.
