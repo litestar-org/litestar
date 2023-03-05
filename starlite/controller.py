@@ -63,6 +63,7 @@ class Controller:
         "response_class",
         "response_cookies",
         "response_headers",
+        "return_dto",
         "security",
         "tags",
         "type_encoders",
@@ -129,6 +130,8 @@ class Controller:
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
     response_headers: ResponseHeaders | None
     """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
+    return_dto: type[AbstractDTO] | EmptyType | None
+    """DTO type to use for serializing outbound request data."""
     tags: OptionalSequence[str]
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""
     security: OptionalSequence[SecurityRequirement]

@@ -76,6 +76,7 @@ class Router:
         "response_class",
         "response_cookies",
         "response_headers",
+        "return_dto",
         "routes",
         "security",
         "tags",
@@ -101,6 +102,7 @@ class Router:
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         route_handlers: Sequence[ControllerRouterHandler],
         security: Sequence[SecurityRequirement] | None = None,
         tags: Sequence[str] | None = None,
@@ -138,6 +140,7 @@ class Router:
             response_cookies: A sequence of [Cookie](starlite.datastructures.Cookie] instances.
             response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
                 instances.
+            return_dto: DTO type to use for deserializing and validating inbound request data.
             route_handlers: A required sequence of route handlers, which can include instances of
                 :class:`Router <starlite.router.Router>`, subclasses of
                 :class:`Controller <starlite.controller.Controller>` or any function decorated by the route handler
@@ -165,6 +168,7 @@ class Router:
         self.response_class = response_class
         self.response_cookies = narrow_response_cookies(response_cookies)
         self.response_headers = narrow_response_headers(response_headers)
+        self.return_dto = return_dto
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.security = list(security or [])
         self.tags = list(tags or [])

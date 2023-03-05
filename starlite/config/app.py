@@ -171,6 +171,8 @@ class AppConfig:
     """A list of [Cookie](starlite.datastructures.Cookie] instances."""
     response_headers: Sequence[ResponseHeader] = field(default_factory=list)
     """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
+    return_dto: type[AbstractDTO] | None | EmptyType = field(default=Empty)
+    """DTO type to use for serializing outbound request data."""
     route_handlers: list[ControllerRouterHandler] = field(default_factory=list)
     """A required list of route handlers, which can include instances of :class:`Router <starlite.router.Router>`, subclasses
     of.

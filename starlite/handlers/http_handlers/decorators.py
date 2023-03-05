@@ -70,6 +70,7 @@ class delete(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -131,6 +132,7 @@ class delete(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: DTO type to use for deserializing and validating inbound request data.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -184,6 +186,7 @@ class delete(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             status_code=status_code,
             summary=summary,
@@ -223,6 +226,7 @@ class get(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -284,6 +288,7 @@ class get(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: DTO type to use for deserializing and validating inbound request data.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -338,6 +343,7 @@ class get(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             status_code=status_code,
             summary=summary,
@@ -389,6 +395,7 @@ class head(HTTPRouteHandler):
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: dict[int, ResponseSpec] | None = None,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         security: list[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: list[str] | None = None,
@@ -442,6 +449,7 @@ class head(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: DTO type to use for deserializing and validating inbound request data.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -496,6 +504,7 @@ class head(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             status_code=status_code,
             summary=summary,
@@ -549,6 +558,7 @@ class patch(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -610,6 +620,7 @@ class patch(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: DTO type to use for deserializing and validating inbound request data.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -663,6 +674,7 @@ class patch(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             status_code=status_code,
             summary=summary,
@@ -702,6 +714,7 @@ class post(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -763,6 +776,7 @@ class post(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: DTO type to use for deserializing and validating inbound request data.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -816,6 +830,7 @@ class post(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             status_code=status_code,
             summary=summary,
@@ -855,6 +870,7 @@ class put(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -916,6 +932,7 @@ class put(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: DTO type to use for deserializing and validating inbound request data.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -969,6 +986,7 @@ class put(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             status_code=status_code,
             summary=summary,

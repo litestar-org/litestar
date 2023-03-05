@@ -79,6 +79,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "_resolved_before_request",
         "_resolved_data_dto",
         "_resolved_response_handler",
+        "_resolved_return_dto",
         "after_request",
         "after_response",
         "background",
@@ -103,6 +104,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "response_description",
         "response_headers",
         "responses",
+        "return_dto",
         "security",
         "status_code",
         "summary",
@@ -137,6 +139,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -198,6 +201,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: DTO type to use for deserializing and validating inbound request data.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -247,6 +251,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.etag = etag
         self.media_type: MediaType | str = media_type or ""
         self.response_class = response_class
+        self.return_dto = return_dto
 
         self.response_cookies: Sequence[Cookie] | None = narrow_response_cookies(response_cookies)
         self.response_headers: Sequence[ResponseHeader] | None = narrow_response_headers(response_headers)
@@ -270,6 +275,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self._resolved_before_request: BeforeRequestHookHandler | None | EmptyType = Empty
         self._resolved_data_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
+        self._resolved_return_dto: type[AbstractDTO] | None | EmptyType = Empty
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
@@ -452,7 +458,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional :class:`after response lifecycle hook handler <starlite.types.AfterResponseHookHandler>`
+            An optional :class:`DTO type <starlite.types.AfterResponseHookHandler>`
         """
         if self._resolved_data_dto is Empty:
             data_dtos: list[type[AbstractDTO] | None] = [
@@ -463,6 +469,25 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             self._resolved_data_dto = data_dtos[-1] if data_dtos else None
 
         return cast("type[AbstractDTO] | None", self._resolved_data_dto)
+
+    def resolve_return_dto(self) -> type[AbstractDTO] | None:
+        """Resolve the return_dto by starting from the route handler and moving up.
+
+        If a handler is found it is returned, otherwise None is set.
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            An optional :class:`after response lifecycle hook handler <starlite.types.AfterResponseHookHandler>`
+        """
+        if self._resolved_return_dto is Empty:
+            return_dtos: list[type[AbstractDTO] | None] = [
+                layer_dto_type  # type:ignore[misc]
+                for layer in self.ownership_layers
+                if (layer_dto_type := layer.return_dto) is not Empty
+            ]
+            self._resolved_return_dto = return_dtos[-1] if return_dtos else None
+
+        return cast("type[AbstractDTO] | None", self._resolved_return_dto)
 
     async def to_response(
         self, app: "Starlite", data: Any, plugins: list["SerializationPluginProtocol"], request: "Request"
