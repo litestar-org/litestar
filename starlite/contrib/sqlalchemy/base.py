@@ -35,7 +35,7 @@ def touch_updated_timestamp(session: Session, *_: Any) -> None:
     """Set timestamp on update.
 
     Called from SQLAlchemy's
-    [`before_flush`][sqlalchemy.orm.SessionEvents.before_flush] event to bump the `updated`
+    :meth:`before_flush <sqlalchemy.orm.SessionEvents.before_flush>` event to bump the ``updated``
     timestamp on modified instances.
 
     Args:
