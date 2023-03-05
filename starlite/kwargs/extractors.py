@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from collections import defaultdict
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, DefaultDict, Dict, cast
-
-from typing_extensions import get_args
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, DefaultDict, cast
 
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
 from starlite.multipart import parse_multipart_form
+from starlite.new_dto.kwarg_extractor import create_dto_extractor
 from starlite.params import BodyKwarg
 from starlite.parsers import (
     parse_headers,
@@ -22,7 +21,6 @@ if TYPE_CHECKING:
     from starlite.connection import ASGIConnection, Request
     from starlite.kwargs import KwargsModel
     from starlite.kwargs.parameter_definition import ParameterDefinition
-    from starlite.new_dto.abc import AbstractDTO
     from starlite.signature.models import SignatureField
 
 
@@ -125,7 +123,7 @@ def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> dict
     parsed_headers = connection.scope["_headers"] = (  # type: ignore
         connection._headers if connection._headers is not Empty else parse_headers(tuple(connection.scope["headers"]))
     )
-    return cast("Dict[str, Any]", parsed_headers)
+    return cast("dict[str, Any]", parsed_headers)
 
 
 def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
@@ -268,34 +266,6 @@ async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
     return await connection.msgpack()
 
 
-def create_dto_extractor(
-    signature_field: SignatureField,
-) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
-    """Create a DTO data extractor.
-
-    Args:
-        signature_field: A SignatureField instance.
-
-    Returns:
-        An extractor function.
-    """
-    if signature_field.is_non_string_iterable:
-        # what about fixed sized, heterogeneous tuples?
-        dto_type = cast("type[AbstractDTO[Any]]", get_args(signature_field.field_type)[0])
-
-        async def collection_dto_extractor(connection: Request[Any, Any, Any]) -> list[AbstractDTO[Any]]:
-            return dto_type.list_from_bytes(await connection.body())
-
-        return collection_dto_extractor  # type:ignore[return-value]
-
-    dto_type = cast("type[AbstractDTO[Any]]", signature_field.field_type)
-
-    async def scalar_dto_extractor(connection: Request[Any, Any, Any]) -> AbstractDTO[Any]:
-        return dto_type.from_bytes(await connection.body())
-
-    return scalar_dto_extractor  # type:ignore[return-value]
-
-
 def create_multipart_extractor(
     signature_field: SignatureField, is_data_optional: bool
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
@@ -391,6 +361,8 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
         data_extractor = cast(
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
         )
+    elif kwargs_model.expected_dto_data:
+        data_extractor = create_dto_extractor(kwargs_model.expected_dto_data)
     else:
         data_extractor = cast(
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor

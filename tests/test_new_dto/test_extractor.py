@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from starlite.kwargs.extractors import create_dto_extractor
+from starlite.new_dto.kwarg_extractor import create_dto_extractor
 from starlite.signature.models import SignatureField
 
 from . import ConcreteDTO
