@@ -217,17 +217,17 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         return item
 
     async def update_many(self, data: Sequence[ModelT]) -> Sequence[ModelT]:
-        """Update instances with the attribute values present on `data`.
+        """Update instances with the attribute values present on ``data``.
 
         Args:
-            data: A list of instances that should have a value for `self.id_attribute` that exists in the
+            data: A list of instances that should have a value for :attr:`id_attribute <GenericMockRepository.id_attribute>` that exists in the
                 collection.
 
         Returns:
             The updated instances.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
         """
         items = [self._find_or_raise_not_found(self.get_id_attribute_value(row)) for row in data]
         # should never be modifiable
