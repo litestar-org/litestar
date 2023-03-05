@@ -7,14 +7,13 @@ maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
     "Peter Schutt <peter.github@proton.me>",
     "Cody Fincher <cody.fincher@gmail.com>",
-    "Janek Nouvertné <provinzkraut@posteo.de>",
-    "Konstantin Mikhailov <konstantin.mikhailov@proton.me>"
+    "Janek Nouvertné <provinzkraut@posteo.de>"
 ]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/starlite-api/starlite"
+homepage = "https://starliteproject.dev/"
 repository = "https://github.com/starlite-api/starlite"
-documentation = "https://starlite-api.github.io/starlite"
+documentation = "https://starliteproject.dev/"
 keywords = ["api", "rest", "http", "asgi", "pydantic", "starlite", "framework", "websocket"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -32,7 +31,7 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-include = ["CHANGELOG.md"]
+include = ["CHANGELOG.rst"]
 packages = [
     { include = "starlite" },
 ]
