@@ -6,6 +6,7 @@ from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import HTTPException, ImproperlyConfiguredException
 from starlite.response import FileResponse
 from starlite.response_containers import File
+from starlite.types import Empty
 from starlite.utils import is_class_and_subclass
 
 from .base import HTTPRouteHandler
@@ -19,11 +20,13 @@ if TYPE_CHECKING:
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
+    from starlite.new_dto import AbstractDTO
     from starlite.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,
         BeforeRequestHookHandler,
         CacheKeyBuilder,
+        EmptyType,
         ExceptionHandlersMap,
         Guard,
         Middleware,
@@ -55,6 +58,7 @@ class delete(HTTPRouteHandler):
         cache: bool | int = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
+        data_dto_type: AbstractDTO | None | EmptyType = Empty,
         dependencies: dict[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -106,6 +110,7 @@ class delete(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
+            data_dto_type: DTO type to use for deserializing and validating inbound request data.
             dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -158,6 +163,7 @@ class delete(HTTPRouteHandler):
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
+            data_dto_type=data_dto_type,
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
@@ -205,6 +211,7 @@ class get(HTTPRouteHandler):
         cache: bool | int = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
+        data_dto_type: AbstractDTO | None | EmptyType = Empty,
         dependencies: dict[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -256,6 +263,7 @@ class get(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
+            data_dto_type: DTO type to use for deserializing and validating inbound request data.
             dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -309,6 +317,7 @@ class get(HTTPRouteHandler):
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
+            data_dto_type=data_dto_type,
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
@@ -356,6 +365,7 @@ class head(HTTPRouteHandler):
         cache: bool | int = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
+        data_dto_type: AbstractDTO | None | EmptyType = Empty,
         dependencies: dict[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -411,6 +421,7 @@ class head(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
+            data_dto_type: DTO type to use for deserializing and validating inbound request data.
             dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -464,6 +475,7 @@ class head(HTTPRouteHandler):
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
+            data_dto_type=data_dto_type,
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
@@ -525,6 +537,7 @@ class patch(HTTPRouteHandler):
         cache: bool | int = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
+        data_dto_type: AbstractDTO | None | EmptyType = Empty,
         dependencies: dict[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -576,6 +589,7 @@ class patch(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
+            data_dto_type: DTO type to use for deserializing and validating inbound request data.
             dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -628,6 +642,7 @@ class patch(HTTPRouteHandler):
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
+            data_dto_type=data_dto_type,
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
@@ -675,6 +690,7 @@ class post(HTTPRouteHandler):
         cache: bool | int = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
+        data_dto_type: AbstractDTO | None | EmptyType = Empty,
         dependencies: dict[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -726,6 +742,7 @@ class post(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
+            data_dto_type: DTO type to use for deserializing and validating inbound request data.
             dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -778,6 +795,7 @@ class post(HTTPRouteHandler):
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
+            data_dto_type=data_dto_type,
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
@@ -825,6 +843,7 @@ class put(HTTPRouteHandler):
         cache: bool | int = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
+        data_dto_type: AbstractDTO | None | EmptyType = Empty,
         dependencies: dict[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -876,6 +895,7 @@ class put(HTTPRouteHandler):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
+            data_dto_type: DTO type to use for deserializing and validating inbound request data.
             dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -928,6 +948,7 @@ class put(HTTPRouteHandler):
             cache_key_builder=cache_key_builder,
             content_encoding=content_encoding,
             content_media_type=content_media_type,
+            data_dto_type=data_dto_type,
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,

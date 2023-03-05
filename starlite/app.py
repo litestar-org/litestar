@@ -59,6 +59,7 @@ if TYPE_CHECKING:
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler  # noqa: TC004
     from starlite.logging.config import BaseLoggingConfig
+    from starlite.new_dto import AbstractDTO
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
     from starlite.template.config import TemplateConfig
@@ -148,6 +149,7 @@ class Starlite(Router):
         "compression_config",
         "cors_config",
         "csrf_config",
+        "data_dto_type",
         "debug",
         "event_emitter",
         "get_logger",
@@ -185,6 +187,7 @@ class Starlite(Router):
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
         csrf_config: CSRFConfig | None = None,
+        data_dto_type: AbstractDTO | None | EmptyType = Empty,
         debug: bool = False,
         dependencies: Dependencies | None = None,
         etag: ETag | None = None,
@@ -249,6 +252,7 @@ class Starlite(Router):
                 defined Compression middleware.
             cors_config: If set this enables the builtin CORS middleware.
             csrf_config: If set this enables the builtin CSRF middleware.
+            data_dto_type: DTO type to use for deserializing and validating inbound request data.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <datastructures.ETag>` to add to route handlers of this app.
@@ -320,6 +324,7 @@ class Starlite(Router):
             compression_config=compression_config,
             cors_config=cors_config,
             csrf_config=csrf_config,
+            data_dto_type=data_dto_type,
             debug=debug,
             dependencies=dict(dependencies or {}),
             etag=etag,
@@ -383,6 +388,7 @@ class Starlite(Router):
             after_response=config.after_response,
             before_request=config.before_request,
             cache_control=config.cache_control,
+            data_dto_type=config.data_dto_type,
             dependencies=config.dependencies,
             etag=config.etag,
             exception_handlers=config.exception_handlers,

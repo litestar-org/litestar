@@ -23,6 +23,7 @@ from starlite.handlers.http_handlers._utils import (
     get_default_status_code,
     normalize_http_method,
 )
+from starlite.new_dto import AbstractDTO
 from starlite.response import FileResponse, Response
 from starlite.response_containers import File, Redirect, ResponseContainer
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
@@ -76,6 +77,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     __slots__ = (
         "_resolved_after_response",
         "_resolved_before_request",
+        "_resolved_data_dto_type",
         "_resolved_response_handler",
         "after_request",
         "after_response",
@@ -86,6 +88,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "cache_key_builder",
         "content_encoding",
         "content_media_type",
+        "data_dto_type",
         "deprecated",
         "description",
         "etag",
@@ -121,6 +124,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         cache: bool | int = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
+        data_dto_type: AbstractDTO | None | EmptyType = Empty,
         dependencies: Mapping[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -173,6 +177,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
+            data_dto_type: DTO type to use for deserializing and validating inbound request data.
             dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -238,6 +243,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.cache = cache
         self.cache_control = cache_control
         self.cache_key_builder = cache_key_builder
+        self.data_dto_type = data_dto_type
         self.etag = etag
         self.media_type: MediaType | str = media_type or ""
         self.response_class = response_class
@@ -262,6 +268,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: AfterResponseHookHandler | None | EmptyType = Empty
         self._resolved_before_request: BeforeRequestHookHandler | None | EmptyType = Empty
+        self._resolved_data_dto_type: AbstractDTO | None | EmptyType = Empty
         self._resolved_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
@@ -437,6 +444,26 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
             self._resolved_response_handler = handler
         return self._resolved_response_handler  # type:ignore[return-value]
+
+    def resolve_data_dto_type(self) -> AbstractDTO | None:
+        """Resolve the data_dto_type by starting from the route handler and moving up.
+
+        If a handler is found it is returned, otherwise None is set.
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            An optional :class:`after response lifecycle hook handler <starlite.types.AfterResponseHookHandler>`
+        """
+        if self._resolved_data_dto_type is Empty:
+            data_dto_types: list[AbstractDTO | None] = [
+                layer_dto_type  # type:ignore[misc]
+                for layer in self.ownership_layers
+                if (layer_dto_type := layer.data_dto_type) is not Empty
+            ]
+            print(data_dto_types)
+            self._resolved_data_dto_type = data_dto_types[-1] if data_dto_types else None
+
+        return cast("AbstractDTO | None", self._resolved_data_dto_type)
 
     async def to_response(
         self, app: "Starlite", data: Any, plugins: list["SerializationPluginProtocol"], request: "Request"

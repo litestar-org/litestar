@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Sequence
 from starlite.cache.config import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.events.emitter import SimpleEventEmitter
+from starlite.types import Empty
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
     from starlite.events.emitter import BaseEventEmitterBackend
     from starlite.events.listener import EventListener
     from starlite.logging.config import BaseLoggingConfig
+    from starlite.new_dto import AbstractDTO
     from starlite.openapi.config import OpenAPIConfig
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
@@ -30,6 +32,7 @@ if TYPE_CHECKING:
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
         ControllerRouterHandler,
+        EmptyType,
         ExceptionHandlersMap,
         Guard,
         LifeSpanHandler,
@@ -119,6 +122,8 @@ class AppConfig:
     """If set this enables the builtin CORS middleware."""
     csrf_config: CSRFConfig | None = field(default=None)
     """If set this enables the builtin CSRF middleware."""
+    data_dto_type: AbstractDTO | EmptyType | None = field(default=Empty)
+    """DTO type to use for deserializing and validating inbound request data."""
     debug: bool = field(default=False)
     """If ``True``, app errors rendered as HTML with a stack trace."""
     dependencies: dict[str, Provide] = field(default_factory=dict)

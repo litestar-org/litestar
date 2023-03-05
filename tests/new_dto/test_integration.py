@@ -9,7 +9,7 @@ from . import ConcreteDTO, Model
 
 def test_dto_data() -> None:
     @post(path="/")
-    def post_handler(data: ConcreteDTO) -> ConcreteDTO:  # type: ignore
+    def post_handler(data: ConcreteDTO) -> ConcreteDTO:
         assert isinstance(data, ConcreteDTO)
         assert data.to_model() == Model(a=1, b="two")
         return data

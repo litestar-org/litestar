@@ -9,6 +9,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
+from starlite.types import Empty
 from starlite.utils import AsyncCallable, normalize_path
 from starlite.utils.helpers import unwrap_partial
 
@@ -19,12 +20,14 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
     from starlite.datastructures import CacheControlHeader, ETag
+    from starlite.new_dto import AbstractDTO
     from starlite.router import Router
     from starlite.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,
         BeforeRequestHookHandler,
         Dependencies,
+        EmptyType,
         ExceptionHandlersMap,
         Guard,
         Middleware,
@@ -47,6 +50,7 @@ class Controller:
         "after_request",
         "after_response",
         "before_request",
+        "data_dto_type",
         "dependencies",
         "etag",
         "exception_handlers",
@@ -86,6 +90,8 @@ class Controller:
 
     Can be overridden by route handlers.
     """
+    data_dto_type: AbstractDTO | EmptyType | None
+    """DTO type to use for deserializing and validating inbound request data."""
     dependencies: Dependencies | None
     """A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances."""
     etag: ETag | None
@@ -147,6 +153,9 @@ class Controller:
 
         for key in self.__slots__:
             if not hasattr(self, key):
+                if key == "data_dto_type":
+                    self.data_dto_type = Empty
+                    continue
                 setattr(self, key, None)
 
         self.response_cookies = narrow_response_cookies(self.response_cookies)
