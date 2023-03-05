@@ -10,7 +10,7 @@ from starlite.datastructures import Cookie, ResponseHeader
 from starlite.dto import DTO
 from starlite.enums import HttpMethod
 from starlite.exceptions import ValidationException
-from starlite.plugins.base import get_plugin_for_value
+from starlite.plugins import get_plugin_for_value
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.utils import (
     annotation_is_iterable_of_type,

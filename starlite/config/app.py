@@ -157,7 +157,7 @@ class AppConfig:
     parameters: ParametersMap = field(default_factory=dict)
     """A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all application paths."""
     plugins: list[PluginProtocol] = field(default_factory=list)
-    """List of :class:`SerializationPluginProtocol <starlite.plugins.base.SerializationPluginProtocol>`."""
+    """List of :class:`SerializationPluginProtocol <starlite.plugins.SerializationPluginProtocol>`."""
     request_class: type[Request] | None = field(default=None)
     """An optional subclass of :class:`Request <starlite.connection.request.Request>` to use for http connections."""
     response_class: ResponseType | None = field(default=None)

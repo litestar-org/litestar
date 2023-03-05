@@ -7,19 +7,16 @@ from tortoise.fields import ReverseRelation
 from tortoise.fields.relational import RelationalField
 
 from starlite.exceptions import MissingDependencyException
-from starlite.plugins.base import (
-    OpenAPISchemaPluginProtocol,
-    SerializationPluginProtocol,
-)
+from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginProtocol
 
 __all__ = ("TortoiseORMPlugin",)
 
 
 try:
     from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
-    from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
-        PydanticModel,
-        pydantic_model_creator,
+    from tortoise.contrib.pydantic import PydanticModel  # pyright: ignore
+    from tortoise.contrib.pydantic import (
+        pydantic_model_creator,  # type: ignore[attr-defined]; pyright: ignore
     )
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e

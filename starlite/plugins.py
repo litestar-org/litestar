@@ -24,6 +24,7 @@ __all__ = (
     "InitPluginProtocol",
     "OpenAPISchemaPluginProtocol",
     "PluginMapping",
+    "PluginProtocol",
     "SerializationPluginProtocol",
     "get_plugin_for_value",
 )
@@ -230,3 +231,6 @@ class PluginMapping(NamedTuple):
         if isinstance(value, (list, tuple)):
             return [self.plugin.from_data_container_instance(self.model_class, item) for item in value]
         return self.plugin.from_data_container_instance(self.model_class, value)
+
+
+PluginProtocol = Union[SerializationPluginProtocol, InitPluginProtocol, OpenAPISchemaPluginProtocol]

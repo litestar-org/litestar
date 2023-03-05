@@ -4,10 +4,7 @@ from pydantic import BaseModel
 from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 
 from starlite.exceptions import MissingDependencyException
-from starlite.plugins.base import (
-    OpenAPISchemaPluginProtocol,
-    SerializationPluginProtocol,
-)
+from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginProtocol
 
 __all__ = ("PiccoloORMPlugin",)
 

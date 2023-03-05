@@ -4,7 +4,7 @@ import pytest
 from pydantic import BaseModel
 
 from starlite import MediaType, Starlite, get
-from starlite.plugins.base import (
+from starlite.plugins import (
     InitPluginProtocol,
     PluginMapping,
     SerializationPluginProtocol,
