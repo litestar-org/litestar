@@ -4,7 +4,9 @@ contrib
 .. toctree::
     :maxdepth: 1
 
-    jinja
-    mako
-    jwt
     htmx
+    jinja
+    jwt
+    mako
+    opentelemetry
+    sqlalchemy_1/index
