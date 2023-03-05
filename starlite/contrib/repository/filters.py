@@ -39,7 +39,7 @@ class CollectionFilter(Generic[T]):
     field_name: str
     """Name of the model attribute to filter on."""
     values: abc.Collection[T]
-    """Values for `IN` clause."""
+    """Values for ``IN`` clause."""
 
 
 @dataclass
