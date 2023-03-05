@@ -67,7 +67,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @abstractmethod
     async def delete(self, item_id: Any) -> T:
-        """Delete instance identified by `item_id`.
+        """Delete instance identified by ``item_id``.
 
         Args:
             item_id: Identifier of instance to be deleted.
