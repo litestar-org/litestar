@@ -33,7 +33,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @abstractmethod
     async def add(self, data: T) -> T:
-        """Add `data` to the collection.
+        """Add ``data`` to the collection.
 
         Args:
             data: Instance to be added to the collection.
