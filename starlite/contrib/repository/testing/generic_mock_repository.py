@@ -270,7 +270,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
 
         Args:
             **kwargs: key/value pairs such that objects remaining in the collection after filtering
-                have the property that their attribute named `key` has value equal to `value`.
+                have the property that their attribute named ``key`` has value equal to ``value``.
         """
         new_collection: dict[Hashable, ModelT] = {}
         for item in self.collection.values():
