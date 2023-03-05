@@ -19,7 +19,7 @@ __all__ = (
 
 @dataclass
 class BeforeAfter:
-    """Data required to filter a query on a `datetime` column."""
+    """Data required to filter a query on a ``datetime`` column."""
 
     field_name: str
     """Name of the model attribute to filter on."""
@@ -31,9 +31,7 @@ class BeforeAfter:
 
 @dataclass
 class CollectionFilter(Generic[T]):
-    """Data required to construct a `WHERE ...
-
-    IN (...)` clause.
+    """Data required to construct a ``WHERE ... IN (...)`` clause.
     """
 
     field_name: str
@@ -47,6 +45,6 @@ class LimitOffset:
     """Data required to add limit/offset filtering to a query."""
 
     limit: int
-    """Value for `LIMIT` clause of query."""
+    """Value for ``LIMIT`` clause of query."""
     offset: int
-    """Value for `OFFSET` clause of query."""
+    """Value for ``OFFSET`` clause of query."""

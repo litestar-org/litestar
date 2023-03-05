@@ -151,61 +151,61 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
             The updated instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
         """
 
     @abstractmethod
     async def update_many(self, data: Sequence[T]) -> Sequence[T]:
-        """Update multiple instances with the attribute values present on instances in `data`.
+        """Update multiple instances with the attribute values present on instances in ``data``.
 
         Args:
-            data: A list of instance that should have a value for `self.id_attribute` that exists in the
+            data: A list of instance that should have a value for :attr:`id_attribute <AbstractRepository.id_attribute>` that exists in the
                 collection.
 
         Returns:
             The updated instances.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
         """
 
     @abstractmethod
     async def upsert(self, data: T) -> T:
         """Update or create instance.
 
-        Updates instance with the attribute values present on `data`, or creates a new instance if
+        Updates instance with the attribute values present on ``data``, or creates a new instance if
         one doesn't exist.
 
         Args:
             data: Instance to update existing, or be created. Identifier used to determine if an
-                existing instance exists is the value of an attribute on `data` named as value of
-                `self.id_attribute`.
+                existing instance exists is the value of an attribute on ``data`` named as value of
+                :attr:`id_attribute <AbstractRepository.id_attribute>`.
 
         Returns:
             The updated or created instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
         """
 
     @abstractmethod
     def filter_collection_by_kwargs(self, collection: CollectionT, /, **kwargs: Any) -> CollectionT:
         """Filter the collection by kwargs.
 
-        Has `AND` semantics where multiple kwargs name/value pairs are provided.
+        Has ``AND`` semantics where multiple kwargs name/value pairs are provided.
 
         Args:
             collection: the collection to be filtered
             **kwargs: key/value pairs such that objects remaining in the collection after filtering
-                have the property that their attribute named `key` has value equal to `value`.
+                have the property that their attribute named ``key`` has value equal to ``value``.
 
         Raises:
-            RepositoryError: if a named attribute doesn't exist on `self.model_type`.
+            RepositoryError: if a named attribute doesn't exist on :attr:`model_type <AbstractRepository.model_type>`.
         """
 
     @staticmethod
     def check_not_found(item_or_none: T | None) -> T:
-        """Raise `RepositoryNotFoundException` if `item_or_none` is `None`.
+        """Raise :class:`RepositoryNotFoundException` if ``item_or_none`` is ``None``.
 
         Args:
             item_or_none: Item to be tested for existence.
@@ -219,13 +219,13 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @classmethod
     def get_id_attribute_value(cls, item: T) -> Any:
-        """Get value of attribute named as `self.id_attribute` on `item`.
+        """Get value of attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` on ``item``.
 
         Args:
-            item: Anything that should have an attribute named as `self.id_attribute` value.
+            item: Anything that should have an attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` value.
 
         Returns:
-            The value of attribute on `item` named as `self.id_attribute`.
+            The value of attribute on ``item`` named as :attr:`id_attribute <AbstractRepository.id_attribute>`.
         """
         return getattr(item, cls.id_attribute)
 

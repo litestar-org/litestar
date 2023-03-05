@@ -25,7 +25,7 @@ MockRepoT = TypeVar("MockRepoT", bound="GenericMockRepository")
 class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
     """A repository implementation for tests.
 
-    Uses a `dict` for storage.
+    Uses a :class:`dict` for storage.
     """
 
     collection: MutableMapping[Hashable, ModelT]
@@ -37,7 +37,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
 
     @classmethod
     def __class_getitem__(cls: type[MockRepoT], item: type[ModelT]) -> type[MockRepoT]:
-        """Add collection to `_collections` for the type.
+        """Add collection to ``_collections`` for the type.
 
         Args:
             item: The type that the class has been parametrized with.
@@ -50,7 +50,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         return self.check_not_found(self.collection.get(item_id))
 
     async def add(self, data: ModelT, allow_id: bool = False) -> ModelT:
-        """Add `data` to the collection.
+        """Add ``data`` to the collection.
 
         Args:
             data: Instance to be added to the collection.
@@ -72,7 +72,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         return data
 
     async def add_many(self, data: Sequence[ModelT], allow_id: bool = False) -> Sequence[ModelT]:
-        """Add multiple `data` to the collection.
+        """Add multiple ``data`` to the collection.
 
         Args:
             data: Instance to be added to the collection.
@@ -96,7 +96,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         return data
 
     async def delete(self, item_id: Any) -> ModelT:
-        """Delete instance identified by `item_id`.
+        """Delete instance identified by ``item_id``.
 
         Args:
             item_id: Identifier of instance to be deleted.
@@ -105,7 +105,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The deleted instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `item_id`.
+            RepositoryNotFoundException: If no instance found identified by ``item_id``.
         """
         try:
             return self._find_or_raise_not_found(item_id)
@@ -113,7 +113,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             del self.collection[item_id]
 
     async def get(self, item_id: Any, **kwargs: Any) -> ModelT:
-        """Get instance identified by `item_id`.
+        """Get instance identified by ``item_id``.
 
         Args:
             item_id: Identifier of the instance to be retrieved.
@@ -122,7 +122,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The retrieved instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `item_id`.
+            RepositoryNotFoundException: If no instance found identified by ``item_id``.
         """
         return self._find_or_raise_not_found(item_id)
 
@@ -193,17 +193,17 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         return await self.list(*filters, **kwargs), await self.count(*filters, **kwargs)
 
     async def update(self, data: ModelT) -> ModelT:
-        """Update instance with the attribute values present on `data`.
+        """Update instance with the attribute values present on ``data``.
 
         Args:
-            data: An instance that should have a value for `self.id_attribute` that exists in the
+            data: An instance that should have a value for :attr:`id_attribute <GenericMockRepository.id_attribute>` that exists in the
                 collection.
 
         Returns:
             The updated instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
         """
         item = self._find_or_raise_not_found(self.get_id_attribute_value(data))
         # should never be modifiable
