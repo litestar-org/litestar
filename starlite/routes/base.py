@@ -18,6 +18,7 @@ from pydantic.datetime_parse import (
 from starlite._kwargs import KwargsModel
 from starlite._signature import get_signature_model
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import join_paths, normalize_path
 
@@ -123,6 +124,9 @@ class BaseRoute(ABC):
             dependencies=route_handler.resolve_dependencies(),
             path_parameters=path_parameters,
             layered_parameters=route_handler.resolve_layered_parameters(),
+            data_dto_type=route_handler.resolve_data_dto_type()
+            if isinstance(route_handler, HTTPRouteHandler)
+            else None,
         )
 
     @staticmethod

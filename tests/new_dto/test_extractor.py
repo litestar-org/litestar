@@ -6,9 +6,12 @@ from unittest.mock import AsyncMock
 import pytest
 
 from starlite._signature.models import SignatureField
-from starlite.new_dto.kwarg_extractor import create_dto_extractor
+from starlite.new_dto.kwarg_extractor import (
+    create_dto_extractor,
+    create_dto_supported_extractor,
+)
 
-from . import ConcreteDTO
+from . import ConcreteDTO, Model
 
 
 async def test_extractor_for_scalar_annotation() -> None:
@@ -39,3 +42,33 @@ async def test_extractor_for_collection_annotation(field_type: Any) -> None:
     assert isinstance(data, list)
     for item in data:
         assert isinstance(item, ConcreteDTO)
+
+
+async def test_dto_supported_extractor_for_scalar_annotation() -> None:
+    signature_field = SignatureField(
+        children=None, default_value=None, extra={}, field_type=ConcreteDTO, kwarg_model=None, name="data"
+    )
+    extractor = create_dto_supported_extractor(signature_field, ConcreteDTO)
+    data = await extractor(AsyncMock(body=AsyncMock(return_value=b"")))
+    assert isinstance(data, Model)
+
+
+@pytest.mark.parametrize(
+    "field_type",
+    [
+        List[ConcreteDTO],
+        FrozenSet[ConcreteDTO],
+        Tuple[ConcreteDTO, ...],
+        Tuple[ConcreteDTO, ConcreteDTO],
+        Set[ConcreteDTO],
+    ],
+)
+async def test_dto_supported_extractor_for_collection_annotation(field_type: Any) -> None:
+    signature_field = SignatureField(
+        children=None, default_value=None, extra={}, field_type=field_type, kwarg_model=None, name="data"
+    )
+    extractor = create_dto_supported_extractor(signature_field, ConcreteDTO)
+    data = await extractor(AsyncMock(body=AsyncMock(return_value=b"")))
+    assert isinstance(data, list)
+    for item in data:
+        assert isinstance(item, Model)

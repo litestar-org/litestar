@@ -23,7 +23,6 @@ from starlite.handlers.http_handlers._utils import (
     get_default_status_code,
     normalize_http_method,
 )
-from starlite.new_dto import AbstractDTO
 from starlite.response import FileResponse, Response
 from starlite.response_containers import File, Redirect, ResponseContainer
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
@@ -59,6 +58,7 @@ if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.datastructures.headers import Header
     from starlite.di import Provide
+    from starlite.new_dto import AbstractDTO
     from starlite.plugins import SerializationPluginProtocol
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
 
@@ -124,7 +124,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         cache: bool | int = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
-        data_dto_type: AbstractDTO | None | EmptyType = Empty,
+        data_dto_type: type[AbstractDTO] | None | EmptyType = Empty,
         dependencies: Mapping[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -268,7 +268,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: AfterResponseHookHandler | None | EmptyType = Empty
         self._resolved_before_request: BeforeRequestHookHandler | None | EmptyType = Empty
-        self._resolved_data_dto_type: AbstractDTO | None | EmptyType = Empty
+        self._resolved_data_dto_type: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
@@ -445,7 +445,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             self._resolved_response_handler = handler
         return self._resolved_response_handler  # type:ignore[return-value]
 
-    def resolve_data_dto_type(self) -> AbstractDTO | None:
+    def resolve_data_dto_type(self) -> type[AbstractDTO] | None:
         """Resolve the data_dto_type by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
@@ -455,15 +455,14 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             An optional :class:`after response lifecycle hook handler <starlite.types.AfterResponseHookHandler>`
         """
         if self._resolved_data_dto_type is Empty:
-            data_dto_types: list[AbstractDTO | None] = [
+            data_dto_types: list[type[AbstractDTO] | None] = [
                 layer_dto_type  # type:ignore[misc]
                 for layer in self.ownership_layers
                 if (layer_dto_type := layer.data_dto_type) is not Empty
             ]
-            print(data_dto_types)
             self._resolved_data_dto_type = data_dto_types[-1] if data_dto_types else None
 
-        return cast("AbstractDTO | None", self._resolved_data_dto_type)
+        return cast("type[AbstractDTO] | None", self._resolved_data_dto_type)
 
     async def to_response(
         self, app: "Starlite", data: Any, plugins: list["SerializationPluginProtocol"], request: "Request"

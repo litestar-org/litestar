@@ -41,3 +41,28 @@ def create_dto_extractor(
         return dto_type.from_bytes(await connection.body())
 
     return scalar_dto_extractor  # type:ignore[return-value]
+
+
+def create_dto_supported_extractor(
+    signature_field: SignatureField, dto_type: type[AbstractDTO]
+) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
+    """Create a DTO supported data extractor.
+
+    Args:
+        signature_field: A SignatureField instance.
+        dto_type: the DTO type supporting the data type.
+
+    Returns:
+        An extractor function.
+    """
+    if signature_field.is_non_string_iterable:
+
+        async def collection_dto_extractor(connection: Request[Any, Any, Any]) -> list[Any]:
+            return [dto.to_model() for dto in dto_type.list_from_bytes(await connection.body())]
+
+        return collection_dto_extractor  # type:ignore[return-value]
+
+    async def scalar_dto_extractor(connection: Request[Any, Any, Any]) -> Any:
+        return dto_type.from_bytes(await connection.body()).to_model()
+
+    return scalar_dto_extractor  # type:ignore[return-value]

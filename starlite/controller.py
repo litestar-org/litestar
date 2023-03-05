@@ -90,7 +90,7 @@ class Controller:
 
     Can be overridden by route handlers.
     """
-    data_dto_type: AbstractDTO | EmptyType | None
+    data_dto_type: type[AbstractDTO] | EmptyType | None
     """DTO type to use for deserializing and validating inbound request data."""
     dependencies: Dependencies | None
     """A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances."""

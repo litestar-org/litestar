@@ -90,7 +90,7 @@ class Router:
         after_response: AfterResponseHookHandler | None = None,
         before_request: BeforeRequestHookHandler | None = None,
         cache_control: CacheControlHeader | None = None,
-        data_dto_type: AbstractDTO | None | EmptyType = Empty,
+        data_dto_type: type[AbstractDTO] | None | EmptyType = Empty,
         dependencies: Mapping[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,

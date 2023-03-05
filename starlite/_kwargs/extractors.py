@@ -13,7 +13,10 @@ from starlite._parsers import (
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
-from starlite.new_dto.kwarg_extractor import create_dto_extractor
+from starlite.new_dto.kwarg_extractor import (
+    create_dto_extractor,
+    create_dto_supported_extractor,
+)
 from starlite.params import BodyKwarg
 from starlite.types import Empty
 
@@ -384,6 +387,8 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
         )
     elif kwargs_model.expected_dto_data:
         data_extractor = create_dto_extractor(kwargs_model.expected_dto_data)
+    elif kwargs_model.expected_dto_supported_data:
+        data_extractor = create_dto_supported_extractor(*kwargs_model.expected_dto_supported_data)
     else:
         data_extractor = cast(
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
