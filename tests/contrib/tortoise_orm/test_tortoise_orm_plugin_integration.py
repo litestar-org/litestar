@@ -1,7 +1,7 @@
-from starlite.plugins.tortoise_orm import TortoiseORMPlugin
+from starlite.contrib.tortoise_orm import TortoiseORMPlugin
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.testing import create_test_client
-from tests.plugins.tortoise_orm import (
+from tests.contrib.tortoise_orm import (
     Tournament,
     cleanup,
     create_tournament,

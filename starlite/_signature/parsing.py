@@ -15,7 +15,7 @@ from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
 from starlite.datastructures import ImmutableState
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
-from starlite.plugins.base import (
+from starlite.plugins import (
     PluginMapping,
     SerializationPluginProtocol,
     get_plugin_for_value,

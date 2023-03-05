@@ -63,7 +63,7 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from starlite.plugins.base import OpenAPISchemaPluginProtocol
+    from starlite.plugins import OpenAPISchemaPluginProtocol
 
 
 def normalize_example_value(value: Any) -> Any:

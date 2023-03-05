@@ -3,7 +3,7 @@ from typing import List, cast
 from piccolo.testing import ModelBuilder
 
 from starlite import get, post
-from tests.plugins.piccolo_orm.tables import Concert, RecordingStudio, Venue
+from tests.contrib.piccolo_orm.tables import Concert, RecordingStudio, Venue
 
 studio = cast("RecordingStudio", ModelBuilder.build_sync(RecordingStudio, persist=False))
 venues = cast("List[Venue]", [ModelBuilder.build_sync(Venue, persist=False) for _ in range(3)])
