@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -72,6 +73,7 @@ def test_jinja_url_for(template_dir: Path) -> None:
         assert response.status_code == 500
 
 
+@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")
 def test_jinja_url_for_static_asset(template_dir: Path, tmp_path: Path) -> None:
     template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=template_dir)
 

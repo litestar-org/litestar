@@ -1,0 +1,18 @@
+name: CodeQL scheduled
+on:
+  schedule:
+    - cron: "0 4 * * *"
+jobs:
+  codeql:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: "main"
+      - name: Initialize CodeQL With Dependencies
+        uses: github/codeql-action/init@v2
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
