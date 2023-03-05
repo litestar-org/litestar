@@ -223,60 +223,6 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         results = await self._execute(select)
         return results.scalar_one()  # type: ignore
 
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:
-        """Get a list of instances, optionally filtered.
-
-        Args:
-            *filters: Types for specific filtering operations.
-            **kwargs: Instance attribute value filters.
-
-        Returns:
-            The list of instances, after filtering applied.
-        """
-        select = self._apply_filters(*filters, select=self.select)
-        select = self._filter_select_by_kwargs(select, **kwargs)
-
-        with wrap_sqlalchemy_exception():
-            result = await self._execute(select)
-            instances = list(result.scalars())
-            for instance in instances:
-                self.session.expunge(instance)
-            return instances
-
-    async def list_and_count(
-        self,
-        *filters: FilterTypes,
-        **kwargs: Any,
-    ) -> tuple[list[ModelT], int]:
-        """List records with total count.
-
-        Args:
-            *filters: Types for specific filtering operations.
-            **kwargs: Instance attribute value filters.
-
-        Returns:
-            Count of records returned by query, ignoring pagination.
-        """
-        select = self.select.add_columns(
-            over(
-                sql_func.count(  # pylint: disable=not-callable
-                    self.model_type.id,  # type:ignore[attr-defined]
-                ),
-            )
-        )
-        select = self._apply_filters(*filters, select=select)
-        select = self._filter_select_by_kwargs(select, **kwargs)
-        with wrap_sqlalchemy_exception():
-            result = await self._execute(select)
-            count: int = 0
-            instances: list[ModelT] = []
-            for i, (instance, count_value) in enumerate(result):
-                self.session.expunge(instance)
-                instances.append(instance)
-                if i == 0:
-                    count = count_value
-            return instances, count
-
     async def update(self, data: ModelT) -> ModelT:
         """Update instance with the attribute values present on `data`.
 
@@ -320,6 +266,60 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             )
             await self.session.flush()
             return data
+
+    async def list_and_count(
+        self,
+        *filters: FilterTypes,
+        **kwargs: Any,
+    ) -> tuple[list[ModelT], int]:
+        """List records with total count.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            Count of records returned by query, ignoring pagination.
+        """
+        select = self.select.add_columns(
+            over(
+                sql_func.count(  # pylint: disable=not-callable
+                    self.model_type.id,  # type:ignore[attr-defined]
+                ),
+            )
+        )
+        select = self._apply_filters(*filters, select=select)
+        select = self._filter_select_by_kwargs(select, **kwargs)
+        with wrap_sqlalchemy_exception():
+            result = await self._execute(select)
+            count: int = 0
+            instances: list[ModelT] = []
+            for i, (instance, count_value) in enumerate(result):
+                self.session.expunge(instance)
+                instances.append(instance)
+                if i == 0:
+                    count = count_value
+            return instances, count
+
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:
+        """Get a list of instances, optionally filtered.
+
+        Args:
+            *filters: Types for specific filtering operations.
+            **kwargs: Instance attribute value filters.
+
+        Returns:
+            The list of instances, after filtering applied.
+        """
+        select = self._apply_filters(*filters, select=self.select)
+        select = self._filter_select_by_kwargs(select, **kwargs)
+
+        with wrap_sqlalchemy_exception():
+            result = await self._execute(select)
+            instances = list(result.scalars())
+            for instance in instances:
+                self.session.expunge(instance)
+            return instances
 
     async def upsert(self, data: ModelT) -> ModelT:
         """Update or create instance.
