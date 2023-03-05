@@ -15,6 +15,10 @@ from starlite.handlers import (
 )
 from starlite.response import Response
 from starlite.router import Router
+from starlite.utils.version import get_version
+
+__version__ = get_version()
+
 
 __all__ = (
     "Controller",
@@ -34,4 +38,5 @@ __all__ = (
     "put",
     "route",
     "websocket",
+    "__version__",
 )
