@@ -1,5 +1,9 @@
 ignore:
-  SNYK-PYTHON-CRYPTOGRAPHY-3172287:
+  SNYK-PYTHON-MARKDOWNITPY-3330239:
     - '*':
         reason: Fix pending
-        expires: 2023-03-01T00:00:00.000Z
+        expires: 2023-04-01T00:00:00.000Z
+  SNYK-PYTHON-MARKDOWNITPY-3330240:
+    - '*':
+        reason: Fix pending
+        expires: 2023-04-01T00:00:00.000Z
