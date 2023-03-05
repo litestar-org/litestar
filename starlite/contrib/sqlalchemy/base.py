@@ -39,7 +39,7 @@ def touch_updated_timestamp(session: Session, *_: Any) -> None:
     timestamp on modified instances.
 
     Args:
-        session: The sync [`Session`][sqlalchemy.orm.Session] instance that underlies the async
+        session: The sync :class:`Session <sqlalchemy.orm.Session>` instance that underlies the async
             session.
     """
     for instance in session.dirty:
