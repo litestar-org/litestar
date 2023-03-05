@@ -25,7 +25,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
     model_type: type[T]
     """Type of object represented by the repository."""
     id_attribute = "id"
-    """Name of the primary identifying attribute on `model_type`."""
+    """Name of the primary identifying attribute on :attr:`model_type`."""
 
     def __init__(self, **kwargs: Any) -> None:
         """Repository constructors accept arbitrary kwargs."""
