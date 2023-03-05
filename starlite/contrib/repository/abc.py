@@ -44,7 +44,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @abstractmethod
     async def add_many(self, data: Sequence[T]) -> Sequence[T]:
-        """Add multiple `data` to the collection.
+        """Add multiple ``data`` to the collection.
 
         Args:
             data: Instances to be added to the collection.
