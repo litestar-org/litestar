@@ -51,8 +51,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2.x Changelog" href="changelog_2.html" />
-    <link rel="prev" title="What’s new in Starlite 2.0" href="whats_new_2.html" />
+    <link rel="next" title="2.x Changelog" href="../lib/changelog.html" />
+    <link rel="prev" title="Release notes" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -383,10 +383,9 @@
   </p>
   <div class="bd-toc-item navbar-nav">
     <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="whats_new_2.html">What’s new in Starlite 2.0</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Starlite 2.0 migration guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog_2.html">2.x Changelog</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://provinzkraut.github.io/starlite/changelog.html">1.x Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../lib/changelog.html">2.x Changelog</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://starliteproject.dev/1/changelog.html">1.x Changelog</a></li>
 </ul>
 
   </div>
@@ -616,6 +615,50 @@
 </tbody>
 </table>
 </section>
+<section id="response-headers">
+<h2>Response headers<a class="headerlink" href="#response-headers" title="Permalink to this heading">#</a></h2>
+<p>Response header can now be set using either a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a> of <a class="reference internal" href="../lib/reference/datastructures/response_header.html#starlite.datastructures.response_header.ResponseHeader" title="starlite.datastructures.response_header.ResponseHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseHeader</span></code></a>,
+or by using a plain <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>. The typing of <code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseHeader</span></code> was also changed to be more strict and now
+only allows string values.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+1.51</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">ResponseHeader</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">response_headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-header&quot;</span><span class="p">:</span> <span class="n">ResponseHeader</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s2">&quot;header-value&quot;</span><span class="p">)})</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+2.x</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">ResponseHeader</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">response_headers</span><span class="o">=</span><span class="p">[</span><span class="n">ResponseHeader</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;my-header&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;header-value&quot;</span><span class="p">)])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="o">...</span>
+
+
+<span class="c1"># or</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">response_headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-header&quot;</span><span class="p">:</span> <span class="s2">&quot;header-value&quot;</span><span class="p">})</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="response-cookies">
+<h2>Response cookies<a class="headerlink" href="#response-cookies" title="Permalink to this heading">#</a></h2>
+<p>Response cookies might now also be set using a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>, analogous to <a class="reference internal" href="#response-headers">Response headers</a>.</p>
+</section>
 </section>
 
 
@@ -626,14 +669,14 @@
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="whats_new_2.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="index.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">What’s new in Starlite 2.0</p>
+          <p class="prev-next-title">Release notes</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="changelog_2.html" title="next page">
+  <a class='right-next' id="next-link" href="../lib/changelog.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
       <p class="prev-next-title">2.x Changelog</p>
@@ -659,6 +702,16 @@
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#changed-module-paths">
    Changed module paths
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#response-headers">
+   Response headers
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#response-cookies">
+   Response cookies
   </a>
  </li>
 </ul>

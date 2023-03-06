@@ -229,7 +229,8 @@ container, so simply pass a string keyed dictionary of values:
 
 .. code-block:: python
 
-   from starlite import Template, get
+   from starlite import get
+   from starlite.response_containers import Template
 
 
    @get(path="/info")

@@ -1,5 +1,5 @@
-starlite.exceptions
-===================
+exceptions
+==========
 
 .. toctree::
     :maxdepth: 1
