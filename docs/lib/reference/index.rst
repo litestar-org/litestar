@@ -10,7 +10,7 @@ API reference
     background_tasks
     cache
     config
-    connection/index
+    connection
     contrib/index
     controller
     data_extractors

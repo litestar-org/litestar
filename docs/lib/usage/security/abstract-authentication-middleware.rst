@@ -30,10 +30,10 @@ that has two attributes:
 2. ``auth``: an optional value representing the authentication scheme. Defaults to ``None``.
 
 These values are then set as part of the "scope" dictionary, and they are made available as
-:attr:`Request.user <.connection.request.Request.user>`
-and :attr:`Request.auth <.connection.request.Request.auth>` respectively, for HTTP route handlers, and
-:attr:`WebSocket.user <.connection.websocket.WebSocket.user>` and
-:attr:`WebSocket.auth <.connection.websocket.WebSocket.auth>` for websocket route handlers.
+:attr:`Request.user <.connection.ASGIConnection.user>`
+and :attr:`Request.auth <.connection.ASGIConnection.auth>` respectively, for HTTP route handlers, and
+:attr:`WebSocket.user <.connection.ASGIConnection.user>` and
+:attr:`WebSocket.auth <.connection.ASGIConnection.auth>` for websocket route handlers.
 
 Example: Implementing a JWTAuthenticationMiddleware
 ---------------------------------------------------
