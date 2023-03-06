@@ -28,6 +28,7 @@ intersphinx_mapping = {
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),
+    "click": ("https://click.palletsprojects.com/en/8.1.x/", None)
 }
 
 
