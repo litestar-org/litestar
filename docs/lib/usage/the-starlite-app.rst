@@ -55,20 +55,19 @@ establish the connection, and another to close it, and then pass them to the Sta
 Using Application State
 -----------------------
 
-As seen in the examples for the `on_startup <#before-after-startup>`_ / `on_shutdown <#before-after-shutdown>`_\ ,
-callables passed to these hooks can receive an optional kwarg called ``state``\ , which is the application's state object.
-The advantage of using application ``state``\ , is that it can be accessed during multiple stages of the connection, and
+As seen in the examples for the `on_startup <#before-after-startup>`_ / `on_shutdown <#before-after-shutdown>`_ ,
+callables passed to these hooks can receive an optional kwarg called ``state``, which is the application's state object.
+The advantage of using application ``state``, is that it can be accessed during multiple stages of the connection, and
 it can be injected into dependencies and route handlers.
 
-The Application State is an instance of the :class:`State <starlite.datastructures.State>` datastructure, and it is accessible
-via the
-:class:`app.state <starlite.app.Starlite>` attribute. As such it can be accessed wherever the app instance is accessible.
+The Application State is an instance of the :class:`State <.datastructures.state.State>` datastructure, and it is accessible
+via the :class:`app.state <.app.Starlite>` attribute. As such it can be accessed wherever the app instance is accessible.
 
 It's important to understand in this context that the application instance is injected into the ASGI ``scope`` mapping for
 each connection (i.e. request or websocket connection) as ``scope["app"].state``. This makes the application accessible
-wherever the scope mapping is available, e.g. in middleware, on :class:`Request <starlite.connection.Request>` and
-:class:`Websocket <starlite.connection.WebSocket>` instances (accessible as ``request.app`` / ``socket.app``\ ) and many other
-places.
+wherever the scope mapping is available, e.g. in middleware, on :class:`Request <.connection.request.Request>` and
+:class:`Websocket <.connection.websocket.WebSocket>` instances (accessible as ``request.app`` / ``socket.app``) and many
+other places.
 
 Therefore, state offers an easy way to share contextual data between disparate parts of the application, as seen below:
 
@@ -90,12 +89,12 @@ Starlite constructor:
 
 .. note::
 
-    The `initial_state` can be a dictionary, an instance of :class:`ImmutableState <starlite.datastructures.ImmutableState>`
-    or :class:`State <starlite.datastructures.State>`, or a list of tuples containing key/value pairs.
+    The `initial_state` can be a dictionary, an instance of :class:`ImmutableState <.datastructures.state.ImmutableState>`
+    or :class:`State <.datastructures.state.State>`, or a list of tuples containing key/value pairs.
 
 .. attention::
 
-    Any value passed to `initial_state` will be deep copied - to prevent mutation from outside the application context.
+    Any value passed to ``initial_state`` will be deep copied - to prevent mutation from outside the application context.
 
 Injecting Application State into Route Handlers and Dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -134,8 +133,8 @@ Static Files
 ------------
 
 Static files are served by the app from predefined locations. To configure static file serving, either pass an
-instance of :class:`StaticFilesConfig <starlite.config.static_files.StaticFilesConfig>` or a list
-thereof to the :class:`Starlite constructor <starlite.app.Starlite>` using the ``static_files_config`` kwarg.
+instance of :class:`StaticFilesConfig <.static_files.config.StaticFilesConfig>` or a list
+thereof to :class:`Starlite <.app.Starlite>` using the ``static_files_config`` kwarg.
 
 For example, lets say our Starlite app is going to serve **regular files** from the ``my_app/static`` folder and **html
 documents** from the ``my_app/html`` folder, and we would like to serve the **static files** on the ``/files`` path,
@@ -160,7 +159,7 @@ found, the file will be sent, otherwise a **404 response** will be sent.
 
 If ``html_mode`` is enabled and no specific file is requested, the application will fall back to serving ``index.html``. If
 no file is found the application will look for a ``404.html`` file in order to render a response, otherwise a 404
-:class:`NotFoundException <starlite.exceptions.NotFoundException>` will be returned.
+:class:`NotFoundException <.exceptions.http_exceptions.NotFoundException>` will be returned.
 
 You can provide a ``name`` parameter to ``StaticFilesConfig`` to identify the given config and generate links to files in
 folders belonging to that config. ``name`` should be a unique string across all static configs and
@@ -169,7 +168,7 @@ folders belonging to that config. ``name`` should be a unique string across all 
 .. code-block:: python
 
    from starlite import Starlite
-   from starlite.config.static_files import StaticFilesConfig
+   from starlite.static_files.config import StaticFilesConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -193,7 +192,7 @@ To send them as attachments, use the ``send_as_attachment=True`` flag, which wil
 .. code-block:: python
 
    from starlite import Starlite
-   from starlite.config.static_files import StaticFilesConfig
+   from starlite.static_files.config import StaticFilesConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -210,10 +209,10 @@ To send them as attachments, use the ``send_as_attachment=True`` flag, which wil
 File System support and Cloud Files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The :class:`StaticFilesConfig <starlite.config.static_files.StaticFilesConfig>` class accepts a value called ``file_system``\ ,
+The :class:`StaticFilesConfig <.static_files.StaticFilesConfig>` class accepts a value called ``file_system``,
 which can be any class adhering to the Starlite :class:`FileSystemProtocol <starlite.types.FileSystemProtocol>`.
 
-This protocol is similar to the file systems defined by `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_\ ,
+This protocol is similar to the file systems defined by `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_,
 which cover all major cloud providers and a wide range of other use cases (e.g. HTTP based file service, ``ftp`` etc.).
 
 In order to use any file system, simply use `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ or one of
@@ -287,8 +286,7 @@ Subclass Logging Configs
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can easily create you own ``LoggingConfig`` class by subclassing
-:class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>` and
-implementing the ``configure`` method.
+:class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` and implementing the ``configure`` method.
 
 Application Hooks
 -----------------
