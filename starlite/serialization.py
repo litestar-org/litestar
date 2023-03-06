@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import deque
+from collections.abc import Iterable as CollectionsIterable
 from decimal import Decimal
 from ipaddress import (
     IPv4Address,
@@ -259,6 +260,16 @@ def encode_for_media_type(
     """
     if isinstance(obj, AbstractDTO):
         return obj.to_bytes(media_type=media_type)
+
+    if isinstance(obj, CollectionsIterable):
+        try:
+            first_item = next(iter(obj))
+        except StopIteration:
+            pass
+        else:
+            if isinstance(first_item, AbstractDTO):
+                return first_item.encode_iterable(obj, media_type=media_type)
+
     if media_type == MediaType.MESSAGEPACK:
         return encode_msgpack(obj, enc_hook)
     return encode_json(obj, enc_hook)

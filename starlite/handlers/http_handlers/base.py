@@ -505,7 +505,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             A Response instance
         """
         response_handler = self.resolve_response_handler()
-        return await response_handler(app=app, data=data, plugins=plugins, request=request)  # type: ignore
+        return await response_handler(app=app, data=data, plugins=plugins, request=request, return_dto=self.resolve_return_dto())  # type: ignore
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""

@@ -9,7 +9,7 @@ __all__ = ("AbstractDTO",)
 
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Iterable
 
     from typing_extensions import Self
 
@@ -36,6 +36,19 @@ class AbstractDTO(ABC, Generic[T]):
 
         Returns:
             A model instance
+        """
+
+    @classmethod
+    @abstractmethod
+    def encode_iterable(cls, value: Iterable[Self], media_type: MediaType | str = MediaType.JSON) -> bytes:
+        """Encode an iterable of DTO instances.
+
+        Args:
+            value: iterable of ``Self``.
+            media_type: serialization format.
+
+        Returns:
+            Array encoded iterable of ``T`` instances.
         """
 
     @classmethod

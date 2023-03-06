@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable as CollectionsIterable
 from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
+    from starlite.new_dto import AbstractDTO
     from starlite.plugins import SerializationPluginProtocol
     from starlite.response import Response
     from starlite.response_containers import ResponseContainer
@@ -82,11 +84,19 @@ def create_data_handler(
 
         return response
 
-    async def handler(data: Any, plugins: list["SerializationPluginProtocol"], **kwargs: Any) -> "ASGIApp":
+    async def handler(
+        data: Any, plugins: list["SerializationPluginProtocol"], return_dto: AbstractDTO | None, **kwargs: Any
+    ) -> "ASGIApp":
         if isawaitable(data):
             data = await data
 
-        if is_dto_annotation and not isinstance(data, DTO):
+        if return_dto:
+            if isinstance(data, CollectionsIterable):
+                data = [return_dto.from_model(item) for item in data]
+            else:
+                data = return_dto.from_model(data).to_bytes(media_type=media_type)
+
+        elif is_dto_annotation and not isinstance(data, DTO):
             data = return_annotation(**data) if isinstance(data, dict) else return_annotation.from_model_instance(data)
 
         elif is_dto_iterable_annotation and data and not isinstance(data[0], DTO):  # pyright: ignore
