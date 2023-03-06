@@ -10,7 +10,7 @@ class. Typically, this code will be placed in a file called ``main.py`` at the p
 
 Creating an app is straightforward – the only required arg is a list
 of :class:`Controllers <.controller.Controller>`, :class:`Routers <.router.Router>`
-or :class:`Route handlers <.handlers.base.BaseRouteHandler>`:
+or :class:`Route handlers <.handlers.BaseRouteHandler>`:
 
 .. literalinclude:: /examples/hello_world.py
     :caption: Hello World

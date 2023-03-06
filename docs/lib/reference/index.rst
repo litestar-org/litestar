@@ -20,7 +20,7 @@ API reference
     enums
     events
     exceptions
-    handlers/index
+    handlers
     logging/index
     middleware/index
     openapi
