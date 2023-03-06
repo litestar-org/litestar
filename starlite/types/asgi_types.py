@@ -88,7 +88,7 @@ __all__ = (
     "LifeSpanSend",
     "LifeSpanSendMessage",
     "WebSocketReceiveMessage",
-    "WebSocketSendMessage"
+    "WebSocketSendMessage",
 )
 
 

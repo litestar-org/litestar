@@ -44,9 +44,7 @@ autodoc_class_signature = "separated"
 autodoc_default_options = {"special-members": "__init__", "show-inheritance": True, "members": True}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
-autodoc_type_aliases = {
-    "starlite.types.AnyIOBackend": "AnyIOBackend"
-}
+autodoc_type_aliases = {"starlite.types.AnyIOBackend": "AnyIOBackend"}
 
 nitpicky = True
 nitpick_ignore = [
