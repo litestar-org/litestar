@@ -1,8 +1,8 @@
 from typing import Any
 
 from starlite import Starlite, get
-from starlite.config.logging import LoggingConfig
 from starlite.connection import ASGIConnection
+from starlite.logging.config import LoggingConfig
 from starlite.testing import RequestFactory
 
 

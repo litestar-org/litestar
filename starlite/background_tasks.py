@@ -5,6 +5,9 @@ from typing_extensions import ParamSpec
 
 from starlite.utils.sync import AsyncCallable
 
+__all__ = ("BackgroundTask", "BackgroundTasks")
+
+
 P = ParamSpec("P")
 
 

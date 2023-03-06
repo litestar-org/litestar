@@ -26,6 +26,8 @@ from starlite.types import (
     TypeEncodersMap,
 )
 
+__all__ = ("SessionAuth",)
+
 
 @dataclass
 class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig[UserType, Dict[str, Any]]):

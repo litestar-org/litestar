@@ -11,6 +11,9 @@ from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.serialization import decode_json, encode_json
 from starlite.utils import AsyncCallable
 
+__all__ = ("CacheObject", "RateLimitConfig", "RateLimitMiddleware")
+
+
 if TYPE_CHECKING:
     from typing import Awaitable
 

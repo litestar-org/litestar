@@ -25,7 +25,7 @@ API reference
     openapi
     pagination
     params
-    plugins/index
+    plugins
     response
     response_containers
     router

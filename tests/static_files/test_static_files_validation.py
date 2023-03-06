@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING
 import pytest
 
 from starlite import HttpMethod, MediaType, Starlite, get
-from starlite.config.static_files import StaticFilesConfig
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.static_files.config import StaticFilesConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_405_METHOD_NOT_ALLOWED
 from starlite.testing import create_test_client
 

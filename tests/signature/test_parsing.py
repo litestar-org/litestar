@@ -6,21 +6,21 @@ import pytest
 from pydantic import BaseModel
 
 from starlite import get
+from starlite._signature import create_signature_model
+from starlite._signature.parsing import ParsedSignatureParameter
 from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.params import Dependency, Parameter
-from starlite.signature import create_signature_model
-from starlite.signature.parsing import ParsedSignatureParameter
 from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from starlite.types.helper_types import OptionalSequence  # noqa: TC001
-from tests.plugins.test_base import AModel, APlugin
+from tests.test_plugins import AModel, APlugin
 
 if TYPE_CHECKING:
     from types import ModuleType
     from typing import Callable
 
-    from starlite.signature.models import PydanticSignatureModel
+    from starlite._signature.models import PydanticSignatureModel
 
 
 def test_parses_values_from_connection_kwargs_with_plugin() -> None:

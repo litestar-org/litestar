@@ -3,6 +3,9 @@ from typing import TYPE_CHECKING
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import AbstractMiddleware
 
+__all__ = ("OpenTelemetryInstrumentationMiddleware",)
+
+
 try:
     from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
     from opentelemetry.util.http import get_excluded_urls

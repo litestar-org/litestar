@@ -7,6 +7,9 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.utils import Ref, is_async_callable
 
+__all__ = ("WebsocketRouteHandler",)
+
+
 if TYPE_CHECKING:
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
     from starlite.types import (

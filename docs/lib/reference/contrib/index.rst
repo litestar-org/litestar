@@ -1,10 +1,14 @@
-starlite.contrib
-================
+contrib
+=======
 
 .. toctree::
     :maxdepth: 1
 
-    jinja
-    mako
-    jwt
     htmx
+    jinja
+    jwt
+    mako
+    opentelemetry
+    piccolo_orm
+    sqlalchemy_1/index
+    tortoise_orm

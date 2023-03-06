@@ -21,8 +21,7 @@ from pydantic.generics import GenericModel
 from pydantic_factories import ModelFactory
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.plugins import SerializationPluginProtocol
-from starlite.plugins.base import get_plugin_for_value
+from starlite.plugins import SerializationPluginProtocol, get_plugin_for_value
 from starlite.utils import (
     convert_dataclass_to_model,
     convert_typeddict_to_model,
@@ -30,6 +29,9 @@ from starlite.utils import (
     is_dataclass_class_or_instance,
     is_typed_dict,
 )
+
+__all__ = ("DTO", "DTOFactory")
+
 
 if TYPE_CHECKING:
     from typing import Awaitable

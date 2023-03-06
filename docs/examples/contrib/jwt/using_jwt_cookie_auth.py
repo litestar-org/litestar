@@ -5,9 +5,9 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr
 
 from starlite import Request, Response, Starlite, get, post
-from starlite.config.openapi import OpenAPIConfig
 from starlite.connection import ASGIConnection
 from starlite.contrib.jwt import JWTCookieAuth, Token
+from starlite.openapi.config import OpenAPIConfig
 
 
 # Let's assume we have a User model that is a pydantic model.

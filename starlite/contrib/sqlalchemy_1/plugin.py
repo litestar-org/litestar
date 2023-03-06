@@ -24,9 +24,12 @@ from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
-from starlite.plugins.base import InitPluginProtocol, SerializationPluginProtocol
+from starlite.plugins import InitPluginProtocol, SerializationPluginProtocol
 
 from .types import SQLAlchemyBinaryType
+
+__all__ = ("SQLAlchemyPlugin",)
+
 
 try:
     from sqlalchemy import inspect

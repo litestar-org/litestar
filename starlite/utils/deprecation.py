@@ -7,6 +7,9 @@ from warnings import warn
 
 from typing_extensions import ParamSpec
 
+__all__ = ("deprecated", "warn_deprecation")
+
+
 T = TypeVar("T")
 P = ParamSpec("P")
 DeprecatedKind = Literal["function", "method", "classmethod", "attribute", "property", "class", "parameter", "import"]

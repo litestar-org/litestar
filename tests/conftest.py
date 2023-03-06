@@ -71,7 +71,7 @@ def template_dir(tmp_path: Path) -> Path:
 @pytest.fixture()
 async def scaffold_tortoise() -> AsyncGenerator:
     """Scaffolds Tortoise ORM and performs cleanup."""
-    from tests.plugins.tortoise_orm import cleanup, init_tortoise
+    from tests.contrib.tortoise_orm import cleanup, init_tortoise
 
     await init_tortoise()
     yield

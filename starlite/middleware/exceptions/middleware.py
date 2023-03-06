@@ -9,8 +9,11 @@ from starlite.datastructures import Headers
 from starlite.enums import ScopeType
 from starlite.exceptions import WebSocketException
 from starlite.middleware.cors import CORSMiddleware
-from starlite.middleware.exceptions.debug_response import create_debug_response
+from starlite.middleware.exceptions._debug_response import create_debug_response
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+
+__all__ = ("ExceptionHandlerMiddleware",)
+
 
 if TYPE_CHECKING:
     from starlite import Response

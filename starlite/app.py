@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 from pydantic_openapi_schema import construct_open_api_with_schema_class
 from typing_extensions import Self, TypedDict
 
-from starlite.asgi import ASGIRouter
-from starlite.asgi.utils import get_route_handlers, wrap_in_exception_handler
+from starlite._asgi import ASGIRouter
+from starlite._asgi.utils import get_route_handlers, wrap_in_exception_handler
+from starlite._openapi.path_item import create_path_item
+from starlite._signature import create_signature_model
+from starlite.cache.config import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
-from starlite.config.cache import CacheConfig
-from starlite.config.logging import LoggingConfig, get_logger_placeholder
-from starlite.config.openapi import OpenAPIConfig
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
@@ -23,16 +23,16 @@ from starlite.exceptions import (
     NoRouteMatchFoundException,
 )
 from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.logging.config import LoggingConfig, get_logger_placeholder
 from starlite.middleware.cors import CORSMiddleware
-from starlite.openapi.path_item import create_path_item
-from starlite.plugins.base import (
+from starlite.openapi.config import OpenAPIConfig
+from starlite.plugins import (
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
     SerializationPluginProtocol,
 )
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-from starlite.signature import create_signature_model
 from starlite.static_files.base import StaticFiles
 from starlite.types import Empty
 from starlite.types.internal_types import PathParameterDefinition
@@ -45,6 +45,9 @@ from starlite.utils import (
 )
 from starlite.utils.dataclass import extract_dataclass_fields
 
+__all__ = ("HandlerIndex", "Starlite")
+
+
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
@@ -52,18 +55,18 @@ if TYPE_CHECKING:
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
-    from starlite.config.logging import BaseLoggingConfig
-    from starlite.config.static_files import StaticFilesConfig
-    from starlite.config.template import TemplateConfig
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler  # noqa: TC004
+    from starlite.logging.config import BaseLoggingConfig
     from starlite.plugins import PluginProtocol
+    from starlite.static_files.config import StaticFilesConfig
+    from starlite.template.config import TemplateConfig
+    from starlite.types import AnyCallable  # nopycln: import
     from starlite.types import (  # noqa: TC004
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
-        AnyCallable,
         ASGIApp,
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
@@ -460,7 +463,7 @@ class Starlite(Router):
         """Initialize a ``Starlite`` application from a configuration instance.
 
         Args:
-            config: An instance of :class:`AppConfig` <startlite.config.AppConfig>
+            config: An instance of :class:`AppConfig` <starlite.config.AppConfig>
 
         Returns:
             An instance of ``Starlite`` application.

@@ -10,6 +10,9 @@ from anyio.to_thread import run_sync
 
 from .base import Storage, StorageObject
 
+__all__ = ("FileStorage",)
+
+
 if TYPE_CHECKING:
     from datetime import timedelta
     from os import PathLike

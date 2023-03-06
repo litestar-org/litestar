@@ -1,5 +1,5 @@
-starlite.testing
-================
+testing
+=======
 
 
 .. automodule:: starlite.testing

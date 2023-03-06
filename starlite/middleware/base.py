@@ -4,10 +4,13 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Callable, Protocol, runtime_checkable
 
 from starlite.enums import ScopeType
-from starlite.middleware.utils import (
+from starlite.middleware._utils import (
     build_exclude_path_pattern,
     should_bypass_middleware,
 )
+
+__all__ = ("AbstractMiddleware", "DefineMiddleware", "MiddlewareProtocol")
+
 
 if TYPE_CHECKING:
     from starlite.types import Scopes

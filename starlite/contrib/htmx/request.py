@@ -5,9 +5,12 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 from starlite import Request
-from starlite.contrib.htmx.utils import HTMXHeaders
+from starlite.contrib.htmx._utils import HTMXHeaders
 from starlite.exceptions import SerializationException
 from starlite.serialization import decode_json
+
+__all__ = ("HTMXDetails", "HTMXRequest")
+
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send

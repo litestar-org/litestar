@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING, Any
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import AsyncCallable
 
+__all__ = ("EventListener",)
+
+
 if TYPE_CHECKING:
     from starlite.types import AnyCallable
 

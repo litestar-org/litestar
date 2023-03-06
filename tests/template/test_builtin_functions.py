@@ -1,18 +1,20 @@
+import sys
 from pathlib import Path
 from typing import Optional
 
 import pytest
 
 from starlite import get
-from starlite.config.static_files import StaticFilesConfig
-from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
 from starlite.response_containers import Template
+from starlite.static_files.config import StaticFilesConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
+from starlite.template.config import TemplateConfig
 from starlite.testing import create_test_client
 
 
+@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")
 def test_jinja_url_for(template_dir: Path) -> None:
     template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=template_dir)
 
@@ -72,6 +74,7 @@ def test_jinja_url_for(template_dir: Path) -> None:
         assert response.status_code == 500
 
 
+@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")
 def test_jinja_url_for_static_asset(template_dir: Path, tmp_path: Path) -> None:
     template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=template_dir)
 

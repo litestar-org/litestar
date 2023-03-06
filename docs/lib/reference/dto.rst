@@ -1,5 +1,5 @@
-starlite.dto
-============
+dto
+===
 
 .. automodule:: starlite.dto
     :members:

@@ -6,7 +6,9 @@ from logging.handlers import QueueHandler, QueueListener
 from queue import Queue
 from typing import Any
 
-from starlite.logging.utils import resolve_handlers
+from starlite.logging._utils import resolve_handlers
+
+__all__ = ("QueueListenerHandler",)
 
 
 class QueueListenerHandler(QueueHandler):

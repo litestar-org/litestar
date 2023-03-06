@@ -6,11 +6,11 @@ import pytest
 
 from starlite import MediaType, get
 from starlite.config.csrf import CSRFConfig
-from starlite.config.template import TemplateConfig
 from starlite.contrib.jinja import JinjaTemplateEngine
 from starlite.contrib.mako import MakoTemplateEngine
 from starlite.middleware.csrf import generate_csrf_token
 from starlite.response_containers import Template
+from starlite.template.config import TemplateConfig
 from starlite.testing import create_test_client
 from starlite.types import Scope
 

@@ -10,6 +10,9 @@ from starlite.exceptions import InternalServerException, NotAuthorizedException
 from starlite.types.file_types import FileSystemProtocol
 from starlite.utils.sync import is_async_callable
 
+__all__ = ("BaseLocalFileSystem", "FileSystemAdapter")
+
+
 if TYPE_CHECKING:
     from os import stat_result
 
