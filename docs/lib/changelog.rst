@@ -1,3 +1,5 @@
+:orphan:
+
 2.x Changelog
 =============
 

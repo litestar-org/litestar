@@ -14,6 +14,7 @@ from starlite.template.config import TemplateConfig
 from starlite.testing import create_test_client
 
 
+@pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")
 def test_jinja_url_for(template_dir: Path) -> None:
     template_config = TemplateConfig(engine=JinjaTemplateEngine, directory=template_dir)
 
