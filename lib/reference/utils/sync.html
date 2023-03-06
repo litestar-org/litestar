@@ -51,8 +51,8 @@
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Migrating to Starlite" href="../../migration/index.html" />
-    <link rel="prev" title="scope" href="scope.html" />
+    <link rel="next" title="scope" href="scope.html" />
+    <link rel="prev" title="predicates" href="predicates.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -145,7 +145,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../../../community/contribution-guide/index.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../../../community/contribution-guide.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -298,7 +298,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../../../community/contribution-guide/index.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../../../community/contribution-guide.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -404,7 +404,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../usage/security/guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/storage.html">Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -421,69 +420,65 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/jwt.html">JWT Security Backends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/htmx.html">HTMX Request Class</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/cli.html">CLI</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../app.html">app</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cache.html">cache</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../config.html">config</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../connection/index.html">connection</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../connection/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../connection/request.html">request</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../connection/websocket.html">websocket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../app.html">starlite.app</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../cache/index.html">starlite.cache</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../cache/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cache/memcached_cache_backend.html">memcached_cache_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cache/redis_cache_backend.html">redis_cache_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cache/simple_cache_backend.html">simple_cache_backend</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/htmx.html">HTMX</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/jinja.html">jinja</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/jwt.html">jwt</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy_1/config.html">config</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy_1/plugin.html">plugin</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy_1/types.html">types</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/tortoise_orm.html">tortoise_orm</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../controller.html">controller</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../data_extractors.html">data_extractors</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../datastructures/index.html">datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../router.html">starlite.router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../controller.html">starlite.controller</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/background_tasks.html">background_tasks</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/cookie.html">cookie</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/headers.html">headers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/multi_dicts.html">multi_dicts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/pagination.html">pagination</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/provide.html">provide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/response_containers.html">response_containers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/response_header.html">response_header</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/state.html">state</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/url.html">url</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/upload_file.html">upload_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../datastructures/url.html">url</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../dto.html">dto</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../enums.html">enums</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../events.html">events</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../exceptions/index.html">exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dto.html">starlite.dto</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../exceptions/base_exceptions.html">base_exceptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../exceptions/http_exceptions.html">http_exceptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../handlers/index.html">handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/asgi_handlers.html">asgi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/http_handlers.html">http</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/websocket_handlers.html">websocket</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../enums.html">starlite.enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../config.html">starlite.config</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../connection/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../connection/request.html">request</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../connection/websocket.html">websocket</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../contrib/index.html">starlite.contrib</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/jwt.html">jwt</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../handlers/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../handlers/asgi.html">asgi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../handlers/http.html">http</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../handlers/websocket.html">websocket</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../middleware/authentication.html">authentication</a></li>
@@ -494,39 +489,41 @@
 <li class="toctree-l3"><a class="reference internal" href="../middleware/rate_limit.html">rate_limit</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../middleware/session/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../middleware/session/client_side.html">client_side</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../middleware/session/server_side.html">server_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../middleware/session/cookie_backend.html">cookie_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../middleware/session/file_backend.html">file_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../middleware/session/memcached_backend.html">memcached_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../middleware/session/memory_backend.html">memory_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../middleware/session/redis_backend.html">redis_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../middleware/session/sqlalchemy_backend.html">sqlalchemy_backend</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../openapi.html">openapi</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../params.html">params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../plugins.html">plugins</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../response.html">response</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../response_containers.html">response_containers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../router.html">router</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../openapi.html">starlite.openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../params.html">starlite.params</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/piccolo_orm.html">piccolo_orm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/sql_alchemy.html">sql_alchemy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/tortoise_orm.html">tortoise_orm</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../response.html">starlite.response</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">starlite.security</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../storage/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../storage/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../storage/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../storage/redis.html">redis</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../template.html">template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../testing.html">testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../types.html">types</a></li>
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../template.html">starlite.template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../testing.html">starlite.testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../types.html">starlite.types</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">starlite.utils</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="predicates.html">predicates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="scope.html">scope</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">sync</a></li>
+<li class="toctree-l3"><a class="reference internal" href="scope.html">scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exception.html">exception</a></li>
+<li class="toctree-l3"><a class="reference internal" href="extractors.html">extractors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="serialization.html">serialization</a></li>
 </ul>
 </li>
 </ul>
@@ -570,6 +567,21 @@
               
   <section id="module-starlite.utils.sync">
 <span id="sync"></span><h1>sync<a class="headerlink" href="#module-starlite.utils.sync" title="Permalink to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.utils.sync.is_async_callable">
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.sync.</span></span><span class="sig-name descname"><span class="pre">is_async_callable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.sync.is_async_callable" title="Permalink to this definition">#</a></dt>
+<dd><p>Extend <code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.iscoroutinefunction()</span></code> to additionally detect async <a class="reference external" href="https://docs.python.org/3/library/functools.html#functools.partial" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">functools.partial()</span></code></a> objects and
+class instances with <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span> <span class="pre">__call__()</span></code> defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – Any</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Bool determining if type of <code class="docutils literal notranslate"><span class="pre">value</span></code> is an awaitable.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="starlite.utils.sync.AsyncCallable">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.sync.</span></span><span class="sig-name descname"><span class="pre">AsyncCallable</span></span><a class="headerlink" href="#starlite.utils.sync.AsyncCallable" title="Permalink to this definition">#</a></dt>
@@ -605,27 +617,9 @@
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="starlite.utils.sync.AsyncIteratorWrapper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.sync.</span></span><span class="sig-name descname"><span class="pre">AsyncIteratorWrapper</span></span><a class="headerlink" href="#starlite.utils.sync.AsyncIteratorWrapper" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
-<p>Asynchronous generator, wrapping an iterable or iterator.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.utils.sync.AsyncIteratorWrapper.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.11)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.11)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.utils.sync.AsyncIteratorWrapper.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Take a sync iterator or iterable and yields values from it asynchronously.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>iterator</strong> – A sync iterator or iterable.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="starlite.utils.sync.as_async_callable_list">
-<span class="sig-prename descclassname"><span class="pre">starlite.utils.sync.</span></span><span class="sig-name descname"><span class="pre">as_async_callable_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.utils.sync.AsyncCallable" title="starlite.utils.sync.AsyncCallable"><span class="pre">starlite.utils.sync.AsyncCallable</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.sync.as_async_callable_list" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">starlite.utils.sync.</span></span><span class="sig-name descname"><span class="pre">as_async_callable_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.utils.sync.AsyncCallable" title="starlite.utils.sync.AsyncCallable"><span class="pre">AsyncCallable</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.sync.as_async_callable_list" title="Permalink to this definition">#</a></dt>
 <dd><p>Wrap callables in <code class="docutils literal notranslate"><span class="pre">AsyncCallable</span></code> s.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -652,19 +646,22 @@
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="starlite.utils.sync.is_async_callable">
-<span class="sig-prename descclassname"><span class="pre">starlite.utils.sync.</span></span><span class="sig-name descname"><span class="pre">is_async_callable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard" title="(in Python v3.11)"><span class="pre">TypeGuard</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.11)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.utils.sync.is_async_callable" title="Permalink to this definition">#</a></dt>
-<dd><p>Extend <code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.iscoroutinefunction()</span></code> to additionally detect async <a class="reference external" href="https://docs.python.org/3/library/functools.html#functools.partial" title="(in Python v3.11)"><code class="xref py py-func docutils literal notranslate"><span class="pre">functools.partial()</span></code></a> objects and
-class instances with <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span> <span class="pre">__call__()</span></code> defined.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.utils.sync.AsyncIteratorWrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.utils.sync.</span></span><span class="sig-name descname"><span class="pre">AsyncIteratorWrapper</span></span><a class="headerlink" href="#starlite.utils.sync.AsyncIteratorWrapper" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Asynchronous generator, wrapping an iterable or iterator.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.utils.sync.AsyncIteratorWrapper.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.11)"><span class="pre">Iterator</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.11)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.utils.sync.AsyncIteratorWrapper.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Take a sync iterator or iterable and yields values from it asynchronously.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> – Any</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Bool determining if type of <code class="docutils literal notranslate"><span class="pre">value</span></code> is an awaitable.</p>
+<dd class="field-odd"><p><strong>iterator</strong> – A sync iterator or iterable.</p>
 </dd>
 </dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -677,17 +674,17 @@ class instances with <code class="docutils literal notranslate"><span class="pre
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="scope.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="predicates.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">scope</p>
+          <p class="prev-next-title">predicates</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="../../migration/index.html" title="next page">
+  <a class='right-next' id="next-link" href="scope.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">Migrating to Starlite</p>
+      <p class="prev-next-title">scope</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
@@ -707,6 +704,15 @@ class instances with <code class="docutils literal notranslate"><span class="pre
 </div>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.utils.sync.is_async_callable">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     is_async_callable()
+    </span>
+   </code>
+  </a>
+ </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#starlite.utils.sync.AsyncCallable">
    <code class="docutils literal notranslate">
@@ -737,26 +743,6 @@ class instances with <code class="docutils literal notranslate"><span class="pre
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.utils.sync.AsyncIteratorWrapper">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     AsyncIteratorWrapper
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.utils.sync.AsyncIteratorWrapper.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       AsyncIteratorWrapper.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#starlite.utils.sync.as_async_callable_list">
    <code class="docutils literal notranslate">
     <span class="pre">
@@ -775,13 +761,24 @@ class instances with <code class="docutils literal notranslate"><span class="pre
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.utils.sync.is_async_callable">
+  <a class="reference internal nav-link" href="#starlite.utils.sync.AsyncIteratorWrapper">
    <code class="docutils literal notranslate">
     <span class="pre">
-     is_async_callable()
+     AsyncIteratorWrapper
     </span>
    </code>
   </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.utils.sync.AsyncIteratorWrapper.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AsyncIteratorWrapper.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
