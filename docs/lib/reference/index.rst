@@ -21,6 +21,7 @@ API reference
     events
     exceptions/index
     handlers/index
+    logging/index
     middleware/index
     openapi
     pagination
@@ -35,4 +36,3 @@ API reference
     template
     testing
     types
-    utils/index
