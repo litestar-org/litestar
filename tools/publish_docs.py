@@ -58,6 +58,7 @@ def make_version(version: str | None, push: bool) -> None:
 
         version_spec = add_to_versions_file(version)
         rebuild_page = version_spec["docs_latest"] == version
+        is_latest = version == version_spec["latest"]
 
         docs_src_path = Path("docs/_build/html")
 
@@ -70,6 +71,9 @@ def make_version(version: str | None, push: bool) -> None:
                     shutil.copytree(path, path.name, dirs_exist_ok=True)
                 else:
                     shutil.copy2(path, ".")
+
+        if is_latest:
+            shutil.copytree(docs_src_path / "lib", "lib", dirs_exist_ok=True)
 
         shutil.rmtree("docs/_build")
 
