@@ -19,6 +19,7 @@ import uvicorn
 from auto_pytabs.sphinx_ext import CodeBlockOverride, LiteralIncludeOverride
 from docutils.nodes import Node, admonition, literal_block, title
 from sphinx.addnodes import highlightlang
+from sphinx.errors import NoUri
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -166,6 +167,25 @@ class LiteralInclude(LiteralIncludeOverride):
         return nodes
 
 
+def on_missing_reference(app: Sphinx, env: BuildEnvironment, node: Node, contnode: Node) -> None:
+    ignore_refs = app.config["ignore_missing_refs"]
+    if node.tagname == "pending_xref":  # type: ignore[attr-defined]
+        if not hasattr(node, "attributes"):
+            return
+        attributes = node.attributes  # type: ignore[attr-defined]
+        target = attributes["reftarget"]
+
+        if not (full_ref := attributes.get("py:module")):
+            return
+        for attr in ["py:class", "py:func", "py:meth"]:
+            if ref := attributes.get(attr):
+                full_ref += f".{ref}"
+                break
+        if target in ignore_refs.get(full_ref, []):
+            raise NoUri
+    return
+
+
 def on_env_before_read_docs(app: Sphinx, env: BuildEnvironment, docnames: set[str]) -> None:
     tmp_examples_path = Path.cwd() / "docs/_build/_tmp_examples"
     tmp_examples_path.mkdir(exist_ok=True, parents=True)
@@ -176,5 +196,7 @@ def setup(app: Sphinx) -> dict[str, bool]:
     app.add_directive("literalinclude", LiteralInclude, override=True)
     app.add_directive("code-block", CodeBlockOverride, override=True)
     app.connect("env-before-read-docs", on_env_before_read_docs)
+    app.connect("missing-reference", on_missing_reference)
+    app.add_config_value("ignore_missing_refs", default={}, rebuild=False)
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}

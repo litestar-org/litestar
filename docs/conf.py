@@ -44,7 +44,9 @@ autodoc_class_signature = "separated"
 autodoc_default_options = {"special-members": "__init__", "show-inheritance": True, "members": True}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
-autodoc_type_aliases = {"starlite.types.AnyIOBackend": "AnyIOBackend"}
+autodoc_type_aliases = {
+    "starlite.types.AnyIOBackend": "AnyIOBackend",
+}
 
 nitpicky = True
 nitpick_ignore = [
@@ -54,13 +56,18 @@ nitpick_ignore = [
     ("py:class", "WebSocketSendMessage"),
     ("py:class", "WebSocketScope"),
     ("py:class", "ExitStack"),
+    ("py:class", "AsyncExitStack"),
     ("py:class", "CookieTypes"),
-    ("py:class", "T"),
     ("py:class", "AnyIOBackend"),
+    ("py:class", "T"),
+    ("py:class", "httpx.Client"),
+    ("py:class", "httpx.AsyncClient"),
+    ("py:class", "BaseModel"),
+    ("py:class", "RouteHandlerType"),
 ]
-nitpick_ignore_regex = [
-    (r"py:.*", r"starlite\.types.*"),
-]
+nitpick_ignore_regex = [(r"py:.*", r"starlite\.types.*"), (r"py:.*", r"starlite.*\.T")]
+
+ignore_missing_refs = {"starlite.testing.BaseTestClient": {"BlockingPortal"}}
 
 auto_pytabs_min_version = (3, 8)
 auto_pytabs_max_version = (3, 11)
