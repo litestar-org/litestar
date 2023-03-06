@@ -36,3 +36,4 @@ API reference
     template
     testing
     types
+    static_files
