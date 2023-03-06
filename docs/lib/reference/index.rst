@@ -19,7 +19,7 @@ API reference
     dto
     enums
     events
-    exceptions/index
+    exceptions
     handlers/index
     logging/index
     middleware/index
