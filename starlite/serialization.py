@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections import deque
-from collections.abc import Iterable as CollectionsIterable
 from decimal import Decimal
 from ipaddress import (
     IPv4Address,
@@ -30,7 +29,7 @@ from pydantic.json import decimal_encoder
 
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
-from starlite.new_dto import AbstractDTO
+from starlite.new_dto.serializer import serialize_dto_for_media_type
 from starlite.types import Empty
 
 __all__ = ("dec_hook", "decode_json", "decode_msgpack", "default_serializer", "encode_json", "encode_msgpack")
@@ -258,18 +257,11 @@ def encode_for_media_type(
     Returns:
         ``media_type`` as bytes.
     """
-    if isinstance(obj, AbstractDTO):
-        return obj.to_bytes(media_type=media_type)
 
-    if isinstance(obj, CollectionsIterable):
-        try:
-            first_item = next(iter(obj))
-        except StopIteration:
-            pass
-        else:
-            if isinstance(first_item, AbstractDTO):
-                return first_item.encode_iterable(obj, media_type=media_type)
+    if (data := serialize_dto_for_media_type(media_type, obj)) is not None:
+        return data
 
     if media_type == MediaType.MESSAGEPACK:
         return encode_msgpack(obj, enc_hook)
+
     return encode_json(obj, enc_hook)
