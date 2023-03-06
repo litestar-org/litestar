@@ -14,7 +14,7 @@ API reference
     contrib/index
     controller
     data_extractors
-    datastructures/index
+    datastructures
     di
     dto
     enums
