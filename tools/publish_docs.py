@@ -68,6 +68,8 @@ def make_version(version: str | None, push: bool) -> None:
             for path in docs_src_path.iterdir():
                 git_add.append(path.name)
                 if path.is_dir():
+                    if path == docs_src_path / "lib" and not is_latest:
+                        continue
                     shutil.copytree(path, path.name, dirs_exist_ok=True)
                 else:
                     shutil.copy2(path, ".")
