@@ -472,7 +472,7 @@ class Starlite(Router):
         """Initialize a ``Starlite`` application from a configuration instance.
 
         Args:
-            config: An instance of :class:`AppConfig` <startlite.config.AppConfig>
+            config: An instance of :class:`AppConfig` <starlite.config.AppConfig>
 
         Returns:
             An instance of ``Starlite`` application.
