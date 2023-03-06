@@ -1,6 +1,6 @@
 from typing import Type
 
-__all__ = ("Empty",)
+__all__ = ("Empty", "EmptyType")
 
 
 class Empty:

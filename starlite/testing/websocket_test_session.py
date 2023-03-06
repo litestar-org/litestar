@@ -21,6 +21,9 @@ if TYPE_CHECKING:
     )
 
 
+__all__ = ("WebSocketTestSession",)
+
+
 class WebSocketTestSession:
     exit_stack: ExitStack
 

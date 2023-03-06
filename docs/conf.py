@@ -28,7 +28,7 @@ intersphinx_mapping = {
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),
-    "click": ("https://click.palletsprojects.com/en/8.1.x/", None)
+    "click": ("https://click.palletsprojects.com/en/8.1.x/", None),
 }
 
 
@@ -44,6 +44,25 @@ autodoc_class_signature = "separated"
 autodoc_default_options = {"special-members": "__init__", "show-inheritance": True, "members": True}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
+autodoc_type_aliases = {
+    "starlite.types.AnyIOBackend": "AnyIOBackend"
+}
+
+nitpicky = True
+nitpick_ignore = [
+    ("py:class", "PathType"),
+    ("py:class", "OpenBinaryMode"),
+    ("py:class", "OpenTextMode"),
+    ("py:class", "WebSocketSendMessage"),
+    ("py:class", "WebSocketScope"),
+    ("py:class", "ExitStack"),
+    ("py:class", "CookieTypes"),
+    ("py:class", "T"),
+    ("py:class", "AnyIOBackend"),
+]
+nitpick_ignore_regex = [
+    (r"py:.*", r"starlite\.types.*"),
+]
 
 auto_pytabs_min_version = (3, 8)
 auto_pytabs_max_version = (3, 11)
