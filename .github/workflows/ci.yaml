@@ -59,7 +59,7 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction --with docs
       - name: Build docs
-        run: make docs
+        run: poetry run make docs
 
   test-platform-compat:
     if: github.event_name == 'push'
