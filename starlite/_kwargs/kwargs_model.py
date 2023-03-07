@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable
 
 from anyio import create_task_group
-from typing_extensions import get_args
 
 from starlite._kwargs.cleanup import DependencyCleanupGroup
 from starlite._kwargs.dependencies import (
@@ -43,7 +42,6 @@ __all__ = ("KwargsModel",)
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
     from starlite.di import Provide
-    from starlite.new_dto import AbstractDTO
 
 
 class KwargsModel:
@@ -56,7 +54,6 @@ class KwargsModel:
         "dependency_batches",
         "expected_cookie_params",
         "expected_dto_data",
-        "expected_dto_supported_data",
         "expected_form_data",
         "expected_msgpack_data",
         "expected_header_params",
@@ -74,7 +71,6 @@ class KwargsModel:
         *,
         expected_cookie_params: set[ParameterDefinition],
         expected_dto_data: SignatureField | None,
-        expected_dto_supported_data: tuple[SignatureField, type[AbstractDTO]] | None,
         expected_dependencies: set[Dependency],
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
         expected_msgpack_data: SignatureField | None,
@@ -91,7 +87,6 @@ class KwargsModel:
             expected_cookie_params: Any expected cookie parameter kwargs
             expected_dependencies: Any expected dependency kwargs
             expected_dto_data: Any expected DTO data kwargs
-            expected_dto_supported_data: Any expected DTO supported data kwargs
             expected_form_data: Any expected form data kwargs
             expected_msgpack_data: Any expected MessagePack data kwargs
             expected_header_params: Any expected header parameter kwargs
@@ -103,7 +98,6 @@ class KwargsModel:
         """
         self.expected_cookie_params = expected_cookie_params
         self.expected_dto_data = expected_dto_data
-        self.expected_dto_supported_data = expected_dto_supported_data
         self.expected_form_data = expected_form_data
         self.expected_msgpack_data = expected_msgpack_data
         self.expected_header_params = expected_header_params
@@ -122,7 +116,6 @@ class KwargsModel:
             or expected_query_params
             or expected_reserved_kwargs
             or expected_dto_data
-            or expected_dto_supported_data
         )
 
         self.is_data_optional = is_data_optional
@@ -265,7 +258,6 @@ class KwargsModel:
         dependencies: dict[str, Provide],
         path_parameters: set[str],
         layered_parameters: dict[str, SignatureField],
-        data_dto: type[AbstractDTO] | None = None,
     ) -> KwargsModel:
         """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
         during the application bootstrap process.
@@ -275,7 +267,6 @@ class KwargsModel:
             dependencies: A string keyed dictionary mapping dependency providers.
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
-            data_dto: An AbstractDTO subclass for deserializing and validating requests data.
 
         Returns:
             An instance of KwargsModel
@@ -307,7 +298,6 @@ class KwargsModel:
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None = None
         expected_msgpack_data: SignatureField | None = None
         expected_dto_data: SignatureField | None = None
-        expected_dto_supported_data: tuple[SignatureField, type[AbstractDTO]] | None = None
 
         data_signature_field = signature_fields.get("data")
 
@@ -327,16 +317,6 @@ class KwargsModel:
 
         elif data_signature_field and data_signature_field.has_dto_annotation:
             expected_dto_data = data_signature_field
-
-        elif (
-            data_signature_field
-            and data_dto
-            and any(
-                data_dto.supports(type_)
-                for type_ in get_args(data_signature_field.field_type) or (data_signature_field.field_type,)
-            )
-        ):
-            expected_dto_supported_data = data_signature_field, data_dto
 
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
@@ -371,7 +351,6 @@ class KwargsModel:
             expected_cookie_params=expected_cookie_parameters,
             expected_dependencies=expected_dependencies,
             expected_dto_data=expected_dto_data,
-            expected_dto_supported_data=expected_dto_supported_data,
             expected_form_data=expected_form_data,
             expected_header_params=expected_header_parameters,
             expected_msgpack_data=expected_msgpack_data,

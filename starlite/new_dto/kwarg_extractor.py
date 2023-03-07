@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from typing_extensions import get_args
-
 if TYPE_CHECKING:
     from typing import Any, Callable, Coroutine
 
@@ -26,43 +24,13 @@ def create_dto_extractor(
     Returns:
         An extractor function.
     """
-    if signature_field.is_non_string_iterable:
-        # what about fixed sized, heterogeneous tuples?
-        dto_type = cast("type[AbstractDTO[Any]]", get_args(signature_field.field_type)[0])
+    dto_type = cast("type[AbstractDTO[Any]]", signature_field.parsed_parameter.annotation)
+    is_dto_supported = signature_field.parsed_parameter.dto_supported
 
-        async def collection_dto_extractor(connection: Request[Any, Any, Any]) -> list[AbstractDTO[Any]]:
-            return dto_type.list_from_bytes(await connection.body())
+    async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
+        dto = dto_type.from_bytes(await connection.body())
+        if is_dto_supported:
+            return dto.data
+        return dto
 
-        return collection_dto_extractor  # type:ignore[return-value]
-
-    dto_type = cast("type[AbstractDTO[Any]]", signature_field.field_type)
-
-    async def scalar_dto_extractor(connection: Request[Any, Any, Any]) -> AbstractDTO[Any]:
-        return dto_type.from_bytes(await connection.body())
-
-    return scalar_dto_extractor  # type:ignore[return-value]
-
-
-def create_dto_supported_extractor(
-    signature_field: SignatureField, dto_type: type[AbstractDTO]
-) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
-    """Create a DTO supported data extractor.
-
-    Args:
-        signature_field: A SignatureField instance.
-        dto_type: the DTO type supporting the data type.
-
-    Returns:
-        An extractor function.
-    """
-    if signature_field.is_non_string_iterable:
-
-        async def collection_dto_extractor(connection: Request[Any, Any, Any]) -> list[Any]:
-            return [dto.to_model() for dto in dto_type.list_from_bytes(await connection.body())]
-
-        return collection_dto_extractor  # type:ignore[return-value]
-
-    async def scalar_dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        return dto_type.from_bytes(await connection.body()).to_model()
-
-    return scalar_dto_extractor  # type:ignore[return-value]
+    return dto_extractor  # type:ignore[return-value]

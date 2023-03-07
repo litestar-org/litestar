@@ -29,7 +29,7 @@ from pydantic.json import decimal_encoder
 
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
-from starlite.new_dto.serializer import serialize_dto_for_media_type
+from starlite.new_dto import AbstractDTO
 from starlite.types import Empty
 
 __all__ = ("dec_hook", "decode_json", "decode_msgpack", "default_serializer", "encode_json", "encode_msgpack")
@@ -61,7 +61,13 @@ def _enc_pattern(pattern: Pattern) -> Any:
     return pattern.pattern
 
 
+def _enc_dto(dto: AbstractDTO) -> Any:
+    return dto.to_encodable_type()
+
+
 DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
+    # dto
+    AbstractDTO: _enc_dto,
     Path: str,
     PurePath: str,
     # pydantic specific types
@@ -257,10 +263,6 @@ def encode_for_media_type(
     Returns:
         ``media_type`` as bytes.
     """
-
-    if (data := serialize_dto_for_media_type(media_type, obj)) is not None:
-        return data
-
     if media_type == MediaType.MESSAGEPACK:
         return encode_msgpack(obj, enc_hook)
 

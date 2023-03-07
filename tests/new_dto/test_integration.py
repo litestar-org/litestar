@@ -1,4 +1,4 @@
-from __future__ import annotations
+from typing import List
 
 from starlite import post
 from starlite.status_codes import HTTP_201_CREATED
@@ -9,9 +9,9 @@ from . import ConcreteDTO, Model
 
 def test_dto_data() -> None:
     @post(path="/")
-    def post_handler(data: ConcreteDTO) -> ConcreteDTO:
+    def post_handler(data: ConcreteDTO[Model]) -> ConcreteDTO[Model]:
         assert isinstance(data, ConcreteDTO)
-        assert data.to_model() == Model(a=1, b="two")
+        assert data.data == Model(a=1, b="two")
         return data
 
     with create_test_client(route_handlers=[post_handler]) as client:
@@ -22,10 +22,11 @@ def test_dto_data() -> None:
 
 def test_dto_iterable_data() -> None:
     @post(path="/")
-    def post_handler(data: list[ConcreteDTO]) -> list[ConcreteDTO]:
-        assert isinstance(data, list)
-        for item in data:
-            assert isinstance(item, ConcreteDTO)
+    def post_handler(data: ConcreteDTO[List[Model]]) -> ConcreteDTO[List[Model]]:
+        assert isinstance(data, ConcreteDTO)
+        assert isinstance(data.data, list)
+        for item in data.data:
+            assert isinstance(item, Model)
         return data
 
     with create_test_client(route_handlers=[post_handler]) as client:
@@ -35,9 +36,8 @@ def test_dto_iterable_data() -> None:
 
 
 def test_dto_supported_data() -> None:
-    @post(path="/", data_dto=ConcreteDTO, return_dto=ConcreteDTO)
+    @post(path="/", data_dto=ConcreteDTO[Model], return_dto=ConcreteDTO[Model])
     def post_handler(data: Model) -> Model:
-        assert isinstance(data, Model)
         return data
 
     with create_test_client(route_handlers=[post_handler]) as client:
@@ -47,8 +47,8 @@ def test_dto_supported_data() -> None:
 
 
 def test_dto_supported_iterable_data() -> None:
-    @post(path="/", data_dto=ConcreteDTO, return_dto=ConcreteDTO)
-    def post_handler(data: list[Model]) -> list[Model]:
+    @post(path="/", data_dto=ConcreteDTO[List[Model]], return_dto=ConcreteDTO[List[Model]])
+    def post_handler(data: List[Model]) -> List[Model]:
         assert isinstance(data, list)
         for item in data:
             assert isinstance(item, Model)

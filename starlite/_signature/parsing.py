@@ -14,6 +14,7 @@ from starlite._signature.utils import get_fn_type_hints
 from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
 from starlite.datastructures import ImmutableState
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.new_dto import AbstractDTO
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.plugins import (
     PluginMapping,
@@ -21,7 +22,7 @@ from starlite.plugins import (
     get_plugin_for_value,
 )
 from starlite.types import Empty
-from starlite.utils import is_optional_union
+from starlite.utils import is_class_and_subclass, is_optional_union
 from starlite.utils.helpers import unwrap_partial
 
 __all__ = (
@@ -45,6 +46,7 @@ class ParsedSignatureParameter:
     default: Any
     name: str
     optional: bool
+    dto_supported: bool
 
     @classmethod
     def from_parameter(
@@ -76,6 +78,7 @@ class ParsedSignatureParameter:
             default=parameter.default,
             name=parameter_name,
             optional=is_optional_union(parameter.annotation),
+            dto_supported=False,
         )
 
     @property
@@ -97,8 +100,13 @@ class ParsedSignatureParameter:
         Returns:
             A boolean indicating whether the parameter should be validated.
         """
-        return self.name in SKIP_VALIDATION_NAMES or (
-            isinstance(self.default, DependencyKwarg) and self.default.skip_validation
+        # MyPY error:
+        #   Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
+        #   https://github.com/python/mypy/issues/4717
+        return (
+            self.name in SKIP_VALIDATION_NAMES
+            or is_class_and_subclass(self.annotation, AbstractDTO)  # type:ignore[type-abstract]
+            or (isinstance(self.default, DependencyKwarg) and self.default.skip_validation)
         )
 
 
@@ -128,6 +136,8 @@ def parse_fn_signature(
     fn: AnyCallable,
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
+    data_dto: type[AbstractDTO] | None,
+    return_dto: type[AbstractDTO] | None,
     namespace: dict[str, Any] | None = None,
 ) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
@@ -136,6 +146,8 @@ def parse_fn_signature(
         fn: A callable.
         plugins: A list of plugins.
         dependency_name_set: A set of dependency names
+        data_dto: DTO type for "data" kwarg
+        return_dto: DTO type for return value
         namespace: Extra names for resolution of forward references.
 
     Returns:
@@ -165,6 +177,20 @@ def parse_fn_signature(
                 "`starlite.datastructures.State`."
             )
 
+        if parameter.name == "data" and data_dto:
+            parameter.annotation = data_dto
+            parameter.dto_supported = True
+
+        # MyPY error:
+        #   Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
+        #   https://github.com/python/mypy/issues/4717
+        if (
+            is_class_and_subclass(parameter.annotation, AbstractDTO)  # type:ignore[type-abstract]
+            and not parameter.annotation.__on_startup_called
+        ):
+            parameter.annotation.on_startup()
+            parameter.annotation.__on_startup_called = True
+
         if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
             if not parameter.optional and (
                 isinstance(parameter.default, DependencyKwarg) and parameter.default.default is Empty
@@ -183,13 +209,20 @@ def parse_fn_signature(
 
         parsed_params.append(parameter)
 
-    return parsed_params, fn_type_hints.get("return", signature.empty), field_plugin_mappings, dependency_names
+    return (
+        parsed_params,
+        return_dto or fn_type_hints.get("return", signature.empty),
+        field_plugin_mappings,
+        dependency_names,
+    )
 
 
 def create_signature_model(
     fn: AnyCallable,
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
+    data_dto: type[AbstractDTO] | None = None,
+    return_dto: type[AbstractDTO] | None = None,
     namespace: dict[str, Any] | None = None,
 ) -> type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
@@ -199,6 +232,8 @@ def create_signature_model(
         fn: A callable.
         plugins: A list of plugins.
         dependency_name_set: A set of dependency names
+        data_dto: DTO type for "data" kwarg
+        return_dto: DTO type for return value
         namespace: Extra names for resolution of forward references.
 
     Returns:
@@ -213,6 +248,8 @@ def create_signature_model(
         fn=unwrapped_fn,
         plugins=plugins,
         dependency_name_set=dependency_name_set,
+        data_dto=data_dto,
+        return_dto=return_dto,
         namespace=namespace or {},
     )
 
@@ -253,26 +290,32 @@ def create_pydantic_signature_model(
     field_definitions: dict[str, tuple[Any, Any]] = {}
 
     for parameter in parsed_params:
-        if parameter.should_skip_validation:
-            if isinstance(parameter.default, DependencyKwarg):
-                field_definitions[parameter.name] = (
-                    Any,
-                    parameter.default.default if parameter.default.default is not Empty else None,
-                )
-            else:
-                field_definitions[parameter.name] = (Any, ...)
-        elif isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
-            field_info = FieldInfo(**asdict(parameter.default), kwargs_model=parameter.default)
-            field_info.default = parameter.default.default if parameter.default.default is not Empty else Undefined
-            field_definitions[parameter.name] = (parameter.annotation, field_info)
-        elif ModelFactory.is_constrained_field(parameter.default):
-            field_definitions[parameter.name] = (parameter.default, ...)
-        elif parameter.default_defined:
-            field_definitions[parameter.name] = (parameter.annotation, parameter.default)
-        elif not parameter.optional:
-            field_definitions[parameter.name] = (parameter.annotation, ...)
+        if isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
+            field_info = FieldInfo(
+                **asdict(parameter.default), kwargs_model=parameter.default, parsed_parameter=parameter
+            )
         else:
-            field_definitions[parameter.name] = (parameter.annotation, None)
+            field_info = FieldInfo(default=..., parsed_parameter=parameter)
+
+        if parameter.should_skip_validation:
+            field_type = Any
+            if isinstance(parameter.default, DependencyKwarg):
+                field_info.default = parameter.default.default if parameter.default.default is not Empty else None
+        elif isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
+            field_type = parameter.annotation
+            field_info.default = parameter.default.default if parameter.default.default is not Empty else Undefined
+        elif ModelFactory.is_constrained_field(parameter.default):
+            field_type = parameter.default
+        elif parameter.default_defined:
+            field_type = parameter.annotation
+            field_info.default = parameter.default
+        elif not parameter.optional:
+            field_type = parameter.annotation
+        else:
+            field_type = parameter.annotation
+            field_info.default = None
+
+        field_definitions[parameter.name] = (field_type, field_info)
 
     model: type[PydanticSignatureModel] = create_model(  # type: ignore
         f"{fn_name}_signature_model",

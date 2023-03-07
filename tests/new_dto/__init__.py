@@ -1,56 +1,57 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, TypeVar
+
+from typing_extensions import get_args
 
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
 from starlite.new_dto import AbstractDTO
-from starlite.utils.predicates import is_class_and_subclass
+from starlite.serialization import decode_json, decode_msgpack
 
 if TYPE_CHECKING:
-    from typing import Any, Iterable
+    from typing import Any
 
     from typing_extensions import Self
 
+    from starlite.types.protocols import DataclassProtocol
 
-@dataclass
+
+@dataclass(unsafe_hash=True)
 class Model:
     a: int
     b: str
 
 
-class ConcreteDTO(AbstractDTO[Model]):
-    def to_bytes(self, media_type: MediaType | str = MediaType.JSON) -> bytes:
+def create_model_instance() -> Model:
+    return Model(a=1, b="two")
+
+
+SupportedT = TypeVar("SupportedT", bound="DataclassProtocol | Iterable[DataclassProtocol]")
+
+var: Iterable[DataclassProtocol] = [Model(a=1, b="two")]
+
+
+class ConcreteDTO(AbstractDTO[SupportedT], Generic[SupportedT]):
+    def to_encodable_type(self) -> Any:
+        return self.data
+
+    @classmethod
+    def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
         if media_type == MediaType.JSON:
-            return b'{"a":1,"b":"two"}'
-        if media_type == MediaType.MESSAGEPACK:
-            return b"\x82\xa1a\x01\xa1b\xa3two"
-        raise SerializationException(f"Media type '{media_type}' not supported by DTO.")
-
-    def to_model(self) -> Model:
-        return Model(a=1, b="two")
-
-    @classmethod
-    def encode_iterable(cls, value: Iterable[Self], media_type: MediaType | str = MediaType.JSON) -> bytes:
-        if media_type == MediaType.JSON:
-            return b'[{"a":1,"b":"two"},{"a":3,"b":"four"}]'
-        if media_type == MediaType.MESSAGEPACK:
-            return b"\x92\x82\xa1a\x01\xa1b\xa3two\x82\xa1a\x03\xa1b\xa4four"
-        raise SerializationException(f"Media type '{media_type}' not supported by DTO.")
+            data = decode_json(raw, cls.annotation)
+        elif media_type == MediaType.MESSAGEPACK:
+            data = decode_msgpack(raw, cls.annotation)
+        else:
+            raise SerializationException(f"Unsupported media type: '{media_type}'")
+        return cls(data)
 
     @classmethod
-    def from_bytes(cls, raw: bytes) -> Self:
-        return cls()
-
-    @classmethod
-    def list_from_bytes(cls, raw: bytes) -> list[Self]:
-        return [cls(), cls()]
-
-    @classmethod
-    def from_model(cls, model: Model) -> Self:
-        return cls()
-
-    @classmethod
-    def supports(cls, value: Any) -> bool:
-        return is_class_and_subclass(value, Model) or isinstance(value, Model)
+    def supports_type(cls, value: type) -> bool:
+        if issubclass(value, Iterable):
+            if not (args := get_args(value)):
+                return False
+            value = args[0]
+        return issubclass(value, Model)

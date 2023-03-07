@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseConfig, BaseModel, ValidationError
 from pydantic.fields import ModelField
@@ -25,6 +25,11 @@ from starlite.utils.predicates import (
     is_non_string_sequence,
 )
 
+if TYPE_CHECKING:
+    from typing import ClassVar
+
+    from .parsing import ParsedSignatureParameter
+
 __all__ = ("PydanticSignatureModel", "SignatureField", "SignatureModel")
 
 
@@ -37,6 +42,7 @@ class SignatureField:
     __slots__ = (
         "children",
         "default_value",
+        "dto_supported",
         "extra",
         "field_type",
         "kwarg_model",
@@ -146,15 +152,17 @@ class SignatureField:
         return not (self.is_optional or self.is_any) and (self.is_empty or self.default_value is None)
 
     @property
+    def parsed_parameter(self) -> ParsedSignatureParameter:
+        """The associated _signature.parsing.ParsedSignatureParameter type."""
+        return self.extra["parsed_parameter"]  # type:ignore[no-any-return]
+
+    @property
     def has_dto_annotation(self) -> bool:
         """Field is annotated with a DTO type."""
         # MyPY error:
         #   Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
         #   https://github.com/python/mypy/issues/4717
-        return any(
-            is_class_and_subclass(t, AbstractDTO)  # type:ignore[type-abstract]
-            for t in (get_args(self.field_type) or (self.field_type,))
-        )
+        return is_class_and_subclass(self.parsed_parameter.annotation, AbstractDTO)  # type:ignore[type-abstract]
 
     @classmethod
     def create(

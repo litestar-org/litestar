@@ -726,6 +726,8 @@ class Starlite(Router):
                 fn=cast("AnyCallable", route_handler.fn.value),
                 plugins=self.serialization_plugins,
                 dependency_name_set=route_handler.dependency_name_set,
+                data_dto=route_handler.resolve_data_dto() if isinstance(route_handler, HTTPRouteHandler) else None,
+                return_dto=route_handler.resolve_return_dto() if isinstance(route_handler, HTTPRouteHandler) else None,
             )
 
         for provider in route_handler.resolve_dependencies().values():

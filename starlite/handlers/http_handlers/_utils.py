@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable as CollectionsIterable
 from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
@@ -85,16 +84,13 @@ def create_data_handler(
         return response
 
     async def handler(
-        data: Any, plugins: list["SerializationPluginProtocol"], return_dto: AbstractDTO | None, **kwargs: Any
+        data: Any, plugins: list["SerializationPluginProtocol"], return_dto: type[AbstractDTO] | None, **kwargs: Any
     ) -> "ASGIApp":
         if isawaitable(data):
             data = await data
 
         if return_dto:
-            if isinstance(data, CollectionsIterable):
-                data = [return_dto.from_model(item) for item in data]
-            else:
-                data = return_dto.from_model(data).to_bytes(media_type=media_type)
+            data = return_dto(data=data)
 
         elif is_dto_annotation and not isinstance(data, DTO):
             data = return_annotation(**data) if isinstance(data, dict) else return_annotation.from_model_instance(data)

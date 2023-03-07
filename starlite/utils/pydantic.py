@@ -38,7 +38,7 @@ def convert_dataclass_to_model(dataclass_or_instance: DataclassClassOrInstance) 
 
     existing = _type_model_map.get(dataclass)
     if not existing:
-        _type_model_map[dataclass] = existing = create_model_from_dataclass(dataclass)
+        _type_model_map[dataclass] = existing = create_model_from_dataclass(dataclass)  # type:ignore[arg-type]
     return existing
 
 
