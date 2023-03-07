@@ -1,13 +1,22 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
 
+import tempfile
 from datetime import datetime
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, AsyncGenerator
 from unittest.mock import AsyncMock, MagicMock, call
+from uuid import UUID
 
 import pytest
+from sqlalchemy import NullPool, insert
 from sqlalchemy.exc import IntegrityError, InvalidRequestError, SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from starlite.contrib.repository.exceptions import ConflictError, RepositoryError
 from starlite.contrib.repository.filters import (
@@ -20,6 +29,7 @@ from starlite.contrib.sqlalchemy.repository import (
     SQLAlchemyRepository,
     wrap_sqlalchemy_exception,
 )
+from tests.contrib.sqlalchemy.models import Author, AuthorRepository, BookRepository
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
@@ -397,3 +407,151 @@ def test_filter_collection_by_kwargs_raises_repository_exception_for_attribute_e
     )
     with pytest.raises(RepositoryError):
         _ = mock_repo.filter_collection_by_kwargs(mock_repo.select, a=1)
+
+
+@pytest.fixture(name="engine")
+async def get_sqlite_engine() -> AsyncGenerator[AsyncEngine, None]:
+    """Postgresql instance for end-to-end testing.
+
+    Args:
+        docker_ip: IP address for TCP connection to Docker containers.
+
+    Returns:
+        Async SQLAlchemy engine instance.
+    """
+    db_path = tempfile.mkdtemp()
+    engine = create_async_engine(
+        f"sqlite+aiosqlite:///{db_path}/test.db",
+        echo=True,
+        poolclass=NullPool,
+    )
+    try:
+        yield engine
+    finally:
+        await engine.dispose()
+        Path(f"{db_path}/test.db").unlink()
+        Path(db_path).rmdir()
+
+
+@pytest.fixture(name="raw_authors")
+def get_raw_authors() -> list[dict[str, Any]]:
+    """Unstructured author representations."""
+    return [
+        {
+            "id": UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"),
+            "name": "Agatha Christie",
+            "dob": "1890-09-15",
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+        {
+            "id": UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"),
+            "name": "Leo Tolstoy",
+            "dob": "1828-09-09",
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+    ]
+
+
+@pytest.fixture(name="raw_books")
+def get_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Unstructured book representations."""
+    return [
+        {
+            "id": UUID("f34545b9-663c-4fce-915d-dd1ae9cea42a"),
+            "title": "Murder on the Orient Express",
+            "author_id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
+            "author": raw_authors[0],
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+    ]
+
+
+async def _seed_db(engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_books: list[dict[str, Any]]) -> None:
+    """Populate test database with sample data.
+
+    Args:
+        engine: The SQLAlchemy engine instance.
+    """
+    # convert date/time strings to dt objects.
+    for raw_author in raw_authors:
+        raw_author["dob"] = datetime.strptime(raw_author["dob"], "%Y-%m-%d")
+        raw_author["created"] = datetime.strptime(raw_author["created"], "%Y-%m-%dT%H:%M:%S")
+        raw_author["updated"] = datetime.strptime(raw_author["updated"], "%Y-%m-%dT%H:%M:%S")
+
+    async with engine.begin() as conn:
+        await conn.run_sync(base.orm_registry.metadata.drop_all)
+        await conn.run_sync(base.orm_registry.metadata.create_all)
+        await conn.execute(insert(Author).values(raw_authors))
+
+
+@pytest.fixture(
+    name="session",
+)
+async def get_sqlite_session(
+    engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_books: list[dict[str, Any]]
+) -> AsyncGenerator[AsyncSession, None]:
+    session = async_sessionmaker(bind=engine)()
+    await _seed_db(engine, raw_authors, raw_books)
+    try:
+        yield session
+    finally:
+        await session.rollback()
+        await session.close()
+
+
+@pytest.fixture(name="author_repo")
+def get_author_repo(session: AsyncSession) -> AuthorRepository:
+    return AuthorRepository(session=session)
+
+
+@pytest.fixture(name="book_repo")
+def get_book_repo(session: AsyncSession) -> BookRepository:
+    return BookRepository(session=session)
+
+
+def test_sqlite_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepository) -> None:
+    with pytest.raises(RepositoryError):
+        author_repo.filter_collection_by_kwargs(author_repo.select, whoops="silly me")
+
+
+async def test_sqlite_repo_count_method(author_repo: AuthorRepository) -> None:
+    assert await author_repo.count() == 2
+
+
+async def test_sqlite_repo_list_and_count_method(
+    raw_authors: list[dict[str, Any]], author_repo: AuthorRepository
+) -> None:
+    exp_count = len(raw_authors)
+    collection, count = await author_repo.list_and_count()
+    assert exp_count == count
+    assert isinstance(collection, list)
+    assert len(collection) == exp_count
+
+
+async def test_sqlite_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
+    exp_count = len(raw_authors) + 1
+    new_author = Author(name="Testing", dob=datetime.now())
+    obj = await author_repo.add(new_author)
+    count = await author_repo.count()
+    assert exp_count == count
+    assert isinstance(obj, Author)
+    assert new_author.name == obj.name
+    assert obj.id is not None
+
+
+async def test_sqlite_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
+    exp_count = len(raw_authors) + 2
+    [Author(name="Testing 2", dob=datetime.now()), Author(name="Cody", dob=datetime.now())]
+    objs = await author_repo.add_many(
+        [Author(name="Testing 2", dob=datetime.now()), Author(name="Cody", dob=datetime.now())]
+    )
+    count = await author_repo.count()
+    assert exp_count == count
+    assert isinstance(objs, list)
+    assert len(objs) == 2
+    for obj in objs:
+        assert obj.id is not None
+        assert obj.name in {"Testing 2", "Cody"}

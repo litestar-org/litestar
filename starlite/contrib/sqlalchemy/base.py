@@ -99,7 +99,7 @@ class CommonTableAttributes:
 
 
 meta = MetaData(naming_convention=convention)
-registry_ = registry(
+orm_registry = registry(
     metadata=meta,
     type_annotation_map={UUID: Uuid, EmailStr: String, AnyUrl: String, AnyHttpUrl: String, dict: JSON},
 )
@@ -108,10 +108,10 @@ registry_ = registry(
 class Base(CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase):
     """Base for all SQLAlchemy declarative models."""
 
-    registry = registry_
+    registry = orm_registry
 
 
 class AuditBase(CommonTableAttributes, UUIDPrimaryKey, AuditColumns, DeclarativeBase):
     """Base for declarative models with audit columns."""
 
-    registry = registry_
+    registry = orm_registry

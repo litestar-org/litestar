@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Generic, Literal, Tuple, TypeVar, cast
+from uuid import uuid4
 
 from sqlalchemy import func as sql_func
 from sqlalchemy import insert, over
@@ -62,6 +63,10 @@ def wrap_sqlalchemy_exception() -> Any:
         raise RepositoryError(f"An exception occurred: {exc}") from exc
 
 
+DIALECTS_WITHOUT_BULK_INSERT_SUPPORT = {"sqlite"}
+DIALECTS_WITHOUT_BULK_UPDATE_SUPPORT = {"sqlite"}
+
+
 class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
     """SQLAlchemy based implementation of the repository interface."""
 
@@ -77,6 +82,9 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         super().__init__(**kwargs)
         self.session = session
         self.select = base_select or sql_select(self.model_type)
+        self.dialect = session.bind.dialect.name
+        self._supports_bulk_insert = self.dialect not in DIALECTS_WITHOUT_BULK_INSERT_SUPPORT
+        self._supports_bulk_update = self.dialect not in DIALECTS_WITHOUT_BULK_UPDATE_SUPPORT
 
     async def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
@@ -103,17 +111,29 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             The added instances.
         """
+        data_to_insert: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
-            instances: list[ModelT] = await self._execute(
-                insert(
-                    self.model_type,
+            if self._supports_bulk_insert:
+                data: list[ModelT] = await self.session.execute(  # type: ignore
+                    insert(self.model_type).returning(self.model_type),
+                    data_to_insert,
                 )
-                .values([v.to_dict() if isinstance(v, self.model_type) else v for v in data])
-                .returning(self.model_type),  # type: ignore
+                for instance in data:
+                    self.session.expunge(instance)
+                return data
+            # when bulk insert with returning isn't supported, we ensure there is a unique ID on each record so that we can refresh the records after insert.
+            # ensure we have a UUID ID on each record so that we can refresh the data before returning
+            for datum in data_to_insert:
+                if datum.get("id", None) is None:
+                    datum.update({"id": uuid4()})
+            await self.session.execute(
+                insert(self.model_type),
+                data_to_insert,
             )
-            for instance in instances:
-                self.session.expunge(instance)
-            return instances
+            # select the records we just updated.
+            return await self.list(
+                CollectionFilter(field_name="id", values=[datum.get("id") for datum in data_to_insert])
+            )
 
     async def delete(self, item_id: Any) -> ModelT:
         """Delete instance identified by `item_id`.
