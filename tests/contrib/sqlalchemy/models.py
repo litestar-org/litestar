@@ -15,7 +15,7 @@ class Author(AuditBase):
     """The Author domain object."""
 
     name: Mapped[str]
-    dob: Mapped[date | None]
+    dob: Mapped[date] = mapped_column(nullable=True)
 
 
 class Book(Base):
