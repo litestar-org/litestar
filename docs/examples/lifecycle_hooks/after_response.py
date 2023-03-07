@@ -15,7 +15,7 @@ async def hello() -> Dict[str, int]:
     return COUNTER
 
 
-app = Starlite(route_handlers=[hello], after_response=after_response, debug=True)
+app = Starlite(route_handlers=[hello], after_response=after_response)
 
 
 # run: /hello
