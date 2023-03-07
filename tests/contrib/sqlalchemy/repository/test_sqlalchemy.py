@@ -1,11 +1,10 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
 
-import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, AsyncGenerator
-from unittest.mock import AsyncMock, MagicMock, call
+from unittest.mock import AsyncMock, MagicMock, call, patch
 from uuid import UUID
 
 import pytest
@@ -44,7 +43,7 @@ def mock_repo() -> SQLAlchemyRepository:
 
         model_type = MagicMock()  # pyright:ignore[reportGeneralTypeIssues]
 
-    return Repo(session=AsyncMock(spec=AsyncSession), base_select=MagicMock())
+    return Repo(session=AsyncMock(spec=AsyncSession, bind=MagicMock()), base_select=MagicMock())
 
 
 async def test_sqlalchemy_tablename(monkeypatch: MonkeyPatch) -> None:
@@ -100,14 +99,13 @@ async def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemyRepository, monkeyp
         ...
 
     mock_instances = [MagicMock(), MagicMock(), MagicMock()]
-
+    patch.object(SQLAlchemyRepository, "dialect", "postgresql")
     monkeypatch.setattr(mock_repo, "model_type", Model)
-    monkeypatch.setattr(mock_repo, "_execute", AsyncMock(return_value=mock_instances))
-
+    monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
     instances = await mock_repo.add_many(mock_instances)
-
-    #
-    assert instances is mock_instances
+    assert len(instances) == 3
+    for row in instances:
+        assert row.id is not None
     mock_repo.session.expunge.assert_called()
     mock_repo.session.commit.assert_not_called()
 
@@ -124,11 +122,15 @@ async def test_sqlalchemy_repo_update_many(mock_repo: SQLAlchemyRepository, monk
     mock_instances = [MagicMock(), MagicMock(), MagicMock()]
 
     monkeypatch.setattr(mock_repo, "model_type", Model)
-    monkeypatch.setattr(mock_repo, "_execute", AsyncMock(return_value=mock_instances))
-
+    patch.object(SQLAlchemyRepository, "dialect", "postgresql")
+    monkeypatch.setattr(mock_repo, "model_type", Model)
+    monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
     instances = await mock_repo.update_many(mock_instances)
 
-    assert instances is mock_instances
+    assert len(instances) == 3
+    for row in instances:
+        assert row.id is not None
+
     mock_repo.session.flush.assert_called_once()
     mock_repo.session.commit.assert_not_called()
 
@@ -417,7 +419,7 @@ async def get_sqlite_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]
         Async SQLAlchemy engine instance.
     """
     engine = create_async_engine(
-        f"sqlite+aiosqlite:///{db_path}/test.db",
+        f"sqlite+aiosqlite:///{tmp_path}/test.db",
         echo=True,
         poolclass=NullPool,
     )
@@ -507,17 +509,33 @@ def get_book_repo(session: AsyncSession) -> BookRepository:
 
 
 def test_sqlite_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy filter by kwargs with invalid column name.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
     with pytest.raises(RepositoryError):
         author_repo.filter_collection_by_kwargs(author_repo.select, whoops="silly me")
 
 
 async def test_sqlite_repo_count_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy count with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
     assert await author_repo.count() == 2
 
 
 async def test_sqlite_repo_list_and_count_method(
     raw_authors: list[dict[str, Any]], author_repo: AuthorRepository
 ) -> None:
+    """Test SQLALchemy list with count in sqlite.
+
+    Args:
+        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        author_repo (AuthorRepository): The author mock repository
+    """
     exp_count = len(raw_authors)
     collection, count = await author_repo.list_and_count()
     assert exp_count == count
@@ -525,7 +543,26 @@ async def test_sqlite_repo_list_and_count_method(
     assert len(collection) == exp_count
 
 
+async def test_sqlite_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy list with sqlite.
+
+    Args:
+        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        author_repo (AuthorRepository): The author mock repository
+    """
+    exp_count = len(raw_authors)
+    collection = await author_repo.list()
+    assert isinstance(collection, list)
+    assert len(collection) == exp_count
+
+
 async def test_sqlite_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy Add with sqlite.
+
+    Args:
+        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        author_repo (AuthorRepository): The author mock repository
+    """
     exp_count = len(raw_authors) + 1
     new_author = Author(name="Testing", dob=datetime.now())
     obj = await author_repo.add(new_author)
@@ -537,8 +574,13 @@ async def test_sqlite_repo_add_method(raw_authors: list[dict[str, Any]], author_
 
 
 async def test_sqlite_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy Add Many with sqlite.
+
+    Args:
+        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        author_repo (AuthorRepository): The author mock repository
+    """
     exp_count = len(raw_authors) + 2
-    [Author(name="Testing 2", dob=datetime.now()), Author(name="Cody", dob=datetime.now())]
     objs = await author_repo.add_many(
         [Author(name="Testing 2", dob=datetime.now()), Author(name="Cody", dob=datetime.now())]
     )
@@ -549,3 +591,75 @@ async def test_sqlite_repo_add_many_method(raw_authors: list[dict[str, Any]], au
     for obj in objs:
         assert obj.id is not None
         assert obj.name in {"Testing 2", "Cody"}
+
+
+async def test_sqlite_repo_update_many_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy Update Many with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    objs = await author_repo.list()
+    for idx, obj in enumerate(objs):
+        obj.name = f"Update {idx}"
+    objs = await author_repo.update_many(objs)
+    for obj in objs:
+        assert obj.name.startswith("Update")
+
+
+async def test_sqlite_repo_update_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy Update with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    obj = await author_repo.get(UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    obj.name = "Updated Name"
+    updated_obj = await author_repo.update(obj)
+    assert updated_obj.name == obj.name
+
+
+async def test_sqlite_repo_delete_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy delete with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    obj = await author_repo.delete(UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    assert obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+
+
+async def test_sqlite_repo_get_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy Get with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    obj = await author_repo.get(UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    assert obj.name == "Agatha Christie"
+
+
+async def test_sqlite_repo_get_one_or_none_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy Get One with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    obj = await author_repo.get_one_or_none(id=UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    assert obj is not None
+    assert obj.name == "Agatha Christie"
+    none_obj = await author_repo.get_one_or_none(name="I don't exist")
+    assert none_obj is None
+
+
+async def test_sqlite_repo_get_one_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy Get One with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    obj = await author_repo.get_one(id=UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    assert obj is not None
+    assert obj.name == "Agatha Christie"
+    with pytest.raises(RepositoryError):
+        _ = await author_repo.get_one(name="I don't exist")

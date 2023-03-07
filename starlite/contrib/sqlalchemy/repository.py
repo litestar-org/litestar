@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Generic, Literal, Tuple, TypeVar, cast
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from sqlalchemy import func as sql_func
 from sqlalchemy import insert, over
@@ -63,8 +63,7 @@ def wrap_sqlalchemy_exception() -> Any:
         raise RepositoryError(f"An exception occurred: {exc}") from exc
 
 
-DIALECTS_WITHOUT_BULK_INSERT_SUPPORT = {"sqlite"}
-DIALECTS_WITHOUT_BULK_UPDATE_SUPPORT = {"sqlite"}
+DIALECTS_WITHOUT_BULK_RETURNING_SUPPORT = {"sqlite"}
 
 
 class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
@@ -83,8 +82,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         self.session = session
         self.select = base_select or sql_select(self.model_type)
         self.dialect = session.bind.dialect.name
-        self._supports_bulk_insert = self.dialect not in DIALECTS_WITHOUT_BULK_INSERT_SUPPORT
-        self._supports_bulk_update = self.dialect not in DIALECTS_WITHOUT_BULK_UPDATE_SUPPORT
+        self._supports_bulk_returning = self.dialect not in DIALECTS_WITHOUT_BULK_RETURNING_SUPPORT
 
     async def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
@@ -108,32 +106,37 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Args:
             data: list of Instances to be added to the collection.
 
+        This function has an optimized bulk insert based on the configured SQL dialect:
+        - For backends supporting `RETURNING` with `executemany`, a single bulk insert with returning clause is executed.
+        - For other backends, it does a bulk insert and then selects the inserted records
+
         Returns:
             The added instances.
         """
         data_to_insert: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
-            if self._supports_bulk_insert:
-                data: list[ModelT] = await self.session.execute(  # type: ignore
+            if self._supports_bulk_returning:
+                instances: list[ModelT] = await self.session.execute(  # type: ignore
                     insert(self.model_type).returning(self.model_type),
                     data_to_insert,
                 )
-                for instance in data:
+                for instance in instances:
                     self.session.expunge(instance)
-                return data
+                return instances
             # when bulk insert with returning isn't supported, we ensure there is a unique ID on each record so that we can refresh the records after insert.
             # ensure we have a UUID ID on each record so that we can refresh the data before returning
+            new_primary_keys: list[UUID] = []
             for datum in data_to_insert:
                 if datum.get("id", None) is None:
                     datum.update({"id": uuid4()})
+                new_primary_keys.append(datum.get("id"))  # type: ignore[arg-type]
+
             await self.session.execute(
                 insert(self.model_type),
                 data_to_insert,
             )
-            # select the records we just updated.
-            return await self.list(
-                CollectionFilter(field_name="id", values=[datum.get("id") for datum in data_to_insert])
-            )
+            # select the records we just inserted.
+            return await self.list(CollectionFilter(field_name="id", values=new_primary_keys))
 
     async def delete(self, item_id: Any) -> ModelT:
         """Delete instance identified by `item_id`.
@@ -270,6 +273,10 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
     async def update_many(self, data: list[ModelT]) -> list[ModelT]:
         """Update one or more instances with the attribute values present on `data`.
 
+        This function has an optimized bulk insert based on the configured SQL dialect:
+        - For backends supporting `RETURNING` with `executemany`, a single bulk insert with returning clause is executed.
+        - For other backends, it does a bulk insert and then selects the inserted records
+
         Args:
             data: A list of instances to update.  Each should have a value for `self.id_attribute` that exists in the
                 collection.
@@ -280,12 +287,27 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Raises:
             RepositoryNotFoundException: If no instance found with same identifier as `data`.
         """
+        data_to_update: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
+            if self._supports_bulk_returning:
+                instances = await self.session.execute(
+                    update(self.model_type).returning(self.model_type), data_to_update
+                )
+                await self.session.flush()
+                for instance in instances:
+                    self.session.expunge(instance)
+                return instances  # type: ignore
+            updated_primary_keys: list[UUID] = []
+            for datum in data_to_update:
+                updated_primary_keys.append(datum.get("id"))  # type: ignore[arg-type]
+
             await self.session.execute(
-                update(self.model_type), [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
+                update(self.model_type),
+                data_to_update,
             )
             await self.session.flush()
-            return data
+            # select the records we just updated.
+            return await self.list(CollectionFilter(field_name="id", values=updated_primary_keys))
 
     async def list_and_count(
         self,
