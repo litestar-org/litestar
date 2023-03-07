@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, AsyncGenerator
 from unittest.mock import AsyncMock, MagicMock, call, patch
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import pytest
 from sqlalchemy import NullPool, insert
@@ -663,3 +663,40 @@ async def test_sqlite_repo_get_one_method(author_repo: AuthorRepository) -> None
     assert obj.name == "Agatha Christie"
     with pytest.raises(RepositoryError):
         _ = await author_repo.get_one(name="I don't exist")
+
+
+async def test_sqlite_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy Get or create with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    existing_obj, existing_created = await author_repo.get_or_create(name="Agatha Christie")
+    assert existing_obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+    assert existing_created is False
+    new_obj, new_created = await author_repo.get_or_create(name="New Author")
+    assert new_obj.id is not None
+    assert new_obj.name == "New Author"
+    assert new_created
+
+
+async def test_sqlite_repo_upsert_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy upsert with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    existing_obj = await author_repo.get_one(name="Agatha Christie")
+    existing_obj.name = "Agatha C."
+    upsert_update_obj = await author_repo.upsert(existing_obj)
+    assert upsert_update_obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+    assert upsert_update_obj.name == "Agatha C."
+
+    upsert_insert_obj = await author_repo.upsert(Author(name="An Author"))
+    assert upsert_insert_obj.id is not None
+    assert upsert_insert_obj.name == "An Author"
+
+    # ensures that it still works even if the ID is added before insert
+    upsert2_insert_obj = await author_repo.upsert(Author(id=uuid4(), name="Another Author"))
+    assert upsert2_insert_obj.id is not None
+    assert upsert2_insert_obj.name == "Another Author"

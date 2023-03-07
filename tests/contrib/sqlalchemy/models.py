@@ -15,7 +15,7 @@ class Author(AuditBase):
     """The Author domain object."""
 
     name: Mapped[str]
-    dob: Mapped[date]
+    dob: Mapped[date | None]
 
 
 class Book(Base):
