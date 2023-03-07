@@ -410,16 +410,12 @@ def test_filter_collection_by_kwargs_raises_repository_exception_for_attribute_e
 
 
 @pytest.fixture(name="engine")
-async def get_sqlite_engine() -> AsyncGenerator[AsyncEngine, None]:
-    """Postgresql instance for end-to-end testing.
-
-    Args:
-        docker_ip: IP address for TCP connection to Docker containers.
+async def get_sqlite_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
+    """SQLite engine for end-to-end testing.
 
     Returns:
         Async SQLAlchemy engine instance.
     """
-    db_path = tempfile.mkdtemp()
     engine = create_async_engine(
         f"sqlite+aiosqlite:///{db_path}/test.db",
         echo=True,
@@ -429,8 +425,6 @@ async def get_sqlite_engine() -> AsyncGenerator[AsyncEngine, None]:
         yield engine
     finally:
         await engine.dispose()
-        Path(f"{db_path}/test.db").unlink()
-        Path(db_path).rmdir()
 
 
 @pytest.fixture(name="raw_authors")
