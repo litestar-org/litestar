@@ -119,7 +119,7 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
             Template instance
 
         Raises:
-            :class:`TemplateNotFoundException <starlite.exceptions.TemplateNotFoundException>`: if no template is found.
+            TemplateNotFoundException: if no template is found.
         """
         ...
 
