@@ -46,9 +46,7 @@ autodoc_class_signature = "separated"
 autodoc_default_options = {"special-members": "__init__", "show-inheritance": True, "members": True}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
-autodoc_type_aliases = {
-    "starlite.types.AnyIOBackend": "AnyIOBackend",
-}
+
 
 nitpicky = True
 nitpick_ignore = [
@@ -57,9 +55,22 @@ nitpick_ignore = [
     ("py:class", "httpx.Client"),
     ("py:class", "httpx.AsyncClient"),
     ("py:class", "BaseModel"),
-    ("py:class", "RouteHandlerType"),
     ("py:class", "redis.asyncio.Redis"),
+    # internal types we don't document intentionally
+    ("py:class", "RouteHandlerType"),
     ("py:obj", "starlite.security.base.AuthType"),
+    ("py:class", "ControllerRouterHandler"),
+    # autodoc cannot link those in type hints for... reasons
+    ("py:class", "AfterRequestHookHandler"),
+    ("py:class", "AfterResponseHookHandler"),
+    ("py:class", "BeforeRequestHookHandler"),
+    ("py:class", "ExceptionHandlersMap"),
+    ("py:class", "Guard"),
+    ("py:class", "Middleware"),
+    ("py:class", "ParametersMap"),
+    ("py:class", "ResponseCookies"),
+    ("py:class", "ResponseType"),
+    ("py:class", "TypeEncodersMap"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.types.*"),
@@ -74,6 +85,9 @@ nitpick_ignore_regex = [
 # **/starlite/testing/client/async_client.py:docstring of starlite.testing.AsyncTestClient.exit_stack:1: WARNING: py:class reference target not found: AsyncExitStack
 # would be added as: "starlite.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
 ignore_missing_refs = {
+    # autodoc thinks it's a py:class: but it's a py:data. TODO: Fix this. Should be possible I think
+    # "starlite.router.Router.__init__": {"TypeEncodersMap"},
+    # No idea what autodoc is doing here. Possibly unfixable on our end
     "starlite.testing.BaseTestClient.blocking_portal": {"BlockingPortal"},
     "starlite.template.base.TemplateEngineProtocol.get_template": {"starlite.template.base.T_co"},
     "starlite.template": {"starlite.template.base.T_co"},
