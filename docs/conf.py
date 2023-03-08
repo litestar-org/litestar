@@ -29,6 +29,7 @@ intersphinx_mapping = {
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),
     "click": ("https://click.palletsprojects.com/en/8.1.x/", None),
+    "redis": ("https://redis-py.readthedocs.io/en/stable/", None),
 }
 
 
@@ -50,24 +51,28 @@ autodoc_type_aliases = {
 
 nitpicky = True
 nitpick_ignore = [
-    ("py:class", "PathType"),
-    ("py:class", "OpenBinaryMode"),
-    ("py:class", "OpenTextMode"),
-    ("py:class", "WebSocketSendMessage"),
-    ("py:class", "WebSocketScope"),
-    ("py:class", "ExitStack"),
-    ("py:class", "AsyncExitStack"),
-    ("py:class", "CookieTypes"),
     ("py:class", "AnyIOBackend"),
     ("py:class", "T"),
     ("py:class", "httpx.Client"),
     ("py:class", "httpx.AsyncClient"),
     ("py:class", "BaseModel"),
     ("py:class", "RouteHandlerType"),
+    ("py:class", "redis.asyncio.Redis"),
 ]
 nitpick_ignore_regex = [(r"py:.*", r"starlite\.types.*"), (r"py:.*", r"starlite.*\.T")]
 
-ignore_missing_refs = {"starlite.testing.BaseTestClient": {"BlockingPortal"}}
+# Warnings about missing references to those targets in the specified location will be ignored.
+# The source of the references is taken 1:1 from the warnings as reported by Sphinx, e.g
+# **/starlite/testing/client/async_client.py:docstring of starlite.testing.AsyncTestClient.exit_stack:1: WARNING: py:class reference target not found: AsyncExitStack
+# would be added as: "starlite.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
+ignore_missing_refs = {
+    "starlite.testing.BaseTestClient.blocking_portal": {"BlockingPortal"},
+    "starlite.template.base.TemplateEngineProtocol.get_template": {"starlite.template.base.T_co"},
+    "starlite.template": {"starlite.template.base.T_co"},
+    "starlite.testing.WebSocketTestSession.exit_stack": {"ExitStack"},
+    "starlite.testing.TestClient.exit_stack": {"ExitStack"},
+    "starlite.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
+}
 
 auto_pytabs_min_version = (3, 8)
 auto_pytabs_max_version = (3, 11)

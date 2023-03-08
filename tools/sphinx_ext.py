@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import ast
 import importlib
+import inspect
 import logging
 import multiprocessing
 import os
@@ -11,6 +13,7 @@ import subprocess
 import sys
 import time
 from contextlib import contextmanager, redirect_stderr
+from functools import cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator
 
@@ -18,8 +21,8 @@ import httpx
 import uvicorn
 from auto_pytabs.sphinx_ext import CodeBlockOverride, LiteralIncludeOverride
 from docutils.nodes import Node, admonition, literal_block, title
+from docutils.utils import get_source_line
 from sphinx.addnodes import highlightlang
-from sphinx.errors import NoUri
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -167,23 +170,54 @@ class LiteralInclude(LiteralIncludeOverride):
         return nodes
 
 
-def on_missing_reference(app: Sphinx, env: BuildEnvironment, node: Node, contnode: Node) -> None:
-    ignore_refs = app.config["ignore_missing_refs"]
-    if node.tagname == "pending_xref":  # type: ignore[attr-defined]
-        if not hasattr(node, "attributes"):
-            return
-        attributes = node.attributes  # type: ignore[attr-defined]
-        target = attributes["reftarget"]
+def _import_node_to_paths(node: ast.Import | ast.ImportFrom) -> list[str]:
+    return [alias.asname or alias.name for alias in node.names]
 
-        if not (full_ref := attributes.get("py:module")):
-            return
-        for attr in ["py:class", "py:func", "py:meth"]:
-            if ref := attributes.get(attr):
-                full_ref += f".{ref}"
-                break
-        if target in ignore_refs.get(full_ref, []):
-            raise NoUri
-    return
+
+@cache
+def get_type_checking_imports(module_import_path: str, reference_target_source_obj: str) -> set[str]:
+    """Get imports located within a  ``If TYPE_CHECKING`` block from the containing module of a referenced object"""
+    module = importlib.import_module(module_import_path)
+    obj = getattr(module, reference_target_source_obj)
+    tree = ast.parse(Path(inspect.getsourcefile(obj)).read_text())
+
+    if_nodes = (node for node in tree.body if isinstance(node, ast.If) and node.test.id == "TYPE_CHECKING")
+    import_nodes = (
+        node for if_node in if_nodes for node in if_node.body if isinstance(node, (ast.Import, ast.ImportFrom))
+    )
+    return {path for import_node in import_nodes for path in _import_node_to_paths(import_node)}
+
+
+def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | None:
+    ignore_refs = app.config["ignore_missing_refs"]
+    if node.tagname != "pending_xref":  # type: ignore[attr-defined]
+        return None
+
+    if not hasattr(node, "attributes"):
+        return None
+
+    attributes = node.attributes  # type: ignore[attr-defined]
+    target = attributes["reftarget"]
+
+    reference_target_source_obj = attributes.get("py:class", attributes.get("py:meth", attributes.get("py:func")))
+
+    if reference_target_source_obj and target in get_type_checking_imports(
+        attributes["py:module"], reference_target_source_obj
+    ):
+        # autodoc has issues with if TYPE_CHECKING imports, so we ignore those errors if we can validate that a
+        # name exists within such a block within the containing module.
+        # see: https://github.com/sphinx-doc/sphinx/issues/11225 and https://github.com/sphinx-doc/sphinx/issues/9813
+        # for reference
+        return True
+
+    # for various other autodoc issues that can't be resolved automatically, we check the exact path to be able
+    # to suppress specific warnings
+    source_line = get_source_line(node)[0]
+    source = source_line.split(" ")[-1]
+    if target in ignore_refs.get(source, []):
+        return True
+
+    return None
 
 
 def on_env_before_read_docs(app: Sphinx, env: BuildEnvironment, docnames: set[str]) -> None:
@@ -196,7 +230,7 @@ def setup(app: Sphinx) -> dict[str, bool]:
     app.add_directive("literalinclude", LiteralInclude, override=True)
     app.add_directive("code-block", CodeBlockOverride, override=True)
     app.connect("env-before-read-docs", on_env_before_read_docs)
-    app.connect("missing-reference", on_missing_reference)
+    app.connect("warn-missing-reference", on_warn_missing_reference)
     app.add_config_value("ignore_missing_refs", default={}, rebuild=False)
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}
