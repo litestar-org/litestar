@@ -241,11 +241,6 @@ def create_responses(
         responses[status_code] = response
 
     for status_code, response in create_additional_responses(route_handler, plugins):
-        if status_code in responses:
-            raise ImproperlyConfiguredException(
-                f"Additional response for status code {status_code} already exists in success or error responses"
-            )
-
         responses[status_code] = response
 
     return responses or None
