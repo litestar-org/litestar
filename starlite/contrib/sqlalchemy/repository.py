@@ -63,9 +63,6 @@ def wrap_sqlalchemy_exception() -> Any:
         raise RepositoryError(f"An exception occurred: {exc}") from exc
 
 
-DIALECTS_WITHOUT_BULK_RETURNING_SUPPORT = {"sqlite"}
-
-
 class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
     """SQLAlchemy based implementation of the repository interface."""
 
@@ -81,8 +78,6 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         super().__init__(**kwargs)
         self.session = session
         self.select = base_select or sql_select(self.model_type)
-        self.dialect = session.bind.dialect.name
-        self._supports_bulk_returning = self.dialect not in DIALECTS_WITHOUT_BULK_RETURNING_SUPPORT
 
     async def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
@@ -115,7 +110,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         data_to_insert: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
-            if self._supports_bulk_returning:
+            if self.session.bind.dialect.insert_executemany_returning:
                 instances: list[ModelT] = await self.session.execute(  # type: ignore
                     insert(self.model_type).returning(self.model_type),
                     data_to_insert,
@@ -289,7 +284,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         data_to_update: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
-            if self._supports_bulk_returning:
+            if self.session.bind.dialect.update_executemany_returning:
                 instances = await self.session.execute(
                     update(self.model_type).returning(self.model_type), data_to_update
                 )

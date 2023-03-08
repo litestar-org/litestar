@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, AsyncGenerator
-from unittest.mock import AsyncMock, MagicMock, call, patch
+from unittest.mock import AsyncMock, MagicMock, call
 from uuid import UUID, uuid4
 
 import pytest
@@ -99,7 +99,6 @@ async def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemyRepository, monkeyp
         ...
 
     mock_instances = [MagicMock(), MagicMock(), MagicMock()]
-    patch.object(SQLAlchemyRepository, "dialect", "postgresql")
     monkeypatch.setattr(mock_repo, "model_type", Model)
     monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
     instances = await mock_repo.add_many(mock_instances)
@@ -121,8 +120,6 @@ async def test_sqlalchemy_repo_update_many(mock_repo: SQLAlchemyRepository, monk
 
     mock_instances = [MagicMock(), MagicMock(), MagicMock()]
 
-    monkeypatch.setattr(mock_repo, "model_type", Model)
-    patch.object(SQLAlchemyRepository, "dialect", "postgresql")
     monkeypatch.setattr(mock_repo, "model_type", Model)
     monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
     instances = await mock_repo.update_many(mock_instances)
