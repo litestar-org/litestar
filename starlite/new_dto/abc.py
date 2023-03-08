@@ -85,8 +85,10 @@ class AbstractDTO(ABC, Generic[DataT]):
         else:
             resolved_dto_annotation = resolved_handler_annotation
 
-        if not issubclass(cls.get_model_type(resolved_dto_annotation), cls.model_type):
-            raise ValueError("DTO handler annotation mismatch")
+        if not issubclass(handler_type := cls.get_model_type(resolved_dto_annotation), cls.model_type):
+            raise ValueError(
+                f"DTO annotation mismatch: DTO narrowed with '{cls.model_type}', handler type is '{handler_type}'"
+            )
 
         if not cls._postponed_cls_init_called:
             cls._postponed_cls_init_called = True

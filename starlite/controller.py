@@ -154,11 +154,14 @@ class Controller:
             if callable(cls_value):
                 setattr(self, key, AsyncCallable(cls_value))
 
+        if not hasattr(self, "data_dto"):
+            self.data_dto = Empty
+
+        if not hasattr(self, "return_dto"):
+            self.return_dto = Empty
+
         for key in self.__slots__:
             if not hasattr(self, key):
-                if key == "data_dto":
-                    self.data_dto = Empty
-                    continue
                 setattr(self, key, None)
 
         self.response_cookies = narrow_response_cookies(self.response_cookies)

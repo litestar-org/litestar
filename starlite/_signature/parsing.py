@@ -100,9 +100,6 @@ class ParsedSignatureParameter:
         Returns:
             A boolean indicating whether the parameter should be validated.
         """
-        # MyPY error:
-        #   Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
-        #   https://github.com/python/mypy/issues/4717
         return (
             self.name in SKIP_VALIDATION_NAMES
             or is_class_and_subclass(self.annotation, AbstractDTO)  # type:ignore[type-abstract]
@@ -180,9 +177,6 @@ def parse_fn_signature(
                 data_dto.on_startup(parameter.annotation)
                 parameter.dto = data_dto
 
-            # MyPY error:
-            #   Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
-            #   https://github.com/python/mypy/issues/4717
             if is_class_and_subclass(parameter.annotation, AbstractDTO):  # type:ignore[type-abstract]
                 parameter.annotation.on_startup(parameter.annotation)
 
@@ -234,7 +228,6 @@ def create_signature_model(
     Returns:
         A _signature model.
     """
-
     unwrapped_fn = cast("AnyCallable", unwrap_partial(fn))
     fn_name = getattr(fn, "__name__", "anonymous")
     fn_module = getattr(fn, "__module__", None)
@@ -247,9 +240,6 @@ def create_signature_model(
         namespace=namespace or {},
     )
 
-    # MyPY error:
-    #   Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
-    #   https://github.com/python/mypy/issues/4717
     if is_class_and_subclass(return_annotation, AbstractDTO):  # type:ignore[type-abstract]
         return_annotation.on_startup(return_annotation)
     elif return_dto:
