@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from inspect import getmro
+from sys import exc_info
+from traceback import format_exception
 from typing import TYPE_CHECKING, Any, Type, cast
 
 from starlite.connection import Request
@@ -18,10 +20,12 @@ __all__ = ("ExceptionHandlerMiddleware",)
 if TYPE_CHECKING:
     from starlite import Response
     from starlite.app import Starlite
+    from starlite.logging import BaseLoggingConfig
     from starlite.types import (
         ASGIApp,
         ExceptionHandler,
         ExceptionHandlersMap,
+        Logger,
         Receive,
         Scope,
         Send,
@@ -145,10 +149,9 @@ class ExceptionHandlerMiddleware:
             await self.app(scope, receive, send)
         except Exception as e:  # pylint: disable=broad-except
             starlite_app = scope["app"]
-            if self.debug and starlite_app.logger:
-                starlite_app.logger.debug(
-                    "exception raised on %s connection request to route %s", scope["type"], scope["path"], exc_info=True
-                )
+
+            if starlite_app.logging_config and (logger := starlite_app.logger):
+                self.handle_exception_logging(logger=logger, logging_config=starlite_app.logging_config, scope=scope)
 
             for hook in starlite_app.after_exception:
                 await hook(e, scope, starlite_app.state)
@@ -210,3 +213,16 @@ class ExceptionHandlerMiddleware:
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
             return create_debug_response(request=request, exc=exc)
         return create_exception_response(exc)
+
+    def handle_exception_logging(self, logger: Logger, logging_config: BaseLoggingConfig, scope: Scope) -> None:
+        """Handle logging - if the starlite app has a logging config in place.
+
+        :param logger: A logger instance.
+        :param logging_config: Logging Config instance.
+        :param scope: The ASGI connection scope.
+        :return: None
+        """
+        if (
+            logging_config.log_exceptions == "always" or (logging_config.log_exceptions == "debug" and self.debug)
+        ) and logging_config.exception_logging_handler:
+            logging_config.exception_logging_handler(logger, scope, format_exception(*exc_info()))
