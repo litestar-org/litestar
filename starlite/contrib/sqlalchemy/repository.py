@@ -111,13 +111,12 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         data_to_insert: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
             if self.session.bind.dialect.insert_executemany_returning:
-                instances: list[ModelT] = await self.session.execute(  # type: ignore
-                    insert(self.model_type).returning(self.model_type),
-                    data_to_insert,
+                instances = await self.session.execute(
+                    insert(self.model_type).returning(self.model_type), data_to_insert
                 )
                 for instance in instances:
                     self.session.expunge(instance)
-                return instances
+                return list(instances)  # type: ignore
             # when bulk insert with returning isn't supported, we ensure there is a unique ID on each record so that we can refresh the records after insert.
             # ensure we have a UUID ID on each record so that we can refresh the data before returning
             new_primary_keys: list[UUID] = []
