@@ -4,6 +4,7 @@ from datetime import date, datetime
 from uuid import uuid4
 
 import pytest
+from sqlalchemy.orm import Mapped
 
 from starlite.contrib.repository.exceptions import ConflictError, RepositoryError
 from starlite.contrib.repository.testing.generic_mock_repository import (
@@ -151,3 +152,195 @@ async def test_does_not_set_created_updated() -> None:
     instance = await repo.update(instance)
     assert "created" not in vars(instance)
     assert "updated" not in vars(instance)
+
+
+async def test_add() -> None:
+    """Test that the repository add method works correctly`."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    instance = Model()
+
+    inserted_instance = await GenericMockRepository[Model]().add(instance)
+    assert inserted_instance == instance
+
+
+async def test_add_many() -> None:
+    """Test that the repository add_many method works correctly`."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    instances = [Model(), Model()]
+
+    inserted_instances = await GenericMockRepository[Model]().add_many(instances)
+    assert len(instances) == len(inserted_instances)
+
+
+async def test_update() -> None:
+    """Test that the repository update method works correctly`."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        random_column: Mapped[str]
+
+    mock_repo = GenericMockRepository[Model]()
+
+    instance = await mock_repo.add(Model(random_column="A"))
+    instance.random_column = "B"
+    updated_instance = await mock_repo.update(instance)
+
+    assert updated_instance == instance
+
+
+async def test_update_many() -> None:
+    """Test that the repository add_many method works correctly`."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        random_column: Mapped[str]
+
+    mock_repo = GenericMockRepository[Model]()
+    instances = [Model(random_column="A"), Model(random_column="B")]
+    inserted_instances = await mock_repo.add_many(instances)
+    for instance in inserted_instances:
+        instance.random_column = "C"
+    updated_instances = await mock_repo.update_many(instances)
+    for instance in updated_instances:
+        assert instance.random_column == "C"
+    assert len(instances) == len(updated_instances)
+
+
+async def test_upsert() -> None:
+    """Test that the repository upsert method works correctly`."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        random_column: Mapped[str]
+
+    mock_repo = GenericMockRepository[Model]()
+
+    instance = await mock_repo.upsert(Model(random_column="A"))
+    instance.random_column = "B"
+    updated_instance = await mock_repo.upsert(instance)
+
+    assert updated_instance == instance
+
+
+async def test_list() -> None:
+    """Test that the repository list returns records."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    mock_repo = GenericMockRepository[Model]()
+    inserted_instances = await mock_repo.add_many([Model(), Model()])
+    listed_instances = await mock_repo.list()
+    assert inserted_instances == listed_instances
+
+
+async def test_list_and_count() -> None:
+    """Test that the repository list_and_count returns records and the total record count."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    instances = [Model(), Model()]
+    mock_repo = GenericMockRepository[Model]()
+    inserted_instances = await mock_repo.add_many(instances)
+    listed_instances, count = await mock_repo.list_and_count()
+    assert inserted_instances == listed_instances
+    assert count == len(instances)
+
+
+async def test_get() -> None:
+    """Test that the repository get returns a model record correctly."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        random_column: Mapped[str]
+
+    instances = [Model(random_column="value 1"), Model(random_column="value 2")]
+    mock_repo = GenericMockRepository[Model]()
+    inserted_instances = await mock_repo.add_many(instances)
+    item_id = inserted_instances[0].id
+    fetched_instance = await mock_repo.get(item_id)
+    assert inserted_instances[0] == fetched_instance
+
+
+async def test_get_one() -> None:
+    """Test that the repository get_one returns a model record correctly."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        random_column: Mapped[str]
+
+    instances = [Model(random_column="value 1"), Model(random_column="value 2")]
+    mock_repo = GenericMockRepository[Model]()
+    inserted_instances = await mock_repo.add_many(instances)
+    fetched_instance = await mock_repo.get_one(random_column="value 1")
+    assert inserted_instances[0] == fetched_instance
+    with pytest.raises(RepositoryError):
+        _ = await mock_repo.get_one(random_column="value 3")
+
+
+async def test_get_one_or_none() -> None:
+    """Test that the repository get_one_or_none returns a model record correctly."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        random_column: Mapped[str]
+
+    instances = [Model(random_column="value 1"), Model(random_column="value 2")]
+    mock_repo = GenericMockRepository[Model]()
+    inserted_instances = await mock_repo.add_many(instances)
+    fetched_instance = await mock_repo.get_one_or_none(random_column="value 1")
+    assert inserted_instances[0] == fetched_instance
+    none_instance = await mock_repo.get_one_or_none(random_column="value 3")
+    assert none_instance is None
+
+
+async def test_get_or_create() -> None:
+    """Test that the repository get_or_create returns a model record correctly."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        random_column: Mapped[str]
+
+    instances = [Model(random_column="value 1"), Model(random_column="value 2")]
+    mock_repo = GenericMockRepository[Model]()
+    inserted_instances = await mock_repo.add_many(instances)
+    fetched_instance, fetched_created = await mock_repo.get_or_create(random_column="value 1")
+    assert await mock_repo.count() == 2
+    assert inserted_instances[0] == fetched_instance
+    assert fetched_created is False
+    _, created = await mock_repo.get_or_create(random_column="value 3")
+    assert await mock_repo.count() == 3
+    assert created

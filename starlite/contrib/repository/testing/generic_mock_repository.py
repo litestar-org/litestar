@@ -220,10 +220,10 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         items = [self._find_or_raise_not_found(self.get_id_attribute_value(row)) for row in data]
         # should never be modifiable
         for item in items:
-            if hasattr(data, "updated"):
+            if hasattr(item, "updated"):
                 # maybe the @declarative_mixin decorator doesn't play nice with pyright?
-                data.updated = datetime.now()  # pyright: ignore
-            for key, val in data.__dict__.items():
+                item.updated = datetime.now()  # pyright: ignore
+            for key, val in item.__dict__.items():
                 if key.startswith("_"):
                     continue
                 setattr(item, key, val)
@@ -277,7 +277,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             The list of instances, after filtering applied.
         """
-        return list(self.collection.values())
+        return list(self.filter_collection_by_kwargs(self.collection, **kwargs).values())
 
     def filter_collection_by_kwargs(  # type:ignore[override]
         self, collection: MutableMapping[Hashable, ModelT], /, **kwargs: Any
@@ -295,8 +295,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
                     new_collection[item.id] = item
             except AttributeError as orig:
                 raise RepositoryError from orig
-        self.collection = new_collection
-        return self.collection
+        return new_collection
 
     @classmethod
     def seed_collection(cls, instances: Iterable[ModelT]) -> None:
