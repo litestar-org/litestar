@@ -16,7 +16,6 @@ from starlite._openapi.responses import (
 from starlite.datastructures import Cookie, ResponseHeader
 from starlite.exceptions import (
     HTTPException,
-    ImproperlyConfiguredException,
     PermissionDeniedException,
     ValidationException,
 )
