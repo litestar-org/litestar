@@ -8,10 +8,7 @@ from msgspec import Struct
 from msgspec.msgpack import decode as msgpack_decode
 from msgspec.msgpack import encode as msgpack_encode
 
-__all__ = (
-    "Storage",
-    "StorageObject",
-)
+__all__ = ("Storage", "StorageObject")
 
 
 class Storage(ABC):  # pragma: no cover
@@ -77,7 +74,7 @@ class Storage(ABC):  # pragma: no cover
 
 
 class StorageObject(Struct):
-    """Msgspec :class:`Struct` to store serialized data alongside with their expiry time."""
+    """:class:`msgspec.Struct` to store serialized data alongside with their expiry time."""
 
     expires_at: Optional[datetime]
     data: bytes

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class FileStorage(Storage):
     """File based, thread and process safe, asynchronous key/value store."""
 
-    __slots__ = ("path",)
+    __slots__ = {"path": "file path"}
 
     def __init__(self, path: PathLike) -> None:
         """Initialize ``FileStorage``.
