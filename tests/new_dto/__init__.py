@@ -43,11 +43,3 @@ class ExampleDTO(AbstractDTO[SupportedT], Generic[SupportedT]):
         else:
             raise SerializationException(f"Unsupported media type: '{media_type}'")
         return cls(data)
-
-    @classmethod
-    def supports_type(cls, value: type) -> bool:
-        if issubclass(value, Iterable):
-            if not (args := get_args(value)):
-                return False
-            value = args[0]
-        return issubclass(value, Model)
