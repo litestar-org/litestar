@@ -44,16 +44,27 @@ class AbstractDTO(ABC, Generic[DataT]):
         if isinstance(item, str):
             raise TypeError("Forward reference not supported as type argument to DTO")
 
-        if issubclass(get_origin(item) or item, Iterable):
-            model_type = get_args(item)[0]
-        else:
-            model_type = item
-
         return type(
             f"{cls.__name__}[{item}]",
             (cls,),
-            {"annotation": item, "model_type": model_type, "_postponed_cls_init_called": False},
+            {"annotation": item, "model_type": cls.get_model_type(item), "_postponed_cls_init_called": False},
         )
+
+    @staticmethod
+    def get_model_type(item: type) -> Any:
+        """Get model type represented by the DTO.
+
+        Unwraps iterable annotation.
+
+        Args:
+            item: any type.
+
+        Returns:
+            The model type that is represented by the DTO.
+        """
+        if issubclass(get_origin(item) or item, Iterable):
+            return get_args(item)[0]
+        return item
 
     @classmethod
     def postponed_cls_init(cls) -> None:
@@ -74,7 +85,7 @@ class AbstractDTO(ABC, Generic[DataT]):
         else:
             resolved_dto_annotation = resolved_handler_annotation
 
-        if resolved_dto_annotation != cls.annotation:
+        if not issubclass(cls.get_model_type(resolved_dto_annotation), cls.model_type):
             raise ValueError("DTO handler annotation mismatch")
 
         if not cls._postponed_cls_init_called:
