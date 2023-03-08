@@ -61,13 +61,8 @@ def _enc_pattern(pattern: Pattern) -> Any:
     return pattern.pattern
 
 
-def _enc_dto(dto: AbstractDTO) -> Any:
-    return dto.to_encodable_type()
-
-
 DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     # dto
-    AbstractDTO: _enc_dto,
     Path: str,
     PurePath: str,
     # pydantic specific types
@@ -263,6 +258,12 @@ def encode_for_media_type(
     Returns:
         ``media_type`` as bytes.
     """
+    if isinstance(obj, AbstractDTO):
+        obj = obj.to_encodable_type(media_type)
+
+    if isinstance(obj, bytes):
+        return obj
+
     if media_type == MediaType.MESSAGEPACK:
         return encode_msgpack(obj, enc_hook)
 

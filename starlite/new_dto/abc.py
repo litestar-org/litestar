@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from typing_extensions import get_args, get_origin
 
@@ -11,12 +11,13 @@ from starlite.enums import MediaType
 __all__ = ("AbstractDTO",)
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar
+    from typing import ClassVar
 
     from typing_extensions import Self
 
 
 DataT = TypeVar("DataT")
+StarliteEncodableType = Any
 
 
 class AbstractDTO(ABC, Generic[DataT]):
@@ -81,8 +82,23 @@ class AbstractDTO(ABC, Generic[DataT]):
             cls.postponed_cls_init()
 
     @abstractmethod
-    def to_encodable_type(self) -> Any:
-        """Encode data held by the DTO type to a type supported by starlite serialization."""
+    def to_encodable_type(self, media_type: str | MediaType) -> bytes | StarliteEncodableType:
+        """Encode data held by the DTO type to a type supported by starlite serialization.
+
+        Can return either bytes or a type that Starlite can return to bytes.
+
+        If returning bytes, must respect ``media_type``.
+
+        If media type not supported raise `SerializationException`.
+
+        If returning a ``StarliteEncodableType``, ignore ``media_type``.
+
+        Args:
+            media_type: expected encoding type of serialized data
+
+        Returns:
+            Either ``bytes`` or a type that Starlite can convert to bytes.
+        """
 
     @classmethod
     @abstractmethod

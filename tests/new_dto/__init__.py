@@ -31,11 +31,9 @@ def create_model_instance() -> Model:
 
 SupportedT = TypeVar("SupportedT", bound="DataclassProtocol | Iterable[DataclassProtocol]")
 
-var: Iterable[DataclassProtocol] = [Model(a=1, b="two")]
-
 
 class ConcreteDTO(AbstractDTO[SupportedT], Generic[SupportedT]):
-    def to_encodable_type(self) -> Any:
+    def to_encodable_type(self, _: str | MediaType) -> SupportedT:
         return self.data
 
     @classmethod
