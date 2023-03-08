@@ -7,7 +7,7 @@ import pytest
 from starlite._kwargs.kwargs_model import KwargsModel
 from starlite._signature.parsing import create_signature_model
 
-from . import ConcreteDTO, Model
+from . import ExampleDTO, Model
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
@@ -17,10 +17,10 @@ if TYPE_CHECKING:
 
 @pytest.fixture
 def signature_model(monkeypatch: MonkeyPatch) -> type[SignatureModel]:
-    def func(data: ConcreteDTO[Model]) -> None:
+    def func(data: ExampleDTO[Model]) -> None:
         ...
 
-    return create_signature_model(func, [], set(), namespace={"ConcreteDTO": ConcreteDTO, "Model": Model})
+    return create_signature_model(func, [], set(), namespace={"ExampleDTO": ExampleDTO, "Model": Model})
 
 
 def test_kwargs_model(signature_model: type[SignatureModel]) -> None:

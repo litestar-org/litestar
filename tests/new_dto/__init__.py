@@ -12,8 +12,6 @@ from starlite.new_dto import AbstractDTO
 from starlite.serialization import decode_json, decode_msgpack
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from typing_extensions import Self
 
     from starlite.types.protocols import DataclassProtocol
@@ -32,7 +30,7 @@ def create_model_instance() -> Model:
 SupportedT = TypeVar("SupportedT", bound="DataclassProtocol | Iterable[DataclassProtocol]")
 
 
-class ConcreteDTO(AbstractDTO[SupportedT], Generic[SupportedT]):
+class ExampleDTO(AbstractDTO[SupportedT], Generic[SupportedT]):
     def to_encodable_type(self, _: str | MediaType) -> SupportedT:
         return self.data
 

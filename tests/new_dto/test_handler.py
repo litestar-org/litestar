@@ -5,18 +5,18 @@ import pytest
 from starlite import Controller, Router, Starlite, post
 from starlite.types import Empty, EmptyType
 
-from . import ConcreteDTO, Model
+from . import ExampleDTO, Model
 
 
 @pytest.mark.parametrize("layer", ["app", "router", "controller", "handler"])
 def test_dto_layer_resolution(layer: str) -> None:
-    data_dto = ConcreteDTO[Model]
-    ret_dto = ConcreteDTO[Model]
+    data_dto = ExampleDTO[Model]
+    ret_dto = ExampleDTO[Model]
 
-    def get_data(layer_name: str) -> type[ConcreteDTO] | EmptyType:
+    def get_data(layer_name: str) -> type[ExampleDTO] | EmptyType:
         return data_dto if layer == layer_name else Empty
 
-    def get_ret(layer_name: str) -> type[ConcreteDTO] | EmptyType:
+    def get_ret(layer_name: str) -> type[ExampleDTO] | EmptyType:
         return ret_dto if layer == layer_name else Empty
 
     class MyController(Controller):
