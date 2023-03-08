@@ -112,7 +112,8 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             if self.session.bind.dialect.insert_executemany_returning:
                 instances = list(
                     await self.session.scalars(  # type: ignore
-                        insert(self.model_type).returning(self.model_type), data_to_insert
+                        insert(self.model_type).returning(self.model_type),
+                        data_to_insert,  # pyright: reportGeneralTypeIssues=false
                     )
                 )
                 for instance in instances:
@@ -174,7 +175,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
                 await self.session.flush()
                 for instance in instances:
                     self.session.expunge(instance)
-                return instances  # type: ignore
+                return instances
 
             instances = await self.list(CollectionFilter(field_name=self.id_attribute, values=item_ids))
             await self.session.execute(
@@ -319,13 +320,14 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             if self.session.bind.dialect.update_executemany_returning:
                 instances = list(
                     await self.session.scalars(  # type: ignore
-                        update(self.model_type).returning(self.model_type), data_to_update
+                        update(self.model_type).returning(self.model_type),
+                        data_to_update,  # pyright: reportGeneralTypeIssues=false
                     )
                 )
                 await self.session.flush()
                 for instance in instances:
                     self.session.expunge(instance)
-                return instances  # type: ignore
+                return instances
             updated_primary_keys: list[UUID] = []
             for datum in data_to_update:
                 updated_primary_keys.append(datum.get("id"))  # type: ignore[arg-type]

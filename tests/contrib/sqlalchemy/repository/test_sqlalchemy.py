@@ -600,7 +600,7 @@ async def test_sqlite_repo_add_many_method(raw_authors: list[dict[str, Any]], au
     """
     exp_count = len(raw_authors) + 2
     objs = await author_repo.add_many(
-        [Author(name="Testing 2", dob=datetime.now()), Author(name="Cody", dob=datetime.now())]  # type: ignore[call-arg]
+        [Author(name="Testing 2", dob=datetime.now()), Author(name="Cody", dob=datetime.now())]
     )
     count = await author_repo.count()
     assert exp_count == count

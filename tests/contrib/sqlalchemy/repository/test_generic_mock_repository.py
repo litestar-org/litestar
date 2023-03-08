@@ -18,7 +18,7 @@ from tests.contrib.sqlalchemy.models import Author, Book
 def fx_authors() -> list[Author]:
     """Collection of Author models."""
     return [
-        Author(id=uuid4(), name=name, dob=dob, created=datetime.min, updated=datetime.min)  # type: ignore[call-arg]
+        Author(id=uuid4(), name=name, dob=dob, created=datetime.min, updated=datetime.min)
         for name, dob in [("Agatha Christie", date(1890, 9, 15)), ("Leo Tolstoy", date(1828, 9, 9))]
     ]
 
