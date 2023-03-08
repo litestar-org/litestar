@@ -315,7 +315,9 @@ class KwargsModel:
             elif media_type == RequestEncodingType.MESSAGEPACK:
                 expected_msgpack_data = data_signature_field
 
-        elif data_signature_field and data_signature_field.has_dto_annotation:
+        elif data_signature_field and (
+            data_signature_field.has_dto_annotation or data_signature_field.parsed_parameter.dto
+        ):
             expected_dto_data = data_signature_field
 
         for dependency in expected_dependencies:

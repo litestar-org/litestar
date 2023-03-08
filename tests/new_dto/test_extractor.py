@@ -12,9 +12,12 @@ from . import ConcreteDTO, Model
 
 
 async def test_extractor_for_scalar_annotation() -> None:
+    dto_type = ConcreteDTO[Model]
+    dto_type.on_startup(Model)
+
     class FakeParsedParameter:
-        annotation = ConcreteDTO[Model]
-        dto_supported = False
+        annotation = dto_type
+        dto = None
 
     signature_field = SignatureField(
         children=None,
@@ -31,9 +34,12 @@ async def test_extractor_for_scalar_annotation() -> None:
 
 @pytest.mark.parametrize("generic_collection", [List, FrozenSet, Tuple, Set])
 async def test_extractor_for_collection_annotation(generic_collection: Any) -> None:
+    dto_type = ConcreteDTO[generic_collection[Model]]
+    dto_type.on_startup(generic_collection[Model])
+
     class FakeParsedParameter:
-        annotation = ConcreteDTO[generic_collection[Model]]
-        dto_supported = False
+        annotation = dto_type
+        dto = False
 
     signature_field = SignatureField(
         children=None,

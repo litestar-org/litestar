@@ -24,12 +24,14 @@ def create_dto_extractor(
     Returns:
         An extractor function.
     """
-    dto_type = cast("type[AbstractDTO[Any]]", signature_field.parsed_parameter.annotation)
-    is_dto_supported = signature_field.parsed_parameter.dto_supported
+    dto_type = signature_field.parsed_parameter.dto or cast(
+        "type[AbstractDTO]", signature_field.parsed_parameter.annotation
+    )
+    is_not_dto_annotated = bool(signature_field.parsed_parameter.dto)
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
         dto = dto_type.from_bytes(await connection.body())
-        if is_dto_supported:
+        if is_not_dto_annotated:
             return dto.data
         return dto
 

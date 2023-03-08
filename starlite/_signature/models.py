@@ -209,6 +209,7 @@ class SignatureModel(ABC):
     dependency_name_set: ClassVar[set[str]]
     field_plugin_mappings: ClassVar[dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
+    return_dto: ClassVar[type[AbstractDTO] | None]
     fields: ClassVar[dict[str, SignatureField]]
 
     @classmethod

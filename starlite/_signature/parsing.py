@@ -46,7 +46,7 @@ class ParsedSignatureParameter:
     default: Any
     name: str
     optional: bool
-    dto_supported: bool
+    dto: type[AbstractDTO] | None
 
     @classmethod
     def from_parameter(
@@ -78,7 +78,7 @@ class ParsedSignatureParameter:
             default=parameter.default,
             name=parameter_name,
             optional=is_optional_union(parameter.annotation),
-            dto_supported=False,
+            dto=None,
         )
 
     @property
@@ -137,7 +137,6 @@ def parse_fn_signature(
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
     data_dto: type[AbstractDTO] | None,
-    return_dto: type[AbstractDTO] | None,
     namespace: dict[str, Any] | None = None,
 ) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
@@ -147,7 +146,6 @@ def parse_fn_signature(
         plugins: A list of plugins.
         dependency_name_set: A set of dependency names
         data_dto: DTO type for "data" kwarg
-        return_dto: DTO type for return value
         namespace: Extra names for resolution of forward references.
 
     Returns:
@@ -177,19 +175,16 @@ def parse_fn_signature(
                 "`starlite.datastructures.State`."
             )
 
-        if parameter.name == "data" and data_dto:
-            parameter.annotation = data_dto
-            parameter.dto_supported = True
+        if parameter.name == "data":
+            if data_dto:
+                data_dto.on_startup(parameter.annotation)
+                parameter.dto = data_dto
 
-        # MyPY error:
-        #   Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
-        #   https://github.com/python/mypy/issues/4717
-        if (
-            is_class_and_subclass(parameter.annotation, AbstractDTO)  # type:ignore[type-abstract]
-            and not parameter.annotation.__on_startup_called
-        ):
-            parameter.annotation.on_startup()
-            parameter.annotation.__on_startup_called = True
+            # MyPY error:
+            #   Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
+            #   https://github.com/python/mypy/issues/4717
+            if is_class_and_subclass(parameter.annotation, AbstractDTO):  # type:ignore[type-abstract]
+                parameter.annotation.on_startup(parameter.annotation)
 
         if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
             if not parameter.optional and (
@@ -211,7 +206,7 @@ def parse_fn_signature(
 
     return (
         parsed_params,
-        return_dto or fn_type_hints.get("return", signature.empty),
+        fn_type_hints.get("return", signature.empty),
         field_plugin_mappings,
         dependency_names,
     )
@@ -249,9 +244,16 @@ def create_signature_model(
         plugins=plugins,
         dependency_name_set=dependency_name_set,
         data_dto=data_dto,
-        return_dto=return_dto,
         namespace=namespace or {},
     )
+
+    # MyPY error:
+    #   Only concrete class can be given where "Type[AbstractDTO[Any]]" is expected
+    #   https://github.com/python/mypy/issues/4717
+    if is_class_and_subclass(return_annotation, AbstractDTO):  # type:ignore[type-abstract]
+        return_annotation.on_startup(return_annotation)
+    elif return_dto:
+        return_dto.on_startup(return_annotation)
 
     # TODO: we will implement logic here to determine what kind of SignatureModel we are creating.
     # For now this is only pydantic:
@@ -261,6 +263,7 @@ def create_signature_model(
         fn_module=fn_module,
         parsed_params=parsed_params,
         return_annotation=return_annotation,
+        return_dto=return_dto,
         field_plugin_mappings=field_plugin_mappings,
         dependency_names={*dependency_name_set, *dependency_names},
     )
@@ -271,6 +274,7 @@ def create_pydantic_signature_model(
     fn_module: str | None,
     parsed_params: list[ParsedSignatureParameter],
     return_annotation: Any,
+    return_dto: type[AbstractDTO] | None,
     field_plugin_mappings: dict[str, PluginMapping],
     dependency_names: set[str],
 ) -> type[PydanticSignatureModel]:
@@ -281,6 +285,7 @@ def create_pydantic_signature_model(
         fn_module: Name of the function's module, if any.
         parsed_params: A list of parsed signature parameters.
         return_annotation: Annotation for the callable's return value.
+        return_dto: DTO type for return value
         field_plugin_mappings: A mapping of field names to plugin mappings.
         dependency_names: A set of dependency names.
 
@@ -324,6 +329,7 @@ def create_pydantic_signature_model(
         **field_definitions,
     )
     model.return_annotation = return_annotation
+    model.return_dto = return_dto
     model.field_plugin_mappings = field_plugin_mappings
     model.dependency_name_set = dependency_names
     model.populate_signature_fields()

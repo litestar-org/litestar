@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import List
 
 from starlite import post
@@ -6,10 +8,13 @@ from starlite.testing import create_test_client
 
 from . import ConcreteDTO, Model
 
+ScalarDTO = ConcreteDTO[Model]
+IterableDTO = ConcreteDTO[List[Model]]
+
 
 def test_dto_data() -> None:
     @post(path="/")
-    def post_handler(data: ConcreteDTO[Model]) -> ConcreteDTO[Model]:
+    def post_handler(data: ScalarDTO) -> ScalarDTO:
         assert isinstance(data, ConcreteDTO)
         assert data.data == Model(a=1, b="two")
         return data
@@ -22,7 +27,7 @@ def test_dto_data() -> None:
 
 def test_dto_iterable_data() -> None:
     @post(path="/")
-    def post_handler(data: ConcreteDTO[List[Model]]) -> ConcreteDTO[List[Model]]:
+    def post_handler(data: IterableDTO) -> IterableDTO:
         assert isinstance(data, ConcreteDTO)
         assert isinstance(data.data, list)
         for item in data.data:
@@ -48,7 +53,7 @@ def test_dto_supported_data() -> None:
 
 def test_dto_supported_iterable_data() -> None:
     @post(path="/", data_dto=ConcreteDTO[List[Model]], return_dto=ConcreteDTO[List[Model]])
-    def post_handler(data: List[Model]) -> List[Model]:
+    def post_handler(data: list[Model]) -> list[Model]:
         assert isinstance(data, list)
         for item in data:
             assert isinstance(item, Model)

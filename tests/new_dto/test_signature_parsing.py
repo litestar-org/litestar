@@ -1,15 +1,32 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+from unittest.mock import MagicMock
+
 from starlite._signature.parsing import create_signature_model
 
 from . import ConcreteDTO, Model
 
+if TYPE_CHECKING:
+    from pytest import MonkeyPatch
 
-def test_create_signature_model() -> None:
-    def func(data: ConcreteDTO[Model]) -> None:
-        ...
+
+def test_create_signature_model(monkeypatch: MonkeyPatch) -> None:
+    data_dto = ConcreteDTO[Model]
+    ret_dto = ConcreteDTO[Model]
+    mocks = []
+    for dto in data_dto, ret_dto:
+        mock = MagicMock()
+        monkeypatch.setattr(dto, "on_startup", mock)
+        mocks.append(mock)
+
+    def func(data: data_dto) -> ret_dto:
+        return data
 
     signature_model = create_signature_model(
-        func, plugins=[], dependency_name_set=set(), namespace={"ConcreteDTO": ConcreteDTO, "Model": Model}
+        func, plugins=[], dependency_name_set=set(), namespace={"data_dto": data_dto, "ret_dto": ret_dto}
     )
     assert signature_model.fields["data"].has_dto_annotation
+    assert signature_model.return_annotation is ret_dto
+    for mock, dto in zip(mocks, [data_dto, ret_dto]):
+        mock.assert_called_once_with(dto)
