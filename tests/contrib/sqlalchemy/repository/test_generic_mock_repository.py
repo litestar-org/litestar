@@ -18,7 +18,7 @@ from tests.contrib.sqlalchemy.models import Author, Book
 def fx_authors() -> list[Author]:
     """Collection of Author models."""
     return [
-        Author(id=uuid4(), name=name, dob=dob, created=datetime.min, updated=datetime.min)
+        Author(id=uuid4(), name=name, dob=dob, created=datetime.min, updated=datetime.min)  # type: ignore[call-arg]
         for name, dob in [("Agatha Christie", date(1890, 9, 15)), ("Leo Tolstoy", date(1828, 9, 9))]
     ]
 
@@ -253,6 +253,40 @@ async def test_list() -> None:
     inserted_instances = await mock_repo.add_many([Model(), Model()])
     listed_instances = await mock_repo.list()
     assert inserted_instances == listed_instances
+
+
+async def test_delete() -> None:
+    """Test that the repository delete functionality."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    mock_repo = GenericMockRepository[Model]()
+    inserted_instances = await mock_repo.add_many([Model(), Model()])
+    delete_instance = await mock_repo.delete(inserted_instances[0].id)
+    assert delete_instance.id == inserted_instances[0].id
+    count = await mock_repo.count()
+    assert count == 1
+
+
+async def test_delete_many() -> None:
+    """Test that the repository delete many functionality."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    mock_repo = GenericMockRepository[Model]()
+    inserted_instances = await mock_repo.add_many([Model(), Model()])
+    delete_instances = await mock_repo.delete_many([obj.id for obj in inserted_instances])
+    assert len(delete_instances) == 2
+    count = await mock_repo.count()
+    assert count == 0
 
 
 async def test_list_and_count() -> None:

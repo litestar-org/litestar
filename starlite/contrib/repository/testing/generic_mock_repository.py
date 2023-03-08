@@ -112,6 +112,24 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         finally:
             del self.collection[item_id]
 
+    async def delete_many(self, item_ids: list[Any]) -> list[ModelT]:
+        """Delete instances identified by list of identifiers ``item_ids``.
+
+        Args:
+            item_ids: list of identifiers of instances to be deleted.
+
+        Returns:
+            The deleted instances.
+
+        """
+        instances: list[ModelT] = []
+        for item_id in item_ids:
+            obj = await self.get_one_or_none(**{self.id_attribute: item_id})
+            if obj:
+                obj = await self.delete(obj.id)
+                instances.append(obj)
+        return instances
+
     async def get(self, item_id: Any, **kwargs: Any) -> ModelT:
         """Get instance identified by ``item_id``.
 

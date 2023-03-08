@@ -100,7 +100,7 @@ async def test_sqlalchemy_repo_add_many(mock_repo: SQLAlchemyRepository, monkeyp
 
     mock_instances = [MagicMock(), MagicMock(), MagicMock()]
     monkeypatch.setattr(mock_repo, "model_type", Model)
-    monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo.session, "scalars", AsyncMock(return_value=mock_instances))
     instances = await mock_repo.add_many(mock_instances)
     assert len(instances) == 3
     for row in instances:
@@ -121,7 +121,7 @@ async def test_sqlalchemy_repo_update_many(mock_repo: SQLAlchemyRepository, monk
     mock_instances = [MagicMock(), MagicMock(), MagicMock()]
 
     monkeypatch.setattr(mock_repo, "model_type", Model)
-    monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo.session, "scalars", AsyncMock(return_value=mock_instances))
     instances = await mock_repo.update_many(mock_instances)
 
     assert len(instances) == 3
@@ -141,6 +141,27 @@ async def test_sqlalchemy_repo_delete(mock_repo: SQLAlchemyRepository, monkeypat
     mock_repo.session.delete.assert_called_once_with(mock_instance)
     mock_repo.session.flush.assert_called_once()
     mock_repo.session.expunge.assert_called_once_with(mock_instance)
+    mock_repo.session.commit.assert_not_called()
+
+
+async def test_sqlalchemy_repo_delete_many(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
+    """Test expected method calls for delete operation."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    mock_instances = [MagicMock(), MagicMock(id=uuid4())]
+    monkeypatch.setattr(mock_repo.session, "scalars", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo, "model_type", Model)
+    monkeypatch.setattr(mock_repo.session, "execute", AsyncMock(return_value=mock_instances))
+    monkeypatch.setattr(mock_repo, "list", AsyncMock(return_value=mock_instances))
+    added_instances = await mock_repo.add_many(mock_instances)
+    instances = await mock_repo.delete_many([obj.id for obj in added_instances])
+    assert len(instances) == len(mock_instances)
+    mock_repo.session.flush.assert_called_once()
     mock_repo.session.commit.assert_not_called()
 
 
@@ -278,11 +299,11 @@ async def test_sqlalchemy_repo_list_with_pagination(mock_repo: SQLAlchemyReposit
     result_mock = MagicMock()
     execute_mock = AsyncMock(return_value=result_mock)
     monkeypatch.setattr(mock_repo, "_execute", execute_mock)
-    mock_repo.select.limit.return_value = mock_repo.select
-    mock_repo.select.offset.return_value = mock_repo.select
+    mock_repo.statement.limit.return_value = mock_repo.statement
+    mock_repo.statement.offset.return_value = mock_repo.statement
     await mock_repo.list(LimitOffset(2, 3))
-    mock_repo.select.limit.assert_called_once_with(2)
-    mock_repo.select.limit().offset.assert_called_once_with(3)  # type:ignore[call-arg]
+    mock_repo.statement.limit.assert_called_once_with(2)
+    mock_repo.statement.limit().offset.assert_called_once_with(3)  # type:ignore[call-arg]
 
 
 async def test_sqlalchemy_repo_list_with_before_after_filter(
@@ -296,10 +317,10 @@ async def test_sqlalchemy_repo_list_with_before_after_filter(
     result_mock = MagicMock()
     execute_mock = AsyncMock(return_value=result_mock)
     monkeypatch.setattr(mock_repo, "_execute", execute_mock)
-    mock_repo.select.where.return_value = mock_repo.select
+    mock_repo.statement.where.return_value = mock_repo.statement
     await mock_repo.list(BeforeAfter(field_name, datetime.max, datetime.min))
-    assert mock_repo.select.where.call_count == 2
-    assert mock_repo.select.where.has_calls([call("gt"), call("lt")])
+    assert mock_repo.statement.where.call_count == 2
+    assert mock_repo.statement.where.has_calls([call("gt"), call("lt")])
 
 
 async def test_sqlalchemy_repo_list_with_collection_filter(
@@ -310,10 +331,10 @@ async def test_sqlalchemy_repo_list_with_collection_filter(
     result_mock = MagicMock()
     execute_mock = AsyncMock(return_value=result_mock)
     monkeypatch.setattr(mock_repo, "_execute", execute_mock)
-    mock_repo.select.where.return_value = mock_repo.select
+    mock_repo.statement.where.return_value = mock_repo.statement
     values = [1, 2, 3]
     await mock_repo.list(CollectionFilter(field_name, values))
-    mock_repo.select.where.assert_called_once()
+    mock_repo.statement.where.assert_called_once()
     getattr(mock_repo.model_type, field_name).in_.assert_called_once_with(values)
 
 
@@ -364,14 +385,14 @@ async def test_attach_to_session_unexpected_strategy_raises_valueerror(
 
 async def testexecute(mock_repo: SQLAlchemyRepository) -> None:
     """Simple test of the abstraction over `AsyncSession.execute()`"""
-    _ = await mock_repo._execute(mock_repo.select)
-    mock_repo.session.execute.assert_called_once_with(mock_repo.select)
+    _ = await mock_repo._execute(mock_repo.statement)
+    mock_repo.session.execute.assert_called_once_with(mock_repo.statement)
 
 
 def test_filter_in_collection_noop_if_collection_empty(mock_repo: SQLAlchemyRepository) -> None:
     """Ensures we don't filter on an empty collection."""
-    mock_repo._filter_in_collection("id", [], select=mock_repo.select)
-    mock_repo.select.where.assert_not_called()
+    mock_repo._filter_in_collection("id", [], statement=mock_repo.statement)
+    mock_repo.statement.where.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -387,13 +408,13 @@ def test__filter_on_datetime_field(before: datetime, after: datetime, mock_repo:
     field_mock = MagicMock()
     field_mock.__gt__ = field_mock.__lt__ = lambda self, other: True
     mock_repo.model_type.updated = field_mock
-    mock_repo._filter_on_datetime_field("updated", before, after, select=mock_repo.select)
+    mock_repo._filter_on_datetime_field("updated", before, after, statement=mock_repo.statement)
 
 
 def test_filter_collection_by_kwargs(mock_repo: SQLAlchemyRepository) -> None:
     """Test `filter_by()` called with kwargs."""
-    _ = mock_repo.filter_collection_by_kwargs(mock_repo.select, a=1, b=2)
-    mock_repo.select.filter_by.assert_called_once_with(a=1, b=2)
+    _ = mock_repo.filter_collection_by_kwargs(mock_repo.statement, a=1, b=2)
+    mock_repo.statement.filter_by.assert_called_once_with(a=1, b=2)
 
 
 def test_filter_collection_by_kwargs_raises_repository_exception_for_attribute_error(
@@ -401,11 +422,11 @@ def test_filter_collection_by_kwargs_raises_repository_exception_for_attribute_e
 ) -> None:
     """Test that we raise a repository exception if an attribute name is
     incorrect."""
-    mock_repo.select.filter_by = MagicMock(  # type:ignore[assignment]
+    mock_repo.statement.filter_by = MagicMock(  # type:ignore[assignment]
         side_effect=InvalidRequestError,
     )
     with pytest.raises(RepositoryError):
-        _ = mock_repo.filter_collection_by_kwargs(mock_repo.select, a=1)
+        _ = mock_repo.filter_collection_by_kwargs(mock_repo.statement, a=1)
 
 
 @pytest.fixture(name="engine")
@@ -427,7 +448,7 @@ async def get_sqlite_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]
 
 
 @pytest.fixture(name="raw_authors")
-def get_raw_authors() -> list[dict[str, Any]]:
+def fx_raw_authors() -> list[dict[str, Any]]:
     """Unstructured author representations."""
     return [
         {
@@ -448,7 +469,7 @@ def get_raw_authors() -> list[dict[str, Any]]:
 
 
 @pytest.fixture(name="raw_books")
-def get_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def fx_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Unstructured book representations."""
     return [
         {
@@ -483,7 +504,7 @@ async def _seed_db(engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_b
 @pytest.fixture(
     name="session",
 )
-async def get_sqlite_session(
+async def fx_sqlite_session(
     engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_books: list[dict[str, Any]]
 ) -> AsyncGenerator[AsyncSession, None]:
     session = async_sessionmaker(bind=engine)()
@@ -512,7 +533,7 @@ def test_sqlite_filter_by_kwargs_with_incorrect_attribute_name(author_repo: Auth
         author_repo (AuthorRepository): The author mock repository
     """
     with pytest.raises(RepositoryError):
-        author_repo.filter_collection_by_kwargs(author_repo.select, whoops="silly me")
+        author_repo.filter_collection_by_kwargs(author_repo.statement, whoops="silly me")
 
 
 async def test_sqlite_repo_count_method(author_repo: AuthorRepository) -> None:
@@ -579,7 +600,7 @@ async def test_sqlite_repo_add_many_method(raw_authors: list[dict[str, Any]], au
     """
     exp_count = len(raw_authors) + 2
     objs = await author_repo.add_many(
-        [Author(name="Testing 2", dob=datetime.now()), Author(name="Cody", dob=datetime.now())]
+        [Author(name="Testing 2", dob=datetime.now()), Author(name="Cody", dob=datetime.now())]  # type: ignore[call-arg]
     )
     count = await author_repo.count()
     assert exp_count == count
@@ -624,6 +645,20 @@ async def test_sqlite_repo_delete_method(author_repo: AuthorRepository) -> None:
     """
     obj = await author_repo.delete(UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
     assert obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+
+
+async def test_sqlite_repo_delete_many_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy delete many with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    all_objs = await author_repo.list()
+    ids_to_delete = [existing_obj.id for existing_obj in all_objs]
+    objs = await author_repo.delete_many(ids_to_delete)
+    assert len(objs) > 0
+    count = await author_repo.count()
+    assert count == 0
 
 
 async def test_sqlite_repo_get_method(author_repo: AuthorRepository) -> None:

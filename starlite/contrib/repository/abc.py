@@ -78,6 +78,17 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
+    async def delete_many(self, item_ids: list[Any]) -> list[T]:
+        """Delete multiple instances identified by list of IDs ``item_ids``.
+
+        Args:
+            item_ids: list of Identifiers to be deleted.
+
+        Returns:
+            The deleted instances.
+        """
+
+    @abstractmethod
     async def get(self, item_id: Any, **kwargs: Any) -> T:
         """Get instance identified by ``item_id``.
 
