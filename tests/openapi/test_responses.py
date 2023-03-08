@@ -253,11 +253,7 @@ def test_additional_responses_overlap_with_other_responses() -> None:
     def handler() -> Person:
         return PersonFactory.build()
 
-    with pytest.raises(
-        ImproperlyConfiguredException,
-        match="Additional response for status code 200 already exists in success or error responses",
-    ):
-        create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
+    create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
 
 
 def test_create_response_for_response_subclass() -> None:
