@@ -20,9 +20,9 @@ from typing import TYPE_CHECKING, Generator
 import httpx
 import uvicorn
 from auto_pytabs.sphinx_ext import CodeBlockOverride, LiteralIncludeOverride
-from docutils.nodes import Node, admonition, literal_block, title
+from docutils.nodes import Element, Node, admonition, literal_block, title
 from docutils.utils import get_source_line
-from sphinx.addnodes import highlightlang
+from sphinx.addnodes import highlightlang, pending_xref
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -170,22 +170,30 @@ class LiteralInclude(LiteralIncludeOverride):
         return nodes
 
 
-def _import_node_to_paths(node: ast.Import | ast.ImportFrom) -> list[str]:
-    return [alias.asname or alias.name for alias in node.names]
+@cache
+def _get_module_ast(source_file: str) -> ast.AST | ast.Module:
+    return ast.parse(Path(source_file).read_text())
+
+
+def _get_import_nodes(nodes: list[ast.stmt]) -> Generator[ast.Import | ast.ImportFrom, None, None]:
+    for node in nodes:
+        if isinstance(node, (ast.Import, ast.ImportFrom)):
+            yield node
+        elif isinstance(node, ast.If) and node.test.id == "TYPE_CHECKING":
+            yield from _get_import_nodes(node.body)
 
 
 @cache
-def get_type_checking_imports(module_import_path: str, reference_target_source_obj: str) -> set[str]:
-    """Get imports located within a  ``If TYPE_CHECKING`` block from the containing module of a referenced object"""
+def get_module_global_imports(module_import_path: str, reference_target_source_obj: str) -> set[str]:
+    """Return a set of names that are imported globally within the containing module of ``reference_target_source_obj``,
+    including imports in ``if TYPE_CHECKING`` blocks.
+    """
     module = importlib.import_module(module_import_path)
     obj = getattr(module, reference_target_source_obj)
-    tree = ast.parse(Path(inspect.getsourcefile(obj)).read_text())
+    tree = _get_module_ast(inspect.getsourcefile(obj))
 
-    if_nodes = (node for node in tree.body if isinstance(node, ast.If) and node.test.id == "TYPE_CHECKING")
-    import_nodes = (
-        node for if_node in if_nodes for node in if_node.body if isinstance(node, (ast.Import, ast.ImportFrom))
-    )
-    return {path for import_node in import_nodes for path in _import_node_to_paths(import_node)}
+    import_nodes = _get_import_nodes(tree.body)
+    return {path.asname or path.name for import_node in import_nodes for path in import_node.names}
 
 
 def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | None:
@@ -201,14 +209,16 @@ def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | No
 
     reference_target_source_obj = attributes.get("py:class", attributes.get("py:meth", attributes.get("py:func")))
 
-    if reference_target_source_obj and target in get_type_checking_imports(
-        attributes["py:module"], reference_target_source_obj
-    ):
-        # autodoc has issues with if TYPE_CHECKING imports, so we ignore those errors if we can validate that a
-        # name exists within such a block within the containing module.
-        # see: https://github.com/sphinx-doc/sphinx/issues/11225 and https://github.com/sphinx-doc/sphinx/issues/9813
-        # for reference
-        return True
+    if reference_target_source_obj:
+        global_names = get_module_global_imports(attributes["py:module"], reference_target_source_obj)
+
+        if target in global_names:
+            # autodoc has issues with if TYPE_CHECKING imports, and randomly with type aliases in annotations,
+            # so we ignore those errors if we can validate that such a name exists in the containing modules global
+            # scope or an if TYPE_CHECKING block.
+            # see: https://github.com/sphinx-doc/sphinx/issues/11225 and https://github.com/sphinx-doc/sphinx/issues/9813
+            # for reference
+            return True
 
     # for various other autodoc issues that can't be resolved automatically, we check the exact path to be able
     # to suppress specific warnings
@@ -218,6 +228,24 @@ def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | No
         return True
 
     return None
+
+
+def on_missing_reference(app: Sphinx, env: BuildEnvironment, node: pending_xref, contnode: Element):
+    if not hasattr(node, "attributes"):
+        return None
+
+    attributes = node.attributes  # type: ignore[attr-defined]
+    target = attributes["reftarget"]
+    py_domain = env.domains["py"]
+
+    # autodoc sometimes incorrectly resolves these types, so we try to resolve them as py:data fist and fall back to any
+    new_node = py_domain.resolve_xref(env, node["refdoc"], app.builder, "data", target, node, contnode)
+    if new_node is None:
+        resolved_xrefs = py_domain.resolve_any_xref(env, node["refdoc"], app.builder, target, node, contnode)
+        for ref in resolved_xrefs:
+            if ref:
+                return ref[1]
+    return new_node
 
 
 def on_env_before_read_docs(app: Sphinx, env: BuildEnvironment, docnames: set[str]) -> None:
@@ -230,6 +258,7 @@ def setup(app: Sphinx) -> dict[str, bool]:
     app.add_directive("literalinclude", LiteralInclude, override=True)
     app.add_directive("code-block", CodeBlockOverride, override=True)
     app.connect("env-before-read-docs", on_env_before_read_docs)
+    app.connect("missing-reference", on_missing_reference)
     app.connect("warn-missing-reference", on_warn_missing_reference)
     app.add_config_value("ignore_missing_refs", default={}, rebuild=False)
 

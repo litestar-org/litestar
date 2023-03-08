@@ -52,25 +52,12 @@ nitpicky = True
 nitpick_ignore = [
     ("py:class", "AnyIOBackend"),
     ("py:class", "T"),
-    ("py:class", "httpx.Client"),
-    ("py:class", "httpx.AsyncClient"),
     ("py:class", "BaseModel"),
     ("py:class", "redis.asyncio.Redis"),
     # internal types we don't document intentionally
     ("py:class", "RouteHandlerType"),
     ("py:obj", "starlite.security.base.AuthType"),
     ("py:class", "ControllerRouterHandler"),
-    # autodoc cannot link those in type hints for... reasons
-    ("py:class", "AfterRequestHookHandler"),
-    ("py:class", "AfterResponseHookHandler"),
-    ("py:class", "BeforeRequestHookHandler"),
-    ("py:class", "ExceptionHandlersMap"),
-    ("py:class", "Guard"),
-    ("py:class", "Middleware"),
-    ("py:class", "ParametersMap"),
-    ("py:class", "ResponseCookies"),
-    ("py:class", "ResponseType"),
-    ("py:class", "TypeEncodersMap"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.types.*"),
@@ -79,6 +66,7 @@ nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.security\.base\.UserType"),
     (r"py:.*", r"starlite\.middleware\.session\.base\.BaseSessionBackendT"),
     (r"py:obj", r"typing\..*"),
+    (r"py:.*", r"httpx.*"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
@@ -86,16 +74,9 @@ nitpick_ignore_regex = [
 # **/starlite/testing/client/async_client.py:docstring of starlite.testing.AsyncTestClient.exit_stack:1: WARNING: py:class reference target not found: AsyncExitStack
 # would be added as: "starlite.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
 ignore_missing_refs = {
-    # autodoc thinks it's a py:class: but it's a py:data. TODO: Fix this. Should be possible I think
-    # "starlite.router.Router.__init__": {"TypeEncodersMap"},
     # No idea what autodoc is doing here. Possibly unfixable on our end
-    "starlite.testing.BaseTestClient.blocking_portal": {"BlockingPortal"},
     "starlite.template.base.TemplateEngineProtocol.get_template": {"starlite.template.base.T_co"},
     "starlite.template": {"starlite.template.base.T_co"},
-    "starlite.testing.WebSocketTestSession.exit_stack": {"ExitStack"},
-    "starlite.testing.TestClient.exit_stack": {"ExitStack"},
-    "starlite.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
-    "starlite.security.session_auth.middleware.SessionAuthMiddleware.__init__": {"Scopes"},
 }
 
 auto_pytabs_min_version = (3, 8)
