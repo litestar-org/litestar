@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
-
-from typing_extensions import get_args
 
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
@@ -12,6 +9,8 @@ from starlite.new_dto import AbstractDTO
 from starlite.serialization import decode_json, decode_msgpack
 
 if TYPE_CHECKING:
+    from typing import Iterable
+
     from typing_extensions import Self
 
     from starlite.types.protocols import DataclassProtocol
