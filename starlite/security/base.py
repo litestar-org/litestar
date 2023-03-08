@@ -75,10 +75,10 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
         level.
 
         Args:
-            app_config: An instance of :class:`AppConfig <starlite.config.AppConfig>`
+            app_config: An instance of :class:`AppConfig <.config.app.AppConfig>`
 
         Returns:
-            The :class:`AppConfig <starlite.config.AppConfig>`.
+            The :class:`AppConfig <.config.app.AppConfig>`.
         """
         app_config.middleware.insert(0, self.middleware)
 
@@ -160,11 +160,11 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     def security_requirement(self) -> SecurityRequirement:  # pragma: no cover
         """Return OpenAPI 3.1.
 
-        :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
+        :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
         backend.
 
         Returns:
-            An OpenAPI 3.1 :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
+            An OpenAPI 3.1 :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
         """
         raise NotImplementedError
 

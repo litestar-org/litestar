@@ -30,6 +30,7 @@ intersphinx_mapping = {
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),
     "click": ("https://click.palletsprojects.com/en/8.1.x/", None),
     "redis": ("https://redis-py.readthedocs.io/en/stable/", None),
+    "pydantic_openapi_schema": ("https://starlite-api.github.io/pydantic-openapi-schema/", None),
 }
 
 
@@ -58,8 +59,15 @@ nitpick_ignore = [
     ("py:class", "BaseModel"),
     ("py:class", "RouteHandlerType"),
     ("py:class", "redis.asyncio.Redis"),
+    ("py:obj", "starlite.security.base.AuthType"),
 ]
-nitpick_ignore_regex = [(r"py:.*", r"starlite\.types.*"), (r"py:.*", r"starlite.*\.T")]
+nitpick_ignore_regex = [
+    (r"py:.*", r"starlite\.types.*"),
+    (r"py:.*", r"starlite.*\.T"),
+    (r"py:.*", r"starlite\.security\.base\.UserType"),
+    (r"py:.*", r"starlite\.middleware\.session\.base\.BaseSessionBackendT"),
+    (r"py:obj", r"typing\..*"),
+]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
 # The source of the references is taken 1:1 from the warnings as reported by Sphinx, e.g
@@ -72,6 +80,7 @@ ignore_missing_refs = {
     "starlite.testing.WebSocketTestSession.exit_stack": {"ExitStack"},
     "starlite.testing.TestClient.exit_stack": {"ExitStack"},
     "starlite.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
+    "starlite.security.session_auth.middleware.SessionAuthMiddleware.__init__": {"Scopes"},
 }
 
 auto_pytabs_min_version = (3, 8)

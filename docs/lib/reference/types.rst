@@ -173,6 +173,8 @@ Composite Types
 
 .. autodata:: starlite.types.PathType
 
+.. autodata:: starlite.types.Scopes
+
 
 File types
 ----------
