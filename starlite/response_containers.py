@@ -140,10 +140,9 @@ class File(ResponseContainer[FileResponse]):
     """The file_system spec to use loading the file.
 
     Notes:
-        - A file_system is a class that adheres to the
-            :class:`FileSystemProtocol <.types.FileSystemProtocol>`.
+        - A file_system is a class that adheres to the :class:`FileSystemProtocol <.types.FileSystemProtocol>`.
         - You can use any of the file systems exported from the
-            `fsspec <https://filesystem-spec.readthedocs.io/en/latest/)>`_ library for this purpose.
+          `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ library for this purpose.
     """
     file_info: FileInfo | None = field(default=None)
     """The output of calling :meth:`file_system.info <.types.FileSystemProtocol.info>`, equivalent to providing a
@@ -202,8 +201,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
     path: str
     """Redirection path."""
     background: BackgroundTask | BackgroundTasks | None = field(default=None)
-    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or.
-
+    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or 
     :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
     Defaults to None.
     """
@@ -242,7 +240,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
             request: A :class:`Request <.connection.Request>` instance.
 
         Returns:
-            A :class:`RedirectResponse <.response.RedirectResponse>`instance
+            A :class:`RedirectResponse <.response.RedirectResponse>` instance
         """
         return RedirectResponse(
             background=self.background,
@@ -340,21 +338,14 @@ class Template(ResponseContainer[TemplateResponse]):
     Defaults to None.
     """
     background: BackgroundTask | BackgroundTasks | None = field(default=None)
-    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or.
-
-    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
-    Defaults to None.
+    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or 
+    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished. Defaults to 
+    None.
     """
     headers: dict[str, Any] = field(default_factory=dict)
-    """A string/string dictionary of response headers.
-
-    Header keys are insensitive. Defaults to None.
-    """
+    """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
     cookies: list[Cookie] = field(default_factory=list)
-    """A list of Cookie instances to be set under the response ``Set-Cookie`` header.
-
-    Defaults to None.
-    """
+    """A list of Cookie instances to be set under the response ``Set-Cookie`` header. Defaults to None. """
     media_type: MediaType | str | None = field(default=None)
     """If defined, overrides the media type configured in the route decorator."""
     encoding: str = field(default="utf-8")

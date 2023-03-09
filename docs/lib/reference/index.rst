@@ -26,14 +26,15 @@ API reference
     openapi
     pagination
     params
+    partial
     plugins
     response
     response_containers
     router
     security/index
     serialization
+    static_files
     storage/index
     template
     testing
     types
-    static_files

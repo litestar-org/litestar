@@ -161,9 +161,9 @@ class AppConfig:
     response_class: ResponseType | None = field(default=None)
     """A custom subclass of :class:`Response <.response.Response>` to be used as the app's default response."""
     response_cookies: ResponseCookies = field(default_factory=list)  # type: ignore
-    """A list of :class:`Cookie <.datastructures.Cookie>`s."""
+    """A list of :class:`Cookie <.datastructures.Cookie>`\ s."""
     response_headers: Sequence[ResponseHeader] = field(default_factory=list)
-    """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`s."""
+    """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`\ s."""
     route_handlers: list[ControllerRouterHandler] = field(default_factory=list)
     """A required list of route handlers, which can include instances of :class:`Router <.router.Router>`,
     subclasses of :class:`Controller <.controller.Controller>` or any function decorated by the route handler

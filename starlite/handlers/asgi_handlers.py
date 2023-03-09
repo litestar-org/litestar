@@ -48,8 +48,8 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
                 ``/``
             is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path
                 accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
-                 ``/some-path/`` will accept requests for `/some-path/` and any sub path under this, e.g.
-                 ``/some-path/sub-path/`` etc.
+                ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.
+                ``/some-path/sub-path/`` etc.
             is_static: A boolean dictating whether the handler's paths should be regarded as static paths. Static paths
                 are used to deliver static files.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
