@@ -56,6 +56,7 @@ nitpick_ignore = [
     ("py:class", "T"),
     ("py:class", "C"),
     ("py:class", "BaseModel"),
+    ("py:class", "pydantic.generics.GenericModel"),
     ("py:class", "redis.asyncio.Redis"),
     # type vars
     ("py:class", "RouteHandlerType"),
@@ -75,6 +76,7 @@ nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.middleware\.session\.base\.BaseSessionBackendT"),
     (r"py:obj", r"typing\..*"),
     (r"py:.*", r"httpx.*"),
+    (r"py:,*", r"pydantic.*"),
     # type vars
     ("py:.*", r"starlite\.plugins\.ModelT"),
     ("py:.*", r"starlite\.plugins\.DataContainerT"),
