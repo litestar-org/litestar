@@ -185,9 +185,11 @@ class Controller:
     def validate_route_handlers(self, route_handlers: list[BaseRouteHandler]) -> None:
         """Validate that the combination of path and decorator method or type are unique on the controller.
 
-        :param route_handlers: The controller's route handlers.
-        :raises: ``ImproperlyConfiguredException``
-        :return: None.
+        Args:
+            route_handlers: The controller's route handlers.
+
+        Returns:
+            None.
         """
         paths: DefaultDict[str, set[str]] = defaultdict(set)
 

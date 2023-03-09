@@ -120,8 +120,7 @@ class FileStorage(Storage):
     async def delete_all(self) -> None:
         """Delete all stored values.
 
-        .. note::
-
+        Note:
             This deletes and recreates :attr:`FileStorage.path`
         """
 

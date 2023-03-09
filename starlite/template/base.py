@@ -54,7 +54,6 @@ def csrf_token(context: TemplateContext) -> str:
     Args:
         context: The template context.
 
-
     Returns:
         A CSRF token if the app level ``csrf_config`` is set, otherwise an empty string.
     """

@@ -451,7 +451,10 @@ class Starlite(Router):
     def openapi_schema(self) -> OpenAPI | None:
         """Access  the OpenAPI schema of the application.
 
-        :return: The :class:`OpenAPI` <pydantic_openapi_schema.open_api.OpenAPI> instance of the application's.
+        Returns:
+            The :class:`OpenAPI`
+            <pydantic_openapi_schema.open_api.OpenAPI> instance of the
+            application's.
         """
         if self.openapi_config and not self._openapi_schema:
             self._openapi_schema = self.openapi_config.to_openapi_schema()
@@ -475,10 +478,13 @@ class Starlite(Router):
 
         This method can be used to dynamically add endpoints to an application.
 
-        :param value: An instance of :class:`Router <starlite.router.Router>`, a subclass of
-                :class:`Controller <starlite.controller.Controller>` or any function decorated by the route handler decorators.
+        Args:
+            value: An instance of :class:`Router<starlite.router.Router>`, a subclass of
+                :class:`Controller <starlite.controller.Controller>` or
+                any function decorated by the route handler decorators.
 
-        :return: None
+        Returns:
+            None
         """
         routes = super().register(value=value)
 
@@ -517,11 +523,9 @@ class Starlite(Router):
 
                 from starlite import Starlite, get
 
-
                 @get("/", name="my-handler")
                 def handler() -> None:
                     pass
-
 
                 app = Starlite(route_handlers=[handler])
 
@@ -554,11 +558,9 @@ class Starlite(Router):
 
                 from starlite import Starlite, get
 
-
                 @get("/group/{group_id:int}/user/{user_id:int}", name="get_membership_details")
                 def get_membership_details(group_id: int, user_id: int) -> None:
                     pass
-
 
                 app = Starlite(route_handlers=[get_membership_details])
 
@@ -790,9 +792,12 @@ class Starlite(Router):
     async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
 
-        :param event_id: The ID of the event to emit, e.g 'my_event'.
-        :param args: args to pass to the listener(s).
-        :param kwargs: kwargs to pass to the listener(s)
-        :return: None
+        Args:
+            event_id: The ID of the event to emit, e.g 'my_event'.
+            *args: args to pass to the listener(s).
+            **kwargs: kwargs to pass to the listener(s)
+
+        Returns:
+            None
         """
         await self.event_emitter.emit(event_id, *args, **kwargs)

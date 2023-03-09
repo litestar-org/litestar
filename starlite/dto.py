@@ -184,11 +184,9 @@ class DTOFactory:
                 first: int
                 second: int
 
-
             MyClassDTO = DTOFactory()(
                 MyClass, exclude=["first"], field_mapping={"second": ("third", float)}
             )
-
 
         ``MyClassDTO`` is now equal to this:
 
@@ -197,7 +195,6 @@ class DTOFactory:
             class MyClassDTO(BaseModel):
                 third: float
 
-
         It can be used as a regular pydantic model:
 
         .. code-block: python
@@ -205,7 +202,6 @@ class DTOFactory:
             @post(path="/my-path")
             def create_obj(data: MyClassDTO) -> MyClass:
                 ...
-
 
         This will affect parsing, validation and how OpenAPI schema is generated exactly like when using a pydantic model.
 

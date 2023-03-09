@@ -7,9 +7,9 @@ import pytest
 from starlite import Request, get
 from starlite.logging.config import (
     LoggingConfig,
+    _get_default_handlers,
     default_handlers,
     default_picologging_handlers,
-    get_default_handlers,
 )
 from starlite.logging.picologging import (
     QueueListenerHandler as PicologgingQueueListenerHandler,
@@ -132,7 +132,7 @@ def test_connection_logger(handlers: Any, listener: Any) -> None:
 
 def test_validation() -> None:
     logging_config = LoggingConfig(handlers={}, loggers={})
-    assert logging_config.handlers["queue_listener"] == get_default_handlers()["queue_listener"]
+    assert logging_config.handlers["queue_listener"] == _get_default_handlers()["queue_listener"]
     assert logging_config.loggers["starlite"]
 
 
