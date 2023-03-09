@@ -201,7 +201,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
     path: str
     """Redirection path."""
     background: BackgroundTask | BackgroundTasks | None = field(default=None)
-    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or 
+    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
     :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
     Defaults to None.
     """
@@ -338,8 +338,8 @@ class Template(ResponseContainer[TemplateResponse]):
     Defaults to None.
     """
     background: BackgroundTask | BackgroundTasks | None = field(default=None)
-    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or 
-    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished. Defaults to 
+    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
+    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished. Defaults to
     None.
     """
     headers: dict[str, Any] = field(default_factory=dict)

@@ -255,9 +255,9 @@ class Starlite(Router):
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
             initial_state: An object from which to initialize the app state.
-            listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`\ s.
+            listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
             logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
-            middleware: A sequence of :class:`Middleware <.types.Middleware>`\ s.
+            middleware: A sequence of :class:`Middleware <.types.Middleware>`.
             multipart_form_part_limit: The maximal number of allowed parts in a multipart/formdata request. This limit
                 is intended to protect from DoS attacks.
             on_app_init: A sequence of :class:`OnAppInitHandler <.types.OnAppInitHandler>` instances. Handlers receive
@@ -278,8 +278,8 @@ class Starlite(Router):
             request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
                 response.
-            response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`\ s.
-            response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`\ s
+            response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
             route_handlers: A sequence of route handlers, which can include instances of
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
                 callable decorated by the route handler decorators.
