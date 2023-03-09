@@ -80,7 +80,7 @@ nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.types.*"),
     (r"py:.*", r"starlite.*\.T"),
     (r"py:.*", r".*R_co"),
-    (r"py:.*", r"starlite\.security\.base\.UserType"),
+    (r"py:.*", r".*UserType"),
     (r"py:.*", r"starlite\.middleware\.session\.base\.BaseSessionBackendT"),
     (r"py:obj", r"typing\..*"),
     (r"py:.*", r"httpx.*"),
