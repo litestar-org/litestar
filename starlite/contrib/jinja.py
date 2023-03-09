@@ -50,7 +50,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
             JinjaTemplate instance
 
         Raises:
-            :class:`TemplateNotFoundException <starlite.exceptions.TemplateNotFoundException>`: if no template is found.
+            TemplateNotFoundException: if no template is found.
         """
         try:
             return self.engine.get_template(name=template_name)
