@@ -35,6 +35,7 @@ intersphinx_mapping = {
     "structlog": ("https://www.structlog.org/en/stable/", None),
     "tortoise": ("https://tortoise.github.io/", None),
     "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest", None),
+    "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
 }
 
 
@@ -100,7 +101,6 @@ ignore_missing_refs = {
     "starlite.template.base.TemplateEngineProtocol.get_template": {"starlite.template.base.T_co"},
     "starlite.template": {"starlite.template.base.T_co"},
     "starlite.openapi.OpenAPIController.security": {"SecurityRequirement"},
-    "starlite.contrib.tortoise_orm.TortoiseORMPlugin.is_plugin_supported_type": {"Model"},
     "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
     "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
 }
