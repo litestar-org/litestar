@@ -278,17 +278,17 @@ select = [
 ]
 ignore = [
     "E501", # pycodestyle line too long, handled by black
-    "D100", # pydocstyle -missing docstring in public module
-    "D101", # pydocstyle -missing docstring in public class
-    "D102", # pydocstyle -missing docstring in public method
-    "D103", # pydocstyle -missing docstring in public function
-    "D104", # pydocstyle -missing docstring in public package
-    "D105", # pydocstyle -missing docstring in magic method
-    "D106", # pydocstyle -missing docstring in public nested class
-    "D107", # pydocstyle -missing docstring in __init__
-    "D202", # pydocstyle -no blank lines allowed after function docstring
-    "D205", # pydocstyle -1 blank line required between summary line and description
-    "D415", # pydocstyle -first line should end with a period, question mark, or exclamation point
+    "D100", # pydocstyle - missing docstring in public module
+    "D101", # pydocstyle - missing docstring in public class
+    "D102", # pydocstyle - missing docstring in public method
+    "D103", # pydocstyle - missing docstring in public function
+    "D104", # pydocstyle - missing docstring in public package
+    "D105", # pydocstyle - missing docstring in magic method
+    "D106", # pydocstyle - missing docstring in public nested class
+    "D107", # pydocstyle - missing docstring in __init__
+    "D202", # pydocstyle - no blank lines allowed after function docstring
+    "D205", # pydocstyle - 1 blank line required between summary line and description
+    "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
     "UP037", # pyupgrade - removes quotes from type annotation
     "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
     "B010" # flake8-bugbear - do not call setattr with a constant attribute value
