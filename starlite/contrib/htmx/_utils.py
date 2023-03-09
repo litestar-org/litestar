@@ -55,7 +55,7 @@ class HTMXHeaders(str, Enum):
     HISTORY_RESTORE_REQUEST = "HX-History-Restore-Request"
     PROMPT = "HX-Prompt"
     TARGET = "HX-Target"
-    TRIGGER_ID = "HX-Trigger"
+    TRIGGER_ID = "HX-Trigger"  # noqa: PIE796
     TRIGGER_NAME = "HX-Trigger-Name"
     TRIGGERING_EVENT = "Triggering-Event"
 

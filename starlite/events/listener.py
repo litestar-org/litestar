@@ -23,7 +23,7 @@ class EventListener:
         """Create a decorator for event handlers.
 
         Args:
-            event_id: The id of the event to listen to or a list of
+            *event_ids: The id of the event to listen to or a list of
                 event ids to listen to.
         """
         self.event_ids: list[str] = list(event_ids)

@@ -154,7 +154,9 @@ class LoggingMiddleware(AbstractMiddleware):
         if self.is_struct_logger:
             self.logger.info(message, **values)
         else:
-            self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))
+            value_strings = [f"{key}={value}" for key, value in values.items()]
+            log_message = f"{message}: {', '.join(value_strings)}"
+            self.logger.info(log_message)
 
     def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
         if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):

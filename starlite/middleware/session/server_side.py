@@ -12,7 +12,6 @@ from starlite.middleware.session.base import (
     BaseBackendConfig,
     BaseSessionBackend,
 )
-from starlite.storage.base import Storage
 from starlite.types import Empty, Message, Scopes, ScopeSession
 from starlite.utils.dataclass import extract_dataclass_fields
 
@@ -21,6 +20,7 @@ __all__ = ("ServerSideSessionBackend", "ServerSideSessionConfig")
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
+    from starlite.storage.base import Storage
 
 
 class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):

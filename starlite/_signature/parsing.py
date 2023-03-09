@@ -157,7 +157,7 @@ def parse_fn_signature(
         if parameter.name == "state" and not issubclass(parameter.annotation, ImmutableState):
             raise ImproperlyConfiguredException(
                 f"The type annotation `{parameter.annotation}` is an invalid type for the 'state' reserved kwarg. "
-                "It must be typed to a subclass of `starlite.datastructures.ImmutableState` or "
+                "It must be typed to a subclass of `st  arlite.datastructures.ImmutableState` or "
                 "`starlite.datastructures.State`."
             )
 

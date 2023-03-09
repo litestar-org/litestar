@@ -735,6 +735,7 @@ class Starlite(Router):
 
         Args:
             send: The ASGI send function.
+            scope: The ASGI scope.
 
         Returns:
             An ASGI send function.

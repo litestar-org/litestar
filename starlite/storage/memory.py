@@ -110,6 +110,7 @@ class MemoryStorage(Storage):
         """Get the time in seconds ``key`` expires in. If no such ``key`` exists or no
         expiry time was set, return ``None``.
         """
-        if storage_obj := self._store.get(key):
+        storage_obj = self._store.get(key)
+        if storage_obj and isinstance(storage_obj.expires_in, int):
             return storage_obj.expires_in
         return None

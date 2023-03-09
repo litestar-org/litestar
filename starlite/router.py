@@ -12,28 +12,7 @@ from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-from starlite.types import (
-    AfterRequestHookHandler,
-    AfterResponseHookHandler,
-    BeforeRequestHookHandler,
-    ControllerRouterHandler,
-    ExceptionHandlersMap,
-    Guard,
-    Middleware,
-    ParametersMap,
-    ResponseCookies,
-    ResponseType,
-    RouteHandlerMapItem,
-    RouteHandlerType,
-    TypeEncodersMap,
-)
-from starlite.utils import (
-    find_index,
-    is_class_and_subclass,
-    join_paths,
-    normalize_path,
-    unique,
-)
+from starlite.utils import find_index, is_class_and_subclass, join_paths, normalize_path, unique
 from starlite.utils.sync import AsyncCallable
 
 __all__ = ("Router",)
@@ -45,6 +24,21 @@ if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
     from starlite.routes import BaseRoute
+    from starlite.types import (
+        AfterRequestHookHandler,
+        AfterResponseHookHandler,
+        BeforeRequestHookHandler,
+        ControllerRouterHandler,
+        ExceptionHandlersMap,
+        Guard,
+        Middleware,
+        ParametersMap,
+        ResponseCookies,
+        ResponseType,
+        RouteHandlerMapItem,
+        RouteHandlerType,
+        TypeEncodersMap,
+    )
     from starlite.types.composite_types import ResponseHeaders
 
 

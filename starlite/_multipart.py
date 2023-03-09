@@ -37,7 +37,7 @@ from starlite.serialization import decode_json
 __all__ = ("parse_body", "parse_content_header", "parse_multipart_form")
 
 
-_token = r"([\w!#$%&'*+\-.^_`|~]+)"
+_token = r"([\w!#$%&'*+\-.^_`|~]+)"  # noqa: S105
 _quoted = r'"([^"]*)"'
 _param = re.compile(rf";\s*{_token}=(?:{_token}|{_quoted})", re.ASCII)
 _firefox_quote_escape = re.compile(r'\\"(?!; |\s*$)')

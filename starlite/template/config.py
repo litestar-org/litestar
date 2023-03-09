@@ -3,14 +3,15 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from functools import cached_property
 from inspect import isclass
-from typing import Callable, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Callable, Generic, TypeVar, cast
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.template import TemplateEngineProtocol
-from starlite.types import PathType
 
 __all__ = ("TemplateConfig",)
 
+if TYPE_CHECKING:
+    from starlite.types import PathType
 
 T = TypeVar("T", bound=TemplateEngineProtocol)
 

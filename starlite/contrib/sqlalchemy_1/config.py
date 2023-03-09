@@ -3,11 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
-from starlite.datastructures.state import State
-from starlite.exceptions import (
-    ImproperlyConfiguredException,
-    MissingDependencyException,
-)
+from starlite.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from starlite.logging.config import BaseLoggingConfig, LoggingConfig
 from starlite.serialization import decode_json, encode_json
 from starlite.utils import AsyncCallable
@@ -18,16 +14,8 @@ except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 
 from sqlalchemy import create_engine  # pylint: disable=wrong-import-order
-from sqlalchemy.ext.asyncio import (  # pylint: disable=wrong-import-order
-    AsyncEngine,
-    AsyncSession,
-    create_async_engine,
-)
-from sqlalchemy.orm import (  # pylint: disable=wrong-import-order
-    Query,
-    Session,
-    sessionmaker,
-)
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine  # pylint: disable=wrong-import-order
+from sqlalchemy.orm import Query, Session, sessionmaker  # pylint: disable=wrong-import-order
 
 __all__ = ("SQLAlchemyConfig", "SQLAlchemyEngineConfig", "SQLAlchemySessionConfig")
 
@@ -37,6 +25,7 @@ if TYPE_CHECKING:
     from sqlalchemy.future import Engine as FutureEngine
     from sqlalchemy.pool import Pool
 
+    from starlite.datastructures.state import State
     from starlite.types import BeforeMessageSendHookHandler, Message, Scope
 
     from .types import SessionMakerInstanceProtocol, SessionMakerTypeProtocol

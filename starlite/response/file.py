@@ -8,7 +8,6 @@ from urllib.parse import quote
 from zlib import adler32
 
 from starlite.constants import ONE_MEGABYTE
-from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.file_system import BaseLocalFileSystem, FileSystemAdapter
 from starlite.response.streaming import StreamingResponse
@@ -25,13 +24,8 @@ if TYPE_CHECKING:
 
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.datastructures.headers import ETag
-    from starlite.types import (
-        HTTPResponseBodyEvent,
-        PathType,
-        Receive,
-        ResponseCookies,
-        Send,
-    )
+    from starlite.enums import MediaType
+    from starlite.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Send
     from starlite.types.file_types import FileInfo, FileSystemProtocol
 
 

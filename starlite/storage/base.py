@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from msgspec import Struct
 from msgspec.msgpack import decode as msgpack_decode
@@ -85,21 +85,21 @@ class StorageObject(Struct):
             expires_in = timedelta(seconds=expires_in)
         return cls(
             data=data,
-            expires_at=(datetime.now() + expires_in) if expires_in else None,
+            expires_at=(datetime.now(tz=timezone.utc) + expires_in) if expires_in else None,
         )
 
     @property
     def expired(self) -> bool:
         """Return if the :class:`StorageObject` is expired"""
-        return self.expires_at is not None and datetime.now() >= self.expires_at
+        return self.expires_at is not None and datetime.now(tz=timezone.utc) >= self.expires_at
 
     @property
-    def expires_in(self) -> int:
+    def expires_in(self) -> float | int:
         """Return the expiry time of this ``StorageObject`` in seconds. If no expiry time
         was set, return ``-1``.
         """
         if self.expires_at:
-            return (self.expires_at - datetime.now()).seconds
+            return (self.expires_at - datetime.now(tz=timezone.utc)).total_seconds()
         return -1
 
     def to_bytes(self) -> bytes:

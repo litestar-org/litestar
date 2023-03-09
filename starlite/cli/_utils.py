@@ -316,9 +316,8 @@ def show_app_info(app: Starlite) -> None:  # pragma: no cover
 
     middlewares = []
     for middleware in app.middleware:
-        if isinstance(middleware, DefineMiddleware):
-            middleware = middleware.middleware
-        middlewares.append(get_name(middleware))
+        updated_middleware = middleware.middleware if isinstance(middleware, DefineMiddleware) else middleware
+        middlewares.append(get_name(updated_middleware))
     if middlewares:
         table.add_row("Middlewares", ", ".join(middlewares))
 
