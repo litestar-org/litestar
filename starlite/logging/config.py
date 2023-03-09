@@ -83,9 +83,13 @@ def _default_exception_logging_handler_factory(
 ) -> ExceptionLoggingHandler:
     """Create an exception logging handler function.
 
-    :param is_struct_logger: Whether the logger is a structlog instance.
-    :param traceback_line_limit: Maximal number of lines to log from the traceback.
-    :return: An exception logging handler.
+    Args:
+        is_struct_logger: Whether the logger is a structlog instance.
+        traceback_line_limit: Maximal number of lines to log from the
+            traceback.
+
+    Returns:
+        An exception logging handler.
     """
 
     def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:

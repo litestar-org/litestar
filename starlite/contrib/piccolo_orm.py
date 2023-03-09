@@ -77,7 +77,11 @@ class PiccoloORMPlugin(SerializationPluginProtocol[Table, BaseModel], OpenAPISch
     def to_openapi_schema(self, model_class: Type[Table]) -> "Schema":
         """Given a model class, transform it into an OpenAPI schema class.
 
-        :param model_class: A table class.
-        :return: An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+        Args:
+            model_class: A table class.
+
+        Returns:
+            An :class:`OpenAPI
+            <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
         """
         return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))

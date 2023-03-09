@@ -345,18 +345,15 @@ class LoggingMiddlewareConfig:
 
                 logging_middleware_config = LoggingMiddlewareConfig()
 
-
                 @get("/")
                 def my_handler(request: Request) -> None:
                     ...
-
 
                 app = Starlite(
                     route_handlers=[my_handler],
                     logging_config=logging_config,
                     middleware=[logging_middleware_config.middleware],
                 )
-
 
         Returns:
             An instance of DefineMiddleware including ``self`` as the config kwarg value.

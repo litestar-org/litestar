@@ -257,9 +257,7 @@ class HTTPRoute(BaseRoute):
         )
 
     def create_options_handler(self, path: str) -> HTTPRouteHandler:
-        """
-
-        Args:
+        """Args:
             path: The route path
 
         Returns:
@@ -267,8 +265,7 @@ class HTTPRoute(BaseRoute):
         """
 
         def options_handler(scope: Scope) -> Response:
-            """
-            Handler function for OPTIONS requests.
+            """Handler function for OPTIONS requests.
             Args:
                 scope: The ASGI Scope.
 

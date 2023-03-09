@@ -179,18 +179,15 @@ class WebSocketTestSession:
         return message
 
     def receive_text(self) -> str:
-        """
-
-        Returns:
-            A string value.
+        """Returns:
+        A string value.
         """
         message = self.receive()
         return cast("str", message.get("text", ""))
 
     def receive_bytes(self) -> bytes:
-        """
-        Returns:
-            A bytes string value.
+        """Returns:
+        A bytes string value.
         """
         message = self.receive()
         return cast("bytes", message.get("bytes", b""))

@@ -100,17 +100,14 @@ def create_test_client(
             from starlite import get
             from starlite.testing import create_test_client
 
-
             @get("/some-path")
             def my_handler() -> dict[str, str]:
                 return {"hello": "world"}
-
 
             def test_my_handler() -> None:
                 with create_test_client(my_handler) as client:
                     response == client.get("/some-path")
                     assert response.json() == {"hello": "world"}
-
 
     Args:
         route_handlers: A single handler or a sequence of route handlers, which can include instances of
@@ -295,11 +292,9 @@ def create_async_test_client(
             from starlite import get
             from starlite.testing import create_test_client
 
-
             @get("/some-path")
             def my_handler() -> dict[str, str]:
                 return {"hello": "world"}
-
 
             def test_my_handler() -> None:
                 with create_test_client(my_handler) as client:
