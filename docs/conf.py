@@ -31,6 +31,8 @@ intersphinx_mapping = {
     "click": ("https://click.palletsprojects.com/en/8.1.x/", None),
     "redis": ("https://redis-py.readthedocs.io/en/stable/", None),
     "pydantic_openapi_schema": ("https://starlite-api.github.io/pydantic-openapi-schema/", None),
+    "picologging": ("https://microsoft.github.io/picologging", None),
+    "structlog": ("https://www.structlog.org/en/stable/", None),
 }
 
 

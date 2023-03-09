@@ -12,11 +12,7 @@ from starlite.exceptions import (
 )
 from starlite.serialization import encode_json
 
-__all__ = (
-    "BaseLoggingConfig",
-    "LoggingConfig",
-    "StructLoggingConfig",
-)
+__all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
 
 
 if TYPE_CHECKING:
