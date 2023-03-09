@@ -4,9 +4,12 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from typing_extensions import get_args, get_origin
+from typing_extensions import Annotated, get_args, get_origin
 
 from starlite.enums import MediaType
+
+from .exc import InvalidAnnotation
+from .types import DTOConfig
 
 __all__ = ("AbstractDTO",)
 
@@ -24,7 +27,8 @@ class AbstractDTO(ABC, Generic[DataT]):
     """Base class for DTO types."""
 
     annotation: ClassVar[Any]
-    model_type: Any
+    config: ClassVar[DTOConfig]
+    model_type: ClassVar[Any]
 
     _postponed_cls_init_called: ClassVar[bool]
     """Used to bookkeep that logic in the ``postponed_cls_init()`` method is not executed multiple times."""
@@ -37,18 +41,27 @@ class AbstractDTO(ABC, Generic[DataT]):
         """
         self.data = data
 
-    def __class_getitem__(cls, item: TypeVar | Any) -> type[Self]:
+    def __class_getitem__(cls, item: TypeVar | type | type[Annotated[TypeVar | type, DTOConfig, ...]]) -> type[Self]:
         if isinstance(item, TypeVar):
             return cls
 
-        if isinstance(item, str):
-            raise TypeError("Forward reference not supported as type argument to DTO")
+        config: DTOConfig
+        if get_origin(item) is Annotated:
+            item, expected_config, *_ = get_args(item)
+            if not isinstance(expected_config, DTOConfig):
+                raise InvalidAnnotation("Annotation metadata must be an instance of `DTOConfig`.")
+            config = expected_config
+        else:
+            config = getattr(cls, "config", DTOConfig())
 
-        return type(
-            f"{cls.__name__}[{item}]",
-            (cls,),
-            {"annotation": item, "model_type": cls.get_model_type(item), "_postponed_cls_init_called": False},
-        )
+        if isinstance(item, str):
+            raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
+
+        cls_dict = {"config": config, "_postponed_cls_init_called": False}
+        if not isinstance(item, TypeVar):
+            cls_dict.update(annotation=item, model_type=cls.get_model_type(item))
+
+        return type(f"{cls.__name__}[{item}]", (cls,), cls_dict)
 
     @staticmethod
     def get_model_type(item: type) -> Any:
@@ -86,7 +99,7 @@ class AbstractDTO(ABC, Generic[DataT]):
             resolved_dto_annotation = resolved_handler_annotation
 
         if not issubclass(handler_type := cls.get_model_type(resolved_dto_annotation), cls.model_type):
-            raise ValueError(
+            raise InvalidAnnotation(
                 f"DTO annotation mismatch: DTO narrowed with '{cls.model_type}', handler type is '{handler_type}'"
             )
 

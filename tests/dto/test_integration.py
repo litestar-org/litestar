@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import List
+from typing import Any, List
 
-from starlite import post
+import pytest
+
+from starlite import Starlite, get, post
+from starlite.dto.exc import InvalidAnnotation
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
 
@@ -63,3 +66,21 @@ def test_dto_supported_iterable_data() -> None:
         post_response = client.post("/", content=b'[{"a":1,"b":"two"},{"a":3,"b":"four"}]')
         assert post_response.status_code == HTTP_201_CREATED
         assert post_response.json() == [{"a": 1, "b": "two"}, {"a": 3, "b": "four"}]
+
+
+def test_exception_if_incompatible_data_dto_type() -> None:
+    @post(path="/", data_dto=ExampleDTO[Model])
+    def post_handler(data: dict[str, Any]) -> None:
+        ...
+
+    with pytest.raises(InvalidAnnotation):
+        Starlite(route_handlers=[post_handler])
+
+
+def test_exception_if_incompatible_return_dto_type() -> None:
+    @get(return_dto=ExampleDTO[List[Model]])
+    def get_handler() -> list[int]:
+        return []
+
+    with pytest.raises(InvalidAnnotation):
+        Starlite(route_handlers=[get_handler])
