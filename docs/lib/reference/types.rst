@@ -177,6 +177,8 @@ Composite Types
 
 .. autoclass:: starlite.types.TypeEncodersMap
 
+.. autoclass:: starlite.types.ParametersMap
+
 
 File types
 ----------
