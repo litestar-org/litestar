@@ -137,10 +137,10 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
     def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
-        :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
+        :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
         backend.
 
         Returns:
-            An OpenAPI 3.1 :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
+            An OpenAPI 3.1 :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
         """
         return {"sessionCookie": []}

@@ -26,20 +26,32 @@ from starlite.exceptions import (
 )
 from starlite.plugins import InitPluginProtocol, SerializationPluginProtocol
 
+try:
+    import sqlalchemy  # nopycln: import # noqa: F401
+except ImportError as e:
+    raise MissingDependencyException("sqlalchemy is not installed") from e
+
+
+from sqlalchemy import inspect  # pylint: disable=wrong-import-order
+from sqlalchemy import types as sqlalchemy_type  # pylint: disable=wrong-import-order
+from sqlalchemy.dialects import (  # pylint: disable=wrong-import-order
+    mssql,
+    mysql,
+    oracle,
+    postgresql,
+    sqlite,
+)
+from sqlalchemy.exc import NoInspectionAvailable  # pylint: disable=wrong-import-order
+from sqlalchemy.orm import (  # pylint: disable=wrong-import-order
+    DeclarativeMeta,
+    InstanceState,
+    Mapper,
+)
+from sqlalchemy.sql.type_api import TypeEngine  # pylint: disable=wrong-import-order
+
 from .types import SQLAlchemyBinaryType
 
 __all__ = ("SQLAlchemyPlugin",)
-
-
-try:
-    from sqlalchemy import inspect
-    from sqlalchemy import types as sqlalchemy_type
-    from sqlalchemy.dialects import mssql, mysql, oracle, postgresql, sqlite
-    from sqlalchemy.exc import NoInspectionAvailable
-    from sqlalchemy.orm import DeclarativeMeta, InstanceState, Mapper
-    from sqlalchemy.sql.type_api import TypeEngine
-except ImportError as e:
-    raise MissingDependencyException("sqlalchemy is not installed") from e
 
 
 if TYPE_CHECKING:
@@ -47,7 +59,8 @@ if TYPE_CHECKING:
     from typing_extensions import TypeGuard
 
     from starlite.app import Starlite
-    from starlite.plugins.sql_alchemy.config import SQLAlchemyConfig
+
+    from .config import SQLAlchemyConfig
 
 
 class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[DeclarativeMeta, BaseModel]):
@@ -62,7 +75,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
         ORM types.
 
         Args:
-            config: Optional :class:`SQLAlchemyConfig <starlite.plugins.sql_alchemy.SQLAlchemyConfig>` instance. If
+            config: Optional :class:`SQLAlchemyConfig <.contrib.sqlalchemy_1.config.SQLAlchemyConfig>` instance. If
                 passed, the plugin will establish a DB connection and hook handlers and dependencies.
         """
         self._model_namespace_map: Dict[str, "Type[BaseModel]"] = {}
@@ -74,7 +87,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
         Executed on the application's init process.
 
         Args:
-            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
+            app: The :class:`Starlite <.app.Starlite>` application instance.
 
         Returns:
             None
@@ -175,8 +188,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
     def providers_map(self) -> Dict[Type[TypeEngine], Callable[[Union[TypeEngine, Type[TypeEngine]]], Any]]:
         """Map of SQLAlchemy column types to provider functions.
 
-        This method is separated to allow for easy overriding in
-        subclasses.
+        This method is separated to allow for easy overriding in subclasses.
 
         Returns
             A dictionary mapping SQLAlchemy types to callables.
@@ -313,7 +325,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
         }
 
     def get_pydantic_type(self, column_type: Any) -> Any:
-        """Given a 'Column.type' value, return a type supported by pydantic.
+        """Given a ``Column.type`` value, return a type supported by pydantic.
 
         Args:
             column_type: The type of the SQLColumn.
@@ -452,7 +464,6 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
             model_class: A table class.
 
         Returns:
-            An :class:`OpenAPI
-            <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
         """
         return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))

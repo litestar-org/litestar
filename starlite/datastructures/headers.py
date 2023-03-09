@@ -97,8 +97,8 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
 
 
 class MutableScopeHeaders(MutableMapping):
-    """A case-insensitive, multidict-like structure that can be used to mutate headers
-    within a :class:`Scope <starlite.types.Scope>`
+    """A case-insensitive, multidict-like structure that can be used to mutate headers within a
+    :class:`Scope <.types.Scope>`
     """
 
     def __init__(self, scope: Optional["HeaderScope"] = None) -> None:
@@ -121,7 +121,7 @@ class MutableScopeHeaders(MutableMapping):
         """Construct a header from a message object.
 
         Args:
-            message: :class:`Message <starlite.types.Message>`.
+            message: :class:`Message <.types.Message>`.
 
         Returns:
             MutableScopeHeaders.
@@ -382,7 +382,7 @@ class ETag(Header):
 
     @validator("value", always=True)
     def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:  # pylint: disable=no-self-argument
-        """Ensure that either value is set or the instance is for documentation_only."""
+        """Ensure that either value is set or the instance is for ``documentation_only``."""
         if values.get("documentation_only") or value is not None:
             return value
         raise ValueError("value must be set if documentation_only is false")

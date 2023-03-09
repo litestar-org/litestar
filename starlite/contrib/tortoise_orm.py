@@ -13,19 +13,20 @@ __all__ = ("TortoiseORMPlugin",)
 
 
 try:
-    from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
-
-    # isort: off
-    # See https://github.com/PyCQA/isort/issues/1950
-    from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
-        PydanticModel,  # pyright: ignore
-        pydantic_model_creator,  # pyright: ignore
-    )
-
-    # isort: on
-
+    import tortoise  # nopycln: import # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
+
+# isort: off
+# See https://github.com/PyCQA/isort/issues/1950
+from tortoise import Model, ModelMeta  # type: ignore[attr-defined] # pylint: disable=wrong-import-order
+
+from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]  # pylint: disable=wrong-import-order
+    PydanticModel,  # pyright: ignore
+    pydantic_model_creator,  # pyright: ignore
+)
+
+# isort: on
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import Schema
@@ -121,7 +122,6 @@ class TortoiseORMPlugin(SerializationPluginProtocol[Model, BaseModel], OpenAPISc
             model_class: A table class.
 
         Returns:
-            An :class:`OpenAPI
-            <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
         """
         return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))

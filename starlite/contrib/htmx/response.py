@@ -180,28 +180,23 @@ class HTMXTemplate(ResponseContainer[TemplateResponse]):
     Defaults to None.
     """
     background: BackgroundTask | BackgroundTasks | None = field(default=None)
-    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
-
-    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
-    Defaults to None.
+    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
+    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished. Defaults to
+    ``None``.
     """
     headers: dict[str, Any] = field(default_factory=dict)
-    """A string/string dictionary of response headers.
-
-    Header keys are insensitive. Defaults to None.
-    """
+    """A string/string dictionary of response headers.Header keys are insensitive. Defaults to ``None``."""
     cookies: list[Cookie] = field(default_factory=list)
-    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
-
-    Defaults to None.
+    """A list of :class:`Cookies <.datastructures.Cookie>` to be set under the response ``Set-Cookie`` header. Defaults
+    to ``None``.
     """
     media_type: MediaType | str | None = field(default=None)
     """If defined, overrides the media type configured in the route decorator."""
     encoding: str = field(default="utf-8")
     """The encoding to be used for the response headers."""
     push_url: PushUrlType | None = field(default=None)
-    """Either a string value specifying a URL to push to browser history or ``False`` to
-    prevent HTMX client from pushing a url to browser history."""
+    """Either a string value specifying a URL to push to browser history or ``False`` to prevent HTMX client from
+    pushing a url to browser history."""
     re_swap: ReSwapMethod | None = field(default=None)
     """Method value to instruct HTMX which swapping method to use."""
     re_target: str | None = field(default=None)
@@ -221,7 +216,7 @@ class HTMXTemplate(ResponseContainer[TemplateResponse]):
         app: Starlite,
         request: Request,
     ) -> TemplateResponse:
-        """Add HTMX headers and return a :class:`.response.TemplateResponse`."""
+        """Add HTMX headers and return a :class:`TemplateResponse <.response.TemplateResponse>`."""
 
         event: TriggerEventType | None = None
         if self.trigger_event:

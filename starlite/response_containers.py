@@ -47,9 +47,9 @@ class ResponseContainer(ABC, Generic[R_co]):
     """Generic response container."""
 
     background: BackgroundTask | BackgroundTasks | None
-    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
+    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or.
 
-    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
     Defaults to None.
     """
     headers: dict[str, Any]
@@ -58,7 +58,7 @@ class ResponseContainer(ABC, Generic[R_co]):
     Header keys are insensitive. Defaults to None.
     """
     cookies: list[Cookie]
-    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
+    """A list of Cookie instances to be set under the response ``Set-Cookie`` header.
 
     Defaults to None.
     """
@@ -80,10 +80,10 @@ class ResponseContainer(ABC, Generic[R_co]):
 
         Args:
             headers: A dictionary of headers.
-            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum.
+            media_type: A string or member of the :class:`MediaType <.enums.MediaType>` enum.
             status_code: A response status code.
-            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
-            request: A :class:`Request <starlite.connection.request.Request>` instance.
+            app: The :class:`Starlite <.app.Starlite>` application instance.
+            request: A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A Response Object
@@ -98,9 +98,9 @@ class File(ResponseContainer[FileResponse]):
     path: PathType
     """Path to the file to send."""
     background: BackgroundTask | BackgroundTasks | None = field(default=None)
-    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
+    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or.
 
-    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
     Defaults to None.
     """
     headers: dict[str, Any] = field(default_factory=dict)
@@ -109,7 +109,7 @@ class File(ResponseContainer[FileResponse]):
     Header keys are insensitive. Defaults to None.
     """
     cookies: list[Cookie] = field(default_factory=list)
-    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
+    """A list of Cookie instances to be set under the response ``Set-Cookie`` header.
 
     Defaults to None.
     """
@@ -129,10 +129,10 @@ class File(ResponseContainer[FileResponse]):
     content_disposition_type: Literal["attachment", "inline"] = field(default="attachment")
     """The type of the 'Content-Disposition'.
 
-    Either 'inline' or 'attachment'.
+    Either ``inline`` or ``attachment``.
     """
     etag: ETag | None = field(default=None)
-    """An optional :class:`ETag <starlite.datastructures.ETag>` instance.
+    """An optional :class:`ETag <.datastructures.ETag>` instance.
 
     If not provided, an etag will be automatically generated.
     """
@@ -140,13 +140,13 @@ class File(ResponseContainer[FileResponse]):
     """The file_system spec to use loading the file.
 
     Notes:
-        - A file_system is a class that adheres to the
-            :class:`FileSystemProtocol <starlite.types.FileSystemProtocol>`.
+        - A file_system is a class that adheres to the :class:`FileSystemProtocol <.types.FileSystemProtocol>`.
         - You can use any of the file systems exported from the
-            [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
+          `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ library for this purpose.
     """
     file_info: FileInfo | None = field(default=None)
-    """The output of calling `file_system.info(..)`, equivalent to providing a ``stat_result``."""
+    """The output of calling :meth:`file_system.info <.types.FileSystemProtocol.info>`, equivalent to providing a
+    :class`os.stat_result`."""
 
     def __post_init__(self) -> None:
         if not (
@@ -169,13 +169,13 @@ class File(ResponseContainer[FileResponse]):
 
         Args:
             headers: A dictionary of headers.
-            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum.
+            media_type: A string or member of the :class:`MediaType <.enums.MediaType>` enum.
             status_code: A response status code.
-            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
-            request: A :class:`Request <starlite.connection.request.Request>` instance.
+            app: The :class:`Starlite <.app.Starlite>` application instance.
+            request: A :class:`Request <.connection.Request>` instance.
 
         Returns:
-            A FileResponse instance
+            A :class:`FileResponse <.response.FileResponse>` instance
         """
         return FileResponse(
             background=self.background,
@@ -201,9 +201,8 @@ class Redirect(ResponseContainer[RedirectResponse]):
     path: str
     """Redirection path."""
     background: BackgroundTask | BackgroundTasks | None = field(default=None)
-    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
-
-    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
+    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
     Defaults to None.
     """
     headers: dict[str, Any] = field(default_factory=dict)
@@ -212,7 +211,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
     Header keys are insensitive. Defaults to None.
     """
     cookies: list[Cookie] = field(default_factory=list)
-    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
+    """A list of Cookie instances to be set under the response ``Set-Cookie`` header.
 
     Defaults to None.
     """
@@ -235,13 +234,13 @@ class Redirect(ResponseContainer[RedirectResponse]):
 
         Args:
             headers: A dictionary of headers.
-            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum.
+            media_type: A string or member of the :class:`MediaType <.enums.MediaType>` enum.
             status_code: A response status code.
-            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
-            request: A :class:`Request <starlite.connection.request.Request>` instance.
+            app: The :class:`Starlite <.app.Starlite>` application instance.
+            request: A :class:`Request <.connection.Request>` instance.
 
         Returns:
-            A RedirectResponse instance
+            A :class:`RedirectResponse <.response.RedirectResponse>` instance
         """
         return RedirectResponse(
             background=self.background,
@@ -259,9 +258,9 @@ class Stream(ResponseContainer[StreamingResponse]):
     iterator: StreamType[str | bytes] | Callable[[], StreamType[str | bytes]]
     """Iterator, Iterable,Generator or async Iterator, Iterable or Generator returning chunks to stream."""
     background: BackgroundTask | BackgroundTasks | None = field(default=None)
-    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
+    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or.
 
-    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
     Defaults to None.
     """
     headers: dict[str, Any] = field(default_factory=dict)
@@ -270,7 +269,7 @@ class Stream(ResponseContainer[StreamingResponse]):
     Header keys are insensitive. Defaults to None.
     """
     cookies: list[Cookie] = field(default_factory=list)
-    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
+    """A list of Cookie instances to be set under the response ``Set-Cookie`` header.
 
     Defaults to None.
     """
@@ -281,9 +280,6 @@ class Stream(ResponseContainer[StreamingResponse]):
 
     def __post_init__(self) -> None:
         """Set the iterator value by ensuring that the return value is iterable.
-
-        Args:
-            value: An iterable or callable returning an iterable.
 
         Returns:
             A sync or async iterable.
@@ -311,13 +307,13 @@ class Stream(ResponseContainer[StreamingResponse]):
 
         Args:
             headers: A dictionary of headers.
-            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum.
+            media_type: A string or member of the :class:`MediaType <.enums.MediaType>` enum.
             status_code: A response status code.
-            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
-            request: A :class:`Request <starlite.connection.request.Request>` instance.
+            app: The :class:`Starlite <.app.Starlite>` application instance.
+            request: A :class:`Request <.connection.Request>` instance.
 
         Returns:
-            A StreamingResponse instance
+            A :class:`StreamingResponse <.response.StreamingResponse>` instance
         """
 
         return StreamingResponse(
@@ -342,21 +338,14 @@ class Template(ResponseContainer[TemplateResponse]):
     Defaults to None.
     """
     background: BackgroundTask | BackgroundTasks | None = field(default=None)
-    """A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or.
-
-    :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
-    Defaults to None.
+    """A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
+    :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished. Defaults to
+    None.
     """
     headers: dict[str, Any] = field(default_factory=dict)
-    """A string/string dictionary of response headers.
-
-    Header keys are insensitive. Defaults to None.
-    """
+    """A string/string dictionary of response headers. Header keys are insensitive. Defaults to None."""
     cookies: list[Cookie] = field(default_factory=list)
-    """A list of Cookie instances to be set under the response 'Set-Cookie' header.
-
-    Defaults to None.
-    """
+    """A list of Cookie instances to be set under the response ``Set-Cookie`` header. Defaults to None. """
     media_type: MediaType | str | None = field(default=None)
     """If defined, overrides the media type configured in the route decorator."""
     encoding: str = field(default="utf-8")
@@ -374,17 +363,16 @@ class Template(ResponseContainer[TemplateResponse]):
 
         Args:
             headers: A dictionary of headers.
-            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum.
+            media_type: A string or member of the :class:`MediaType <.enums.MediaType>` enum.
             status_code: A response status code.
-            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
-            request: A :class:`Request <starlite.connection.request.Request>` instance.
+            app: The :class:`Starlite <.app.Starlite>` application instance.
+            request: A :class:`Request <.connection.Request>` instance.
 
         Raises:
-            :class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>`: if app.template_engine
-                is not configured.
+            ImproperlyConfiguredException: If ``Starlite.template_engine`` is not configured.
 
         Returns:
-            A TemplateResponse instance
+            A :class:`TemplateResponse <.response.TemplateResponse>` instance
         """
         if not app.template_engine:
             raise ImproperlyConfiguredException("Template engine is not configured")
@@ -404,7 +392,7 @@ class Template(ResponseContainer[TemplateResponse]):
         """Create a context object for the template.
 
         Args:
-            request: A :class:`Request <starlite.connection.request.Request>` instance.
+            request: A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A dictionary holding the template context

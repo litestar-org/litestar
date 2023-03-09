@@ -23,7 +23,8 @@ class ImmutableState(Mapping[str, Any]):
         """Initialize an ``ImmutableState`` instance.
 
         Args:
-             state: An object to initialize the state from. Can be a dict, an instance of 'ImmutableState', or a tuple of key value paris.
+             state: An object to initialize the state from. Can be a dict, an instance of :class:`ImmutableState`, or a tuple
+                of key value paris.
              deep_copy: Whether to 'deepcopy' the passed in state.
 
         Examples:

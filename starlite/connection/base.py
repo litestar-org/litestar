@@ -275,8 +275,8 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     def set_session(self, value: dict[str, Any] | BaseModel | EmptyType) -> None:
         """Set the session in the connection's ``Scope``.
 
-        If the :class:`Starlite SessionMiddleware <starlite.middleware.session.SessionMiddleware>` is
-        enabled, the session will be added to the response as a cookie header.
+        If the :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>` is enabled, the session will be added
+        to the response as a cookie header.
 
         Args:
             value: Dictionary or pydantic model instance for the session data.
@@ -289,8 +289,8 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     def clear_session(self) -> None:
         """Remove the session from the connection's ``Scope``.
 
-        If the :class:`Starlite SessionMiddleware <starlite.middleware.session.SessionMiddleware>` is
-        enabled, this will cause the session data to be cleared.
+        If the :class:`Starlite SessionMiddleware <.middleware.session.base.SessionMiddleware>` is enabled, this will cause
+        the session data to be cleared.
 
         Returns:
             None.

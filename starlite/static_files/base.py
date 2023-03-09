@@ -34,7 +34,7 @@ class StaticFiles:
         """Initialize the Application.
 
         Args:
-            is_html_mode: Flag dictating whether serving html. If true, the default file will be 'index.html'.
+            is_html_mode: Flag dictating whether serving html. If true, the default file will be ``index.html``.
             directories: A list of directories to serve files from.
             file_system: The file_system spec to use for serving files.
             send_as_attachment: Whether to send the file with a ``content-disposition`` header of
@@ -48,7 +48,7 @@ class StaticFiles:
     async def get_fs_info(
         self, directories: Sequence[PathType], file_path: str
     ) -> tuple[str, FileInfo] | tuple[None, None]:
-        """Return the resolved path and a :func:`stat_result <os.stat_result>`.
+        """Return the resolved path and a :class:`stat_result <os.stat_result>`.
 
         Args:
             directories: A list of directory paths.
@@ -56,7 +56,7 @@ class StaticFiles:
 
         Returns:
             A tuple with an optional resolved :class:`Path <anyio.Path>` instance and an optional
-            :func:`stat_result <os.stat_result>`.
+            :class:`stat_result <os.stat_result>`.
         """
         for directory in directories:
             try:

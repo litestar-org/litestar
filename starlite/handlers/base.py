@@ -79,14 +79,16 @@ class BaseRouteHandler(Generic[T]):
         """Initialize ``HTTPRouteHandler``.
 
         Args:
-            path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults to '/'
-            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
+            path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
+                to ``/``
+            dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
-            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
-            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
+            guards: A sequence of :class:`Guard <.types.Guard>` callables.
+            middleware: A sequence of :class:`Middleware <.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
-                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
+                wherever you have access to :class:`Request <.connection.Request>` or
+                :class:`ASGI Scope <.types.Scope>`.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -136,7 +138,7 @@ class BaseRouteHandler(Generic[T]):
     def ownership_layers(self) -> list[T | Controller | Router]:
         """Return the handler layers from the app down to the route handler.
 
-        app -> ... -> route handler
+        ``app -> ... -> route handler``
         """
         layers = []
 
@@ -209,7 +211,8 @@ class BaseRouteHandler(Generic[T]):
     def resolve_middleware(self) -> list[Middleware]:
         """Build the middleware stack for the RouteHandler and return it.
 
-        The middlewares are added from top to bottom (app -> router -> controller -> route handler) and then reversed.
+        The middlewares are added from top to bottom (``app -> router -> controller -> route handler``) and then
+        reversed.
         """
         resolved_middleware: list[Middleware] = []
         for layer in self.ownership_layers:

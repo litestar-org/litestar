@@ -9,7 +9,7 @@ __all__ = ("Cookie",)
 
 @dataclass
 class Cookie:
-    """Container class for defining a cookie using the 'Set-Cookie' header.
+    """Container class for defining a cookie using the ``Set-Cookie`` header.
 
     See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie for more details regarding this header.
     """
@@ -19,7 +19,7 @@ class Cookie:
     path: str = "/"
     """Path fragment that must exist in the request url for the cookie to be valid.
 
-    Defaults to '/'.
+    Defaults to ``/``.
     """
     value: str | None = field(default=None)
     """Value for the cookie, if none given defaults to empty string."""
@@ -32,7 +32,7 @@ class Cookie:
     secure: bool | None = field(default=None)
     """Https is required for the cookie."""
     httponly: bool | None = field(default=None)
-    """Forbids javascript to access the cookie via 'Document.cookie'."""
+    """Forbids javascript to access the cookie via ``document.cookie``."""
     samesite: Literal["lax", "strict", "none"] = field(default="lax")
     """Controls whether or not a cookie is sent with cross-site requests.
 
@@ -48,7 +48,7 @@ class Cookie:
         """Get a simple cookie object from the values.
 
         Returns:
-            A SimpleCookie instance.
+            A :class:`SimpleCookie <http.cookies.SimpleCookie>`
         """
         simple_cookie: SimpleCookie = SimpleCookie()
         simple_cookie[self.key] = self.value or ""
@@ -73,7 +73,7 @@ class Cookie:
         return self.simple_cookie.output(**kwargs).strip()
 
     def to_encoded_header(self) -> tuple[bytes, bytes]:
-        """Create encoded header for ASGI send.
+        """Create encoded header for ASGI ``send``.
 
         Returns:
             A two tuple of bytes.

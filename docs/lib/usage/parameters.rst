@@ -69,7 +69,7 @@ so using the `the parameter function`_:
     :language: python
 
 
-In the above example, :class:`Parameter <.params.Parameter>` is used to restrict the value of ``version`` to a range
+In the above example, :func:`Parameter <.params.Parameter>` is used to restrict the value of ``version`` to a range
 between 1 and 10, and then set the ``title``, ``description``, ``examples`` and ``externalDocs`` sections of the
 OpenAPI schema.
 
@@ -181,15 +181,11 @@ the ``cookie`` kwarg. Aside form this difference they work the same as query par
 
 
 
-The Parameter Function
+The Parameter function
 -----------------------
 
-:class:`Parameter <.params.Parameter>` is a wrapper on top of the
-pydantic `Field function <https://pydantic-docs.helpmanual.io/lib/usage/schema/#field-customization>`_ that extends it with a
-set of Starlite specific kwargs. As such, you can use most of the kwargs of *Field* with Parameter and have the same
-parsing and validation. The additional kwargs accepted by ``Parameter`` are passed to the resulting pydantic ``FieldInfo``
-as an ``extra`` dictionary and have no effect on the working of pydantic itself.
-
+:func:`Parameter <.params.Parameter>` is a helper function wrapping a parameter with extra information to be added to
+the OpenAPI schema.
 
 
 Layered Parameters

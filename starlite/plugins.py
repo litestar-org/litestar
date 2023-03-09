@@ -190,8 +190,7 @@ class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
             model_class: A model class.
 
         Returns:
-            An :class:`OpenAPI
-            <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
         """
         raise NotImplementedError()
 

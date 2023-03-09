@@ -83,7 +83,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
             MakoTemplate instance
 
         Raises:
-            :class:`TemplateNotFoundException <starlite.exceptions.TemplateNotFoundException>`: if no template is found.
+            TemplateNotFoundException: if no template is found.
         """
         try:
             return MakoTemplate(

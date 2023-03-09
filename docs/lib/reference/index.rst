@@ -10,29 +10,31 @@ API reference
     background_tasks
     cache
     config
-    connection/index
+    connection
     contrib/index
     controller
     data_extractors
-    datastructures/index
+    datastructures
     di
     dto
     enums
     events
-    exceptions/index
-    handlers/index
+    exceptions
+    handlers
+    logging/index
     middleware/index
     openapi
     pagination
     params
+    partial
     plugins
     response
     response_containers
     router
     security/index
     serialization
+    static_files
     storage/index
     template
     testing
     types
-    utils/index

@@ -496,7 +496,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
             extensions: Dictionary of ASGI extensions.
 
         Returns:
-            An :class:`WebSocketTestSession <starlite.testing.test_client.WebSocketTestSession>` instance.
+            A `WebSocketTestSession <starlite.testing.WebSocketTestSession>` instance.
         """
         url = urljoin("ws://testserver", url)
         default_headers: dict[str, str] = {}

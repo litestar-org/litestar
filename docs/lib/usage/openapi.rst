@@ -29,8 +29,8 @@ OpenAPI schema generation config
 --------------------------------
 
 OpenAPI schema generation is enabled by default. To configure it you can pass an instance of
-:class:`OpenAPIConfig <starlite.config.OpenAPIConfig>` to the :class:`Starlite constructor <starlite.app.Starlite>`
-using the ``openapi_config`` kwarg:
+:class:`OpenAPIConfig <.openapi.OpenAPIConfig>` to the :class:`Starlite <starlite.app.Starlite>` class using the
+``openapi_config`` kwarg:
 
 .. code-block:: python
 
@@ -218,13 +218,13 @@ This controller exposes the following endpoints:
     Serves the docs using `Stoplight Elements <https://github.com/stoplightio/elements>`_.
 
 Additionally, the root ``/schema/`` path is accessible, serving the site that is configured as the default in
-the :class:`OpenAPIConfig <starlite.config.OpenAPIConfig>`.
+the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`.
 
 Subclassing OpenAPIController
 +++++++++++++++++++++++++++++
 
-You can use your own subclass of :class:`OpenAPIController <starlite.openapi.controller.OpenAPIController>` by setting it as
-then controller to use in the :class:`OpenAPIConfig <starlite.config.OpenAPIConfig>` ``openapi_controller`` kwarg.
+You can use your own subclass of :class:`OpenAPIController <.openapi.controller.OpenAPIController>` by setting it as
+the controller to use in the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>` ``openapi_controller`` kwarg.
 
 For example, lets say we wanted to change the base path of the OpenAPI related endpoints from ``/schema`` to
 ``/api-docs``, in this case we'd the following:
