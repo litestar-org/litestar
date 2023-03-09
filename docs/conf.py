@@ -60,6 +60,7 @@ nitpick_ignore = [
     ("py:obj", "starlite.security.base.AuthType"),
     ("py:class", "ControllerRouterHandler"),
     ("py:class", "PathParameterDefinition"),
+    ("py:class", "BaseSessionBackendT"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.types.*"),
@@ -73,6 +74,7 @@ nitpick_ignore_regex = [
     ("py:.*", r"starlite\.plugins\.ModelT"),
     ("py:.*", r"starlite\.plugins\.DataContainerT"),
     ("py:.*", r"starlite\.pagination\.C"),
+    ("py:.*", "starlite.middleware.session.base.ConfigT"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.

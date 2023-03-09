@@ -125,8 +125,8 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
             scope: A scope, if applicable, from which to extract a serializer.
 
         Notes:
-            - The serializer will be extracted from ``scope`` or fall back
-              to :func:`default_serializer <starlite.utils.default_serializer>`
+            - The serializer will be extracted from ``scope`` or fall back to
+                :func:`default_serializer <.serialization.default_serializer>`
 
         Returns:
             ``data`` serialized as bytes.
