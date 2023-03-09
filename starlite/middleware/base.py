@@ -46,11 +46,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
 class DefineMiddleware:
     """Container enabling passing ``*args`` and ``**kwargs`` to Middleware class constructors and factory functions."""
 
-    __slots__ = (
-        "middleware",
-        "args",
-        "kwargs",
-    )
+    __slots__ = ("middleware", "args", "kwargs")
 
     def __init__(self, middleware: Callable[..., ASGIApp], *args: Any, **kwargs: Any) -> None:
         """Initialize ``DefineMiddleware``.
@@ -75,7 +71,7 @@ class DefineMiddleware:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
 
         Returns:
-            Calls :attr:`DefineMiddleware.middleware` and returns the ASGIApp created.
+            Calls :class:`DefineMiddleware.middleware <.DefineMiddleware>` and returns the ASGIApp created.
         """
 
         return self.middleware(*self.args, app=app, **self.kwargs)
