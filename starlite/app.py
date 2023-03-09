@@ -56,10 +56,10 @@ if TYPE_CHECKING:
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
+    from starlite.dto import AbstractDTO
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler  # noqa: TC004
     from starlite.logging.config import BaseLoggingConfig
-    from starlite.new_dto import AbstractDTO
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
     from starlite.template.config import TemplateConfig

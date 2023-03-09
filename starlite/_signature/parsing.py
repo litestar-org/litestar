@@ -13,8 +13,8 @@ from starlite._signature.models import PydanticSignatureModel, SignatureModel
 from starlite._signature.utils import get_fn_type_hints
 from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
 from starlite.datastructures import ImmutableState
+from starlite.dto import AbstractDTO
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.new_dto import AbstractDTO
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.plugins import (
     PluginMapping,

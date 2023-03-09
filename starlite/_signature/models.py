@@ -10,9 +10,9 @@ from typing_extensions import get_args, get_origin
 
 from starlite.connection import ASGIConnection, Request
 from starlite.constants import UNDEFINED_SENTINELS
+from starlite.dto import AbstractDTO
 from starlite.enums import ScopeType
 from starlite.exceptions import InternalServerException, ValidationException
-from starlite.new_dto import AbstractDTO
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.plugins import PluginMapping
 from starlite.types import Empty

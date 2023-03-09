@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
-    from starlite.new_dto import AbstractDTO
+    from starlite.dto import AbstractDTO
     from starlite.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,

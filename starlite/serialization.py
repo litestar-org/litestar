@@ -27,9 +27,9 @@ from pydantic import (
 from pydantic.color import Color
 from pydantic.json import decimal_encoder
 
+from starlite.dto import AbstractDTO
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
-from starlite.new_dto import AbstractDTO
 from starlite.types import Empty
 
 __all__ = ("dec_hook", "decode_json", "decode_msgpack", "default_serializer", "encode_json", "encode_msgpack")

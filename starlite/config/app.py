@@ -17,10 +17,10 @@ if TYPE_CHECKING:
     from starlite.connection import Request, WebSocket
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.di import Provide
+    from starlite.dto import AbstractDTO
     from starlite.events.emitter import BaseEventEmitterBackend
     from starlite.events.listener import EventListener
     from starlite.logging.config import BaseLoggingConfig
-    from starlite.new_dto import AbstractDTO
     from starlite.openapi.config import OpenAPIConfig
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig

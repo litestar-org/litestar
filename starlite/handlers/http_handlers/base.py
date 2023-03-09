@@ -58,7 +58,7 @@ if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.datastructures.headers import Header
     from starlite.di import Provide
-    from starlite.new_dto import AbstractDTO
+    from starlite.dto import AbstractDTO
     from starlite.plugins import SerializationPluginProtocol
     from starlite.types import MaybePartial  # nopycln: import # noqa: F401
 

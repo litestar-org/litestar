@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
 
+from starlite.dto import AbstractDTO
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
-from starlite.new_dto import AbstractDTO
 from starlite.serialization import decode_json, decode_msgpack
 
 if TYPE_CHECKING:

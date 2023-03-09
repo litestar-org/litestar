@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from starlite.app import Starlite
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
-    from starlite.new_dto import AbstractDTO
+    from starlite.dto import AbstractDTO
     from starlite.plugins import SerializationPluginProtocol
     from starlite.response import Response
     from starlite.response_containers import ResponseContainer

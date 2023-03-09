@@ -11,9 +11,9 @@ from starlite._parsers import (
     parse_url_encoded_form_data,
 )
 from starlite.datastructures.upload_file import UploadFile
+from starlite.dto.kwarg_extractor import create_dto_extractor
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
-from starlite.new_dto.kwarg_extractor import create_dto_extractor
 from starlite.params import BodyKwarg
 from starlite.types import Empty
 

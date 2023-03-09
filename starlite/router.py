@@ -45,7 +45,7 @@ if TYPE_CHECKING:
 
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
-    from starlite.new_dto import AbstractDTO
+    from starlite.dto import AbstractDTO
     from starlite.routes import BaseRoute
     from starlite.types import EmptyType
     from starlite.types.composite_types import ResponseHeaders
