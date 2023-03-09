@@ -59,6 +59,7 @@ nitpick_ignore = [
     ("py:class", "RouteHandlerType"),
     ("py:obj", "starlite.security.base.AuthType"),
     ("py:class", "ControllerRouterHandler"),
+    ("py:class", "PathParameterDefinition"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.types.*"),
@@ -82,6 +83,7 @@ ignore_missing_refs = {
     # No idea what autodoc is doing here. Possibly unfixable on our end
     "starlite.template.base.TemplateEngineProtocol.get_template": {"starlite.template.base.T_co"},
     "starlite.template": {"starlite.template.base.T_co"},
+    "starlite.openapi.OpenAPIController.security": {"SecurityRequirement"},
 }
 
 auto_pytabs_min_version = (3, 8)
