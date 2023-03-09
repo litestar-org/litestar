@@ -51,7 +51,7 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="utils" href="utils/index.html" />
+    <link rel="next" title="Migrating to Starlite" href="../migration/index.html" />
     <link rel="prev" title="testing" href="testing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
@@ -432,20 +432,15 @@
 <li class="toctree-l2"><a class="reference internal" href="background_tasks.html">background_tasks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cache.html">cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="config.html">config</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="connection/index.html">connection</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="connection/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="connection/request.html">request</a></li>
-<li class="toctree-l3"><a class="reference internal" href="connection/websocket.html">websocket</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="connection.html">connection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="contrib/htmx.html">HTMX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="contrib/sqlalchemy_1/config.html">config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="contrib/sqlalchemy_1/plugin.html">plugin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="contrib/sqlalchemy_1/types.html">types</a></li>
@@ -456,34 +451,20 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_extractors.html">data_extractors</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="datastructures/index.html">datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/cookie.html">cookie</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/headers.html">headers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/multi_dicts.html">multi_dicts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/response_header.html">response_header</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/state.html">state</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/url.html">url</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/upload_file.html">upload_file</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="di.html">di</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dto.html">dto</a></li>
 <li class="toctree-l2"><a class="reference internal" href="enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="events.html">events</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="exceptions/index.html">exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="exceptions/base_exceptions.html">base_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="exceptions/http_exceptions.html">http_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handlers.html">handlers</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="handlers/index.html">handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="handlers/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="handlers/asgi_handlers.html">asgi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="handlers/http_handlers.html">http</a></li>
-<li class="toctree-l3"><a class="reference internal" href="handlers/websocket_handlers.html">websocket</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="middleware/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/authentication.html">authentication</a></li>
@@ -492,7 +473,7 @@
 <li class="toctree-l3"><a class="reference internal" href="middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="middleware/session/server_side.html">server_side</a></li>
@@ -503,17 +484,19 @@
 <li class="toctree-l2"><a class="reference internal" href="openapi.html">openapi</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="partial.html">partial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plugins.html">plugins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="response.html">response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="router.html">router</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">serialization</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="static_files.html">static_files</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="storage/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="storage/memory.html">memory</a></li>
@@ -523,15 +506,9 @@
 <li class="toctree-l2"><a class="reference internal" href="template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">testing</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">types</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="utils/index.html">utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="utils/predicates.html">predicates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/sync.html">sync</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -710,12 +687,6 @@
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="starlite.types.WebSocketScope">
-<span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketScope</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;class</span> <span class="pre">'starlite.types.asgi_types.WebSocketScope'&gt;</span></em><a class="headerlink" href="#starlite.types.WebSocketScope" title="Permalink to this definition">#</a></dt>
-<dd><p>WebSocket-ASGI-scope.</p>
-</dd></dl>
-
-<dl class="py data">
 <dt class="sig sig-object py" id="starlite.types.HTTPScope">
 <span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">HTTPScope</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;class</span> <span class="pre">'starlite.types.asgi_types.HTTPScope'&gt;</span></em><a class="headerlink" href="#starlite.types.HTTPScope" title="Permalink to this definition">#</a></dt>
 <dd><p>HTTP-ASGI-scope.</p>
@@ -725,6 +696,12 @@
 <dt class="sig sig-object py" id="starlite.types.LifeSpanScope">
 <span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">LifeSpanScope</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;class</span> <span class="pre">'starlite.types.asgi_types.LifeSpanScope'&gt;</span></em><a class="headerlink" href="#starlite.types.LifeSpanScope" title="Permalink to this definition">#</a></dt>
 <dd><p>Lifespan-ASGI-scope.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="starlite.types.WebSocketScope">
+<span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">WebSocketScope</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;class</span> <span class="pre">'starlite.types.asgi_types.WebSocketScope'&gt;</span></em><a class="headerlink" href="#starlite.types.WebSocketScope" title="Permalink to this definition">#</a></dt>
+<dd><p>WebSocket-ASGI-scope.</p>
 </dd></dl>
 
 </section>
@@ -934,10 +911,22 @@
 <section id="helper-types">
 <h2>Helper Types<a class="headerlink" href="#helper-types" title="Permalink to this heading">#</a></h2>
 <p>Helper types are useful generic types that can be used.</p>
-<dl class="py data">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.types.SyncOrAsyncUnion">
 <span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">SyncOrAsyncUnion</span></span><a class="headerlink" href="#starlite.types.SyncOrAsyncUnion" title="Permalink to this definition">#</a></dt>
 <dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]]</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.types.AnyIOBackend">
+<span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">AnyIOBackend</span></span><a class="headerlink" href="#starlite.types.AnyIOBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal</span></code></a>[‘asyncio’, ‘trio’]</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.types.OptionalSequence">
+<span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">OptionalSequence</span></span><a class="headerlink" href="#starlite.types.OptionalSequence" title="Permalink to this definition">#</a></dt>
+<dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]]</p>
 </dd></dl>
 
 </section>
@@ -1079,13 +1068,13 @@ is added to the logging message.</p>
 </section>
 <section id="composite-types">
 <h2>Composite Types<a class="headerlink" href="#composite-types" title="Permalink to this heading">#</a></h2>
-<dl class="py data">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.types.Dependencies">
 <span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">Dependencies</span></span><a class="headerlink" href="#starlite.types.Dependencies" title="Permalink to this definition">#</a></dt>
 <dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]</p>
 </dd></dl>
 
-<dl class="py data">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.types.ExceptionHandlersMap">
 <span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">ExceptionHandlersMap</span></span><a class="headerlink" href="#starlite.types.ExceptionHandlersMap" title="Permalink to this definition">#</a></dt>
 <dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a>]], <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">ExceptionT</span></code>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]]</p>
@@ -1097,22 +1086,40 @@ is added to the logging message.</p>
 <dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[…], <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPScope</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketScope</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[…], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference internal" href="#starlite.types.HTTPRequestEvent" title="starlite.types.asgi_types.HTTPRequestEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRequestEvent</span></code></a>, <a class="reference internal" href="#starlite.types.HTTPDisconnectEvent" title="starlite.types.asgi_types.HTTPDisconnectEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPDisconnectEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketConnectEvent" title="starlite.types.asgi_types.WebSocketConnectEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketConnectEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketReceiveEvent" title="starlite.types.asgi_types.WebSocketReceiveEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketReceiveEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketDisconnectEvent" title="starlite.types.asgi_types.WebSocketDisconnectEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketDisconnectEvent</span></code></a>]]], <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference internal" href="#starlite.types.HTTPResponseStartEvent" title="starlite.types.asgi_types.HTTPResponseStartEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseStartEvent</span></code></a>, <a class="reference internal" href="#starlite.types.HTTPResponseBodyEvent" title="starlite.types.asgi_types.HTTPResponseBodyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseBodyEvent</span></code></a>, <a class="reference internal" href="#starlite.types.HTTPServerPushEvent" title="starlite.types.asgi_types.HTTPServerPushEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPServerPushEvent</span></code></a>, <a class="reference internal" href="#starlite.types.HTTPDisconnectEvent" title="starlite.types.asgi_types.HTTPDisconnectEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPDisconnectEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketAcceptEvent" title="starlite.types.asgi_types.WebSocketAcceptEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketAcceptEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketSendEvent" title="starlite.types.asgi_types.WebSocketSendEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketSendEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketResponseStartEvent" title="starlite.types.asgi_types.WebSocketResponseStartEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketResponseStartEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketResponseBodyEvent" title="starlite.types.asgi_types.WebSocketResponseBodyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketResponseBodyEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketCloseEvent" title="starlite.types.asgi_types.WebSocketCloseEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketCloseEvent</span></code></a>]], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]]], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]]], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPScope</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketScope</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[…], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference internal" href="#starlite.types.HTTPRequestEvent" title="starlite.types.asgi_types.HTTPRequestEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRequestEvent</span></code></a>, <a class="reference internal" href="#starlite.types.HTTPDisconnectEvent" title="starlite.types.asgi_types.HTTPDisconnectEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPDisconnectEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketConnectEvent" title="starlite.types.asgi_types.WebSocketConnectEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketConnectEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketReceiveEvent" title="starlite.types.asgi_types.WebSocketReceiveEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketReceiveEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketDisconnectEvent" title="starlite.types.asgi_types.WebSocketDisconnectEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketDisconnectEvent</span></code></a>]]], <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference internal" href="#starlite.types.HTTPResponseStartEvent" title="starlite.types.asgi_types.HTTPResponseStartEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseStartEvent</span></code></a>, <a class="reference internal" href="#starlite.types.HTTPResponseBodyEvent" title="starlite.types.asgi_types.HTTPResponseBodyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseBodyEvent</span></code></a>, <a class="reference internal" href="#starlite.types.HTTPServerPushEvent" title="starlite.types.asgi_types.HTTPServerPushEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPServerPushEvent</span></code></a>, <a class="reference internal" href="#starlite.types.HTTPDisconnectEvent" title="starlite.types.asgi_types.HTTPDisconnectEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPDisconnectEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketAcceptEvent" title="starlite.types.asgi_types.WebSocketAcceptEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketAcceptEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketSendEvent" title="starlite.types.asgi_types.WebSocketSendEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketSendEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketResponseStartEvent" title="starlite.types.asgi_types.WebSocketResponseStartEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketResponseStartEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketResponseBodyEvent" title="starlite.types.asgi_types.WebSocketResponseBodyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketResponseBodyEvent</span></code></a>, <a class="reference internal" href="#starlite.types.WebSocketCloseEvent" title="starlite.types.asgi_types.WebSocketCloseEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketCloseEvent</span></code></a>]], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]]], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Awaitable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]]], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Type</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]]</p>
 </dd></dl>
 
-<dl class="py data">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.types.ResponseCookies">
 <span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">ResponseCookies</span></span><a class="headerlink" href="#starlite.types.ResponseCookies" title="Permalink to this definition">#</a></dt>
 <dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]</p>
 </dd></dl>
 
-<dl class="py data">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.types.ResponseHeaders">
 <span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">ResponseHeaders</span></span><a class="headerlink" href="#starlite.types.ResponseHeaders" title="Permalink to this definition">#</a></dt>
 <dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]</p>
 </dd></dl>
 
-<dl class="py data">
+<dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.types.PathType">
 <span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">PathType</span></span><a class="headerlink" href="#starlite.types.PathType" title="Permalink to this definition">#</a></dt>
 <dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathLike</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="starlite.types.Scopes">
+<span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">Scopes</span></span><a class="headerlink" href="#starlite.types.Scopes" title="Permalink to this definition">#</a></dt>
+<dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Set</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Literal</span></code></a>[&lt;ScopeType.HTTP: ‘http’&gt;, &lt;ScopeType.WEBSOCKET: ‘websocket’&gt;]]</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.types.TypeEncodersMap">
+<span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">TypeEncodersMap</span></span><a class="headerlink" href="#starlite.types.TypeEncodersMap" title="Permalink to this definition">#</a></dt>
+<dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]]</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.types.ParametersMap">
+<span class="sig-prename descclassname"><span class="pre">starlite.types.</span></span><span class="sig-name descname"><span class="pre">ParametersMap</span></span><a class="headerlink" href="#starlite.types.ParametersMap" title="Permalink to this definition">#</a></dt>
+<dd><p>alias of <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code></a>]</p>
 </dd></dl>
 
 </section>
@@ -1203,7 +1210,7 @@ is added to the logging message.</p>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
 <p>Base protocol used to interact with a file-system.</p>
 <p>This protocol is commensurable with the file systems
-exported by the [fsspec](<a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">https://filesystem-spec.readthedocs.io/en/latest/</a>) library.</p>
+exported by the <cite>fsspec &lt;https://filesystem-spec.readthedocs.io/en/latest/&gt;</cite> library.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.types.FileSystemProtocol.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.types.FileSystemProtocol.__init__" title="Permalink to this definition">#</a></dt>
@@ -1211,7 +1218,7 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.types.FileSystemProtocol.info">
-<span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathType</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.types.FileInfo" title="starlite.types.file_types.FileInfo"><span class="pre">FileInfo</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.types.FileInfo" title="starlite.types.file_types.FileInfo"><span class="pre">FileInfo</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.types.FileSystemProtocol.info" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.types.PathType" title="starlite.types.PathType"><span class="pre">PathType</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.types.FileInfo" title="starlite.types.file_types.FileInfo"><span class="pre">FileInfo</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.11)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.types.FileInfo" title="starlite.types.file_types.FileInfo"><span class="pre">FileInfo</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.types.FileSystemProtocol.info" title="Permalink to this definition">#</a></dt>
 <dd><p>Retrieve information about a given file path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1228,9 +1235,9 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.types.FileSystemProtocol.open">
-<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpenBinaryMode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffering</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">IO</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'AsyncFile[bytes]'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.types.FileSystemProtocol.open" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.types.PathType" title="starlite.types.PathType"><span class="pre">PathType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpenBinaryMode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffering</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">IO</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'AsyncFile[bytes]'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.types.FileSystemProtocol.open" title="Permalink to this definition">#</a></dt>
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpenTextMode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffering</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">IO</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'AsyncFile[str]'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span></dt>
+<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.types.PathType" title="starlite.types.PathType"><span class="pre">PathType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OpenTextMode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffering</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">IO</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'AsyncFile[str]'</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span></dt>
 <dd><p>Return a file-like object from the filesystem.</p>
 <div class="admonition-notes admonition">
 <p class="admonition-title">Notes</p>
@@ -1269,10 +1276,10 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
           <p class="prev-next-title">testing</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="utils/index.html" title="next page">
+  <a class='right-next' id="next-link" href="../migration/index.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">utils</p>
+      <p class="prev-next-title">Migrating to Starlite</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
@@ -1513,15 +1520,6 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
-      <a class="reference internal nav-link" href="#starlite.types.WebSocketScope">
-       <code class="docutils literal notranslate">
-        <span class="pre">
-         WebSocketScope
-        </span>
-       </code>
-      </a>
-     </li>
-     <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#starlite.types.HTTPScope">
        <code class="docutils literal notranslate">
         <span class="pre">
@@ -1535,6 +1533,15 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
        <code class="docutils literal notranslate">
         <span class="pre">
          LifeSpanScope
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#starlite.types.WebSocketScope">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         WebSocketScope
         </span>
        </code>
       </a>
@@ -1839,6 +1846,24 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
      </code>
     </a>
    </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.types.AnyIOBackend">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AnyIOBackend
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.types.OptionalSequence">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       OptionalSequence
+      </span>
+     </code>
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -1995,6 +2020,33 @@ exported by the [fsspec](<a class="reference external" href="https://filesystem-
      <code class="docutils literal notranslate">
       <span class="pre">
        PathType
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.types.Scopes">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Scopes
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.types.TypeEncodersMap">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       TypeEncodersMap
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.types.ParametersMap">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ParametersMap
       </span>
      </code>
     </a>
