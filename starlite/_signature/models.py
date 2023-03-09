@@ -42,7 +42,6 @@ class SignatureField:
     __slots__ = (
         "children",
         "default_value",
-        "dto_supported",
         "extra",
         "field_type",
         "kwarg_model",

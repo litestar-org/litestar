@@ -4,19 +4,12 @@ from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
-from typing_extensions import get_args
-
 from starlite.datastructures import Cookie, ResponseHeader
-from starlite.dto import DTO
 from starlite.enums import HttpMethod
 from starlite.exceptions import ValidationException
 from starlite.plugins import get_plugin_for_value
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from starlite.utils import (
-    annotation_is_iterable_of_type,
-    is_async_callable,
-    is_class_and_subclass,
-)
+from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
@@ -55,7 +48,6 @@ def create_data_handler(
     headers: frozenset[ResponseHeader],
     media_type: str,
     response_class: ResponseType,
-    return_annotation: Any,
     status_code: int,
     type_encoders: TypeEncodersMap | None,
 ) -> AsyncAnyCallable:
@@ -65,8 +57,6 @@ def create_data_handler(
     ]
     cookie_headers = [cookie.to_encoded_header() for cookie in cookies if not cookie.documentation_only]
     raw_headers = [*normalized_headers, *cookie_headers]
-    is_dto_annotation = is_class_and_subclass(return_annotation, DTO)
-    is_dto_iterable_annotation = annotation_is_iterable_of_type(return_annotation, DTO)
 
     async def create_response(data: Any) -> "ASGIApp":
         response = response_class(
@@ -92,16 +82,7 @@ def create_data_handler(
         if return_dto:
             data = return_dto(data=data)
 
-        elif is_dto_annotation and not isinstance(data, DTO):
-            data = return_annotation(**data) if isinstance(data, dict) else return_annotation.from_model_instance(data)
-
-        elif is_dto_iterable_annotation and data and not isinstance(data[0], DTO):  # pyright: ignore
-            dto_type = cast("type[DTO]", get_args(return_annotation)[0])
-            data = [
-                dto_type(**datum) if isinstance(datum, dict) else dto_type.from_model_instance(datum) for datum in data
-            ]
-
-        elif plugins and not (is_dto_annotation or is_dto_iterable_annotation):
+        elif plugins:
             data = await normalize_response_data(data=data, plugins=plugins)
 
         return await create_response(data=data)

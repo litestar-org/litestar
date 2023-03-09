@@ -27,7 +27,7 @@ def test_app(app: Starlite) -> None:
     with TestClient(app=app) as client:
         assert client.get("/companies/1").status_code == 404
 
-        create_res = client.post("/companies", json={"name": "my company", "worth": 0.0})
+        create_res = client.post("/companies", json={"id": 1, "name": "my company", "worth": 0.0})
         company_id = create_res.json().get("id")
         assert create_res.status_code == 201
         assert company_id == 1
