@@ -102,31 +102,33 @@ class FileResponse(StreamingResponse):
         """Initialize ``FileResponse``
 
         Notes:
-            - This class extends the :class:`StreamingResponse <starlite.response.StreamingResponse>` class.
+            - This class extends the :class:`StreamingResponse <.response.StreamingResponse>` class.
 
         Args:
             path: A file path in one of the supported formats.
             status_code: An HTTP status code.
-            media_type: A value for the response 'Content-Type' header. If not provided, the value will be either
+            media_type: A value for the response ``Content-Type`` header. If not provided, the value will be either
                 derived from the filename if provided and supported by the stdlib, or will default to
-                'application/octet-stream'.
-            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
-                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+                ``application/octet-stream``.
+            background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
+                :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances to be set under the response 'Set-Cookie' header.
+            cookies: A list of :class:`Cookie <.datastructures.Cookie>` instances to be set under the response
+                ``Set-Cookie`` header.
             encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
             filename: An optional filename to set in the header.
-            stat_result: An optional result of calling 'os.stat'. If not provided, this will be done by the response
-                constructor.
+            stat_result: An optional result of calling :func:os.stat:. If not provided, this will be done by the
+                response constructor.
             chunk_size: The chunk sizes to use when streaming the file. Defaults to 1MB.
-            content_disposition_type: The type of the 'Content-Disposition'. Either ``inline`` or ``attachment``.
-            etag: An optional :class:`ETag <starlite.datastructures.ETag>` instance.
-                If not provided, an etag will be automatically generated.
-            file_system: An implementation of the :class:`FileSystemProtocol <starlite.types.FileSystemProtocol>`. If provided
+            content_disposition_type: The type of the ``Content-Disposition``. Either ``inline`` or ``attachment``.
+            etag: An optional :class:`ETag <.datastructures.ETag>` instance. If not provided, an etag will be
+                generated.
+            file_system: An implementation of the :class:`FileSystemProtocol <.types.FileSystemProtocol>`. If provided
                 it will be used to load the file.
-            file_info: The output of calling ``file_system.info(..)``, equivalent to providing a ``stat_result``.
+            file_info: The output of calling :meth:`file_system.info <types.FileSystemProtocol.info>`, equivalent to
+                providing an :class:`os.stat_result`.
         """
         if not media_type:
             mimetype, _ = guess_type(filename) if filename else (None, None)
@@ -162,7 +164,7 @@ class FileResponse(StreamingResponse):
         """Content disposition.
 
         Returns:
-            A value for the 'Content-Disposition' header.
+            A value for the ``Content-Disposition`` header.
         """
         quoted_filename = quote(self.filename)
         is_utf8 = quoted_filename == self.filename
@@ -175,7 +177,8 @@ class FileResponse(StreamingResponse):
         """Content length of the response if applicable.
 
         Returns:
-            Returns the value of 'self.stat_result.st_size' to populate the 'Content-Length' header.
+            Returns the value of :attr:`stat_result.st_size <os.stat_result.st_size>` to populate the ``Content-Length``
+                header.
         """
         if isinstance(self.file_info, dict):
             return self.file_info["size"]
