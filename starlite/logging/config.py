@@ -61,9 +61,9 @@ default_picologging_handlers: dict[str, dict[str, Any]] = {
 
 
 def get_logger_placeholder(_: str) -> NoReturn:  # pragma: no cover
-    """Raise an `ImproperlyConfiguredException."""
+    """Raise an :class:`ImproperlyConfiguredException <.exceptions.ImproperlyConfiguredException>`."""
     raise ImproperlyConfiguredException(
-        "To use 'app.get_logger', 'request.get_logger' or 'socket.get_logger' pass 'logging_config' to the Starlite constructor"
+        "To use :meth:`Starlite.get_logger <.app.Starlite.get_logger>`, :meth`request.get_logger <.connection.Request.get_logger>` or :class:`socket.get_logger <.connection.WebSocket.get_logger>` pass ``logging_config`` to the Starlite constructor"
     )
 
 
@@ -118,7 +118,7 @@ class BaseLoggingConfig(ABC):  # pragma: no cover
     __slots__ = ("log_exceptions", "traceback_line_limit", "exception_logging_handler")
 
     log_exceptions: Literal["always", "debug", "never"]
-    """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
+    """Should exceptions be logged, defaults to log exceptions when ``app.debug == True``'"""
     traceback_line_limit: int
     """Max number of lines to print for exception traceback"""
     exception_logging_handler: ExceptionLoggingHandler | None
