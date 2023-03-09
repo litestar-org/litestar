@@ -122,7 +122,6 @@ class TortoiseORMPlugin(SerializationPluginProtocol[Model, BaseModel], OpenAPISc
             model_class: A table class.
 
         Returns:
-            An :class:`OpenAPI
-            <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
         """
         return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))

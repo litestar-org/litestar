@@ -18,11 +18,15 @@ __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
 if TYPE_CHECKING:
     from typing import NoReturn
 
+    # these imports are duplicated on purpose so sphinx autodoc can find and link them
+    from structlog.types import BindableLogger, Processor, WrappedLogger
+
     from starlite.types import Logger, Scope
     from starlite.types.callable_types import ExceptionLoggingHandler, GetLogger
 
+
 try:
-    from structlog.types import BindableLogger, Processor, WrappedLogger
+    from structlog.types import BindableLogger, Processor, WrappedLogger  # noqa: F811
 except ImportError:
     BindableLogger = Any  # type: ignore
     Processor = Any  # type: ignore
@@ -281,7 +285,7 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Configuration class for structlog.
 
     Notes:
-        - requires 'structlog' to be installed.
+        - requires ``structlog`` to be installed.
     """
 
     processors: list[Processor] | None = field(default_factory=default_structlog_processors)  # pyright: ignore
