@@ -39,15 +39,7 @@ class CacheObject:
 class RateLimitMiddleware(AbstractMiddleware):
     """Rate-limiting middleware."""
 
-    __slots__ = (
-        "app",
-        "cache",
-        "check_throttle_handler",
-        "max_requests",
-        "unit",
-        "request_quota",
-        "config",
-    )
+    __slots__ = ("app", "cache", "check_throttle_handler", "max_requests", "unit", "request_quota", "config")
 
     cache: Cache
 
@@ -129,7 +121,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """Get a cache-key from a ``Request``
 
         Args:
-            request: A :class:`Request <starlite.connection.Request>` instance.
+            request: A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A cache key.
@@ -152,7 +144,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             key: Cache key.
 
         Returns:
-            An instance of StorageObject.
+            An :class:`CacheObject`.
         """
         duration = DURATION_VALUES[self.unit]
         now = int(time())
@@ -173,7 +165,7 @@ class RateLimitMiddleware(AbstractMiddleware):
 
         Args:
             key: Cache key.
-            cache_object: An instance of StorageObject.
+            cache_object: A :class:`CacheObject`.
 
         Returns:
             None
@@ -185,7 +177,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """Return a boolean indicating if a request should be checked for rate limiting.
 
         Args:
-            request: A :class:`Request <starlite.connection.Request>` instance.
+            request: A :class:`Request <.connection.Request>` instance.
 
         Returns:
             Boolean dictating whether the request should be checked for rate-limiting.
@@ -198,10 +190,10 @@ class RateLimitMiddleware(AbstractMiddleware):
         """Create ratelimit response headers.
 
         Notes:
-            * see the :func:`IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>`
+            * see the `IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>_`
 
         Args:
-            cache_object: An instance of Cache Object.
+            cache_object:A :class:`CacheObject`.
 
         Returns:
             A dict of http headers.
@@ -270,6 +262,7 @@ class RateLimitConfig:
                 app = Starlite(route_handlers=[my_handler], middleware=[throttle_config.middleware])
 
         Returns:
-            An instance of DefineMiddleware including ``self`` as the config kwarg value.
+            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>` including ``self`` as the
+            config kwarg value.
         """
         return DefineMiddleware(self.middleware_class, config=self)
