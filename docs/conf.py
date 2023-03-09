@@ -90,6 +90,10 @@ nitpick_ignore_regex = [
     ("py:.*", r"starlite\.pagination\.C"),
     ("py:.*", r"starlite.middleware.session.base.ConfigT"),
     ("py:.*", r"multidict\..*"),
+    (r"py:.*", r"starlite\.connection\.base\.UserT"),
+    (r"py:.*", r"starlite\.connection\.base\.AuthT"),
+    (r"py:.*", r"starlite\.connection\.base\.StateT"),
+    (r"py:.*", r"starlite\.connection\.base\.HandlerT"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
