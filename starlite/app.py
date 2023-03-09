@@ -479,8 +479,7 @@ class Starlite(Router):
         This method can be used to dynamically add endpoints to an application.
 
         Args:
-            value: An instance of :class:`Router
-                <starlite.router.Router>`, a subclass of
+            value: An instance of :class:`Router<starlite.router.Router>`, a subclass of
                 :class:`Controller <starlite.controller.Controller>` or
                 any function decorated by the route handler decorators.
 
