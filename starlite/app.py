@@ -120,7 +120,7 @@ class HandlerIndex(TypedDict):
     identifier: str
     """Unique identifier of the handler.
 
-    Either equal to :attr`__name__ <obj.__name__>` attribute or :meth:`__str__ <obj.__str__>` value of the handler.
+    Either equal to :attr`__name__ <obj.__name__>` attribute or ``__str__`` value of the handler.
     """
 
 
@@ -275,7 +275,7 @@ class Starlite(Router):
             parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
                 paths.
             plugins: Sequence of plugins.
-            request_class: An optional subclass of :class:`Request <.connection..Request>` to use for http connections.
+            request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
                 response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`s.
@@ -292,7 +292,7 @@ class Starlite(Router):
                 application.
             template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            websocket_class: An optional subclass of :class:`WebSocket <.connection..WebSocket>` to use for websocket
+            websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
         """
         self._openapi_schema: OpenAPI | None = None
