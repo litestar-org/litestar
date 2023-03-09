@@ -9,15 +9,12 @@ from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginPro
 __all__ = ("PiccoloORMPlugin",)
 
 try:
-    pass
+    import piccolo  # nopycln: import # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("piccolo orm is not installed") from e
 
-from piccolo.table import (  # pylint: disable=wrong-import-order,wrong-import-position
-    Table,
-    TableMetaclass,
-)
-from piccolo.utils.pydantic import (  # pylint: disable=wrong-import-order,wrong-import-position
+from piccolo.table import Table, TableMetaclass  # pylint: disable=wrong-import-order
+from piccolo.utils.pydantic import (  # pylint: disable=wrong-import-order
     create_pydantic_model,
 )
 
