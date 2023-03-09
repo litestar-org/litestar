@@ -61,9 +61,9 @@ default_picologging_handlers: dict[str, dict[str, Any]] = {
 
 
 def get_logger_placeholder(_: str) -> NoReturn:  # pragma: no cover
-    """Raise an :class:`ImproperlyConfiguredException <.exceptions.ImproperlyConfiguredException>`."""
+    """Raise: An :class:`ImproperlyConfiguredException <.exceptions.ImproperlyConfiguredException>`"""
     raise ImproperlyConfiguredException(
-        "To use :meth:`Starlite.get_logger <.app.Starlite.get_logger>`, :meth`request.get_logger <.connection.Request.get_logger>` or :class:`socket.get_logger <.connection.WebSocket.get_logger>` pass ``logging_config`` to the Starlite constructor"
+        "cannot call '.get_logger' without passing 'logging_config' to the Starlite constructor first"
     )
 
 
