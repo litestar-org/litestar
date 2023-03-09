@@ -34,6 +34,7 @@ intersphinx_mapping = {
     "picologging": ("https://microsoft.github.io/picologging", None),
     "structlog": ("https://www.structlog.org/en/stable/", None),
     "tortoise": ("https://tortoise.github.io/", None),
+    "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest", None),
 }
 
 

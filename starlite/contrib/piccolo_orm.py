@@ -9,10 +9,17 @@ from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginPro
 __all__ = ("PiccoloORMPlugin",)
 
 try:
-    from piccolo.table import Table, TableMetaclass
-    from piccolo.utils.pydantic import create_pydantic_model
+    pass
 except ImportError as e:
     raise MissingDependencyException("piccolo orm is not installed") from e
+
+from piccolo.table import (  # pylint: disable=wrong-import-order,wrong-import-position
+    Table,
+    TableMetaclass,
+)
+from piccolo.utils.pydantic import (  # pylint: disable=wrong-import-order,wrong-import-position
+    create_pydantic_model,
+)
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import Schema
