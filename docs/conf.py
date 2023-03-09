@@ -33,6 +33,7 @@ intersphinx_mapping = {
     "pydantic_openapi_schema": ("https://starlite-api.github.io/pydantic-openapi-schema/", None),
     "picologging": ("https://microsoft.github.io/picologging", None),
     "structlog": ("https://www.structlog.org/en/stable/", None),
+    "tortoise": ("https://tortoise.github.io/", None),
 }
 
 
@@ -94,6 +95,7 @@ ignore_missing_refs = {
     "starlite.template.base.TemplateEngineProtocol.get_template": {"starlite.template.base.T_co"},
     "starlite.template": {"starlite.template.base.T_co"},
     "starlite.openapi.OpenAPIController.security": {"SecurityRequirement"},
+    "starlite.contrib.tortoise_orm.TortoiseORMPlugin.is_plugin_supported_type": {"Model"},
 }
 
 auto_pytabs_min_version = (3, 8)
