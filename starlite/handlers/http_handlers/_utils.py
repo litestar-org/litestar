@@ -218,10 +218,7 @@ def normalize_http_method(http_methods: HttpMethod | Method | Sequence[HttpMetho
         http_methods = [http_methods]  # pyright: ignore
 
     for method in http_methods:
-        if isinstance(method, HttpMethod):
-            method_name = method.value.upper()
-        else:
-            method_name = method.upper()
+        method_name = method.value.upper() if isinstance(method, HttpMethod) else method.upper()
         if method_name not in HTTP_METHOD_NAMES:
             raise ValidationException(f"Invalid HTTP method: {method_name}")
         output.add(method_name)

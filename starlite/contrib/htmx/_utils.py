@@ -94,10 +94,7 @@ def get_push_url_header(url: PushUrlType) -> dict[str, Any]:
 
 def get_replace_url_header(url: PushUrlType) -> dict[str, Any]:
     """Return headers for replace url in browser tab response."""
-    if isinstance(url, str):
-        url = url if url != "False" else "false"
-    else:
-        url = "false"
+    url = (url if url != "False" else "false") if isinstance(url, str) else "false"
     return {HTMXHeaders.REPLACE_URL: url}
 
 

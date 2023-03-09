@@ -1,4 +1,4 @@
-from examples.request_data.request_data_1 import app as app
+from examples.request_data.request_data_1 import app
 from examples.request_data.request_data_2 import app as app_2
 from examples.request_data.request_data_3 import app as app_3
 from examples.request_data.request_data_4 import app as app_4

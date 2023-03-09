@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
-from starlite.datastructures.state import State  # noqa: TC001
+from starlite.datastructures.state import State
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,

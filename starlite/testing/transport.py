@@ -187,8 +187,8 @@ class TestClientTransport(Generic[T]):
 
             stream = ByteStream(raw_kwargs.pop("stream", BytesIO()).read())
             response = Response(**raw_kwargs, stream=stream, request=request)
-            setattr(response, "template", context["template"])  # noqa: B010
-            setattr(response, "context", context["context"])  # noqa: B010
+            setattr(response, "template", context["template"])
+            setattr(response, "context", context["context"])
             return response
 
     async def handle_async_request(self, request: "Request") -> "Response":

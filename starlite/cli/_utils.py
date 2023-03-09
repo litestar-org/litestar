@@ -93,10 +93,7 @@ class StarliteEnv:
         except ImportError:
             pass
 
-        if not app_path:
-            loaded_app = _autodiscover_app(getenv("STARLITE_APP"), cwd)
-        else:
-            loaded_app = _load_app_from_path(app_path)
+        loaded_app = _autodiscover_app(getenv("STARLITE_APP"), cwd) if not app_path else _load_app_from_path(app_path)
 
         port = getenv("STARLITE_PORT")
         web_concurrency = getenv("WEB_CONCURRENCY")

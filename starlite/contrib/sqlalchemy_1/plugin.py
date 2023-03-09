@@ -190,7 +190,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
 
         This method is separated to allow for easy overriding in subclasses.
 
-        Returns
+        Returns:
             A dictionary mapping SQLAlchemy types to callables.
         """
         return {

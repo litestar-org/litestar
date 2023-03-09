@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 
 from httpx._content import encode_json as httpx_encode_json
 from httpx._content import encode_multipart_data, encode_urlencoded_data
-from httpx._types import FileTypes  # noqa: TC002
+from httpx._types import FileTypes
 from pydantic import BaseModel
 
 from starlite.app import Starlite

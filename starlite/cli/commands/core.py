@@ -116,10 +116,7 @@ def routes_command(app: Starlite) -> None:  # pragma: no cover
                     branch.add(" ".join(handler_info))
 
         else:
-            if isinstance(route, WebSocketRoute):
-                route_type = "WS"
-            else:
-                route_type = "ASGI"
+            route_type = "WS" if isinstance(route, WebSocketRoute) else "ASGI"
             branch = tree.add(f"[green]{route.path}[/green] ({route_type})")
             branch.add(f"[blue]{route.route_handler.name or route.route_handler.handler_name}[/blue]")
 

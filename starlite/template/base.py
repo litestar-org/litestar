@@ -112,6 +112,7 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
 
     def get_template(self, template_name: str) -> T_co:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
+
         Args:
             template_name: A dotted path
 

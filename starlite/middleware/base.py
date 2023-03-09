@@ -129,7 +129,7 @@ class AbstractMiddleware:
                 await original__call__(self, scope, receive, send)
 
         # https://github.com/python/mypy/issues/2427#issuecomment-384229898
-        setattr(cls, "__call__", wrapped_call)  # noqa: B010
+        setattr(cls, "__call__", wrapped_call)
 
     @abstractmethod
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:

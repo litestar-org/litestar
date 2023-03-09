@@ -132,7 +132,7 @@ class BaseRouteHandler(Generic[T]):
     def dependency_name_set(self) -> set[str]:
         """Set of all dependency names provided in the handler's ownership layers."""
         layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
-        return {name for layer in layered_dependencies for name in layer.keys()}
+        return {name for layer in layered_dependencies for name in layer}
 
     @property
     def ownership_layers(self) -> list[T | Controller | Router]:

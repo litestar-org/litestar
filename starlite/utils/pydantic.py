@@ -31,10 +31,7 @@ _type_model_map: dict[type[Any], type[BaseModel]] = {}
 
 def convert_dataclass_to_model(dataclass_or_instance: DataclassClassOrInstance) -> type[BaseModel]:
     """Convert a dataclass or dataclass instance to a pydantic model and memoize the result."""
-    if not isinstance(dataclass_or_instance, type):
-        dataclass = type(dataclass_or_instance)
-    else:
-        dataclass = dataclass_or_instance
+    dataclass = type(dataclass_or_instance) if not isinstance(dataclass_or_instance, type) else dataclass_or_instance
 
     existing = _type_model_map.get(dataclass)
     if not existing:

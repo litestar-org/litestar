@@ -93,7 +93,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
             header_list = self._header_list = _encode_headers(
                 (key, value) for key in set(self) for value in self.getall(key)
             )
-        return header_list  # noqa: R504
+        return header_list
 
 
 class MutableScopeHeaders(MutableMapping):

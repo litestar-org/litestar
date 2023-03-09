@@ -238,7 +238,7 @@ class HTTPRoute(BaseRoute):
         cached_response = await cache.get(key=cache_key)
 
         if cached_response:
-            return cast("ASGIApp", pickle.loads(cached_response))  # nosec # noqa: SCS113
+            return cast("ASGIApp", pickle.loads(cached_response))  # nosec
 
         return None
 
@@ -266,6 +266,7 @@ class HTTPRoute(BaseRoute):
 
         def options_handler(scope: Scope) -> Response:
             """Handler function for OPTIONS requests.
+
             Args:
                 scope: The ASGI Scope.
 

@@ -60,7 +60,7 @@ class StaticFiles:
         """
         for directory in directories:
             try:
-                joined_path = join(directory, file_path)  # noqa: PL118
+                joined_path = join(directory, file_path)
                 file_info = await self.adapter.info(joined_path)
                 if file_info and commonpath([str(directory), file_info["name"], joined_path]) == str(directory):
                     return joined_path, file_info
@@ -84,7 +84,7 @@ class StaticFiles:
 
         split_path = scope["path"].split("/")
         filename = split_path[-1]
-        joined_path = join(*split_path)  # noqa: PL118
+        joined_path = join(*split_path)
         resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=joined_path)
         content_disposition_type: Literal["inline", "attachment"] = (
             "attachment" if self.send_as_attachment else "inline"

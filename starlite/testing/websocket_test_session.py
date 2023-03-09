@@ -167,6 +167,7 @@ class WebSocketTestSession:
 
         Notes:
             - you can use one of the other receive methods to extract the data from the message.
+
         Returns:
             A websocket message.
         """
