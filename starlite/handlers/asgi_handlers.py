@@ -39,14 +39,17 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
 
         Args:
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
-            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
+            guards: A sequence of :class:`Guard <.types.Guard>` callables.
             name: A string identifying the route handler.
-            opt: A string key mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
-                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
-            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to '/'
-            is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path accept
-                any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path `/some-path/`
-                will accept requests for `/some-path/` and any sub path under this, e.g. `/some-path/sub-path/` etc.
+            opt: A string key mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
+                wherever you have access to :class:`Request <.connection.Request>` or
+                :class:`ASGI Scope <.types.Scope>`.
+            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to
+                ``/``
+            is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path
+                accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
+                 ``/some-path/`` will accept requests for `/some-path/` and any sub path under this, e.g.
+                 ``/some-path/sub-path/`` etc.
             is_static: A boolean dictating whether the handler's paths should be regarded as static paths. Static paths
                 are used to deliver static files.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.

@@ -63,6 +63,9 @@ nitpick_ignore = [
     ("py:class", "ControllerRouterHandler"),
     ("py:class", "PathParameterDefinition"),
     ("py:class", "BaseSessionBackendT"),
+    # intentionally undocumented
+    ("py:class", "NoneType"),
+    ("py:class", "starlite._signature.models.SignatureField"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.types.*"),
