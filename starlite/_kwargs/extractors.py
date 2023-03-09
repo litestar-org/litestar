@@ -312,7 +312,7 @@ def create_multipart_extractor(
             if body_kwarg_multipart_form_part_limit is not None
             else connection.app.multipart_form_part_limit
         )
-        connection.scope["_form"] = form_values = (  # type: ignore[typeddict-item]
+        connection.scope["_form"] = form_values = (  # type: ignore[typeddict-unknown-key]
             connection.scope["_form"]  # type: ignore[typeddict-item]
             if "_form" in connection.scope
             else parse_multipart_form(
@@ -347,7 +347,7 @@ def create_url_encoded_data_extractor(
     async def extract_url_encoded_extractor(
         connection: "Request[Any, Any, Any]",
     ) -> Any:
-        connection.scope["_form"] = form_values = (  # type: ignore[typeddict-item]
+        connection.scope["_form"] = form_values = (  # type: ignore[typeddict-unknown-key]
             connection.scope["_form"]  # type: ignore[typeddict-item]
             if "_form" in connection.scope
             else parse_url_encoded_form_data(await connection.body())
