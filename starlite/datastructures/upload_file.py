@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class UploadFile:
-    """Representation of a file upload, modifying the pydantic schema."""
+    """Representation of a file upload"""
 
     __slots__ = ("filename", "file", "content_type", "headers")
 
