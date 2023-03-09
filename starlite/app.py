@@ -98,12 +98,12 @@ if TYPE_CHECKING:
     )
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
-"""The default OpenAPI config used if not configuration is explicitly passed to the :class:`Starlite
-<starlite.app.Starlite>` instance constructor.
+"""The default OpenAPI config used if not configuration is explicitly passed to the
+:class:`Starlite <.app.Starlite>` instance constructor.
 """
 DEFAULT_CACHE_CONFIG = CacheConfig()
-"""The default cache config used if not configuration is explicitly passed to the :class:`Starlite
-<starlite.app.Starlite>` instance constructor.
+"""The default cache config used if not configuration is explicitly passed to the
+:class:`Starlite <.app.Starlite>` instance constructor.
 """
 
 
