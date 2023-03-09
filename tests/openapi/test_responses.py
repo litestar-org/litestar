@@ -248,11 +248,15 @@ def test_additional_responses_overlap_with_other_responses() -> None:
     class OkResponse(BaseModel):
         pass
 
-    @get(responses={200: ResponseSpec(model=OkResponse)})
+    @get(responses={200: ResponseSpec(model=OkResponse, description="Overwritten response")})
     def handler() -> Person:
         return PersonFactory.build()
 
-    create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
+    responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
+
+    assert responses is not None
+    assert responses["200"] is not None
+    assert responses["200"].description == "Overwritten response"
 
 
 def test_create_response_for_response_subclass() -> None:
