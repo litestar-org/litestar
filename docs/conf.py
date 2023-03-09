@@ -52,9 +52,10 @@ nitpicky = True
 nitpick_ignore = [
     ("py:class", "AnyIOBackend"),
     ("py:class", "T"),
+    ("py:class", "C"),
     ("py:class", "BaseModel"),
     ("py:class", "redis.asyncio.Redis"),
-    # internal types we don't document intentionally
+    # type vars
     ("py:class", "RouteHandlerType"),
     ("py:obj", "starlite.security.base.AuthType"),
     ("py:class", "ControllerRouterHandler"),
@@ -67,6 +68,10 @@ nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.middleware\.session\.base\.BaseSessionBackendT"),
     (r"py:obj", r"typing\..*"),
     (r"py:.*", r"httpx.*"),
+    # type vars
+    ("py:.*", r"starlite\.plugins\.ModelT"),
+    ("py:.*", r"starlite\.plugins\.DataContainerT"),
+    ("py:.*", r"starlite\.pagination\.C"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
