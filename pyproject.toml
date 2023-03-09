@@ -249,7 +249,7 @@ select = [
     "C90", # mccabe
     "D", # pydocstyle
     "DJ", # flake8-django
-    "DTZ",
+    "DTZ", # flake8-datetimez
     "E", # pycodestyle errors
     "ERA", # eradicate
     "EXE", # flake8-executable
