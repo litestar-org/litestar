@@ -17,9 +17,7 @@ if TYPE_CHECKING:
 
 
 class HTMXDetails:
-    """HTMXDetails holds all the values sent by HTMX client in headers
-    and provide convenient properties.
-    """
+    """HTMXDetails holds all the values sent by HTMX client in headers and provide convenient properties."""
 
     def __init__(self, request: Request) -> None:
         """Initialize :class:`HTMXDetails`"""
