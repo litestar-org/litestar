@@ -53,19 +53,23 @@ autodoc_typehints_format = "short"
 
 nitpicky = True
 nitpick_ignore = [
-    ("py:class", "AnyIOBackend"),
-    ("py:class", "T"),
-    ("py:class", "C"),
+    # external library / undocumented external
     ("py:class", "BaseModel"),
     ("py:class", "pydantic.main.BaseModel"),
     ("py:class", "pydantic.generics.GenericModel"),
     ("py:class", "redis.asyncio.Redis"),
-    # type vars
+    ("py:class", "sqlalchemy.orm.decl_api.DeclarativeMeta"),
+    ("py:class", "sqlalchemy.sql.sqltypes.TupleType"),
+    ("py:class", "sqlalchemy.dialects.postgresql.named_types.ENUM"),
+    # type vars and aliases / intentionally undocumented
     ("py:class", "RouteHandlerType"),
     ("py:obj", "starlite.security.base.AuthType"),
     ("py:class", "ControllerRouterHandler"),
     ("py:class", "PathParameterDefinition"),
     ("py:class", "BaseSessionBackendT"),
+    ("py:class", "AnyIOBackend"),
+    ("py:class", "T"),
+    ("py:class", "C"),
     # intentionally undocumented
     ("py:class", "NoneType"),
     ("py:class", "starlite._signature.models.SignatureField"),
@@ -96,6 +100,8 @@ ignore_missing_refs = {
     "starlite.template": {"starlite.template.base.T_co"},
     "starlite.openapi.OpenAPIController.security": {"SecurityRequirement"},
     "starlite.contrib.tortoise_orm.TortoiseORMPlugin.is_plugin_supported_type": {"Model"},
+    "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
+    "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
 }
 
 auto_pytabs_min_version = (3, 8)

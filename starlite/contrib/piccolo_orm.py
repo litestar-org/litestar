@@ -8,7 +8,6 @@ from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginPro
 
 __all__ = ("PiccoloORMPlugin",)
 
-
 try:
     from piccolo.table import Table, TableMetaclass
     from piccolo.utils.pydantic import create_pydantic_model
