@@ -1,3 +1,4 @@
+from __future__ import annotations
 from secrets import token_hex
 from typing import TYPE_CHECKING
 
