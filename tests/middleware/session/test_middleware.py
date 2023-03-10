@@ -1,5 +1,4 @@
-from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Optional
 
 from starlite import HttpMethod, Request, get, post, route
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
@@ -25,7 +24,7 @@ def test_session_middleware_not_installed_raises() -> None:
 
 def test_integration(session_backend_config: "BaseBackendConfig") -> None:
     @route("/session", http_method=[HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE])
-    def session_handler(request: Request) -> dict[str, bool] | None:
+    def session_handler(request: Request) -> Optional[Dict[str, bool]]:
         if request.method == HttpMethod.GET:
             return {"has_session": request.session != {}}
 
@@ -74,7 +73,7 @@ def test_set_empty(session_backend_config: "BaseBackendConfig") -> None:
         assert not client.get_session_data()
 
 
-def get_session_installed(request: Request) -> dict[str, bool]:
+def get_session_installed(request: Request) -> Dict[str, bool]:
     return {"has_session": "session" in request.scope}
 
 
@@ -82,15 +81,15 @@ def test_middleware_exclude_pattern(session_backend_config_memory: "ServerSideSe
     session_backend_config_memory.exclude = ["north", "south"]
 
     @get("/north")
-    def north_handler(request: Request) -> dict[str, bool]:
+    def north_handler(request: Request) -> Dict[str, bool]:
         return get_session_installed(request)
 
     @get("/south")
-    def south_handler(request: Request) -> dict[str, bool]:
+    def south_handler(request: Request) -> Dict[str, bool]:
         return get_session_installed(request)
 
     @get("/west")
-    def west_handler(request: Request) -> dict[str, bool]:
+    def west_handler(request: Request) -> Dict[str, bool]:
         return get_session_installed(request)
 
     with create_test_client(
@@ -109,11 +108,11 @@ def test_middleware_exclude_pattern(session_backend_config_memory: "ServerSideSe
 
 def test_middleware_exclude_flag(session_backend_config_memory: "ServerSideSessionConfig") -> None:
     @get("/north")
-    def north_handler(request: Request) -> dict[str, bool]:
+    def north_handler(request: Request) -> Dict[str, bool]:
         return get_session_installed(request)
 
     @get("/south", skip_session=True)
-    def south_handler(request: Request) -> dict[str, bool]:
+    def south_handler(request: Request) -> Dict[str, bool]:
         return get_session_installed(request)
 
     with create_test_client(
@@ -131,11 +130,11 @@ def test_middleware_exclude_custom_key(session_backend_config_memory: "ServerSid
     session_backend_config_memory.exclude_opt_key = "my_exclude_key"
 
     @get("/north")
-    def north_handler(request: Request) -> dict[str, bool]:
+    def north_handler(request: Request) -> Dict[str, bool]:
         return get_session_installed(request)
 
     @get("/south", my_exclude_key=True)
-    def south_handler(request: Request) -> dict[str, bool]:
+    def south_handler(request: Request) -> Dict[str, bool]:
         return get_session_installed(request)
 
     with create_test_client(

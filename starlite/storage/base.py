@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+
+from typing import Optional
+
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, timezone
 
@@ -75,7 +78,7 @@ class Storage(ABC):  # pragma: no cover
 class StorageObject(Struct):
     """:class:`msgspec.Struct` to store serialized data alongside with their expiry time."""
 
-    expires_at: datetime | None
+    expires_at: Optional[datetime]  # noqa: UP007
     data: bytes
 
     @classmethod
