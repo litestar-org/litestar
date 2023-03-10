@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Sequence
 
-from starlite.cache.config import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.events.emitter import SimpleEventEmitter
+from starlite.config.cache import CacheConfig
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement

@@ -9,6 +9,7 @@ from starlite.enums import ScopeType
 from starlite.exceptions import TooManyRequestsException
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.serialization import decode_json, encode_json
+from starlite.storage.memory import MemoryStorage
 from starlite.utils import AsyncCallable
 
 __all__ = ("CacheObject", "RateLimitConfig", "RateLimitMiddleware")
@@ -17,9 +18,10 @@ __all__ = ("CacheObject", "RateLimitConfig", "RateLimitMiddleware")
 if TYPE_CHECKING:
     from typing import Awaitable
 
-    from starlite.cache import Cache
     from starlite.connection import Request
     from starlite.types import ASGIApp, Message, Receive, Scope, Send, SyncOrAsyncUnion
+    from starlite.storage.base import Storage
+
 
 DurationUnit = Literal["second", "minute", "hour", "day"]
 
@@ -39,9 +41,7 @@ class CacheObject:
 class RateLimitMiddleware(AbstractMiddleware):
     """Rate-limiting middleware."""
 
-    __slots__ = ("app", "cache", "check_throttle_handler", "max_requests", "unit", "request_quota", "config")
-
-    cache: Cache
+    __slots__ = ("app", "check_throttle_handler", "max_requests", "unit", "request_quota", "config", "storage")
 
     def __init__(self, app: ASGIApp, config: RateLimitConfig) -> None:
         """Initialize ``RateLimitMiddleware``.
@@ -55,6 +55,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         )
         self.check_throttle_handler = cast("Callable[[Request], Awaitable[bool]] | None", config.check_throttle_handler)
         self.config = config
+        self.storage = config.storage
         self.max_requests: int = config.rate_limit[1]
         self.unit: DurationUnit = config.rate_limit[0]
 
@@ -69,9 +70,6 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        if not hasattr(self, "cache"):
-            self.cache = scope["app"].cache
-
         request: Request[Any, Any, Any] = scope["app"].request_class(scope)
         if await self.should_check_request(request=request):
             key = self.cache_key_from_request(request=request)
@@ -148,7 +146,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """
         duration = DURATION_VALUES[self.unit]
         now = int(time())
-        cached_string = await self.cache.get(key)
+        cached_string = await self.storage.get(key)
         if cached_string:
             cache_object = CacheObject(**decode_json(cached_string))
             if cache_object.reset <= now:
@@ -171,7 +169,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             None
         """
         cache_object.history = [int(time()), *cache_object.history]
-        await self.cache.set(key, encode_json(cache_object), expiration=DURATION_VALUES[self.unit])
+        await self.storage.set(key, encode_json(cache_object), expires_in=DURATION_VALUES[self.unit])
 
     async def should_check_request(self, request: "Request[Any, Any, Any]") -> bool:
         """Return a boolean indicating if a request should be checked for rate limiting.
@@ -236,7 +234,8 @@ class RateLimitConfig:
     """Key to use for the rate limit reset header."""
     rate_limit_limit_header_key: str = field(default="RateLimit-Limit")
     """Key to use for the rate limit limit header."""
-    cache_key_builder: Callable[[Request], str] | None = field(default=None)
+    storage: Storage = field(default_factory=MemoryStorage)
+    """Storage to use to retain request information"""
 
     def __post_init__(self) -> None:
         if self.check_throttle_handler:

@@ -32,10 +32,10 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
     with freeze_time() as frozen_time, create_test_client(
         route_handlers=[handler], middleware=[config.middleware]
     ) as client:
-        cache = client.app.cache
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        cached_value = await cache.get(cache_key)
+        cached_value = await config.storage.get(cache_key)
+        assert cached_value
         cache_object = CacheObject(**decode_json(cached_value))
         assert len(cache_object.history) == 1
 
@@ -68,15 +68,15 @@ async def test_reset() -> None:
     cache_key = "RateLimitMiddleware::testclient"
 
     with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
-        cache = client.app.cache
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        cached_value = await cache.get(cache_key)
+        cached_value = await config.storage.get(cache_key)
+        assert cached_value
         cache_object = CacheObject(**decode_json(cached_value))
         assert cache_object.reset == int(time() + 1)
 
         cache_object.reset -= 2
-        await cache.set(cache_key, encode_json(cache_object))
+        await config.storage.set(cache_key, encode_json(cache_object))
 
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -170,10 +170,7 @@ async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
     path1.write_text("styles content", "utf-8")
 
     static_files_config = StaticFilesConfig(directories=[tmpdir], path="/src/static")  # pyright: ignore
-    rate_limit_config = RateLimitConfig(
-        rate_limit=("minute", 1),
-        exclude=[r"^/src.*$"],
-    )
+    rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=[r"^/src.*$"])
     with create_test_client(
         [handler], static_files_config=[static_files_config], middleware=[rate_limit_config.middleware]
     ) as client:

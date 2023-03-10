@@ -41,4 +41,3 @@ def test_connection_base_properties() -> None:
     assert connection.user is user
     assert connection.auth is auth
     assert connection.session is session
-    assert connection.cache is app.cache

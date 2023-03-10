@@ -4,11 +4,10 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
 
-from starlite.cache import Cache
-from starlite.storage.memory import MemoryStorage
 
 __all__ = ("CacheConfig", "default_cache_key_builder")
 
+from starlite.storage.memory import MemoryStorage
 
 if TYPE_CHECKING:
     from starlite.connection import Request
@@ -38,24 +37,12 @@ class CacheConfig:
     ``cache_config`` key.
     """
 
-    backend: Storage | None = field(default=None)
+    storage: Storage = field(default_factory=MemoryStorage)
     """A :class:`Storage <.storage.base.Storage>`. Defaults to :class:`MemoryStorage <.storage.memory.MemoryStorage>`
     """
-    expiration: int = field(default=60)
+    default_expiration: int = field(default=60)
     """Default cache expiration in seconds."""
-    cache_key_builder: CacheKeyBuilder = field(default=default_cache_key_builder)
+    key_builder: CacheKeyBuilder = field(default=default_cache_key_builder)
     """:class:`CacheKeyBuilder <.types.CacheKeyBuilder>`. Defaults to
     :func:`default_cache_key_builder <.cache.default_cache_key_builder>`.
     """
-
-    def to_cache(self) -> Cache:
-        """Create a cache wrapper from the config.
-
-        Returns:
-            An instance of :class:`Cache <.cache.Cache>`
-        """
-        return Cache(
-            backend=self.backend or MemoryStorage(),
-            default_expiration=self.expiration,
-            cache_key_builder=self.cache_key_builder,
-        )
