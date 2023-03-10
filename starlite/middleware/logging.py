@@ -43,10 +43,10 @@ if TYPE_CHECKING:
 try:
     from structlog.types import BindableLogger
 
-    structlog_installed = True  # pylint: disable=invalid-name
+    structlog_installed = True
 except ImportError:
     BindableLogger = object  # type: ignore
-    structlog_installed = False  # pylint: disable=invalid-name
+    structlog_installed = False
 
 
 class LoggingMiddleware(AbstractMiddleware):

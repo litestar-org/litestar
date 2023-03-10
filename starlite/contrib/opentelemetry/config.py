@@ -19,10 +19,7 @@ except ImportError as e:
     raise MissingDependencyException("OpenTelemetry dependencies are not installed") from e
 
 
-from opentelemetry.trace import (  # pyright: ignore  # pylint: disable=wrong-import-order
-    Span,
-    TracerProvider,
-)
+from opentelemetry.trace import Span, TracerProvider  # pyright: ignore
 
 if TYPE_CHECKING:
     from opentelemetry.metrics import Meter, MeterProvider

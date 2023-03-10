@@ -156,49 +156,6 @@ build-backend = "poetry.core.masonry.api"
 line-length = 120
 include = '\.pyi?$'
 
-[tool.pylint.MESSAGE_CONTROL]
-disable = [
-    "cyclic-import",
-    "duplicate-code",
-    "fixme",
-    "import-outside-toplevel",
-    "invalid-name",
-    "line-too-long",
-    "missing-class-docstring",
-    "missing-function-docstring",
-    "missing-module-docstring",
-    "no-name-in-module",
-    "protected-access",
-    "super-init-not-called",
-    "too-few-public-methods",
-    "too-many-ancestors",
-    "too-many-arguments",
-    "too-many-branches",
-    "too-many-instance-attributes",
-    "too-many-lines",
-    "too-many-locals",
-    "too-many-return-statements",
-    "ungrouped-imports",
-    "unnecessary-ellipsis",
-    "unused-import",
-]
-enable = "useless-suppression"
-extension-pkg-allow-list = ["pydantic", "msgspec", "picologging"]
-
-[tool.pylint.REPORTS]
-reports = "no"
-
-[tool.pylint.FORMAT]
-max-line-length = "120"
-
-[tool.pylint.VARIABLES]
-ignored-argument-names = "args|kwargs|_|__"
-
-[tool.pylint.BASIC]
-no-docstring-rgx = "(__.*__|main|test.*|.*test|.*Test|^_.*)$"
-
-[tool.pylint.LOGGING]
-logging-modules = ["logging", "picologging", "structlog"]
 
 [tool.coverage.run]
 omit = ["*/tests/*", "starlite/contrib/sqlalchemy_1/*"]

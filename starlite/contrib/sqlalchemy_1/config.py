@@ -13,9 +13,9 @@ try:
 except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 
-from sqlalchemy import create_engine  # pylint: disable=wrong-import-order
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine  # pylint: disable=wrong-import-order
-from sqlalchemy.orm import Query, Session, sessionmaker  # pylint: disable=wrong-import-order
+from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
+from sqlalchemy.orm import Query, Session, sessionmaker
 
 __all__ = ("SQLAlchemyConfig", "SQLAlchemyEngineConfig", "SQLAlchemySessionConfig")
 

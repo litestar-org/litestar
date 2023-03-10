@@ -156,7 +156,7 @@ class TestClientTransport(Generic[T]):
 
         raw_kwargs: dict[str, Any] = {"stream": BytesIO()}
 
-        try:  # pylint: disable=no-else-return
+        try:
             with self.client.portal() as portal:
                 response_complete = portal.call(Event)
                 context: SendReceiveContext = {

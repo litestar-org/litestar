@@ -190,9 +190,7 @@ class Router:
                     ]
                 ):
                     http_handlers.extend(existing_handlers)
-                    existing_route_index = find_index(
-                        self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop # noqa: B023
-                    )
+                    existing_route_index = find_index(self.routes, lambda x: x.path == path)  # noqa: B023
 
                     if existing_route_index == -1:  # pragma: no cover
                         raise ImproperlyConfiguredException("unable to find_index existing route index")

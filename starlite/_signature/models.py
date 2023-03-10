@@ -271,7 +271,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         Returns:
             The plugin value, if available.
         """
-        value = self.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
+        value = self.__getattribute__(key)
         mapping = self.field_plugin_mappings.get(key)
         return mapping.get_model_instance_for_value(value) if mapping else value
 
@@ -283,7 +283,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         """
         if self.field_plugin_mappings:
             return {key: self._resolve_field_value(key) for key in self.__fields__}
-        return {key: self.__getattribute__(key) for key in self.__fields__}  # pylint: disable=unnecessary-dunder-call
+        return {key: self.__getattribute__(key) for key in self.__fields__}
 
     @classmethod
     def signature_field_from_model_field(cls, model_field: ModelField) -> SignatureField:

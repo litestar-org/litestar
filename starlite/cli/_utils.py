@@ -155,7 +155,7 @@ class StarliteGroup(Group):
 
         def decorator(f: AnyCallable) -> Command:
             f = _inject_args(f)
-            return cast("Command", Group.command(self, *args, **kwargs)(f))  # pylint: disable=E1102
+            return cast("Command", Group.command(self, *args, **kwargs)(f))
 
         return decorator
 
