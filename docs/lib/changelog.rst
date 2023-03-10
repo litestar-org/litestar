@@ -61,7 +61,7 @@ Event bus
     Reference: https://github.com/starlite-api/starlite/pull/1105
 
 Unified storage interfaces **[Breaking]**
-    Storage backends for server-side sessions and :class:`Cache <starlite.cache.Cache>` have been unified and replaced
+    Storage backends for server-side sessions and ``Cache <starlite.cache.Cache>`` have been unified and replaced
     by the :doc:`storage module </lib/usage/storage>`, which implements generic asynchronous key/values stores backed
     by memory, the file system or redis.
 
@@ -128,7 +128,7 @@ Replace Pydantic models with dataclasses **[Breaking]**
 
     - :class:`starlite.config.allowed_hosts.AllowedHostsConfig`
     - :class:`starlite.config.app.AppConfig`
-    - :class:`starlite.cache.CacheConfig`
+    - :class:`starlite.config.cache.CacheConfig`
     - :class:`starlite.config.compression.CompressionConfig`
     - :class:`starlite.config.cors.CORSConfig`
     - :class:`starlite.config.csrf.CSRFConfig`
