@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Sequence
 
-from starlite.cache.config import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.datastructures import State
 from starlite.events.emitter import SimpleEventEmitter
+from starlite.config.cache import CacheConfig
 
 if TYPE_CHECKING:
     from starlite.config.compression import CompressionConfig

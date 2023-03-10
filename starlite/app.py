@@ -11,7 +11,7 @@ from starlite._asgi import ASGIRouter
 from starlite._asgi.utils import get_route_handlers, wrap_in_exception_handler
 from starlite._openapi.path_item import create_path_item
 from starlite._signature import create_signature_model
-from starlite.cache.config import CacheConfig
+from starlite.config.cache import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
 from starlite.connection import Request, WebSocket
@@ -99,10 +99,6 @@ DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """The default OpenAPI config used if not configuration is explicitly passed to the
 :class:`Starlite <.app.Starlite>` instance constructor.
 """
-DEFAULT_CACHE_CONFIG = CacheConfig()
-"""The default cache config used if not configuration is explicitly passed to the
-:class:`Starlite <.app.Starlite>` instance constructor.
-"""
 
 
 class HandlerIndex(TypedDict):
@@ -140,7 +136,7 @@ class Starlite(Router):
         "before_send",
         "before_shutdown",
         "before_startup",
-        "cache",
+        "cache_config",
         "compression_config",
         "cors_config",
         "csrf_config",
@@ -176,7 +172,7 @@ class Starlite(Router):
         before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
         before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
         before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-        cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+        cache_config: CacheConfig | None = None,
         cache_control: CacheControlHeader | None = None,
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
@@ -312,7 +308,7 @@ class Starlite(Router):
             before_send=list(before_send or []),
             before_shutdown=list(before_shutdown or []),
             before_startup=list(before_startup or []),
-            cache_config=cache_config,
+            cache_config=cache_config or CacheConfig(),
             cache_control=cache_control,
             compression_config=compression_config,
             cors_config=cors_config,
@@ -356,7 +352,7 @@ class Starlite(Router):
         self.before_send = as_async_callable_list(config.before_send)
         self.before_shutdown = as_async_callable_list(config.before_shutdown)
         self.before_startup = as_async_callable_list(config.before_startup)
-        self.cache = config.cache_config.to_cache()
+        self.cache_config = config.cache_config
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config

@@ -2,15 +2,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal, Mapping, Sequence
 
-from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
+from starlite.app import Starlite
 from starlite.controller import Controller
 from starlite.events import SimpleEventEmitter
 from starlite.testing.client import AsyncTestClient, TestClient
 from starlite.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
+    from starlite.config.cache import CacheConfig
+
     from starlite import Request, WebSocket
-    from starlite.cache.config import CacheConfig
     from starlite.config.allowed_hosts import AllowedHostsConfig
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
@@ -58,7 +59,7 @@ def create_test_client(
     before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
     before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
     before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-    cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+    cache_config: CacheConfig | None = None,
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
     csrf_config: CSRFConfig | None = None,
@@ -248,7 +249,7 @@ def create_async_test_client(
     before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
     before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
     before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-    cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+    cache_config: CacheConfig | None = None,
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
     csrf_config: CSRFConfig | None = None,
