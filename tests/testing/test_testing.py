@@ -1,5 +1,6 @@
+from __future__ import annotations
 import json
-from typing import TYPE_CHECKING, Any, Callable, Dict, Union
+from typing import TYPE_CHECKING, Any, Callable
 
 import pytest
 from pydantic import BaseModel
@@ -22,20 +23,20 @@ pet = PetFactory.build()
 
 
 def test_request_factory_no_cookie_header() -> None:
-    headers: Dict[str, str] = {}
+    headers: dict[str, str] = {}
     RequestFactory._create_cookie_header(headers)
     assert headers == {}
 
 
 def test_request_factory_str_cookie_header() -> None:
-    headers: Dict[str, str] = {}
+    headers: dict[str, str] = {}
     cookie_as_str = "test=cookie; starlite=cookie"
     RequestFactory._create_cookie_header(headers, cookie_as_str)
     assert headers[ParamType.COOKIE] == cookie_as_str
 
 
 def test_request_factory_cookie_list_header() -> None:
-    headers: Dict[str, str] = {}
+    headers: dict[str, str] = {}
     cookie_list = [Cookie(key="test", value="cookie"), Cookie(key="starlite", value="cookie", path="/test")]
     RequestFactory._create_cookie_header(headers, cookie_list)
     assert headers[ParamType.COOKIE] == "test=cookie; Path=/; SameSite=lax; starlite=cookie; Path=/test; SameSite=lax"
@@ -58,7 +59,7 @@ def test_request_factory_build_headers() -> None:
 
 
 @pytest.mark.parametrize("data", [pet, pet.dict()])
-async def test_request_factory_create_with_data(data: Union[Pet, Dict[str, Any]]) -> None:
+async def test_request_factory_create_with_data(data: Pet | dict[str, Any]) -> None:
     request = RequestFactory()._create_request_with_data(
         HttpMethod.POST,
         "/",
@@ -218,7 +219,7 @@ def test_test_client_set_session_data(
         session_backend_config.domain = "testserver.local"
 
     @get(path="/test")
-    def get_session_data(request: Request) -> Dict[str, Any]:
+    def get_session_data(request: Request) -> dict[str, Any]:
         return request.session
 
     app = Starlite(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])

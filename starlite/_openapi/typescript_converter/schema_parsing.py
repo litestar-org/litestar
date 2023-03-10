@@ -1,8 +1,7 @@
 import re
-from typing import Any, Dict, Literal, Optional, Set, Union, cast, overload
+from typing import Any, Dict, Literal, Optional, Set, Union, cast, overload, TYPE_CHECKING
 
 from pydantic_openapi_schema.v3_1_0 import Schema
-from typing_extensions import TypeGuard
 
 from starlite._openapi.enums import OpenAPIType
 from starlite._openapi.typescript_converter.types import (
@@ -19,6 +18,8 @@ from starlite._openapi.typescript_converter.types import (
 
 __all__ = ("create_interface", "is_schema_value", "normalize_typescript_namespace", "parse_schema", "parse_type_schema")
 
+if TYPE_CHECKING:
+    from typing_extensions import TypeGuard
 
 openapi_typescript_equivalent_types = Literal[
     "string", "boolean", "number", "null", "Record<string, unknown>", "unknown[]"

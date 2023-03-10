@@ -241,42 +241,58 @@ strict-imports = false
 
 [tool.ruff]
 select = [
-    "A",
-    "B",
-    "BLE",
-    "C",
-    "C4",
-    "C90",
-    "D",
-    "DJ",
-    "DTZ",
-    "E",
-    "ERA",
-    "EXE",
-    "F",
-    "G",
-    "ICN",
-    "ISC",
-    "N",
-    "PIE",
-    "PLC",
-    "PLE",
-    "PLW",
-    "PTH",
-    "Q",
-    "RET",
-    "RUF",
-    "S",
-    "SIM",
-    "T10",
-    "T20",
-    "TCH",
-    "TID",
-    "UP",
-    "W",
-    "YTT",
+    "A", # flake8-builtins
+    "B", # flake8-bugbear
+    "BLE", # flake8-blind-except
+    "C", # ! TODO: Unsure of this ruleset?
+    "C4", # flake8-comprehensions
+    "C90", # mccabe
+    "D", # pydocstyle
+    "DJ", # flake8-django
+    "DTZ", # flake8-datetimez
+    "E", # pycodestyle errors
+    "ERA", # eradicate
+    "EXE", # flake8-executable
+    "F", # pyflakes
+    "G", # flake8-logging-format
+    "ICN", # flake8-import-conventions
+    "ISC", # flake8-implicit-str-concat
+    "N", # pep8-naming
+    "PIE", # flake8-pie
+    "PLC", # pylint - convention
+    "PLE", # pylint - error
+    "PLW", # pylint - warning
+    "PTH", # flake8-use-pathlib
+    "Q", # flake8-quotes
+    "RET", # flake8-return
+    "RUF", # Ruff-specific rules
+    "S", # flake8-bandit
+    "SIM", # flake8-simplify
+    "T10", # flake8-debugger
+    "T20", # flake8-print
+    "TCH", # flake8-type-checking
+    "TID", # flake8-tidy-imports
+    "UP", # pyupgrade
+    "W", # pycodestyle - warning
+    "YTT", # flake8-2020
 ]
-ignore = ["E501", "D100", "D101", "D102", "D103", "D107", "D104", "D105", "D106", "D202", "D205", "D415", "UP037", "A003", "B010"]
+ignore = [
+    "E501", # pycodestyle line too long, handled by black
+    "D100", # pydocstyle - missing docstring in public module
+    "D101", # pydocstyle - missing docstring in public class
+    "D102", # pydocstyle - missing docstring in public method
+    "D103", # pydocstyle - missing docstring in public function
+    "D104", # pydocstyle - missing docstring in public package
+    "D105", # pydocstyle - missing docstring in magic method
+    "D106", # pydocstyle - missing docstring in public nested class
+    "D107", # pydocstyle - missing docstring in __init__
+    "D202", # pydocstyle - no blank lines allowed after function docstring
+    "D205", # pydocstyle - 1 blank line required between summary line and description
+    "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
+    "UP037", # pyupgrade - removes quotes from type annotation
+    "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
+    "B010" # flake8-bugbear - do not call setattr with a constant attribute value
+]
 line-length = 120
 src = ["starlite", "tests", "docs/examples"]
 target-version = "py38"

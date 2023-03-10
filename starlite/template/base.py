@@ -87,6 +87,7 @@ class TemplateProtocol(Protocol):  # pragma: no cover
         """Return the rendered template as a string.
 
         Args:
+            *args: Positional arguments passed to the TemplateEngine
             **kwargs: A string keyed mapping of values passed to the TemplateEngine
 
         Returns:

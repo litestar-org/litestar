@@ -3,18 +3,20 @@ from __future__ import annotations
 import inspect
 import multiprocessing
 import subprocess
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 from click import command, option
 from rich.tree import Tree
 
-from starlite import Starlite
 from starlite.cli._utils import StarliteEnv, console, show_app_info
 from starlite.routes import HTTPRoute, WebSocketRoute
 from starlite.utils.helpers import unwrap_partial
 
 __all__ = ("info_command", "routes_command", "run_command")
+
+if TYPE_CHECKING:
+    from starlite import Starlite
 
 
 def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:

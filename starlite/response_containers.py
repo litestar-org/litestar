@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -17,28 +16,25 @@ from typing import (
     TypeVar,
 )
 
-from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.constants import DEFAULT_CHUNK_SIZE
-from starlite.datastructures.cookie import Cookie
-from starlite.datastructures.headers import ETag
-from starlite.enums import MediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.file_system import BaseLocalFileSystem
-from starlite.response import (
-    FileResponse,
-    RedirectResponse,
-    StreamingResponse,
-    TemplateResponse,
-)
-from starlite.types import FileInfo
-from starlite.types.composite_types import PathType, StreamType
+from starlite.response import FileResponse, RedirectResponse, StreamingResponse, TemplateResponse
 
 __all__ = ("File", "Redirect", "ResponseContainer", "Stream", "Template")
 
 
 if TYPE_CHECKING:
+    import os
+
     from starlite.app import Starlite
+    from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
+    from starlite.datastructures.cookie import Cookie
+    from starlite.datastructures.headers import ETag
+    from starlite.enums import MediaType
+    from starlite.types import FileInfo
+    from starlite.types.composite_types import PathType, StreamType
 
 R_co = TypeVar("R_co", covariant=True)
 

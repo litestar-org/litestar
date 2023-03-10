@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import BaseConfig, BaseModel, ValidationError
-from pydantic.fields import ModelField
 from typing_extensions import get_args, get_origin
 
 from starlite.connection import ASGIConnection, Request
@@ -13,17 +12,16 @@ from starlite.constants import UNDEFINED_SENTINELS
 from starlite.enums import ScopeType
 from starlite.exceptions import InternalServerException, ValidationException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
-from starlite.plugins import PluginMapping
 from starlite.types import Empty
 from starlite.utils import is_any, is_optional_union, is_union, make_non_optional_union
-from starlite.utils.predicates import (
-    is_generic,
-    is_mapping,
-    is_non_string_iterable,
-    is_non_string_sequence,
-)
+from starlite.utils.predicates import is_generic, is_mapping, is_non_string_iterable, is_non_string_sequence
 
 __all__ = ("PydanticSignatureModel", "SignatureField", "SignatureModel")
+
+if TYPE_CHECKING:
+    from pydantic.fields import ModelField
+
+    from starlite.plugins import PluginMapping
 
 
 @dataclass(unsafe_hash=True, frozen=True)

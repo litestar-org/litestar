@@ -58,9 +58,10 @@ class Cookie:
             if key in {"key", "value"}:
                 continue
             if value is not None:
+                updated_key = key
                 if key == "max_age":
-                    key = "max-age"
-                namespace[key] = value
+                    updated_key = "max-age"
+                namespace[updated_key] = value
 
         return simple_cookie
 

@@ -53,7 +53,7 @@ class FileStorage(Storage):
                 renamed = True
             finally:
                 if not renamed:
-                    os.unlink(tmp_file_name)
+                    Path(tmp_file_name).unlink()  # type: ignore  # pyright: reportUnusedCoroutine=false
         except OSError:
             pass
 
@@ -148,6 +148,7 @@ class FileStorage(Storage):
         """Get the time in seconds ``key`` expires in. If no such ``key`` exists or no
         expiry time was set, return ``None``.
         """
-        if storage_obj := await self._load_from_path(self.path / key):
+        storage_obj = await self._load_from_path(self.path / key)
+        if storage_obj and isinstance(storage_obj.expires_in, int):
             return storage_obj.expires_in
         return None

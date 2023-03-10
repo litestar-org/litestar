@@ -5,7 +5,6 @@ from urllib.parse import urlencode
 
 from httpx._content import encode_json as httpx_encode_json
 from httpx._content import encode_multipart_data, encode_urlencoded_data
-from httpx._types import FileTypes
 from pydantic import BaseModel
 
 from starlite.app import Starlite
@@ -19,6 +18,7 @@ from starlite.types.asgi_types import ASGIVersion
 if TYPE_CHECKING:
     from starlite.datastructures.cookie import Cookie
     from starlite.handlers.http_handlers import HTTPRouteHandler
+    from httpx._types import FileTypes
 
 
 def _create_default_route_handler() -> HTTPRouteHandler:
@@ -230,6 +230,7 @@ class RequestFactory:
             request_media_type: The 'Content-Type' header of the request.
             data: A value for the request's body. Can be either a pydantic model instance
                 or a string keyed dictionary.
+            files: A dictionary of files to be sent with the request.
             query_params: A dictionary of values from which the request's query will be generated.
             state: Arbitrary request state.
             path_params: A string keyed dictionary of path parameter values.

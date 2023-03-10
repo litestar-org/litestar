@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Sequence, cast
 
 from typing_extensions import get_args
 
-from starlite.datastructures import Cookie, ResponseHeader
 from starlite.dto import DTO
 from starlite.enums import HttpMethod
 from starlite.exceptions import ValidationException
@@ -20,6 +19,7 @@ from starlite.utils import (
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
+    from starlite.datastructures import Cookie, ResponseHeader
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
     from starlite.plugins import SerializationPluginProtocol

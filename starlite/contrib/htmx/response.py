@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from urllib.parse import quote
 
 from starlite import MediaType, Request, Response, Starlite
-from starlite.background_tasks import BackgroundTask, BackgroundTasks
 from starlite.contrib.htmx._utils import HTMX_STOP_POLLING, get_headers
 from starlite.contrib.htmx.types import (
     EventAfterType,
@@ -15,7 +14,6 @@ from starlite.contrib.htmx.types import (
     ReSwapMethod,
     TriggerEventType,
 )
-from starlite.datastructures import Cookie
 from starlite.response import TemplateResponse
 from starlite.response_containers import ResponseContainer, Template
 from starlite.status_codes import HTTP_200_OK
@@ -32,6 +30,10 @@ __all__ = (
     "Retarget",
     "TriggerEvent",
 )
+
+if TYPE_CHECKING:
+    from starlite.background_tasks import BackgroundTask, BackgroundTasks
+    from starlite.datastructures import Cookie
 
 
 # HTMX defined HTTP status code.

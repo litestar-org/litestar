@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, Any, DefaultDict
 from anyio import create_task_group
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.utils import AsyncCallable
 
 __all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
 
 
 if TYPE_CHECKING:
     from starlite.events.listener import EventListener
+    from starlite.utils import AsyncCallable
 
 
 class BaseEventEmitterBackend(ABC):

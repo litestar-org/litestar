@@ -147,7 +147,7 @@ class ExceptionHandlerMiddleware:
         """
         try:
             await self.app(scope, receive, send)
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as e:  # noqa: BLE001
             starlite_app = scope["app"]
 
             if starlite_app.logging_config and (logger := starlite_app.logger):
