@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from os.path import commonpath, join
+from os.path import commonpath
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal, Sequence
 
@@ -46,8 +46,8 @@ class StaticFiles:
         self.send_as_attachment = send_as_attachment
 
     async def get_fs_info(
-        self, directories: Sequence[PathType], file_path: str
-    ) -> tuple[str, FileInfo] | tuple[None, None]:
+        self, directories: Sequence[PathType], file_path: PathType
+    ) -> tuple[Path, FileInfo] | tuple[None, None]:
         """Return the resolved path and a :class:`stat_result <os.stat_result>`.
 
         Args:
@@ -60,7 +60,7 @@ class StaticFiles:
         """
         for directory in directories:
             try:
-                joined_path = join(directory, file_path)  # noqa: PL118
+                joined_path = Path(directory, file_path)
                 file_info = await self.adapter.info(joined_path)
                 if file_info and commonpath([str(directory), file_info["name"], joined_path]) == str(directory):
                     return joined_path, file_info
@@ -84,7 +84,7 @@ class StaticFiles:
 
         split_path = scope["path"].split("/")
         filename = split_path[-1]
-        joined_path = join(*split_path)  # noqa: PL118
+        joined_path = Path(*split_path)
         resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=joined_path)
         content_disposition_type: Literal["inline", "attachment"] = (
             "attachment" if self.send_as_attachment else "inline"
@@ -93,7 +93,8 @@ class StaticFiles:
         if self.is_html_mode and fs_info and fs_info["type"] == "directory":
             filename = "index.html"
             resolved_path, fs_info = await self.get_fs_info(
-                directories=self.directories, file_path=join(resolved_path or joined_path, filename)
+                directories=self.directories,
+                file_path=Path(resolved_path or joined_path) / filename,
             )
 
         if fs_info and fs_info["type"] == "file":

@@ -52,18 +52,20 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
     from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
 
+    from starlite.handlers.base import BaseRouteHandler
+
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.events.listener import EventListener
-    from starlite.handlers.base import BaseRouteHandler  # noqa: TC004
+
     from starlite.logging.config import BaseLoggingConfig
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
     from starlite.template.config import TemplateConfig
-    from starlite.types import AnyCallable  # nopycln: import
-    from starlite.types import (  # noqa: TC004
+    from starlite.types import AnyCallable
+    from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
@@ -733,6 +735,7 @@ class Starlite(Router):
 
         Args:
             send: The ASGI send function.
+            scope: The ASGI scope.
 
         Returns:
             An ASGI send function.

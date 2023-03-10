@@ -87,6 +87,7 @@ class TemplateProtocol(Protocol):  # pragma: no cover
         """Return the rendered template as a string.
 
         Args:
+            *args: Positional arguments passed to the TemplateEngine
             **kwargs: A string keyed mapping of values passed to the TemplateEngine
 
         Returns:
@@ -112,6 +113,7 @@ class TemplateEngineProtocol(Protocol[T_co]):  # pragma: no cover
 
     def get_template(self, template_name: str) -> T_co:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
+
         Args:
             template_name: A dotted path
 

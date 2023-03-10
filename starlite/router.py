@@ -12,28 +12,7 @@ from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-from starlite.types import (
-    AfterRequestHookHandler,
-    AfterResponseHookHandler,
-    BeforeRequestHookHandler,
-    ControllerRouterHandler,
-    ExceptionHandlersMap,
-    Guard,
-    Middleware,
-    ParametersMap,
-    ResponseCookies,
-    ResponseType,
-    RouteHandlerMapItem,
-    RouteHandlerType,
-    TypeEncodersMap,
-)
-from starlite.utils import (
-    find_index,
-    is_class_and_subclass,
-    join_paths,
-    normalize_path,
-    unique,
-)
+from starlite.utils import find_index, is_class_and_subclass, join_paths, normalize_path, unique
 from starlite.utils.sync import AsyncCallable
 
 __all__ = ("Router",)
@@ -45,6 +24,21 @@ if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
     from starlite.routes import BaseRoute
+    from starlite.types import (
+        AfterRequestHookHandler,
+        AfterResponseHookHandler,
+        BeforeRequestHookHandler,
+        ControllerRouterHandler,
+        ExceptionHandlersMap,
+        Guard,
+        Middleware,
+        ParametersMap,
+        ResponseCookies,
+        ResponseType,
+        RouteHandlerMapItem,
+        RouteHandlerType,
+        TypeEncodersMap,
+    )
     from starlite.types.composite_types import ResponseHeaders
 
 
@@ -196,9 +190,7 @@ class Router:
                     ]
                 ):
                     http_handlers.extend(existing_handlers)
-                    existing_route_index = find_index(
-                        self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop # noqa: B023
-                    )
+                    existing_route_index = find_index(self.routes, lambda x: x.path == path)  # noqa: B023
 
                     if existing_route_index == -1:  # pragma: no cover
                         raise ImproperlyConfiguredException("unable to find_index existing route index")

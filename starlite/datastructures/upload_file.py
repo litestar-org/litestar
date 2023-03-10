@@ -39,7 +39,7 @@ class UploadFile:
         """
         self.filename = filename
         self.content_type = content_type
-        self.file = SpooledTemporaryFile(max_size=max_spool_size)  # pylint: disable=consider-using-with
+        self.file = SpooledTemporaryFile(max_size=max_spool_size)
         self.headers = headers or {}
 
         if file_data:

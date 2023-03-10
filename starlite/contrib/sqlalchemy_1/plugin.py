@@ -27,27 +27,17 @@ from starlite.exceptions import (
 from starlite.plugins import InitPluginProtocol, SerializationPluginProtocol
 
 try:
-    import sqlalchemy  # nopycln: import # noqa: F401
+    import sqlalchemy  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 
 
-from sqlalchemy import inspect  # pylint: disable=wrong-import-order
-from sqlalchemy import types as sqlalchemy_type  # pylint: disable=wrong-import-order
-from sqlalchemy.dialects import (  # pylint: disable=wrong-import-order
-    mssql,
-    mysql,
-    oracle,
-    postgresql,
-    sqlite,
-)
-from sqlalchemy.exc import NoInspectionAvailable  # pylint: disable=wrong-import-order
-from sqlalchemy.orm import (  # pylint: disable=wrong-import-order
-    DeclarativeMeta,
-    InstanceState,
-    Mapper,
-)
-from sqlalchemy.sql.type_api import TypeEngine  # pylint: disable=wrong-import-order
+from sqlalchemy import inspect
+from sqlalchemy import types as sqlalchemy_type
+from sqlalchemy.dialects import mssql, mysql, oracle, postgresql, sqlite
+from sqlalchemy.exc import NoInspectionAvailable
+from sqlalchemy.orm import DeclarativeMeta, InstanceState, Mapper
+from sqlalchemy.sql.type_api import TypeEngine
 
 from .types import SQLAlchemyBinaryType
 
@@ -190,7 +180,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
 
         This method is separated to allow for easy overriding in subclasses.
 
-        Returns
+        Returns:
             A dictionary mapping SQLAlchemy types to callables.
         """
         return {

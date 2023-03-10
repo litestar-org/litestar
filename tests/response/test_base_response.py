@@ -91,7 +91,6 @@ def test_delete_cookie() -> None:
         assert response.cookies.get("test") is None
         # the commented out assert fails, because of the starlette test client's behaviour - which doesn't clear
         # cookies.
-        # assert client.cookies.get("test") is None
 
 
 @pytest.mark.parametrize(

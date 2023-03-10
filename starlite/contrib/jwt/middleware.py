@@ -83,7 +83,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         """Given an encoded JWT token, parse, validate and look up sub within token.
 
         Args:
-            encoded_token:
+            encoded_token: Encoded JWT token.
             connection: An ASGI connection instance.
 
         Raises:

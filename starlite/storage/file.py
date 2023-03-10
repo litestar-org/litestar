@@ -53,7 +53,7 @@ class FileStorage(Storage):
                 renamed = True
             finally:
                 if not renamed:
-                    os.unlink(tmp_file_name)  # noqa: PL108
+                    os.unlink(tmp_file_name)  # noqa: PTH108
         except OSError:
             pass
 

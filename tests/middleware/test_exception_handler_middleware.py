@@ -127,7 +127,7 @@ def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> 
         state.called = True
 
     with create_test_client(handler, after_exception=[after_exception_hook_handler]) as client:
-        setattr(client.app.state, "called", False)  # noqa: B010
+        setattr(client.app.state, "called", False)
         assert not client.app.state.called
         response = client.get("/test")
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR

@@ -9,16 +9,12 @@ __all__ = ("OpenTelemetryInstrumentationMiddleware",)
 
 
 try:
-    import opentelemetry  # nopycln: import # noqa: F401
+    import opentelemetry  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("OpenTelemetry dependencies are not installed") from e
 
-from opentelemetry.instrumentation.asgi import (  # pylint: disable=wrong-import-order
-    OpenTelemetryMiddleware,
-)
-from opentelemetry.util.http import (  # pylint: disable=wrong-import-order
-    get_excluded_urls,
-)
+from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
+from opentelemetry.util.http import get_excluded_urls
 
 if TYPE_CHECKING:
     from starlite.contrib.opentelemetry import OpenTelemetryConfig

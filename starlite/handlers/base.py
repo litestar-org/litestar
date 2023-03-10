@@ -4,18 +4,8 @@ from copy import copy
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
 from starlite._signature.models import SignatureField
-from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.types import (
-    Dependencies,
-    Empty,
-    EmptyType,
-    ExceptionHandlersMap,
-    Guard,
-    Middleware,
-    TypeEncodersMap,
-)
-from starlite.types.composite_types import MaybePartial
+from starlite.types import Dependencies, Empty, EmptyType, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
 from starlite.utils import AsyncCallable, Ref, get_name, normalize_path
 from starlite.utils.helpers import unwrap_partial
 
@@ -28,9 +18,11 @@ if TYPE_CHECKING:
     from starlite._signature.models import SignatureModel
     from starlite.connection import ASGIConnection
     from starlite.controller import Controller
+    from starlite.di import Provide
     from starlite.params import ParameterKwarg
     from starlite.router import Router
     from starlite.types import AnyCallable, ExceptionHandler
+    from starlite.types.composite_types import MaybePartial
 
 T = TypeVar("T", bound="BaseRouteHandler")
 
@@ -132,7 +124,7 @@ class BaseRouteHandler(Generic[T]):
     def dependency_name_set(self) -> set[str]:
         """Set of all dependency names provided in the handler's ownership layers."""
         layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
-        return {name for layer in layered_dependencies for name in layer.keys()}
+        return {name for layer in layered_dependencies for name in layer}
 
     @property
     def ownership_layers(self) -> list[T | Controller | Router]:

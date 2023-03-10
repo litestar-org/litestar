@@ -4,40 +4,24 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Literal, TypeVar
 
-from pydantic_openapi_schema.v3_1_0 import (
-    Components,
-    OAuthFlow,
-    OAuthFlows,
-    SecurityRequirement,
-    SecurityScheme,
-)
+from pydantic_openapi_schema.v3_1_0 import Components, OAuthFlow, OAuthFlows, SecurityRequirement, SecurityScheme
 
-from starlite.connection import ASGIConnection
 from starlite.contrib.jwt.jwt_token import Token
-from starlite.contrib.jwt.middleware import (
-    JWTAuthenticationMiddleware,
-    JWTCookieAuthenticationMiddleware,
-)
+from starlite.contrib.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
 from starlite.datastructures import Cookie
-from starlite.di import Provide
 from starlite.enums import MediaType
 from starlite.middleware import DefineMiddleware
 from starlite.security.base import AbstractSecurityConfig
 from starlite.status_codes import HTTP_201_CREATED
-from starlite.types import (
-    ControllerRouterHandler,
-    Empty,
-    Guard,
-    Scopes,
-    SyncOrAsyncUnion,
-    TypeEncodersMap,
-)
+from starlite.types import ControllerRouterHandler, Empty, Guard, Scopes, SyncOrAsyncUnion, TypeEncodersMap
 
 __all__ = ("BaseJWTAuth", "JWTAuth", "JWTCookieAuth", "OAuth2Login", "OAuth2PasswordBearerAuth")
 
 
 if TYPE_CHECKING:
     from starlite import Response
+    from starlite.connection import ASGIConnection
+    from starlite.di import Provide
 
 
 UserType = TypeVar("UserType")
@@ -668,7 +652,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
             token_dto = OAuth2Login(
                 access_token=encoded_token,
                 expires_in=expires_in,
-                token_type="bearer",
+                token_type="bearer",  # noqa: S106
             )
             body = asdict(token_dto)
         else:

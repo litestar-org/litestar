@@ -26,7 +26,7 @@ class OpenAPIFormat(str, Enum):
     JSON_POINTER = "json-pointer"
     RELATIVE_JSON_POINTER = "relative-json-pointer"
     IRI = "iri-reference"
-    IRI_REFERENCE = "iri-reference"
+    IRI_REFERENCE = "iri-reference"  # noqa: PIE796
     UUID = "uuid"
     REGEX = "regex"
 

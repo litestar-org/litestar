@@ -21,8 +21,8 @@ __all__ = ("WebSocket",)
 if TYPE_CHECKING:
     from starlite.handlers.websocket_handlers import WebsocketRouteHandler  # noqa: F401
     from starlite.types import Message, Serializer, WebSocketScope
-    from starlite.types.asgi_types import WebSocketDisconnectEvent  # nopycln: import
-    from starlite.types.asgi_types import WebSocketReceiveEvent  # nopycln: import
+    from starlite.types.asgi_types import WebSocketDisconnectEvent
+    from starlite.types.asgi_types import WebSocketReceiveEvent
     from starlite.types.asgi_types import (
         Receive,
         ReceiveMessage,

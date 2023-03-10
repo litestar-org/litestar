@@ -43,6 +43,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
 
     def get_template(self, template_name: str) -> JinjaTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
+
         Args:
             template_name: A dotted path
 

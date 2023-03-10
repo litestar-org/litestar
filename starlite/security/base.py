@@ -5,16 +5,6 @@ from copy import copy
 from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, TypeVar
 
 from starlite import Response
-from starlite.connection import ASGIConnection
-from starlite.di import Provide
-from starlite.middleware.authentication import AbstractAuthenticationMiddleware
-from starlite.types import (
-    ControllerRouterHandler,
-    Guard,
-    Scopes,
-    SyncOrAsyncUnion,
-    TypeEncodersMap,
-)
 from starlite.utils.sync import AsyncCallable
 
 __all__ = ("AbstractSecurityConfig",)
@@ -24,9 +14,19 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
 
     from starlite.config.app import AppConfig
+    from starlite.connection import ASGIConnection
+    from starlite.di import Provide
     from starlite.enums import MediaType, OpenAPIMediaType
+    from starlite.middleware.authentication import AbstractAuthenticationMiddleware
     from starlite.middleware.base import DefineMiddleware
-    from starlite.types import ResponseCookies
+    from starlite.types import (
+        ControllerRouterHandler,
+        Guard,
+        ResponseCookies,
+        Scopes,
+        SyncOrAsyncUnion,
+        TypeEncodersMap,
+    )
 
 
 UserType = TypeVar("UserType")

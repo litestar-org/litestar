@@ -220,6 +220,7 @@ class DTOFactory:
                 attribute.
             field_definitions (dict[str, tuple[Any, Any]] | None): Add fields to the model that don't exist on ``source``.
                 These are passed as kwargs to `pydantic.create_model()`.
+            base (type[DTO] | None): Base class for the generated pydantic model.
 
         Returns:
             Type[DTO[T]]
@@ -239,9 +240,13 @@ class DTOFactory:
         dto.dto_source_model = source
         dto.dto_source_plugin = plugin
         dto.dto_field_mapping = {}
-        for key, value in field_mapping.items():
-            if not isinstance(value, str):
-                value = value[0]
+        for key, value_tuple in field_mapping.items():
+            if isinstance(value_tuple, tuple):
+                value = value_tuple[0]
+            elif isinstance(value_tuple, str):
+                value = value_tuple
+            else:
+                raise TypeError(f"Expected a string or tuple containing a string, but got {value_tuple!r}")
             dto.dto_field_mapping[value] = key
         return dto
 

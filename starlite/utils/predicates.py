@@ -154,7 +154,7 @@ def is_non_string_sequence(annotation: Any) -> TypeGuard[Sequence[Any]]:
 def is_any(annotation: Any) -> TypeGuard[Any]:
     """Given a type annotation determine if the annotation is Any.
 
-        Args:
+    Args:
         annotation: A type.
 
     Returns:
