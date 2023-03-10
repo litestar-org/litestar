@@ -8,7 +8,6 @@ API reference
 
     app
     background_tasks
-    cache
     config
     connection
     contrib/index
