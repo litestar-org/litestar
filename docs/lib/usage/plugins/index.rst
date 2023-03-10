@@ -14,7 +14,7 @@ data using non-pydantic classes. Additionally, they allow for seamless serializa
 Creating Plugins
 ----------------
 
-A plugin is a class that implements the :class:`SerializationPluginProtocol <starlite.plugins.base.SerializationPluginProtocol>`.
+A plugin is a class that implements the :class:`SerializationPluginProtocol <.plugins.SerializationPluginProtocol>`.
 
 If you wish to support the serialization and deserialization of non-pydantic classes, you need to implement the
 following methods specified by the:
@@ -75,8 +75,8 @@ following methods specified by the:
            """
            ...
 
-If you wish to register middlewares, guards, dependencies and so forth on the application init, you need to implement the
-:meth:`on_app_init <starlite.plugins.base.SerializationPluginProtocol.on_app_init>` method:
+If you wish to register middlewares, guards, dependencies and so forth on the application init, you need to implement
+the :meth:`on_app_init <.plugins.InitPluginProtocol.on_app_init>` method:
 
 .. code-block:: python
 

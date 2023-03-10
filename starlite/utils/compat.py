@@ -22,7 +22,7 @@ except NameError:  # pragma: no cover
     async def async_next(gen: AsyncGenerator[T, Any], default: D | EmptyType = Empty) -> T | D:  # type: ignore[misc]
         """Backwards compatibility shim for Python<3.10."""
         try:
-            return await gen.__anext__()  # pylint: disable=C2801
+            return await gen.__anext__()
         except StopAsyncIteration as exc:
             if default is not Empty:
                 return default  # type: ignore[return-value]

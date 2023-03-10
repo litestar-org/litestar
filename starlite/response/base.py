@@ -7,17 +7,8 @@ from typing import TYPE_CHECKING, Any, Generic, Literal, Mapping, TypeVar, overl
 from starlite.datastructures import Cookie, ETag
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.serialization import (
-    DEFAULT_TYPE_ENCODERS,
-    default_serializer,
-    encode_json,
-    encode_msgpack,
-)
-from starlite.status_codes import (
-    HTTP_200_OK,
-    HTTP_204_NO_CONTENT,
-    HTTP_304_NOT_MODIFIED,
-)
+from starlite.serialization import DEFAULT_TYPE_ENCODERS, default_serializer, encode_json, encode_msgpack
+from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from starlite.utils.helpers import get_enum_string_value
 
 __all__ = ("Response",)
@@ -78,13 +69,13 @@ class Response(Generic[T]):
         Args:
             content: A value for the response body that will be rendered into bytes string.
             status_code: An HTTP status code.
-            media_type: A value for the response 'Content-Type' header.
-            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
-                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
-                Defaults to None.
+            media_type: A value for the response ``Content-Type`` header.
+            background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
+                :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
+                Defaults to ``None``.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances to be set under
-                the response 'Set-Cookie' header.
+            cookies: A list of :class:`Cookie <.datastructures.Cookie>` instances to be set under the response
+                ``Set-Cookie`` header.
             encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
@@ -164,18 +155,18 @@ class Response(Generic[T]):
         httponly: bool = False,
         samesite: Literal["lax", "strict", "none"] = "lax",
     ) -> None:
-        """Set a cookie on the response. If passed a :class:`Cookie <starlite.Cookie>` instance, keyword arguments will be
-        ignored.
+        """Set a cookie on the response. If passed a :class:`Cookie <.datastructures.Cookie>` instance, keyword
+        arguments will be ignored.
 
         Args:
-            key: Key for the cookie or a :class:`Cookie <starlite.Cookie>` instance.
+            key: Key for the cookie or a :class:`Cookie <.datastructures.Cookie>` instance.
             value: Value for the cookie, if none given defaults to empty string.
             max_age: Maximal age of the cookie before its invalidated.
             expires: Expiration date as unix MS timestamp.
-            path: Path fragment that must exist in the request url for the cookie to be valid. Defaults to '/'.
+            path: Path fragment that must exist in the request url for the cookie to be valid. Defaults to ``/``.
             domain: Domain for which the cookie is valid.
             secure: Https is required for the cookie.
-            httponly: Forbids javascript to access the cookie via 'Document.cookie'.
+            httponly: Forbids javascript to access the cookie via ``document.cookie``.
             samesite: Controls whether a cookie is sent with cross-site requests. Defaults to ``lax``.
 
         Returns:
@@ -239,7 +230,7 @@ class Response(Generic[T]):
         self.cookies.append(cookie)
 
     def render(self, content: Any) -> bytes:
-        """Handle the rendering of content T into a bytes string.
+        """Handle the rendering of content into a bytes string.
 
         Args:
             content: A value for the response body that will be rendered into bytes string.
@@ -266,7 +257,7 @@ class Response(Generic[T]):
         """Content length of the response if applicable.
 
         Returns:
-            The content length of the body (e.g. for use in a "Content-Length" header).
+            The content length of the body (e.g. for use in a ``Content-Length`` header).
             If the response does not have a body, this value is ``None``
         """
         if self.status_allows_body:
@@ -277,7 +268,7 @@ class Response(Generic[T]):
         """Encode the response headers as a list of byte tuples.
 
         Notes:
-            - A 'Content-Length' header will be added if appropriate and not provided by the user.
+            - A ``Content-Length`` header will be added if appropriate and not provided by the user.
 
         Returns:
             A list of tuples containing the headers and cookies of the request in a format ready for ASGI transmission.
@@ -324,7 +315,7 @@ class Response(Generic[T]):
 
         await send(event)
 
-    async def send_body(self, send: "Send", receive: "Receive") -> None:  # pylint: disable=unused-argument
+    async def send_body(self, send: "Send", receive: "Receive") -> None:
         """Emit the response body.
 
         Args:

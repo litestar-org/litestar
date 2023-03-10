@@ -52,10 +52,9 @@ class BackgroundTasks:
         """Initialize ``BackgroundTasks``.
 
         Args:
-            tasks: An iterable of :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instances.
+            tasks: An iterable of :class:`BackgroundTask <.background_tasks.BackgroundTask>` instances.
             run_in_task_group: If you set this value to ``True`` than the tasks will run concurrently, using
-                an [anyio.task_group](https://anyio.readthedocs.io/en/stable/tasks.html). Note: this will
-                not preserve execution order.
+                a :class:`TaskGroup <anyio.abc.TaskGroup>`. Note: This will not preserve execution order.
         """
         self.tasks = tasks
         self.run_in_task_group = run_in_task_group

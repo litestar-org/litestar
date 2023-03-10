@@ -119,7 +119,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             A URL instance constructed from the request's scope.
         """
         if self._url is Empty:
-            self._url = self.scope["_url"] = URL.from_scope(self.scope)  # type: ignore[typeddict-item]
+            self._url = self.scope["_url"] = URL.from_scope(self.scope)  # type: ignore[typeddict-unknown-key]
 
         return cast("URL", self._url)
 
@@ -138,7 +138,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
                 "query_string": b"",
                 "root_path": self.scope.get("app_root_path") or self.scope.get("root_path", ""),
             }
-            self._base_url = self.scope["_base_url"] = URL.from_scope(cast("Scope", scope))  # type: ignore[typeddict-item]
+            self._base_url = self.scope["_base_url"] = URL.from_scope(cast("Scope", scope))  # type: ignore[typeddict-unknown-key]
 
         return cast("URL", self._base_url)
 
@@ -151,7 +151,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         if self._headers is Empty:
             self.scope.setdefault("headers", [])
-            self._headers = self.scope["_headers"] = parse_headers(tuple(self.scope["headers"]))  # type: ignore[typeddict-item]
+            self._headers = self.scope["_headers"] = parse_headers(tuple(self.scope["headers"]))  # type: ignore[typeddict-unknown-key]
 
         return Headers(self._headers)
 
@@ -190,7 +190,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             if cookie_header:
                 cookies = parse_cookie_string(cookie_header)
 
-            self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-item]
+            self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-unknown-key]
 
         return cast("dict[str, str]", self._cookies)
 
@@ -275,8 +275,8 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     def set_session(self, value: dict[str, Any] | BaseModel | EmptyType) -> None:
         """Set the session in the connection's ``Scope``.
 
-        If the :class:`Starlite SessionMiddleware <starlite.middleware.session.SessionMiddleware>` is
-        enabled, the session will be added to the response as a cookie header.
+        If the :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>` is enabled, the session will be added
+        to the response as a cookie header.
 
         Args:
             value: Dictionary or pydantic model instance for the session data.
@@ -289,8 +289,8 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     def clear_session(self) -> None:
         """Remove the session from the connection's ``Scope``.
 
-        If the :class:`Starlite SessionMiddleware <starlite.middleware.session.SessionMiddleware>` is
-        enabled, this will cause the session data to be cleared.
+        If the :class:`Starlite SessionMiddleware <.middleware.session.base.SessionMiddleware>` is enabled, this will cause
+        the session data to be cleared.
 
         Returns:
             None.

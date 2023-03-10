@@ -262,7 +262,7 @@ Request methods
     To learn more about requests,, check out these chapters in the documentation
 
     * :doc:`/lib/usage/request-data`
-    * :doc:`/lib/reference/connection/index`
+    * :doc:`/lib/reference/connection`
 
 Static files
 ~~~~~~~~~~~~

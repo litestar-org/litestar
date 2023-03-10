@@ -100,7 +100,7 @@ class DTO(GenericModel, Generic[T]):
         elif isinstance(model_instance, dict):
             values = dict(model_instance)  # copy required as `_from_value_mapping()`` mutates ``values`.
         else:
-            values = asdict(model_instance)  # pyright: ignore
+            values = asdict(model_instance)  # type:ignore[call-overload]
         return cls._from_value_mapping(mapping=values)
 
     @classmethod
@@ -184,11 +184,9 @@ class DTOFactory:
                 first: int
                 second: int
 
-
             MyClassDTO = DTOFactory()(
                 MyClass, exclude=["first"], field_mapping={"second": ("third", float)}
             )
-
 
         ``MyClassDTO`` is now equal to this:
 
@@ -197,7 +195,6 @@ class DTOFactory:
             class MyClassDTO(BaseModel):
                 third: float
 
-
         It can be used as a regular pydantic model:
 
         .. code-block: python
@@ -205,7 +202,6 @@ class DTOFactory:
             @post(path="/my-path")
             def create_obj(data: MyClassDTO) -> MyClass:
                 ...
-
 
         This will affect parsing, validation and how OpenAPI schema is generated exactly like when using a pydantic model.
 
@@ -224,6 +220,7 @@ class DTOFactory:
                 attribute.
             field_definitions (dict[str, tuple[Any, Any]] | None): Add fields to the model that don't exist on ``source``.
                 These are passed as kwargs to `pydantic.create_model()`.
+            base (type[DTO] | None): Base class for the generated pydantic model.
 
         Returns:
             Type[DTO[T]]
@@ -243,9 +240,13 @@ class DTOFactory:
         dto.dto_source_model = source
         dto.dto_source_plugin = plugin
         dto.dto_field_mapping = {}
-        for key, value in field_mapping.items():
-            if not isinstance(value, str):
-                value = value[0]
+        for key, value_tuple in field_mapping.items():
+            if isinstance(value_tuple, tuple):
+                value = value_tuple[0]
+            elif isinstance(value_tuple, str):
+                value = value_tuple
+            else:
+                raise TypeError(f"Expected a string or tuple containing a string, but got {value_tuple!r}")
             dto.dto_field_mapping[value] = key
         return dto
 

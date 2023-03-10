@@ -43,6 +43,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
 
     def get_template(self, template_name: str) -> JinjaTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
+
         Args:
             template_name: A dotted path
 
@@ -50,7 +51,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
             JinjaTemplate instance
 
         Raises:
-            :class:`TemplateNotFoundException <starlite.exceptions.TemplateNotFoundException>`: if no template is found.
+            TemplateNotFoundException: if no template is found.
         """
         try:
             return self.engine.get_template(name=template_name)

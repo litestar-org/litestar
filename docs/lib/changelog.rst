@@ -99,13 +99,13 @@ Renamed handler module names **[Breaking]**
 New plugin protocols **[Breaking]**
     The plugin protocol has been split into three distinct protocols, covering different use cases:
 
-    :class:`InitPluginProtocol <starlite.plugins.base.InitPluginProtocol>`
+    :class:`InitPluginProtocol <starlite.plugins.InitPluginProtocol>`
         Hook into an application's initialization process
 
-    :class:`SerializationPluginProtocol <starlite.plugins.base.SerializationPluginProtocol>`
+    :class:`SerializationPluginProtocol <starlite.plugins.SerializationPluginProtocol>`
         Extend the serialization and deserialization capabilities of an application
 
-    :class:`OpenAPISchemaPluginProtocol <starlite.plugins.base.OpenAPISchemaPluginProtocol>`
+    :class:`OpenAPISchemaPluginProtocol <starlite.plugins.OpenAPISchemaPluginProtocol>`
         Extend OpenAPI schema generation
 
     Reference: https://github.com/starlite-api/starlite/pull/1176
@@ -128,20 +128,20 @@ Replace Pydantic models with dataclasses **[Breaking]**
 
     - :class:`starlite.config.allowed_hosts.AllowedHostsConfig`
     - :class:`starlite.config.app.AppConfig`
-    - :class:`starlite.config.cache.CacheConfig`
+    - :class:`starlite.cache.CacheConfig`
     - :class:`starlite.config.compression.CompressionConfig`
     - :class:`starlite.config.cors.CORSConfig`
     - :class:`starlite.config.csrf.CSRFConfig`
-    - :class:`starlite.config.logging.LoggingConfig`
-    - :class:`starlite.config.openapi.OpenAPIConfig`
-    - :class:`starlite.config.static_files.StaticFilesConfig`
-    - :class:`starlite.config.template.TemplateConfig`
+    - :class:`starlite.logging.config.LoggingConfig`
+    - :class:`starlite.openapi.OpenAPIConfig`
+    - :class:`starlite.static_files.StaticFilesConfig`
+    - :class:`starlite.template.TemplateConfig`
     - :class:`starlite.contrib.jwt.jwt_token.Token`
     - :class:`starlite.contrib.jwt.jwt_auth.JWTAuth`
     - :class:`starlite.contrib.jwt.jwt_auth.JWTCookieAuth`
     - :class:`starlite.contrib.jwt.jwt_auth.OAuth2Login`
     - :class:`starlite.contrib.jwt.jwt_auth.OAuth2PasswordBearerAuth`
-    - :class:`starlite.contrib.opentelemetry.config.OpenTelemetryConfig`
+    - :class:`starlite.contrib.opentelemetry.OpenTelemetryConfig`
     - :class:`starlite.middleware.logging.LoggingMiddlewareConfig`
     - :class:`starlite.middleware.rate_limit.RateLimitConfig`
     - :class:`starlite.middleware.session.base.BaseBackendConfig`

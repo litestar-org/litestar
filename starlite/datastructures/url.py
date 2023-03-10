@@ -8,10 +8,7 @@ from starlite._parsers import parse_query_string
 from starlite.datastructures import MultiDict
 from starlite.types import Empty
 
-__all__ = (
-    "Address",
-    "URL",
-)
+__all__ = ("Address", "URL")
 
 
 if TYPE_CHECKING:
@@ -163,7 +160,7 @@ class URL:
 
     @classmethod
     def from_scope(cls, scope: Scope) -> URL:
-        """Construct a URL from a :class:`Scope <starlite.types.Scope>`
+        """Construct a URL from a :class:`Scope <.types.Scope>`
 
         Args:
             scope: A scope
@@ -229,13 +226,13 @@ class URL:
 
     @property
     def query_params(self) -> MultiDict:
-        """Query parameters of a URL as a :class:`MultiDict <multidict.MultiDict>`
+        """Query parameters of a URL as a :class:`MultiDict <.datastructures.multi_dicts.MultiDict>`
 
         Returns:
-            A :class:`MultiDict <multidict.MultiDict>` with query parameters
+            A :class:`MultiDict <.datastructures.multi_dicts.MultiDict>` with query parameters
 
         Notes:
-            - The returned `MultiDict` is mutable, :class:`URL` itself is *immutable*,
+            - The returned ``MultiDict`` is mutable, :class:`URL` itself is *immutable*,
                 therefore mutating the query parameters will not directly mutate the ``URL``.
                 If you want to modify query parameters, make  modifications in the
                 multidict and pass them back to :meth:`with_replacements`

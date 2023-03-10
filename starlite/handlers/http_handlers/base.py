@@ -58,12 +58,9 @@ if TYPE_CHECKING:
     from starlite.datastructures.headers import Header
     from starlite.di import Provide
     from starlite.plugins import SerializationPluginProtocol
-    from starlite.types import MaybePartial  # nopycln: import # noqa: F401
+    from starlite.types import MaybePartial  # noqa: F401
 
-__all__ = (
-    "HTTPRouteHandler",
-    "route",
-)
+__all__ = ("HTTPRouteHandler", "route")
 
 
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
@@ -154,41 +151,42 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments.
-                If not given defaults to ``'/'``
-            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
+                If not given defaults to ``/``
+            after_request: A sync or async function executed before a :class:`Request <.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                :class:`Request <starlite.connection.Request>` object and should not return any values.
-            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
-                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+                :class:`Request <.connection.Request>` object and should not return any values.
+            background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
+                :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to ``None``.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request`` instance and any non-``None`` return value is used for the response,
-                bypassing the route handler.
-            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a number
-                of seconds (e.g. ``120``) to cache the response.
+                the :class:`Request <.connection.Request>` instance and any non-``None`` return value is used for the
+                response, bypassing the route handler.
+            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a
+                number of seconds (e.g. ``120``) to cache the response.
             cache_control: A ``cache-control`` header of type
-                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
-            cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
+                :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
+            cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
-            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
+            dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
-            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
-            http_method: An :class:`http method string <starlite.types.Method>`, a member of the enum
-                :class:`HttpMethod <starlite.enums.HttpMethod>` or a list of these that correlates to the methods the
-                route handler function should handle.
-            media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
-                valid IANA Media-Type.
-            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
+            guards: A sequence of :class:`Guard <.types.Guard>` callables.
+            http_method: An :class:`http method string <.types.Method>`, a member of the enum
+                :class:`HttpMethod <.enums.HttpMethod>` or a list of these that correlates to the methods the route
+                handler function should handle.
+            media_type: A member of the :class:`MediaType <.enums.MediaType>` enum or a string with a valid IANA
+                Media-Type.
+            middleware: A sequence of :class:`Middleware <.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
-                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
-            response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
+                wherever you have access to :class:`Request <.connection.Request>` or
+                :class:`ASGI Scope <.types.Scope>`.
+            response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A sequence of :class:`Cookie <starlite.datastructures.Cookie>` instances.
-            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+            response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
@@ -285,7 +283,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            The default :class:`Response <starlite.response.Response>` class for the route handler.
+            The default :class:`Response <.response.Response>` class for the route handler.
         """
         for layer in list(reversed(self.ownership_layers)):
             if layer.response_class is not None:
@@ -296,7 +294,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """Return all header parameters in the scope of the handler function.
 
         Returns:
-            A dictionary mapping keys to :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances.
+            A dictionary mapping keys to :class:`ResponseHeader <.datastructures.ResponseHeader>` instances.
         """
         resolved_response_headers: dict[str, ResponseHeader] = {}
 
@@ -325,7 +323,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """Return a list of Cookie instances. Filters the list to ensure each cookie key is unique.
 
         Returns:
-            A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            A list of :class:`Cookie <.datastructures.Cookie>` instances.
         """
         response_cookies: set[Cookie] = set()
         for layer in reversed(self.ownership_layers):
@@ -347,7 +345,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional :class:`before request lifecycle hook handler <starlite.types.BeforeRequestHookHandler>`
+            An optional :class:`before request lifecycle hook handler <.types.BeforeRequestHookHandler>`
         """
         if self._resolved_before_request is Empty:
             before_request_handlers: list[AsyncCallable] = [
@@ -366,7 +364,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional :class:`after response lifecycle hook handler <starlite.types.AfterResponseHookHandler>`
+            An optional :class:`after response lifecycle hook handler <.types.AfterResponseHookHandler>`
         """
         if self._resolved_after_response is Empty:
             after_response_handlers: list[AsyncCallable] = [
@@ -441,14 +439,14 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     async def to_response(
         self, app: "Starlite", data: Any, plugins: list["SerializationPluginProtocol"], request: "Request"
     ) -> "ASGIApp":
-        """Return a :class:`Response <starlite.Response>` from the handler by resolving and calling it.
+        """Return a :class:`Response <.response.Response>` from the handler by resolving and calling it.
 
         Args:
-            app: The :class:`Starlite <starlite.app.Starlite>` app instance
-            data: Either an instance of a :class:`ResponseContainer <starlite.datastructures.ResponseContainer>`,
+            app: The :class:`Starlite <.app.Starlite>` app instance
+            data: Either an instance of a :class:`ResponseContainer <.response_containers.ResponseContainer>`,
                 a Response instance or an arbitrary value.
             plugins: An optional mapping of plugins
-            request: A :class:`Request <starlite.connection.request.Request>` instance
+            request: A :class:`Request <.connection.Request>` instance
 
         Returns:
             A Response instance

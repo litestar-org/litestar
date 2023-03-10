@@ -1,17 +1,16 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+
 from typing import Optional
+
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta, timezone
 
 from msgspec import Struct
 from msgspec.msgpack import decode as msgpack_decode
 from msgspec.msgpack import encode as msgpack_encode
 
-__all__ = (
-    "Storage",
-    "StorageObject",
-)
+__all__ = ("Storage", "StorageObject")
 
 
 class Storage(ABC):  # pragma: no cover
@@ -77,9 +76,9 @@ class Storage(ABC):  # pragma: no cover
 
 
 class StorageObject(Struct):
-    """Msgspec :class:`Struct` to store serialized data alongside with their expiry time."""
+    """:class:`msgspec.Struct` to store serialized data alongside with their expiry time."""
 
-    expires_at: Optional[datetime]
+    expires_at: Optional[datetime]  # noqa: UP007
     data: bytes
 
     @classmethod
@@ -89,13 +88,13 @@ class StorageObject(Struct):
             expires_in = timedelta(seconds=expires_in)
         return cls(
             data=data,
-            expires_at=(datetime.now() + expires_in) if expires_in else None,
+            expires_at=(datetime.now(tz=timezone.utc) + expires_in) if expires_in else None,
         )
 
     @property
     def expired(self) -> bool:
         """Return if the :class:`StorageObject` is expired"""
-        return self.expires_at is not None and datetime.now() >= self.expires_at
+        return self.expires_at is not None and datetime.now(tz=timezone.utc) >= self.expires_at
 
     @property
     def expires_in(self) -> int:
@@ -103,7 +102,7 @@ class StorageObject(Struct):
         was set, return ``-1``.
         """
         if self.expires_at:
-            return (self.expires_at - datetime.now()).seconds
+            return (self.expires_at - datetime.now(tz=timezone.utc)).seconds
         return -1
 
     def to_bytes(self) -> bytes:
@@ -112,5 +111,5 @@ class StorageObject(Struct):
 
     @classmethod
     def from_bytes(cls, raw: bytes) -> StorageObject:
-        """Load an previously encoded with :meth:`StorageObject.to_bytes`"""
+        """Load a previously encoded with :meth:`StorageObject.to_bytes`"""
         return msgpack_decode(raw, type=cls)

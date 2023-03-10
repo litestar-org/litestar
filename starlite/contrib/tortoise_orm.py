@@ -13,19 +13,15 @@ __all__ = ("TortoiseORMPlugin",)
 
 
 try:
-    from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
-
-    # isort: off
-    # See https://github.com/PyCQA/isort/issues/1950
-    from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
-        PydanticModel,  # pyright: ignore
-        pydantic_model_creator,  # pyright: ignore
-    )
-
-    # isort: on
-
+    import tortoise  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
+
+
+from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
+
+from tortoise.contrib.pydantic import PydanticModel, pydantic_model_creator  # type: ignore[attr-defined]  # pyright: ignore
+
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import Schema
@@ -104,7 +100,7 @@ class TortoiseORMPlugin(SerializationPluginProtocol[Model, BaseModel], OpenAPISc
         """
         return model_class().update_from_dict(data_container_instance.dict())
 
-    async def to_dict(self, model_instance: Model) -> Dict[str, Any]:  # pylint: disable=invalid-overridden-method
+    async def to_dict(self, model_instance: Model) -> Dict[str, Any]:
         """Given an instance of a model supported by the plugin, return a dictionary of serializable values."""
         pydantic_model_class = self.to_data_container_class(type(model_instance))
         data = await pydantic_model_class.from_tortoise_orm(model_instance)
@@ -117,7 +113,10 @@ class TortoiseORMPlugin(SerializationPluginProtocol[Model, BaseModel], OpenAPISc
     def to_openapi_schema(self, model_class: Type[Model]) -> "Schema":
         """Given a model class, transform it into an OpenAPI schema class.
 
-        :param model_class: A table class.
-        :return: An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+        Args:
+            model_class: A table class.
+
+        Returns:
+            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
         """
         return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))

@@ -12,21 +12,21 @@ from starlite.exceptions import (
 )
 from starlite.serialization import encode_json
 
-__all__ = (
-    "BaseLoggingConfig",
-    "LoggingConfig",
-    "StructLoggingConfig",
-)
+__all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
 
 
 if TYPE_CHECKING:
     from typing import NoReturn
 
-    from starlite.types import Logger
-    from starlite.types.callable_types import GetLogger
+    # these imports are duplicated on purpose so sphinx autodoc can find and link them
+    from structlog.types import BindableLogger, Processor, WrappedLogger
+
+    from starlite.types import Logger, Scope
+    from starlite.types.callable_types import ExceptionLoggingHandler, GetLogger
+
 
 try:
-    from structlog.types import BindableLogger, Processor, WrappedLogger
+    from structlog.types import BindableLogger, Processor, WrappedLogger  # noqa: F811
 except ImportError:
     BindableLogger = Any  # type: ignore
     Processor = Any  # type: ignore
@@ -60,7 +60,14 @@ default_picologging_handlers: dict[str, dict[str, Any]] = {
 }
 
 
-def get_default_handlers() -> dict[str, dict[str, Any]]:
+def get_logger_placeholder(_: str) -> NoReturn:  # pragma: no cover
+    """Raise: An :class:`ImproperlyConfiguredException <.exceptions.ImproperlyConfiguredException>`"""
+    raise ImproperlyConfiguredException(
+        "cannot call '.get_logger' without passing 'logging_config' to the Starlite constructor first"
+    )
+
+
+def _get_default_handlers() -> dict[str, dict[str, Any]]:
     """Return the default logging handlers for the config.
 
     Returns:
@@ -71,17 +78,51 @@ def get_default_handlers() -> dict[str, dict[str, Any]]:
     return default_handlers
 
 
-def get_logger_placeholder(_: str) -> NoReturn:  # pragma: no cover
-    """Raise an `ImproperlyConfiguredException."""
-    raise ImproperlyConfiguredException(
-        "To use 'app.get_logger', 'request.get_logger' or 'socket.get_logger' pass 'logging_config' to the Starlite constructor"
-    )
+def _default_exception_logging_handler_factory(
+    is_struct_logger: bool, traceback_line_limit: int
+) -> ExceptionLoggingHandler:
+    """Create an exception logging handler function.
+
+    Args:
+        is_struct_logger: Whether the logger is a structlog instance.
+        traceback_line_limit: Maximal number of lines to log from the
+            traceback.
+
+    Returns:
+        An exception logging handler.
+    """
+
+    def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
+        # we limit the length of the stack trace to 20 lines.
+        first_line = tb.pop(0)
+
+        if is_struct_logger:
+            logger.exception(
+                "uncaught exception",
+                connection_type=scope["type"],
+                path=scope["path"],
+                traceback="".join(tb[-traceback_line_limit:]),
+            )
+        else:
+            stack_trace = first_line + "".join(tb[-traceback_line_limit:])
+            logger.exception(
+                "exception raised on %s connection to route %s\n\n%s", scope["type"], scope["path"], stack_trace
+            )
+
+    return _default_exception_logging_handler
 
 
 class BaseLoggingConfig(ABC):  # pragma: no cover
     """Abstract class that should be extended by logging configs."""
 
-    __slots__ = ()
+    __slots__ = ("log_exceptions", "traceback_line_limit", "exception_logging_handler")
+
+    log_exceptions: Literal["always", "debug", "never"]
+    """Should exceptions be logged, defaults to log exceptions when ``app.debug == True``'"""
+    traceback_line_limit: int
+    """Max number of lines to print for exception traceback"""
+    exception_logging_handler: ExceptionLoggingHandler | None
+    """Handler function for logging exceptions."""
 
     @abstractmethod
     def configure(self) -> GetLogger:
@@ -122,7 +163,7 @@ class LoggingConfig(BaseLoggingConfig):
             "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
         }
     )
-    handlers: dict[str, dict[str, Any]] = field(default_factory=get_default_handlers)
+    handlers: dict[str, dict[str, Any]] = field(default_factory=_get_default_handlers)
     """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding
     Handler instance.
     """
@@ -144,10 +185,16 @@ class LoggingConfig(BaseLoggingConfig):
 
     Processing of the configuration will be as for any logger, except that the propagate setting will not be applicable.
     """
+    log_exceptions: Literal["always", "debug", "never"] = field(default="debug")
+    """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
+    traceback_line_limit: int = field(default=20)
+    """Max number of lines to print for exception traceback"""
+    exception_logging_handler: ExceptionLoggingHandler | None = field(default=None)
+    """Handler function for logging exceptions."""
 
     def __post_init__(self) -> None:
         if "queue_listener" not in self.handlers:
-            self.handlers["queue_listener"] = get_default_handlers()["queue_listener"]
+            self.handlers["queue_listener"] = _get_default_handlers()["queue_listener"]
 
         if "starlite" not in self.loggers:
             self.loggers["starlite"] = {
@@ -155,6 +202,11 @@ class LoggingConfig(BaseLoggingConfig):
                 "handlers": ["queue_listener"],
                 "propagate": False,
             }
+
+        if self.log_exceptions != "never" and self.exception_logging_handler is None:
+            self.exception_logging_handler = _default_exception_logging_handler_factory(
+                is_struct_logger=False, traceback_line_limit=self.traceback_line_limit
+            )
 
     def configure(self) -> GetLogger:
         """Return logger with the given configuration.
@@ -233,7 +285,7 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Configuration class for structlog.
 
     Notes:
-        - requires 'structlog' to be installed.
+        - requires ``structlog`` to be installed.
     """
 
     processors: list[Processor] | None = field(default_factory=default_structlog_processors)  # pyright: ignore
@@ -246,6 +298,18 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Logger factory to use."""
     cache_logger_on_first_use: bool = field(default=True)
     """Whether to cache the logger configuration and reuse."""
+    log_exceptions: Literal["always", "debug", "never"] = field(default="debug")
+    """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
+    traceback_line_limit: int = field(default=20)
+    """Max number of lines to print for exception traceback"""
+    exception_logging_handler: ExceptionLoggingHandler | None = field(default=None)
+    """Handler function for logging exceptions."""
+
+    def __post_init__(self) -> None:
+        if self.log_exceptions != "never" and self.exception_logging_handler is None:
+            self.exception_logging_handler = _default_exception_logging_handler_factory(
+                is_struct_logger=True, traceback_line_limit=self.traceback_line_limit
+            )
 
     def configure(self) -> GetLogger:
         """Return logger with the given configuration.
@@ -257,7 +321,19 @@ class StructLoggingConfig(BaseLoggingConfig):
             from structlog import configure, get_logger
 
             # we now configure structlog
-            configure(**{k: v for k, v in asdict(self).items() if k != "standard_lib_logging_config"})
+            configure(
+                **{
+                    k: v
+                    for k, v in asdict(self).items()
+                    if k
+                    not in (
+                        "standard_lib_logging_config",
+                        "log_exceptions",
+                        "traceback_line_limit",
+                        "exception_logging_handler",
+                    )
+                }
+            )
             return get_logger
         except ImportError as e:  # pragma: no cover
             raise MissingDependencyException("structlog is not installed") from e

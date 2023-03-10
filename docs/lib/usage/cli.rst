@@ -198,10 +198,10 @@ Which will result in:
 Extending the CLI
 -----------------
 
-Starlite's CLI is built with `click <https://click.palletsprojects.com/>`_\ , and can be easily extended.
+Starlite's CLI is built with `click <https://click.palletsprojects.com/>`_, and can be easily extended.
 All that's needed to add subcommands under the ``starlite`` command is adding an
-`entry point <https://packaging.python.org/en/latest/specifications/entry-points/>`_\ , pointing
-to a :class:`click.Command <click.Command>` or :class:`click.Group <click.Group>`, under the
+`entry point <https://packaging.python.org/en/latest/specifications/entry-points/>`_, pointing to a
+:class:`click.Command` or :class:`click.Group`, under the
 ``starlite.commands`` group.
 
 .. tab-set::

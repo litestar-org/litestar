@@ -144,7 +144,7 @@ HTTP route handlers
 -------------------
 
 The most commonly used route handlers are those that handle http requests and responses. These route handlers all
-inherit from the class :class:`HTTPRouteHandler <starlite.handlers.http_handlers.HTTPRouteHandler>`, which
+inherit from the class :class:`HTTPRouteHandler <starlite.handlers.HTTPRouteHandler>`, which
 is aliased as the decorator called :func:`route <starlite.handlers.route>`:
 
 .. code-block:: python
@@ -238,8 +238,8 @@ These are used exactly like ``route`` with the sole exception that you cannot co
    def delete_resource(pk: int) -> None:
        ...
 
-Although these decorators are merely subclasses of :class:`HTTPRouteHandler <starlite.handlers.http_handlers.HTTPRouteHandler>`
-that pre-set the ``http_method``\ , using *get*\ , *patch*\ , *put*\ , *delete* or *post* instead of *route* makes the
+Although these decorators are merely subclasses of :class:`HTTPRouteHandler <starlite.handlers.HTTPRouteHandler>`
+that pre-set the ``http_method``, using *get*, *patch*, *put*, *delete* or *post* instead of *route* makes the
 code clearer and simpler.
 
 Furthermore, in the OpenAPI specification each unique combination of http verb (e.g. "GET", "POST" etc.) and path is
@@ -276,7 +276,7 @@ should not use the ``sync_to_thread`` option.
 Websocket route handlers
 ------------------------
 
-Starlite supports Websockets via the :func:`websocket <starlite.handlers.websocket>` decorator:
+Starlite supports Websockets via the :func:`websocket <starlite.handlers.WebsocketRouteHandler>` decorator:
 
 .. code-block:: python
 
@@ -289,8 +289,8 @@ Starlite supports Websockets via the :func:`websocket <starlite.handlers.websock
        await socket.send_json({...})
        await socket.close()
 
-The\ ``websocket`` decorator is an alias of the class
-:class:`WebsocketRouteHandler <starlite.handlers.websocket_handlers.WebsocketRouteHandler>`. Thus, the below
+The ``websocket`` decorator is an alias of the class
+:class:`WebsocketRouteHandler <.handlers.WebsocketRouteHandler>`. Thus, the below
 code is equivalent to the one above:
 
 .. code-block:: python
@@ -318,7 +318,10 @@ These requirements are enforced using inspection, and if any of them is unfulfil
 
     OpenAPI currently does not support websockets. As such no schema will be generated for these route handlers.
 
-See the :class:`API Reference <starlite.handlers.WebsocketRouteHandler>` for full details on the ``websocket`` decorator and the kwargs it accepts.
+
+.. seealso::
+
+    :class:`WebsocketRouteHandler <starlite.handlers.WebsocketRouteHandler>`
 
 
 ASGI route handlers
@@ -346,7 +349,7 @@ If you need to write your own ASGI application, you can do so using the :func:`a
        await response(scope=scope, receive=receive, send=send)
 
 Like other route handlers, the ``asgi`` decorator is an alias of the class
-:class:`ASGIRouteHandler <.handlers.asgi.ASGIRouteHandler>`. Thus,
+:class:`ASGIRouteHandler <.handlers.ASGIRouteHandler>`. Thus,
 the code below is equivalent to the one above:
 
 .. code-block:: python
@@ -386,7 +389,7 @@ You can read more about these in the `ASGI specification <https://asgi.readthedo
 Additionally, ASGI route handler functions **must** be async functions. This is enforced using inspection, and if the
 function is not an async function, an informative exception will be raised.
 
-See the :class:`API Reference <starlite.handlers.ASGIRouteHandler>` for full details on the ``asgi`` decorator and the
+See the :class:`API Reference <.handlers.asgi_handlers.ASGIRouteHandler>` for full details on the ``asgi`` decorator and the
 kwargs it accepts.
 
 
@@ -485,8 +488,8 @@ has been registered on multiple routers) the result of ``route_reverse`` is not 
 The function will return a formatted path, but it might be picked randomly so reversing urls in such cases is highly
 discouraged.
 
-If you have access to :class:`request <starlite.connection.request.Request>` instance you can make reverse lookups using
-:meth:`url_for <.connection.base.ASGIConnection.url_for>` function which is similar to ``route_reverse`` but returns
+If you have access to :class:`request <.connection.Request>` instance you can make reverse lookups using
+:meth:`url_for <.connection.ASGIConnection.url_for>` function which is similar to ``route_reverse`` but returns
 absolute URL.
 
 

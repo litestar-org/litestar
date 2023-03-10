@@ -47,10 +47,14 @@ def default_operation_id_creator(
 ) -> str:
     """Create a unique 'operationId' for an OpenAPI PathItem entry.
 
-    :param route_handler: The HTTP Route Handler instance.
-    :param http_method: The HTTP method for the given PathItem.
-    :param path_components: A list of path components.
-    :return: A camelCased operationId created from the handler function name, http method and path components.
+    Args:
+        route_handler: The HTTP Route Handler instance.
+        http_method: The HTTP method for the given PathItem.
+        path_components: A list of path components.
+
+    Returns:
+        A camelCased operationId created from the handler function name,
+        http method and path components.
     """
 
     handler_namespace = (

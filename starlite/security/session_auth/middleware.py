@@ -97,14 +97,13 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         """Authenticate an incoming connection.
 
         Args:
-            connection: A Starlette ``HTTPConnection`` instance.
+            connection: An :class:`ASGIConnection <.connection.ASGIConnection>` instance.
 
         Raises:
-            :class:`NotAuthorizedException <starlite.exceptions.NotAuthorizedException>`: if session data is empty or user
-                is not found.
+            NotAuthorizedException: if session data is empty or user is not found.
 
         Returns:
-            :class:`AuthenticationResult <starlite.middleware.authentication.AuthenticationResult>`
+            :class:`AuthenticationResult <.middleware.authentication.AuthenticationResult>`
         """
         if not connection.session or connection.session is Empty:  # type: ignore
             # the assignment of 'Empty' forces the session middleware to clear session data.

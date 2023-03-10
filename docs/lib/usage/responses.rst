@@ -244,7 +244,8 @@ What is an ASGI Application?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An ASGI application in this context is any async callable (function, class method or simply a class that implements
-that special :meth:`__call__` dunder method) that accepts the three ASGI arguments: ``scope``, ``receive`` and ``send``.
+that special :meth:`object.__call__` dunder method) that accepts the three ASGI arguments: ``scope``, ``receive`` and
+``send``.
 
 For example, all the following examples are ASGI applications:
 
@@ -413,7 +414,7 @@ specifications.
 Cache Control
 ^^^^^^^^^^^^^
 
-:class:`CacheControlHeader <starlite.datastructures.headers.CacheControlHeader>` represents a
+:class:`CacheControlHeader <.datastructures.headers.CacheControlHeader>` represents a
 `Cache-Control Header <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control>`_.
 
 Here is a simple example that shows how to use it:
@@ -503,7 +504,7 @@ Of the two declarations of ``my-cookie`` only the route handler one will be used
 
 .. seealso::
 
-    :class:`Cookie reference <starlite.datastructures.cookie.Cookie>`
+    :class:`Cookie reference <.datastructures.cookie.Cookie>`
 
 
 
@@ -575,7 +576,6 @@ In Starlite, a redirect response looks like this:
 
 To return a redirect response you should do the following:
 
-
 - set an appropriate status code for the route handler (301, 302, 303, 307, 308)
 - annotate the return value of the route handler as returning ``Redirect``
 - return an instance of the ``Redirect`` class with the desired redirect path
@@ -583,9 +583,8 @@ To return a redirect response you should do the following:
 The Redirect Class
 ++++++++++++++++++
 
-``Redirect`` is a container class used to generate redirect responses and their respective OpenAPI documentation.
-See the :class:`API Reference <starlite.datastructures.Redirect>` for full details on the ``Redirect`` class and the kwargs it accepts.
-
+:class:`API Reference <.response_containers.Redirect>` is a container class used to generate redirect responses and
+their respective OpenAPI documentation.
 
 
 File Responses
@@ -607,7 +606,7 @@ File responses send a file:
            filename="repost.pdf",
        )
 
-The :class:`File <starlite.datastructures.file.File>` class expects two kwargs:
+The :class:`File <.response_containers.File>` class expects two kwargs:
 
 
 * ``path``: path of the file to download.
@@ -617,7 +616,7 @@ The :class:`File <starlite.datastructures.file.File>` class expects two kwargs:
 
 .. attention::
 
-    When a route handler's return value is annotated with :class:`File <.starlite.datastructure.file.File>`, the default
+    When a route handler's return value is annotated with :class:`File <.response_containers.File>`, the default
     ``media_type`` for the route_handler is switched from :class:`MediaType.JSON <.enums.MediaType>` to
     :class:`MediaType.TEXT <.enums.MediaType>` (i.e. ``"text/plain"``). If the file being sent has an
     `IANA media type <https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types>`_, you should set it
@@ -643,8 +642,8 @@ For example:
 Streaming Responses
 -------------------
 
-To return a streaming response use the :class:`Stream <starlite.datastructures.Stream>` class. The Stream class receives
-a single required kwarg - ``iterator``:
+To return a streaming response use the :class:`Stream <.response_containers.Stream>` class. The Stream class receives a
+single required kwarg - ``iterator``:
 
 .. literalinclude:: /examples/responses/streaming_responses.py
     :language: python
@@ -674,8 +673,8 @@ engine is in place, you can use a template response like so:
    def info(request: Request) -> Template:
        return Template(name="info.html", context={"user": request.user})
 
-In the above :class:`API Reference <starlite.datastructures.Template>` is passed the template name, which is a path like
-value, and a context dictionary that maps string keys into values that will be rendered in the template.
+In the above example, :class:`Template <.response_containers.Template>` is passed the template name, which is a path
+like value, and a context dictionary that maps string keys into values that will be rendered in the template.
 
 
 
@@ -709,12 +708,12 @@ Background Tasks
 ----------------
 
 All Starlite responses and response containers (e.g. ``File``, ``Template``, etc.) allow passing in a ``background``
-kwarg. This kwarg accepts either an instance of :class:`BackgroundTask <.datastructures.background_tasks.BackgroundTask>`
-or an instance of :class:`BackgroundTasks <.datastructures.background_tasks.BackgroundTasks>`, which wraps an iterable
-of :class:`BackgroundTask <.datastructures.background_tasks.BackgroundTask>` instances.
+kwarg. This kwarg accepts either an instance of :class:`BackgroundTask <.background_tasks.BackgroundTask>`
+or an instance of :class:`BackgroundTasks <.background_tasks.BackgroundTasks>`, which wraps an iterable of
+:class:`BackgroundTask <.background_tasks.BackgroundTask>` instances.
 
-A background task is a sync or async callable (function, method or class that implements the :meth:`__call__` dunder method)
-that will be called after the response finishes sending the data.
+A background task is a sync or async callable (function, method or class that implements the :meth:`object.__call__`
+dunder method) that will be called after the response finishes sending the data.
 
 Thus, in the following example the passed in background task will be executed after the response sends:
 
@@ -723,15 +722,15 @@ Thus, in the following example the passed in background task will be executed af
     :language: python
 
 
-When the ``greeter`` handler is called, the logging task will be called with any ``*args`` and ``**kwargs`` passed into the
-:class:`BackgroundTask <.datastructures.background_tasks.BackgroundTask>`.
+When the ``greeter`` handler is called, the logging task will be called with any ``*args`` and ``**kwargs`` passed into
+the :class:`BackgroundTask <.background_tasks.BackgroundTask>`.
 
 .. note::
 
     In the above example ``"greeter"`` is an arg and ``message=f"was called with name {name}"`` is a kwarg.
     The function signature of ``logging_task`` allows for this, so this should pose no problem.
-    :class:`BackgroundTask <starlite.datastructures.background_tasks.BackgroundTask>` is typed with
-    :class:`ParamSpec <typing.ParamSpec>`, enabling correct type checking for arguments and keyword arguments passed to it.
+    :class:`BackgroundTask <.background_tasks.BackgroundTask>` is typed with :class:`ParamSpec <typing.ParamSpec>`,
+    enabling correct type checking for arguments and keyword arguments passed to it.
 
 Route decorators (e.g. ``@get``, ``@post``, etc.) also allow passing in a background task with the ``background`` kwarg:
 
@@ -748,16 +747,15 @@ Route decorators (e.g. ``@get``, ``@post``, etc.) also allow passing in a backgr
 Executing Multiple Background Tasks
 +++++++++++++++++++++++++++++++++++
 
-You can also use the :class:`BackgroundTasks <starlite.datastructures.background_tasks.BackgroundTasks>` class and pass
-to it an iterable (:class:`list`, :class:`tuple`, etc.) of
-:class:`BackgroundTask <starlite.datastructures.background_tasks.BackgroundTask>` instances:
+You can also use the :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` class and pass to it an iterable
+(:class:`list`, :class:`tuple`, etc.) of :class:`BackgroundTask <.background_tasks.BackgroundTask>` instances:
 
 .. literalinclude:: /examples/responses/background_tasks_3.py
     :caption: Multiple Background Tasks
     :language: python
 
 
-:class:`BackgroundTasks <starlite.datastructures.background_tasks.BackgroundTasks>` class
+:class:`BackgroundTasks <.background_tasks.BackgroundTasks>` class
 accepts an optional keyword argument ``run_in_task_group`` with a default value of ``False``. Setting this to ``True``
 allows background tasks to run concurrently, using an `anyio.task_group <https://anyio.readthedocs.io/en/stable/tasks.html>`_.
 
@@ -788,13 +786,13 @@ In classic pagination the dataset is divided into pages of a specific size and t
     :language: python
 
 
-The data container for this pagination is
-called :class:`ClassicPagination <starlite.datastructures.pagination.ClassicPagination>`, which is what will be returned
-by the paginator in the above example This will also generate the corresponding OpenAPI documentation.
+The data container for this pagination is called :class:`ClassicPagination <.pagination.ClassicPagination>`, which is
+what will be returned by the paginator in the above example This will also generate the corresponding OpenAPI
+documentation.
 
 If you require async logic, you can implement
-the :class:`AbstractAsyncClassicPaginator <starlite.datastructures.pagination.AbstractAsyncClassicPaginator>` instead of
-the :class:`AbstractSyncClassicPaginator <starlite.datastructures.pagination.AbstractSyncClassicPaginator>`.
+the :class:`AbstractAsyncClassicPaginator <.pagination.AbstractAsyncClassicPaginator>` instead of the
+:class:`AbstractSyncClassicPaginator <.pagination.AbstractSyncClassicPaginator>`.
 
 Offset Pagination
 +++++++++++++++++
@@ -808,12 +806,12 @@ For example, given a list of 50 items, you could request ``limit=10``, ``offset=
 
 
 The data container for this pagination is
-called :class:`OffsetPagination <starlite.datastructures.pagination.OffsetPagination>`, which is what will be returned
-by the paginator in the above example This will also generate the corresponding OpenAPI documentation.
+called :class:`OffsetPagination <.pagination.OffsetPagination>`, which is what will be returned by the paginator in the
+above example This will also generate the corresponding OpenAPI documentation.
 
 If you require async logic, you can implement
-the :class:`AbstractAsyncOffsetPaginator <starlite.datastructures.pagination.AbstractAsyncOffsetPaginator>` instead of
-the :class:`AbstractSyncOffsetPaginator <starlite.datastructures.pagination.AbstractSyncOffsetPaginator>`.
+the :class:`AbstractAsyncOffsetPaginator <.pagination.AbstractAsyncOffsetPaginator>` instead of the
+:class:`AbstractSyncOffsetPaginator <.pagination.AbstractSyncOffsetPaginator>`.
 
 Offset Pagination With SQLAlchemy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -840,10 +838,9 @@ Cursor is unique identifier within the dataset that serves as a way to point the
     :language: python
 
 
-The data container for this pagination is
-called :class:`CursorPagination <starlite.datastructures.pagination.CursorPagination>`, which is what will be returned
-by the paginator in the above example This will also generate the corresponding OpenAPI documentation.
+The data container for this pagination is called :class:`CursorPagination <.pagination.CursorPagination>`, which is what
+will be returned by the paginator in the above example This will also generate the corresponding OpenAPI documentation.
 
 If you require async logic, you can implement
-the :class:`AbstractAsyncCursorPaginator <starlite.datastructures.pagination.AbstractAsyncCursorPaginator>` instead of
-the :class:`AbstractSyncCursorPaginator <starlite.datastructures.pagination.AbstractSyncCursorPaginator>`.
+the :class:`AbstractAsyncCursorPaginator <.pagination.AbstractAsyncCursorPaginator>` instead of the
+:class:`AbstractSyncCursorPaginator <.pagination.AbstractSyncCursorPaginator>`.

@@ -196,7 +196,7 @@ Creating partial DTOs
 ----------------------
 
 Sometimes you may only need to partially modify a resource. In these cases, DTOs can be wrapped with
-:class:`Partial <starlite.types.Partial>`.
+:class:`Partial <.partial.Partial>`.
 
 .. code-block:: python
 
@@ -225,7 +225,7 @@ The created ``PartialCompanyDTO`` is equivalent to the following declaration:
        name: Optional[str]
        worth: Optional[float]
 
-:class:`Partial <starlite.types.Partial>` can also be used inline when creating routes.
+:class:`Partial <.partial.Partial>` can also be used inline when creating routes.
 
 .. code-block:: python
 

@@ -93,12 +93,12 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
             header_list = self._header_list = _encode_headers(
                 (key, value) for key in set(self) for value in self.getall(key)
             )
-        return header_list  # noqa: R504
+        return header_list
 
 
 class MutableScopeHeaders(MutableMapping):
-    """A case-insensitive, multidict-like structure that can be used to mutate headers
-    within a :class:`Scope <starlite.types.Scope>`
+    """A case-insensitive, multidict-like structure that can be used to mutate headers within a
+    :class:`Scope <.types.Scope>`
     """
 
     def __init__(self, scope: Optional["HeaderScope"] = None) -> None:
@@ -121,7 +121,7 @@ class MutableScopeHeaders(MutableMapping):
         """Construct a header from a message object.
 
         Args:
-            message: :class:`Message <starlite.types.Message>`.
+            message: :class:`Message <.types.Message>`.
 
         Returns:
             MutableScopeHeaders.
@@ -381,8 +381,8 @@ class ETag(Header):
             raise ImproperlyConfiguredException from exc
 
     @validator("value", always=True)
-    def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:  # pylint: disable=no-self-argument
-        """Ensure that either value is set or the instance is for documentation_only."""
+    def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:
+        """Ensure that either value is set or the instance is for ``documentation_only``."""
         if values.get("documentation_only") or value is not None:
             return value
         raise ValueError("value must be set if documentation_only is false")
