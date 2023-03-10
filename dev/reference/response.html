@@ -786,6 +786,7 @@ If the response does not have a body, this value is <code class="docutils litera
 <li><p><strong>url</strong> – A url to redirect to.</p></li>
 <li><p><strong>status_code</strong> – An HTTP status code. The status code should be one of 301, 302, 303, 307 or 308,
 otherwise an exception will be raised.</p></li>
+<li><p><strong>background</strong> – A background task or tasks to be run after the response is sent.</p></li>
 <li><p><strong>headers</strong> – A string keyed dictionary of response headers. Header keys are insensitive.</p></li>
 <li><p><strong>cookies</strong> – A list of <a class="reference internal" href="datastructures.html#starlite.datastructures.Cookie" title="starlite.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instances to be set under the response
 <code class="docutils literal notranslate"><span class="pre">Set-Cookie</span></code> header.</p></li>

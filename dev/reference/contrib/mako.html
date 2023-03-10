@@ -604,14 +604,16 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.contrib.mako.MakoTemplateEngine.get_template">
 <span class="sig-name descname"><span class="pre">get_template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.contrib.mako.MakoTemplate" title="starlite.contrib.mako.MakoTemplate"><span class="pre">MakoTemplate</span></a></span></span><a class="headerlink" href="#starlite.contrib.mako.MakoTemplateEngine.get_template" title="Permalink to this definition">#</a></dt>
-<dd><p>Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
-:param template_name: A dotted path</p>
+<dd><p>Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>MakoTemplate instance</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>template_name</strong> – A dotted path</p>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../exceptions.html#starlite.exceptions.TemplateNotFoundException" title="starlite.exceptions.TemplateNotFoundException"><strong>TemplateNotFoundException</strong></a> – if no template is found.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>MakoTemplate instance</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../exceptions.html#starlite.exceptions.TemplateNotFoundException" title="starlite.exceptions.TemplateNotFoundException"><strong>TemplateNotFoundException</strong></a> – if no template is found.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -639,6 +639,7 @@ are either a <code class="docutils literal notranslate"><span class="pre">str</s
 attribute.</p></li>
 <li><p><strong>field_definitions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.11)"><em>tuple</em></a><em>[</em><em>Any</em><em>, </em><em>Any</em><em>]</em><em>] </em><em>| </em><em>None</em>) – Add fields to the model that don’t exist on <code class="docutils literal notranslate"><span class="pre">source</span></code>.
 These are passed as kwargs to <cite>pydantic.create_model()</cite>.</p></li>
+<li><p><strong>base</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><em>type</em></a><em>[</em><a class="reference internal" href="#starlite.dto.DTO" title="starlite.dto.DTO"><em>DTO</em></a><em>] </em><em>| </em><em>None</em>) – Base class for the generated pydantic model.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
