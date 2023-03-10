@@ -1,4 +1,4 @@
-from pytest import CaptureFixture  # noqa: TC002
+from pytest import CaptureFixture
 from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger
 

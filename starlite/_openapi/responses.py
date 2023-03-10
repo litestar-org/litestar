@@ -5,9 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Ty
 
 from pydantic_openapi_schema.v3_1_0 import Response
 from pydantic_openapi_schema.v3_1_0.header import Header
-from pydantic_openapi_schema.v3_1_0.media_type import (
-    MediaType as OpenAPISchemaMediaType,
-)
+from pydantic_openapi_schema.v3_1_0.media_type import MediaType as OpenAPISchemaMediaType
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 from typing_extensions import get_args, get_origin
 
@@ -16,11 +14,7 @@ from starlite._openapi.schema import create_schema
 from starlite._openapi.utils import pascal_case_to_text
 from starlite._signature.models import SignatureField
 from starlite.enums import MediaType
-from starlite.exceptions import (
-    HTTPException,
-    ImproperlyConfiguredException,
-    ValidationException,
-)
+from starlite.exceptions import HTTPException, ImproperlyConfiguredException, ValidationException
 from starlite.response import Response as StarliteResponse
 from starlite.response_containers import File, Redirect, Stream, Template
 from starlite.utils import get_enum_string_value, get_name, is_class_and_subclass
@@ -189,7 +183,7 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
             )
             for exc in exception_group
         ]
-        if len(exceptions_schemas) > 1:
+        if len(exceptions_schemas) > 1:  # noqa: SIM108
             schema = Schema(oneOf=exceptions_schemas)  # type:ignore[arg-type]
         else:
             schema = exceptions_schemas[0]

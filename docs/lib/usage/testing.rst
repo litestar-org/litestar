@@ -136,15 +136,16 @@ If you are using :ref:`session middleware <lib/usage/middleware/builtin-middlewa
 across requests, then you might want to inject or inspect session data outside a request. For this,
 :class:`TestClient <.testing.TestClient>` provides two methods:
 
-* :meth:`set_session_data <starlite.testing.test_client.TestClient.set_session_data>`
-* :meth:`get_session_data <starlite.testing.test_client.TestClient.get_session_data>`
+* :meth:`set_session_data <starlite.testing.TestClient.set_session_data>`
+* :meth:`get_session_data <starlite.testing.TestClient.get_session_data>`
 
 .. attention::
 
     - The Session Middleware must be enabled in Starlite app provided to the TestClient to use sessions.
-    - If you are using the :class:`ClientSideSessionBackend <starlite.middleware.session.cookie_backend.ClientSideSessionBackend>` you need
-      to install the ``cryptography`` package. You can do so by installing starlite with e.g. ``pip install starlite[cryptography]``
-      or ``poetry add starlite[cryptography]``
+    - If you are using the
+      :class:`ClientSideSessionBackend <starlite.middleware.session.client_side.ClientSideSessionBackend>` you need to
+      install the ``cryptography`` package. You can do so by installing starlite with e.g.
+      ``pip install starlite[cryptography]`` or ``poetry add starlite[cryptography]``
 
 .. tab-set::
 
@@ -179,7 +180,7 @@ Using a blocking portal
 The :class:`TestClient <.testing.TestClient>` uses a feature of `anyio <https://anyio.readthedocs.io/en/stable/>`_ called
 a **Blocking Portal**.
 
-The :class:`anyio.BlockingPortal` allows :class:`TestClient <.testing.TestClient>`
+The :class:`anyio.abc.BlockingPortal` allows :class:`TestClient <.testing.TestClient>`
 to execute asynchronous functions using a synchronous call. ``TestClient`` creates a blocking portal to manage
 ``Starlite``'s async logic, and it allows ``TestClient``'s API to remain fully synchronous.
 

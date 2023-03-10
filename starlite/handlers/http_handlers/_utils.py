@@ -4,7 +4,10 @@ from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
+from typing_extensions import get_args
+
 from starlite.datastructures import Cookie, ResponseHeader
+from starlite.dto import DTO
 from starlite.enums import HttpMethod
 from starlite.exceptions import ValidationException
 from starlite.plugins import get_plugin_for_value
@@ -13,6 +16,7 @@ from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
+    from starlite.datastructures import Cookie, ResponseHeader
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
     from starlite.dto import AbstractDTO
@@ -205,10 +209,7 @@ def normalize_http_method(http_methods: HttpMethod | Method | Sequence[HttpMetho
         http_methods = [http_methods]  # pyright: ignore
 
     for method in http_methods:
-        if isinstance(method, HttpMethod):
-            method_name = method.value.upper()
-        else:
-            method_name = method.upper()
+        method_name = method.value.upper() if isinstance(method, HttpMethod) else method.upper()
         if method_name not in HTTP_METHOD_NAMES:
             raise ValidationException(f"Invalid HTTP method: {method_name}")
         output.add(method_name)

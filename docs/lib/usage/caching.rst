@@ -82,8 +82,8 @@ You can also specify the default cache key builder to use for the entire applica
 Interacting with the cache
 --------------------------
 
-The Starlite app's cache is exposed as :attr:`cache <.app.Starlite.cache>`, which makes it accessible via the ``scope``
-object. For example, you can access the cache in a custom middleware thus:
+The Starlite app's cache is exposed as :class:`Starlite.cache <.app.Starlite>`, which makes it accessible via the
+``scope`` object. For example, you can access the cache in a custom middleware thus:
 
 .. code-block:: python
 

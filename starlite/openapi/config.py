@@ -32,7 +32,7 @@ class OpenAPIConfig:
     """Configuration for OpenAPI.
 
     To enable OpenAPI schema generation and serving, pass an instance of this class to the
-    :class:`Starlite <starlite.app.Starlite>` constructor using the 'openapi_config' kwargs.
+    :class:`Starlite <.app.Starlite>` constructor using the ``openapi_config`` kwargs.
     """
 
     title: str
@@ -64,12 +64,13 @@ class OpenAPIConfig:
     security: list[SecurityRequirement] | None = field(default=None)
     """API Security requirements information.
 
-    Should be an instance of :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>`.
+    Should be an instance of
+        :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>`.
     """
     components: Components | list[Components] | None = field(default=None)
     """API Components information.
 
-    Should be an instance of :class:`Components <pydantic_openapi_schema.v3_10_0.components.Components>` or a list thereof.
+    Should be an instance of :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` or a list thereof.
     """
     servers: list[Server] = field(default_factory=lambda: [Server(url="/")])
     """A list of :class:`Server <pydantic_openapi_schema.v3_1_0.server.Server>` instances."""

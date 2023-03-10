@@ -21,6 +21,9 @@ if TYPE_CHECKING:
     )
 
 
+__all__ = ("WebSocketTestSession",)
+
+
 class WebSocketTestSession:
     exit_stack: ExitStack
 
@@ -164,6 +167,7 @@ class WebSocketTestSession:
 
         Notes:
             - you can use one of the other receive methods to extract the data from the message.
+
         Returns:
             A websocket message.
         """
@@ -179,18 +183,15 @@ class WebSocketTestSession:
         return message
 
     def receive_text(self) -> str:
-        """
-
-        Returns:
-            A string value.
+        """Returns:
+        A string value.
         """
         message = self.receive()
         return cast("str", message.get("text", ""))
 
     def receive_bytes(self) -> bytes:
-        """
-        Returns:
-            A bytes string value.
+        """Returns:
+        A bytes string value.
         """
         message = self.receive()
         return cast("bytes", message.get("bytes", b""))

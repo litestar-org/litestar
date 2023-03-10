@@ -57,7 +57,7 @@ class AppConfig:
     """
 
     after_exception: list[AfterExceptionHookHandler] = field(default_factory=list)
-    """An application level :class:`exception hook handler <starlite.types.AfterExceptionHookHandler>` or list thereof.
+    """An application level :class:`exception hook handler <.types.AfterExceptionHookHandler>` or list thereof.
 
     This hook is called after an exception occurs. In difference to exception handlers, it is not meant to return a
     response - only to process the exception (e.g. log it, send it to Sentry etc.).
@@ -66,51 +66,49 @@ class AppConfig:
     """A sync or async function executed after the route handler function returned and the response object has been
     resolved.
 
-    Receives the response object which may be any subclass of :class:`Response <starlite.response.Response>`.
+    Receives the response object which may be any subclass of :class:`Response <.response.Response>`.
     """
     after_response: AfterResponseHookHandler | None = field(default=None)
-    """A sync or async function called after the response has been awaited. It receives the.
-
-    :class:`Request <starlite.connection.Request>` object and should not return any values.
+    """A sync or async function called after the response has been awaited. It receives the
+    :class:`Request <.connection.Request>` object and should not return any values.
     """
     after_shutdown: list[LifeSpanHookHandler] = field(default_factory=list)
-    """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
+    """An application level :class:`life-span hook handler <.types.LifeSpanHookHandler>` or list thereof.
 
-    This hook is called during the ASGI shutdown, after all callables in the 'on_shutdown' list have been called.
+    This hook is called during the ASGI shutdown, after all callables in the ``on_shutdown`` list have been called.
     """
     after_startup: list[LifeSpanHookHandler] = field(default_factory=list)
-    """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
+    """An application level :class:`life-span hook handler <.types.LifeSpanHookHandler>` or list thereof.
 
-    This hook is called during the ASGI startup, after all callables in the 'on_startup' list have been called.
+    This hook is called during the ASGI startup, after all callables in the ``on_startup`` list have been called.
     """
     allowed_hosts: list[str] | AllowedHostsConfig | None = field(default=None)
     """If set enables the builtin allowed hosts middleware."""
     before_request: BeforeRequestHookHandler | None = field(default=None)
-    """A sync or async function called immediately before calling the route handler. Receives the.
-
-    :class:`Request <starlite.connection.Request>` instance and any non-``None`` return value is used for the response, bypassing
-    the route handler.
+    """A sync or async function called immediately before calling the route handler. Receives the
+    :class:`Request <.connection.Request>` instance and any non-``None`` return value is used for the response,
+    bypassing the route handler.
     """
     before_send: list[BeforeMessageSendHookHandler] = field(default_factory=list)
-    """An application level :class:`before send hook handler <starlite.types.BeforeMessageSendHookHandler>` or list thereof.
+    """An application level :class:`before send hook handler <.types.BeforeMessageSendHookHandler>` or list thereof.
 
     This hook is called when the ASGI send function is called.
     """
     before_shutdown: list[LifeSpanHookHandler] = field(default_factory=list)
-    """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
+    """An application level :class:`life-span hook handler <.types.LifeSpanHookHandler>` or list thereof.
 
-    This hook is called during the ASGI shutdown, before any callables in the 'on_shutdown' list have been called.
+    This hook is called during the ASGI shutdown, before any callables in the ``on_shutdown`` list have been called.
     """
     before_startup: list[LifeSpanHookHandler] = field(default_factory=list)
-    """An application level :class:`life-span hook handler <starlite.types.LifeSpanHookHandler>` or list thereof.
+    """An application level :class:`life-span hook handler <.types.LifeSpanHookHandler>` or list thereof.
 
-    This hook is called during the ASGI startup, before any callables in the 'on_startup' list have been called.
+    This hook is called during the ASGI startup, before any callables in the ``on_startup`` list have been called.
     """
     cache_config: CacheConfig = field(default_factory=CacheConfig)
     """Configures caching behavior of the application."""
     cache_control: CacheControlHeader | None = field(default=None)
-    """A ``cache-control`` header of type :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` to add to route
-    handlers of this app.
+    """A ``cache-control`` header of type :class:`CacheControlHeader <.datastructures.CacheControlHeader>` to add to
+    route handlers of this app.
 
     Can be overridden by route handlers.
     """
@@ -127,75 +125,74 @@ class AppConfig:
     debug: bool = field(default=False)
     """If ``True``, app errors rendered as HTML with a stack trace."""
     dependencies: dict[str, Provide] = field(default_factory=dict)
-    """A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances."""
+    """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
     etag: ETag | None = field(default=None)
-    """An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` to add to route handlers of this app.
+    """An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
 
     Can be overridden by route handlers.
     """
     event_emitter_backend: type[BaseEventEmitterBackend] = field(default=SimpleEventEmitter)
-    """A subclass of :class:`BaseEventEmitterBackend <starlite.events.emitter.BaseEventEmitterBackend>`."""
+    """A subclass of :class:`BaseEventEmitterBackend <.events.emitter.BaseEventEmitterBackend>`."""
     exception_handlers: ExceptionHandlersMap = field(default_factory=dict)
     """A dictionary that maps handler functions to status codes and/or exception types."""
     guards: list[Guard] = field(default_factory=list)
-    """A list of :class:`Guard <starlite.types.Guard>` callables."""
+    """A list of :class:`Guard <.types.Guard>` callables."""
     initial_state: InitialStateType = field(default_factory=dict)
     """An object from which to initialize the app state."""
     listeners: list[EventListener] = field(default_factory=list)
-    """A list of :class:`EventListener <starlite.events.listener.EventListener>`."""
+    """A list of :class:`EventListener <.events.listener.EventListener>`."""
     logging_config: BaseLoggingConfig | None = field(default=None)
-    """An instance of :class:`BaseLoggingConfig <starlite.config.logging.BaseLoggingConfig>` subclass."""
+    """An instance of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` subclass."""
     middleware: list[Middleware] = field(default_factory=list)
-    """A list of :class:`Middleware <starlite.types.Middleware>`."""
+    """A list of :class:`Middleware <.types.Middleware>`."""
     on_shutdown: list[LifeSpanHandler] = field(default_factory=list)
-    """A list of :class:`LifeSpanHandler <starlite.types.LifeSpanHandler>` called during application shutdown."""
+    """A list of :class:`LifeSpanHandler <.types.LifeSpanHandler>` called during application shutdown."""
     on_startup: list[LifeSpanHandler] = field(default_factory=list)
-    """A list of :class:`LifeSpanHandler <starlite.types.LifeSpanHandler>` called during application startup."""
+    """A list of :class:`LifeSpanHandler <.types.LifeSpanHandler>` called during application startup."""
     openapi_config: OpenAPIConfig | None = field(default=None)
-    """Defaults to :data:`DEFAULT_OPENAPI_CONFIG <starlite.app.DEFAULT_OPENAPI_CONFIG>`"""
+    """Defaults to :data:`DEFAULT_OPENAPI_CONFIG <.app.DEFAULT_OPENAPI_CONFIG>`"""
     opt: dict[str, Any] = field(default_factory=dict)
-    """A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
-    wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+    """A string keyed dictionary of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
+    wherever you have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
 
     Can be overridden by routers and router handlers.
     """
     parameters: ParametersMap = field(default_factory=dict)
-    """A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all application paths."""
+    """A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application paths."""
     plugins: list[PluginProtocol] = field(default_factory=list)
-    """List of :class:`SerializationPluginProtocol <starlite.plugins.SerializationPluginProtocol>`."""
+    """List of :class:`SerializationPluginProtocol <.plugins.SerializationPluginProtocol>`."""
     request_class: type[Request] | None = field(default=None)
-    """An optional subclass of :class:`Request <starlite.connection.request.Request>` to use for http connections."""
+    """An optional subclass of :class:`Request <.connection.Request>` to use for http connections."""
     response_class: ResponseType | None = field(default=None)
-    """A custom subclass of [starlite.response.Response] to be used as the app's default response."""
+    """A custom subclass of :class:`Response <.response.Response>` to be used as the app's default response."""
     response_cookies: ResponseCookies = field(default_factory=list)  # type: ignore
-    """A list of [Cookie](starlite.datastructures.Cookie] instances."""
+    """A list of :class:`Cookie <.datastructures.Cookie>`."""
     response_headers: Sequence[ResponseHeader] = field(default_factory=list)
-    """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
+    """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
     return_dto: type[AbstractDTO] | None | EmptyType = field(default=Empty)
     """DTO type to use for serializing outbound request data."""
     route_handlers: list[ControllerRouterHandler] = field(default_factory=list)
-    """A required list of route handlers, which can include instances of :class:`Router <starlite.router.Router>`, subclasses
-    of.
-
-    :class:`Controller <starlite.controller.Controller>` or any function decorated by the route handler decorators.
+    """A required list of route handlers, which can include instances of :class:`Router <.router.Router>`,
+    subclasses of :class:`Controller <.controller.Controller>` or any function decorated by the route handler
+    decorators.
     """
     security: list[SecurityRequirement] = field(default_factory=list)
-    """A list of dictionaries that will be added to the schema of all route handlers in the application. See.
-
-    :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for details.
+    """A list of dictionaries that will be added to the schema of all route handlers in the application. See
+    :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for details.
     """
     static_files_config: list[StaticFilesConfig] = field(default_factory=list)
-    """An instance or list of :class:`StaticFilesConfig <starlite.config.StaticFilesConfig>`."""
+    """An instance or list of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`."""
     tags: list[str] = field(default_factory=list)
     """A list of string tags that will be appended to the schema of all route handlers under the application."""
     template_config: TemplateConfig | None = field(default=None)
-    """An instance of :class:`TemplateConfig <starlite.config.TemplateConfig>`."""
+    """An instance of :class:`TemplateConfig <.template.TemplateConfig>`."""
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
     websocket_class: type[WebSocket] | None = field(default=None)
-    """An optional subclass of :class:`WebSocket <starlite.connection.websocket.WebSocket>` to use for websocket connections."""
+    """An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket connections."""
     multipart_form_part_limit: int = field(default=1000)
-    """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from DoS attacks."""
+    """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from
+    DoS attacks."""
 
     def __post_init__(self) -> None:
         """Normalize the allowed hosts to be a config or None.

@@ -94,7 +94,7 @@ class OpenAPIController(Controller):
         """Return the OpenAPI pydantic model from the request instance.
 
         Args:
-            request: A :class:`Starlite <starlite.connection.Request>` instance.
+            request: A :class:`Starlite <.connection.Request>` instance.
 
         Returns:
             An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.open_api.OpenAPI>` instance.
@@ -138,10 +138,10 @@ class OpenAPIController(Controller):
 
     @property
     def favicon(self) -> str:
-        """Return favicon `<link>` tag, if applicable.
+        """Return favicon ``<link>`` tag, if applicable.
 
         Returns:
-            A `<link>` tag if self.favicon_url is not empty, otherwise returns a placeholder meta tag.
+            A ``<link>`` tag if ``self.favicon_url`` is not empty, otherwise returns a placeholder meta tag.
         """
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
@@ -164,11 +164,11 @@ class OpenAPIController(Controller):
         include_in_schema=False,
     )
     def retrieve_schema_yaml(self, request: Request) -> Response:
-        """Return the OpenAPI schema as YAML with an 'application/vnd.oai.openapi' Content-Type header.
+        """Return the OpenAPI schema as YAML with an ``application/vnd.oai.openapi`` Content-Type header.
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A Response instance with the YAML object rendered into a string.
@@ -184,11 +184,11 @@ class OpenAPIController(Controller):
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
     def retrieve_schema_json(self, request: Request) -> Response:
-        """Return the OpenAPI schema as JSON with an 'application/vnd.oai.openapi+json' Content-Type header.
+        """Return the OpenAPI schema as JSON with an ``application/vnd.oai.openapi+json`` Content-Type header.
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A Response instance with the JSON object rendered into a string.
@@ -206,13 +206,12 @@ class OpenAPIController(Controller):
     def root(self, request: Request) -> Response:
         """Render a static documentation site.
 
-         The site to be rendered is based on the ``root_schema_site`` value set in the
-         application's :class:`OpenAPIConfig <starlite.config.openapi.OpenAPIConfig>`.
-         Defaults to ``redoc``.
+         The site to be rendered is based on the ``root_schema_site`` value set in the application's
+         :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`. Defaults to ``redoc``.
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A response with the rendered site defined in root_schema_site.
@@ -241,10 +240,10 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
-            response: With a rendered swagger documentation site
+            A response with a rendered swagger documentation site
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
@@ -263,7 +262,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A response with a rendered stoplight elements documentation site
@@ -281,7 +280,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A response with a rendered redoc documentation site
@@ -301,7 +300,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A rendered html string.
@@ -364,7 +363,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A rendered html string.
@@ -408,7 +407,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A rendered html string.

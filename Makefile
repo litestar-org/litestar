@@ -7,7 +7,7 @@ docs-serve:
 	sphinx-autobuild docs docs/_build/ -j auto --watch starlite,examples
 
 docs: docs-clean
-	sphinx-build -M html docs docs/_build/ -E -a -j auto -W --keep-going
+	sphinx-build -M html docs docs/_build/ -a -j auto -W --keep-going
 
 test-examples:
 	pytest docs/examples

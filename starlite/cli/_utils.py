@@ -93,10 +93,7 @@ class StarliteEnv:
         except ImportError:
             pass
 
-        if not app_path:
-            loaded_app = _autodiscover_app(getenv("STARLITE_APP"), cwd)
-        else:
-            loaded_app = _load_app_from_path(app_path)
+        loaded_app = _autodiscover_app(getenv("STARLITE_APP"), cwd) if not app_path else _load_app_from_path(app_path)
 
         port = getenv("STARLITE_PORT")
         web_concurrency = getenv("WEB_CONCURRENCY")
@@ -158,7 +155,7 @@ class StarliteGroup(Group):
 
         def decorator(f: AnyCallable) -> Command:
             f = _inject_args(f)
-            return cast("Command", Group.command(self, *args, **kwargs)(f))  # pylint: disable=E1102
+            return cast("Command", Group.command(self, *args, **kwargs)(f))
 
         return decorator
 
@@ -319,9 +316,8 @@ def show_app_info(app: Starlite) -> None:  # pragma: no cover
 
     middlewares = []
     for middleware in app.middleware:
-        if isinstance(middleware, DefineMiddleware):
-            middleware = middleware.middleware
-        middlewares.append(get_name(middleware))
+        updated_middleware = middleware.middleware if isinstance(middleware, DefineMiddleware) else middleware
+        middlewares.append(get_name(updated_middleware))
     if middlewares:
         table.add_row("Middlewares", ", ".join(middlewares))
 

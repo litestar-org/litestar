@@ -46,11 +46,7 @@ class MiddlewareProtocol(Protocol):  # pragma: no cover
 class DefineMiddleware:
     """Container enabling passing ``*args`` and ``**kwargs`` to Middleware class constructors and factory functions."""
 
-    __slots__ = (
-        "middleware",
-        "args",
-        "kwargs",
-    )
+    __slots__ = ("middleware", "args", "kwargs")
 
     def __init__(self, middleware: Callable[..., ASGIApp], *args: Any, **kwargs: Any) -> None:
         """Initialize ``DefineMiddleware``.
@@ -75,7 +71,7 @@ class DefineMiddleware:
             app: An ASGIApp, this value is the next ASGI handler to call in the middleware stack.
 
         Returns:
-            Calls :attr:`DefineMiddleware.middleware` and returns the ASGIApp created.
+            Calls :class:`DefineMiddleware.middleware <.DefineMiddleware>` and returns the ASGIApp created.
         """
 
         return self.middleware(*self.args, app=app, **self.kwargs)
@@ -133,7 +129,7 @@ class AbstractMiddleware:
                 await original__call__(self, scope, receive, send)
 
         # https://github.com/python/mypy/issues/2427#issuecomment-384229898
-        setattr(cls, "__call__", wrapped_call)  # noqa: B010
+        setattr(cls, "__call__", wrapped_call)
 
     @abstractmethod
     async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:

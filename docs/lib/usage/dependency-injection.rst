@@ -59,8 +59,8 @@ the application:
 The above example illustrates how dependencies are declared on the different layers of the application.
 
 Dependencies can be either callables - sync or async functions, methods or class instances that implement the
-:meth:`__call__` method, or classes. These are in turn wrapped inside an instance of the
-:class:`Provide <.datastructures.Provide>` class.
+:meth:`object.__call__` method, or classes. These are in turn wrapped inside an instance of the
+:class:`Provide <.di.Provide>` class.
 
 Pre-requisites and Scope
 ------------------------
@@ -248,8 +248,8 @@ controller. The lower scoped dependency therefore overrides the higher scoped on
 The Provide Class
 -----------------
 
-The :class:`Provide <.datastructures.provide.Provide>` class is a wrapper used for dependency injection.
-To inject a callable you must wrap it in ``Provide``:
+The :class:`Provide <.di.Provide>` class is a wrapper used for dependency injection. To inject a callable you must wrap
+it in ``Provide``:
 
 .. code-block:: python
 
@@ -276,10 +276,10 @@ To inject a callable you must wrap it in ``Provide``:
 
 .. attention::
 
-    If :attr:`Provide.use_cache <.datastructures.Provide.use_cache>` is true, the return value of the function will be
-    memoized the first time it is called and then will be used. There is no sophisticated comparison of kwargs,
-    LRU implementation etc. so you should be careful when you choose to use this option. Note that dependencies will
-    only be called once per request, even with ``Provide.use_cache`` set to false.
+    If :class:`Provide.use_cache <.di.Provide>` is ``True``, the return value of the function will be memoized the first
+    time it is called and then will be used. There is no sophisticated comparison of kwargs, LRU implementation etc., so
+    you should be careful when you choose to use this option. Note that dependencies will only be called once per
+    request, even with ``Provide.use_cache`` set to ``False``.
 
 
 
@@ -354,8 +354,8 @@ Exclude dependencies with default values from OpenAPI docs
 ***********************************************************
 
 Depending on your application design, it is possible to have a dependency declared in a handler or
-:class:`Provide <.datastructures.provide.Provide>` function that has a default value. If the dependency isn't provided for
-the route, the default should be used by the function.
+:class:`Provide <.di.Provide>` function that has a default value. If the dependency isn't provided for the route, the
+default should be used by the function.
 
 .. literalinclude:: /examples/dependency_injection/dependency_default_value_no_dependency_fn.py
     :caption: Dependency with default value

@@ -1,8 +1,8 @@
 Tortoise ORM Plugin
 ===================
 
-To use the :class:`TortoiseORMPlugin <starlite.plugins.tortoise_orm.TortoiseORMPlugin>`
-import it and pass it to the :class:`Starlite constructor <starlite.app.Starlite>`:
+To use the :class:`TortoiseORMPlugin <.contrib.tortoise_orm.TortoiseORMPlugin>`
+import it and pass it to the :class:`Starlite <starlite.app.Starlite>` class:
 
 .. code-block:: python
 

@@ -2,7 +2,7 @@ import os
 
 from piccolo.conf.apps import AppConfig, table_finder
 
-CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))  # noqa: PL120, SCS100
+CURRENT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 
 APP_CONFIG = AppConfig(

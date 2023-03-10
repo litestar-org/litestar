@@ -21,10 +21,7 @@ class QueueListenerHandler(QueueHandler):
             handlers: Optional 'ConvertingList'
         """
         super().__init__(Queue(-1))
-        if handlers:
-            handlers = resolve_handlers(handlers)
-        else:
-            handlers = [StreamHandler()]
+        handlers = resolve_handlers(handlers) if handlers else [StreamHandler()]
         self.listener = QueueListener(self.queue, *handlers)
         self.listener.start()
 

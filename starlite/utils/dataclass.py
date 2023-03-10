@@ -14,10 +14,13 @@ def extract_dataclass_fields(
 ) -> tuple[tuple[str, Any], ...]:
     """Extract dataclass fields. Unlike the 'asdict' method exports by the stlib, this function does not pickle values.
 
-    :param dt: A dataclass instance.
-    :param exclude_none: Whether to exclude None values.
-    :param include: An iterable of fields to include.
-    :return: A tuple of key/value pairs.
+    Args:
+        dt: A dataclass instance.
+        exclude_none: Whether to exclude None values.
+        include: An iterable of fields to include.
+
+    Returns:
+        A tuple of key/value pairs.
     """
     return tuple(
         (field_name, getattr(dt, field_name))

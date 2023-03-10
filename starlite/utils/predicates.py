@@ -154,7 +154,7 @@ def is_non_string_sequence(annotation: Any) -> TypeGuard[Sequence[Any]]:
 def is_any(annotation: Any) -> TypeGuard[Any]:
     """Given a type annotation determine if the annotation is Any.
 
-        Args:
+    Args:
         annotation: A type.
 
     Returns:
@@ -215,7 +215,7 @@ def is_dataclass_class_or_instance(value: Any) -> TypeGuard[DataclassClassOrInst
     Returns:
         ``True`` if instance or type of ``dataclass``.
     """
-    return is_dataclass(value)
+    return is_dataclass(value)  # type:ignore[no-any-return]
 
 
 def is_typed_dict(value: Any) -> TypeGuard[TypedDictClass]:

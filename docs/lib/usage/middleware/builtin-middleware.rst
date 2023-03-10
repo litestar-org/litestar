@@ -6,7 +6,7 @@ CORS
 
 `CORS (Cross-Origin Resource Sharing) <https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS>`_ is a common security
 mechanism that is often implemented using middleware. To enable CORS in a starlite application simply pass an instance
-of :class:`CORSConfig <starlite.config.CORSConfig>` to the :class:`Starlite constructor <starlite.app.Starlite>`:
+of :class:`CORSConfig <.config.cors.CORSConfig>` to :class:`Starlite <.app.Starlite>`:
 
 .. code-block:: python
 
@@ -46,7 +46,7 @@ This middleware prevents CSRF attacks by doing the following:
 
 
 To enable CSRF protection in a Starlite application simply pass an instance of
-:class:`CSRFConfig <.config.CSRFConfig>` to the Starlite constructor:
+:class:`CSRFConfig <.config.csrf.CSRFConfig>` to the Starlite constructor:
 
 .. code-block:: python
 
@@ -72,7 +72,7 @@ Routes can be marked as being exempt from the protection offered by this middlew
 
 
 If you need to exempt many routes at once you might want to consider using the
-:attr:`exclude <.config.CSRFConfig.exclude>` kwarg which accepts list of path
+:attr:`exclude <.config.csrf.CSRFConfig.exclude>` kwarg which accepts list of path
 patterns to skip in the middleware.
 
 
@@ -83,8 +83,8 @@ Another common security mechanism is to require that each incoming request has a
 and then to restrict hosts to a specific set of domains - what's called "allowed hosts".
 
 Starlite includes an :class:`AllowedHostsMiddleware <.middleware.allowed_hosts.AllowedHostsMiddleware>` class that can be
-easily enabled by either passing an instance of :class:`AllowedHostsConfig <starlite.config.AllowedHostsConfig>` or a
-list of domains to the :class:`Starlite constructor <starlite.app.Starlite>`:
+easily enabled by either passing an instance of :class:`AllowedHostsConfig <.config.allowed_hosts.AllowedHostsConfig>` or a
+list of domains to :class:`Starlite <starlite.app.Starlite>`:
 
 .. code-block:: python
 
@@ -113,13 +113,14 @@ Compression
 HTML responses can optionally be compressed. Starlite has built in support for gzip and brotli. Gzip support is provided
 through the built-in Starlette classes, and brotli support can be added by installing the ``brotli`` extras.
 
-You can enable either backend by passing an instance of :class:`CompressionConfig <starlite.config.CompressionConfig>`
-into the ``compression_config`` the :class:`Starlite constructor <starlite.app.Starlite>`.
+You can enable either backend by passing an instance of
+:class:`CompressionConfig <.config.compression.CompressionConfig>` to ``compression_config`` of
+:class:`Starlite <starlite.app.Starlite>`.
 
 GZIP
 ^^^^
 
-You can enable gzip compression of responses by passing an instance of :class:`starlite.config.CompressionConfig` with
+You can enable gzip compression of responses by passing an instance of :class:`CompressionConfig <.config.compression.CompressionConfig>` with
 the ``backend`` parameter set to ``"gzip"``.
 
 You can configure the following additional gzip-specific values:
@@ -146,8 +147,8 @@ Brotli
 The Brotli package is required to run this middleware. It is available as an extras to starlite with the ``brotli``
 extra (``pip install starlite[brotli]``).
 
-You can enable brotli compression of responses by passing an instance of :class:`starlite.config.CompressionConfig` with
-the ``backend`` parameter set to ``"brotli"``.
+You can enable brotli compression of responses by passing an instance of
+:class:`CompressionConfig <.config.compression.CompressionConfig>` with the ``backend`` parameter set to ``"brotli"``.
 
 You can configure the following additional brotli-specific values:
 
@@ -236,7 +237,7 @@ addition to including ``"body"`` in ``response_log_fields``.
 Session Middleware
 ------------------
 
-Starlite includes a :class:`SessionMiddleware <starlite.middleware.session.SessionMiddleware>`,
+Starlite includes a :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>`,
 offering client- and server-side sessions. Server-side sessions are backed by Starlite's
 :doc:`storage backends </lib/usage/storage>`, which offer support for:
 
@@ -304,7 +305,7 @@ Interacting with the storage backend
 
 In some situations you might want to access the storage backend directly, outside a
 request. For example to delete a specific session's data, or delete expired sessions
-from the database when using the :class:`FileStorage <starlite.storage.file_backend.FileStorage>`:
+from the database when using the :class:`FileStorage <.storage.file.FileStorage>`:
 
 .. literalinclude:: /examples/middleware/session/backend_access_explicit.py
     :language: python

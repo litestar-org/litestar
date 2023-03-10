@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseConfig, BaseModel, ValidationError
-from pydantic.fields import ModelField
 from typing_extensions import get_args, get_origin
 
 from starlite.connection import ASGIConnection, Request
@@ -14,7 +13,6 @@ from starlite.dto import AbstractDTO
 from starlite.enums import ScopeType
 from starlite.exceptions import InternalServerException, ValidationException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
-from starlite.plugins import PluginMapping
 from starlite.types import Empty
 from starlite.utils import is_any, is_optional_union, is_union, make_non_optional_union
 from starlite.utils.predicates import (
@@ -31,6 +29,11 @@ if TYPE_CHECKING:
     from .parsing import ParsedSignatureParameter
 
 __all__ = ("PydanticSignatureModel", "SignatureField", "SignatureModel")
+
+if TYPE_CHECKING:
+    from pydantic.fields import ModelField
+
+    from starlite.plugins import PluginMapping
 
 
 @dataclass(unsafe_hash=True, frozen=True)
@@ -291,7 +294,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         Returns:
             The plugin value, if available.
         """
-        value = self.__getattribute__(key)  # pylint: disable=unnecessary-dunder-call
+        value = self.__getattribute__(key)
         mapping = self.field_plugin_mappings.get(key)
         return mapping.get_model_instance_for_value(value) if mapping else value
 
@@ -303,7 +306,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         """
         if self.field_plugin_mappings:
             return {key: self._resolve_field_value(key) for key in self.__fields__}
-        return {key: self.__getattribute__(key) for key in self.__fields__}  # pylint: disable=unnecessary-dunder-call
+        return {key: self.__getattribute__(key) for key in self.__fields__}
 
     @classmethod
     def signature_field_from_model_field(cls, model_field: ModelField) -> SignatureField:

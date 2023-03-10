@@ -161,7 +161,7 @@ def test_is_any(value: Any, expected: bool) -> None:
     (
         (Optional[int], True),
         (Optional[Union[int, str]], True),
-        (Union[str, None], True),  # noqa: SIM907
+        (Union[str, None], True),
         (None, False),
         (int, False),
         (Union[int, str], True),
@@ -176,7 +176,7 @@ def test_is_union(value: Any, expected: bool) -> None:
     (
         (Optional[int], True),
         (Optional[Union[int, str]], True),
-        (Union[str, None], True),  # noqa: SIM907
+        (Union[str, None], True),
         (None, False),
         (int, False),
         (Union[int, str], False),
