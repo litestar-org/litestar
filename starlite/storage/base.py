@@ -94,12 +94,12 @@ class StorageObject(Struct):
         return self.expires_at is not None and datetime.now(tz=timezone.utc) >= self.expires_at
 
     @property
-    def expires_in(self) -> float | int:
+    def expires_in(self) -> int:
         """Return the expiry time of this ``StorageObject`` in seconds. If no expiry time
         was set, return ``-1``.
         """
         if self.expires_at:
-            return (self.expires_at - datetime.now(tz=timezone.utc)).total_seconds()
+            return (self.expires_at - datetime.now(tz=timezone.utc)).seconds
         return -1
 
     def to_bytes(self) -> bytes:
@@ -108,5 +108,5 @@ class StorageObject(Struct):
 
     @classmethod
     def from_bytes(cls, raw: bytes) -> StorageObject:
-        """Load an previously encoded with :meth:`StorageObject.to_bytes`"""
+        """Load a previously encoded with :meth:`StorageObject.to_bytes`"""
         return msgpack_decode(raw, type=cls)
