@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING, AnyStr, Mapping, cast
 from starlite._layers.utils import narrow_response_cookies, narrow_response_headers
 from starlite._signature.utils import get_signature_model
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.datastructures import Cookie, ResponseHeader
+from starlite.datastructures.cookie import Cookie
+from starlite.datastructures.response_header import ResponseHeader
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
@@ -49,15 +50,14 @@ from starlite.utils import AsyncCallable, Ref, is_async_callable, is_class_and_s
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
 
-    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-
-    from starlite._openapi.datastructures import ResponseSpec
     from starlite.app import Starlite
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.datastructures.headers import Header
     from starlite.di import Provide
+    from starlite.openapi.datastructures import ResponseSpec
+    from starlite.openapi.spec import SecurityRequirement
     from starlite.plugins import SerializationPluginProtocol
     from starlite.types import MaybePartial  # noqa: F401
 

@@ -19,10 +19,9 @@ __all__ = ("Router",)
 
 
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
+    from starlite.openapi.spec import SecurityRequirement
     from starlite.routes import BaseRoute
     from starlite.types import (
         AfterRequestHookHandler,
@@ -130,7 +129,7 @@ class Router:
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
                 function decorated by the route handler decorators.
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
-                See :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>`
+                See :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>`
                 for details.
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.

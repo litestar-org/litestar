@@ -116,11 +116,11 @@ def test_classic_pagination_openapi_schema(paginator: Any) -> None:
 
         path = "/sync" if isinstance(paginator, TestSyncClassicPaginator) else "/async"
 
-        spec = schema.dict(exclude_none=True)["paths"][path]["get"]["responses"]["200"]["content"]["application/json"]
+        spec = schema.to_schema()["paths"][path]["get"]["responses"]["200"]["content"]["application/json"]
         assert spec == {
-            "media_type_schema": {
+            "schema": {
                 "properties": {
-                    "items": {"items": {"ref": "#/components/schemas/Person"}, "type": "array"},
+                    "items": {"items": {"$ref": "#/components/schemas/Person"}, "type": "array"},
                     "page_size": {"type": "integer", "description": "Number of items per page."},
                     "current_page": {"type": "integer", "description": "Current page number."},
                     "total_pages": {"type": "integer", "description": "Total number of pages."},
@@ -170,11 +170,11 @@ def test_limit_offset_pagination_openapi_schema(paginator: Any) -> None:
 
         path = "/sync" if isinstance(paginator, TestSyncOffsetPaginator) else "/async"
 
-        spec = schema.dict(exclude_none=True)["paths"][path]["get"]["responses"]["200"]["content"]["application/json"]
+        spec = schema.to_schema()["paths"][path]["get"]["responses"]["200"]["content"]["application/json"]
         assert spec == {
-            "media_type_schema": {
+            "schema": {
                 "properties": {
-                    "items": {"items": {"ref": "#/components/schemas/Person"}, "type": "array"},
+                    "items": {"items": {"$ref": "#/components/schemas/Person"}, "type": "array"},
                     "limit": {"type": "integer", "description": "Maximal number of items to send."},
                     "offset": {"type": "integer", "description": "Offset from the beginning of the query."},
                     "total": {"type": "integer", "description": "Total number of items."},
@@ -245,11 +245,11 @@ def test_cursor_pagination_openapi_schema(paginator: Any) -> None:
 
         path = "/sync" if isinstance(paginator, TestSyncCursorPagination) else "/async"
 
-        spec = schema.dict(exclude_none=True)["paths"][path]["get"]["responses"]["200"]["content"]["application/json"]
+        spec = schema.to_schema()["paths"][path]["get"]["responses"]["200"]["content"]["application/json"]
         assert spec == {
-            "media_type_schema": {
+            "schema": {
                 "properties": {
-                    "items": {"items": {"ref": "#/components/schemas/Person"}, "type": "array"},
+                    "items": {"items": {"$ref": "#/components/schemas/Person"}, "type": "array"},
                     "cursor": {
                         "type": "string",
                         "description": "Unique ID, designating the last identifier in the given data set. This value can be used to request the 'next' batch of records.",

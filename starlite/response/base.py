@@ -4,7 +4,8 @@ from functools import partial
 from itertools import chain
 from typing import TYPE_CHECKING, Any, Generic, Literal, Mapping, TypeVar, overload
 
-from starlite.datastructures import Cookie, ETag
+from starlite.datastructures.cookie import Cookie
+from starlite.datastructures.headers import ETag
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.serialization import DEFAULT_TYPE_ENCODERS, default_serializer, encode_for_media_type

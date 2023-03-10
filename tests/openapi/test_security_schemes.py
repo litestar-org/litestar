@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, Any, List
 
 import pytest
-from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
-from pydantic_openapi_schema.v3_1_0.security_scheme import SecurityScheme
 
 from starlite import Controller, Router, Starlite, get
 from starlite.openapi.config import OpenAPIConfig
+from starlite.openapi.spec import Components, SecurityRequirement
+from starlite.openapi.spec.security_scheme import SecurityScheme
 
 if TYPE_CHECKING:
     from starlite.handlers.http_handlers import HTTPRouteHandler
@@ -34,7 +34,8 @@ def test_schema_without_security_property(public_route: "HTTPRouteHandler") -> N
     schema = app.openapi_schema
 
     assert schema
-    assert schema.components is None
+    assert schema.components
+    assert not schema.components.security_schemes
 
 
 def test_schema_with_security_scheme_defined(public_route: "HTTPRouteHandler") -> None:
@@ -44,7 +45,7 @@ def test_schema_with_security_scheme_defined(public_route: "HTTPRouteHandler") -
             title="test app",
             version="0.0.1",
             components=Components(
-                securitySchemes={
+                security_schemes={
                     "BearerToken": SecurityScheme(
                         type="http",
                         scheme="bearer",
@@ -56,7 +57,7 @@ def test_schema_with_security_scheme_defined(public_route: "HTTPRouteHandler") -
     )
     schema = app.openapi_schema
     assert schema
-    schema_dict = schema.dict()
+    schema_dict = schema.to_schema()
 
     schema_components = schema_dict.get("components", {})
     assert "securitySchemes" in schema_components
@@ -64,13 +65,7 @@ def test_schema_with_security_scheme_defined(public_route: "HTTPRouteHandler") -
     assert schema_components.get("securitySchemes", {}) == {
         "BearerToken": {
             "type": "http",
-            "description": None,
-            "name": None,
-            "security_scheme_in": None,
             "scheme": "bearer",
-            "bearerFormat": None,
-            "flows": None,
-            "openIdConnectUrl": None,
         }
     }
 
@@ -84,7 +79,7 @@ def test_schema_with_route_security_overridden(protected_route: "HTTPRouteHandle
             title="test app",
             version="0.0.1",
             components=Components(
-                securitySchemes={
+                security_schemes={
                     "BearerToken": SecurityScheme(
                         type="http",
                         scheme="bearer",
@@ -95,7 +90,7 @@ def test_schema_with_route_security_overridden(protected_route: "HTTPRouteHandle
     )
     schema = app.openapi_schema
     assert schema
-    schema_dict = schema.dict()
+    schema_dict = schema.to_schema()
 
     route = schema_dict["paths"]["/protected"]["get"]
     assert route.get("security", None) == [{"BearerToken": []}]
@@ -119,7 +114,7 @@ def test_layered_security_declaration() -> None:
             title="test app",
             version="0.0.1",
             components=Components(
-                securitySchemes={
+                security_schemes={
                     "handlerToken": SecurityScheme(
                         type="http",
                         scheme="bearer",
@@ -140,13 +135,23 @@ def test_layered_security_declaration() -> None:
             ),
         ),
     )
-    assert list(app.openapi_schema.components.securitySchemes.keys()) == [  # type: ignore
+    assert app.openapi_schema
+    assert app.openapi_schema.components
+    security_schemes = app.openapi_schema.components.security_schemes
+    assert security_schemes
+
+    assert list(security_schemes.keys()) == [
         "handlerToken",
         "controllerToken",
         "routerToken",
         "appToken",
     ]
-    assert app.openapi_schema.paths["/router/controller"].get.security == [  # type: ignore
+
+    assert app.openapi_schema
+    paths = app.openapi_schema.paths
+    assert paths
+    assert paths["/router/controller"].get
+    assert paths["/router/controller"].get.security == [
         {"appToken": []},
         {"routerToken": []},
         {"controllerToken": []},

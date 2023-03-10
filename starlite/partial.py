@@ -36,11 +36,12 @@ except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 if TYPE_CHECKING:
-    from starlite.types.builtin_types import DataclassClass, TypedDictClass
+    from starlite.types import DataclassProtocol
+    from starlite.types.builtin_types import TypedDictClass
 
 T = TypeVar("T")
 
-SupportedTypes: TypeAlias = "Union[DataclassClass, Type[BaseModel], TypedDictClass]"
+SupportedTypes: TypeAlias = "Union[Type[DataclassProtocol], Type[BaseModel], TypedDictClass]"
 """Types that are supported by :class:`Partial <starlite.types.partial.Partial>`"""
 
 
@@ -98,14 +99,14 @@ class Partial(Generic[T]):
         cls._models[item] = create_model(cls._create_partial_type_name(item), __base__=item, **field_definitions)  # type: ignore
 
     @classmethod
-    def _create_partial_dataclass(cls, item: "DataclassClass") -> None:
+    def _create_partial_dataclass(cls, item: "Type[DataclassProtocol]") -> None:
         """Receives a dataclass class and creates an all optional subclass of it.
 
         Args:
             item: A dataclass class.
         """
         fields: Dict[str, DataclassField] = cls._create_optional_field_map(item)
-        partial_type: "DataclassClass" = dataclass(
+        partial_type: "Type[DataclassProtocol]" = dataclass(
             type(cls._create_partial_type_name(item), (item,), {"__dataclass_fields__": fields})
         )
         annotated_ancestors = [a for a in getmro(partial_type) if hasattr(a, "__annotations__")]
@@ -134,7 +135,7 @@ class Partial(Generic[T]):
         cls._models[item] = TypedDict(cls._create_partial_type_name(item), type_hints, total=False)  # type:ignore
 
     @staticmethod
-    def _create_optional_field_map(item: "DataclassClass") -> Dict[str, DataclassField]:
+    def _create_optional_field_map(item: "Type[DataclassProtocol]") -> Dict[str, DataclassField]:
         """Create a map of field name to optional dataclass Fields for a given dataclass.
 
         Args:

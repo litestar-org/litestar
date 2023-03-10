@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING, Any, Dict, Type
 
 from pydantic import BaseModel
-from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 
 from starlite.exceptions import MissingDependencyException
+from starlite.openapi.spec.schema import SchemaDataContainer
 from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginProtocol
 
 __all__ = ("PiccoloORMPlugin",)
@@ -17,8 +17,9 @@ from piccolo.table import Table, TableMetaclass
 from piccolo.utils.pydantic import create_pydantic_model
 
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import Schema
     from typing_extensions import TypeGuard
+
+    from starlite.openapi.spec import Schema
 
 
 class PiccoloORMPlugin(SerializationPluginProtocol[Table, BaseModel], OpenAPISchemaPluginProtocol[Table]):
@@ -82,6 +83,6 @@ class PiccoloORMPlugin(SerializationPluginProtocol[Table, BaseModel], OpenAPISch
             model_class: A table class.
 
         Returns:
-            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+            An :class:`OpenAPI <starlite.openapi.spec.schema.Schema>` instance.
         """
-        return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))
+        return SchemaDataContainer(data_container=self.to_data_container_class(model_class=model_class))

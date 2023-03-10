@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Literal, Tuple, Union
+from typing import Any, Literal
 
 __all__ = (
     "TypeScriptAnonymousInterface",
@@ -65,7 +67,7 @@ class TypeScriptContainer(TypeScriptElement):
 class TypeScriptIntersection(TypeScriptElement):
     """A class representing a TypeScript intersection type."""
 
-    types: Tuple[TypeScriptElement, ...]
+    types: tuple[TypeScriptElement, ...]
 
     def write(self) -> str:
         """Write a typescript intersection value.
@@ -83,7 +85,7 @@ class TypeScriptIntersection(TypeScriptElement):
 class TypeScriptUnion(TypeScriptElement):
     """A class representing a TypeScript union type."""
 
-    types: Tuple[TypeScriptElement, ...]
+    types: tuple[TypeScriptElement, ...]
 
     def write(self) -> str:
         """Write a typescript union value.
@@ -121,7 +123,7 @@ class TypeScriptPrimitive(TypeScriptElement):
 class TypeScriptLiteral(TypeScriptElement):
     """A class representing a TypeScript literal type."""
 
-    value: Union[str, int, float, bool, None]
+    value: str | int | float | bool | None
 
     def write(self) -> str:
         """Write a typescript literal type.
@@ -183,7 +185,7 @@ class TypeScriptProperty(TypeScriptElement):
 class TypeScriptAnonymousInterface(TypeScriptElement):
     """A class representing a TypeScript anonymous interface."""
 
-    properties: Tuple[TypeScriptProperty, ...]
+    properties: tuple[TypeScriptProperty, ...]
 
     def write(self) -> str:
         """Write a typescript interface object, without a name.
@@ -206,7 +208,7 @@ class TypeScriptInterface(TypeScriptContainer):
     """A class representing a TypeScript interface."""
 
     name: str
-    properties: Tuple[TypeScriptProperty, ...]
+    properties: tuple[TypeScriptProperty, ...]
 
     def write(self) -> str:
         """Write a typescript interface.
@@ -229,7 +231,7 @@ class TypeScriptEnum(TypeScriptContainer):
     """A class representing a TypeScript enum."""
 
     name: str
-    values: Union[Tuple[Tuple[str, str], ...], Tuple[Tuple[str, Union[int, float]], ...]]
+    values: tuple[tuple[str, str], ...] | tuple[tuple[str, int | float], ...]
 
     def write(self) -> str:
         """Write a typescript enum.
@@ -273,7 +275,7 @@ class TypeScriptConst(TypeScriptContainer):
     """A class representing a TypeScript const."""
 
     name: str
-    value: Union[TypeScriptPrimitive, TypeScriptLiteral]
+    value: TypeScriptPrimitive | TypeScriptLiteral
 
     def write(self) -> str:
         """Write a typescript const.
@@ -292,7 +294,7 @@ class TypeScriptNamespace(TypeScriptContainer):
     """A class representing a TypeScript namespace."""
 
     name: str
-    values: Tuple[TypeScriptContainer, ...]
+    values: tuple[TypeScriptContainer, ...]
 
     def write(self) -> str:
         """Write a typescript namespace.

@@ -40,7 +40,7 @@ from .asgi_types import (
     WebSocketSendEvent,
     WebSocketSendMessage,
 )
-from .builtin_types import DataclassClass, DataclassClassOrInstance, TypedDictClass
+from .builtin_types import TypedDictClass
 from .callable_types import (
     AfterExceptionHookHandler,
     AfterRequestHookHandler,
@@ -100,8 +100,6 @@ __all__ = (
     "BeforeRequestHookHandler",
     "CacheKeyBuilder",
     "ControllerRouterHandler",
-    "DataclassClass",
-    "DataclassClassOrInstance",
     "DataclassProtocol",
     "Dependencies",
     "Empty",

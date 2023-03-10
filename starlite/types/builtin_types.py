@@ -6,8 +6,6 @@ from typing_extensions import TypeAlias
 if TYPE_CHECKING:
     from typing_extensions import _TypedDictMeta  # type: ignore
 
-    from starlite.types.protocols import DataclassProtocol
-
 
 if sys.version_info >= (3, 10):
     from types import NoneType as _NoneType
@@ -20,6 +18,4 @@ else:  # pragma: no cover
     UNION_TYPES = {Union}
     NoneType = type(None)
 
-DataclassClass: TypeAlias = "Type[DataclassProtocol]"
-DataclassClassOrInstance: TypeAlias = "Union[DataclassClass, DataclassProtocol]"
 TypedDictClass: TypeAlias = "Type[_TypedDictMeta]"

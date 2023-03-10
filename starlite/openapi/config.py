@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from typing import TYPE_CHECKING, Literal, cast
 
-from pydantic_openapi_schema.v3_1_0 import (
+from starlite._openapi.utils import default_operation_id_creator
+from starlite.openapi.controller import OpenAPIController
+from starlite.openapi.spec import (
     Components,
     Contact,
     ExternalDocumentation,
@@ -16,9 +18,6 @@ from pydantic_openapi_schema.v3_1_0 import (
     Server,
     Tag,
 )
-
-from starlite._openapi.utils import default_operation_id_creator
-from starlite.openapi.controller import OpenAPIController
 
 __all__ = ("OpenAPIConfig",)
 
@@ -48,44 +47,44 @@ class OpenAPIConfig:
     Must be subclass of :class:`OpenAPIController <starlite.openapi.controller.OpenAPIController>`.
     """
     contact: Contact | None = field(default=None)
-    """API contact information, should be an :class:`Contact <pydantic_openapi_schema.v3_1_0.contact.Contact>` instance."""
+    """API contact information, should be an :class:`Contact <starlite.openapi.spec.contact.Contact>` instance."""
     description: str | None = field(default=None)
     """API description."""
     external_docs: ExternalDocumentation | None = field(default=None)
     """Links to external documentation.
 
-    Should be an instance of :class:`ExternalDocumentation <pydantic_openapi_schema.v3_1_0.external_documentation.ExternalDocumentation>`.
+    Should be an instance of :class:`ExternalDocumentation <starlite.openapi.spec.external_documentation.ExternalDocumentation>`.
     """
     license: License | None = field(default=None)
     """API Licensing information.
 
-    Should be an instance of :class:`License <pydantic_openapi_schema.v3_1_0.license.License>`.
+    Should be an instance of :class:`License <starlite.openapi.spec.license.License>`.
     """
     security: list[SecurityRequirement] | None = field(default=None)
     """API Security requirements information.
 
     Should be an instance of
-        :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>`.
+        :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>`.
     """
     components: Components | list[Components] | None = field(default=None)
     """API Components information.
 
-    Should be an instance of :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` or a list thereof.
+    Should be an instance of :class:`Components <starlite.openapi.spec.components.Components>` or a list thereof.
     """
     servers: list[Server] = field(default_factory=lambda: [Server(url="/")])
-    """A list of :class:`Server <pydantic_openapi_schema.v3_1_0.server.Server>` instances."""
+    """A list of :class:`Server <starlite.openapi.spec.server.Server>` instances."""
     summary: str | None = field(default=None)
     """A summary text."""
     tags: list[Tag] | None = field(default=None)
-    """A list of :class:`Tag <pydantic_openapi_schema.v3_1_0.tag.Tag>` instances."""
+    """A list of :class:`Tag <starlite.openapi.spec.tag.Tag>` instances."""
     terms_of_service: str | None = field(default=None)
     """URL to page that contains terms of service."""
     use_handler_docstrings: bool = field(default=False)
     """Draw operation description from route handler docstring if not otherwise provided."""
     webhooks: dict[str, PathItem | Reference] | None = field(default=None)
-    """A mapping of key to either :class:`PathItem <pydantic_openapi_schema.v3_1_0.path_item.PathItem>` or.
+    """A mapping of key to either :class:`PathItem <starlite.openapi.spec.path_item.PathItem>` or.
 
-    :class:`Reference <pydantic_openapi_schema.v3_1_0.reference.Reference>` objects.
+    :class:`Reference <starlite.openapi.spec.reference.Reference>` objects.
     """
     root_schema_site: Literal["redoc", "swagger", "elements"] = "redoc"
     """The static schema generator to use for the "root" path of `/schema/`."""
@@ -93,8 +92,6 @@ class OpenAPIConfig:
         default_factory=lambda: {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml"}
     )
     """A set of the enabled documentation sites and schema download endpoints."""
-    by_alias: bool = True
-    """Render pydantic model schema using field aliases, if defined."""
     operation_id_creator: OperationIDCreator = default_operation_id_creator
     """A callable that generates unique operation ids"""
 
@@ -102,22 +99,22 @@ class OpenAPIConfig:
         """Return an ``OpenAPI`` instance from the values stored in ``self``.
 
         Returns:
-            An instance of :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.open_api.OpenAPI>`.
+            An instance of :class:`OpenAPI <starlite.openapi.spec.open_api.OpenAPI>`.
         """
 
         if isinstance(self.components, list):
             merged_components = Components()
             for components in self.components:
-                for key in components.__fields__:
-                    value = getattr(components, key, None)
-                    if value:
+                for key in (f.name for f in fields(components)):
+                    if value := getattr(components, key, None):
                         merged_value_dict = getattr(merged_components, key, {}) or {}
                         merged_value_dict.update(value)
                         setattr(merged_components, key, merged_value_dict)
+
             self.components = merged_components
 
         return OpenAPI(
-            externalDocs=self.external_docs,
+            external_docs=self.external_docs,
             security=self.security,
             components=cast("Components", self.components),
             servers=self.servers,
@@ -130,7 +127,7 @@ class OpenAPIConfig:
                 contact=self.contact,
                 license=self.license,
                 summary=self.summary,
-                termsOfService=self.terms_of_service,  # type: ignore
+                terms_of_service=self.terms_of_service,
             ),
             paths={},
         )

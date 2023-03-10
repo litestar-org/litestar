@@ -282,7 +282,7 @@ async def test_path_exclusion() -> None:
 
 def test_jwt_auth_openapi() -> None:
     jwt_auth = JWTAuth[Any](token_secret="abc123", retrieve_user_handler=lambda _: None)  # type: ignore
-    assert jwt_auth.openapi_components.dict(exclude_none=True) == {
+    assert jwt_auth.openapi_components.to_schema() == {
         "securitySchemes": {
             "BearerToken": {
                 "type": "http",
@@ -295,12 +295,15 @@ def test_jwt_auth_openapi() -> None:
     }
     assert jwt_auth.security_requirement == {"BearerToken": []}
     app = Starlite(on_app_init=[jwt_auth.on_app_init])
-    assert app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
+
+    assert app.openapi_schema
+    assert app.openapi_schema.to_schema() == {
         "openapi": "3.1.0",
         "info": {"title": "Starlite API", "version": "1.0.0"},
         "servers": [{"url": "/"}],
         "paths": {},
         "components": {
+            "schemas": {},
             "securitySchemes": {
                 "BearerToken": {
                     "type": "http",
@@ -309,7 +312,7 @@ def test_jwt_auth_openapi() -> None:
                     "scheme": "Bearer",
                     "bearerFormat": "JWT",
                 }
-            }
+            },
         },
         "security": [{"BearerToken": []}],
     }
@@ -342,39 +345,41 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStorage") -> 
         assert "access_token" in response.content.decode()
         assert response.content != response_custom.content
 
-    assert jwt_auth.openapi_components.dict(exclude_none=True) == {
+    assert jwt_auth.openapi_components.to_schema() == {
         "securitySchemes": {
             "BearerToken": {
                 "type": "oauth2",
                 "description": "OAUTH2 password bearer authentication and authorization.",
                 "name": "Authorization",
-                "security_scheme_in": "header",
+                "in": "header",
                 "scheme": "Bearer",
                 "bearerFormat": "JWT",
                 "flows": {"password": {"tokenUrl": "/login"}},
             }
-        }
+        },
     }
+
     assert jwt_auth.security_requirement == {"BearerToken": []}
 
     app = Starlite(on_app_init=[jwt_auth.on_app_init])
-    assert app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
+    assert app.openapi_schema.to_schema() == {  # type: ignore
         "openapi": "3.1.0",
         "info": {"title": "Starlite API", "version": "1.0.0"},
         "servers": [{"url": "/"}],
         "paths": {},
         "components": {
+            "schemas": {},
             "securitySchemes": {
                 "BearerToken": {
                     "type": "oauth2",
                     "description": "OAUTH2 password bearer authentication and authorization.",
                     "name": "Authorization",
-                    "security_scheme_in": "header",
+                    "in": "header",
                     "scheme": "Bearer",
                     "bearerFormat": "JWT",
                     "flows": {"password": {"tokenUrl": "/login"}},
                 }
-            }
+            },
         },
         "security": [{"BearerToken": []}],
     }
