@@ -58,7 +58,7 @@ if TYPE_CHECKING:
     from starlite.datastructures.headers import Header
     from starlite.di import Provide
     from starlite.plugins import SerializationPluginProtocol
-    from starlite.types import MaybePartial  # nopycln: import # noqa: F401
+    from starlite.types import MaybePartial  # noqa: F401
 
 __all__ = ("HTTPRouteHandler", "route")
 

@@ -27,7 +27,7 @@ from starlite.exceptions import (
 from starlite.plugins import InitPluginProtocol, SerializationPluginProtocol
 
 try:
-    import sqlalchemy  # nopycln: import # noqa: F401
+    import sqlalchemy  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 

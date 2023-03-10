@@ -221,8 +221,6 @@ filterwarnings = [
     "ignore::DeprecationWarning:pkg_resources:2803"
 ]
 
-[tool.pycln]
-all = true
 
 [tool.pyright]
 include = ["starlite", "tests", "examples"]

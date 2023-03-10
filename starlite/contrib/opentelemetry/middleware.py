@@ -9,7 +9,7 @@ __all__ = ("OpenTelemetryInstrumentationMiddleware",)
 
 
 try:
-    import opentelemetry  # nopycln: import # noqa: F401
+    import opentelemetry  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("OpenTelemetry dependencies are not installed") from e
 

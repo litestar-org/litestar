@@ -9,7 +9,7 @@ from starlite.serialization import decode_json, encode_json
 from starlite.utils import AsyncCallable
 
 try:
-    import sqlalchemy  # nopycln: import # noqa: F401
+    import sqlalchemy  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 

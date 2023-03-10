@@ -64,7 +64,7 @@ if TYPE_CHECKING:
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
     from starlite.template.config import TemplateConfig
-    from starlite.types import AnyCallable  # nopycln: import
+    from starlite.types import AnyCallable
     from starlite.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,

@@ -9,7 +9,7 @@ from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginPro
 __all__ = ("PiccoloORMPlugin",)
 
 try:
-    import piccolo  # nopycln: import # noqa: F401
+    import piccolo  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("piccolo orm is not installed") from e
 

@@ -11,7 +11,7 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
-    from starlite.types import MaybePartial  # nopycln: import # noqa: F401
+    from starlite.types import MaybePartial  # noqa: F401
     from starlite.types import AsyncAnyCallable, ExceptionHandlersMap, Guard
 
 

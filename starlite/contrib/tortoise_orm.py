@@ -13,7 +13,7 @@ __all__ = ("TortoiseORMPlugin",)
 
 
 try:
-    import tortoise  # nopycln: import # noqa: F401
+    import tortoise  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
 
