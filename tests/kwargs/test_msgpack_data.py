@@ -20,6 +20,5 @@ def test_request_body_msgpack() -> None:
         assert data == test_data
 
     with create_test_client([test_header, test_annotated]) as client:
-
         response = client.post("/annotated", content=encode_msgpack(test_data))
         assert response.status_code == HTTP_201_CREATED
