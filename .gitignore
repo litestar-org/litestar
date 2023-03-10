@@ -24,7 +24,6 @@ target/
 .coverage
 .python-version
 .ruff_cache
-/.auto_pytabs_cache/
 /docs/_build/
 coverage.*
 setup.py
