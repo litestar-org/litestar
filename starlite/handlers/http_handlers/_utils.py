@@ -4,10 +4,6 @@ from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
-from typing_extensions import get_args
-
-from starlite.datastructures import Cookie, ResponseHeader
-from starlite.dto import DTO
 from starlite.enums import HttpMethod
 from starlite.exceptions import ValidationException
 from starlite.plugins import get_plugin_for_value
