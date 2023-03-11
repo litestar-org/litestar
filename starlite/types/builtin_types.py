@@ -1,7 +1,7 @@
 import sys
 from typing import TYPE_CHECKING, Type, Union
 
-from typing_extensions import TypeAlias  # noqa: TC002
+from typing_extensions import TypeAlias
 
 if TYPE_CHECKING:
     from typing_extensions import _TypedDictMeta  # type: ignore

@@ -258,7 +258,7 @@ def test_multipart_request_with_charset_for_filename() -> None:
             content=(
                 # file
                 b"--a7f7ac8d4e2e437c877bb7b8d7cc549c\r\n"
-                b'Content-Disposition: form-data; name="file"; filename="\xe6\x96\x87\xe6\x9b\xb8.txt"\r\n'  # noqa: E501
+                b'Content-Disposition: form-data; name="file"; filename="\xe6\x96\x87\xe6\x9b\xb8.txt"\r\n'
                 b"Content-Type: text/plain\r\n\r\n"
                 b"<file content>\r\n"
                 b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
@@ -281,7 +281,7 @@ def test_multipart_request_without_charset_for_filename() -> None:
             content=(
                 # file
                 b"--a7f7ac8d4e2e437c877bb7b8d7cc549c\r\n"
-                b'Content-Disposition: form-data; name="file"; filename="\xe7\x94\xbb\xe5\x83\x8f.jpg"\r\n'  # noqa: E501
+                b'Content-Disposition: form-data; name="file"; filename="\xe7\x94\xbb\xe5\x83\x8f.jpg"\r\n'
                 b"Content-Type: image/jpeg\r\n\r\n"
                 b"<file content>\r\n"
                 b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
@@ -304,7 +304,7 @@ def test_multipart_request_with_asterisks_filename() -> None:
             content=(
                 # file
                 b"--a7f7ac8d4e2e437c877bb7b8d7cc549c\r\n"
-                b"Content-Disposition: form-data; name='file'; filename*=utf-8''Na%C3%AFve%20file.jpg\r\n"  # noqa: E501
+                b"Content-Disposition: form-data; name='file'; filename*=utf-8''Na%C3%AFve%20file.jpg\r\n"
                 b"Content-Type: image/jpeg\r\n\r\n"
                 b"<file content>\r\n"
                 b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
@@ -357,9 +357,9 @@ def test_urlencoded_percent_encoding_keys() -> None:
 
 
 def test_postman_multipart_form_data() -> None:
-    postman_body = b'----------------------------850116600781883365617864\r\nContent-Disposition: form-data; name="attributes"; filename="test-attribute_5.tsv"\r\nContent-Type: text/tab-separated-values\r\n\r\n"Campaign ID"\t"Plate Set ID"\t"No"\n\r\n----------------------------850116600781883365617864\r\nContent-Disposition: form-data; name="fasta"; filename="test-sequence_correct_5.fasta"\r\nContent-Type: application/octet-stream\r\n\r\n>P23G01_IgG1-1411:H:Q10C3:1/1:NID18\r\nCAGGTATTGAA\r\n\r\n----------------------------850116600781883365617864--\r\n'  # noqa: E501
+    postman_body = b'----------------------------850116600781883365617864\r\nContent-Disposition: form-data; name="attributes"; filename="test-attribute_5.tsv"\r\nContent-Type: text/tab-separated-values\r\n\r\n"Campaign ID"\t"Plate Set ID"\t"No"\n\r\n----------------------------850116600781883365617864\r\nContent-Disposition: form-data; name="fasta"; filename="test-sequence_correct_5.fasta"\r\nContent-Type: application/octet-stream\r\n\r\n>P23G01_IgG1-1411:H:Q10C3:1/1:NID18\r\nCAGGTATTGAA\r\n\r\n----------------------------850116600781883365617864--\r\n'
     postman_headers = {
-        "Content-Type": "multipart/form-data; boundary=--------------------------850116600781883365617864",  # noqa: E501
+        "Content-Type": "multipart/form-data; boundary=--------------------------850116600781883365617864",
         "user-agent": "PostmanRuntime/7.26.0",
         "accept": "*/*",
         "cache-control": "no-cache",

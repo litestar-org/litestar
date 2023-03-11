@@ -4,16 +4,11 @@ import pickle
 from itertools import chain
 from typing import TYPE_CHECKING, Any, cast
 
-from starlite.connection import Request
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.datastructures.headers import Headers
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, MediaType, ScopeType
-from starlite.exceptions import (
-    ClientException,
-    ImproperlyConfiguredException,
-    SerializationException,
-)
+from starlite.exceptions import ClientException, ImproperlyConfiguredException, SerializationException
 from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.response import Response
 from starlite.routes.base import BaseRoute
@@ -22,6 +17,7 @@ from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 if TYPE_CHECKING:
     from starlite._kwargs import KwargsModel
     from starlite._kwargs.cleanup import DependencyCleanupGroup
+    from starlite.connection import Request
     from starlite.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
 
@@ -238,7 +234,7 @@ class HTTPRoute(BaseRoute):
         cached_response = await cache.get(key=cache_key)
 
         if cached_response:
-            return cast("ASGIApp", pickle.loads(cached_response))  # nosec # noqa: SCS113
+            return cast("ASGIApp", pickle.loads(cached_response))  # nosec
 
         return None
 
@@ -257,9 +253,7 @@ class HTTPRoute(BaseRoute):
         )
 
     def create_options_handler(self, path: str) -> HTTPRouteHandler:
-        """
-
-        Args:
+        """Args:
             path: The route path
 
         Returns:
@@ -267,8 +261,8 @@ class HTTPRoute(BaseRoute):
         """
 
         def options_handler(scope: Scope) -> Response:
-            """
-            Handler function for OPTIONS requests.
+            """Handler function for OPTIONS requests.
+
             Args:
                 scope: The ASGI Scope.
 

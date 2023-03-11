@@ -9,7 +9,7 @@ from httpx import USE_CLIENT_DEFAULT, Client, Response
 from starlite import HttpMethod
 from starlite.testing.client.base import BaseTestClient
 from starlite.testing.life_span_handler import LifeSpanHandler
-from starlite.testing.transport import ConnectionUpgradeException, TestClientTransport
+from starlite.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
 from starlite.types import AnyIOBackend, ASGIApp
 
 if TYPE_CHECKING:
@@ -496,7 +496,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
             extensions: Dictionary of ASGI extensions.
 
         Returns:
-            An :class:`WebSocketTestSession <starlite.testing.test_client.WebSocketTestSession>` instance.
+            A `WebSocketTestSession <starlite.testing.WebSocketTestSession>` instance.
         """
         url = urljoin("ws://testserver", url)
         default_headers: dict[str, str] = {}
@@ -518,7 +518,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore [misc]
                 timeout=timeout,
                 extensions=extensions,
             )
-        except ConnectionUpgradeException as exc:
+        except ConnectionUpgradeExceptionError as exc:
             return exc.session
 
         raise RuntimeError("Expected WebSocket upgrade")  # pragma: no cover

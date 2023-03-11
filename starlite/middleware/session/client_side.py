@@ -18,8 +18,8 @@ from starlite.exceptions import (
 from starlite.serialization import decode_json, encode_json
 from starlite.types import Empty, Scopes
 
-from ...enums import ScopeType
-from ...utils.dataclass import extract_dataclass_fields
+from starlite.enums import ScopeType
+from starlite.utils.dataclass import extract_dataclass_fields
 from .base import ONE_DAY_IN_SECONDS, BaseBackendConfig, BaseSessionBackend
 
 __all__ = ("ClientSideSessionBackend", "CookieBackendConfig")

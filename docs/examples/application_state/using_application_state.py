@@ -33,7 +33,7 @@ def my_dependency(state: State) -> Any:
 
 
 @get("/", dependencies={"dep": Provide(my_dependency)}, middleware=[middleware_factory])
-def get_handler(state: State, request: Request, dep: Any) -> None:  # pylint: disable=unused-argument
+def get_handler(state: State, request: Request, dep: Any) -> None:
     """Handlers can receive state via injection."""
     logger.info("state value in handler from `State`: %s", state.value)
     logger.info("state value in handler from `Request`: %s", request.app.state.value)

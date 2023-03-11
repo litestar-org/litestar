@@ -5,9 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Ty
 
 from pydantic_openapi_schema.v3_1_0 import Response
 from pydantic_openapi_schema.v3_1_0.header import Header
-from pydantic_openapi_schema.v3_1_0.media_type import (
-    MediaType as OpenAPISchemaMediaType,
-)
+from pydantic_openapi_schema.v3_1_0.media_type import MediaType as OpenAPISchemaMediaType
 from pydantic_openapi_schema.v3_1_0.schema import Schema
 from typing_extensions import get_args, get_origin
 
@@ -185,7 +183,7 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
             )
             for exc in exception_group
         ]
-        if len(exceptions_schemas) > 1:
+        if len(exceptions_schemas) > 1:  # noqa: SIM108
             schema = Schema(oneOf=exceptions_schemas)  # type:ignore[arg-type]
         else:
             schema = exceptions_schemas[0]

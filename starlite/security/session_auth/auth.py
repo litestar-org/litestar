@@ -1,32 +1,21 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, Generic, Iterable
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable
 
-from pydantic_openapi_schema.v3_1_0 import (
-    Components,
-    SecurityRequirement,
-    SecurityScheme,
-)
+from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement, SecurityScheme
 
-from starlite.connection import ASGIConnection
-from starlite.di import Provide
 from starlite.middleware.base import DefineMiddleware
 from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackendT
 from starlite.security.base import AbstractSecurityConfig, UserType
-from starlite.security.session_auth.middleware import (
-    MiddlewareWrapper,
-    SessionAuthMiddleware,
-)
-from starlite.types import (
-    ControllerRouterHandler,
-    Guard,
-    Scopes,
-    SyncOrAsyncUnion,
-    TypeEncodersMap,
-)
+from starlite.security.session_auth.middleware import MiddlewareWrapper, SessionAuthMiddleware
 
 __all__ = ("SessionAuth",)
+
+if TYPE_CHECKING:
+    from starlite.connection import ASGIConnection
+    from starlite.di import Provide
+    from starlite.types import ControllerRouterHandler, Guard, Scopes, SyncOrAsyncUnion, TypeEncodersMap
 
 
 @dataclass
@@ -137,10 +126,10 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
     def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
-        :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
+        :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
         backend.
 
         Returns:
-            An OpenAPI 3.1 :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
+            An OpenAPI 3.1 :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
         """
         return {"sessionCookie": []}

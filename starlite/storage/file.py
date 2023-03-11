@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class FileStorage(Storage):
     """File based, thread and process safe, asynchronous key/value store."""
 
-    __slots__ = ("path",)
+    __slots__ = {"path": "file path"}
 
     def __init__(self, path: PathLike) -> None:
         """Initialize ``FileStorage``.
@@ -53,7 +53,7 @@ class FileStorage(Storage):
                 renamed = True
             finally:
                 if not renamed:
-                    os.unlink(tmp_file_name)  # noqa: PL108
+                    os.unlink(tmp_file_name)  # noqa: PTH108
         except OSError:
             pass
 
@@ -120,8 +120,7 @@ class FileStorage(Storage):
     async def delete_all(self) -> None:
         """Delete all stored values.
 
-        .. note::
-
+        Note:
             This deletes and recreates :attr:`FileStorage.path`
         """
 

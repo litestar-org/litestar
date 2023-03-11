@@ -56,7 +56,7 @@ class FileSystemProtocol(Protocol):
     """Base protocol used to interact with a file-system.
 
     This protocol is commensurable with the file systems
-    exported by the [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library.
+    exported by the `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>` library.
     """
 
     def info(self, path: "PathType", **kwargs: Any) -> Union[FileInfo, Awaitable[FileInfo]]:

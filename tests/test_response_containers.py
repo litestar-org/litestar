@@ -64,7 +64,7 @@ def test_file_with_passed_in_stat_result(tmpdir: "Path") -> None:
     path.write_text("content", "utf-8")
 
     fs = LocalFileSystem()
-    stat_result = stat(path)  # noqa:PL116
+    stat_result = stat(path)
 
     @get("/", media_type="application/octet-stream")
     def handler() -> File:

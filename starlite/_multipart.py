@@ -37,7 +37,7 @@ from starlite.serialization import decode_json
 __all__ = ("parse_body", "parse_content_header", "parse_multipart_form")
 
 
-_token = r"([\w!#$%&'*+\-.^_`|~]+)"
+_token = r"([\w!#$%&'*+\-.^_`|~]+)"  # noqa: S105
 _quoted = r'"([^"]*)"'
 _param = re.compile(rf";\s*{_token}=(?:{_token}|{_quoted})", re.ASCII)
 _firefox_quote_escape = re.compile(r'\\"(?!; |\s*$)')
@@ -68,10 +68,12 @@ def parse_body(body: bytes, boundary: bytes, multipart_form_part_limit: int) -> 
     """Split the body using the boundary
         and validate the number of form parts is within the allowed limit.
 
-    :param body: The form body.
-    :param boundary: The boundary used to separate form components.
-    :param multipart_form_part_limit: The limit of allowed form components
-    :return:
+    Args:
+        body: The form body.
+        boundary: The boundary used to separate form components.
+        multipart_form_part_limit: The limit of allowed form components
+
+    Returns:
         A list of form components.
     """
     if not (body and boundary):

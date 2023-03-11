@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
     from starlite.datastructures import CacheControlHeader, ETag
+    from starlite.response import Response
     from starlite.router import Router
     from starlite.types import (
         AfterRequestHookHandler,
@@ -31,7 +32,6 @@ if TYPE_CHECKING:
         OptionalSequence,
         ParametersMap,
         ResponseCookies,
-        ResponseType,
         TypeEncodersMap,
     )
     from starlite.types.composite_types import ResponseHeaders
@@ -65,64 +65,64 @@ class Controller:
     )
 
     after_request: AfterRequestHookHandler | None
-    """A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed to any route handler.
+    """A sync or async function executed before a :class:`Request <.connection.Request>` is passed to any route handler.
 
     If this function returns a value, the request will not reach the route handler, and instead this value will be used.
     """
     after_response: AfterResponseHookHandler | None
     """A sync or async function called after the response has been awaited.
 
-    It receives the :class:`Request <starlite.connection.Request>` instance and should not return any values.
+    It receives the :class:`Request <.connection.Request>` instance and should not return any values.
     """
     before_request: BeforeRequestHookHandler | None
     """A sync or async function called immediately before calling the route handler.
 
-    It receives the :class:`Request <starlite.connection.Request>` instance and any non-``None`` return value is used for the
+    It receives the :class:`Request <.connection.Request>` instance and any non-``None`` return value is used for the
     response, bypassing the route handler.
     """
     cache_control: CacheControlHeader | None
-    """A :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` header to add to route handlers of this
+    """A :class:`CacheControlHeader <.datastructures.CacheControlHeader>` header to add to route handlers of this
     controller.
 
     Can be overridden by route handlers.
     """
     dependencies: Dependencies | None
-    """A string keyed dictionary of dependency :class:`Provider <starlite.datastructures.Provide>` instances."""
+    """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
     etag: ETag | None
-    """An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` to add to route handlers of this controller.
+    """An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this controller.
 
     Can be overridden by route handlers.
     """
     exception_handlers: ExceptionHandlersMap | None
     """A map of handler functions to status codes and/or exception types."""
     guards: OptionalSequence[Guard]
-    """A sequence of :class:`Guard <starlite.types.Guard>` callables."""
+    """A sequence of :class:`Guard <.types.Guard>` callables."""
     middleware: OptionalSequence[Middleware]
-    """A sequence of :class:`Middleware <starlite.types.Middleware>`."""
+    """A sequence of :class:`Middleware <.types.Middleware>`."""
     opt: Mapping[str, Any] | None
-    """A string key mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or wherever
-    you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
+    """A string key mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or wherever you
+    have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
     """
     owner: Router
-    """The :class:`Router <starlite.router.Router>` or :class:`Starlite <starlite.app.Starlite>` app that owns the controller.
+    """The :class:`Router <.router.Router>` or :class:`Starlite <.app.Starlite>` app that owns the controller.
 
     This value is set internally by Starlite and it should not be set when subclassing the controller.
     """
     parameters: ParametersMap | None
-    """A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all application paths."""
+    """A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application paths."""
     path: str
     """A path fragment for the controller.
 
-    All route handlers under the controller will have the fragment appended to them. If not set it defaults to '/'.
+    All route handlers under the controller will have the fragment appended to them. If not set it defaults to ``/``.
     """
-    response_class: ResponseType | None
-    """A custom subclass of [starlite.response.Response] to be used as the default response for all route handlers under
-    the controller.
+    response_class: type[Response] | None
+    """A custom subclass of :class:`Response <.response.Response>` to be used as the default response for all route
+    handlers under the controller.
     """
     response_cookies: ResponseCookies | None
-    """A list of [Cookie](starlite.datastructures.Cookie] instances."""
+    """A list of :class:`Cookie <.datastructures.Cookie>` instances."""
     response_headers: ResponseHeaders | None
-    """A string keyed dictionary mapping :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances."""
+    """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>` instances."""
     tags: OptionalSequence[str]
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""
     security: OptionalSequence[SecurityRequirement]
@@ -136,7 +136,7 @@ class Controller:
         Should only be called by routers as part of controller registration.
 
         Args:
-            owner: An instance of 'Router'
+            owner: An instance of :class:`Router <.router.Router>`
         """
         # Since functions set on classes are bound, we need replace the bound instance with the class version and wrap
         # it to ensure it does not get bound.
@@ -185,9 +185,14 @@ class Controller:
     def validate_route_handlers(self, route_handlers: list[BaseRouteHandler]) -> None:
         """Validate that the combination of path and decorator method or type are unique on the controller.
 
-        :param route_handlers: The controller's route handlers.
-        :raises: ``ImproperlyConfiguredException``
-        :return: None.
+        Args:
+            route_handlers: The controller's route handlers.
+
+        Raises:
+            ImproperlyConfiguredException
+
+        Returns:
+            None
         """
         paths: DefaultDict[str, set[str]] = defaultdict(set)
 

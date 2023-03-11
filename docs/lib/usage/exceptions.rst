@@ -26,7 +26,7 @@ Application Exceptions
 ----------------------
 
 For application exceptions, Starlite uses the class :class:`HTTPException <.exceptions.http_exceptions.HTTPException>`,
-which inherits from :class:`StarliteException <.exceptions.base.StarliteException>`. This exception will be serialized
+which inherits from :class:`StarliteException <.exceptions.StarliteException>`. This exception will be serialized
 into a JSON response of the following schema:
 
 .. code-block:: json

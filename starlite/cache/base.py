@@ -14,7 +14,11 @@ if TYPE_CHECKING:
 class Cache:
     """Asynchronous cache"""
 
-    __slots__ = ("backend", "default_expiration", "key_builder")
+    __slots__ = {
+        "backend": "Storage backend",
+        "default_expiration": "Default expiration time",
+        "key_builder": "A :class:`CacheKeyBuilder <.types.CacheKeyBuilder>`",
+    }
 
     def __init__(self, backend: Storage, default_expiration: int, cache_key_builder: CacheKeyBuilder) -> None:
         """Initialize cache
@@ -41,6 +45,8 @@ class Cache:
         await self.backend.delete(key)
 
     def build_cache_key(self, request: Request, cache_key_builder: CacheKeyBuilder | None = None) -> str:
-        """Create a cache key from a request. If ``cache_key_builder`` is not passed, :attr:`Cache.key_builder` will be used"""
+        """Create a cache key from a request. If ``cache_key_builder`` is not passed, :attr:`Cache.key_builder` will be
+        used
+        """
         key_builder = cache_key_builder or self.key_builder
         return key_builder(request)

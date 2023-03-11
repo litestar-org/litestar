@@ -141,9 +141,12 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
     def to_data_container_class(self, model_class: Type[ModelT], **kwargs: Any) -> Type[DataContainerT]:
         """Create a data container class corresponding to the given model class.
 
-        :param model_class: The model class that serves as a basis.
-        :param kwargs: Any kwargs.
-        :return: The generated data container class.
+        Args:
+            model_class: The model class that serves as a basis.
+            **kwargs: Any kwargs.
+
+        Returns:
+            The generated data container class.
         """
         raise NotImplementedError()
 
@@ -152,9 +155,12 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
     ) -> ModelT:
         """Create a model instance from the given data container instance.
 
-        :param model_class: The model class to be instantiated.
-        :param data_container_instance: The data container instance.
-        :return: A model instance.
+        Args:
+            model_class: The model class to be instantiated.
+            data_container_instance: The data container instance.
+
+        Returns:
+            A model instance.
         """
         raise NotImplementedError()
 
@@ -180,8 +186,11 @@ class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
     def to_openapi_schema(self, model_class: Type[ModelT]) -> "Schema":
         """Given a model class, transform it into an OpenAPI schema class.
 
-        :param model_class: A model class.
-        :return: An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+        Args:
+            model_class: A model class.
+
+        Returns:
+            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
         """
         raise NotImplementedError()
 

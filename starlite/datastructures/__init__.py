@@ -2,6 +2,7 @@ from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.headers import (
     CacheControlHeader,
     ETag,
+    Header,
     Headers,
     MutableScopeHeaders,
 )
@@ -9,6 +10,7 @@ from starlite.datastructures.multi_dicts import (
     FormMultiDict,
     ImmutableMultiDict,
     MultiDict,
+    MultiMixin,
 )
 from starlite.datastructures.response_header import ResponseHeader
 from starlite.datastructures.state import ImmutableState, State
@@ -21,13 +23,15 @@ __all__ = (
     "Cookie",
     "ETag",
     "FormMultiDict",
+    "Header",
     "Headers",
     "ImmutableMultiDict",
     "ImmutableState",
     "MultiDict",
+    "MultiMixin",
     "MutableScopeHeaders",
     "ResponseHeader",
     "State",
-    "URL",
     "UploadFile",
+    "URL",
 )

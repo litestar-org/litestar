@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, Any, DefaultDict
 from anyio import create_task_group
 
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.utils import AsyncCallable
 
 __all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
 
 
 if TYPE_CHECKING:
     from starlite.events.listener import EventListener
+    from starlite.utils import AsyncCallable
 
 
 class BaseEventEmitterBackend(ABC):
@@ -27,7 +27,8 @@ class BaseEventEmitterBackend(ABC):
     def __init__(self, listeners: list[EventListener]):
         """Create an event emitter instance.
 
-        :param listeners: A list of listeners.
+        Args:
+            listeners: A list of listeners.
         """
         self.listeners = defaultdict(list)
         for listener in listeners:
@@ -38,10 +39,13 @@ class BaseEventEmitterBackend(ABC):
     async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
         """Emit an event to all attached listeners.
 
-        :param event_id: The ID of the event to emit, e.g 'my_event'.
-        :param args: args to pass to the listener(s).
-        :param kwargs: kwargs to pass to the listener(s)
-        :return: None
+        Args:
+            event_id: The ID of the event to emit, e.g 'my_event'.
+            *args: args to pass to the listener(s).
+            **kwargs: kwargs to pass to the listener(s)
+
+        Returns:
+            None
         """
         raise NotImplementedError("not implemented")
 
@@ -52,10 +56,13 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
     async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
 
-        :param event_id: The ID of the event to emit, e.g 'my_event'.
-        :param args: args to pass to the listener(s).
-        :param kwargs: kwargs to pass to the listener(s)
-        :return: None
+        Args:
+            event_id: The ID of the event to emit, e.g 'my_event'.
+            *args: args to pass to the listener(s).
+            **kwargs: kwargs to pass to the listener(s)
+
+        Returns:
+            None
         """
         if listeners := self.listeners.get(event_id):
             if len(listeners) > 1:

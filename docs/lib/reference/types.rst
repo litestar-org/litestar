@@ -64,11 +64,11 @@ ASGI Scopes
 
 .. autodata:: starlite.types.BaseScope
 
-.. autodata:: starlite.types.WebSocketScope
-
 .. autodata:: starlite.types.HTTPScope
 
 .. autodata:: starlite.types.LifeSpanScope
+
+.. autodata:: starlite.types.WebSocketScope
 
 
 ASGI Events
@@ -145,7 +145,11 @@ Helper Types
 
 Helper types are useful generic types that can be used.
 
-.. autodata:: starlite.types.SyncOrAsyncUnion
+.. autoclass:: starlite.types.SyncOrAsyncUnion
+
+.. autoclass:: starlite.types.AnyIOBackend
+
+.. autoclass:: starlite.types.OptionalSequence
 
 
 Protocols
@@ -157,17 +161,23 @@ Protocols
 Composite Types
 ---------------
 
-.. autodata:: starlite.types.Dependencies
+.. autoclass:: starlite.types.Dependencies
 
-.. autodata:: starlite.types.ExceptionHandlersMap
+.. autoclass:: starlite.types.ExceptionHandlersMap
 
 .. autodata:: starlite.types.Middleware
 
-.. autodata:: starlite.types.ResponseCookies
+.. autoclass:: starlite.types.ResponseCookies
 
-.. autodata:: starlite.types.ResponseHeaders
+.. autoclass:: starlite.types.ResponseHeaders
 
-.. autodata:: starlite.types.PathType
+.. autoclass:: starlite.types.PathType
+
+.. autodata:: starlite.types.Scopes
+
+.. autoclass:: starlite.types.TypeEncodersMap
+
+.. autoclass:: starlite.types.ParametersMap
 
 
 File types
