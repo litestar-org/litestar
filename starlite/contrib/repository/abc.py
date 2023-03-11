@@ -7,14 +7,18 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from .exceptions import NotFoundError
 
 if TYPE_CHECKING:
-    from .types import FilterTypes
+    from typing_extensions import TypeAlias
 
+    from .filters import BeforeAfter, CollectionFilter, LimitOffset
 
-__all__ = ("AbstractRepository",)
+__all__ = ("AbstractRepository", "FilterTypes")
 
 T = TypeVar("T")
 RepoT = TypeVar("RepoT", bound="AbstractRepository")
 CollectionT = TypeVar("CollectionT")
+
+FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset"
+"""Aggregate type alias of the types supported for collection filtering."""
 
 
 class AbstractRepository(Generic[T], metaclass=ABCMeta):

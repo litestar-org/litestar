@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from sqlalchemy.engine import Result
     from sqlalchemy.ext.asyncio import AsyncSession
 
-    from starlite.contrib.repository.types import FilterTypes
+    from starlite.contrib.repository import FilterTypes
     from starlite.contrib.sqlalchemy import base
 
 __all__ = (
@@ -509,8 +509,6 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             if isinstance(filter_, LimitOffset):
                 if apply_pagination:
                     statement = self._apply_limit_offset_pagination(filter_.limit, filter_.offset, statement=statement)
-                else:
-                    pass
             elif isinstance(filter_, BeforeAfter):
                 statement = self._filter_on_datetime_field(
                     filter_.field_name, filter_.before, filter_.after, statement=statement

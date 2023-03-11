@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Hashable, Iterable, MutableMapping
     from typing import Any
 
-    from starlite.contrib.repository.types import FilterTypes
+    from starlite.contrib.repository import FilterTypes
     from starlite.contrib.sqlalchemy import base
 
 ModelT = TypeVar("ModelT", bound="base.Base | base.AuditBase")
