@@ -266,8 +266,8 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         existing = await self.get_one_or_none(**kwargs)
         if existing:
-            return (existing, False)
-        return (await self.add(self.model_type(**kwargs)), True)  # type: ignore[arg-type]
+            return existing, False
+        return await self.add(self.model_type(**kwargs)), True  # type: ignore[arg-type]
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
         """Get the count of records returned by a query.
