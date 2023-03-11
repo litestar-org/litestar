@@ -9,7 +9,8 @@ from typing_extensions import Annotated, get_args, get_origin
 from starlite.enums import MediaType
 
 from .exc import InvalidAnnotation
-from .types import DTOConfig
+from .config import DTOConfig
+from .types import DataT, StarliteEncodableType
 
 __all__ = ("AbstractDTO",)
 
@@ -19,19 +20,17 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-DataT = TypeVar("DataT")
-StarliteEncodableType = Any
-
-
 class AbstractDTO(ABC, Generic[DataT]):
     """Base class for DTO types."""
 
     annotation: ClassVar[Any]
+    """The full annotation used to make the generic DTO concrete."""
     config: ClassVar[DTOConfig]
+    """Config object to define the properties of the DTO."""
     model_type: ClassVar[Any]
+    """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
 
     _postponed_cls_init_called: ClassVar[bool]
-    """Used to bookkeep that logic in the ``postponed_cls_init()`` method is not executed multiple times."""
 
     def __init__(self, data: DataT) -> None:
         """Create an AbstractDTO type.

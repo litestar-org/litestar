@@ -189,3 +189,12 @@ File types
 
 .. autoclass:: starlite.types.FileSystemProtocol
     :members:
+
+Empty types
+-----------
+.. autoclass:: starlite.types.Empty
+    :members:
+
+
+.. autoclass:: starlite.types.EmptyType
+    :members:

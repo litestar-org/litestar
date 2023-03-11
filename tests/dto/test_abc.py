@@ -7,7 +7,7 @@ import pytest
 from typing_extensions import Annotated, get_args, get_origin
 
 from starlite.dto.exc import InvalidAnnotation
-from starlite.dto.types import DTOConfig
+from starlite.dto.config import DTOConfig
 
 from . import ExampleDTO, Model, SupportedT
 
