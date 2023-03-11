@@ -61,7 +61,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         if allow_id is False and self.get_id_attribute_value(data) is not None:
             raise ConflictError("`add()` received identified item.")
-        now = datetime.now()
+        now = datetime.now()  # noqa: DTZ005
         if hasattr(data, "updated") and hasattr(data, "created"):
             # maybe the @declarative_mixin decorator doesn't play nice with pyright?
             data.updated = data.created = now  # pyright: ignore
@@ -81,7 +81,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             The added instance.
         """
-        now = datetime.now()
+        now = datetime.now()  # noqa: DTZ005
         for data_row in data:
             if allow_id is False and self.get_id_attribute_value(data_row) is not None:
                 raise ConflictError("`add()` received identified item.")
@@ -130,11 +130,25 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
                 instances.append(obj)
         return instances
 
+    async def exists(self, **kwargs: Any) -> bool:
+        """Return true if the object specified by ``kwargs`` exists.
+
+        Args:
+            **kwargs: Identifier of the instance to be retrieved.
+
+        Returns:
+            True if the instance was found.  False if not found..
+
+        """
+        existing = await self.get_one_or_none(**kwargs)
+        return bool(existing)
+
     async def get(self, item_id: Any, **kwargs: Any) -> ModelT:
         """Get instance identified by ``item_id``.
 
         Args:
             item_id: Identifier of the instance to be retrieved.
+            **kwargs: additional arguments
 
         Returns:
             The retrieved instance.
@@ -215,7 +229,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         # should never be modifiable
         if hasattr(data, "updated"):
             # maybe the @declarative_mixin decorator doesn't play nice with pyright?
-            data.updated = datetime.now()  # pyright: ignore
+            data.updated = datetime.now()  # pyright: ignore  # noqa: DTZ005
         for key, val in data.__dict__.items():
             if key.startswith("_"):
                 continue
@@ -240,7 +254,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         for item in items:
             if hasattr(item, "updated"):
                 # maybe the @declarative_mixin decorator doesn't play nice with pyright?
-                item.updated = datetime.now()  # pyright: ignore
+                item.updated = datetime.now()  # pyright: ignore # noqa: DTZ005
             for key, val in item.__dict__.items():
                 if key.startswith("_"):
                     continue
@@ -303,6 +317,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """Filter the collection by kwargs.
 
         Args:
+            collection: set of objects to filter
             **kwargs: key/value pairs such that objects remaining in the collection after filtering
                 have the property that their attribute named ``key`` has value equal to ``value``.
         """

@@ -73,6 +73,8 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Args:
             session: Session managing the unit-of-work for the operation.
             base_select: To facilitate customization of the underlying select query.
+            **kwargs: Additional arguments.
+
         """
         super().__init__(**kwargs)
         self.session = session
@@ -157,10 +159,10 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """Delete instance identified by `item_id`.
 
         Args:
-            item_id: Identifier of instance to be deleted.
+            item_ids: Identifier of instance to be deleted.
 
         Returns:
-            The deleted instance.
+            The deleted instances.
 
         """
         with wrap_sqlalchemy_exception():
@@ -183,13 +185,27 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             )
             await self.session.flush()
             # no need to expunge.  The list did this already.
-            return instances  # noqa: R504
+            return instances
+
+    async def exists(self, **kwargs: Any) -> bool:
+        """Return true if the object specified by ``kwargs`` exists.
+
+        Args:
+            **kwargs: Identifier of the instance to be retrieved.
+
+        Returns:
+            True if the instance was found.  False if not found..
+
+        """
+        existing = await self.count(**kwargs)
+        return bool(existing > 0)
 
     async def get(self, item_id: Any, **kwargs: Any) -> ModelT:
         """Get instance identified by `item_id`.
 
         Args:
             item_id: Identifier of the instance to be retrieved.
+            **kwargs: Additional parameters
 
         Returns:
             The retrieved instance.
@@ -424,6 +440,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """Filter the collection by kwargs.
 
         Args:
+            collection: statement to filter
             **kwargs: key/value pairs such that objects remaining in the collection after filtering
                 have the property that their attribute named `key` has value equal to `value`.
         """
@@ -480,7 +497,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Args:
             *filters: filter types to apply to the query
             apply_pagination: applies pagination filters if true
-            select: select statement to apply filters
+            statement: select statement to apply filters
 
         Keyword Args:
             select: select to apply filters against

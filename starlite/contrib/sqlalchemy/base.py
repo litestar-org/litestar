@@ -48,7 +48,7 @@ def touch_updated_timestamp(session: Session, *_: Any) -> None:
     """
     for instance in session.dirty:
         if hasattr(instance, "updated"):
-            instance.updated = datetime.now()
+            instance.updated = datetime.now()  # noqa: DTZ005
 
 
 @declarative_mixin

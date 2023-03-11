@@ -260,6 +260,7 @@ classmethod-decorators = [
   "pydantic.validator",
   "pydantic.root_validator",
   "sqlalchemy.ext.declarative.declared_attr",
+  "sqlalchemy.orm.declared_attr.directive",
 ]
 
 [tool.ruff.isort]

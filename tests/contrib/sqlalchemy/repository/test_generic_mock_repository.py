@@ -306,6 +306,38 @@ async def test_list_and_count() -> None:
     assert count == len(instances)
 
 
+async def test_exists() -> None:
+    """Test that the repository exists returns booleans."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        random_column: Mapped[str]
+
+    instances = [Model(random_column="value 1"), Model(random_column="value 2")]
+    mock_repo = GenericMockRepository[Model]()
+    _ = await mock_repo.add_many(instances)
+    exists = await mock_repo.exists(random_column="value 1")
+    assert exists
+
+
+async def test_count() -> None:
+    """Test that the repository count returns the total record count."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        ...
+
+    instances = [Model(), Model()]
+    mock_repo = GenericMockRepository[Model]()
+    _ = await mock_repo.add_many(instances)
+    count = await mock_repo.count()
+    assert count == len(instances)
+
+
 async def test_get() -> None:
     """Test that the repository get returns a model record correctly."""
 

@@ -280,6 +280,20 @@ async def test_sqlalchemy_repo_list_and_count(mock_repo: SQLAlchemyRepository, m
     mock_repo.session.commit.assert_not_called()
 
 
+async def test_sqlalchemy_repo_exists(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
+    """Test expected method calls for exists operation."""
+    result_mock = MagicMock()
+    count_mock = MagicMock()
+    execute_mock = AsyncMock(return_value=result_mock)
+    execute_count_mock = AsyncMock(return_value=count_mock)
+    monkeypatch.setattr(mock_repo, "count", execute_count_mock)
+    monkeypatch.setattr(mock_repo, "_execute", execute_mock)
+    mock_repo.count.return_value = 1
+    exists = await mock_repo.exists(id="my-id")
+    assert exists
+    mock_repo.session.commit.assert_not_called()
+
+
 async def test_sqlalchemy_repo_count(mock_repo: SQLAlchemyRepository, monkeypatch: MonkeyPatch) -> None:
     """Test expected method calls for list operation."""
     result_mock = MagicMock()
@@ -422,7 +436,7 @@ def test_filter_collection_by_kwargs_raises_repository_exception_for_attribute_e
 ) -> None:
     """Test that we raise a repository exception if an attribute name is
     incorrect."""
-    mock_repo.statement.filter_by = MagicMock(  # type:ignore[assignment]
+    mock_repo.statement.filter_by = MagicMock(  # type:ignore[method-assign]
         side_effect=InvalidRequestError,
     )
     with pytest.raises(RepositoryError):
@@ -623,6 +637,16 @@ async def test_sqlite_repo_update_many_method(author_repo: AuthorRepository) -> 
     objs = await author_repo.update_many(objs)
     for obj in objs:
         assert obj.name.startswith("Update")
+
+
+async def test_sqlite_repo_exists_method(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy exists with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    exists = await author_repo.exists(id=UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"))
+    assert exists
 
 
 async def test_sqlite_repo_update_method(author_repo: AuthorRepository) -> None:

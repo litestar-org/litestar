@@ -89,11 +89,24 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
+    async def exists(self, **kwargs: Any) -> bool:
+        """Return true if the object specified by ``kwargs`` exists.
+
+        Args:
+            **kwargs: Identifier of the instance to be retrieved.
+
+        Returns:
+            True if the instance was found.  False if not found.
+
+        """
+
+    @abstractmethod
     async def get(self, item_id: Any, **kwargs: Any) -> T:
         """Get instance identified by ``item_id``.
 
         Args:
             item_id: Identifier of the instance to be retrieved.
+            **kwargs: Additional arguments
 
         Returns:
             The retrieved instance.
