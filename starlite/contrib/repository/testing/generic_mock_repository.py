@@ -4,8 +4,8 @@ Uses a `dict` for storage.
 """
 from __future__ import annotations
 
-from datetime import datetime
-from typing import TYPE_CHECKING, Generic, TypeVar
+from datetime import datetime, tzinfo, timezone
+from typing import TYPE_CHECKING, Generic, Protocol, TypeVar
 from uuid import uuid4
 
 from starlite.contrib.repository.abc import AbstractRepository
@@ -16,10 +16,13 @@ if TYPE_CHECKING:
     from typing import Any
 
     from starlite.contrib.repository import FilterTypes
-    from starlite.contrib.sqlalchemy import base
 
-ModelT = TypeVar("ModelT", bound="base.Base | base.AuditBase")
+ModelT = TypeVar("ModelT", bound="HasID")
 MockRepoT = TypeVar("MockRepoT", bound="GenericMockRepository")
+
+
+class HasID(Protocol):
+    id: Any
 
 
 class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
@@ -31,9 +34,16 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
     collection: MutableMapping[Hashable, ModelT]
     model_type: type[ModelT]
 
-    def __init__(self, id_factory: Callable[[], Any] = uuid4, **_: Any) -> None:
+    _model_has_created: bool
+    _model_has_updated: bool
+
+    def __init__(
+        self, id_factory: Callable[[], Any] = uuid4, tz: tzinfo = timezone.utc, allow_ids_on_add: bool = False, **_: Any
+    ) -> None:
         super().__init__()
         self._id_factory = id_factory
+        self.tz = tz
+        self.allow_ids_on_add = allow_ids_on_add
 
     @classmethod
     def __class_getitem__(cls: type[MockRepoT], item: type[ModelT]) -> type[MockRepoT]:
@@ -43,57 +53,68 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             item: The type that the class has been parametrized with.
         """
         return type(  # pyright:ignore
-            f"{cls.__name__}[{item.__name__}]", (cls,), {"collection": {}, "model_type": item}
+            f"{cls.__name__}[{item.__name__}]",
+            (cls,),
+            {
+                "collection": {},
+                "model_type": item,
+                "_model_has_created": hasattr(item, "created"),
+                "_model_has_updated": hasattr(item, "updated"),
+            },
         )
 
     def _find_or_raise_not_found(self, item_id: Any) -> ModelT:
         return self.check_not_found(self.collection.get(item_id))
 
-    async def add(self, data: ModelT, allow_id: bool = False) -> ModelT:
+    def _now(self) -> datetime:
+        return datetime.now(tz=self.tz).replace(tzinfo=None)
+
+    def _update_audit_attributes(self, data: ModelT, now: datetime | None = None, do_created: bool = False) -> ModelT:
+        now = now or self._now()
+        if self._model_has_updated:
+            data.updated = now  # type:ignore[attr-defined]
+        if self._model_has_updated and do_created:
+            data.created = now  # type:ignore[attr-defined]
+        return data
+
+    async def add(self, data: ModelT) -> ModelT:
         """Add ``data`` to the collection.
 
         Args:
             data: Instance to be added to the collection.
-            allow_id: disable the identified object check.
 
         Returns:
             The added instance.
         """
-        if allow_id is False and self.get_id_attribute_value(data) is not None:
+        if self.allow_ids_on_add is False and self.get_id_attribute_value(data) is not None:
             raise ConflictError("`add()` received identified item.")
-        now = datetime.now()  # noqa: DTZ005
-        if hasattr(data, "updated") and hasattr(data, "created"):
-            # maybe the @declarative_mixin decorator doesn't play nice with pyright?
-            data.updated = data.created = now  # pyright: ignore
-        if allow_id is False:
+        self._update_audit_attributes(data, do_created=True)
+        if self.allow_ids_on_add is False:
             id_ = self._id_factory()
             self.set_id_attribute_value(id_, data)
         self.collection[data.id] = data
         return data
 
-    async def add_many(self, data: list[ModelT], allow_id: bool = False) -> list[ModelT]:
+    async def add_many(self, data: Iterable[ModelT]) -> list[ModelT]:
         """Add multiple ``data`` to the collection.
 
         Args:
             data: Instance to be added to the collection.
-            allow_id: disable the identified object check.
 
         Returns:
             The added instance.
         """
-        now = datetime.now()  # noqa: DTZ005
+        now = self._now()
         for data_row in data:
-            if allow_id is False and self.get_id_attribute_value(data_row) is not None:
+            if self.allow_ids_on_add is False and self.get_id_attribute_value(data_row) is not None:
                 raise ConflictError("`add()` received identified item.")
 
-            if hasattr(data, "updated") and hasattr(data, "created"):
-                # maybe the @declarative_mixin decorator doesn't play nice with pyright?
-                data.updated = data.created = now  # pyright: ignore
-            if allow_id is False:
+            self._update_audit_attributes(data_row, do_created=True, now=now)
+            if self.allow_ids_on_add is False:
                 id_ = self._id_factory()
                 self.set_id_attribute_value(id_, data_row)
                 self.collection[data_row.id] = data_row
-        return data
+        return list(data)
 
     async def delete(self, item_id: Any) -> ModelT:
         """Delete instance identified by ``item_id``.
@@ -165,13 +186,13 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
-            a tuple that includes the instance and whether or not it needed to be created.
+            a tuple that includes the instance and whether it needed to be created.
 
         """
         existing = await self.get_one_or_none(**kwargs)
         if existing:
-            return (existing, False)
-        return (await self.add(self.model_type(**kwargs)), True)  # type: ignore[arg-type]
+            return existing, False
+        return await self.add(self.model_type(**kwargs)), True
 
     async def get_one(self, **kwargs: Any) -> ModelT:
         """Get instance identified by query filters.
@@ -186,7 +207,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             RepositoryNotFoundException: If no instance found identified by ``kwargs``.
         """
         data = await self.list(**kwargs)
-        return self.check_not_found(data[0] if len(data) > 0 else None)
+        return self.check_not_found(data[0] if data else None)
 
     async def get_one_or_none(self, **kwargs: Any) -> ModelT | None:
         """Get instance identified by query filters or None if not found.
@@ -198,7 +219,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The retrieved instance or None
         """
         data = await self.list(**kwargs)
-        return data[0] if len(data) > 0 else None
+        return data[0] if data else None
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
         """Count of rows returned by query.
@@ -226,10 +247,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             RepositoryNotFoundException: If no instance found with same identifier as ``data``.
         """
         item = self._find_or_raise_not_found(self.get_id_attribute_value(data))
-        # should never be modifiable
-        if hasattr(data, "updated"):
-            # maybe the @declarative_mixin decorator doesn't play nice with pyright?
-            data.updated = datetime.now()  # pyright: ignore  # noqa: DTZ005
+        self._update_audit_attributes(data, do_created=False)
         for key, val in data.__dict__.items():
             if key.startswith("_"):
                 continue
@@ -240,8 +258,8 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """Update instances with the attribute values present on ``data``.
 
         Args:
-            data: A list of instances that should have a value for :attr:`id_attribute <GenericMockRepository.id_attribute>` that exists in the
-                collection.
+            data: A list of instances that should have a value for :attr:`id_attribute <GenericMockRepository.id_attribute>`
+                that exists in the collection.
 
         Returns:
             The updated instances.
@@ -250,11 +268,9 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             RepositoryNotFoundException: If no instance found with same identifier as ``data``.
         """
         items = [self._find_or_raise_not_found(self.get_id_attribute_value(row)) for row in data]
-        # should never be modifiable
+        now = self._now()
         for item in items:
-            if hasattr(item, "updated"):
-                # maybe the @declarative_mixin decorator doesn't play nice with pyright?
-                item.updated = datetime.now()  # pyright: ignore # noqa: DTZ005
+            self._update_audit_attributes(item, do_created=False, now=now)
             for key, val in item.__dict__.items():
                 if key.startswith("_"):
                     continue
@@ -281,7 +297,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         item_id = self.get_id_attribute_value(data)
         if item_id in self.collection:
             return await self.update(data)
-        return await self.add(data, allow_id=True)
+        return await self.add(data)
 
     async def list_and_count(
         self,
@@ -295,7 +311,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             **kwargs: Instance attribute value filters.
 
         Returns:
-            Count of records returned by query, ignoring pagination.
+            List of instances, and count of records returned by query, ignoring pagination.
         """
         return await self.list(*filters, **kwargs), await self.count(*filters, **kwargs)
 

@@ -121,8 +121,8 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
                 for instance in instances:
                     self.session.expunge(instance)
                 return instances
-            # when bulk insert with returning isn't supported, we ensure there is a unique ID on each record so that we can refresh the records after insert.
-            # ensure we have a UUID ID on each record so that we can refresh the data before returning
+            # When bulk insert with returning isn't supported, we ensure there is a unique ID on each record so that we
+            # can refresh the records after insert.
             new_primary_keys: list[UUID] = []
             for datum in data_to_insert:
                 if datum.get(self.id_attribute, None) is None:
