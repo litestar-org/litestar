@@ -259,6 +259,24 @@ def test_additional_responses_overlap_with_other_responses() -> None:
     assert responses["200"].description == "Overwritten response"
 
 
+def test_additional_responses_overlap_with_raises() -> None:
+    class ErrorResponse(BaseModel):
+        pass
+
+    @get(
+        raises=[ValidationException],
+        responses={400: ResponseSpec(model=ErrorResponse, description="Overwritten response")},
+    )
+    def handler() -> Person:
+        raise ValidationException()
+
+    responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
+
+    assert responses is not None
+    assert responses["400"] is not None
+    assert responses["400"].description == "Overwritten response"
+
+
 def test_create_response_for_response_subclass() -> None:
     class CustomResponse(Response[T]):
         pass
