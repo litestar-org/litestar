@@ -2,37 +2,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from typing import Any
 
-__all__ = ("DTOConfig", "DTOField", "Mark", "Purpose")
+    from .enums import Mark, Purpose
+    from .types import FieldDefinitionsType, FieldMappingType
 
 
-class Mark(str, Enum):
-    """For marking field definitions on domain models."""
-
-    READ_ONLY = "read-only"
-    """To mark a field that can be read, but not updated by clients."""
-    PRIVATE = "private"
-    """To mark a field that can neither be read or updated by clients."""
-
-
-class Purpose(str, Enum):
-    """For identifying the purpose of a DTO.
-
-    The factory will exclude fields marked as private or read-only on the domain model depending
-    on the purpose of the DTO.
-    """
-
-    READ = "read"
-    """To mark a DTO that is to be used to serialize data returned to
-    clients."""
-    WRITE = "write"
-    """To mark a DTO that is to deserialize and validate data provided by
-    clients."""
+__all__ = ("DTOConfig", "DTOField")
 
 
 @dataclass
@@ -49,13 +30,13 @@ class DTOField:
 class DTOConfig:
     """Control the generated DTO."""
 
-    purpose: Purpose = field(default=Purpose.READ)
+    purpose: Purpose | None = field(default=None)
     """Configure the DTO for "read" or "write" operations."""
     exclude: set[str] = field(default_factory=set)
     """Explicitly exclude fields from the generated DTO."""
-    field_mapping: dict[str, str | tuple[str, type]] = field(default_factory=dict)
+    field_mapping: FieldMappingType = field(default_factory=dict)
     """Mapping of field names, to new name, or tuple of new name, new type."""
-    field_definitions: dict[str, tuple[type, Any]] = field(default_factory=dict)
+    field_definitions: FieldDefinitionsType = field(default_factory=dict)
     """Additional fields for transferred data.
 
     Key is the name of the new field, and value is a tuple of type and default value pairs.
@@ -70,3 +51,10 @@ class DTOConfig:
         {"new_field": (str | None, None)}
     """
     partial: bool = field(default=False)
+    """DTO should allow incomplete object representation."""
+    private_fields: set[str] = field(default_factory=set)
+    """Names of fields that should never be included in data transfer, either in or out."""
+    read_only_fields: set[str] = field(default_factory=set)
+    """Names of fields that should never be parsed from input data."""
+    backend_kwargs: Mapping[str, Any] = field(default_factory=dict)
+    """Kwargs passed through to the DTO backend instance."""

@@ -10,7 +10,7 @@ from starlite.enums import MediaType
 
 from .exc import InvalidAnnotation
 from .config import DTOConfig
-from .types import DataT, StarliteEncodableType
+from .types import DataT
 
 __all__ = ("AbstractDTO",)
 
@@ -18,6 +18,8 @@ if TYPE_CHECKING:
     from typing import ClassVar
 
     from typing_extensions import Self
+
+    from .types import FieldDefinitionsType, StarliteEncodableType
 
 
 class AbstractDTO(ABC, Generic[DataT]):
@@ -77,6 +79,33 @@ class AbstractDTO(ABC, Generic[DataT]):
         if issubclass(get_origin(item) or item, Iterable):
             return get_args(item)[0]
         return item
+
+    @classmethod
+    @abstractmethod
+    def parse_model(cls) -> FieldDefinitionsType:
+        """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
+
+        .. important::
+            Implementations must respect the :attr:`config` object. For example:
+                - fields marked private must never be included in the field definitions.
+                - if a ``purpose`` is declared, then read-only fields must be taken into account.
+                - field mappings must be implemented.
+                - additions fields must be included, subject to ``purpose``.
+
+        Returns:
+            Fields for data transfer.
+
+            Key is the name of the new field, and value is a tuple of type and default value pairs.
+
+            Add a new field called "new_field", that is a string, and required:
+            {"new_field": (str, ...)}
+
+            Add a new field called "new_field", that is a string, and not-required:
+            {"new_field": (str, "default")}
+
+            Add a new field called "new_field", that may be `None`:
+            {"new_field": (str | None, None)}
+        """
 
     @classmethod
     def postponed_cls_init(cls) -> None:

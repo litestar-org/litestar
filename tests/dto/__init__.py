@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
+    from starlite.dto.types import FieldDefinitionsType
     from starlite.types.protocols import DataclassProtocol
 
 
@@ -42,3 +43,7 @@ class ExampleDTO(AbstractDTO[SupportedT], Generic[SupportedT]):
         else:
             raise SerializationException(f"Unsupported media type: '{media_type}'")
         return cls(data)
+
+    @classmethod
+    def parse_model(cls) -> FieldDefinitionsType:
+        return {"a": (int, ...), "b": (str, ...)}
