@@ -381,13 +381,12 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         statement = self._filter_select_by_kwargs(statement, **kwargs)
         with wrap_sqlalchemy_exception():
             result = await self._execute(statement)
-            count: int = 0
-            instances: list[ModelT] = []
-            for i, (instance, count_value) in enumerate(result):
+            first, count = next(result)
+            self.session.expunge(first)
+            instances = [first]
+            for instance, _ in result:
                 self.session.expunge(instance)
                 instances.append(instance)
-                if i == 0:
-                    count = count_value
             return instances, count
 
     async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:
