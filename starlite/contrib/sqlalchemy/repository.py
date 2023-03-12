@@ -24,7 +24,6 @@ if TYPE_CHECKING:
     from sqlalchemy import Select
     from sqlalchemy.engine import Result
     from sqlalchemy.ext.asyncio import AsyncSession
-    from uuid import UUID
 
     from starlite.contrib.repository import FilterTypes
     from starlite.contrib.sqlalchemy import base
@@ -143,25 +142,30 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
 
         """
         with wrap_sqlalchemy_exception():
-            if self.session.bind.dialect.delete_executemany_returning:
-                instances = list(
-                    await self.session.scalars(
-                        delete(self.model_type)
-                        .where(getattr(self.model_type, self.id_attribute).in_(item_ids))
-                        .returning(self.model_type)
+            instances: list[ModelT] = []
+            chunk_size = 450
+            for idx in range(0, len(item_ids), chunk_size):
+                chunk = item_ids[idx : min(idx + chunk_size, len(item_ids))]
+                if self.session.bind.dialect.delete_executemany_returning:
+                    instances.extend(
+                        await self.session.scalars(
+                            delete(self.model_type)
+                            .where(getattr(self.model_type, self.id_attribute).in_(chunk))
+                            .returning(self.model_type)
+                        )
                     )
-                )
-                await self.session.flush()
-                for instance in instances:
-                    self.session.expunge(instance)
-                return instances
-
-            instances = await self.list(CollectionFilter(field_name=self.id_attribute, values=item_ids))
-            await self.session.execute(
-                delete(self.model_type).where(getattr(self.model_type, self.id_attribute).in_(item_ids))
-            )
+                else:
+                    instances.extend(
+                        await self.session.scalars(
+                            select(self.model_type).where(getattr(self.model_type, self.id_attribute).in_(chunk))
+                        )
+                    )
+                    await self.session.execute(
+                        delete(self.model_type).where(getattr(self.model_type, self.id_attribute).in_(chunk))
+                    )
             await self.session.flush()
-            # no need to expunge.  The list did this already.
+            for instance in instances:
+                self.session.expunge(instance)
             return instances
 
     async def exists(self, **kwargs: Any) -> bool:
@@ -321,17 +325,12 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
                 for instance in instances:
                     self.session.expunge(instance)
                 return instances
-            updated_primary_keys: list[UUID] = []
-            for datum in data_to_update:
-                updated_primary_keys.append(datum.get("id"))  # type: ignore[arg-type]
-
             await self.session.execute(
                 update(self.model_type),
                 data_to_update,
             )
             await self.session.flush()
-            # select the records we just updated.
-            return await self.list(CollectionFilter(field_name="id", values=updated_primary_keys))
+            return data
 
     async def list_and_count(
         self,
@@ -358,12 +357,13 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         statement = self._filter_select_by_kwargs(statement, **kwargs)
         with wrap_sqlalchemy_exception():
             result = await self._execute(statement)
-            first, count = next(result)
-            self.session.expunge(first)
-            instances = [first]
-            for instance, _ in result:
+            count: int = 0
+            instances: list[ModelT] = []
+            for i, (instance, count_value) in enumerate(result):
                 self.session.expunge(instance)
                 instances.append(instance)
+                if i == 0:
+                    count = count_value
             return instances, count
 
     async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:

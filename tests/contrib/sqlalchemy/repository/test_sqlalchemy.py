@@ -573,6 +573,20 @@ async def test_sqlite_repo_list_and_count_method(
     assert len(collection) == exp_count
 
 
+async def test_sqlite_repo_list_and_count_method_empty(book_repo: BookRepository) -> None:
+    """Test SQLALchemy list with count in sqlite.
+
+    Args:
+        raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
+        author_repo (AuthorRepository): The author mock repository
+    """
+
+    collection, count = await book_repo.list_and_count()
+    assert 0 == count
+    assert isinstance(collection, list)
+    assert len(collection) == 0
+
+
 async def test_sqlite_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
     """Test SQLALchemy list with sqlite.
 
@@ -675,11 +689,21 @@ async def test_sqlite_repo_delete_many_method(author_repo: AuthorRepository) -> 
     Args:
         author_repo (AuthorRepository): The author mock repository
     """
+    data_to_insert = []
+    for chunk in range(0, 1000):
+        data_to_insert.append(
+            Author(
+                name="author name %d" % chunk,
+            )
+        )
+    _ = await author_repo.add_many(data_to_insert)
     all_objs = await author_repo.list()
     ids_to_delete = [existing_obj.id for existing_obj in all_objs]
     objs = await author_repo.delete_many(ids_to_delete)
+    await author_repo.session.commit()
     assert len(objs) > 0
-    count = await author_repo.count()
+    data, count = await author_repo.list_and_count()
+    assert data == []
     assert count == 0
 
 
