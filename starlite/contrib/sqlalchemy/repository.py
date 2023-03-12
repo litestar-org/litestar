@@ -3,11 +3,10 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Generic, Literal, Tuple, TypeVar, cast
-from uuid import UUID, uuid4
 
 from sqlalchemy import delete
 from sqlalchemy import func as sql_func
-from sqlalchemy import insert, over, select, text, update
+from sqlalchemy import over, select, text, update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from starlite.contrib.repository.abc import AbstractRepository
@@ -25,6 +24,7 @@ if TYPE_CHECKING:
     from sqlalchemy import Select
     from sqlalchemy.engine import Result
     from sqlalchemy.ext.asyncio import AsyncSession
+    from uuid import UUID
 
     from starlite.contrib.repository import FilterTypes
     from starlite.contrib.sqlalchemy import base
@@ -102,39 +102,16 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Args:
             data: list of Instances to be added to the collection.
 
-        This function has an optimized bulk insert based on the configured SQL dialect:
-        - For backends supporting `RETURNING` with `executemany`, a single bulk insert with returning clause is executed.
-        - For other backends, it does a bulk insert and then selects the inserted records
 
         Returns:
             The added instances.
         """
-        data_to_insert: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
-            if self.session.bind.dialect.insert_executemany_returning:
-                instances = list(
-                    await self.session.scalars(  # type: ignore
-                        insert(self.model_type).returning(self.model_type),
-                        data_to_insert,  # pyright: reportGeneralTypeIssues=false
-                    )
-                )
-                for instance in instances:
-                    self.session.expunge(instance)
-                return instances
-            # When bulk insert with returning isn't supported, we ensure there is a unique ID on each record so that we
-            # can refresh the records after insert.
-            new_primary_keys: list[UUID] = []
-            for datum in data_to_insert:
-                if datum.get(self.id_attribute, None) is None:
-                    datum.update({self.id_attribute: uuid4()})
-                new_primary_keys.append(datum.get(self.id_attribute))  # type: ignore[arg-type]
-
-            await self.session.execute(
-                insert(self.model_type),
-                data_to_insert,
-            )
-            # select the records we just inserted.
-            return await self.list(CollectionFilter(field_name=self.id_attribute, values=new_primary_keys))
+            self.session.add_all(data)
+            await self.session.flush()
+            for datum in data:
+                self.session.expunge(datum)
+            return data
 
     async def delete(self, item_id: Any) -> ModelT:
         """Delete instance identified by `item_id`.

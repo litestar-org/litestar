@@ -161,7 +161,7 @@ async def test_sqlalchemy_repo_delete_many(mock_repo: SQLAlchemyRepository, monk
     added_instances = await mock_repo.add_many(mock_instances)
     instances = await mock_repo.delete_many([obj.id for obj in added_instances])
     assert len(instances) == len(mock_instances)
-    mock_repo.session.flush.assert_called_once()
+    mock_repo.session.flush.assert_called()
     mock_repo.session.commit.assert_not_called()
 
 
@@ -269,9 +269,7 @@ async def test_sqlalchemy_repo_list_and_count(mock_repo: SQLAlchemyRepository, m
     """Test expected method calls for list operation."""
     mock_instances = [MagicMock(), MagicMock()]
     mock_count = len(mock_instances)
-    result_mock = MagicMock()
-    result_mock.__iter__.return_value = iter([(mock, mock_count) for mock in mock_instances])
-    execute_mock = AsyncMock(return_value=result_mock)
+    execute_mock = AsyncMock(return_value=iter([(mock, mock_count) for mock in mock_instances]))
     monkeypatch.setattr(mock_repo, "_execute", execute_mock)
     instances, instance_count = await mock_repo.list_and_count()
     assert instances == mock_instances
