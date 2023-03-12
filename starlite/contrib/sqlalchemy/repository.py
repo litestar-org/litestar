@@ -234,7 +234,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             instance = (await self._execute(statement)).scalar_one_or_none()
             if instance:
                 self.session.expunge(instance)
-            return instance or None
+            return instance
 
     async def get_or_create(self, **kwargs: Any) -> tuple[ModelT, bool]:
         """Get instance identified by ``kwargs`` or create if it doesn't exist.
@@ -261,7 +261,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             Count of records returned by query, ignoring pagination.
         """
         statement = self.statement.with_only_columns(
-            sql_func.count(  # pylint: disable=not-callable
+            sql_func.count(
                 self.model_type.id,  # type:ignore[attr-defined]
             ),
             maintain_column_froms=True,
@@ -348,7 +348,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         statement = self.statement.add_columns(
             over(
-                sql_func.count(  # pylint: disable=not-callable
+                sql_func.count(
                     self.model_type.id,  # type:ignore[attr-defined]
                 ),
             )
