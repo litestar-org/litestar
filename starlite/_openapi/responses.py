@@ -14,7 +14,7 @@ from starlite._openapi.schema import create_schema
 from starlite._openapi.utils import pascal_case_to_text
 from starlite._signature.models import SignatureField
 from starlite.enums import MediaType
-from starlite.exceptions import HTTPException, ImproperlyConfiguredException, ValidationException
+from starlite.exceptions import HTTPException, ValidationException
 from starlite.response import Response as StarliteResponse
 from starlite.response_containers import File, Redirect, Stream, Template
 from starlite.utils import get_enum_string_value, get_name, is_class_and_subclass
@@ -235,11 +235,6 @@ def create_responses(
         responses[status_code] = response
 
     for status_code, response in create_additional_responses(route_handler, plugins):
-        if status_code in responses:
-            raise ImproperlyConfiguredException(
-                f"Additional response for status code {status_code} already exists in success or error responses"
-            )
-
         responses[status_code] = response
 
     return responses or None
