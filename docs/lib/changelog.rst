@@ -1,6 +1,13 @@
 1.x Changelog
 =============
 
+1.51.7
+------
+
+* Fix a regression in path resolution that prevented ``404`` being raised for some invalid paths
+* Fix a ``DeprecationWarning`` for the wrong name ``starlite/middleware/session/__init__.py``
+
+
 1.51.6
 ------
 
