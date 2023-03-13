@@ -62,7 +62,10 @@ def make_version(version: str | None, push: bool) -> None:
 
         docs_src_path = Path("docs/_build/html")
 
+        inventory_file = docs_src_path / "objects.inv"
         shutil.copytree(docs_src_path / "lib", version, dirs_exist_ok=True)
+        shutil.copy2(inventory_file, version)
+        git_add.append(f"{version}/objects.inv")
 
         if rebuild_page:
             for path in docs_src_path.iterdir():
@@ -76,6 +79,8 @@ def make_version(version: str | None, push: bool) -> None:
 
         if is_latest:
             shutil.copytree(docs_src_path / "lib", "lib", dirs_exist_ok=True)
+            shutil.copy2(inventory_file, "lib")
+            git_add.append("lib/objects.inv")
 
         shutil.rmtree("docs/_build")
 
