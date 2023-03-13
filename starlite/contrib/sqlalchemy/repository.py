@@ -429,7 +429,6 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
 
         Args:
             session: through which we run a check statement
-            query: override the default health check SQL statement
 
         Returns:
             `True` if healthy.
