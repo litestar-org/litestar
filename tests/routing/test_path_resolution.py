@@ -35,7 +35,7 @@ def root_delete_handler() -> None:
         ("/", "/", int(HTTP_200_OK)),
         ("", "", int(HTTP_200_OK)),
         (
-            "/a/b/c/d/path/1/2/sub/2535a9cb-6554-4d85-bb3b-ad38362f63c7/",
+            "/a/b/c/d/path/1/2/sub/d4aca431-2e02-4818-824b-a2ddc6a64e9c/",
             "/path/{first:int}/{second:str}/sub/{third:uuid}/",
             int(HTTP_404_NOT_FOUND),
         ),
