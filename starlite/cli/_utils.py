@@ -338,4 +338,3 @@ def show_app_info(app: Starlite) -> None:  # pragma: no cover
         table.add_row("Middlewares", ", ".join(middlewares))
 
     console.print(table)
-    console.print(table)
