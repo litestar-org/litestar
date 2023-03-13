@@ -1,5 +1,9 @@
-openapi
-=======
+starlite.openapi
+================
 
-.. automodule:: starlite.openapi
-    :members: OpenAPIController, OpenAPISchemaResponse, OpenAPIConfig
+.. autoclass:: starlite.openapi.controller.OpenAPIController
+    :members:
+
+
+.. autoclass:: starlite.openapi.datastructures.ResponseSpec
+    :members:

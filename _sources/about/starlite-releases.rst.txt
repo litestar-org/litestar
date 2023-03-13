@@ -17,32 +17,6 @@ Patch
     Bugfixes were applied, in a backwards compatible manner
 
 
-Pre-release versions
-++++++++++++++++++++
-
-A major release may be preceded by a number of pre-releases. The pre-release identifier
-will be appended to the major version number and follow the schema ``<release type><release number>``. The resulting
-version number will have the schema ``<major>.<minor>.<patch><release type><release number>``, for example
-``2.0.0alpha1``.
-
-The release types are:
-
-``alpha``
-    A developmental release, equivalent to the current status of the development branch. At this point, new
-    features can still be added and breaking changes introduced. These releases should be considered very unstable and
-    are intended for early developer feedback.
-
-``beta``
-    A more stable development release. New features might be added at this point, but no major breaking changes are to
-    be expected
-
-``rc``
-    "Release candidate". This is the first release after the feature freeze before a new major release. No new features
-    and breaking changes will be introduced at this point, only bugfixes will be added at this point. This release is
-    suitable for testing migration to the upcoming major release. Each major version will be preceded by *at least* one
-    release candidate.
-
-
 Release schedule
 ----------------
 
@@ -52,7 +26,7 @@ lower bound, meaning it may take longer for a particular major version to be rel
 but it won't be less than 6 months after the last major release.
 
 
-About major version
+About major versions
 --------------------
 
 Starlite's major releases are *generally backwards compatible* and usually won't include
@@ -64,22 +38,12 @@ won't be sweeping changes that require a complete rewrite of an application or m
 migration efforts when upgrading to a new major version.
 
 
-Supported versions
-------------------
+LTS releases and support
+------------------------
 
-Current version
-    The current version is the last release of the most recent major version. This
-    version is under active development and will receive bugfixes as well as feature
-    updates in minor releases (see `Version numbering`_)
-
-Maintenance versions
-    When a new major version is released, the last *minor* version before it enters
-    maintenance mode. It will receive bugfixes and other critical patches during the
-    next two release cycles
-
-
-In practice this means that, at any given time, there may be up to 3 currently supported
-releases: The current version and the two major versions preceding it.
+The last released minor version becomes the current *LTS release* once a new major
+version is released. These LTS releases will receive **patch** releases for security and
+other critical bugfixes *at least until the next major release*.
 
 
 Deprecation policy

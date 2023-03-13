@@ -25,11 +25,14 @@ Installation
     :ref:`Brotli Compression Middleware <lib/usage/middleware/builtin-middleware:brotli>`:
         :code:`pip install starlite[brotli]`
 
-    :ref:`Cookie based sessions <lib/usage/middleware/builtin-middleware:client-side sessions>`
+    :ref:`Client-side sessions <lib/usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install starlite[cryptography]`
 
-    :doc:`Redis storage </lib/usage/storage>`:
+    :ref:`Server-side sessions <lib/usage/middleware/builtin-middleware:redis storage>` / :ref:`redis caching <lib/usage/caching:redis>`:
         :code:`pip install starlite[redis]`
+
+    :ref:`Server-side sessions <lib/usage/middleware/builtin-middleware:memcached storage>` / :ref:`memcached caching <lib/usage/caching:memcached>`:
+        :code:`pip install starlite[memcached]`
 
     :ref:`Picologging <lib/usage/the-starlite-app:using picologging>`
         :code:`pip install starlite[picologging]`
@@ -93,8 +96,8 @@ You can also use dataclasses (standard library and Pydantic),
     from typing import List
 
     from pydantic import UUID4
-    from starlite import Controller, get, post, put, patch, delete
-    from starlite.partial import Partial
+    from starlite import Controller, Partial, get, post, put, patch, delete
+
     from my_app.models import User
 
 

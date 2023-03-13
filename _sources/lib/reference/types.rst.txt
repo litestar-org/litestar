@@ -1,5 +1,5 @@
-types
-=====
+starlite.types
+==============
 
 .. py:currentmodule:: starlite.types
 
@@ -147,6 +147,8 @@ Helper types are useful generic types that can be used.
 
 .. autodata:: starlite.types.SyncOrAsyncUnion
 
+.. autodata:: starlite.types.SingleOrList
+
 
 Protocols
 ---------
@@ -165,9 +167,16 @@ Composite Types
 
 .. autodata:: starlite.types.ResponseCookies
 
-.. autodata:: starlite.types.ResponseHeaders
+.. autodata:: starlite.types.ResponseHeadersMap
 
 .. autodata:: starlite.types.PathType
+
+
+Partial types
+-------------
+
+.. autoclass:: starlite.types.Partial
+    :members:
 
 
 File types

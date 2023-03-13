@@ -10,8 +10,7 @@ of :class:`CORSConfig <starlite.config.CORSConfig>` to the :class:`Starlite cons
 
 .. code-block:: python
 
-   from starlite import Starlite
-   from starlite.config.cors import CORSConfig
+   from starlite import CORSConfig, Starlite
 
    cors_config = CORSConfig(allow_origins=["https://www.example.com"])
 
@@ -50,8 +49,7 @@ To enable CSRF protection in a Starlite application simply pass an instance of
 
 .. code-block:: python
 
-    from starlite import Starlite
-    from starlite.config.csrf import CSRFConfig
+    from starlite import Starlite, CSRFConfig
 
     csrf_config = CSRFConfig(secret="my-secret")
 
@@ -88,8 +86,7 @@ list of domains to the :class:`Starlite constructor <starlite.app.Starlite>`:
 
 .. code-block:: python
 
-   from starlite import Starlite
-   from starlite.config.allowed_hosts import AllowedHostsConfig
+   from starlite import Starlite, AllowedHostsConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -132,8 +129,7 @@ You can configure the following additional gzip-specific values:
 
 .. code-block:: python
 
-   from starlite import Starlite
-   from starlite.config.compression import CompressionConfig
+   from starlite import Starlite, CompressionConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -166,7 +162,7 @@ You can configure the following additional brotli-specific values:
 .. code-block:: python
 
    from starlite import Starlite
-   from starlite.config.compression import CompressionConfig
+   from starlite.config import CompressionConfig
 
    app = Starlite(
        route_handlers=[...],
@@ -210,7 +206,7 @@ configuration:
 
 .. code-block:: python
 
-   from starlite.middleware.logging import LoggingMiddlewareConfig
+   from starlite.middleware import LoggingMiddlewareConfig
 
    logging_middleware_config = LoggingMiddlewareConfig(
        request_cookies_to_obfuscate={"my-custom-session-key"},
@@ -237,12 +233,18 @@ Session Middleware
 ------------------
 
 Starlite includes a :class:`SessionMiddleware <starlite.middleware.session.SessionMiddleware>`,
-offering client- and server-side sessions. Server-side sessions are backed by Starlite's
-:doc:`storage backends </lib/usage/storage>`, which offer support for:
+offering client- and server-side sessions. Different storage mechanisms are available through
+:class:`SessionBackends <starlite.middleware.session.base.BaseSessionBackend>`, and include support for
+storing data in:
 
-- In memory sessions
-- File based sessions
-- Redis based sessions
+* `Cookies <client side sessions>`_
+* `Files <file storage>`_
+* `Redis <redis storage>`_
+* `Memcached <memcached storage>`_ (through ``aiomcache``)
+* `Databases <database storage>`_ (through ``sqlalchemy``)
+* `Memory <in memory storage>`_
+
+
 
 Setting up the middleware
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -265,12 +267,12 @@ add its middleware to your application's middleware stack:
 Client-side sessions
 ^^^^^^^^^^^^^^^^^^^^
 
-Client side sessions are available through the :class:`ClientSideSessionBackend <starlite.middleware.session.client_side.ClientSideSessionBackend>`,
+Client side sessions are available through the :class:`CookieBackend <starlite.middleware.session.cookie_backend.CookieBackend>`,
 which offers strong AES-CGM encryption security best practices while support cookie splitting.
 
 .. important::
 
-    ``ClientSideSessionBackend`` requires the `cryptography <https://cryptography.io/en/latest/>`_ library,
+    ``CookieBackend`` requires the `cryptography <https://cryptography.io/en/latest/>`_ library,
     which can be installed together with starlite as an extra using ``pip install starlite[cryptography]``
 
 .. literalinclude:: /examples/middleware/session/cookie_backend.py
@@ -280,7 +282,7 @@ which offers strong AES-CGM encryption security best practices while support coo
 
 .. seealso::
 
-    :class:`CookieBackendConfig <starlite.middleware.session.client_side.CookieBackendConfig>`
+    :class:`CookieBackendConfig <starlite.middleware.session.cookie_backend.CookieBackendConfig>`
 
 
 Server-side sessions
@@ -288,23 +290,153 @@ Server-side sessions
 
 Server side session store data - as the name suggests - on the server instead of the client.
 They use a cookie containing a session ID which is a randomly generated string to identify a client
-and load the appropriate data from the storage backend
+and load the appropriate data from the storage backend.
 
-.. literalinclude:: /examples/middleware/session/memory_storage.py
+File storage
+~~~~~~~~~~~~
+
+The :class:`FileBackend <starlite.middleware.session.file_backend.FileBackend>` will store session data
+in files on disk, alongside some metadata. Files containing expired sessions will only be deleted
+when trying to access them. Expired session files can be manually deleted using the
+:meth:`delete_expired <starlite.middleware.session.file_backend.FileBackend.delete_expired>` method.
+
+.. literalinclude:: /examples/middleware/session/file_backend.py
+    :caption: file_backend.py
+    :language: python
 
 
 .. seealso::
 
-    - :doc:`/lib/usage/storage`
-    - :class:`ServerSideSessionConfig <starlite.middleware.session.server_side.ServerSideSessionConfig>`
+    - `Accessing the storage backend directly`_
+    - :class:`BaseBackendConfig <starlite.middleware.session.base.BaseBackendConfig>`
+    - :class:`ServerSideSessionConfig <starlite.middleware.session.base.ServerSideSessionConfig>`
+    - :class:`FileBackendConfig <starlite.middleware.session.file_backend.FileBackendConfig>`
+
+Redis storage
+~~~~~~~~~~~~~
+
+The :class:`Redis backend <starlite.middleware.session.redis_backend.RedisBackend>` can store session data
+in redis. Session data stored in redis will expire automatically after its
+:attr:`max_age <starlite.middleware.session.base.BaseBackendConfig.max_age>` has been passed.
+
+.. important::
+
+    This requires the ``redis`` package. To install it you can install starlite with
+    ``pip install starlite[redis]``
+
+.. literalinclude:: /examples/middleware/session/redis_backend.py
+    :caption: redis_backend.py
+    :language: python
 
 
-Interacting with the storage backend
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. seealso::
+
+    - `Accessing the storage backend directly`_
+    - :class:`BaseBackendConfig <starlite.middleware.session.base.BaseBackendConfig>`
+    - :class:`ServerSideSessionConfig <starlite.middleware.session.base.ServerSideSessionConfig>`
+
+Memcached storage
+~~~~~~~~~~~~~~~~~
+
+The :class:`Memcached backend <starlite.middleware.session.memcached_backend.MemcachedBackend>` can store session data
+in memcached. Session data stored in memcached will expire automatically after its
+:attr:`max_age <starlite.middleware.session.base.BaseBackendConfig.max_age>` has been passed.
+
+.. important::
+
+    This requires the ``aiomemcache`` package. To install it you can install starlite with
+    ``pip install starlite[memcached]``
+
+.. literalinclude:: /examples/middleware/session/memcached_backend.py
+    :caption: memcached_backend.py
+    :language: python
+
+
+.. seealso::
+
+    - `Accessing the storage backend directly`_
+    - :class:`BaseBackendConfig <starlite.middleware.session.base.BaseBackendConfig>`
+    - :class:`ServerSideSessionConfig <starlite.middleware.session.base.ServerSideSessionConfig>`
+
+In-memory storage
+~~~~~~~~~~~~~~~~~
+
+The :class:`Memory backend <starlite.middleware.session.memory_backend.MemoryBackend>` can store
+session data in memory.
+
+.. important::
+
+    This should not be used in production. It primarily exists as a dummy backend for
+    testing purposes. It is not process safe, and data will not be persisted.
+
+.. literalinclude:: /examples/middleware/session/memory_backend.py
+    :caption: memory_backend.py
+    :language: python
+
+
+Database storage
+~~~~~~~~~~~~~~~~
+
+Database storage is currently offered through the
+:class:`SQLAlchemyBackend <starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend>`.
+It supports both sync and async-engines and integrates with the
+:doc:`SQLAlchemyPlugin </lib/usage/plugins/sqlalchemy>`. Expired sessions will only be deleted when trying to access them.
+They can be manually deleted using the
+:meth:`delete_expired <starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend.delete_expired>` method.
+
+There are two backends for SQLAlchemy:
+
+* :class:`SQLAlchemyBackend <starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackend>` for synchronous engines
+* :class:`AsyncSQLAlchemyBackend <starlite.middleware.session.sqlalchemy_backend.AsyncSQLAlchemyBackend>` for asynchronous engines
+
+When using the :class:`configuration <starlite.middleware.session.sqlalchemy_backend.SQLAlchemyBackendConfig>` object,
+it will automatically pick the correct backend to use based on the engine configuration.
+
+.. important::
+
+    This requires `sqlalchemy <https://sqlalchemy.org/>`_. You can install it via
+    ``pip install sqlalchemy``.
+
+.. tab-set::
+
+    .. tab-item:: Synchronous engine
+
+        .. literalinclude:: /examples/middleware/session/sqlalchemy_backend.py
+            :caption: sqlalchemy_backend.py
+            :language: python
+
+
+
+    .. tab-item:: Asynchronous engine
+
+        .. literalinclude:: /examples/middleware/session/sqlalchemy_backend_async.py
+            :caption: sqlalchemy_backend.py
+            :language: python
+
+
+Supplying your own session model
+""""""""""""""""""""""""""""""""
+
+If you wish to extend the built-in session model, you can mixin the
+:class:`SessionModelMixin <starlite.middleware.session.sqlalchemy_backend.SessionModelMixin>` into your own classes:
+
+.. literalinclude:: /examples/middleware/session/sqlalchemy_backend_custom_model.py
+    :caption: sqlalchemy_backend_custom_model.py
+    :language: python
+
+
+.. seealso::
+
+    - :class:`BaseBackendConfig <starlite.middleware.session.base.BaseBackendConfig>`
+    - :class:`ServerSideSessionConfig <starlite.middleware.session.base.ServerSideSessionConfig>`
+
+
+Accessing the storage backend directly
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In some situations you might want to access the storage backend directly, outside a
 request. For example to delete a specific session's data, or delete expired sessions
-from the database when using the :class:`FileStorage <starlite.storage.file_backend.FileStorage>`:
+from the database when using the :class:`SQLAlchemyBackend <starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend>`.
 
 .. literalinclude:: /examples/middleware/session/backend_access_explicit.py
     :language: python

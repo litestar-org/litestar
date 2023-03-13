@@ -6,8 +6,7 @@ the application:
 
 .. code-block:: python
 
-   from starlite import Controller, Router, Starlite, get
-   from starlite.di import Provide
+   from starlite import Controller, Router, Starlite, Provide, get
 
 
    def bool_fn() -> bool:
@@ -58,9 +57,8 @@ the application:
 
 The above example illustrates how dependencies are declared on the different layers of the application.
 
-Dependencies can be either callables - sync or async functions, methods or class instances that implement the
-:meth:`__call__` method, or classes. These are in turn wrapped inside an instance of the
-:class:`Provide <.datastructures.Provide>` class.
+Dependencies are callables - sync or async functions, methods or class instances that implement the :meth:`__call__` method -
+that are wrapped inside an instance of the :class:`Provide <.datastructures.Provide>` class.
 
 Pre-requisites and Scope
 ------------------------
@@ -107,7 +105,7 @@ returned:
 
 .. code-block:: python
 
-   from starlite.testing import TestClient
+   from starlite import TestClient
    from dependencies import app, CONNECTION
 
    with TestClient(app=app) as client:
@@ -129,7 +127,7 @@ and committing otherwise.
 
 .. code-block:: python
 
-   from starlite.testing import TestClient
+   from starlite import TestClient
    from dependencies import STATE, app
 
    with TestClient(app=app) as client:
@@ -177,9 +175,8 @@ can :ref:`inject into route handlers <lib/usage/route-handlers:handler function 
 
 .. code-block:: python
 
-   from starlite import Controller, patch
-   from starlite.di import Provide
-   from starlite.partial import Partial
+   from starlite import Controller, Provide, patch
+   from starlite.types.partial import Partial
    from pydantic import BaseModel, UUID4
 
 
@@ -216,8 +213,7 @@ very simple:
 
 .. code-block:: python
 
-   from starlite import Controller, get
-   from starlite.di import Provide
+   from starlite import Controller, Provide, get
 
 
    def bool_fn() -> bool:
@@ -253,9 +249,8 @@ To inject a callable you must wrap it in ``Provide``:
 
 .. code-block:: python
 
+   from starlite import Provide, get
    from random import randint
-   from starlite import get
-   from starlite.di import Provide
 
 
    def my_dependency() -> int:
@@ -290,8 +285,7 @@ You can inject dependencies into other dependencies - exactly like you would int
 
 .. code-block:: python
 
-   from starlite import Starlite, get
-   from starlite.di import Provide
+   from starlite import Starlite, Provide, get
    from random import randint
 
 

@@ -276,7 +276,7 @@ in Starlite.
    from starlite import Starlite, StaticFilesConfig
 
    app = Starlite(
-       [], static_files_config=[StaticFilesConfig(path="/static", directories=["static"])]
+       [], static_files_config=StaticFilesConfig(path="/static", directories=["static"])
    )
 
 ..  seealso::

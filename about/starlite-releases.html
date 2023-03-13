@@ -145,7 +145,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../community/contribution-guide/index.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../community/contribution-guide.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -298,7 +298,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../community/contribution-guide/index.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../community/contribution-guide.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -414,28 +414,6 @@
 <dt>Patch</dt><dd><p>Bugfixes were applied, in a backwards compatible manner</p>
 </dd>
 </dl>
-<section id="pre-release-versions">
-<h3>Pre-release versions<a class="headerlink" href="#pre-release-versions" title="Permalink to this heading">#</a></h3>
-<p>A major release may be preceded by a number of pre-releases. The pre-release identifier
-will be appended to the major version number and follow the schema <code class="docutils literal notranslate"><span class="pre">&lt;release</span> <span class="pre">type&gt;&lt;release</span> <span class="pre">number&gt;</span></code>. The resulting
-version number will have the schema <code class="docutils literal notranslate"><span class="pre">&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;&lt;release</span> <span class="pre">type&gt;&lt;release</span> <span class="pre">number&gt;</span></code>, for example
-<code class="docutils literal notranslate"><span class="pre">2.0.0alpha1</span></code>.</p>
-<p>The release types are:</p>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">alpha</span></code></dt><dd><p>A developmental release, equivalent to the current status of the development branch. At this point, new
-features can still be added and breaking changes introduced. These releases should be considered very unstable and
-are intended for early developer feedback.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">beta</span></code></dt><dd><p>A more stable development release. New features might be added at this point, but no major breaking changes are to
-be expected</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">rc</span></code></dt><dd><p>“Release candidate”. This is the first release after the feature freeze before a new major release. No new features
-and breaking changes will be introduced at this point, only bugfixes will be added at this point. This release is
-suitable for testing migration to the upcoming major release. Each major version will be preceded by <em>at least</em> one
-release candidate.</p>
-</dd>
-</dl>
-</section>
 </section>
 <section id="release-schedule">
 <h2>Release schedule<a class="headerlink" href="#release-schedule" title="Permalink to this heading">#</a></h2>
@@ -444,8 +422,8 @@ and 4 weeks between minor versions. For major releases, this is to be interprete
 lower bound, meaning it may take longer for a particular major version to be released,
 but it won’t be less than 6 months after the last major release.</p>
 </section>
-<section id="about-major-version">
-<h2>About major version<a class="headerlink" href="#about-major-version" title="Permalink to this heading">#</a></h2>
+<section id="about-major-versions">
+<h2>About major versions<a class="headerlink" href="#about-major-versions" title="Permalink to this heading">#</a></h2>
 <p>Starlite’s major releases are <em>generally backwards compatible</em> and usually won’t include
 major breaking changes. They can be seen as maintenance releases that offer the
 opportunity to make some backwards incompatible changes.</p>
@@ -453,20 +431,11 @@ opportunity to make some backwards incompatible changes.</p>
 won’t be sweeping changes that require a complete rewrite of an application or major
 migration efforts when upgrading to a new major version.</p>
 </section>
-<section id="supported-versions">
-<h2>Supported versions<a class="headerlink" href="#supported-versions" title="Permalink to this heading">#</a></h2>
-<dl class="simple">
-<dt>Current version</dt><dd><p>The current version is the last release of the most recent major version. This
-version is under active development and will receive bugfixes as well as feature
-updates in minor releases (see <a class="reference internal" href="#version-numbering">Version numbering</a>)</p>
-</dd>
-<dt>Maintenance versions</dt><dd><p>When a new major version is released, the last <em>minor</em> version before it enters
-maintenance mode. It will receive bugfixes and other critical patches during the
-next two release cycles</p>
-</dd>
-</dl>
-<p>In practice this means that, at any given time, there may be up to 3 currently supported
-releases: The current version and the two major versions preceding it.</p>
+<section id="lts-releases-and-support">
+<h2>LTS releases and support<a class="headerlink" href="#lts-releases-and-support" title="Permalink to this heading">#</a></h2>
+<p>The last released minor version becomes the current <em>LTS release</em> once a new major
+version is released. These LTS releases will receive <strong>patch</strong> releases for security and
+other critical bugfixes <em>at least until the next major release</em>.</p>
 </section>
 <section id="deprecation-policy">
 <h2>Deprecation policy<a class="headerlink" href="#deprecation-policy" title="Permalink to this heading">#</a></h2>
@@ -520,13 +489,6 @@ removed in the <code class="docutils literal notranslate"><span class="pre">2.0<
   <a class="reference internal nav-link" href="#version-numbering">
    Version numbering
   </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#pre-release-versions">
-     Pre-release versions
-    </a>
-   </li>
-  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#release-schedule">
@@ -534,13 +496,13 @@ removed in the <code class="docutils literal notranslate"><span class="pre">2.0<
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#about-major-version">
-   About major version
+  <a class="reference internal nav-link" href="#about-major-versions">
+   About major versions
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#supported-versions">
-   Supported versions
+  <a class="reference internal nav-link" href="#lts-releases-and-support">
+   LTS releases and support
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">

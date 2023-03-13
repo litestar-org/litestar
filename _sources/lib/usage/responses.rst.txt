@@ -339,22 +339,6 @@ application using the given key+value combinations. I.e. it will be a dictionary
 
 The respective descriptions will be used for the OpenAPI documentation.
 
-
-.. tip::
-
-    :class:`ResponseHeader <starlite.datastructures.response_header.ResponseHeader>` is
-    a special class that allows to add OpenAPI attributes such as `description` or `documentation_only`.
-    If you don't need those, you can optionally define `response_headers` using a mapping - such as a dictionary -
-    as well:
-
-    .. code-block:: python
-
-        @get(response_headers={"my-header": "header-value"})
-        async def handler() -> str:
-            ...
-
-
-
 Dynamic Headers
 +++++++++++++++
 
@@ -487,24 +471,9 @@ Of the two declarations of ``my-cookie`` only the route handler one will be used
 
    Set-Cookie: my-cookie=456; Path=/; SameSite=lax
 
-
-
-.. tip::
-
-    If all you need for your cookies are key and value, you can supply them using a :class:`Mapping[str, str] <typing.Mapping>`
-    - like a :class:`dict` - instead:
-
-    .. code-block:: python
-
-        @get(response_cookies={"my-cookie": "cookie-value"})
-        async def handler() -> str:
-            ...
-
-
 .. seealso::
 
     :class:`Cookie reference <starlite.datastructures.cookie.Cookie>`
-
 
 
 Dynamic Cookies
@@ -562,8 +531,7 @@ In Starlite, a redirect response looks like this:
 .. code-block:: python
 
    from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
-   from starlite import get
-   from starlite.response_containers import Redirect
+   from starlite import Redirect, get
 
 
    @get(path="/some-path", status_code=HTTP_307_TEMPORARY_REDIRECT)
@@ -596,8 +564,7 @@ File responses send a file:
 .. code-block:: python
 
    from pathlib import Path
-   from starlite import get
-   from starlite.response_containers import File
+   from starlite import File, get
 
 
    @get(path="/file-download")
@@ -628,8 +595,7 @@ For example:
 .. code-block:: python
 
    from pathlib import Path
-   from starlite import get
-   from starlite.response_containers import File
+   from starlite import File, get
 
 
    @get(path="/file-download", media_type="application/pdf")
@@ -666,8 +632,7 @@ engine is in place, you can use a template response like so:
 
 .. code-block:: python
 
-   from starlite import Request, get
-   from starlite.response_containers import Template
+   from starlite import Template, Request, get
 
 
    @get(path="/info")
@@ -783,7 +748,7 @@ Classic Pagination
 
 In classic pagination the dataset is divided into pages of a specific size and the consumer then requests a specific page.
 
-.. literalinclude:: /examples/pagination/using_classic_pagination.py
+.. literalinclude:: /examples/datastructures/pagination/using_classic_pagination.py
     :caption: Classic Pagination
     :language: python
 
@@ -802,7 +767,7 @@ Offset Pagination
 In offset pagination the consumer requests a number of items specified by ``limit`` and the ``offset`` from the beginning of the dataset.
 For example, given a list of 50 items, you could request ``limit=10``, ``offset=39`` to request items 40-50.
 
-.. literalinclude:: /examples/pagination/using_offset_pagination.py
+.. literalinclude:: /examples/datastructures/pagination/using_offset_pagination.py
     :caption: Offset Pagination
     :language: python
 
@@ -822,7 +787,7 @@ When retrieving paginated data from the database using SQLAlchemy, the Paginator
 instance to make queries. This can be achieved with :ref:`dependency injection <lib/usage/dependency-injection:dependency
 kwargs>`
 
-.. literalinclude:: /examples/pagination/using_offset_pagination_with_sqlalchemy.py
+.. literalinclude:: /examples/datastructures/pagination/using_offset_pagination_with_sqlalchemy.py
     :caption: Offset Pagination With SQLAlchemy
     :language: python
 
@@ -835,7 +800,7 @@ Cursor Pagination
 In cursor pagination the consumer requests a number of items specified by ``results_per_page`` and a ``cursor`` after which results are given.
 Cursor is unique identifier within the dataset that serves as a way to point the starting position.
 
-.. literalinclude:: /examples/pagination/using_cursor_pagination.py
+.. literalinclude:: /examples/datastructures/pagination/using_cursor_pagination.py
     :caption: Cursor Pagination
     :language: python
 

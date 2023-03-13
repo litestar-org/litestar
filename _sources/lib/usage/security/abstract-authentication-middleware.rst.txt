@@ -8,11 +8,11 @@ To add authentication to your app using this class as a basis, subclass it and i
 
 .. code-block:: python
 
-   from starlite.authentication import (
+   from starlite import (
        AbstractAuthenticationMiddleware,
        AuthenticationResult,
+       ASGIConnection,
    )
-   from starlite.connection import ASGIConnection
 
 
    class MyAuthenticationMiddleware(AbstractAuthenticationMiddleware):
@@ -122,12 +122,12 @@ We can now create our authentication middleware:
 
     from sqlalchemy import select
     from sqlalchemy.ext.asyncio import AsyncSession
-    from starlite.authentication import (
+    from starlite import (
         AbstractAuthenticationMiddleware,
         AuthenticationResult,
+        NotAuthorizedException,
+        ASGIConnection,
     )
-    from starlite.exceptions import NotAuthorizedException
-    from starlite.connection import ASGIConnection
 
     from app.db.models import User
     from app.security.jwt import decode_jwt_token
@@ -220,8 +220,7 @@ And if you'd like to exclude individual routes outside those configured:
 .. code-block:: python
 
    import anyio
-   from starlite import Starlite, MediaType, Response, get
-   from starlite.exceptions import NotFoundException
+   from starlite import Starlite, MediaType, NotFoundException, Response, get
    from starlite.middleware.base import DefineMiddleware
 
    from my_app.security.authentication_middleware import JWTAuthenticationMiddleware

@@ -1,5 +1,5 @@
-connection
-==========
+starlite.connection
+===================
 
 .. toctree::
     :maxdepth: 1

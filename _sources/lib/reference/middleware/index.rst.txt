@@ -1,5 +1,5 @@
-middleware
-==========
+starlite.middleware
+===================
 
 
 .. toctree::

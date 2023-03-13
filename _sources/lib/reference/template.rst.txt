@@ -1,5 +1,5 @@
-template
-========
+starlite.template
+=================
 
 .. automodule:: starlite.template
     :members:

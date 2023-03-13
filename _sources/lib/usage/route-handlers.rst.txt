@@ -105,8 +105,8 @@ For example:
 .. code-block:: python
 
    from typing import Any, Dict
-   from starlite import Request, get
-   from starlite.datastructures import Headers, State
+   from starlite import State, Request, get
+   from starlite.datastructures import Headers
 
 
    @get(path="/")
@@ -144,7 +144,7 @@ HTTP route handlers
 -------------------
 
 The most commonly used route handlers are those that handle http requests and responses. These route handlers all
-inherit from the class :class:`HTTPRouteHandler <starlite.handlers.http_handlers.HTTPRouteHandler>`, which
+inherit from the class :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>`, which
 is aliased as the decorator called :func:`route <starlite.handlers.route>`:
 
 .. code-block:: python
@@ -161,8 +161,7 @@ above:
 
 .. code-block:: python
 
-   from starlite import HttpMethod
-   from starlite.handlers.http_handlers import HTTPRouteHandler
+   from starlite import HttpMethod, HTTPRouteHandler
 
 
    @HTTPRouteHandler(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
@@ -195,8 +194,7 @@ These are used exactly like ``route`` with the sole exception that you cannot co
 
 .. code-block:: python
 
-   from starlite import delete, get, patch, post, put, head
-   from starlite.partial import Partia
+   from starlite import Partial, delete, get, patch, post, put, head
    from pydantic import BaseModel
 
 
@@ -238,13 +236,13 @@ These are used exactly like ``route`` with the sole exception that you cannot co
    def delete_resource(pk: int) -> None:
        ...
 
-Although these decorators are merely subclasses of :class:`HTTPRouteHandler <starlite.handlers.http_handlers.HTTPRouteHandler>`
+Although these decorators are merely subclasses of :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>`
 that pre-set the ``http_method``\ , using *get*\ , *patch*\ , *put*\ , *delete* or *post* instead of *route* makes the
 code clearer and simpler.
 
 Furthermore, in the OpenAPI specification each unique combination of http verb (e.g. "GET", "POST" etc.) and path is
 regarded as a distinct `operation <https://spec.openapis.org/oas/latest.html#operation-object>`_\ , and each operation
-should be distinguished by a unique ``operation_id`` and optimally also have a ``summary`` and ``description`` sections.
+should be distinguished by a unique ``operationId`` and optimally also have a ``summary`` and ``description`` sections.
 
 As such, using the ``route`` decorator is discouraged. Instead, the preferred pattern is to share code using secondary
 class methods or by abstracting code to reusable functions.
@@ -290,13 +288,12 @@ Starlite supports Websockets via the :func:`websocket <starlite.handlers.websock
        await socket.close()
 
 The\ ``websocket`` decorator is an alias of the class
-:class:`WebsocketRouteHandler <starlite.handlers.websocket_handlers.WebsocketRouteHandler>`. Thus, the below
+:class:`WebsocketRouteHandler <starlite.handlers.websocket.WebsocketRouteHandler>`. Thus, the below
 code is equivalent to the one above:
 
 .. code-block:: python
 
-   from starlite import WebSocket
-   from starlite.handlers.websocket_handlers import WebsocketRouteHandler
+   from starlite import WebSocket, WebsocketRouteHandler
 
 
    @WebsocketRouteHandler(path="/socket")
@@ -351,10 +348,9 @@ the code below is equivalent to the one above:
 
 .. code-block:: python
 
-   from starlite import Response
-   from starlite.handlers.asgi_handlers import ASGIRouteHandler
-   from starlite.status_codes import HTTP_400_BAD_REQUEST
    from starlite.types import Scope, Receive, Send
+   from starlite.status_codes import HTTP_400_BAD_REQUEST
+   from starlite import ASGIRouteHandler, Response
 
 
    @ASGIRouteHandler(path="/my-asgi-app")
@@ -403,9 +399,7 @@ it can be used to build a URL path for that handler:
 
 .. code-block:: python
 
-   from starlite import Starlite, Request, get
-   from starlite.exceptions import NotFoundException
-   from starlite.response_containers import Redirect
+   from starlite import Starlite, Request, Redirect, NotFoundException, get
 
 
    @get("/abc", name="one")
