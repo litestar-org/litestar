@@ -12,6 +12,7 @@ from starlite.connection.base import (
     empty_receive,
     empty_send,
 )
+from starlite.datastructures.headers import Accept
 from starlite.datastructures.multi_dicts import FormMultiDict
 from starlite.enums import RequestEncodingType
 from starlite.exceptions import InternalServerException
@@ -38,7 +39,7 @@ SERVER_PUSH_HEADERS = {
 class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", UserT, AuthT, StateT]):
     """The Starlite Request class."""
 
-    __slots__ = ("_json", "_form", "_body", "_msgpack", "_content_type", "is_connected")
+    __slots__ = ("_json", "_form", "_body", "_msgpack", "_content_type", "_accept", "is_connected")
 
     scope: HTTPScope
     """The ASGI scope attached to the connection."""
@@ -62,6 +63,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         self._json: Any = scope.get("_json", Empty)
         self._msgpack: Any = scope.get("_msgpack", Empty)
         self._content_type: Any = scope.get("_content_type", Empty)
+        self._accept: Any = scope.get("_accept", Empty)
 
     @property
     def method(self) -> Method:
@@ -82,6 +84,17 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         if self._content_type is Empty:
             self._content_type = self.scope["_content_type"] = parse_content_header(self.headers.get("Content-Type", ""))  # type: ignore[typeddict-unknown-key]
         return cast("tuple[str, dict[str, str]]", self._content_type)
+
+    @property
+    def accept(self) -> Accept:
+        """Parse the request's 'Accept' header, returning an 'Accept' instance.
+
+        Returns:
+            An 'Accept' instance, representing the list of acceptable media types.
+        """
+        if self._accept is Empty:
+            self._accept = self.scope["_accept"] = Accept(self.headers.get("Accept", "*/*"))  # type: ignore[typeddict-unknown-key]
+        return cast("Accept", self._accept)
 
     async def json(self) -> Any:
         """Retrieve the json request body from the request.

@@ -1,5 +1,6 @@
 from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.headers import (
+    Accept,
     CacheControlHeader,
     ETag,
     Header,
@@ -18,6 +19,7 @@ from starlite.datastructures.upload_file import UploadFile
 from starlite.datastructures.url import URL, Address
 
 __all__ = (
+    "Accept",
     "Address",
     "CacheControlHeader",
     "Cookie",
