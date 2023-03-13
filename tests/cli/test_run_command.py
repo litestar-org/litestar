@@ -80,7 +80,7 @@ def test_run_command(
     else:
         web_concurrency = 1
 
-    path = create_app_file(custom_app_file or "asgi.py")
+    path = create_app_file(custom_app_file or "app.py")
 
     result = runner.invoke(cli_command, args)
 

@@ -5,9 +5,10 @@ import inspect
 import sys
 from dataclasses import dataclass
 from functools import wraps
+from itertools import chain
 from os import getenv
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence, TypeVar, cast, Generator
 
 from click import ClickException, Command, Context, Group, pass_context, style
 from rich.console import Console
@@ -42,13 +43,7 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-AUTODISCOVER_PATHS = [
-    "asgi.py",
-    "app.py",
-    "application.py",
-    "app/__init__.py",
-    "application/__init__.py",
-]
+AUTODISCOVERY_FILE_NAMES = ["app", "application"]
 
 console = Console()
 
@@ -93,7 +88,12 @@ class StarliteEnv:
         except ImportError:
             pass
 
-        loaded_app = _autodiscover_app(getenv("STARLITE_APP"), cwd) if not app_path else _load_app_from_path(app_path)
+        app_path = app_path or getenv("STARLITE_APP")
+        if app_path:
+            console.print(f"Using Starlite app from env: [bright_blue]{app_path!r}")
+            loaded_app = _load_app_from_path(app_path)
+        else:
+            loaded_app = _autodiscover_app(cwd)
 
         port = getenv("STARLITE_PORT")
         web_concurrency = getenv("WEB_CONCURRENCY")
@@ -230,36 +230,52 @@ def _path_to_dotted_path(path: Path) -> str:
     return ".".join(path.with_suffix("").parts)
 
 
-def _autodiscover_app(app_path: str | None, cwd: Path) -> LoadedApp:
-    if app_path:
-        console.print(f"Using Starlite app from env: [bright_blue]{app_path!r}")
-        return _load_app_from_path(app_path)
-
-    for name in AUTODISCOVER_PATHS:
-        path = cwd / name
-        if not path.exists():
+def _arbitrary_autodiscovery_paths(base_dir: Path) -> Generator[Path, None, None]:
+    yield from _autodiscovery_paths(base_dir, arbitrary=False)
+    for path in base_dir.iterdir():
+        if path.name.startswith(".") or path.name.startswith("_"):
             continue
+        if path.is_file() and path.suffix == ".py":
+            yield path
 
-        dotted_path = _path_to_dotted_path(path.relative_to(cwd))
-        module = importlib.import_module(dotted_path)
 
-        for attr, value in module.__dict__.items():
+def _autodiscovery_paths(base_dir: Path, arbitrary: bool = True) -> Generator[Path, None, None]:
+    for name in AUTODISCOVERY_FILE_NAMES:
+        path = base_dir / name
+
+        if path.exists() or path.with_suffix(".py").exists():
+            yield path
+        if arbitrary and path.is_dir():
+            yield from _arbitrary_autodiscovery_paths(path)
+
+
+def _autodiscover_app(cwd: Path) -> LoadedApp:
+    for file_path in _autodiscovery_paths(cwd):
+        import_path = _path_to_dotted_path(file_path.relative_to(cwd))
+        module = importlib.import_module(import_path)
+
+        for attr, value in chain(
+            [("app", getattr(module, "app", None)), ("application", getattr(module, "application", None))],
+            module.__dict__.items(),
+        ):
             if isinstance(value, Starlite):
-                app_string = f"{dotted_path}:{attr}"
+                app_string = f"{import_path}:{attr}"
                 console.print(f"Using Starlite app from [bright_blue]{app_string}")
                 return LoadedApp(app=value, app_path=app_string, is_factory=False)
 
         if hasattr(module, "create_app"):
-            app_string = f"{dotted_path}:create_app"
+            app_string = f"{import_path}:create_app"
             console.print(f"Using Starlite factory [bright_blue]{app_string}")
             return LoadedApp(app=module.create_app(), app_path=app_string, is_factory=True)
 
         for attr, value in module.__dict__.items():
             if not callable(value):
                 continue
-            signature = inspect.signature(value)
-            if signature.return_annotation in ("Starlite", Starlite):
-                app_string = f"{dotted_path}:{attr}"
+            return_annotation = getattr(value, "__annotations__", {}).get("return")
+            if not return_annotation:
+                continue
+            if return_annotation in ("Starlite", Starlite):
+                app_string = f"{import_path}:{attr}"
                 console.print(f"Using Starlite factory [bright_blue]{app_string}")
                 return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)
 
