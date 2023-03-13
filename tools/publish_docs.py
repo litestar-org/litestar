@@ -81,7 +81,6 @@ def make_version(version: str | None, push: bool) -> None:
             git_add.append("lib/objects.inv")
 
         shutil.rmtree("docs/_build")
-        Path("objects.inv").unlink()
 
         for file in git_add:
             subprocess.run(["git", "add", file], check=True)
