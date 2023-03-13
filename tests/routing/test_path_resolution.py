@@ -20,22 +20,35 @@ def root_delete_handler() -> None:
 
 
 @pytest.mark.parametrize(
-    "request_path, router_path",
+    "request_path, router_path, status_code",
     [
-        ["/path/1/2/sub/c892496f-b1fd-4b91-bdb8-b46f92df1716", "/path/{first:int}/{second:str}/sub/{third:uuid}"],
-        ["/path/1/2/sub/2535a9cb-6554-4d85-bb3b-ad38362f63c7/", "/path/{first:int}/{second:str}/sub/{third:uuid}/"],
-        ["/", "/"],
-        ["", ""],
+        (
+            "/path/1/2/sub/c892496f-b1fd-4b91-bdb8-b46f92df1716",
+            "/path/{first:int}/{second:str}/sub/{third:uuid}",
+            int(HTTP_200_OK),
+        ),
+        (
+            "/path/1/2/sub/2535a9cb-6554-4d85-bb3b-ad38362f63c7/",
+            "/path/{first:int}/{second:str}/sub/{third:uuid}/",
+            int(HTTP_200_OK),
+        ),
+        ("/", "/", int(HTTP_200_OK)),
+        ("", "", int(HTTP_200_OK)),
+        (
+            "/a/b/c/d/path/1/2/sub/2535a9cb-6554-4d85-bb3b-ad38362f63c7/",
+            "/path/{first:int}/{second:str}/sub/{third:uuid}/",
+            int(HTTP_404_NOT_FOUND),
+        ),
     ],
 )
-def test_path_parsing_and_matching(request_path: str, router_path: str) -> None:
+def test_path_parsing_and_matching(request_path: str, router_path: str, status_code: int) -> None:
     @get(path=router_path)
     def test_method() -> None:
         return None
 
     with create_test_client(test_method) as client:
         response = client.get(request_path)
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == status_code
 
 
 def test_path_parsing_with_ambiguous_paths() -> None:
