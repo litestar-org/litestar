@@ -218,7 +218,7 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepos
 
 
 async def test_repo_count_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy count with sqlite.
+    """Test SQLALchemy count with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -227,7 +227,7 @@ async def test_repo_count_method(author_repo: AuthorRepository) -> None:
 
 
 async def test_repo_list_and_count_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy list with count in sqlite.
+    """Test SQLALchemy list with count in asyncpg.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -241,7 +241,7 @@ async def test_repo_list_and_count_method(raw_authors: list[dict[str, Any]], aut
 
 
 async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> None:
-    """Test SQLALchemy list with count in sqlite.
+    """Test SQLALchemy list with count in asyncpg.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -255,7 +255,7 @@ async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> No
 
 
 async def test_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy list with sqlite.
+    """Test SQLALchemy list with asyncpg.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -268,7 +268,7 @@ async def test_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: 
 
 
 async def test_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Add with sqlite.
+    """Test SQLALchemy Add with asyncpg.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -285,7 +285,7 @@ async def test_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: A
 
 
 async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Add Many with sqlite.
+    """Test SQLALchemy Add Many with asyncpg.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -305,7 +305,7 @@ async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_re
 
 
 async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Update Many with sqlite.
+    """Test SQLALchemy Update Many with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -319,7 +319,7 @@ async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
 
 
 async def test_repo_exists_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy exists with sqlite.
+    """Test SQLALchemy exists with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -329,7 +329,7 @@ async def test_repo_exists_method(author_repo: AuthorRepository) -> None:
 
 
 async def test_repo_update_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Update with sqlite.
+    """Test SQLALchemy Update with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -341,7 +341,7 @@ async def test_repo_update_method(author_repo: AuthorRepository) -> None:
 
 
 async def test_repo_delete_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy delete with sqlite.
+    """Test SQLALchemy delete with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -351,7 +351,7 @@ async def test_repo_delete_method(author_repo: AuthorRepository) -> None:
 
 
 async def test_repo_delete_many_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy delete many with sqlite.
+    """Test SQLALchemy delete many with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -375,7 +375,7 @@ async def test_repo_delete_many_method(author_repo: AuthorRepository) -> None:
 
 
 async def test_repo_get_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get with sqlite.
+    """Test SQLALchemy Get with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -385,7 +385,7 @@ async def test_repo_get_method(author_repo: AuthorRepository) -> None:
 
 
 async def test_repo_get_one_or_none_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get One with sqlite.
+    """Test SQLALchemy Get One with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -398,7 +398,7 @@ async def test_repo_get_one_or_none_method(author_repo: AuthorRepository) -> Non
 
 
 async def test_repo_get_one_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get One with sqlite.
+    """Test SQLALchemy Get One with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -411,7 +411,7 @@ async def test_repo_get_one_method(author_repo: AuthorRepository) -> None:
 
 
 async def test_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get or create with sqlite.
+    """Test SQLALchemy Get or create with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -426,7 +426,7 @@ async def test_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
 
 
 async def test_repo_upsert_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy upsert with sqlite.
+    """Test SQLALchemy upsert with asyncpg.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
