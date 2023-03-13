@@ -50,6 +50,15 @@ async def test_repo_raises_conflict_if_add_with_id(
         await author_repository.add(authors[0])
 
 
+async def test_repo_raises_conflict_if_add_many_with_id(
+    authors: list[Author],
+    author_repository: GenericMockRepository[Author],
+) -> None:
+    """Test mock repo raises conflict if add identified entity."""
+    with pytest.raises(ConflictError):
+        await author_repository.add_many(authors)
+
+
 def test_generic_mock_repository_parametrization() -> None:
     """Test that the mock repository handles multiple types."""
     author_repo = GenericMockRepository[Author]

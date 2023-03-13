@@ -424,7 +424,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             return collection.filter_by(**kwargs)
 
     @classmethod
-    async def check_health(cls, session: AsyncSession, query: str | None) -> bool:
+    async def check_health(cls, session: AsyncSession) -> bool:
         """Perform a health check on the database.
 
         Args:
@@ -434,9 +434,8 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             `True` if healthy.
         """
-        query = query or "SELECT 1"
         return (  # type:ignore[no-any-return]  # pragma: no cover
-            await session.execute(text(query))
+            await session.execute(text("SELECT 1"))
         ).scalar_one() == 1
 
     # the following is all sqlalchemy implementation detail, and shouldn't be directly accessed
