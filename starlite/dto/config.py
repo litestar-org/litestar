@@ -32,9 +32,9 @@ class DTOConfig:
 
     purpose: Purpose | None = field(default=None)
     """Configure the DTO for "read" or "write" operations.
-    
+
     If "write", read-only fields are omitted from data transfer. If "read" or ``None``, read-only fields are included.
-    
+
     Fields marked "private" are always omitted, irrespective of purpose.
     """
     exclude: set[str] = field(default_factory=set)

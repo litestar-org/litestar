@@ -6,14 +6,21 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-__all__ = ("AbstractDTOBackend",)
-
-
 if TYPE_CHECKING:
     from typing import Any
 
+    from starlite.dto.types import FieldDefinitionsType
+    from starlite.enums import MediaType
+
+__all__ = ("AbstractDTOBackend",)
+
 
 class AbstractDTOBackend(ABC):
+    @classmethod
     @abstractmethod
-    def receive_fields(self) -> Any:
+    def from_field_definitions(cls, field_definitions: FieldDefinitionsType) -> Any:
+        ...
+
+    @abstractmethod
+    def raw_to_dict(self, raw: bytes, media_type: MediaType | str) -> dict[str, Any]:
         ...

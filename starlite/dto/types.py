@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, TypeVar
 from starlite.types import Empty
 
 if TYPE_CHECKING:
-    from collections.abc import Collection, Mapping
+    from collections.abc import Mapping
     from typing import Any, Callable
 
     from starlite.types import EmptyType
@@ -34,11 +34,10 @@ class NestedFieldDefinition:
     """For representing nested model."""
 
     field_definition: FieldDefinition
-    origin: type
+    origin: Any | None
     args: tuple[Any, ...]
     nested_type: Any
-    nested_field_definitions: dict[str, FieldDefinition] = field(default_factory=dict)
-    collection_type: type[Collection] | EmptyType = field(default=Empty)
+    nested_field_definitions: FieldDefinitionsType = field(default_factory=dict)
 
     def is_recursive(self, model_type: type) -> bool:
         """Indicate if :attribute:`nested_type` is a subtype of ``model_type``.
@@ -51,11 +50,12 @@ class NestedFieldDefinition:
         """
         return issubclass(self.nested_type, model_type)
 
-    def make_collection_type(self, inner_type: type) -> Any:
+    def make_field_type(self, inner_type: type) -> Any:
         if self.origin:
             if hasattr(self.field_definition.field_type, "copy_with"):
-                return self.field_definition.field_type.copy_with(inner_type)
+                return self.field_definition.field_type.copy_with(inner_type)  # pyright: ignore
             return self.origin[inner_type]
+        return inner_type
 
 
 DataT = TypeVar("DataT")

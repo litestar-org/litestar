@@ -186,6 +186,7 @@ exclude = [
     "starlite/contrib/sqlalchemy_1",
     "starlite/openapi",
     "starlite/plugins",
+    "tests/contrib/sqlalchemy/test_dto.py",
     "tests/contrib/sqlalchemy_1",
     "tests/openapi",
     "tests/plugins",

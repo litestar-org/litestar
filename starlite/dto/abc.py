@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
+    from .backends.abc import AbstractDTOBackend
     from .types import FieldDefinitionsType, StarliteEncodableType
 
 __all__ = ("AbstractDTO",)
@@ -26,12 +27,18 @@ __all__ = ("AbstractDTO",)
 class AbstractDTO(ABC, Generic[DataT]):
     """Base class for DTO types."""
 
-    annotation: ClassVar[Any]
+    annotation: ClassVar[type[Any]]
     """The full annotation used to make the generic DTO concrete."""
     config: ClassVar[DTOConfig]
     """Config object to define the properties of the DTO."""
-    model_type: ClassVar[Any]
+    model_type: ClassVar[type[Any]]
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
+    field_definitions: ClassVar[FieldDefinitionsType]
+    """Field definitions parsed from the model."""
+    dto_backend_type: ClassVar[type[AbstractDTOBackend]]
+    """DTO backend type."""
+    dto_backend: ClassVar[AbstractDTOBackend]
+    """DTO backend instance."""
 
     _postponed_cls_init_called: ClassVar[bool]
 
@@ -125,15 +132,6 @@ class AbstractDTO(ABC, Generic[DataT]):
             {"new_field": (str | None, None)}
         """
 
-    @classmethod
-    @abstractmethod
-    def detect_nested(cls, field_type: type) -> bool:
-        """Return ``True`` if :data:``type_hint`` is a nested model type.
-
-        Args:
-            field_type: type of some model property.
-        """
-
     @staticmethod
     def get_model_type(item: type) -> Any:
         """Get model type represented by the DTO.
@@ -174,6 +172,8 @@ class AbstractDTO(ABC, Generic[DataT]):
 
         Use this to do things like type inspection on models that should not occur during compile time.
         """
+        cls.field_definitions = cls.parse_model(cls.model_type)
+        cls.dto_backend = cls.dto_backend_type.from_field_definitions(cls.field_definitions)
 
     @classmethod
     def on_startup(cls, resolved_handler_annotation: Any) -> None:
