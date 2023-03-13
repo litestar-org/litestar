@@ -53,6 +53,8 @@ repos:
         exclude: "test_apps|tools|docs"
         additional_dependencies:
           [
+            aiosqlite,
+            asyncpg,
             beanie,
             beautifulsoup4,
             brotli,
@@ -80,6 +82,7 @@ repos:
             pytest-mock,
             python-dotenv,
             python-jose,
+            pytest_docker,
             pyyaml,
             rich,
             sqlalchemy>2.0,
@@ -99,6 +102,8 @@ repos:
         exclude: "test_apps|tools|docs|_openapi"
         additional_dependencies:
           [
+            aiosqlite,
+            asyncpg,
             beanie,
             beautifulsoup4,
             brotli,
@@ -124,6 +129,7 @@ repos:
             pytest,
             pytest-lazy-fixture,
             pytest-mock,
+            pytest_docker,
             python-dotenv,
             python-jose,
             pyyaml,
