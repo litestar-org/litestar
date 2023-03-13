@@ -43,12 +43,16 @@ def traverse_route_map(
 
         if current_node.is_path_param_node:
             current_node = current_node.children[PathParameterSentinel]
+
             if current_node.is_path_type:
                 path_params.append(normalize_path("/".join(path_components[i:])))
-            else:
-                path_params.append(component)
+                break
 
-        continue
+            path_params.append(component)
+            continue
+
+        if i != len(path_components) - 1:
+            raise NotFoundException()
 
     if not current_node.asgi_handlers:
         raise NotFoundException()
