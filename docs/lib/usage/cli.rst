@@ -26,16 +26,28 @@ to the CLI.
 Autodiscovery
 -------------
 
-Starlite will automatically discover Starlite applications and application factories in
-certain places:
+Starlite will automatically discover Starlite applications and application factories placed within the canonical modules
+``app`` and ``application``, which can be singular files or directories. Within those modules, or submodules thereof,
+the CLI will pick up any :class:`Starlite <.app.Starlite>` instance, callables named ``create_app``, or callables
+annotated as returning a :class:`Starlite <.app.Starlite>` instance.
+
+The lookup will consider these locations in order:
 
 1. ``app.py``
-2. ``application.py``
-3. ``asgi.py``
-4. ``app/__init__.py``
+2. ``app/__init__.py``
+3. Submodules of ``app``
+4. ``application.py``
+5. ``application/__init__.py``
+6. Submodules ``application``
 
-If any of these files contains an instance of the :class:`Starlite <.app.Starlite>` class, a function named
-``create_app``, or a function annotated as returning a :class:`Starlite <.app.Starlite>` instance, the CLI will pick it up.
+and within those, look for:
+
+1. An object named ``app`` that's an instance of  :class:`Starlite <.app.Starlite>`
+2. An object named ``application`` that's an instance of  :class:`Starlite <.app.Starlite>`
+3. Any object that's an instance of :class:`Starlite <.app.Starlite>`
+4. A callable named ``create_app``
+5. A callable that's annotated as returning an instance of :class:`Starlite <.app.Starlite>`
+
 
 Commands
 --------
