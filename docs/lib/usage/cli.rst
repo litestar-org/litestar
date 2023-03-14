@@ -52,7 +52,7 @@ and within those, look for:
 Commands
 --------
 
-Starlite
+starlite
 ^^^^^^^^
 
 The ``starlite`` command is the main entrypoint to the CLI. If the ``--app`` flag is not passed,
@@ -117,7 +117,7 @@ Options
 +-------------------------------------+---------------------------+-----------------------------------------------------------------+
 
 
-Info
+info
 ^^^^
 
 The ``info`` command displays useful information about the selected application and its configuration
@@ -131,7 +131,7 @@ The ``info`` command displays useful information about the selected application 
    :alt: starlite info
 
 
-Routes
+routes
 ^^^^^^
 
 The ``routes`` command displays a tree view of the routing table
@@ -145,13 +145,13 @@ The ``routes`` command displays a tree view of the routing table
    :alt: starlite info
 
 
-Sessions
+sessions
 ^^^^^^^^
 
 This command and its subcommands provide management utilities for
 :ref:`server-side session backends <lib/usage/middleware/builtin-middleware:server-side sessions>`.
 
-Delete
+delete
 ~~~~~~
 
 The ``delete`` subcommand deletes a specific session from the backend.
@@ -160,7 +160,7 @@ The ``delete`` subcommand deletes a specific session from the backend.
 
    starlite sessions delete cc3debc7-1ab6-4dc8-a220-91934a473717
 
-Clear
+clear
 ~~~~~
 
 The ``clear`` subcommand clears all sessions from the backend.
@@ -174,7 +174,7 @@ OpenAPI
 
 This command provides utilities to generate OpenAPI schema and TypeScript types.
 
-Schema
+schema
 ~~~~~~
 
 The ``schema`` subcommand generates OpenAPI specs from the Starlite application, serializing these as either JSON or YAML.
@@ -185,7 +185,7 @@ filename using the ``--output`` flag. For example:
 
    starlite openapi schema --output my-specs.yaml
 
-TypeScript
+typescript
 ~~~~~~~~~~
 
 The ``typescript`` subcommand generates TypeScript definitions from the Starlite application's OpenAPI specs.  For example:
