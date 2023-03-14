@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from typing import Any, Callable
 
 
-def test_generic_controller_scalar(create_module: Callable[[Any], ModuleType]) -> None:
+def test_generic_controller(create_module: Callable[[Any], ModuleType]) -> None:
     module = create_module(
         """
 from __future__ import annotations
@@ -65,7 +65,7 @@ class Service(AbstractService[DC]):
 class ConcreteController(MyGenericController[DC]):
     dependencies = {"service": Provide(lambda: Service())}
 
-app = Starlite(route_handlers=[ConcreteController], openapi_config=None)
+app = Starlite(route_handlers=[ConcreteController])
 """
     )
     payload = {"a": 1, "b": "two", "c": [3.0, 4.0]}
@@ -76,3 +76,5 @@ app = Starlite(route_handlers=[ConcreteController], openapi_config=None)
         for resp in get_resp, post_resp:
             assert resp.json() == payload
         assert list_resp.json() == [payload for _ in range(2)]
+
+    assert module.app.openapi_schema.components.schemas["DC"].properties.keys() == {"a", "b", "c"}
