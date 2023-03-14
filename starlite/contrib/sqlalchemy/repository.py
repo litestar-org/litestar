@@ -122,7 +122,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The deleted instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `item_id`.
+            NotFoundError: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
             instance = await self.get(item_id)
@@ -192,7 +192,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The retrieved instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `item_id`.
+            NotFoundError: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
             statement = self._filter_select_by_kwargs(statement=self.statement, **{self.id_attribute: item_id})
@@ -211,7 +211,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The retrieved instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by `item_id`.
+            NotFoundError: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
             statement = self._filter_select_by_kwargs(statement=self.statement, **kwargs)
@@ -282,7 +282,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The updated instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+            NotFoundError: If no instance found with same identifier as `data`.
         """
         with wrap_sqlalchemy_exception():
             item_id = self.get_id_attribute_value(data)
@@ -310,7 +310,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The updated instances.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+            NotFoundError: If no instance found with same identifier as `data`.
         """
         data_to_update: list[dict[str, Any]] = [v.to_dict() if isinstance(v, self.model_type) else v for v in data]  # type: ignore
         with wrap_sqlalchemy_exception():
@@ -401,7 +401,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The updated or created instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as `data`.
+            NotFoundError: If no instance found with same identifier as `data`.
         """
         with wrap_sqlalchemy_exception():
             instance = await self._attach_to_session(data, strategy="merge")
