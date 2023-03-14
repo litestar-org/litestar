@@ -7,10 +7,7 @@ import msgspec
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from pydantic_factories import ModelFactory
-from sqlalchemy.orm import declarative_base
 from typing_extensions import TypedDict
-
-Base = declarative_base()
 
 
 class Species(str, Enum):

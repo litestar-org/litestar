@@ -16,7 +16,6 @@ from starlite._openapi.responses import (
 from starlite.datastructures import Cookie, ResponseHeader
 from starlite.exceptions import (
     HTTPException,
-    ImproperlyConfiguredException,
     PermissionDeniedException,
     ValidationException,
 )
@@ -249,15 +248,33 @@ def test_additional_responses_overlap_with_other_responses() -> None:
     class OkResponse(BaseModel):
         pass
 
-    @get(responses={200: ResponseSpec(model=OkResponse)})
+    @get(responses={200: ResponseSpec(model=OkResponse, description="Overwritten response")})
     def handler() -> Person:
         return PersonFactory.build()
 
-    with pytest.raises(
-        ImproperlyConfiguredException,
-        match="Additional response for status code 200 already exists in success or error responses",
-    ):
-        create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
+    responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
+
+    assert responses is not None
+    assert responses["200"] is not None
+    assert responses["200"].description == "Overwritten response"
+
+
+def test_additional_responses_overlap_with_raises() -> None:
+    class ErrorResponse(BaseModel):
+        pass
+
+    @get(
+        raises=[ValidationException],
+        responses={400: ResponseSpec(model=ErrorResponse, description="Overwritten response")},
+    )
+    def handler() -> Person:
+        raise ValidationException()
+
+    responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
+
+    assert responses is not None
+    assert responses["400"] is not None
+    assert responses["400"].description == "Overwritten response"
 
 
 def test_create_response_for_response_subclass() -> None:
