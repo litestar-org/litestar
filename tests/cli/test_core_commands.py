@@ -15,6 +15,7 @@ from tests.cli import (
     GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION,
 )
 from tests.cli.conftest import CreateAppFileFixture
+from starlite import __version__ as starlite_version
 
 
 @pytest.fixture()
@@ -174,3 +175,10 @@ def test_run_command_force_debug(
     runner.invoke(cli_command, "run --debug")
 
     assert mock_app.debug is True
+
+
+@pytest.mark.parametrize("short", [True, False])
+def test_version_command(short: bool, runner: CliRunner) -> None:
+    result = runner.invoke(cli_command, "version --short" if short else "version")
+
+    assert result.output.strip() == starlite_version.formatted(short=short)

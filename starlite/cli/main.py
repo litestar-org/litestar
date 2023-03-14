@@ -22,5 +22,6 @@ def starlite_group(ctx: Context, app_path: str | None) -> None:
 starlite_group.add_command(core.info_command)
 starlite_group.add_command(core.run_command)
 starlite_group.add_command(core.routes_command)
+starlite_group.add_command(core.version_command)
 starlite_group.add_command(sessions.sessions_group)
 starlite_group.add_command(schema.schema_group)

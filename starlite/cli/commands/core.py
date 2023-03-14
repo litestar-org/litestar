@@ -31,6 +31,14 @@ def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
     return process_args
 
 
+@command(name="version")
+@option("-s", "--short", help="Exclude release level and serial information", is_flag=True, default=False)
+def version_command(short: bool) -> None:
+    from starlite import __version__
+
+    click.echo(__version__.formatted(short=short))
+
+
 @command(name="info")
 def info_command(app: Starlite) -> None:
     """Show information about the detected Starlite app."""
