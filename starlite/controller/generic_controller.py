@@ -7,6 +7,8 @@ from typing_extensions import Self, get_args, get_origin
 from .base import Controller
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from starlite._signature.parsing import ParsedSignatureParameter
 
 __all__ = ("GenericController",)
@@ -20,13 +22,42 @@ class GenericController(Controller, Generic[T]):
     _data_type: type[T]
 
     def __class_getitem__(cls, data_type: type[T]) -> type[Self]:
-        return type(f"Controller[{data_type.__name__}]", (cls,), {"_data_type": data_type})
+        return type(f"GenericController[{data_type.__name__}]", (cls,), {"_data_type": data_type})
+
+    def _get_new_args(self, args: tuple[Any, ...], origin: Any | None) -> tuple[Any, ...] | None:
+        if not args and origin:
+            return None
+
+        type_var_found = False
+        new_args = []
+        for arg in args:
+            if isinstance(arg, TypeVar):
+                new_args.append(self._data_type)
+                type_var_found = True
+                continue
+            new_args.append(arg)
+
+        if not type_var_found:
+            return None
+
+        return tuple(new_args)
+
+    @staticmethod
+    def _rebuild_annotation(original_annotation: Any, origin: Any | None, args_tuple: tuple[Any, ...]) -> Any:
+        if origin is None:
+            raise RuntimeError("Unexpected origin value")
+        try:
+            return origin[args_tuple]
+        except TypeError as exc:
+            if hasattr(original_annotation, "copy_with"):
+                return original_annotation.copy_with(args_tuple)
+            raise RuntimeError("Unable to rebuild generic type") from exc
 
     def set_parameter_annotation(self, parsed_parameter: ParsedSignatureParameter) -> None:
         """Substitute any ``TypeVar`` in annotation of ``parsed_parameter`` with narrowed type.
 
         Args:
-            parsed_parameter: a parsed signature parameter - should have a ``TypeVar`` as its type.
+            parsed_parameter: a parsed signature parameter.
         """
         if isinstance(parsed_parameter.annotation, TypeVar):
             parsed_parameter.annotation = self._data_type
@@ -34,13 +65,8 @@ class GenericController(Controller, Generic[T]):
 
         args = get_args(parsed_parameter.annotation)
         origin = get_origin(parsed_parameter.annotation)
+        args_tuple = self._get_new_args(args, origin)
+        if args_tuple is None:
+            return
 
-        if args and origin:
-            new_args = tuple(self._data_type if isinstance(arg, TypeVar) else arg for arg in args)
-            try:
-                parsed_parameter.annotation = origin[new_args]
-            except TypeError as exc:
-                if hasattr(parsed_parameter.annotation, "copy_with"):
-                    parsed_parameter.annotation = parsed_parameter.annotation.copy_with(new_args)
-                else:
-                    raise RuntimeError("Unable to rebuild generic type") from exc
+        parsed_parameter.annotation = self._rebuild_annotation(parsed_parameter.annotation, origin, args_tuple)
