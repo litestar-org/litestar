@@ -187,11 +187,18 @@ def _inject_args(func: Callable[P, T]) -> Callable[Concatenate[Context, P], T]:
 
     @wraps(func)
     def wrapped(ctx: Context, /, *args: P.args, **kwargs: P.kwargs) -> T:
-        env = ctx.ensure_object(StarliteEnv)
-        if "app" in params:
-            kwargs["app"] = env.app
-        if "env" in params:
-            kwargs["env"] = env
+        needs_app = "app" in params
+        needs_env = "env" in params
+        if needs_env or needs_app:
+            # only resolve this if actually requested. Commands that don't need an env or app should be able to run
+            # without
+            if not isinstance(ctx.obj, StarliteEnv):
+                ctx.obj = ctx.obj()
+            env = ctx.ensure_object(StarliteEnv)
+            if needs_app:
+                kwargs["app"] = env.app
+            if needs_env:
+                kwargs["env"] = env
         return func(*args, **kwargs)
 
     return pass_context(wrapped)

@@ -14,7 +14,7 @@ __all__ = ("starlite_group",)
 def starlite_group(ctx: Context, app_path: str | None) -> None:
     """Starlite CLI."""
 
-    ctx.obj = StarliteEnv.from_env(app_path)
+    ctx.obj = lambda: StarliteEnv.from_env(app_path)
 
 
 # add sub commands here
