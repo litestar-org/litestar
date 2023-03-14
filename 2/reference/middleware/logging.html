@@ -145,7 +145,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../../../community/contribution-guide.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../../../community/contribution-guide/index.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -298,7 +298,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../../../community/contribution-guide.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../../../community/contribution-guide/index.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -404,6 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../usage/security/guards.html">Guards</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/storage.html">Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -420,65 +421,50 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/contrib/htmx.html">HTMX Request Class</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/cli.html">CLI</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../app.html">starlite.app</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../cache/index.html">starlite.cache</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../cache/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cache/memcached_cache_backend.html">memcached_cache_backend</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cache/redis_cache_backend.html">redis_cache_backend</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cache/simple_cache_backend.html">simple_cache_backend</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../router.html">starlite.router</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../controller.html">starlite.controller</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/cookie.html">cookie</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/headers.html">headers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/multi_dicts.html">multi_dicts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/pagination.html">pagination</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/provide.html">provide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/response_containers.html">response_containers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/response_header.html">response_header</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/state.html">state</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/upload_file.html">upload_file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../datastructures/url.html">url</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../dto.html">starlite.dto</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions/base_exceptions.html">base_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions/http_exceptions.html">http_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../enums.html">starlite.enums</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../config.html">starlite.config</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../connection/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../connection/request.html">request</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../connection/websocket.html">websocket</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../contrib/index.html">starlite.contrib</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../cache.html">cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../connection.html">connection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/htmx.html">HTMX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contrib/jinja.html">jinja</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/piccolo_orm.html">piccolo_orm</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy_1/config.html">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy_1/plugin.html">plugin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy_1/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/asgi.html">asgi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/http.html">http</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../handlers/websocket.html">websocket</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">starlite.middleware</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datastructures.html">datastructures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dto.html">dto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../handlers.html">handlers</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">middleware</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="authentication.html">authentication</a></li>
@@ -487,48 +473,42 @@
 <li class="toctree-l3"><a class="reference internal" href="csrf.html">csrf</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="session/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="session/cookie_backend.html">cookie_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="session/file_backend.html">file_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="session/memcached_backend.html">memcached_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="session/memory_backend.html">memory_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="session/redis_backend.html">redis_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="session/sqlalchemy_backend.html">sqlalchemy_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="session/server_side.html">server_side</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../openapi.html">starlite.openapi</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../params.html">starlite.params</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../plugins/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../plugins/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../plugins/sql_alchemy.html">sql_alchemy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../plugins/tortoise_orm.html">tortoise_orm</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../response.html">starlite.response</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">starlite.security</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../openapi.html">openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../partial.html">partial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../plugins.html">plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../response.html">response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../response_containers.html">response_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../router.html">router</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../template.html">starlite.template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../testing.html">starlite.testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../types.html">starlite.types</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../utils/predicates.html">predicates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/sync.html">sync</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../utils/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../static_files.html">static_files</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../storage/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage/redis.html">redis</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -574,7 +554,7 @@
 <p>Logging middleware.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddleware.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ASGIApp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddlewareConfig" title="starlite.middleware.logging.LoggingMiddlewareConfig"><span class="pre">LoggingMiddlewareConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.ASGIApp" title="starlite.types.ASGIApp"><span class="pre">ASGIApp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddlewareConfig" title="starlite.middleware.logging.LoggingMiddlewareConfig"><span class="pre">LoggingMiddlewareConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.__init__" title="Permalink to this definition">#</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -588,7 +568,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddleware.log_request">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Receive</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.log_request" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.Scope" title="starlite.types.Scope"><span class="pre">Scope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.Receive" title="starlite.types.Receive"><span class="pre">Receive</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.log_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Extract request data and log the message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -605,7 +585,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddleware.log_response">
-<span class="sig-name descname"><span class="pre">log_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Scope</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.log_response" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">log_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.Scope" title="starlite.types.Scope"><span class="pre">Scope</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.log_response" title="Permalink to this definition">#</a></dt>
 <dd><p>Extract the response data and log the message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -619,7 +599,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddleware.log_message">
-<span class="sig-name descname"><span class="pre">log_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.log_message" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">log_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.log_message" title="Permalink to this definition">#</a></dt>
 <dd><p>Log a message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -633,11 +613,11 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddleware.extract_request_data">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_request_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection/request.html#starlite.connection.request.Request" title="starlite.connection.request.Request"><span class="pre">Request</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.extract_request_data" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_request_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#starlite.connection.Request" title="starlite.connection.Request"><span class="pre">Request</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.extract_request_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a dictionary of values for the message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> instance.</p>
+<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="../connection.html#starlite.connection.Request" title="starlite.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An dict.</p>
@@ -647,7 +627,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddleware.extract_response_data">
-<span class="sig-name descname"><span class="pre">extract_response_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Scope</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.extract_response_data" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">extract_response_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.Scope" title="starlite.types.Scope"><span class="pre">Scope</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.extract_response_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Extract data from the response.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -661,7 +641,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddleware.create_send_wrapper">
-<span class="sig-name descname"><span class="pre">create_send_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Scope</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Send</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Send</span></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.create_send_wrapper" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">create_send_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.Scope" title="starlite.types.Scope"><span class="pre">Scope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.Send" title="starlite.types.Send"><span class="pre">Send</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../types.html#starlite.types.Send" title="starlite.types.Send"><span class="pre">Send</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddleware.create_send_wrapper" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a <code class="docutils literal notranslate"><span class="pre">send</span></code> wrapper, which handles logging response data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -681,70 +661,75 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.logging.</span></span><span class="sig-name descname"><span class="pre">LoggingMiddlewareConfig</span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Configuration for <code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.exclude">
-<span class="sig-name descname"><span class="pre">exclude</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Union" title="(in Python v3.11)"><span class="pre">Union</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.exclude" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">exclude</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.exclude" title="Permalink to this definition">#</a></dt>
 <dd><p>List of paths to exclude from logging.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.exclude_opt_key">
-<span class="sig-name descname"><span class="pre">exclude_opt_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.exclude_opt_key" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">exclude_opt_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.exclude_opt_key" title="Permalink to this definition">#</a></dt>
 <dd><p>An identifier to use on routes to disable logging for a particular route.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.include_compressed_body">
-<span class="sig-name descname"><span class="pre">include_compressed_body</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.include_compressed_body" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">include_compressed_body</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.include_compressed_body" title="Permalink to this definition">#</a></dt>
 <dd><p>Include body of compressed response in middleware. If <cite>“body”</cite> not set in.
 <a class="reference internal" href="#starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields" title="starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields"><code class="xref py py-attr docutils literal notranslate"><span class="pre">response_log_fields</span></code></a> this config value is ignored.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.logger_name">
-<span class="sig-name descname"><span class="pre">logger_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.logger_name" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">logger_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'starlite'</span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.logger_name" title="Permalink to this definition">#</a></dt>
 <dd><p>Name of the logger to retrieve using <cite>app.get_logger(“&lt;name&gt;”)</cite>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.request_cookies_to_obfuscate">
-<span class="sig-name descname"><span class="pre">request_cookies_to_obfuscate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.11)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.request_cookies_to_obfuscate" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">request_cookies_to_obfuscate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.11)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.request_cookies_to_obfuscate" title="Permalink to this definition">#</a></dt>
 <dd><p>Request cookie keys to obfuscate.</p>
 <p>Obfuscated values are replaced with ‘<strong>*</strong>’.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.request_headers_to_obfuscate">
-<span class="sig-name descname"><span class="pre">request_headers_to_obfuscate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.11)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.request_headers_to_obfuscate" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">request_headers_to_obfuscate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.11)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.request_headers_to_obfuscate" title="Permalink to this definition">#</a></dt>
 <dd><p>Request header keys to obfuscate.</p>
 <p>Obfuscated values are replaced with ‘<strong>*</strong>’.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.response_cookies_to_obfuscate">
-<span class="sig-name descname"><span class="pre">response_cookies_to_obfuscate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.11)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.response_cookies_to_obfuscate" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">response_cookies_to_obfuscate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.11)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.response_cookies_to_obfuscate" title="Permalink to this definition">#</a></dt>
 <dd><p>Response cookie keys to obfuscate.</p>
 <p>Obfuscated values are replaced with ‘<strong>*</strong>’.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_opt_key:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_compressed_body:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'starlite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_cookies_to_obfuscate:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_headers_to_obfuscate:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_cookies_to_obfuscate:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_headers_to_obfuscate:</span> <span class="pre">set[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_log_message:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'HTTP</span> <span class="pre">Request'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_log_message:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'HTTP</span> <span class="pre">Response'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_log_fields:</span> <span class="pre">~typing.Iterable[~typing.Literal['path'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'method'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'content_type'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'headers'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'cookies'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'query'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'path_params'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'body'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'scheme'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'client']]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_log_fields:</span> <span class="pre">~typing.Iterable[~typing.Literal['status_code'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'headers'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'body'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'cookies']]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middleware_class:</span> <span class="pre">type[starlite.middleware.logging.LoggingMiddleware]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.response_headers_to_obfuscate">
-<span class="sig-name descname"><span class="pre">response_headers_to_obfuscate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Set" title="(in Python v3.11)"><span class="pre">Set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.response_headers_to_obfuscate" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">response_headers_to_obfuscate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.11)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.response_headers_to_obfuscate" title="Permalink to this definition">#</a></dt>
 <dd><p>Response header keys to obfuscate.</p>
 <p>Obfuscated values are replaced with ‘<strong>*</strong>’.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.request_log_message">
-<span class="sig-name descname"><span class="pre">request_log_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.request_log_message" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">request_log_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HTTP</span> <span class="pre">Request'</span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.request_log_message" title="Permalink to this definition">#</a></dt>
 <dd><p>Log message to prepend when logging a request.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.response_log_message">
-<span class="sig-name descname"><span class="pre">response_log_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.response_log_message" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">response_log_message</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HTTP</span> <span class="pre">Response'</span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.response_log_message" title="Permalink to this definition">#</a></dt>
 <dd><p>Log message to prepend when logging a response.</p>
 </dd></dl>
 
@@ -785,9 +770,23 @@ message logged out.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.middleware_class">
-<span class="sig-name descname"><span class="pre">middleware_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.11)"><span class="pre">Type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddleware" title="starlite.middleware.logging.LoggingMiddleware"><span class="pre">LoggingMiddleware</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.middleware_class" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">middleware_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#starlite.middleware.logging.LoggingMiddleware" title="starlite.middleware.logging.LoggingMiddleware"><span class="pre">starlite.middleware.logging.LoggingMiddleware</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.middleware_class" title="Permalink to this definition">#</a></dt>
 <dd><p>Middleware class to use.</p>
 <p>Should be a subclass of [starlite.middleware.LoggingMiddleware].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.logging.LoggingMiddlewareConfig.__post_init__">
+<span class="sig-name descname"><span class="pre">__post_init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.logging.LoggingMiddlewareConfig.__post_init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Override default Pydantic type conversion for iterables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – An iterable</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <cite>value</cite> argument cast as a tuple.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -993,6 +992,15 @@ message logged out.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.middleware.logging.LoggingMiddlewareConfig.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       LoggingMiddlewareConfig.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#starlite.middleware.logging.LoggingMiddlewareConfig.response_headers_to_obfuscate">
      <code class="docutils literal notranslate">
       <span class="pre">
@@ -1042,6 +1050,15 @@ message logged out.</p>
      <code class="docutils literal notranslate">
       <span class="pre">
        LoggingMiddlewareConfig.middleware_class
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.middleware.logging.LoggingMiddlewareConfig.__post_init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       LoggingMiddlewareConfig.__post_init__()
       </span>
      </code>
     </a>

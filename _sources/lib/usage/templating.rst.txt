@@ -43,7 +43,7 @@ To register one of the built-in template engines you simply need to pass it to t
 
 .. note::
 
-    The ``directory`` parameter passed to :class:`TemplateConfig <starlite.config.template.TemplateConfig>`
+    The ``directory`` parameter passed to :class:`TemplateConfig <starlite.template.TemplateConfig>`
     can be either a directory or list of directories to use for loading templates.
 
 
@@ -78,7 +78,7 @@ Accessing the template engine instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you need to access the template engine instance, you can do so via the
-:class:`TemplateConfig.engine <starlite.config.template.TemplateConfig>` attribute:
+:class:`TemplateConfig.engine <starlite.template.TemplateConfig>` attribute:
 
 .. tab-set::
 
@@ -97,7 +97,7 @@ If you need to access the template engine instance, you can do so via the
 Template responses
 ------------------
 
-Once you have a template engine registered you can return :class:`Templates <starlite.Template>` from
+Once you have a template engine registered you can return :class:`Templates <.response_containers.Template>` from
 your route handlers:
 
 .. tab-set::
@@ -116,7 +116,7 @@ your route handlers:
 
 
 * ``name`` is the name of the template file within on of the specified directories. If
-  no file with that name is found, a :class:`TemplateNotFoundException <starlite.exceptions.TemplateNotFoundException>`
+  no file with that name is found, a :class:`TemplateNotFoundException <.exceptions.TemplateNotFoundException>`
   exception will be raised.
 * ``context`` is a dictionary containing arbitrary data that will be passed to the template
   engine's ``render`` method. For Jinja and Mako, this data will be available in the `template context <#template-context>`_
@@ -229,7 +229,8 @@ container, so simply pass a string keyed dictionary of values:
 
 .. code-block:: python
 
-   from starlite import Template, get
+   from starlite import get
+   from starlite.response_containers import Template
 
 
    @get(path="/info")

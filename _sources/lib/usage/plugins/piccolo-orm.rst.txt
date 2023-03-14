@@ -1,8 +1,8 @@
 Piccolo ORM Plugin
 ==================
 
-To use the :class:`PiccoloORMPlugin <starlite.plugins.piccolo_orm.PiccoloORMPlugin>`
-import it and pass it to the :class:`Starlite constructor <starlite.app.Starlite>`:
+To use the :class:`PiccoloORMPlugin <.contrib.piccolo_orm.PiccoloORMPlugin>` import it and pass it to the
+:class:`Starlite <starlite.app.Starlite>` class:
 
 .. code-block:: python
 

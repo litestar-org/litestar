@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Plugins" href="plugins/index.html" />
-    <link rel="prev" title="Guards" href="security/guards.html" />
+    <link rel="prev" title="Storage" href="storage.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -145,7 +145,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../../community/contribution-guide.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../../community/contribution-guide/index.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -298,7 +298,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../../community/contribution-guide.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../../community/contribution-guide/index.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -404,6 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="security/guards.html">Guards</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="storage.html">Storage</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -420,65 +421,50 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/htmx.html">HTMX Request Class</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cli.html">CLI</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../reference/app.html">starlite.app</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/cache/index.html">starlite.cache</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/cache/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/cache/memcached_cache_backend.html">memcached_cache_backend</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/cache/redis_cache_backend.html">redis_cache_backend</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/cache/simple_cache_backend.html">simple_cache_backend</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/router.html">starlite.router</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">starlite.controller</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/cookie.html">cookie</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/headers.html">headers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/multi_dicts.html">multi_dicts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/pagination.html">pagination</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/provide.html">provide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/response_containers.html">response_containers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/response_header.html">response_header</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/state.html">state</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/upload_file.html">upload_file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/url.html">url</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/dto.html">starlite.dto</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/exceptions/base_exceptions.html">base_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/exceptions/http_exceptions.html">http_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">starlite.enums</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/config.html">starlite.config</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/connection/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/connection/request.html">request</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/connection/websocket.html">websocket</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">starlite.contrib</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/cache.html">cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/htmx.html">HTMX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo_orm.html">piccolo_orm</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/config.html">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/plugin.html">plugin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/handlers/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/handlers/asgi.html">asgi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/handlers/http.html">http</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/handlers/websocket.html">websocket</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/dto.html">dto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
@@ -487,48 +473,42 @@
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/cookie_backend.html">cookie_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/file_backend.html">file_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/memcached_backend.html">memcached_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/memory_backend.html">memory_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/redis_backend.html">redis_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/sqlalchemy_backend.html">sqlalchemy_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/openapi.html">starlite.openapi</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/params.html">starlite.params</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sql_alchemy.html">sql_alchemy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/tortoise_orm.html">tortoise_orm</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/response.html">starlite.response</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">starlite.security</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/openapi.html">openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/partial.html">partial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/plugins.html">plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/response.html">response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/response_containers.html">response_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/template.html">starlite.template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">starlite.testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/types.html">starlite.types</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/predicates.html">predicates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/sync.html">sync</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/utils/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/storage/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/storage/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/storage/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/storage/redis.html">redis</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -621,7 +601,7 @@ Async</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
 
 
-<span class="k">def</span> <span class="nf">test_health_check</span><span class="p">():</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_health_check</span><span class="p">():</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
@@ -665,7 +645,7 @@ Async</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncTestClient</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncTestClient</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -679,11 +659,34 @@ Async</label><div class="sd-tab-content docutils">
 Sync</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">tests/test_health_check.py</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
 
-<span class="k">def</span> <span class="nf">test_health_check</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">TestClient</span><span class="p">):</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">test_health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TestClient</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">test_health_check_with_fixture</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">TestClient</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">test_client</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
@@ -697,11 +700,34 @@ Sync</label><div class="sd-tab-content docutils">
 Async</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">tests/test_health_check.py</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
 
-<span class="k">def</span> <span class="nf">test_health_check</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">AsyncTestClient</span><span class="p">):</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
+        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncTestClient</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_health_check_with_fixture</span><span class="p">(</span><span class="n">test_client</span><span class="p">:</span> <span class="n">AsyncTestClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">test_client</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
@@ -717,16 +743,17 @@ Async</label><div class="sd-tab-content docutils">
 across requests, then you might want to inject or inspect session data outside a request. For this,
 <a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient" title="starlite.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> provides two methods:</p>
 <ul class="simple">
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_session_data</span></code></p></li>
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_session_data</span></code></p></li>
+<li><p><a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient.set_session_data" title="starlite.testing.TestClient.set_session_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_session_data</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient.get_session_data" title="starlite.testing.TestClient.get_session_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_session_data</span></code></a></p></li>
 </ul>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <ul class="simple">
 <li><p>The Session Middleware must be enabled in Starlite app provided to the TestClient to use sessions.</p></li>
-<li><p>If you are using the <a class="reference internal" href="../reference/middleware/session/cookie_backend.html#starlite.middleware.session.cookie_backend.CookieBackend" title="starlite.middleware.session.cookie_backend.CookieBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">CookieBackend</span></code></a> you need
-to install the <code class="docutils literal notranslate"><span class="pre">cryptography</span></code> package. You can do so by installing starlite with e.g. <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[cryptography]</span></code>
-or <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">add</span> <span class="pre">starlite[cryptography]</span></code></p></li>
+<li><p>If you are using the
+<a class="reference internal" href="../reference/middleware/session/client_side.html#starlite.middleware.session.client_side.ClientSideSessionBackend" title="starlite.middleware.session.client_side.ClientSideSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code></a> you need to
+install the <code class="docutils literal notranslate"><span class="pre">cryptography</span></code> package. You can do so by installing starlite with e.g.
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[cryptography]</span></code> or <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">add</span> <span class="pre">starlite[cryptography]</span></code></p></li>
 </ul>
 </div>
 <div class="sd-tab-set docutils">
@@ -742,10 +769,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.memory_backend</span> <span class="kn">import</span> <span class="n">MemoryBackendConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">MemoryBackendConfig</span><span class="p">()</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -770,10 +798,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.memory_backend</span> <span class="kn">import</span> <span class="n">MemoryBackendConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">MemoryBackendConfig</span><span class="p">()</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -794,10 +823,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">post</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.memory_backend</span> <span class="kn">import</span> <span class="n">MemoryBackendConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">MemoryBackendConfig</span><span class="p">()</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
 
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -826,10 +856,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.memory_backend</span> <span class="kn">import</span> <span class="n">MemoryBackendConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">MemoryBackendConfig</span><span class="p">()</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -857,10 +888,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.memory_backend</span> <span class="kn">import</span> <span class="n">MemoryBackendConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">MemoryBackendConfig</span><span class="p">()</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -884,10 +916,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id13">
 <div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">post</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.memory_backend</span> <span class="kn">import</span> <span class="n">MemoryBackendConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">MemoryBackendConfig</span><span class="p">()</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
 
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -912,7 +945,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <h3>Using a blocking portal<a class="headerlink" href="#using-a-blocking-portal" title="Permalink to this heading">#</a></h3>
 <p>The <a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient" title="starlite.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> uses a feature of <a class="reference external" href="https://anyio.readthedocs.io/en/stable/">anyio</a> called
 a <strong>Blocking Portal</strong>.</p>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">anyio.BlockingPortal</span></code> allows <a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient" title="starlite.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a>
+<p>The <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.abc.BlockingPortal" title="(in AnyIO v3.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">anyio.abc.BlockingPortal</span></code></a> allows <a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient" title="starlite.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a>
 to execute asynchronous functions using a synchronous call. <code class="docutils literal notranslate"><span class="pre">TestClient</span></code> creates a blocking portal to manage
 <code class="docutils literal notranslate"><span class="pre">Starlite</span></code>’s async logic, and it allows <code class="docutils literal notranslate"><span class="pre">TestClient</span></code>’s API to remain fully synchronous.</p>
 <p>Any tests that are using an instance of <code class="docutils literal notranslate"><span class="pre">TestClient</span></code> can also make use of the blocking portal to execute asynchronous functions
@@ -996,16 +1029,18 @@ expects <code class="docutils literal notranslate"><span class="pre">route_handl
 <section id="requestfactory">
 <h2>RequestFactory<a class="headerlink" href="#requestfactory" title="Permalink to this heading">#</a></h2>
 <p>Another helper is the <a class="reference internal" href="../reference/testing.html#starlite.testing.RequestFactory" title="starlite.testing.RequestFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestFactory</span></code></a> class, which creates instances of
-<a class="reference internal" href="../reference/connection/request.html#starlite.connection.request.Request" title="starlite.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.connection.request.Request</span></code></a>. The use case for this helper is when
+<a class="reference internal" href="../reference/connection.html#starlite.connection.Request" title="starlite.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.connection.request.Request</span></code></a>. The use case for this helper is when
 you need to test logic that expects to receive a request object.</p>
 <p>For example, lets say we wanted to unit test a <em>guard</em> function in isolation, to which end we’ll reuse the examples
 from the <a class="reference internal" href="security/guards.html"><span class="doc">route guards</span></a> documentation:</p>
 <div class="literal-block-wrapper docutils container" id="id17">
 <div class="code-block-caption"><span class="caption-text">my_app/guards.py</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">RouteHandler</span><span class="p">,</span> <span class="n">NotAuthorizedException</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
+<span class="kn">from</span> <span class="nn">starlite.handlers.base</span> <span class="kn">import</span> <span class="n">BaseRouteHandler</span>
 
 
-<span class="k">def</span> <span class="nf">secret_token_guard</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">RouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">secret_token_guard</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;secret&quot;</span><span class="p">)</span>
         <span class="ow">and</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Secret-Header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">route_handler</span><span class="o">.</span><span class="n">opt</span><span class="p">[</span><span class="s2">&quot;secret&quot;</span><span class="p">]</span>
@@ -1035,7 +1070,7 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 <div class="code-block-caption"><span class="caption-text">tests/guards/test_secret_token_guard.py</span><a class="headerlink" href="#id19" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
+<span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">RequestFactory</span>
 
 <span class="kn">from</span> <span class="nn">my_app.guards</span> <span class="kn">import</span> <span class="n">secret_token_guard</span>
@@ -1093,8 +1128,9 @@ and powerful way to generate mock data from pydantic models and dataclasses.</p>
 <div class="code-block-caption"><span class="caption-text">tests/conftest.py</span><a class="headerlink" href="#id21" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
+<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Provide</span><span class="p">,</span> <span class="n">create_test_client</span>
+<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
 
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Item</span><span class="p">,</span> <span class="n">get_item</span>
 
@@ -1129,7 +1165,8 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 <span class="kn">from</span> <span class="nn">pydantic_factories</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
 <span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Provide</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
 
 
@@ -1183,11 +1220,11 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="security/guards.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="storage.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">Guards</p>
+          <p class="prev-next-title">Storage</p>
       </div>
   </a>
   <a class='right-next' id="next-link" href="plugins/index.html" title="next page">

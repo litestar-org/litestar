@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>starlite.controller &#8212; Starlite Framework</title>
+    <title>controller &#8212; Starlite Framework</title>
   
   
   
@@ -51,8 +51,8 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="starlite.datastructures" href="datastructures/index.html" />
-    <link rel="prev" title="starlite.router" href="router.html" />
+    <link rel="next" title="data_extractors" href="data_extractors.html" />
+    <link rel="prev" title="tortoise_orm" href="contrib/tortoise_orm.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -145,7 +145,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../../community/contribution-guide.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../../community/contribution-guide/index.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -298,7 +298,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../../community/contribution-guide.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../../community/contribution-guide/index.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -404,6 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../usage/security/guards.html">Guards</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/storage.html">Storage</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -420,65 +421,50 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/contrib/htmx.html">HTMX Request Class</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/cli.html">CLI</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="app.html">starlite.app</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="cache/index.html">starlite.cache</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="cache/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cache/memcached_cache_backend.html">memcached_cache_backend</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cache/redis_cache_backend.html">redis_cache_backend</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cache/simple_cache_backend.html">simple_cache_backend</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="router.html">starlite.router</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">starlite.controller</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="datastructures/index.html">starlite.datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/cookie.html">cookie</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/headers.html">headers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/multi_dicts.html">multi_dicts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/pagination.html">pagination</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/provide.html">provide</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/response_containers.html">response_containers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/response_header.html">response_header</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/state.html">state</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/upload_file.html">upload_file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="datastructures/url.html">url</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="dto.html">starlite.dto</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="exceptions/index.html">starlite.exceptions</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="exceptions/base_exceptions.html">base_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="exceptions/http_exceptions.html">http_exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="exceptions/websocket_exceptions.html">websocket_exceptions</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="enums.html">starlite.enums</a></li>
-<li class="toctree-l2"><a class="reference internal" href="config.html">starlite.config</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="connection/index.html">starlite.connection</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="connection/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="connection/request.html">request</a></li>
-<li class="toctree-l3"><a class="reference internal" href="connection/websocket.html">websocket</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">starlite.contrib</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cache.html">cache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connection.html">connection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="contrib/htmx.html">HTMX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/jinja.html">jinja</a></li>
-<li class="toctree-l3"><a class="reference internal" href="contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/piccolo_orm.html">piccolo_orm</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="contrib/sqlalchemy_1/config.html">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contrib/sqlalchemy_1/plugin.html">plugin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="contrib/sqlalchemy_1/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="handlers/index.html">starlite.handlers</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="handlers/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="handlers/asgi.html">asgi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="handlers/http.html">http</a></li>
-<li class="toctree-l3"><a class="reference internal" href="handlers/websocket.html">websocket</a></li>
+<li class="toctree-l3"><a class="reference internal" href="contrib/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">starlite.middleware</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datastructures.html">datastructures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dto.html">dto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handlers.html">handlers</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="middleware/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/authentication.html">authentication</a></li>
@@ -487,48 +473,42 @@
 <li class="toctree-l3"><a class="reference internal" href="middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="middleware/session/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="middleware/session/cookie_backend.html">cookie_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="middleware/session/file_backend.html">file_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="middleware/session/memcached_backend.html">memcached_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="middleware/session/memory_backend.html">memory_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="middleware/session/redis_backend.html">redis_backend</a></li>
-<li class="toctree-l4"><a class="reference internal" href="middleware/session/sqlalchemy_backend.html">sqlalchemy_backend</a></li>
+<li class="toctree-l4"><a class="reference internal" href="middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="middleware/session/server_side.html">server_side</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="openapi.html">starlite.openapi</a></li>
-<li class="toctree-l2"><a class="reference internal" href="params.html">starlite.params</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">starlite.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="plugins/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plugins/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plugins/sql_alchemy.html">sql_alchemy</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plugins/tortoise_orm.html">tortoise_orm</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="response.html">starlite.response</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">starlite.security</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="openapi.html">openapi</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="partial.html">partial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html">plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="response.html">response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="response_containers.html">response_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="router.html">router</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="template.html">starlite.template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="testing.html">starlite.testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="types.html">starlite.types</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="utils/index.html">starlite.utils</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="utils/predicates.html">predicates</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/sync.html">sync</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/scope.html">scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/exception.html">exception</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/extractors.html">extractors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static_files.html">static_files</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="storage/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="storage/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="storage/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="storage/redis.html">redis</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -566,7 +546,7 @@
             <article class="bd-article" role="main">
               
   <section id="module-starlite.controller">
-<span id="starlite-controller"></span><h1>starlite.controller<a class="headerlink" href="#module-starlite.controller" title="Permalink to this heading">#</a></h1>
+<span id="controller"></span><h1>controller<a class="headerlink" href="#module-starlite.controller" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="starlite.controller.Controller">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.controller.</span></span><span class="sig-name descname"><span class="pre">Controller</span></span><a class="headerlink" href="#starlite.controller.Controller" title="Permalink to this definition">#</a></dt>
@@ -575,117 +555,100 @@
 <p>Subclass this class to create ‘view’ like components and utilize OOP.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.after_request">
-<span class="sig-name descname"><span class="pre">after_request</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">AfterRequestHookHandler</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.after_request" title="Permalink to this definition">#</a></dt>
-<dd><p>A sync or async function executed before a <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> is passed to any route handler.</p>
+<span class="sig-name descname"><span class="pre">after_request</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.AfterRequestHookHandler" title="starlite.types.AfterRequestHookHandler"><span class="pre">AfterRequestHookHandler</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.after_request" title="Permalink to this definition">#</a></dt>
+<dd><p>A sync or async function executed before a <a class="reference internal" href="connection.html#starlite.connection.Request" title="starlite.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> is passed to any route handler.</p>
 <p>If this function returns a value, the request will not reach the route handler, and instead this value will be used.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.after_response">
-<span class="sig-name descname"><span class="pre">after_response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">AfterResponseHookHandler</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.after_response" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">after_response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.AfterResponseHookHandler" title="starlite.types.AfterResponseHookHandler"><span class="pre">AfterResponseHookHandler</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.after_response" title="Permalink to this definition">#</a></dt>
 <dd><p>A sync or async function called after the response has been awaited.</p>
-<p>It receives the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> instance and should not return any values.</p>
+<p>It receives the <a class="reference internal" href="connection.html#starlite.connection.Request" title="starlite.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance and should not return any values.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.before_request">
-<span class="sig-name descname"><span class="pre">before_request</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">BeforeRequestHookHandler</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.before_request" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">before_request</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.BeforeRequestHookHandler" title="starlite.types.BeforeRequestHookHandler"><span class="pre">BeforeRequestHookHandler</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.before_request" title="Permalink to this definition">#</a></dt>
 <dd><p>A sync or async function called immediately before calling the route handler.</p>
-<p>It receives the <code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code> instance and any non-<code class="docutils literal notranslate"><span class="pre">None</span></code> return value is used for the
+<p>It receives the <a class="reference internal" href="connection.html#starlite.connection.Request" title="starlite.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance and any non-<code class="docutils literal notranslate"><span class="pre">None</span></code> return value is used for the
 response, bypassing the route handler.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.cache_control">
-<span class="sig-name descname"><span class="pre">cache_control</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="datastructures/headers.html#starlite.datastructures.headers.CacheControlHeader" title="starlite.datastructures.headers.CacheControlHeader"><span class="pre">CacheControlHeader</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.cache_control" title="Permalink to this definition">#</a></dt>
-<dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">CacheControlHeader</span></code> header to add to route handlers of this
+<span class="sig-name descname"><span class="pre">cache_control</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures.html#starlite.datastructures.CacheControlHeader" title="starlite.datastructures.CacheControlHeader"><span class="pre">CacheControlHeader</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.cache_control" title="Permalink to this definition">#</a></dt>
+<dd><p>A <a class="reference internal" href="datastructures.html#starlite.datastructures.CacheControlHeader" title="starlite.datastructures.CacheControlHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheControlHeader</span></code></a> header to add to route handlers of this
 controller.</p>
 <p>Can be overridden by route handlers.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.dependencies">
-<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Dependencies</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.dependencies" title="Permalink to this definition">#</a></dt>
-<dd><p>A string keyed dictionary of dependency <code class="xref py py-class docutils literal notranslate"><span class="pre">Provider</span></code> instances.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dependencies</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.Dependencies" title="starlite.types.Dependencies"><span class="pre">Dependencies</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.dependencies" title="Permalink to this definition">#</a></dt>
+<dd><p>A string keyed dictionary of dependency <a class="reference internal" href="di.html#starlite.di.Provide" title="starlite.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provider</span></code></a> instances.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.etag">
-<span class="sig-name descname"><span class="pre">etag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="datastructures/headers.html#starlite.datastructures.headers.ETag" title="starlite.datastructures.headers.ETag"><span class="pre">ETag</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.etag" title="Permalink to this definition">#</a></dt>
-<dd><p>An <code class="docutils literal notranslate"><span class="pre">etag</span></code> header of type <code class="xref py py-class docutils literal notranslate"><span class="pre">ETag</span></code> to add to route handlers of this controller.</p>
+<span class="sig-name descname"><span class="pre">etag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures.html#starlite.datastructures.ETag" title="starlite.datastructures.ETag"><span class="pre">ETag</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.etag" title="Permalink to this definition">#</a></dt>
+<dd><p>An <code class="docutils literal notranslate"><span class="pre">etag</span></code> header of type <a class="reference internal" href="datastructures.html#starlite.datastructures.ETag" title="starlite.datastructures.ETag"><code class="xref py py-class docutils literal notranslate"><span class="pre">ETag</span></code></a> to add to route handlers of this controller.</p>
 <p>Can be overridden by route handlers.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.exception_handlers">
-<span class="sig-name descname"><span class="pre">exception_handlers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ExceptionHandlersMap</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.exception_handlers" title="Permalink to this definition">#</a></dt>
-<dd><p>A dictionary that maps handler functions to status codes and/or exception types.</p>
+<span class="sig-name descname"><span class="pre">exception_handlers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.ExceptionHandlersMap" title="starlite.types.ExceptionHandlersMap"><span class="pre">ExceptionHandlersMap</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.exception_handlers" title="Permalink to this definition">#</a></dt>
+<dd><p>A map of handler functions to status codes and/or exception types.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.guards">
-<span class="sig-name descname"><span class="pre">guards</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Guard</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.guards" title="Permalink to this definition">#</a></dt>
-<dd><p>A list of <a class="reference internal" href="types.html#starlite.types.Guard" title="starlite.types.Guard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Guard</span></code></a> callables.</p>
+<span class="sig-name descname"><span class="pre">guards</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.OptionalSequence" title="starlite.types.OptionalSequence"><span class="pre">OptionalSequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="types.html#starlite.types.Guard" title="starlite.types.Guard"><span class="pre">Guard</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.guards" title="Permalink to this definition">#</a></dt>
+<dd><p>A sequence of <a class="reference internal" href="types.html#starlite.types.Guard" title="starlite.types.Guard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Guard</span></code></a> callables.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.middleware">
-<span class="sig-name descname"><span class="pre">middleware</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Middleware</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.middleware" title="Permalink to this definition">#</a></dt>
-<dd><p>A list of <a class="reference internal" href="types.html#starlite.types.Middleware" title="starlite.types.Middleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Middleware</span></code></a>.</p>
+<span class="sig-name descname"><span class="pre">middleware</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.OptionalSequence" title="starlite.types.OptionalSequence"><span class="pre">OptionalSequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="types.html#starlite.types.Middleware" title="starlite.types.Middleware"><span class="pre">Middleware</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.middleware" title="Permalink to this definition">#</a></dt>
+<dd><p>A sequence of <a class="reference internal" href="types.html#starlite.types.Middleware" title="starlite.types.Middleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">Middleware</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.opt">
-<span class="sig-name descname"><span class="pre">opt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.opt" title="Permalink to this definition">#</a></dt>
-<dd><p>A string key dictionary of arbitrary values that can be accessed in <a class="reference internal" href="types.html#starlite.types.Guard" title="starlite.types.Guard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Guards</span></code></a> or wherever
-you have access to <a class="reference internal" href="connection/request.html#starlite.connection.request.Request" title="starlite.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> or <a class="reference internal" href="types.html#starlite.types.Scope" title="starlite.types.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGI</span> <span class="pre">Scope</span></code></a>.</p>
+<span class="sig-name descname"><span class="pre">opt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.opt" title="Permalink to this definition">#</a></dt>
+<dd><p>A string key mapping of arbitrary values that can be accessed in <a class="reference internal" href="types.html#starlite.types.Guard" title="starlite.types.Guard"><code class="xref py py-class docutils literal notranslate"><span class="pre">Guards</span></code></a> or wherever you
+have access to <a class="reference internal" href="connection.html#starlite.connection.Request" title="starlite.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> or <a class="reference internal" href="types.html#starlite.types.Scope" title="starlite.types.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGI</span> <span class="pre">Scope</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.parameters">
-<span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ParametersMap</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.parameters" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.ParametersMap" title="starlite.types.ParametersMap"><span class="pre">ParametersMap</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.parameters" title="Permalink to this definition">#</a></dt>
 <dd><p>A mapping of <a class="reference internal" href="params.html#starlite.params.Parameter" title="starlite.params.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a> definitions available to all application paths.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.response_class">
-<span class="sig-name descname"><span class="pre">response_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ResponseType</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.response_class" title="Permalink to this definition">#</a></dt>
-<dd><p>A custom subclass of [starlite.response.Response] to be used as the default response for all route handlers under
-the controller.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.controller.Controller.response_cookies">
-<span class="sig-name descname"><span class="pre">response_cookies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ResponseCookies</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.response_cookies" title="Permalink to this definition">#</a></dt>
-<dd><p>A list of [Cookie](starlite.datastructures.Cookie] instances.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.controller.Controller.response_headers">
-<span class="sig-name descname"><span class="pre">response_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ResponseHeadersMap</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.response_headers" title="Permalink to this definition">#</a></dt>
-<dd><p>A string keyed dictionary mapping <code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseHeader</span></code> instances.</p>
+<span class="sig-name descname"><span class="pre">response_class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.11)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="response.html#starlite.response.Response" title="starlite.response.Response"><span class="pre">Response</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.response_class" title="Permalink to this definition">#</a></dt>
+<dd><p>A custom subclass of <a class="reference internal" href="response.html#starlite.response.Response" title="starlite.response.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a> to be used as the default response for all route
+handlers under the controller.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.tags">
-<span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.tags" title="Permalink to this definition">#</a></dt>
-<dd><p>A list of string tags that will be appended to the schema of all route handlers under the controller.</p>
+<span class="sig-name descname"><span class="pre">tags</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.OptionalSequence" title="starlite.types.OptionalSequence"><span class="pre">OptionalSequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.tags" title="Permalink to this definition">#</a></dt>
+<dd><p>A sequence of string tags that will be appended to the schema of all route handlers under the controller.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.security">
-<span class="sig-name descname"><span class="pre">security</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">SecurityRequirement</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.security" title="Permalink to this definition">#</a></dt>
-<dd><p>A list of dictionaries that to the schema of all route handlers under the controller.</p>
+<span class="sig-name descname"><span class="pre">security</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.OptionalSequence" title="starlite.types.OptionalSequence"><span class="pre">OptionalSequence</span></a><span class="p"><span class="pre">[</span></span><span class="pre">SecurityRequirement</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.security" title="Permalink to this definition">#</a></dt>
+<dd><p>A sequence of dictionaries that to the schema of all route handlers under the controller.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.type_encoders">
-<span class="sig-name descname"><span class="pre">type_encoders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.11)"><span class="pre">Optional</span></a><span class="p"><span class="pre">[</span></span><span class="pre">TypeEncodersMap</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.controller.Controller.type_encoders" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">type_encoders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.TypeEncodersMap" title="starlite.types.TypeEncodersMap"><span class="pre">TypeEncodersMap</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.type_encoders" title="Permalink to this definition">#</a></dt>
 <dd><p>A mapping of types to callables that transform them into types supported for serialization.</p>
 </dd></dl>
 
@@ -696,16 +659,28 @@ the controller.</p>
 <p>Should only be called by routers as part of controller registration.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>owner</strong> – An instance of ‘Router’</p>
+<dd class="field-odd"><p><strong>owner</strong> – An instance of <a class="reference internal" href="router.html#starlite.router.Router" title="starlite.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Router</span></code></a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.controller.Controller.response_cookies">
+<span class="sig-name descname"><span class="pre">response_cookies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.ResponseCookies" title="starlite.types.ResponseCookies"><span class="pre">ResponseCookies</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.response_cookies" title="Permalink to this definition">#</a></dt>
+<dd><p>A list of <a class="reference internal" href="datastructures.html#starlite.datastructures.Cookie" title="starlite.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instances.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.controller.Controller.response_headers">
+<span class="sig-name descname"><span class="pre">response_headers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#starlite.types.ResponseHeaders" title="starlite.types.ResponseHeaders"><span class="pre">ResponseHeaders</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><a class="headerlink" href="#starlite.controller.Controller.response_headers" title="Permalink to this definition">#</a></dt>
+<dd><p>A string keyed dictionary mapping <a class="reference internal" href="datastructures.html#starlite.datastructures.ResponseHeader" title="starlite.datastructures.ResponseHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseHeader</span></code></a> instances.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.controller.Controller.path">
 <span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.controller.Controller.path" title="Permalink to this definition">#</a></dt>
 <dd><p>A path fragment for the controller.</p>
-<p>All route handlers under the controller will have the fragment appended to them. If not set it defaults to ‘/’.</p>
+<p>All route handlers under the controller will have the fragment appended to them. If not set it defaults to <code class="docutils literal notranslate"><span class="pre">/</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -717,11 +692,28 @@ the controller.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.controller.Controller.get_route_handlers">
-<span class="sig-name descname"><span class="pre">get_route_handlers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="handlers/base.html#starlite.handlers.base.BaseRouteHandler" title="starlite.handlers.base.BaseRouteHandler"><span class="pre">BaseRouteHandler</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.controller.Controller.get_route_handlers" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_route_handlers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="handlers.html#starlite.handlers.BaseRouteHandler" title="starlite.handlers.base.BaseRouteHandler"><span class="pre">starlite.handlers.base.BaseRouteHandler</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.controller.Controller.get_route_handlers" title="Permalink to this definition">#</a></dt>
 <dd><p>Get a controller’s route handlers and set the controller as the handlers’ owner.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A list containing a copy of the route handlers defined on the controller</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.controller.Controller.validate_route_handlers">
+<span class="sig-name descname"><span class="pre">validate_route_handlers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">route_handlers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="handlers.html#starlite.handlers.BaseRouteHandler" title="starlite.handlers.base.BaseRouteHandler"><span class="pre">starlite.handlers.base.BaseRouteHandler</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.controller.Controller.validate_route_handlers" title="Permalink to this definition">#</a></dt>
+<dd><p>Validate that the combination of path and decorator method or type are unique on the controller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>route_handlers</strong> – The controller’s route handlers.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#starlite.exceptions.ImproperlyConfiguredException" title="starlite.exceptions.ImproperlyConfiguredException"><strong>ImproperlyConfiguredException</strong></a> – </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -738,17 +730,17 @@ the controller.</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="router.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="contrib/tortoise_orm.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">starlite.router</p>
+          <p class="prev-next-title">tortoise_orm</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="datastructures/index.html" title="next page">
+  <a class='right-next' id="next-link" href="data_extractors.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">starlite.datastructures</p>
+      <p class="prev-next-title">data_extractors</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
@@ -886,24 +878,6 @@ the controller.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.controller.Controller.response_cookies">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Controller.response_cookies
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.controller.Controller.response_headers">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Controller.response_headers
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#starlite.controller.Controller.tags">
      <code class="docutils literal notranslate">
       <span class="pre">
@@ -940,6 +914,24 @@ the controller.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.controller.Controller.response_cookies">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Controller.response_cookies
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.controller.Controller.response_headers">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Controller.response_headers
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#starlite.controller.Controller.path">
      <code class="docutils literal notranslate">
       <span class="pre">
@@ -962,6 +954,15 @@ the controller.</p>
      <code class="docutils literal notranslate">
       <span class="pre">
        Controller.get_route_handlers()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.controller.Controller.validate_route_handlers">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       Controller.validate_route_handlers()
       </span>
      </code>
     </a>

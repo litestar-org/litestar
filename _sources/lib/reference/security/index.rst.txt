@@ -1,5 +1,5 @@
-starlite.security
-=================
+security
+========
 
 
 .. toctree::

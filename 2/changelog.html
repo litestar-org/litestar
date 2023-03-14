@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>1.x Changelog &#8212; Starlite Framework</title>
+    <title>2.x Changelog &#8212; Starlite Framework</title>
   
   
   
@@ -51,7 +51,6 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Release notes" href="../release-notes/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -144,7 +143,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../community/contribution-guide.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../community/contribution-guide/index.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -263,7 +262,7 @@
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
   
   <div class="sidebar-header-items sidebar-primary__section">
@@ -297,7 +296,7 @@
                     <ul class="dropdown-menu">
                         
                             <li class="nav-item">
-        <a class="nav-link nav-internal" href="../community/contribution-guide.html">Contribution guide</a>
+        <a class="nav-link nav-internal" href="../community/contribution-guide/index.html">Contribution guide</a>
     </li>
                         
                             <li class="nav-item">
@@ -375,21 +374,6 @@
   </div>
 
   
-  <div class="sidebar-start-items sidebar-primary__section">
-    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">
-    Section Navigation
-  </p>
-  <div class="bd-toc-item navbar-nav">
-    <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">1.x Changelog</a></li>
-</ul>
-
-  </div>
-</nav>
-    </div>
-  </div>
-  
 
   
   <div class="sidebar-end-items sidebar-primary__section">
@@ -415,1028 +399,181 @@
             <article class="bd-article" role="main">
               
   <section id="x-changelog">
-<h1>1.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
-<section id="id1">
-<h2>1.51.7<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Fix a regression in path resolution that prevented <code class="docutils literal notranslate"><span class="pre">404</span></code> being raised for some invalid paths</p></li>
-<li><p>Fix a <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code> for the wrong name <code class="docutils literal notranslate"><span class="pre">starlite/middleware/session/__init__.py</span></code></p></li>
-</ul>
-</section>
-<section id="id2">
-<h2>1.51.6<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Fix optional query parameter openapi schema generation</p></li>
-</ul>
-</section>
-<section id="id3">
-<h2>1.51.5<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Fix domain configuration handling in JWT Auth</p></li>
-</ul>
-</section>
-<section id="id4">
-<h2>1.51.4<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>support passing type encoders to <code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></p></li>
-</ul>
-</section>
-<section id="id5">
-<h2>1.51.3<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Fix static path validation for <code class="docutils literal notranslate"><span class="pre">/</span></code></p></li>
-</ul>
-</section>
-<section id="id6">
-<h2>1.51.2<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Fix for security advisory <a class="github reference external" href="https://github.com/starlite-api/starlite/security/advisories/GHSA-p24m-863f-fm6q">starlite-api/starlite</a></p></li>
-</ul>
-</section>
-<section id="id7">
-<h2>1.51.1<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>Fix critical bug in parsing headers &#64;knowsuchagency</p></li>
-</ul>
-</section>
-<section id="id8">
-<h2>1.51.0<a class="headerlink" href="#id8" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix optional sequence query param</p></li>
-<li><p>fix memory leak in logging middleware</p></li>
-<li><p>add missing CORS headers on exception responses</p></li>
-<li><p>configure logger and force “DEBUG” level in debug mode</p></li>
-<li><p>allow on-app-init hooks to modify initial state</p></li>
-<li><p>add exception logging in debug mode</p></li>
-</ul>
-</section>
-<section id="id9">
-<h2>1.50.2<a class="headerlink" href="#id9" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>return valid OAuth2 response body by default</p></li>
-<li><p>correctly handle async-callable classes as dependencies</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">type_encoders</span></code> pickle bug when using response caching</p></li>
-</ul>
-</section>
-<section id="id10">
-<h2>1.50.1<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix typo in jinja extra</p></li>
-</ul>
-</section>
-<section id="id11">
-<h2>1.50.0<a class="headerlink" href="#id11" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix expected OpenAPI components in <code class="docutils literal notranslate"><span class="pre">test_merged_components_correct</span></code></p></li>
-<li><p>fix missing / wrong dependencies for Jinja2 extra</p></li>
-<li><p>add msgspec typed decoding</p></li>
-<li><p>add async test client</p></li>
-<li><p>prioritize plugins when creating DTOs</p></li>
-</ul>
-</section>
-<section id="id12">
-<h2>1.49.0<a class="headerlink" href="#id12" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add reserved handler kwarg <cite>body</cite></p></li>
-<li><p>add support for <cite>Path</cite> alongside <cite>PurePath</cite> for serialization</p></li>
-<li><p>add CLI commands for OpenAPI to TypeScript and OpenAPI schema generation</p></li>
-<li><p>ensure HTTP requests with invalid payloads return 400.</p></li>
-<li><p>ensure unique OpenAPI operation IDs</p></li>
-<li><p>fix issue when response is an empty iterable of DTOs</p></li>
-<li><p>fix <cite>meter</cite> in OpenTelemetry middleware being passed a</p></li>
-</ul>
-</section>
-<section id="id13">
-<h2>1.48.1<a class="headerlink" href="#id13" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>rename <code class="docutils literal notranslate"><span class="pre">enc_hook</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">default</span></code> in <code class="docutils literal notranslate"><span class="pre">encode_json</span></code></p></li>
-<li><p>re-enable <code class="docutils literal notranslate"><span class="pre">super()</span></code> calls to <code class="docutils literal notranslate"><span class="pre">Response.serializer</span></code></p></li>
-<li><p>extend serializable type</p></li>
-<li><p>support application factory pattern in CLI <code class="docutils literal notranslate"><span class="pre">run</span></code> command</p></li>
-</ul>
-</section>
-<section id="id14">
-<h2>1.48.0<a class="headerlink" href="#id14" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add docs versioning.</p></li>
-<li><p>add support for layered <code class="docutils literal notranslate"><span class="pre">type_encoders</span></code>.</p></li>
-<li><p>fix Sorting of tags in OpenAPI schema.</p></li>
-<li><p>fix rendering of Enum params in OpenAPI.</p></li>
-<li><p>fix swagger check for schema.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">fast-query-parsers</span></code> and <code class="docutils literal notranslate"><span class="pre">pydantic</span></code>.</p></li>
-</ul>
-</section>
-<section id="id15">
-<h2>1.47.0<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix Don’t import <code class="docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code> by default in <code class="docutils literal notranslate"><span class="pre">starlite.middleware.sessions</span></code>.</p></li>
-<li><p>add Auto generation of DTOs from response data.</p></li>
-<li><p>add Media type inference to HTTP handlers.</p></li>
-<li><p>add Support differently named path parameters.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">fast-query-parsers</span></code>.</p></li>
-</ul>
-</section>
-<section id="id16">
-<h2>1.46.0<a class="headerlink" href="#id16" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add CLI.</p></li>
-<li><p>add Support <code class="docutils literal notranslate"><span class="pre">Cookie</span></code> instances in <code class="docutils literal notranslate"><span class="pre">Response.set_cookie</span></code>.</p></li>
-<li><p>add Support for controlling Pydantic models’ alias in OpenAPI Schema.</p></li>
-<li><p>fix Jinja Template response ignores MediaType settings.</p></li>
-<li><p>fix Make SessionAuth openapi_schema use backend_config.key.</p></li>
-<li><p>fix Support utf-8 encoded strings in form data.</p></li>
-<li><p>update Move <code class="docutils literal notranslate"><span class="pre">JinjaTemplateEngine</span></code> and <code class="docutils literal notranslate"><span class="pre">MakoTemplateEngine</span></code> to contrib.</p></li>
-<li><p>update Update template config.</p></li>
-</ul>
-</section>
-<section id="id17">
-<h2>1.45.1<a class="headerlink" href="#id17" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix controller support for mixed websocket and http route handlers.</p></li>
-<li><p>fix serialization of pydantic types.</p></li>
-</ul>
-</section>
-<section id="id18">
-<h2>1.45.0<a class="headerlink" href="#id18" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">MessagePack</span></code> support and serialization with <code class="docutils literal notranslate"><span class="pre">msgspec</span></code>.</p></li>
-<li><p>fix OpenAPI support for custom responses with generic types.</p></li>
-<li><p>fix OpenAPI support for dynamic route handlers.</p></li>
-<li><p>fix TestClient handling of escaped ampersands in query params.</p></li>
-<li><p>fix logger propagation causing duplicate messages.</p></li>
-<li><p>fix mounting starlette apps require trailing slashes.</p></li>
-<li><p>fix rate-limiting of mount paths.</p></li>
-</ul>
-</section>
-<section id="id19">
-<h2>1.44.0<a class="headerlink" href="#id19" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add support for pagination.</p></li>
-<li><p>add new multipart parser.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">urlencoded</span></code> parsing.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">OpenAPIController</span></code> when ASGI <code class="docutils literal notranslate"><span class="pre">root_path</span></code> is set on ASGI server.</p></li>
-<li><p>fix generator based dependencies cached responses.</p></li>
-</ul>
-</section>
-<section id="id20">
-<h2>1.43.1<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>change <code class="docutils literal notranslate"><span class="pre">StructLoggingConfing.processor</span></code> type hint to <code class="docutils literal notranslate"><span class="pre">List</span></code>.</p></li>
-<li><p>fix cookie caching issues.</p></li>
-<li><p>honour documentation_only flag for cookies.</p></li>
-<li><p>remove <code class="docutils literal notranslate"><span class="pre">SessionAuth</span></code> import.</p></li>
-<li><p>support legacy OpenAPI file upload format.</p></li>
-</ul>
-</section>
-<section id="id21">
-<h2>1.43.0<a class="headerlink" href="#id21" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add security module and JWT auth contrib.</p></li>
-<li><p>deprecate <code class="docutils literal notranslate"><span class="pre">middleware.session.memcached_backend.MemcachedBackend.delete_all</span></code>.</p></li>
-</ul>
-</section>
-<section id="id22">
-<h2>1.42.0<a class="headerlink" href="#id22" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>support different types of path parameters for different leaf nodes.</p></li>
-<li><p>add dependencies with <code class="docutils literal notranslate"><span class="pre">yield</span></code>.</p></li>
-<li><p>update custom state injection and add <code class="docutils literal notranslate"><span class="pre">ImmutableState</span></code>.</p></li>
-<li><p>fix #854 - Incorrect path resolution of ‘path’ type parameters.</p></li>
-<li><p>fix #849 - Make LoggingMiddleware handle request bodies correctly.</p></li>
-</ul>
-</section>
-<section id="id23">
-<h2>1.41.0<a class="headerlink" href="#id23" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>general performance optimization.</p></li>
-<li><p>fix #841: change <code class="docutils literal notranslate"><span class="pre">middleware.session.sqlalchemy_backend.SessionModelMixin.data</span></code> to <code class="docutils literal notranslate"><span class="pre">LargeBinary</span></code>.</p></li>
-</ul>
-</section>
-<section id="id24">
-<h2>1.40.1<a class="headerlink" href="#id24" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix for improper parsing of sequence query params declared in nested dependencies.</p></li>
-<li><p>fix for header parsing from iterables.</p></li>
-</ul>
-</section>
-<section id="id25">
-<h2>1.40.0<a class="headerlink" href="#id25" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">OpenTelemetry</span></code> instrumentation contrib package.</p></li>
-<li><p>add forward ref resolution to signature models, allowing for usage with future annotations.</p></li>
-<li><p>add handling of compressed “body” in logging middleware.</p></li>
-<li><p>breaking: removed per request dependency caching.</p></li>
-<li><p>fix 404 where current node has handlers and child route has path params.</p></li>
-<li><p>fix flaky SQLA-session-backend tests.</p></li>
-<li><p>update OpenAPI generation to hide automatically created OPTIONS routes in schema.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">AllowedHosts</span></code> and <code class="docutils literal notranslate"><span class="pre">CompressionMiddleware</span></code> application to handler level.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">request_factory.{_default_route_handler,default_app}</span></code> to have deferred bootstrap.</p></li>
-<li><p>update the routing layer and param parsing to improve performance.</p></li>
-</ul>
-</section>
-<section id="id26">
-<h2>1.39.0<a class="headerlink" href="#id26" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code>.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">URL</span></code>, <code class="docutils literal notranslate"><span class="pre">URLPath</span></code> and <code class="docutils literal notranslate"><span class="pre">Address</span></code> datastructures.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">send_as_attachment</span></code> flag for <code class="docutils literal notranslate"><span class="pre">StaticFiles</span></code>.</p></li>
-<li><p>add handling of <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> requests.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">content-disposition</span></code> in <code class="docutils literal notranslate"><span class="pre">html_mode</span></code> StaticFiles.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">filename</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">FileResponse</span></code> set for <code class="docutils literal notranslate"><span class="pre">StaticFiles</span></code> response.</p></li>
-<li><p>refactor builtin middlewares.</p></li>
-<li><p>remove Python 3.7 support.</p></li>
-<li><p>remove <code class="docutils literal notranslate"><span class="pre">starlette</span></code> as a dependency.</p></li>
-</ul>
-</section>
-<section id="id27">
-<h2>1.38.0<a class="headerlink" href="#id27" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">AllowedHostsMiddleware</span></code>.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">*args</span></code> override to <code class="docutils literal notranslate"><span class="pre">Logger</span></code> protocol.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">QueryMultiDict</span></code> for <code class="docutils literal notranslate"><span class="pre">request.query</span></code> and <code class="docutils literal notranslate"><span class="pre">socket.query</span></code>.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">ServerErrorMiddleware</span></code> with own exception printer.</p></li>
-<li><p>fix resolving starlette responses.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">path_params</span></code> key to always exist in scope.</p></li>
-</ul>
-</section>
-<section id="id28">
-<h2>1.37.0<a class="headerlink" href="#id28" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add ‘gzip’ compression.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">StaticFiles</span></code> to replace Starlette’s version + support for <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">head</span></code> decorator.</p></li>
-<li><p>remove Starlette <code class="docutils literal notranslate"><span class="pre">Middleware</span></code> type from typing.</p></li>
-</ul>
-</section>
-<section id="id29">
-<h2>1.36.0<a class="headerlink" href="#id29" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code> class.</p></li>
-<li><p>add layering for opt dictionary.</p></li>
-<li><p>add per request caching of dependencies.</p></li>
-<li><p>add<code class="docutils literal notranslate"><span class="pre">Headers</span></code>, <code class="docutils literal notranslate"><span class="pre">MutableHeaders</span></code> and update <code class="docutils literal notranslate"><span class="pre">FormMultiDict</span></code> to use the <code class="docutils literal notranslate"><span class="pre">multidict</span></code> library.</p></li>
-<li><p>fix asgi/websocket handlers when <strong>future</strong> annotations is used.</p></li>
-<li><p>removed “method” from <code class="docutils literal notranslate"><span class="pre">ResponseExtractorField</span></code>.</p></li>
-<li><p>update dependency resolution in kwargs model to run concurrently.</p></li>
-</ul>
-</section>
-<section id="id30">
-<h2>1.35.1<a class="headerlink" href="#id30" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix hard dependency on external <code class="docutils literal notranslate"><span class="pre">cryptography</span></code> package when importing <code class="docutils literal notranslate"><span class="pre">starlite</span></code></p></li>
-<li><p>fix invalid default <code class="docutils literal notranslate"><span class="pre">base_url</span></code> for <code class="docutils literal notranslate"><span class="pre">TestClient</span></code></p></li>
-</ul>
-</section>
-<section id="id31">
-<h2>1.35.0<a class="headerlink" href="#id31" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add context-manager when using SQLAlchemy sessions.</p></li>
-<li><p>add support for mounting ASGI applications.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin.to_dict()</span></code> where instance has relationship raising an exception.</p></li>
-<li><p>update route registration to ensure unique handlers.</p></li>
-<li><p>update routing logic to use a cleaner architecture.</p></li>
-<li><p>update sessions to support explicitly setting to <code class="docutils literal notranslate"><span class="pre">Empty</span></code>.</p></li>
-<li><p>update test client to run session creation in the client’s portal.</p></li>
-</ul>
-</section>
-<section id="id32">
-<h2>1.34.0<a class="headerlink" href="#id32" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add a <code class="docutils literal notranslate"><span class="pre">__test__</span> <span class="pre">=</span> <span class="pre">False</span></code> attribute to the <code class="docutils literal notranslate"><span class="pre">TestClient</span></code> so it won’t get collected by pytest together with an async test.</p></li>
-<li><p>add support for server-side sessions.</p></li>
-<li><p>fix an issue where header values would be forced to lower case.</p></li>
-</ul>
-</section>
-<section id="id33">
-<h2>1.33.0<a class="headerlink" href="#id33" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">TestClient</span></code> to replace Starlette.</p></li>
-</ul>
-</section>
-<section id="id34">
-<h2>1.32.0<a class="headerlink" href="#id34" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">BackgroundTask</span></code> and <code class="docutils literal notranslate"><span class="pre">BackgroundTasks</span></code> to replace Starlette.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">Etag</span></code> support to <code class="docutils literal notranslate"><span class="pre">File</span></code> and update response containers.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">RedirectResponse</span></code>, <code class="docutils literal notranslate"><span class="pre">FileResponse</span></code> and <code class="docutils literal notranslate"><span class="pre">StreamingResponse</span></code> to replace Starlette.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">status_codes</span></code> constants.</p></li>
-<li><p>fix cache classes being coupled to <code class="docutils literal notranslate"><span class="pre">asyncio</span></code>.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">Response</span></code> to replace Starlette.</p></li>
-</ul>
-</section>
-<section id="id35">
-<h2>1.31.0<a class="headerlink" href="#id35" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add support for ETag headers.</p></li>
-<li><p>add support Cache-Control headers.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">Partial</span></code> handling of <code class="docutils literal notranslate"><span class="pre">ClassVar</span></code>.</p></li>
-<li><p>update CSRFMiddleware to support excluding routes.</p></li>
-</ul>
-</section>
-<section id="id36">
-<h2>1.30.0<a class="headerlink" href="#id36" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">url_for_static_asset</span></code> path resolver function.</p></li>
-<li><p>fix SQLAlchemy plugin maps JSON column types to <code class="docutils literal notranslate"><span class="pre">Union[Dict,</span> <span class="pre">List]</span></code> on DTOs.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">SessionMiddleware</span></code> handling non-session cookies with <code class="docutils literal notranslate"><span class="pre">session</span></code> anywhere in their name.</p></li>
-<li><p>update a <code class="docutils literal notranslate"><span class="pre">TypeVar</span></code> for <code class="docutils literal notranslate"><span class="pre">ExceptionHandler</span></code> exception parameter.</p></li>
-</ul>
-</section>
-<section id="id37">
-<h2>1.29.0<a class="headerlink" href="#id37" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add native support for <code class="docutils literal notranslate"><span class="pre">TypedDict</span></code> as data type.</p></li>
-</ul>
-</section>
-<section id="id38">
-<h2>1.28.1<a class="headerlink" href="#id38" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">QueueListenerHandler</span></code> using stdlib <code class="docutils literal notranslate"><span class="pre">QueueListenerHandler</span></code>.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">pydantic-factories</span></code> to <code class="docutils literal notranslate"><span class="pre">v1.11.1</span></code>.</p></li>
-</ul>
-</section>
-<section id="id39">
-<h2>1.28.0<a class="headerlink" href="#id39" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">csrf_input</span></code> template context value.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">csrf_token</span></code> template callable.</p></li>
-<li><p>add support for pydantic’s <code class="docutils literal notranslate"><span class="pre">ConstrainedDate</span></code> in OpenAPI schema.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">NoReturn</span></code> as allowed return typing for <code class="docutils literal notranslate"><span class="pre">delete</span></code> decorators.</p></li>
-<li><p>fix signature model for dependency with <code class="docutils literal notranslate"><span class="pre">skip_validation</span></code> and <code class="docutils literal notranslate"><span class="pre">default</span></code>.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">QueueListenerHandler</span></code> to log to stderr by default.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">TemplateEngineProtocol</span></code> to support registering template callables.</p></li>
-</ul>
-</section>
-<section id="id40">
-<h2>1.27.0<a class="headerlink" href="#id40" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">url_for</span></code> function in templates.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">redis</span></code> cache backend.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">memcached</span></code> cache backend.</p></li>
-</ul>
-</section>
-<section id="id41">
-<h2>1.26.1<a class="headerlink" href="#id41" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix optional <code class="docutils literal notranslate"><span class="pre">UploadFile</span></code> not being allowed.</p></li>
-</ul>
-</section>
-<section id="id42">
-<h2>1.26.0<a class="headerlink" href="#id42" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">cache</span></code> property getter to <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code>.</p></li>
-<li><p>add support for creating test sessions from raw session cookies.</p></li>
-<li><p>add support for using custom <code class="docutils literal notranslate"><span class="pre">Request</span></code> and <code class="docutils literal notranslate"><span class="pre">WebSocket</span></code> classes.</p></li>
-<li><p>fix large file uploads with <code class="docutils literal notranslate"><span class="pre">httpx</span></code>.</p></li>
-<li><p>fix route handler name indexing.</p></li>
-<li><p>update OpenAPIController to configure bundle download paths.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">RequestFactory</span></code> to assign empty session dict by default.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">SQLAlchemyConfig</span></code> session<em>maker</em>* attributes to protocols.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">SQLAlchemyConfig</span></code> to support either passing an instance or setting connection string.</p></li>
-<li><p>update templating to inject request into template context.</p></li>
-</ul>
-</section>
-<section id="id43">
-<h2>1.25.0<a class="headerlink" href="#id43" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">app.route_reverse</span></code> method.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPluginConfig</span></code> to allow setting <code class="docutils literal notranslate"><span class="pre">before_send_handler</span></code>.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPluginConfig</span></code> to expose <code class="docutils literal notranslate"><span class="pre">engine</span></code> and <code class="docutils literal notranslate"><span class="pre">sessionmaker</span></code>.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code> to handle <code class="docutils literal notranslate"><span class="pre">SQLAlchemy</span> <span class="pre">2.0</span></code> column types.</p></li>
-</ul>
-</section>
-<section id="id44">
-<h2>1.24.0<a class="headerlink" href="#id44" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update <code class="docutils literal notranslate"><span class="pre">RequestFactory</span></code>.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code> to support connection and dependency injection.</p></li>
-</ul>
-</section>
-<section id="id45">
-<h2>1.23.1<a class="headerlink" href="#id45" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">httpx</span></code> being a required dependency.</p></li>
-</ul>
-</section>
-<section id="id46">
-<h2>1.23.0<a class="headerlink" href="#id46" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code>.</p></li>
-<li><p>add support for configurable <code class="docutils literal notranslate"><span class="pre">exclude_from_auth</span></code> to <code class="docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code>.</p></li>
-<li><p>refactor to reduce cognitive complexity of code and increase performance.</p></li>
-</ul>
-</section>
-<section id="id47">
-<h2>1.22.0<a class="headerlink" href="#id47" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> support to route handlers.</p></li>
-<li><p>breaking: remove <code class="docutils literal notranslate"><span class="pre">create_test_request</span></code>.</p></li>
-<li><p>breaking: update Starlette to version <code class="docutils literal notranslate"><span class="pre">0.21.0</span></code>. This version changes the TestClient to use <code class="docutils literal notranslate"><span class="pre">httpx</span></code> instead of <code class="docutils literal notranslate"><span class="pre">requests</span></code>, which is a breaking change.</p></li>
-<li><p>fix add default empty session to <code class="docutils literal notranslate"><span class="pre">RequestFactory</span></code>.</p></li>
-</ul>
-</section>
-<section id="id48">
-<h2>1.21.2<a class="headerlink" href="#id48" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix regression in accessing <code class="docutils literal notranslate"><span class="pre">request.headers</span></code> due to caching.</p></li>
-</ul>
-</section>
-<section id="id49">
-<h2>1.21.1<a class="headerlink" href="#id49" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">StructLoggingConfig</span></code>.</p></li>
-</ul>
-</section>
-<section id="id50">
-<h2>1.21.0<a class="headerlink" href="#id50" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> hook.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">testing.RequestFactory</span></code> helper class for constructing <code class="docutils literal notranslate"><span class="pre">Request</span></code> objects.</p></li>
-<li><p>refactor logging config and fix default handlers.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">State</span></code> object implements <code class="docutils literal notranslate"><span class="pre">MutableMapping</span></code> interface, attribute access/mutation, <code class="docutils literal notranslate"><span class="pre">copy()</span></code> and <code class="docutils literal notranslate"><span class="pre">dict()</span></code> methods.</p></li>
-<li><p>update internal implementations of <code class="docutils literal notranslate"><span class="pre">HTTPConnection</span></code>, <code class="docutils literal notranslate"><span class="pre">Request</span></code> and <code class="docutils literal notranslate"><span class="pre">WebSocket</span></code>.</p></li>
-<li><p>update typing of <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> method return annotations.</p></li>
-</ul>
-</section>
-<section id="id51">
-<h2>1.20.0<a class="headerlink" href="#id51" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update ASGI typings (<code class="docutils literal notranslate"><span class="pre">scope</span></code>, <code class="docutils literal notranslate"><span class="pre">receive</span></code>, <code class="docutils literal notranslate"><span class="pre">send</span></code>, <code class="docutils literal notranslate"><span class="pre">message</span></code> and <code class="docutils literal notranslate"><span class="pre">ASGIApp</span></code>) to use strong types derived from <a class="reference external" href="https://github.com/django/asgiref">asgiref</a>.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">SessionMiddleware</span></code> to use custom serializer used on request.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">openapi-pydantic-schema</span></code> to <code class="docutils literal notranslate"><span class="pre">v1.3.0</span></code> adding support for <code class="docutils literal notranslate"><span class="pre">__schema_name__</span></code>.</p></li>
-</ul>
-</section>
-<section id="id52">
-<h2>1.19.0<a class="headerlink" href="#id52" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code>.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">media_type</span></code> to <code class="docutils literal notranslate"><span class="pre">ResponseContainer</span></code>.</p></li>
-<li><p>add support for multiple cookies in <code class="docutils literal notranslate"><span class="pre">create_test_request</span></code>.</p></li>
-<li><p>add support for multiple responses documentation by &#64;seladb.</p></li>
-</ul>
-</section>
-<section id="id53">
-<h2>1.18.1<a class="headerlink" href="#id53" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">ResponseHeader</span></code> not being correctly encoded.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code> for v2.0 compatibility.</p></li>
-</ul>
-</section>
-<section id="id54">
-<h2>1.18.0<a class="headerlink" href="#id54" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update <code class="docutils literal notranslate"><span class="pre">serializer</span></code> to handle <code class="docutils literal notranslate"><span class="pre">SecretStr</span></code>, <code class="docutils literal notranslate"><span class="pre">PurePath</span></code> and <code class="docutils literal notranslate"><span class="pre">PurePosixPath</span></code>.</p></li>
-<li><p>update multipart handling to use <a class="reference external" href="https://github.com/starlite-api/starlite-multipart">starlite-multipart</a>.</p></li>
-</ul>
-</section>
-<section id="id55">
-<h2>1.17.2<a class="headerlink" href="#id55" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update <code class="docutils literal notranslate"><span class="pre">Partial</span></code> to support dataclasses.</p></li>
-</ul>
-</section>
-<section id="id56">
-<h2>1.17.1<a class="headerlink" href="#id56" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">url_for</span></code> method similar to Starlette’s.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">AsyncCallable</span></code> to ensure wrapped methods remain unbound.</p></li>
-</ul>
-</section>
-<section id="id57">
-<h2>1.17.0<a class="headerlink" href="#id57" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">SessionMiddleware</span></code>.</p></li>
-</ul>
-</section>
-<section id="id58">
-<h2>1.16.2<a class="headerlink" href="#id58" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">before_request</span></code> regression causing it to not handle returned responses from the hook.</p></li>
-</ul>
-</section>
-<section id="id59">
-<h2>1.16.1<a class="headerlink" href="#id59" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix validation errors raised when using custom state.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">picologging</span></code> integration to use <code class="docutils literal notranslate"><span class="pre">picologging.dictConfig</span></code>.</p></li>
-</ul>
-</section>
-<section id="id60">
-<h2>1.16.0<a class="headerlink" href="#id60" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code>.</p></li>
-<li><p>add options to disable OpenAPI documentation sites and schema endpoints via config.</p></li>
-<li><p>refactor <code class="docutils literal notranslate"><span class="pre">KwargsModel</span></code>.</p></li>
-</ul>
-</section>
-<section id="id61">
-<h2>1.15.0<a class="headerlink" href="#id61" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">examples/</span></code> directory and tests for complete documentation examples.</p></li>
-<li><p>replace <code class="docutils literal notranslate"><span class="pre">pydantic-openapi-schema</span></code> import from <code class="docutils literal notranslate"><span class="pre">v3_0_3</span></code> with import from <code class="docutils literal notranslate"><span class="pre">v3_10_0</span></code>.</p></li>
-</ul>
-</section>
-<section id="id62">
-<h2>1.14.1<a class="headerlink" href="#id62" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix OpenAPI schema for <code class="docutils literal notranslate"><span class="pre">UploadFile</span></code>.</p></li>
-<li><p>remove empty aliases from field parameters.</p></li>
-<li><p>update OpenAPI security definitions into OpenAPI configuration.</p></li>
-</ul>
-</section>
-<section id="id63">
-<h2>1.14.0<a class="headerlink" href="#id63" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>refactored brotli middleware typing.</p></li>
-<li><p>update Extended <code class="docutils literal notranslate"><span class="pre">PluginProtocol</span></code> with an <code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> method.</p></li>
-</ul>
-</section>
-<section id="id64">
-<h2>1.13.1<a class="headerlink" href="#id64" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">is_class_and_subclass</span></code> not handling type annotations.</p></li>
-</ul>
-</section>
-<section id="id65">
-<h2>1.13.0<a class="headerlink" href="#id65" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix remove duplicated detail in <code class="docutils literal notranslate"><span class="pre">HTTPException.__str__()</span></code>.</p></li>
-<li><p>fix removed imports causing <code class="docutils literal notranslate"><span class="pre">MissingDependencyException</span></code> where <code class="docutils literal notranslate"><span class="pre">brotli</span></code> not installed and not required.</p></li>
-<li><p>update Add <code class="docutils literal notranslate"><span class="pre">skip_validation</span></code> flag to <code class="docutils literal notranslate"><span class="pre">Dependency</span></code> function.</p></li>
-<li><p>update Export starlite cookie to header and use it in CSRF middleware and OpenAPI response &#64;seladb.</p></li>
-<li><p>update cache protocol, cache backend integration including locking for sync access.</p></li>
-<li><p>update consistent eager evaluation of async callables across the codebase.</p></li>
-</ul>
-</section>
-<section id="id66">
-<h2>1.12.0<a class="headerlink" href="#id66" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix handling of “*” in routes by &#64;waweber.</p></li>
-<li><p>update middleware typing and addition of <code class="docutils literal notranslate"><span class="pre">DefineMiddleware</span></code>.</p></li>
-</ul>
-</section>
-<section id="id67">
-<h2>1.11.1<a class="headerlink" href="#id67" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>hotfix Exception raised by <code class="docutils literal notranslate"><span class="pre">issubclass</span></code> check.</p></li>
-</ul>
-</section>
-<section id="id68">
-<h2>1.11.0<a class="headerlink" href="#id68" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">Stream</span></code> handling of generators.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">UploadFile</span></code> OpenAPI schema exception.</p></li>
-<li><p>refactor http and path param parsing.</p></li>
-<li><p>update OpenAPIController to use render methods and configurable <code class="docutils literal notranslate"><span class="pre">root</span></code> class var &#64;mobiusxs.</p></li>
-</ul>
-</section>
-<section id="id69">
-<h2>1.10.1<a class="headerlink" href="#id69" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix regression in StaticFiles of resolution of index.html in <code class="docutils literal notranslate"><span class="pre">html_mode=True</span></code>.</p></li>
-</ul>
-</section>
-<section id="id70">
-<h2>1.10.0<a class="headerlink" href="#id70" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>breaking update handling of status code &lt;100, 204 or 304.</p></li>
-<li><p>fix adding only new routes to the route_map by &#64;Dr-Emann.</p></li>
-<li><p>refactor tidy up exceptions.</p></li>
-<li><p>refactor update <code class="docutils literal notranslate"><span class="pre">to_response</span></code> and datastructures.</p></li>
-<li><p>refactor update installation extras.</p></li>
-</ul>
-</section>
-<section id="id71">
-<h2>1.9.2<a class="headerlink" href="#id71" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update installation extras.</p></li>
-</ul>
-</section>
-<section id="id72">
-<h2>1.9.1<a class="headerlink" href="#id72" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add CSRF Middleware and config, &#64;seladb.</p></li>
-<li><p>add starlite ports of BackgroundTask and BackgroundTasks in <code class="docutils literal notranslate"><span class="pre">starlite.datastructures</span></code>.</p></li>
-</ul>
-</section>
-<section id="id73">
-<h2>1.9.0<a class="headerlink" href="#id73" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add support for <a class="reference external" href="https://github.com/microsoft/picologging">picologging</a>.</p></li>
-<li><p>update response headers, handling of cookies and handling of responses.</p></li>
-</ul>
-</section>
-<section id="id74">
-<h2>1.8.1<a class="headerlink" href="#id74" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add piccolo-orm plugin.</p></li>
-<li><p>fix CacheConfig being broken due to pydantic validation bug.</p></li>
-</ul>
-</section>
-<section id="id75">
-<h2>1.8.0<a class="headerlink" href="#id75" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <a class="reference external" href="https://stoplight.io/open-source/elements">Stoplights Elements</a> OpenAPI support &#64;aedify-swi</p></li>
-<li><p>breaking replace <a class="reference external" href="https://github.com/kuimono/openapi-schema-pydantic">openapi-pydantic-schema</a> with <a class="reference external" href="https://github.com/starlite-api/pydantic-openapi-schema">pydantic-openapi-schema</a>.</p></li>
-</ul>
-</section>
-<section id="id76">
-<h2>1.7.3<a class="headerlink" href="#id76" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix to routes being allowed under static paths and improvements to path resolution &#64;Dr-Emann</p></li>
-</ul>
-</section>
-<section id="id77">
-<h2>1.7.2<a class="headerlink" href="#id77" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">OpenAPIConfig.use_handler_docstring</span></code> param.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">Partial</span></code> to annotate fields of nested classes &#64;Harry-Lees.</p></li>
-</ul>
-</section>
-<section id="id78">
-<h2>1.7.1<a class="headerlink" href="#id78" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">Swagger-UI</span></code> support &#64;timwedde.</p></li>
-<li><p>add orjson support to websockets.</p></li>
-</ul>
-</section>
-<section id="id79">
-<h2>1.7.0<a class="headerlink" href="#id79" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">TortoiseORMPlugin</span></code>.</p></li>
-</ul>
-</section>
-<section id="id80">
-<h2>1.6.2<a class="headerlink" href="#id80" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>remove <code class="docutils literal notranslate"><span class="pre">exrex</span></code> from second hand dependencies.</p></li>
-<li><p>update error handling,</p></li>
-</ul>
-</section>
-<section id="id81">
-<h2>1.6.1<a class="headerlink" href="#id81" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">after_response</span></code> hook.</p></li>
-</ul>
-</section>
-<section id="id82">
-<h2>1.6.0<a class="headerlink" href="#id82" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add support for layered parameters.</p></li>
-</ul>
-</section>
-<section id="id83">
-<h2>1.5.4<a class="headerlink" href="#id83" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add Brotli compression middleware by &#64;cofin.</p></li>
-</ul>
-</section>
-<section id="id84">
-<h2>1.5.3<a class="headerlink" href="#id84" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix route handler exception resolution.</p></li>
-<li><p>update path param validation during registration &#64;danesolberg.</p></li>
-</ul>
-</section>
-<section id="id85">
-<h2>1.5.2<a class="headerlink" href="#id85" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix path resolution edge cases.</p></li>
-</ul>
-</section>
-<section id="id86">
-<h2>1.5.1<a class="headerlink" href="#id86" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add gzip middleware support.</p></li>
-<li><p>fix dependency validation failure returning 400 (instead of 500).</p></li>
-<li><p>fix raise exception on routes with duplicate path parameters &#64;danesolberg.</p></li>
-</ul>
-</section>
-<section id="id87">
-<h2>1.5.0<a class="headerlink" href="#id87" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">requests</span></code> as optional dependency &#64;Bobronium.</p></li>
-<li><p>add layered middleware support.</p></li>
-<li><p>fix CORS headers and middlewares not processing exceptions.</p></li>
-<li><p>fix OpenAPI array items being double nested.</p></li>
-<li><p>fix order of exception handlers.</p></li>
-<li><p>update exception handlers to work in layers.</p></li>
-</ul>
-</section>
-<section id="id88">
-<h2>1.4.2<a class="headerlink" href="#id88" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">status_code</span></code> missing from exception OpenAPI documentation &#64;timwedde.</p></li>
-<li><p>fix exception <code class="docutils literal notranslate"><span class="pre">extra</span></code> being mistyped in OpenAPI documentation.</p></li>
-</ul>
-</section>
-<section id="id89">
-<h2>1.4.1<a class="headerlink" href="#id89" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add better detection of async callables.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">None</span></code> return value from handler with <code class="docutils literal notranslate"><span class="pre">204</span></code> has empty response content.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">Provide</span></code> properly detects async <code class="docutils literal notranslate"><span class="pre">&#64;classmethod</span></code> as async callables.</p></li>
-<li><p>update exception handlers to be configurable at each layer of the application.</p></li>
-</ul>
-</section>
-<section id="id90">
-<h2>1.4.0<a class="headerlink" href="#id90" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add dependency function &#64;peterschutt.</p></li>
-<li><p>add raise <code class="docutils literal notranslate"><span class="pre">ImproperConfiguredException</span></code> when user-defined generic type resolved as openapi parameter &#64;peterschutt.</p></li>
-<li><p>add selective deduplication of openapi parameters &#64;peterschutt.</p></li>
-<li><p>add test for generic model injection &#64;Goldziher.</p></li>
-<li><p>update Starlette to 0.20.3.</p></li>
-</ul>
-</section>
-<section id="id91">
-<h2>1.3.9<a class="headerlink" href="#id91" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>include dependencies in docs &#64;timwedde.</p></li>
-</ul>
-</section>
-<section id="id92">
-<h2>1.3.8<a class="headerlink" href="#id92" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">Router.tags</span></code> being omitted from the docs &#64;peterschutt.</p></li>
-</ul>
-</section>
-<section id="id93">
-<h2>1.3.7<a class="headerlink" href="#id93" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix logging configure hanging in startup.</p></li>
-</ul>
-</section>
-<section id="id94">
-<h2>1.3.6<a class="headerlink" href="#id94" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update validation errors to return more useful json objects.</p></li>
-</ul>
-</section>
-<section id="id95">
-<h2>1.3.5<a class="headerlink" href="#id95" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add memoization to openAPI schema.</p></li>
-<li><p>update Starlette to 0.20.1.</p></li>
-</ul>
-</section>
-<section id="id96">
-<h2>1.3.4<a class="headerlink" href="#id96" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">DTOFactory</span></code> handling of optional fields &#64;peterschutt.</p></li>
-</ul>
-</section>
-<section id="id97">
-<h2>1.3.3<a class="headerlink" href="#id97" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update pydantic to 1.9.1.</p></li>
-</ul>
-</section>
-<section id="id98">
-<h2>1.3.2<a class="headerlink" href="#id98" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix static path resolution when static files are served from “/”.</p></li>
-<li><p>refactor logging.</p></li>
-</ul>
-</section>
-<section id="id99">
-<h2>1.3.1<a class="headerlink" href="#id99" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix reserved keywords appearing in OpenAPI documentation &#64;Joko013.</p></li>
-</ul>
-</section>
-<section id="id100">
-<h2>1.3.0<a class="headerlink" href="#id100" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update middleware call order &#64;slavugan.</p></li>
-</ul>
-</section>
-<section id="id101">
-<h2>1.2.5<a class="headerlink" href="#id101" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix ‘request.body()’ being only readable once by setting the read result into scope.</p></li>
-</ul>
-</section>
-<section id="id102">
-<h2>1.2.4<a class="headerlink" href="#id102" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update <code class="docutils literal notranslate"><span class="pre">Starlette</span></code> to version <code class="docutils literal notranslate"><span class="pre">0.19.0</span></code>.</p></li>
-</ul>
-</section>
-<section id="id103">
-<h2>1.2.3<a class="headerlink" href="#id103" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix regression in error handling, returning 404 instead of 500.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code> to be non-blocking &#64;madlad33.</p></li>
-</ul>
-</section>
-<section id="id104">
-<h2>1.2.2<a class="headerlink" href="#id104" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix regression with controller multi-registration.</p></li>
-</ul>
-</section>
-<section id="id105">
-<h2>1.2.1<a class="headerlink" href="#id105" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix handling of empty request body &#64;t1waz.</p></li>
-</ul>
-</section>
-<section id="id106">
-<h2>1.2.0<a class="headerlink" href="#id106" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add run_in_thread configuration.</p></li>
-</ul>
-</section>
-<section id="id107">
-<h2>1.1.1<a class="headerlink" href="#id107" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add tags support to Controller &#64;tclasen.</p></li>
-<li><p>update OpenAPI operationIds to be more humanized &#64;tclasen.</p></li>
-</ul>
-</section>
-<section id="id108">
-<h2>1.1.0<a class="headerlink" href="#id108" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add response caching support.</p></li>
-</ul>
-</section>
-<section id="id109">
-<h2>1.0.5<a class="headerlink" href="#id109" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix typing of <code class="docutils literal notranslate"><span class="pre">Partial</span></code> &#64;to-ph.</p></li>
-</ul>
-</section>
-<section id="id110">
-<h2>1.0.4<a class="headerlink" href="#id110" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update <code class="docutils literal notranslate"><span class="pre">Request.state</span></code> to be defined already in the application &#64;ashwinvin.</p></li>
-</ul>
-</section>
-<section id="id111">
-<h2>1.0.3<a class="headerlink" href="#id111" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add argument validation on <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> and <code class="docutils literal notranslate"><span class="pre">Body</span></code>.</p></li>
-</ul>
-</section>
-<section id="id112">
-<h2>1.0.2<a class="headerlink" href="#id112" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix lifecycle injection of application state into class methods.</p></li>
-</ul>
-</section>
-<section id="id113">
-<h2>1.0.1<a class="headerlink" href="#id113" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">MissingDependencyException</span></code> inheritance chain.</p></li>
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code> missing as export in <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method.</p></li>
-</ul>
-</section>
-<section id="id114">
-<h2>1.0.0<a class="headerlink" href="#id114" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add template support &#64;ashwinvin.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">starlite.request</span></code> by renaming it to <code class="docutils literal notranslate"><span class="pre">starlite.connection</span></code>.</p></li>
-<li><p>update the kwarg parsing and data injection logic to compute required kwargs for each route handler during application bootstrap.</p></li>
-<li><p>update the redoc UI path from <code class="docutils literal notranslate"><span class="pre">/schema/redoc</span></code> to <code class="docutils literal notranslate"><span class="pre">/schema</span></code> &#64;yudjinn.</p></li>
-</ul>
-</section>
-<section id="id115">
-<h2>0.7.2<a class="headerlink" href="#id115" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add missing support for starlette background tasks.</p></li>
-<li><p>fix error with static files not working with root route.</p></li>
-<li><p>fix function signature modelling ignoring non-annotated fields.</p></li>
-<li><p>fix headers being case-sensitive.</p></li>
-</ul>
-</section>
-<section id="id116">
-<h2>0.7.1<a class="headerlink" href="#id116" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update handling of paths without parameters.</p></li>
-</ul>
+<h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="alpha1">
+<h2>2.0.0alpha1<a class="headerlink" href="#alpha1" title="Permalink to this heading">#</a></h2>
+<section id="new-features">
+<h3>New features<a class="headerlink" href="#new-features" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Validation of controller route handler methods</dt><dd><p>Starlite will now validate that no duplicate handlers (that is, they have the same
+path and same method) exist.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1144">starlite-api/starlite#1144</a></p>
+</dd>
+<dt>HTMX support</dt><dd><p>Basic support for HTMX requests and responses.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1086">starlite-api/starlite#1086</a></p>
+</dd>
+<dt>Alternate constructor <code class="docutils literal notranslate"><span class="pre">Starlite.from_config</span></code></dt><dd><p><a class="reference internal" href="reference/app.html#starlite.app.Starlite.from_config" title="starlite.app.Starlite.from_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Starlite.from_config</span></code></a> was added to the
+<a class="reference internal" href="reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> class which allows to construct an instance
+from an <a class="reference internal" href="reference/config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1190">starlite-api/starlite#1190</a></p>
+</dd>
+<dt>Web concurrency option for CLI <code class="docutils literal notranslate"><span class="pre">run</span></code> command</dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">--wc</span></code> / –web-concurrency` option was added to the <code class="docutils literal notranslate"><span class="pre">starlite</span> <span class="pre">run</span></code> command,
+enabling users to specify the amount of worker processes to use. A corresponding
+environment variable <code class="docutils literal notranslate"><span class="pre">WEB_CONCURRENCY</span></code> was added as well</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1218">starlite-api/starlite#1218</a></p>
+</dd>
+<dt>Validation of <code class="docutils literal notranslate"><span class="pre">state</span></code> parameter in handler functions</dt><dd><p>Type annotations of the reserved <code class="docutils literal notranslate"><span class="pre">state</span></code> parameter in handler functions will
+now be validated such that annotations using an unsupported type will raise a
+<a class="reference internal" href="reference/exceptions.html#starlite.exceptions.ImproperlyConfiguredException" title="starlite.exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a>.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1264">starlite-api/starlite#1264</a></p>
+</dd>
+<dt>Generic application state</dt><dd><p><a class="reference internal" href="reference/connection.html#starlite.connection.ASGIConnection" title="starlite.connection.base.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> and its subclasses are now generic on <code class="docutils literal notranslate"><span class="pre">State</span></code>
+which allow to to fully type hint a request as <code class="docutils literal notranslate"><span class="pre">Request[UserType,</span> <span class="pre">AuthType,</span> <span class="pre">StateType]</span></code>.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1030">starlite-api/starlite#1030</a></p>
+</dd>
+<dt>Dependency injection of classes</dt><dd><p>Support using classes (not class instances, which were already supported) as dependency providers.
+With this, now every callable is supported as a dependency provider.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1143">starlite-api/starlite#1143</a></p>
+</dd>
+<dt>Event bus</dt><dd><p>A simple event bus system for Starlite, supporting synchronous and asynchronous listeners and emitters, providing a
+similar interface to handlers. It currently features a simple in-memory, process-local backend. For the future,
+backends that allow inter-process event dispatching are planned.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1105">starlite-api/starlite#1105</a></p>
+</dd>
+<dt>Unified storage interfaces <strong>[Breaking]</strong></dt><dd><p>Storage backends for server-side sessions and <a class="reference internal" href="reference/cache.html#starlite.cache.Cache" title="starlite.cache.Cache"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cache</span></code></a> have been unified and replaced
+by the <a class="reference internal" href="usage/storage.html"><span class="doc">storage module</span></a>, which implements generic asynchronous key/values stores backed
+by memory, the file system or redis.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This is a breaking change and you need to change your session / cache configuration accordingly</p>
+</div>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1184">starlite-api/starlite#1184</a></p>
+</dd>
+</dl>
+</section>
+<section id="changes">
+<h3>Changes<a class="headerlink" href="#changes" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Relaxed type annotations</dt><dd><p>Type annotations across the library have been relaxed to more generic forms, for example
+<code class="docutils literal notranslate"><span class="pre">Iterable[str]</span></code> instead of <code class="docutils literal notranslate"><span class="pre">List[str]</span></code> or <code class="docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code> instead of <code class="docutils literal notranslate"><span class="pre">Dict[str,</span> <span class="pre">str]</span></code>.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1140">starlite-api/starlite#1140</a></p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">type_encoders</span></code> support in <code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">type_encoders</span></code> support has been added to
+<a class="reference internal" href="reference/security/base.html#starlite.security.base.AbstractSecurityConfig" title="starlite.security.base.AbstractSecurityConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></a>, enabling support for customized
+<code class="docutils literal notranslate"><span class="pre">type_encoders</span></code> for example in <a class="reference internal" href="reference/contrib/jwt.html#starlite.contrib.jwt.JWTAuth" title="starlite.contrib.jwt.jwt_auth.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a>.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1167">starlite-api/starlite#1167</a></p>
+</dd>
+<dt>Renamed handler module names <strong>[Breaking]</strong></dt><dd><p>The modules containing route handlers have been renamed to prevent ambiguity between module and handler names.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">starlite.handlers.asgi</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">starlite.handlers.asgi_handlers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">starlite.handlers.http</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">starlite.handlers.http_handlers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">starlite.handlers.websocket</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">starlite.handlers.websocket_handlers</span></code></p></li>
+</ul>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1170">starlite-api/starlite#1170</a></p>
+</dd>
+<dt>New plugin protocols <strong>[Breaking]</strong></dt><dd><p>The plugin protocol has been split into three distinct protocols, covering different use cases:</p>
+<dl class="simple">
+<dt><a class="reference internal" href="reference/plugins.html#starlite.plugins.InitPluginProtocol" title="starlite.plugins.InitPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a></dt><dd><p>Hook into an application’s initialization process</p>
+</dd>
+<dt><a class="reference internal" href="reference/plugins.html#starlite.plugins.SerializationPluginProtocol" title="starlite.plugins.SerializationPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a></dt><dd><p>Extend the serialization and deserialization capabilities of an application</p>
+</dd>
+<dt><a class="reference internal" href="reference/plugins.html#starlite.plugins.OpenAPISchemaPluginProtocol" title="starlite.plugins.OpenAPISchemaPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code></a></dt><dd><p>Extend OpenAPI schema generation</p>
+</dd>
+</dl>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1176">starlite-api/starlite#1176</a></p>
+</dd>
+<dt>Unify response headers and cookies <strong>[Breaking]</strong></dt><dd><p><a class="reference internal" href="usage/responses.html#response-headers"><span class="std std-ref">Response Headers</span></a> and <a class="reference internal" href="usage/responses.html#response-cookies"><span class="std std-ref">Response Cookies</span></a> now have the same
+interface, along with the <code class="docutils literal notranslate"><span class="pre">headers</span></code> and <code class="docutils literal notranslate"><span class="pre">cookies</span></code> keyword arguments to
+<a class="reference internal" href="reference/response.html#starlite.response.Response" title="starlite.response.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a>. They each allow to pass either a
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>, e.g. a dictionary, or a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a> of
+<a class="reference internal" href="reference/datastructures.html#starlite.datastructures.ResponseHeader" title="starlite.datastructures.response_header.ResponseHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseHeaders</span></code></a> or
+<a class="reference internal" href="reference/datastructures.html#starlite.datastructures.Cookie" title="starlite.datastructures.cookie.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookies</span></code></a> respectively.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1209">starlite-api/starlite#1209</a></p>
+</dd>
+<dt>Replace Pydantic models with dataclasses <strong>[Breaking]</strong></dt><dd><p>Several Pydantic models used for configuration have been replaced with dataclasses or plain classes. This change
+should be mostly non-breaking, unless you relied on those configuration objects being Pydantic models. The changed
+models are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference/config.html#starlite.config.allowed_hosts.AllowedHostsConfig" title="starlite.config.allowed_hosts.AllowedHostsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.allowed_hosts.AllowedHostsConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.app.AppConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/cache.html#starlite.cache.CacheConfig" title="starlite.cache.CacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.cache.CacheConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/config.html#starlite.config.compression.CompressionConfig" title="starlite.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.compression.CompressionConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/config.html#starlite.config.cors.CORSConfig" title="starlite.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.cors.CORSConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/config.html#starlite.config.csrf.CSRFConfig" title="starlite.config.csrf.CSRFConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.csrf.CSRFConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/logging/config.html#starlite.logging.config.LoggingConfig" title="starlite.logging.config.LoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.logging.config.LoggingConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/openapi.html#starlite.openapi.OpenAPIConfig" title="starlite.openapi.OpenAPIConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.openapi.OpenAPIConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/static_files.html#starlite.static_files.StaticFilesConfig" title="starlite.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.static_files.StaticFilesConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/template.html#starlite.template.TemplateConfig" title="starlite.template.TemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.template.TemplateConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/contrib/jwt.html#starlite.contrib.jwt.Token" title="starlite.contrib.jwt.jwt_token.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_token.Token</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/contrib/jwt.html#starlite.contrib.jwt.JWTAuth" title="starlite.contrib.jwt.jwt_auth.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_auth.JWTAuth</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/contrib/jwt.html#starlite.contrib.jwt.JWTCookieAuth" title="starlite.contrib.jwt.jwt_auth.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_auth.JWTCookieAuth</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/contrib/jwt.html#starlite.contrib.jwt.OAuth2Login" title="starlite.contrib.jwt.jwt_auth.OAuth2Login"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_auth.OAuth2Login</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/contrib/jwt.html#starlite.contrib.jwt.OAuth2PasswordBearerAuth" title="starlite.contrib.jwt.jwt_auth.OAuth2PasswordBearerAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_auth.OAuth2PasswordBearerAuth</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/contrib/opentelemetry.html#starlite.contrib.opentelemetry.OpenTelemetryConfig" title="starlite.contrib.opentelemetry.OpenTelemetryConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.opentelemetry.OpenTelemetryConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/middleware/logging.html#starlite.middleware.logging.LoggingMiddlewareConfig" title="starlite.middleware.logging.LoggingMiddlewareConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.middleware.logging.LoggingMiddlewareConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/middleware/rate_limit.html#starlite.middleware.rate_limit.RateLimitConfig" title="starlite.middleware.rate_limit.RateLimitConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.middleware.rate_limit.RateLimitConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/middleware/session/base.html#starlite.middleware.session.base.BaseBackendConfig" title="starlite.middleware.session.base.BaseBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.middleware.session.base.BaseBackendConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/middleware/session/client_side.html#starlite.middleware.session.client_side.CookieBackendConfig" title="starlite.middleware.session.client_side.CookieBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.middleware.session.client_side.CookieBackendConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/middleware/session/server_side.html#starlite.middleware.session.server_side.ServerSideSessionConfig" title="starlite.middleware.session.server_side.ServerSideSessionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.middleware.session.server_side.ServerSideSessionConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/response_containers.html#starlite.response_containers.ResponseContainer" title="starlite.response_containers.ResponseContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.response_containers.ResponseContainer</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/response_containers.html#starlite.response_containers.File" title="starlite.response_containers.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.response_containers.File</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/response_containers.html#starlite.response_containers.Redirect" title="starlite.response_containers.Redirect"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.response_containers.Redirect</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/response_containers.html#starlite.response_containers.Stream" title="starlite.response_containers.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.response_containers.Stream</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/security/base.html#starlite.security.base.AbstractSecurityConfig" title="starlite.security.base.AbstractSecurityConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.security.base.AbstractSecurityConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/security/session_auth.html#starlite.security.session_auth.SessionAuth" title="starlite.security.session_auth.SessionAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.security.session_auth.SessionAuth</span></code></a></p></li>
+</ul>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1242">starlite-api/starlite#1242</a></p>
+</dd>
+<dt>SQLAlchemy plugin moved to <code class="docutils literal notranslate"><span class="pre">contrib</span></code> <strong>[Breaking]</strong></dt><dd><p>The <a class="reference internal" href="reference/contrib/sqlalchemy_1/plugin.html#starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin" title="starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code></a> has moved to <code class="docutils literal notranslate"><span class="pre">starlite.contrib.sqlalchemy_1.plugin</span></code> and will only be compatible with
+the SQLAlchemy 1.4 release line. The newer SQLAlchemy 2.x releases will be supported by the <code class="docutils literal notranslate"><span class="pre">contrib.sqlalchemy</span></code>
+module.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1252">starlite-api/starlite#1252</a></p>
+</dd>
+<dt>Cleanup of the <code class="docutils literal notranslate"><span class="pre">starlite</span></code> namespace  <strong>[Breaking]</strong></dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">starlite</span></code> namespace has been cleared up, removing many names from it, which now have to be imported from
+their respective submodules individually. This was both done to improve developer experience as well as reduce
+the time it takes to <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">starlite</span></code>.
+An overview of the changed import paths can be found in the
+<a class="reference internal" href="../release-notes/migration_guide_2.html#changed-module-paths"><span class="std std-ref">migration guide</span></a></p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1135">starlite-api/starlite#1135</a></p>
+</dd>
+</dl>
+</section>
+<section id="bugfixes">
+<h3>Bugfixes<a class="headerlink" href="#bugfixes" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1256">starlite-api/starlite#1256</a>: Resolving of relative paths in <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></dt><dd><p>Using a relative <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> did not resolve correctly and result in a <code class="docutils literal notranslate"><span class="pre">NotFoundException</span></code></p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1256">starlite-api/starlite#1256</a></p>
+</dd>
+<dt>Fix <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1191">starlite-api/starlite#1191</a>: <code class="docutils literal notranslate"><span class="pre">--reload</span></code> flag to <code class="docutils literal notranslate"><span class="pre">starlite</span> <span class="pre">run</span></code> not working correctly</dt><dd><p>Passing the <code class="docutils literal notranslate"><span class="pre">--reload</span></code> flag to the <code class="docutils literal notranslate"><span class="pre">starlite</span> <span class="pre">run</span></code> command did not work correctly in all circumstances due to an
+issue with uvicorn. This was resolved by invoking uvicorn in a subprocess.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1191">starlite-api/starlite#1191</a></p>
+</dd>
+<dt>Fix <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1210">starlite-api/starlite#1210</a>: Optional types generate incorrect OpenAPI schemas</dt><dd><p>An optional query parameter was incorrectly represented as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;oneOf&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">null</span><span class="s2">&quot; },</span>
+  <span class="p">{</span> <span class="s2">&quot;oneOf&quot;</span><span class="p">:</span> <span class="p">[]</span> <span class="p">}</span>
+ <span class="p">]}</span>
+</pre></div>
+</div>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1210">starlite-api/starlite#1210</a></p>
+</dd>
+<dt>Fix <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1228">starlite-api/starlite#1228</a>: <code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code> is sending obfuscated session id to client</dt><dd><p><code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code> would in some cases send obfuscated data to the client, due to a bug in the obfuscation function
+which obfuscated values in the input dictionary in-place.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1228">starlite-api/starlite#1228</a></p>
+</dd>
+<dt>Fix missing <code class="docutils literal notranslate"><span class="pre">domain</span></code> configuration value for JWT cookie auth</dt><dd><p><a class="reference internal" href="reference/contrib/jwt.html#starlite.contrib.jwt.JWTCookieAuth" title="starlite.contrib.jwt.jwt_auth.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_auth.JWTCookieAuth</span></code></a> didn’t set the <code class="docutils literal notranslate"><span class="pre">domain</span></code> configuration value on the response
+cookie.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1223/files">starlite-api/starlite#files</a></p>
+</dd>
+<dt>Fix <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1201">starlite-api/starlite#1201</a>: Can not serve static file in <code class="docutils literal notranslate"><span class="pre">/</span></code> path</dt><dd><p>A validation error made it impossible to serve static files from the root path <code class="docutils literal notranslate"><span class="pre">/</span></code>.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1201">starlite-api/starlite#1201</a></p>
+</dd>
+<dt>Fix <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1149">starlite-api/starlite#1149</a>: Middleware not excluding static path</dt><dd><p>A middleware’s <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter would sometimes not be honoured if the path was used to serve static files
+using <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code>.</p>
+<p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1149">starlite-api/starlite#1149</a></p>
+</dd>
+</dl>
 </section>
-<section id="id117">
-<h2>0.7.0<a class="headerlink" href="#id117" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">&#64;asgi</span></code> route handler decorator.</p></li>
-<li><p>update query parameters parsing.</p></li>
-<li><p>update request-response cycle handling.</p></li>
-<li><p>update rewrote route resolution.</p></li>
-</ul>
-</section>
-<section id="id118">
-<h2>0.6.0<a class="headerlink" href="#id118" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add support for multiple paths per route handler.</p></li>
-<li><p>add support for static files.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">DTOFactory</span></code>.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">PluginProtocol</span></code> - add <code class="docutils literal notranslate"><span class="pre">from_dict</span></code> methods.</p></li>
-<li><p>update <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code>.</p></li>
-<li><p>update dependency injection to allow for dependency injection into dependencies.</p></li>
-<li><p>update lifecycle support to allow for application state injection.</p></li>
-<li><p>update route handlers and dependencies to allow for application state injection.</p></li>
-</ul>
-</section>
-<section id="id119">
-<h2>0.5.0<a class="headerlink" href="#id119" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update BaseRoute to not inherit from Starlette, allowing for optimization using <code class="docutils literal notranslate"><span class="pre">_slots_</span></code>.</p></li>
-<li><p>update RouteHandlers from being pydantic models to being custom classes, allowing for optimization using <code class="docutils literal notranslate"><span class="pre">_slots_</span></code>.</p></li>
-<li><p>update base path handling in controllers &#64;vincentsarago.</p></li>
-</ul>
-</section>
-<section id="id120">
-<h2>0.4.3<a class="headerlink" href="#id120" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix dto factory handling of forward refs.</p></li>
-</ul>
-</section>
-<section id="id121">
-<h2>0.4.2<a class="headerlink" href="#id121" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix Parameter default not being respected.</p></li>
-</ul>
-</section>
-<section id="id122">
-<h2>0.4.1<a class="headerlink" href="#id122" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add support for <code class="docutils literal notranslate"><span class="pre">before_request</span></code> and <code class="docutils literal notranslate"><span class="pre">after_request</span></code> hooks.</p></li>
-<li><p>fix sql_alchemy requirement not being isolated to the plugin only.</p></li>
-</ul>
-</section>
-<section id="id123">
-<h2>0.4.0<a class="headerlink" href="#id123" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">DTOFactory</span></code>.</p></li>
-<li><p>add <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code>.</p></li>
-<li><p>add plugin support.</p></li>
-<li><p>fix orjson compatibility &#64;vincentsarago.</p></li>
-</ul>
-</section>
-<section id="id124">
-<h2>0.3.0<a class="headerlink" href="#id124" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>update openapi configuration.</p></li>
-</ul>
-</section>
-<section id="id125">
-<h2>0.2.1<a class="headerlink" href="#id125" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix regression in handler validation.</p></li>
-</ul>
-</section>
-<section id="id126">
-<h2>0.2.0<a class="headerlink" href="#id126" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add support for websockets.</p></li>
-<li><p>update multipart data handling to support mixed fields.</p></li>
-</ul>
-</section>
-<section id="id127">
-<h2>0.1.6<a class="headerlink" href="#id127" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix monkey patch “openapi-schema-pydantic” to change Schema.Config.extra to Extra.ignore.</p></li>
-</ul>
-</section>
-<section id="id128">
-<h2>0.1.5<a class="headerlink" href="#id128" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix monkey patch “openapi-schema-pydantic” to change Schema.extra to Extra.ignore.</p></li>
-</ul>
-</section>
-<section id="id129">
-<h2>0.1.4<a class="headerlink" href="#id129" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix include_in_schema for routes always being true.</p></li>
-<li><p>fix update pydantic-factories to v1.1.0, resolving compatibility issues with older versions of pydantic.</p></li>
-</ul>
-</section>
-<section id="id130">
-<h2>0.1.3<a class="headerlink" href="#id130" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add <code class="docutils literal notranslate"><span class="pre">NotFoundException</span></code>.</p></li>
-<li><p>update dependencies to use pydantic-factories v1.0.0.</p></li>
-</ul>
-</section>
-<section id="id131">
-<h2>0.1.2<a class="headerlink" href="#id131" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>fix <code class="docutils literal notranslate"><span class="pre">requests</span></code> not being included in project dependencies.</p></li>
-<li><p>update pydantic to v1.9.0.</p></li>
-</ul>
-</section>
-<section id="id132">
-<h2>0.1.1<a class="headerlink" href="#id132" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>add missing exports to <strong>init</strong>.</p></li>
-</ul>
-</section>
-<section id="id133">
-<h2>0.1.0<a class="headerlink" href="#id133" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
-<li><p>initial release.</p></li>
-</ul>
 </section>
 </section>
 
@@ -1448,13 +585,6 @@
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="../release-notes/index.html" title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-          <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">Release notes</p>
-      </div>
-  </a>
 </div>
             </footer>
             
@@ -1472,669 +602,26 @@
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id1">
-   1.51.7
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id2">
-   1.51.6
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id3">
-   1.51.5
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id4">
-   1.51.4
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id5">
-   1.51.3
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id6">
-   1.51.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id7">
-   1.51.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id8">
-   1.51.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id9">
-   1.50.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id10">
-   1.50.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id11">
-   1.50.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id12">
-   1.49.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id13">
-   1.48.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id14">
-   1.48.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id15">
-   1.47.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id16">
-   1.46.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id17">
-   1.45.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id18">
-   1.45.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id19">
-   1.44.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id20">
-   1.43.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id21">
-   1.43.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id22">
-   1.42.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id23">
-   1.41.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id24">
-   1.40.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id25">
-   1.40.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id26">
-   1.39.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id27">
-   1.38.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id28">
-   1.37.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id29">
-   1.36.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id30">
-   1.35.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id31">
-   1.35.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id32">
-   1.34.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id33">
-   1.33.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id34">
-   1.32.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id35">
-   1.31.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id36">
-   1.30.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id37">
-   1.29.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id38">
-   1.28.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id39">
-   1.28.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id40">
-   1.27.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id41">
-   1.26.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id42">
-   1.26.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id43">
-   1.25.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id44">
-   1.24.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id45">
-   1.23.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id46">
-   1.23.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id47">
-   1.22.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id48">
-   1.21.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id49">
-   1.21.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id50">
-   1.21.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id51">
-   1.20.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id52">
-   1.19.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id53">
-   1.18.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id54">
-   1.18.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id55">
-   1.17.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id56">
-   1.17.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id57">
-   1.17.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id58">
-   1.16.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id59">
-   1.16.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id60">
-   1.16.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id61">
-   1.15.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id62">
-   1.14.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id63">
-   1.14.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id64">
-   1.13.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id65">
-   1.13.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id66">
-   1.12.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id67">
-   1.11.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id68">
-   1.11.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id69">
-   1.10.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id70">
-   1.10.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id71">
-   1.9.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id72">
-   1.9.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id73">
-   1.9.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id74">
-   1.8.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id75">
-   1.8.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id76">
-   1.7.3
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id77">
-   1.7.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id78">
-   1.7.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id79">
-   1.7.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id80">
-   1.6.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id81">
-   1.6.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id82">
-   1.6.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id83">
-   1.5.4
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id84">
-   1.5.3
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id85">
-   1.5.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id86">
-   1.5.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id87">
-   1.5.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id88">
-   1.4.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id89">
-   1.4.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id90">
-   1.4.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id91">
-   1.3.9
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id92">
-   1.3.8
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id93">
-   1.3.7
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id94">
-   1.3.6
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id95">
-   1.3.5
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id96">
-   1.3.4
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id97">
-   1.3.3
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id98">
-   1.3.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id99">
-   1.3.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id100">
-   1.3.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id101">
-   1.2.5
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id102">
-   1.2.4
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id103">
-   1.2.3
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id104">
-   1.2.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id105">
-   1.2.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id106">
-   1.2.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id107">
-   1.1.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id108">
-   1.1.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id109">
-   1.0.5
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id110">
-   1.0.4
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id111">
-   1.0.3
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id112">
-   1.0.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id113">
-   1.0.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id114">
-   1.0.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id115">
-   0.7.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id116">
-   0.7.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id117">
-   0.7.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id118">
-   0.6.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id119">
-   0.5.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id120">
-   0.4.3
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id121">
-   0.4.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id122">
-   0.4.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id123">
-   0.4.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id124">
-   0.3.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id125">
-   0.2.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id126">
-   0.2.0
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id127">
-   0.1.6
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id128">
-   0.1.5
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id129">
-   0.1.4
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id130">
-   0.1.3
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id131">
-   0.1.2
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id132">
-   0.1.1
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#id133">
-   0.1.0
-  </a>
+  <a class="reference internal nav-link" href="#alpha1">
+   2.0.0alpha1
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#new-features">
+     New features
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#changes">
+     Changes
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bugfixes">
+     Bugfixes
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 

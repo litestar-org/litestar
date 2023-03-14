@@ -1,5 +1,5 @@
-starlite.router
-===============
+router
+======
 
 .. automodule:: starlite.router
    :members: Router

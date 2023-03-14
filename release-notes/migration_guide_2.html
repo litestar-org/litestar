@@ -616,9 +616,11 @@
 </section>
 <section id="response-headers">
 <h2>Response headers<a class="headerlink" href="#response-headers" title="Permalink to this heading">#</a></h2>
-<p>Response header can now be set using either a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a> of <a class="reference internal" href="../lib/reference/datastructures/response_header.html#starlite.datastructures.response_header.ResponseHeader" title="starlite.datastructures.response_header.ResponseHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseHeader</span></code></a>,
-or by using a plain <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>. The typing of <code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseHeader</span></code> was also changed to be more strict and now
-only allows string values.</p>
+<p>Response header can now be set using either a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a> of
+<a class="reference internal" href="../lib/reference/datastructures.html#starlite.datastructures.ResponseHeader" title="starlite.datastructures.response_header.ResponseHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseHeader</span></code></a>, or by using a plain
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>.
+The typing of <a class="reference internal" href="../lib/reference/datastructures.html#starlite.datastructures.ResponseHeader" title="starlite.datastructures.response_header.ResponseHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseHeader</span></code></a> was also changed to be more
+strict and now only allows string values.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-0">

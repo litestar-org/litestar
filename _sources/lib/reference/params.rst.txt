@@ -1,5 +1,5 @@
-starlite.params
-===============
+params
+======
 
 .. automodule:: starlite.params
     :members:

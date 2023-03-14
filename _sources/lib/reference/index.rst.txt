@@ -7,24 +7,34 @@ API reference
     :maxdepth: 1
 
     app
-    cache/index
-    router
-    controller
-    datastructures/index
-    dto
-    exceptions/index
-    enums
+    background_tasks
+    cache
     config
-    connection/index
+    connection
     contrib/index
-    handlers/index
+    controller
+    data_extractors
+    datastructures
+    di
+    dto
+    enums
+    events
+    exceptions
+    handlers
+    logging/index
     middleware/index
     openapi
+    pagination
     params
-    plugins/index
+    partial
+    plugins
     response
+    response_containers
+    router
     security/index
+    serialization
+    static_files
+    storage/index
     template
     testing
     types
-    utils/index

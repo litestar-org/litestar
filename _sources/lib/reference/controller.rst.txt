@@ -1,5 +1,5 @@
-starlite.controller
-===================
+controller
+==========
 
 .. automodule:: starlite.controller
     :members:

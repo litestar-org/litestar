@@ -1,6 +1,8 @@
 Starlite 2.0 migration guide
 ============================
 
+.. py:currentmodule:: starlite
+
 
 Changed module paths
 ---------------------
@@ -143,9 +145,11 @@ Changed module paths
 Response headers
 ----------------
 
-Response header can now be set using either a :class:`Sequence <typing.Sequence>` of :class:`ResponseHeader <.datastructures.response_header.ResponseHeader>`,
-or by using a plain :class:`Mapping[str, str] <typing.Mapping>`. The typing of :class:`ResponseHeader` was also changed to be more strict and now
-only allows string values.
+Response header can now be set using either a :class:`Sequence <typing.Sequence>` of
+:class:`ResponseHeader <.datastructures.response_header.ResponseHeader>`, or by using a plain
+:class:`Mapping[str, str] <typing.Mapping>`.
+The typing of :class:`ResponseHeader <.datastructures.response_header.ResponseHeader>` was also changed to be more
+strict and now only allows string values.
 
 
 .. tab-set::

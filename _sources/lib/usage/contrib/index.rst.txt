@@ -5,3 +5,4 @@ Contrib
 
     open-telemetry
     jwt
+    htmx

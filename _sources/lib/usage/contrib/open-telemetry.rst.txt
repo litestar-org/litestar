@@ -26,7 +26,7 @@ the Starlite constructor:
 
    open_telemetry_config = OpenTelemetryConfig()
 
-   app = Starlite(route_handlers=[], middleware=[open_telemetry_config.middleware])
+   app = Starlite(middleware=[open_telemetry_config.middleware])
 
 The above example will work out of the box if you configure a global ``tracer_provider`` and/or ``metric_provider`` and an
 exporter to use these (see the

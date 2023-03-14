@@ -13,6 +13,7 @@ Usage
     dependency-injection
     middleware/index
     security/index
+    storage
     testing
     plugins/index
     dto

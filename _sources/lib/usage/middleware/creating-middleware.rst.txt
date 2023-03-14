@@ -177,7 +177,8 @@ create middleware:
    from typing import TYPE_CHECKING
    from time import time
 
-   from starlite import AbstractMiddleware, ScopeType
+   from starlite.enums import ScopeType
+   from starlite.middleware import AbstractMiddleware
    from starlite.datastructures import MutableScopeHeaders
 
 
@@ -228,7 +229,8 @@ these values to our middleware:
 .. code-block:: python
 
    from starlite.types import ASGIApp, Scope, Receive, Send
-   from starlite import Starlite, DefineMiddleware
+   from starlite import Starlite
+   from starlite.middleware import DefineMiddleware
 
 
    def middleware_factory(my_arg: int, *, app: ASGIApp, my_kwarg: str) -> ASGIApp:

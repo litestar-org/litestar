@@ -29,12 +29,13 @@ OpenAPI schema generation config
 --------------------------------
 
 OpenAPI schema generation is enabled by default. To configure it you can pass an instance of
-:class:`OpenAPIConfig <starlite.config.OpenAPIConfig>` to the :class:`Starlite constructor <starlite.app.Starlite>`
-using the ``openapi_config`` kwarg:
+:class:`OpenAPIConfig <.openapi.OpenAPIConfig>` to the :class:`Starlite <starlite.app.Starlite>` class using the
+``openapi_config`` kwarg:
 
 .. code-block:: python
 
-   from starlite import Starlite, OpenAPIConfig
+   from starlite import Starlite
+   from starlite.config.openapi import OpenAPIConfig
 
    app = Starlite(
        route_handlers=[...], openapi_config=OpenAPIConfig(title="My API", version="1.0.0")
@@ -122,7 +123,8 @@ You can also modify the generated schema for the route handler using the followi
 
    from pydantic import BaseModel
 
-   from starlite import ResponseSpec, get
+   from starlite import get
+   from starlite.openapi.datastructures import ResponseSpec
 
 
    class Item(BaseModel):
@@ -150,7 +152,8 @@ app instance itself. For example:
 
 .. code-block:: python
 
-   from starlite import Starlite, OpenAPIConfig, get
+   from starlite import Starlite, get
+   from starlite.config.openapi import OpenAPIConfig
    from pydantic_openapi_schema.v3_1_0 import Components, SecurityScheme, Tag
 
 
@@ -215,20 +218,22 @@ This controller exposes the following endpoints:
     Serves the docs using `Stoplight Elements <https://github.com/stoplightio/elements>`_.
 
 Additionally, the root ``/schema/`` path is accessible, serving the site that is configured as the default in
-the :class:`OpenAPIConfig <starlite.config.OpenAPIConfig>`.
+the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`.
 
 Subclassing OpenAPIController
 +++++++++++++++++++++++++++++
 
-You can use your own subclass of :class:`OpenAPIController <starlite.openapi.controller.OpenAPIController>` by setting it as
-then controller to use in the :class:`OpenAPIConfig <starlite.config.OpenAPIConfig>` ``openapi_controller`` kwarg.
+You can use your own subclass of :class:`OpenAPIController <.openapi.controller.OpenAPIController>` by setting it as
+the controller to use in the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>` ``openapi_controller`` kwarg.
 
 For example, lets say we wanted to change the base path of the OpenAPI related endpoints from ``/schema`` to
 ``/api-docs``, in this case we'd the following:
 
 .. code-block:: python
 
-   from starlite import Starlite, OpenAPIController, OpenAPIConfig
+   from starlite import Starlite
+   from starlite.config.openapi import OpenAPIConfig
+   from starlite.openapi import OpenAPIController
 
 
    class MyOpenAPIController(OpenAPIController):
@@ -252,7 +257,9 @@ You can change the default download paths for JS and CSS bundles as well as goog
 
 .. code-block:: python
 
-   from starlite import Starlite, OpenAPIController, OpenAPIConfig
+   from starlite import Starlite
+   from starlite.config.openapi import OpenAPIConfig
+   from starlite.openapi import OpenAPIController
 
 
    class MyOpenAPIController(OpenAPIController):

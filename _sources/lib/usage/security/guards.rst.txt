@@ -2,10 +2,10 @@ Guards
 ======
 
 Guards are callables that receive two arguments - ``connection``, which is the
-:class:`ASGIConnection <.connection.base.ASGIConnection>` instance, and ``route_handler``, which is a copy of the
-:class:`BaseRouteHandler <.handlers.base.BaseRouteHandler>`. Their role is to *authorize* the request by verifying that
+:class:`ASGIConnection <.connection.ASGIConnection>` instance, and ``route_handler``, which is a copy of the
+:class:`BaseRouteHandler <.handlers.BaseRouteHandler>`. Their role is to *authorize* the request by verifying that
 the connection is allowed to reach the endpoint handler in question. If verification fails, the guard should raise an
-HTTPException, usually a :class:`NotAuthorizedException <starlite.exceptions.NotAuthorizedException>` with a ``status_code``
+HTTPException, usually a :class:`NotAuthorizedException <.exceptions.NotAuthorizedException>` with a ``status_code``
 of 401.
 
 To illustrate this we will implement a rudimentary role based authorization system in our Starlite app. As we have done
@@ -50,10 +50,13 @@ allows admin users to access certain route handlers and then add it to a route h
 
 .. code-block:: python
 
-   from starlite import ASGIConnection, BaseRouteHandler, NotAuthorizedException
+   from enum import Enum
+
    from pydantic import BaseModel, UUID4
    from starlite import post
-   from enum import Enum
+   from starlite.connection import ASGIConnection
+   from starlite.exceptions import NotAuthorizedException
+   from starlite.handlers.base import BaseRouteHandler
 
 
    class UserRole(str, Enum):
@@ -90,7 +93,9 @@ handlers:
 
 .. code-block:: python
 
-   from starlite import ASGIConnection, Controller, Router, Starlite, BaseRouteHandler
+   from starlite import Controller, Router, Starlite
+   from starlite.connection import ASGIConnection
+   from starlite.handlers.base import BaseRouteHandler
 
 
    def my_guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None:
@@ -129,7 +134,10 @@ the following guard:
 
 .. code-block:: python
 
-   from starlite import ASGIConnection, BaseRouteHandler, NotAuthorizedException, get
+   from starlite import get
+   from starlite.exceptions import NotAuthorizedException
+   from starlite.connection import ASGIConnection
+   from starlite.handlers.base import BaseRouteHandler
    from os import environ
 
 

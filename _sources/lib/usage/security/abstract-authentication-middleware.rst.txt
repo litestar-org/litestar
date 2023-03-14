@@ -8,11 +8,11 @@ To add authentication to your app using this class as a basis, subclass it and i
 
 .. code-block:: python
 
-   from starlite import (
+   from starlite.authentication import (
        AbstractAuthenticationMiddleware,
        AuthenticationResult,
-       ASGIConnection,
    )
+   from starlite.connection import ASGIConnection
 
 
    class MyAuthenticationMiddleware(AbstractAuthenticationMiddleware):
@@ -30,10 +30,10 @@ that has two attributes:
 2. ``auth``: an optional value representing the authentication scheme. Defaults to ``None``.
 
 These values are then set as part of the "scope" dictionary, and they are made available as
-:attr:`Request.user <.connection.request.Request.user>`
-and :attr:`Request.auth <.connection.request.Request.auth>` respectively, for HTTP route handlers, and
-:attr:`WebSocket.user <.connection.websocket.WebSocket.user>` and
-:attr:`WebSocket.auth <.connection.websocket.WebSocket.auth>` for websocket route handlers.
+:attr:`Request.user <.connection.ASGIConnection.user>`
+and :attr:`Request.auth <.connection.ASGIConnection.auth>` respectively, for HTTP route handlers, and
+:attr:`WebSocket.user <.connection.ASGIConnection.user>` and
+:attr:`WebSocket.auth <.connection.ASGIConnection.auth>` for websocket route handlers.
 
 Example: Implementing a JWTAuthenticationMiddleware
 ---------------------------------------------------
@@ -122,12 +122,12 @@ We can now create our authentication middleware:
 
     from sqlalchemy import select
     from sqlalchemy.ext.asyncio import AsyncSession
-    from starlite import (
+    from starlite.authentication import (
         AbstractAuthenticationMiddleware,
         AuthenticationResult,
-        NotAuthorizedException,
-        ASGIConnection,
     )
+    from starlite.exceptions import NotAuthorizedException
+    from starlite.connection import ASGIConnection
 
     from app.db.models import User
     from app.security.jwt import decode_jwt_token
@@ -220,7 +220,8 @@ And if you'd like to exclude individual routes outside those configured:
 .. code-block:: python
 
    import anyio
-   from starlite import Starlite, MediaType, NotFoundException, Response, get
+   from starlite import Starlite, MediaType, Response, get
+   from starlite.exceptions import NotFoundException
    from starlite.middleware.base import DefineMiddleware
 
    from my_app.security.authentication_middleware import JWTAuthenticationMiddleware

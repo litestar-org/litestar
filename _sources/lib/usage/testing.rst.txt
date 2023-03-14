@@ -61,7 +61,7 @@ We would then test it using the test client like so:
             from my_app.main import app
 
 
-            def test_health_check():
+            async def test_health_check():
                 async with AsyncTestClient(app=app) as client:
                     response = await client.get("/health-check")
                     assert response.status_code == HTTP_200_OK
@@ -105,7 +105,7 @@ Since we would probably need to use the client in multiple places, it's better t
 
 
             @pytest.fixture(scope="function")
-            def test_client() -> AsyncTestClient:
+            async def test_client() -> AsyncTestClient:
                 return AsyncTestClient(app=app)
 
 
@@ -116,34 +116,18 @@ We would then be able to rewrite our test like so:
     .. tab-item:: Sync
         :sync: sync
 
-        .. code-block:: python
+        .. literalinclude:: /examples/testing/test_health_check_sync.py
             :caption: tests/test_health_check.py
+            :language: python
 
-            from starlite.status_codes import HTTP_200_OK
-            from starlite.testing import TestClient
-
-
-            def test_health_check(test_client: TestClient):
-                with test_client as client:
-                    response = client.get("/health-check")
-                    assert response.status_code == HTTP_200_OK
-                    assert response.text == "healthy"
 
     .. tab-item:: Async
         :sync: async
 
-        .. code-block:: python
+        .. literalinclude:: /examples/testing/test_health_check_async.py
             :caption: tests/test_health_check.py
+            :language: python
 
-            from starlite.status_codes import HTTP_200_OK
-            from starlite.testing import AsyncTestClient
-
-
-            def test_health_check(test_client: AsyncTestClient):
-                async with test_client as client:
-                    response = await client.get("/health-check")
-                    assert response.status_code == HTTP_200_OK
-                    assert response.text == "healthy"
 
 Using sessions
 ++++++++++++++
@@ -152,39 +136,40 @@ If you are using :ref:`session middleware <lib/usage/middleware/builtin-middlewa
 across requests, then you might want to inject or inspect session data outside a request. For this,
 :class:`TestClient <.testing.TestClient>` provides two methods:
 
-* :meth:`set_session_data <starlite.testing.test_client.TestClient.set_session_data>`
-* :meth:`get_session_data <starlite.testing.test_client.TestClient.get_session_data>`
+* :meth:`set_session_data <starlite.testing.TestClient.set_session_data>`
+* :meth:`get_session_data <starlite.testing.TestClient.get_session_data>`
 
 .. attention::
 
     - The Session Middleware must be enabled in Starlite app provided to the TestClient to use sessions.
-    - If you are using the :class:`CookieBackend <starlite.middleware.session.cookie_backend.CookieBackend>` you need
-      to install the ``cryptography`` package. You can do so by installing starlite with e.g. ``pip install starlite[cryptography]``
-      or ``poetry add starlite[cryptography]``
+    - If you are using the
+      :class:`ClientSideSessionBackend <starlite.middleware.session.client_side.ClientSideSessionBackend>` you need to
+      install the ``cryptography`` package. You can do so by installing starlite with e.g.
+      ``pip install starlite[cryptography]`` or ``poetry add starlite[cryptography]``
 
 .. tab-set::
 
     .. tab-item:: Sync
         :sync: sync
 
-        .. literalinclude:: /examples/testing/set_session_data.py
+        .. literalinclude:: /examples/testing/test_set_session_data.py
             :caption: Setting session data
             :language: python
 
 
-        .. literalinclude:: /examples/testing/get_session_data.py
+        .. literalinclude:: /examples/testing/test_get_session_data.py
             :caption: Getting session data
             :language: python
 
     .. tab-item:: Async
         :sync: async
 
-        .. literalinclude:: /examples/testing/set_session_data_async.py
+        .. literalinclude:: /examples/testing/test_set_session_data_async.py
             :caption: Setting session data
             :language: python
 
 
-        .. literalinclude:: /examples/testing/get_session_data_async.py
+        .. literalinclude:: /examples/testing/test_get_session_data_async.py
             :caption: Getting session data
             :language: python
 
@@ -195,7 +180,7 @@ Using a blocking portal
 The :class:`TestClient <.testing.TestClient>` uses a feature of `anyio <https://anyio.readthedocs.io/en/stable/>`_ called
 a **Blocking Portal**.
 
-The :class:`anyio.BlockingPortal` allows :class:`TestClient <.testing.TestClient>`
+The :class:`anyio.abc.BlockingPortal` allows :class:`TestClient <.testing.TestClient>`
 to execute asynchronous functions using a synchronous call. ``TestClient`` creates a blocking portal to manage
 ``Starlite``'s async logic, and it allows ``TestClient``'s API to remain fully synchronous.
 
@@ -267,10 +252,12 @@ from the :doc:`route guards </lib/usage/security/guards>` documentation:
 .. code-block:: python
     :caption: my_app/guards.py
 
-    from starlite import Request, RouteHandler, NotAuthorizedException
+    from starlite import Request
+    from starlite.exceptions import NotAuthorizedException
+    from starlite.handlers.base import BaseRouteHandler
 
 
-    def secret_token_guard(request: Request, route_handler: RouteHandler) -> None:
+    def secret_token_guard(request: Request, route_handler: BaseRouteHandler) -> None:
         if (
             route_handler.opt.get("secret")
             and not request.headers.get("Secret-Header", "") == route_handler.opt["secret"]
@@ -300,7 +287,7 @@ We could thus test the guard function like so:
 
     import pytest
 
-    from starlite import NotAuthorizedException
+    from starlite.exceptions import NotAuthorizedException
     from starlite.testing import RequestFactory
 
     from my_app.guards import secret_token_guard
@@ -361,8 +348,9 @@ We could test the ``/item`` route like so:
 
     import pytest
 
+    from starlite.di import Provide
     from starlite.status_codes import HTTP_200_OK
-    from starlite import Provide, create_test_client
+    from starlite.testing import create_test_client
 
     from my_app.main import Service, Item, get_item
 
@@ -398,7 +386,8 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
     from pydantic import BaseModel
     from pydantic_factories import ModelFactory
     from starlite.status_codes import HTTP_200_OK
-    from starlite import Provide, get
+    from starlite import get
+    from starlite.di import Provide
     from starlite.testing import create_test_client
 
 
