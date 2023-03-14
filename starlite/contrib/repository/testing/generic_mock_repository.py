@@ -126,7 +126,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The deleted instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by ``item_id``.
+            NotFoundError: If no instance found identified by ``item_id``.
         """
         try:
             return self._find_or_raise_not_found(item_id)
@@ -175,7 +175,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The retrieved instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by ``item_id``.
+            NotFoundError: If no instance found identified by ``item_id``.
         """
         return self._find_or_raise_not_found(item_id)
 
@@ -204,7 +204,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The retrieved instance or None
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by ``kwargs``.
+            NotFoundError: If no instance found identified by ``kwargs``.
         """
         data = await self.list(**kwargs)
         return self.check_not_found(data[0] if data else None)
@@ -244,7 +244,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The updated instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
+            NotFoundError: If no instance found with same identifier as ``data``.
         """
         item = self._find_or_raise_not_found(self.get_id_attribute_value(data))
         self._update_audit_attributes(data, do_created=False)
@@ -265,7 +265,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The updated instances.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
+            NotFoundError: If no instance found with same identifier as ``data``.
         """
         items = [self._find_or_raise_not_found(self.get_id_attribute_value(row)) for row in data]
         now = self._now()
@@ -292,7 +292,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The updated or created instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
+            NotFoundError: If no instance found with same identifier as ``data``.
         """
         item_id = self.get_id_attribute_value(data)
         if item_id in self.collection:

@@ -11,7 +11,6 @@ from starlite.connection import Request, WebSocket
 from starlite.datastructures import Headers, ImmutableState, State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Receive, Scope, Send, WebSocketScope
-from starlite.utils.compat import py_39_safe_annotations
 
 __all__ = ("get_fn_type_hints", "get_signature_model")
 
@@ -81,5 +80,4 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         **vars(sys.modules[fn_to_inspect.__module__]),
         **(namespace or {}),
     }
-    with py_39_safe_annotations(fn_to_inspect):
-        return get_type_hints(fn_to_inspect, globalns=namespace)
+    return get_type_hints(fn_to_inspect, globalns=namespace)
