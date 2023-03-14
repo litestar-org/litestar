@@ -265,7 +265,7 @@ class SQLAlchemyConfig:
             )
         return cast("sessionmaker", self.session_maker_instance)
 
-    def create_db_session_dependency(self, state: State, scope: Scope) -> Union[Session, AsyncSession]:  # noqa
+    def create_db_session_dependency(self, state: State, scope: Scope) -> Union[Session, AsyncSession]:  # noqa: F821
         """Create a session instance.
 
         Args:
