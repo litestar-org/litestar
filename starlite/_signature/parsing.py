@@ -152,7 +152,11 @@ def parse_fn_signature(
     parsed_params: list[ParsedSignatureParameter] = []
     dependency_names: set[str] = set()
     fn_type_hints = get_fn_type_hints(fn)
+    return_annotation = fn_type_hints.get("return", signature.empty)
+
     owner_is_generic_controller = owner and isinstance(owner, GenericController)
+    if owner_is_generic_controller:
+        return_annotation = cast("GenericController", owner).get_parameter_annotation(return_annotation)
 
     parameters = (
         ParsedSignatureParameter.from_parameter(
@@ -183,14 +187,14 @@ def parse_fn_signature(
             parameter.annotation = parameter.default.value_type
 
         if owner_is_generic_controller:
-            cast("GenericController", owner).set_parameter_annotation(parameter)
+            parameter.annotation = cast("GenericController", owner).get_parameter_annotation(parameter.annotation)
 
         if plugin := get_plugin_for_value(value=parameter.annotation, plugins=plugins):
             parameter.annotation = get_type_annotation_from_plugin(parameter, plugin, field_plugin_mappings)
 
         parsed_params.append(parameter)
 
-    return parsed_params, signature.return_annotation, field_plugin_mappings, dependency_names
+    return parsed_params, return_annotation, field_plugin_mappings, dependency_names
 
 
 def create_signature_model(

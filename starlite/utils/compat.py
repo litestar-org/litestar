@@ -43,8 +43,8 @@ def py_39_safe_annotations(annotated: Any) -> Generator[Any, None, None]:
     Yields:
         ``annotated`` with patched `__annotations__` attribute if on python < 3.10.
     """
-    if sys.version_info < (3, 10):
-        orig_annotations = getattr(annotated, "__annotations__", {})
+    if sys.version_info < (3, 10) and hasattr(annotated, "__annotations__"):
+        orig_annotations = annotated.__annotations__
         new_annotations = dict(orig_annotations)
         for k, v in orig_annotations.items():
             if isinstance(v, str) and "|" in v:

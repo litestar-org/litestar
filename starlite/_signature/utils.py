@@ -67,9 +67,16 @@ def get_fn_type_hints(fn: Any) -> dict[str, Any]:
     if hasattr(fn_to_inspect, "__func__"):
         fn_to_inspect = fn_to_inspect.__func__
 
+    try:
+        module = sys.modules[fn_to_inspect.__module__]
+    except AttributeError:
+        module_namespace = {}
+    else:
+        module_namespace = vars(module)
+
     # Order important. If a starlite name has been overridden in the function module, we want
     # to use that instead of the starlite one.
     types = vars(typing)
-    namespace = {**STARLITE_GLOBAL_NAMES, **vars(sys.modules[fn_to_inspect.__module__]), **types}
+    namespace = {**STARLITE_GLOBAL_NAMES, **module_namespace, **types}
     with py_39_safe_annotations(fn_to_inspect):
         return get_type_hints(fn_to_inspect, globalns=namespace)

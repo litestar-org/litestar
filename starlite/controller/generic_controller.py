@@ -9,7 +9,6 @@ from .base import Controller
 if TYPE_CHECKING:
     from typing import Any
 
-    from starlite._signature.parsing import ParsedSignatureParameter
 
 __all__ = ("GenericController",)
 
@@ -53,20 +52,19 @@ class GenericController(Controller, Generic[T]):
                 return original_annotation.copy_with(args_tuple)
             raise RuntimeError("Unable to rebuild generic type") from exc
 
-    def set_parameter_annotation(self, parsed_parameter: ParsedSignatureParameter) -> None:
+    def get_parameter_annotation(self, annotation: Any) -> Any:
         """Substitute any ``TypeVar`` in annotation of ``parsed_parameter`` with narrowed type.
 
         Args:
-            parsed_parameter: a parsed signature parameter.
+            annotation: a parsed signature parameter's annotation.
         """
-        if isinstance(parsed_parameter.annotation, TypeVar):
-            parsed_parameter.annotation = self._data_type
-            return
+        if isinstance(annotation, TypeVar):
+            return self._data_type
 
-        args = get_args(parsed_parameter.annotation)
-        origin = get_origin(parsed_parameter.annotation)
+        args = get_args(annotation)
+        origin = get_origin(annotation)
         args_tuple = self._get_new_args(args, origin)
         if args_tuple is None:
-            return
+            return annotation
 
-        parsed_parameter.annotation = self._rebuild_annotation(parsed_parameter.annotation, origin, args_tuple)
+        return self._rebuild_annotation(annotation, origin, args_tuple)
