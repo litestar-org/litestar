@@ -566,21 +566,32 @@ to the CLI.</p>
 </section>
 <section id="autodiscovery">
 <h2>Autodiscovery<a class="headerlink" href="#autodiscovery" title="Permalink to this heading">#</a></h2>
-<p>Starlite will automatically discover Starlite applications and application factories in
-certain places:</p>
+<p>Starlite will automatically discover Starlite applications and application factories placed within the canonical modules
+<code class="docutils literal notranslate"><span class="pre">app</span></code> and <code class="docutils literal notranslate"><span class="pre">application</span></code>, which can be singular files or directories. Within those modules, or submodules thereof,
+the CLI will pick up any <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> instance, callables named <code class="docutils literal notranslate"><span class="pre">create_app</span></code>, or callables
+annotated as returning a <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> instance.</p>
+<p>The lookup will consider these locations in order:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">app.py</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">application.py</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">asgi.py</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">app/__init__.py</span></code></p></li>
+<li><p>Submodules of <code class="docutils literal notranslate"><span class="pre">app</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">application/__init__.py</span></code></p></li>
+<li><p>Submodules <code class="docutils literal notranslate"><span class="pre">application</span></code></p></li>
 </ol>
-<p>If any of these files contains an instance of the <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> class, a function named
-<code class="docutils literal notranslate"><span class="pre">create_app</span></code>, or a function annotated as returning a <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> instance, the CLI will pick it up.</p>
+<p>and within those, look for:</p>
+<ol class="arabic simple">
+<li><p>An object named <code class="docutils literal notranslate"><span class="pre">app</span></code> that’s an instance of  <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a></p></li>
+<li><p>An object named <code class="docutils literal notranslate"><span class="pre">application</span></code> that’s an instance of  <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a></p></li>
+<li><p>Any object that’s an instance of <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a></p></li>
+<li><p>A callable named <code class="docutils literal notranslate"><span class="pre">create_app</span></code></p></li>
+<li><p>A callable that’s annotated as returning an instance of <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a></p></li>
+</ol>
 </section>
 <section id="commands">
 <h2>Commands<a class="headerlink" href="#commands" title="Permalink to this heading">#</a></h2>
 <section id="starlite">
-<h3>Starlite<a class="headerlink" href="#starlite" title="Permalink to this heading">#</a></h3>
+<h3>starlite<a class="headerlink" href="#starlite" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">starlite</span></code> command is the main entrypoint to the CLI. If the <code class="docutils literal notranslate"><span class="pre">--app</span></code> flag is not passed,
 the app will be automatically discovered as described in <a class="reference external" href="autodiscovery">the section above</a></p>
 <section id="options">
@@ -601,6 +612,25 @@ the app will be automatically discovered as described in <a class="reference ext
 </table>
 </section>
 </section>
+<section id="version">
+<h3>version<a class="headerlink" href="#version" title="Permalink to this heading">#</a></h3>
+<p>Print the currently installed version of Starlite</p>
+<section id="id1">
+<h4>Options<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h4>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-s</span></code>, <code class="docutils literal notranslate"><span class="pre">--short</span></code></p></td>
+<td><p>Include only <code class="docutils literal notranslate"><span class="pre">MAJOR.MINOR.PATCH</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 <section id="run">
 <h3>Run<a class="headerlink" href="#run" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">run</span></code> command runs a Starlite application using <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a>.</p>
@@ -613,7 +643,7 @@ the app will be automatically discovered as described in <a class="reference ext
 deploy production applications</p>
 </div>
 <section id="cli-run-options">
-<span id="id1"></span><h4>Options<a class="headerlink" href="#cli-run-options" title="Permalink to this heading">#</a></h4>
+<span id="id2"></span><h4>Options<a class="headerlink" href="#cli-run-options" title="Permalink to this heading">#</a></h4>
 <table class="table">
 <thead>
 <tr class="row-odd"><th class="head" colspan="2"><p>Flag</p></th>
@@ -647,7 +677,7 @@ deploy production applications</p>
 </section>
 </section>
 <section id="info">
-<h3>Info<a class="headerlink" href="#info" title="Permalink to this heading">#</a></h3>
+<h3>info<a class="headerlink" href="#info" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">info</span></code> command displays useful information about the selected application and its configuration</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>info
 </pre></div>
@@ -655,7 +685,7 @@ deploy production applications</p>
 <img alt="starlite info" src="../../_images/starlite_info.png" />
 </section>
 <section id="routes">
-<h3>Routes<a class="headerlink" href="#routes" title="Permalink to this heading">#</a></h3>
+<h3>routes<a class="headerlink" href="#routes" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">routes</span></code> command displays a tree view of the routing table</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>routes
 </pre></div>
@@ -663,18 +693,18 @@ deploy production applications</p>
 <img alt="starlite info" src="../../_images/starlite_routes.png" />
 </section>
 <section id="sessions">
-<h3>Sessions<a class="headerlink" href="#sessions" title="Permalink to this heading">#</a></h3>
+<h3>sessions<a class="headerlink" href="#sessions" title="Permalink to this heading">#</a></h3>
 <p>This command and its subcommands provide management utilities for
 <a class="reference internal" href="middleware/builtin-middleware.html#server-side-sessions"><span class="std std-ref">server-side session backends</span></a>.</p>
 <section id="delete">
-<h4>Delete<a class="headerlink" href="#delete" title="Permalink to this heading">#</a></h4>
+<h4>delete<a class="headerlink" href="#delete" title="Permalink to this heading">#</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">delete</span></code> subcommand deletes a specific session from the backend.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>sessions<span class="w"> </span>delete<span class="w"> </span>cc3debc7-1ab6-4dc8-a220-91934a473717
 </pre></div>
 </div>
 </section>
 <section id="clear">
-<h4>Clear<a class="headerlink" href="#clear" title="Permalink to this heading">#</a></h4>
+<h4>clear<a class="headerlink" href="#clear" title="Permalink to this heading">#</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">clear</span></code> subcommand clears all sessions from the backend.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>sessions<span class="w"> </span>clear
 </pre></div>
@@ -685,7 +715,7 @@ deploy production applications</p>
 <h3>OpenAPI<a class="headerlink" href="#openapi" title="Permalink to this heading">#</a></h3>
 <p>This command provides utilities to generate OpenAPI schema and TypeScript types.</p>
 <section id="schema">
-<h4>Schema<a class="headerlink" href="#schema" title="Permalink to this heading">#</a></h4>
+<h4>schema<a class="headerlink" href="#schema" title="Permalink to this heading">#</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">schema</span></code> subcommand generates OpenAPI specs from the Starlite application, serializing these as either JSON or YAML.
 The serialization format depends on the filename, which is by default <code class="docutils literal notranslate"><span class="pre">openapi_schema.json</span></code>. You can specify a different
 filename using the <code class="docutils literal notranslate"><span class="pre">--output</span></code> flag. For example:</p>
@@ -694,7 +724,7 @@ filename using the <code class="docutils literal notranslate"><span class="pre">
 </div>
 </section>
 <section id="typescript">
-<h4>TypeScript<a class="headerlink" href="#typescript" title="Permalink to this heading">#</a></h4>
+<h4>typescript<a class="headerlink" href="#typescript" title="Permalink to this heading">#</a></h4>
 <p>The <code class="docutils literal notranslate"><span class="pre">typescript</span></code> subcommand generates TypeScript definitions from the Starlite application’s OpenAPI specs.  For example:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>starlite<span class="w"> </span>openapi<span class="w"> </span>typescript
 </pre></div>
@@ -827,11 +857,23 @@ This can be achieved by adding the special <code class="docutils literal notrans
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#starlite">
-     Starlite
+     starlite
     </a>
     <ul class="visible nav section-nav flex-column">
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#options">
+       Options
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#version">
+     version
+    </a>
+    <ul class="visible nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#id1">
        Options
       </a>
      </li>
@@ -851,27 +893,27 @@ This can be achieved by adding the special <code class="docutils literal notrans
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#info">
-     Info
+     info
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#routes">
-     Routes
+     routes
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#sessions">
-     Sessions
+     sessions
     </a>
     <ul class="visible nav section-nav flex-column">
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#delete">
-       Delete
+       delete
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#clear">
-       Clear
+       clear
       </a>
      </li>
     </ul>
@@ -883,12 +925,12 @@ This can be achieved by adding the special <code class="docutils literal notrans
     <ul class="visible nav section-nav flex-column">
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#schema">
-       Schema
+       schema
       </a>
      </li>
      <li class="toc-h4 nav-item toc-entry">
       <a class="reference internal nav-link" href="#typescript">
-       TypeScript
+       typescript
       </a>
      </li>
     </ul>
