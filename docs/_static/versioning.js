@@ -37,7 +37,10 @@ const addVersionWarning = (currentVersion, latestVersion) => {
 
   const warningText = document.createElement("span");
   warningText.textContent = `You are viewing the documentation for ${
-    currentVersion === "dev" ? "a preview" : "an outdated"
+    currentVersion === "dev" ||
+    parseInt(currentVersion) > parseInt(latestVersion)
+      ? "a preview"
+      : "an outdated"
   } version of Starlite.`;
   container.appendChild(warningText);
 
