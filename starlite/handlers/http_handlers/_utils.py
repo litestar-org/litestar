@@ -19,9 +19,9 @@ from starlite.utils import (
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
-    from starlite.datastructures import Cookie, ResponseHeader
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
+    from starlite.datastructures import Cookie, ResponseHeader
     from starlite.plugins import SerializationPluginProtocol
     from starlite.response import Response
     from starlite.response_containers import ResponseContainer

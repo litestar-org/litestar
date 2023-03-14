@@ -2,10 +2,10 @@ from json import dumps as json_dumps
 from typing import TYPE_CHECKING
 
 import pytest
+from test_apps.openapi_test_app.main import app as openapi_test_app
 from yaml import dump as dump_yaml
 
 from starlite.cli.main import starlite_group as cli_command
-from test_apps.openapi_test_app.main import app as openapi_test_app
 
 if TYPE_CHECKING:
     from click.testing import CliRunner

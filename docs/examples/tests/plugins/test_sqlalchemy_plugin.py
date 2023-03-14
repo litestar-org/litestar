@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Generator
 
 import pytest
+
 from examples.plugins.sqlalchemy_plugin.sqlalchemy_async import app as async_sqla_app
 from examples.plugins.sqlalchemy_plugin.sqlalchemy_relationships import (
     app as relationship_app,
@@ -10,7 +11,6 @@ from examples.plugins.sqlalchemy_plugin.sqlalchemy_relationships_to_many import 
     app as relationship_app_to_many,
 )
 from examples.plugins.sqlalchemy_plugin.sqlalchemy_sync import app as sync_sqla_app
-
 from starlite import Starlite
 from starlite.testing import TestClient
 

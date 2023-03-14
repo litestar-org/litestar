@@ -1,6 +1,5 @@
-from dataclasses import MISSING
+from dataclasses import MISSING, dataclass
 from dataclasses import Field as DataclassField
-from dataclasses import dataclass
 from inspect import getmro
 from typing import (
     TYPE_CHECKING,

@@ -1,7 +1,6 @@
 from uuid import uuid4
 
 from examples.contrib.jwt.using_oauth2_password_bearer import app
-
 from starlite.status_codes import HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from starlite.testing import TestClient
 

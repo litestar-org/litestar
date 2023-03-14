@@ -11,12 +11,12 @@ __all__ = ("WebsocketRouteHandler", "websocket")
 
 
 if TYPE_CHECKING:
-    from starlite.types import MaybePartial  # noqa: F401
     from starlite.types import (
         AsyncAnyCallable,
         Dependencies,
         ExceptionHandler,
         Guard,
+        MaybePartial,  # noqa: F401
         Middleware,
     )
 

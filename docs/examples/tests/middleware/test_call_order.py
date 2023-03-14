@@ -1,5 +1,4 @@
 from examples.middleware.call_order import app
-
 from starlite.testing import TestClient
 
 
