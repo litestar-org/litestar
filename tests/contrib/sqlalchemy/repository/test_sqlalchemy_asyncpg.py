@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 import timeit
 from asyncio import AbstractEventLoop, get_event_loop_policy
 from datetime import datetime
@@ -26,6 +27,9 @@ from tests.contrib.sqlalchemy.models import Author, AuthorRepository, BookReposi
 
 if TYPE_CHECKING:
     from pytest_docker.plugin import Services
+
+
+pytestmark = pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform")
 
 
 here = Path(__file__).parent
