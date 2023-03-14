@@ -78,7 +78,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
             The deleted instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by ``item_id``.
+            NotFoundError: If no instance found identified by ``item_id``.
         """
 
     @abstractmethod
@@ -116,7 +116,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
             The retrieved instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by ``item_id``.
+            NotFoundError: If no instance found identified by ``item_id``.
         """
 
     @abstractmethod
@@ -130,7 +130,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
             The retrieved instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found identified by ``kwargs``.
+            NotFoundError: If no instance found identified by ``kwargs``.
         """
 
     @abstractmethod
@@ -167,7 +167,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
             The updated instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
+            NotFoundError: If no instance found with same identifier as ``data``.
         """
 
     @abstractmethod
@@ -182,7 +182,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
             a list of the updated instances.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
+            NotFoundError: If no instance found with same identifier as ``data``.
         """
 
     @abstractmethod
@@ -201,7 +201,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
             The updated or created instance.
 
         Raises:
-            RepositoryNotFoundException: If no instance found with same identifier as ``data``.
+            NotFoundError: If no instance found with same identifier as ``data``.
         """
 
     @abstractmethod
@@ -245,7 +245,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @staticmethod
     def check_not_found(item_or_none: T | None) -> T:
-        """Raise :class:`RepositoryNotFoundException` if ``item_or_none`` is ``None``.
+        """Raise :class:`NotFoundError` if ``item_or_none`` is ``None``.
 
         Args:
             item_or_none: Item to be tested for existence.
