@@ -12,6 +12,7 @@ from typing_extensions import get_args
 from starlite._signature.models import PydanticSignatureModel, SignatureModel
 from starlite._signature.utils import get_fn_type_hints
 from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
+from starlite.controller.generic_controller import GenericController
 from starlite.datastructures import ImmutableState
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
@@ -34,6 +35,8 @@ __all__ = (
 
 
 if TYPE_CHECKING:
+    from starlite.controller import Controller
+    from starlite.router import Router
     from starlite.types import AnyCallable
 
 
@@ -125,7 +128,10 @@ def get_type_annotation_from_plugin(
 
 
 def parse_fn_signature(
-    fn: AnyCallable, plugins: list[SerializationPluginProtocol], dependency_name_set: set[str]
+    fn: AnyCallable,
+    plugins: list[SerializationPluginProtocol],
+    dependency_name_set: set[str],
+    owner: Controller | Router | None = None,
 ) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
 
@@ -133,6 +139,7 @@ def parse_fn_signature(
         fn: A callable.
         plugins: A list of plugins.
         dependency_name_set: A set of dependency names
+        owner: Controller or router that registered the handler.
 
     Returns:
         A tuple containing the following values for generating a signature model: a mapping of field definitions, the
@@ -145,6 +152,7 @@ def parse_fn_signature(
     parsed_params: list[ParsedSignatureParameter] = []
     dependency_names: set[str] = set()
     fn_type_hints = get_fn_type_hints(fn)
+    owner_is_generic_controller = owner and isinstance(owner, GenericController)
 
     parameters = (
         ParsedSignatureParameter.from_parameter(
@@ -174,6 +182,9 @@ def parse_fn_signature(
         if isinstance(parameter.default, ParameterKwarg) and parameter.default.value_type is not Empty:
             parameter.annotation = parameter.default.value_type
 
+        if owner_is_generic_controller:
+            cast("GenericController", owner).set_parameter_annotation(parameter)
+
         if plugin := get_plugin_for_value(value=parameter.annotation, plugins=plugins):
             parameter.annotation = get_type_annotation_from_plugin(parameter, plugin, field_plugin_mappings)
 
@@ -183,7 +194,10 @@ def parse_fn_signature(
 
 
 def create_signature_model(
-    fn: AnyCallable, plugins: list[SerializationPluginProtocol], dependency_name_set: set[str]
+    fn: AnyCallable,
+    plugins: list[SerializationPluginProtocol],
+    dependency_name_set: set[str],
+    owner: Controller | Router | None = None,
 ) -> type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
@@ -191,7 +205,8 @@ def create_signature_model(
     Args:
         fn: A callable.
         plugins: A list of plugins.
-        dependency_name_set: A set of dependency names
+        dependency_name_set: A set of dependency names.
+        owner: Controller or router that registered the handler.
 
     Returns:
         A _signature model.
@@ -205,6 +220,7 @@ def create_signature_model(
         fn=unwrapped_fn,
         plugins=plugins,
         dependency_name_set=dependency_name_set,
+        owner=owner,
     )
 
     # TODO: we will implement logic here to determine what kind of SignatureModel we are creating.

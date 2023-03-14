@@ -720,6 +720,7 @@ class Starlite(Router):
                 fn=cast("AnyCallable", route_handler.fn.value),
                 plugins=self.serialization_plugins,
                 dependency_name_set=route_handler.dependency_name_set,
+                owner=route_handler.owner,
             )
 
         for provider in route_handler.resolve_dependencies().values():
