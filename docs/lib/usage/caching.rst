@@ -41,17 +41,17 @@ You can configure caching behaviour on the application level by passing an insta
 Changing where data is stored
 +++++++++++++++++++++++++++++
 
-By default, caching will use the :class:`MemoryStorage <.storage.memory.MemoryStorage>`, but it can be configured with
-any :class:`Storage <.storage.base.Storage>`, for example :class:`RedisStorage <.storage.redis.RedisStorage>`:
+By default, caching will use the :class:`MemoryStore <.stores.memory.MemoryStore>`, but it can be configured with
+any :class:`Store <.stores.base.Store>`, for example :class:`RedisStore <.stores.redis.RedisStore>`:
 
 .. code-block:: python
 
    from starlite.config.cache import CacheConfig
-   from starlite.storage.redis import RedisStorage
+   from starlite.stores.redis import RedisStore
 
-   redis_storage = RedisStorage(url="redis://localhost/", port=6379, db=0)
+   redis_store = RedisStore(url="redis://localhost/", port=6379, db=0)
 
-   cache_config = CacheConfig(storage=redis_backend)
+   cache_config = CacheConfig(store=redis_store)
 
 
 Specifying a cache key builder

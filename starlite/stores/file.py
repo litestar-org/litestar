@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING
 from anyio import Path
 from anyio.to_thread import run_sync
 
-from .base import Storage, StorageObject
+from .base import Store, StorageObject
 
-__all__ = ("FileStorage",)
+__all__ = ("FileStore",)
 
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from os import PathLike
 
 
-class FileStorage(Storage):
+class FileStore(Store):
     """File based, thread and process safe, asynchronous key/value store."""
 
     __slots__ = {"path": "file path"}
@@ -121,7 +121,7 @@ class FileStorage(Storage):
         """Delete all stored values.
 
         Note:
-            This deletes and recreates :attr:`FileStorage.path`
+            This deletes and recreates :attr:`FileStore.path`
         """
 
         await run_sync(shutil.rmtree, self.path)

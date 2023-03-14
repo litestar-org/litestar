@@ -33,7 +33,7 @@ API reference
     security/index
     serialization
     static_files
-    storage/index
+    stores/index
     template
     testing
     types

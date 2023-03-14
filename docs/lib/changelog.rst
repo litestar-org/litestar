@@ -62,7 +62,7 @@ Event bus
 
 Unified storage interfaces **[Breaking]**
     Storage backends for server-side sessions and ``Cache <starlite.cache.Cache>`` have been unified and replaced
-    by the :doc:`storage module </lib/usage/storage>`, which implements generic asynchronous key/values stores backed
+    by the ``starlite.storages``, which implements generic asynchronous key/values stores backed
     by memory, the file system or redis.
 
     .. important::

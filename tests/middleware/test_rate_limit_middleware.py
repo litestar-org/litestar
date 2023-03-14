@@ -34,7 +34,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        cached_value = await config.storage.get(cache_key)
+        cached_value = await config.store.get(cache_key)
         assert cached_value
         cache_object = CacheObject(**decode_json(cached_value))
         assert len(cache_object.history) == 1
@@ -70,13 +70,13 @@ async def test_reset() -> None:
     with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        cached_value = await config.storage.get(cache_key)
+        cached_value = await config.store.get(cache_key)
         assert cached_value
         cache_object = CacheObject(**decode_json(cached_value))
         assert cache_object.reset == int(time() + 1)
 
         cache_object.reset -= 2
-        await config.storage.set(cache_key, encode_json(cache_object))
+        await config.store.set(cache_key, encode_json(cache_object))
 
         response = client.get("/")
         assert response.status_code == HTTP_200_OK

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from starlite import Starlite
@@ -12,12 +13,11 @@ if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
     from click.testing import CliRunner
     from pytest_mock import MockerFixture
+    from starlite.stores.memory import MemoryStore
 
-    from starlite.storage.memory import MemoryStorage
 
-
-def test_get_session_backend(memory_storage_backend: "MemoryStorage") -> None:
-    session_middleware = ServerSideSessionConfig(storage=memory_storage_backend).middleware
+def test_get_session_backend(memory_store: MemoryStore) -> None:
+    session_middleware = ServerSideSessionConfig(store=memory_store).middleware
     app = Starlite(
         [],
         middleware=[
@@ -50,7 +50,7 @@ def test_delete_session(
     runner: "CliRunner", monkeypatch: "MonkeyPatch", mocker: "MockerFixture", mock_confirm_ask: "MagicMock"
 ) -> None:
     monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.memory_storage:app")
-    mock_delete = mocker.patch("starlite.storage.memory.MemoryStorage.delete")
+    mock_delete = mocker.patch("starlite.stores.memory.MemoryStore.delete")
 
     result = runner.invoke(cli_command, ["sessions", "delete", "foo"])
 
@@ -80,7 +80,7 @@ def test_clear_sessions(
     runner: "CliRunner", monkeypatch: "MonkeyPatch", mocker: "MockerFixture", mock_confirm_ask: "MagicMock"
 ) -> None:
     monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.memory_storage:app")
-    mock_delete = mocker.patch("starlite.storage.memory.MemoryStorage.delete_all")
+    mock_delete = mocker.patch("starlite.stores.memory.MemoryStore.delete_all")
 
     result = runner.invoke(cli_command, ["sessions", "clear"])
 

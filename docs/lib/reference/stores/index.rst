@@ -1,5 +1,5 @@
-storage
-=======
+stores
+======
 
 .. toctree::
 

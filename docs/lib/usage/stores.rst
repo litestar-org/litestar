@@ -1,16 +1,15 @@
-Storage
-=======
+Stores
+======
 
 Starlite includes abstractions over common key/value stores, which can be used for
 :doc:`/lib/usage/caching`, :ref:`lib/usage/middleware/builtin-middleware:Server-side sessions` or any other purpose
 where a simple key value store might be needed.
 
-Currently supported storages are:
+Current Starlite provides:
 
-
-- :class:`MemoryStorage <starlite.storage.memory.MemoryStorage>`: A simple in-memory storage
-- :class:`FileStorage <starlite.storage.file.FileStorage>`: File-based storage
-- :class:`RedisStorage <starlite.storage.redis.RedisStorage>`: Redis based storage
+- :class:`MemoryStore <starlite.stores.memory.MemoryStore>`: A simple in-memory store
+- :class:`FileStore <starlite.stores.file.FileStore>`: File-based store
+- :class:`RedisStore <starlite.stores.redis.RedisStore>`: Redis based store
 
 .. admonition:: Why not memcached?
     :class: info

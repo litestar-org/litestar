@@ -7,11 +7,11 @@ from urllib.parse import urlencode
 
 __all__ = ("CacheConfig", "default_cache_key_builder")
 
-from starlite.storage.memory import MemoryStorage
+from starlite.stores.memory import MemoryStore
 
 if TYPE_CHECKING:
     from starlite.connection import Request
-    from starlite.storage.base import Storage
+    from starlite.stores.base import Store
     from starlite.types import CacheKeyBuilder
 
 
@@ -37,8 +37,8 @@ class CacheConfig:
     ``cache_config`` key.
     """
 
-    storage: Storage = field(default_factory=MemoryStorage)
-    """A :class:`Storage <.storage.base.Storage>`. Defaults to :class:`MemoryStorage <.storage.memory.MemoryStorage>`
+    store: Store = field(default_factory=MemoryStore)
+    """A :class:`Store <.stores.base.Store>`. Defaults to :class:`MemoryStore <.stores.memory.MemoryStore>`
     """
     default_expiration: int = field(default=60)
     """Default cache expiration in seconds."""

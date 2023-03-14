@@ -80,5 +80,5 @@ async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str) -> Non
         ]
     ) as client:
         client.get("/cached")
-        value = await client.app.cache_config.storage.get("/cached:::cached")
+        value = await client.app.cache_config.store.get("/cached:::cached")
         assert value

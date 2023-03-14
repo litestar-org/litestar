@@ -93,9 +93,9 @@ async def test_max_age_expires(server_side_session_backend: "ServerSideSessionBa
 def test_key_validation(server_side_session_backend: "ServerSideSessionBackend", key: str, should_raise: bool) -> None:
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
-            ServerSideSessionConfig(key=key, storage=server_side_session_backend.storage)
+            ServerSideSessionConfig(key=key, store=server_side_session_backend.store)
     else:
-        ServerSideSessionConfig(key=key, storage=server_side_session_backend.storage)
+        ServerSideSessionConfig(key=key, store=server_side_session_backend.store)
 
 
 @pytest.mark.parametrize(
@@ -112,6 +112,6 @@ def test_max_age_validation(
 ) -> None:
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
-            ServerSideSessionConfig(key="a", max_age=max_age, storage=server_side_session_backend.storage)
+            ServerSideSessionConfig(key="a", max_age=max_age, store=server_side_session_backend.store)
     else:
-        ServerSideSessionConfig(key="a", max_age=max_age, storage=server_side_session_backend.storage)
+        ServerSideSessionConfig(key="a", max_age=max_age, store=server_side_session_backend.store)

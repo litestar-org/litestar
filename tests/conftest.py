@@ -28,7 +28,7 @@ from starlite.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
-from starlite.storage.base import Storage
+from starlite.stores.base import Store
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -53,9 +53,9 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from fakeredis.aioredis import FakeRedis
 
-from starlite.storage.file import FileStorage
-from starlite.storage.memory import MemoryStorage
-from starlite.storage.redis import RedisStorage
+from starlite.stores.file import FileStore
+from starlite.stores.memory import MemoryStore
+from starlite.stores.redis import RedisStore
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
@@ -108,29 +108,23 @@ def fake_redis() -> FakeRedis:
 
 
 @pytest.fixture()
-def redis_storage_backend(fake_redis: FakeRedis) -> RedisStorage:
-    return RedisStorage(redis=fake_redis)
+def redis_store(fake_redis: FakeRedis) -> RedisStore:
+    return RedisStore(redis=fake_redis)
 
 
 @pytest.fixture()
-def memory_storage_backend() -> MemoryStorage:
-    return MemoryStorage()
+def memory_store() -> MemoryStore:
+    return MemoryStore()
 
 
 @pytest.fixture()
-def file_storage_backend(tmp_path: Path) -> FileStorage:
-    return FileStorage(path=tmp_path)
+def file_store(tmp_path: Path) -> FileStore:
+    return FileStore(path=tmp_path)
 
 
-@pytest.fixture(
-    params=[
-        "redis_storage_backend",
-        "memory_storage_backend",
-        "file_storage_backend",
-    ]
-)
-def storage_backend(request: FixtureRequest) -> Storage:
-    return cast("Storage", request.getfixturevalue(request.param))
+@pytest.fixture(params=["redis_store", "memory_store", "file_store"])
+def store(request: FixtureRequest) -> Store:
+    return cast("Store", request.getfixturevalue(request.param))
 
 
 @pytest.fixture
@@ -154,8 +148,8 @@ def session_backend_config(request: pytest.FixtureRequest) -> Union[ServerSideSe
 
 
 @pytest.fixture()
-def server_side_session_config(storage_backend: Storage) -> ServerSideSessionConfig:
-    return ServerSideSessionConfig(storage=storage_backend)
+def server_side_session_config(store: Store) -> ServerSideSessionConfig:
+    return ServerSideSessionConfig(store=store)
 
 
 @pytest.fixture()
@@ -174,8 +168,8 @@ def session_backend(request: pytest.FixtureRequest) -> BaseSessionBackend:
 
 
 @pytest.fixture()
-def session_backend_config_memory(memory_storage_backend: MemoryStorage) -> ServerSideSessionConfig:
-    return ServerSideSessionConfig(storage=memory_storage_backend)
+def session_backend_config_memory(memory_store: MemoryStore) -> ServerSideSessionConfig:
+    return ServerSideSessionConfig(store=memory_store)
 
 
 @pytest.fixture
@@ -283,5 +277,5 @@ def create_module(tmp_path: Path, monkeypatch: "MonkeyPatch") -> "Callable[[str]
 
 
 @pytest.fixture(scope="module")
-def mock_db() -> MemoryStorage:
-    return MemoryStorage()
+def mock_db() -> MemoryStore:
+    return MemoryStore()

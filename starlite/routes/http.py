@@ -228,7 +228,7 @@ class HTTPRoute(BaseRoute):
         cache_config = request.app.cache_config
         cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
 
-        cached_response = await cache_config.storage.get(key=cache_key)
+        cached_response = await cache_config.store.get(key=cache_key)
 
         if cached_response:
             return cast("ASGIApp", pickle.loads(cached_response))  # nosec
@@ -249,7 +249,7 @@ class HTTPRoute(BaseRoute):
         elif route_handler.cache is not False and isinstance(route_handler.cache, int):
             expires_in = route_handler.cache
 
-        await cache_config.storage.set(
+        await cache_config.store.set(
             key=cache_key, value=pickle.dumps(response, pickle.HIGHEST_PROTOCOL), expires_in=expires_in
         )
 

@@ -5,22 +5,22 @@ from typing import TYPE_CHECKING
 import anyio
 from anyio import Lock
 
-from .base import Storage, StorageObject
+from .base import Store, StorageObject
 
-__all__ = ("MemoryStorage",)
+__all__ = ("MemoryStore",)
 
 
 if TYPE_CHECKING:
     from datetime import timedelta
 
 
-class MemoryStorage(Storage):
+class MemoryStore(Store):
     """In memory, thread-safe, asynchronous key/value store."""
 
     __slots__ = ("_store", "_lock")
 
     def __init__(self) -> None:
-        """Initialize :class:`MemoryStorage`"""
+        """Initialize :class:`MemoryStore`"""
         self._store: dict[str, StorageObject] = {}
         self._lock = Lock()
 

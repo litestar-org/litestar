@@ -8,10 +8,10 @@ from msgspec import Struct
 from msgspec.msgpack import decode as msgpack_decode
 from msgspec.msgpack import encode as msgpack_encode
 
-__all__ = ("Storage", "StorageObject")
+__all__ = ("Store", "StorageObject")
 
 
-class Storage(ABC):  # pragma: no cover
+class Store(ABC):  # pragma: no cover
     """Thread and process safe asynchronous key/value store."""
 
     @abstractmethod

@@ -20,7 +20,7 @@ __all__ = ("ServerSideSessionBackend", "ServerSideSessionConfig")
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
-    from starlite.storage.base import Storage
+    from starlite.stores.base import Store
 
 
 class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
@@ -30,7 +30,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
     implement to facilitate the storage of session data.
     """
 
-    __slots__ = ("storage",)
+    __slots__ = ("store",)
 
     def __init__(self, config: ServerSideSessionConfig) -> None:
         """Initialize ``ServerSideSessionBackend``
@@ -39,7 +39,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             config: A subclass of ``ServerSideSessionConfig``
         """
         super().__init__(config=config)
-        self.storage = config.storage
+        self.store = config.store
 
     async def get(self, session_id: str) -> bytes | None:
         """Retrieve data associated with ``session_id``.
@@ -51,7 +51,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             The session data, if existing, otherwise ``None``.
         """
         max_age = int(self.config.max_age) if self.config.max_age is not None else None
-        return await self.storage.get(session_id, renew_for=max_age if self.config.renew_on_access else None)
+        return await self.store.get(session_id, renew_for=max_age if self.config.renew_on_access else None)
 
     async def set(self, session_id: str, data: bytes) -> None:
         """Store ``data`` under the ``session_id`` for later retrieval.
@@ -67,7 +67,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             None
         """
         expires_in = int(self.config.max_age) if self.config.max_age is not None else None
-        await self.storage.set(session_id, data, expires_in=expires_in)
+        await self.store.set(session_id, data, expires_in=expires_in)
 
     async def delete(self, session_id: str) -> None:
         """Delete the data associated with ``session_id``. Fails silently if no such session-ID exists.
@@ -78,7 +78,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Returns:
             None
         """
-        await self.storage.delete(session_id)
+        await self.store.delete(session_id)
 
     def generate_session_id(self) -> str:
         """Generate a new session-ID, with
@@ -155,8 +155,8 @@ class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):
 
     _backend_class = ServerSideSessionBackend
 
-    storage: Storage
-    """:class:`.storage.base.Storage <Storage>` to use"""
+    store: Store
+    """:class:`.stores.base.Store <Store>` to use"""
     session_id_bytes: int = field(default=32)
     """Number of bytes used to generate a random session-ID."""
     renew_on_access: bool = field(default=False)

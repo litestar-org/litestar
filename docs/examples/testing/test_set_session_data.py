@@ -2,10 +2,11 @@ from typing import Any, Dict
 
 from starlite import Request, Starlite, get
 from starlite.middleware.session.server_side import ServerSideSessionConfig
-from starlite.storage.memory import MemoryStorage
+from starlite.stores.memory import MemoryStore
+
 from starlite.testing import TestClient
 
-session_config = ServerSideSessionConfig(storage=MemoryStorage())
+session_config = ServerSideSessionConfig(store=MemoryStore())
 
 
 @get(path="/test")

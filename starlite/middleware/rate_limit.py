@@ -9,7 +9,7 @@ from starlite.enums import ScopeType
 from starlite.exceptions import TooManyRequestsException
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.serialization import decode_json, encode_json
-from starlite.storage.memory import MemoryStorage
+from starlite.stores.memory import MemoryStore
 from starlite.utils import AsyncCallable
 
 __all__ = ("CacheObject", "RateLimitConfig", "RateLimitMiddleware")
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
     from starlite.connection import Request
     from starlite.types import ASGIApp, Message, Receive, Scope, Send, SyncOrAsyncUnion
-    from starlite.storage.base import Storage
+    from starlite.stores.base import Store
 
 
 DurationUnit = Literal["second", "minute", "hour", "day"]
@@ -41,7 +41,7 @@ class CacheObject:
 class RateLimitMiddleware(AbstractMiddleware):
     """Rate-limiting middleware."""
 
-    __slots__ = ("app", "check_throttle_handler", "max_requests", "unit", "request_quota", "config", "storage")
+    __slots__ = ("app", "check_throttle_handler", "max_requests", "unit", "request_quota", "config", "store")
 
     def __init__(self, app: ASGIApp, config: RateLimitConfig) -> None:
         """Initialize ``RateLimitMiddleware``.
@@ -55,7 +55,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         )
         self.check_throttle_handler = cast("Callable[[Request], Awaitable[bool]] | None", config.check_throttle_handler)
         self.config = config
-        self.storage = config.storage
+        self.store = config.store
         self.max_requests: int = config.rate_limit[1]
         self.unit: DurationUnit = config.rate_limit[0]
 
@@ -146,7 +146,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """
         duration = DURATION_VALUES[self.unit]
         now = int(time())
-        cached_string = await self.storage.get(key)
+        cached_string = await self.store.get(key)
         if cached_string:
             cache_object = CacheObject(**decode_json(cached_string))
             if cache_object.reset <= now:
@@ -169,7 +169,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             None
         """
         cache_object.history = [int(time()), *cache_object.history]
-        await self.storage.set(key, encode_json(cache_object), expires_in=DURATION_VALUES[self.unit])
+        await self.store.set(key, encode_json(cache_object), expires_in=DURATION_VALUES[self.unit])
 
     async def should_check_request(self, request: "Request[Any, Any, Any]") -> bool:
         """Return a boolean indicating if a request should be checked for rate limiting.
@@ -234,8 +234,8 @@ class RateLimitConfig:
     """Key to use for the rate limit reset header."""
     rate_limit_limit_header_key: str = field(default="RateLimit-Limit")
     """Key to use for the rate limit limit header."""
-    storage: Storage = field(default_factory=MemoryStorage)
-    """Storage to use to retain request information"""
+    store: Store = field(default_factory=MemoryStore)
+    """Store to use to retain request information"""
 
     def __post_init__(self) -> None:
         if self.check_throttle_handler:
