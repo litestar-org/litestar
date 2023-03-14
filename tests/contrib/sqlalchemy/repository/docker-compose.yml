@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres
+    ports:
+      - "5423:5432" # use a non-standard port here
+    environment:
+      POSTGRES_PASSWORD: super-secret
+
+  redis:
+    image: redis
+    ports:
+      - "6397:6379" # use a non-standard port here

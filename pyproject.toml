@@ -60,12 +60,13 @@ python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
 rich = { version = ">=13.0.0", optional = true }
-sqlalchemy = { version = "^2.0", optional = true }
+sqlalchemy = { version = "^2.0.4", optional = true }
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
+asyncpg = "*"
 beautifulsoup4 = "*"
 brotli = "*"
 click = "*"
@@ -89,6 +90,7 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 pytest-mock = "*"
 python-dotenv = "*"
+pytest_docker = "*"
 python-jose = "*"
 redis = "*"
 rich = "*"
@@ -263,6 +265,7 @@ classmethod-decorators = [
     "pydantic.validator",
     "pydantic.root_validator",
     "sqlalchemy.ext.declarative.declared_attr",
+    "sqlalchemy.orm.declared_attr.directive",
 ]
 
 [tool.ruff.isort]
