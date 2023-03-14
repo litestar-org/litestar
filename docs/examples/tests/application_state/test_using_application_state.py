@@ -2,7 +2,6 @@ from logging import INFO
 from typing import Any
 
 from examples.application_state.using_application_state import app
-
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient
 

@@ -5,7 +5,6 @@ from examples.responses.response_cookies_2 import app as app_2
 from examples.responses.response_cookies_3 import app as app_3
 from examples.responses.response_cookies_4 import app as app_4
 from examples.responses.response_cookies_5 import app as app_5
-
 from starlite.testing import TestClient
 
 

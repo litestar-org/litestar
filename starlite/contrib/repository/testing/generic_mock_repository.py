@@ -4,7 +4,7 @@ Uses a `dict` for storage.
 """
 from __future__ import annotations
 
-from datetime import datetime, tzinfo, timezone
+from datetime import datetime, timezone, tzinfo
 from typing import TYPE_CHECKING, Generic, Protocol, TypeVar
 from uuid import uuid4
 

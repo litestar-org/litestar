@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-
-from typing import Optional
-
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
 from msgspec import Struct
 from msgspec.msgpack import decode as msgpack_decode

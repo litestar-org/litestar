@@ -7,6 +7,7 @@ from _pytest.monkeypatch import MonkeyPatch
 from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
+from starlite import __version__ as starlite_version
 from starlite.cli._utils import LoadedApp
 from starlite.cli.main import starlite_group as cli_command
 from tests.cli import (
@@ -15,7 +16,6 @@ from tests.cli import (
     GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION,
 )
 from tests.cli.conftest import CreateAppFileFixture
-from starlite import __version__ as starlite_version
 
 
 @pytest.fixture()

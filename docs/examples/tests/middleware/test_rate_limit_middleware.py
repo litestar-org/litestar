@@ -1,5 +1,4 @@
 from examples.middleware.rate_limit import app
-
 from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
 from starlite.testing import TestClient
 

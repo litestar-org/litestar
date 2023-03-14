@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
 import pytest
-from examples.routing import mount_custom_app, mounting_starlette_app
 
+from examples.routing import mount_custom_app, mounting_starlette_app
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient
 
