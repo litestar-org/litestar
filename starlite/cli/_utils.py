@@ -8,7 +8,7 @@ from functools import wraps
 from itertools import chain
 from os import getenv
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Sequence, TypeVar, cast, Generator
+from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast
 
 from click import ClickException, Command, Context, Group, pass_context, style
 from rich.console import Console
