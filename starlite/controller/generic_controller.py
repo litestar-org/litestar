@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generic, TypeVar
 
+from starlite.exceptions import StarliteException
 from typing_extensions import Self, get_args, get_origin
 
 from .base import Controller
@@ -84,7 +85,7 @@ def _rebuild_annotation(original_annotation: Any, origin: Any | None, args_tuple
         Generic type of ``original_annotation`` narrowed with ``args_tuple``.
     """
     if origin is None:
-        raise RuntimeError("Unexpected origin value")
+        raise StarliteException("Unexpected origin value")
     try:
         return origin[args_tuple]
     except TypeError as exc:
@@ -95,4 +96,4 @@ def _rebuild_annotation(original_annotation: Any, origin: Any | None, args_tuple
         #     given the supplied args.
         if hasattr(original_annotation, "copy_with"):
             return original_annotation.copy_with(args_tuple)
-        raise RuntimeError("Unable to rebuild generic type") from exc
+        raise StarliteException("Unable to rebuild generic type") from exc
