@@ -1,5 +1,4 @@
 from examples.security.using_session_auth import app
-
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from starlite.testing import TestClient
 

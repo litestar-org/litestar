@@ -1,5 +1,4 @@
 from examples.responses.custom_responses import app as app_1
-
 from starlite.testing import TestClient
 
 

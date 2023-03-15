@@ -4,9 +4,8 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Generic, Literal, Tuple, TypeVar, cast
 
-from sqlalchemy import delete
+from sqlalchemy import delete, over, select, text, update
 from sqlalchemy import func as sql_func
-from sqlalchemy import over, select, text, update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from starlite.contrib.repository.abc import AbstractRepository

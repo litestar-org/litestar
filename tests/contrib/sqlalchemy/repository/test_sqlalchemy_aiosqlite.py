@@ -1,7 +1,7 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
-from asyncio import AbstractEventLoop, get_event_loop_policy
 
+from asyncio import AbstractEventLoop, get_event_loop_policy
 from datetime import datetime
 from pathlib import Path
 from typing import Any, AsyncGenerator, Iterator

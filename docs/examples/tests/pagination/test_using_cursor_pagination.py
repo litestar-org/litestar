@@ -1,5 +1,4 @@
 from examples.pagination.using_cursor_pagination import app
-
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import TestClient
 

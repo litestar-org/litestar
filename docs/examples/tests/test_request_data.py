@@ -1,5 +1,4 @@
 from examples.request_data.msgpack_request import app as msgpack_app
-
 from starlite.serialization import encode_msgpack
 from starlite.testing import TestClient
 

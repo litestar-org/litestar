@@ -26,21 +26,33 @@ to the CLI.
 Autodiscovery
 -------------
 
-Starlite will automatically discover Starlite applications and application factories in
-certain places:
+Starlite will automatically discover Starlite applications and application factories placed within the canonical modules
+``app`` and ``application``, which can be singular files or directories. Within those modules, or submodules thereof,
+the CLI will pick up any :class:`Starlite <.app.Starlite>` instance, callables named ``create_app``, or callables
+annotated as returning a :class:`Starlite <.app.Starlite>` instance.
+
+The lookup will consider these locations in order:
 
 1. ``app.py``
-2. ``application.py``
-3. ``asgi.py``
-4. ``app/__init__.py``
+2. ``app/__init__.py``
+3. Submodules of ``app``
+4. ``application.py``
+5. ``application/__init__.py``
+6. Submodules ``application``
 
-If any of these files contains an instance of the :class:`Starlite <.app.Starlite>` class, a function named
-``create_app``, or a function annotated as returning a :class:`Starlite <.app.Starlite>` instance, the CLI will pick it up.
+and within those, look for:
+
+1. An object named ``app`` that's an instance of  :class:`Starlite <.app.Starlite>`
+2. An object named ``application`` that's an instance of  :class:`Starlite <.app.Starlite>`
+3. Any object that's an instance of :class:`Starlite <.app.Starlite>`
+4. A callable named ``create_app``
+5. A callable that's annotated as returning an instance of :class:`Starlite <.app.Starlite>`
+
 
 Commands
 --------
 
-Starlite
+starlite
 ^^^^^^^^
 
 The ``starlite`` command is the main entrypoint to the CLI. If the ``--app`` flag is not passed,
@@ -54,6 +66,21 @@ Options
 +===========+===========================+=============================================+
 | ``--app`` | ``STARLITE_APP``          | ``<modulename>.<submodule>:<app instance>`` |
 +-----------+---------------------------+---------------------------------------------+
+
+
+version
+^^^^^^^
+
+Print the currently installed version of Starlite
+
+Options
+~~~~~~~
+
++-------------------------+------------------------------------+
+| Name                    | Description                        |
++=========================+====================================+
+| ``-s``\ , ``--short``   | Include only ``MAJOR.MINOR.PATCH`` |
++-------------------------+------------------------------------+
 
 
 Run
@@ -90,7 +117,7 @@ Options
 +-------------------------------------+---------------------------+-----------------------------------------------------------------+
 
 
-Info
+info
 ^^^^
 
 The ``info`` command displays useful information about the selected application and its configuration
@@ -104,7 +131,7 @@ The ``info`` command displays useful information about the selected application 
    :alt: starlite info
 
 
-Routes
+routes
 ^^^^^^
 
 The ``routes`` command displays a tree view of the routing table
@@ -118,13 +145,13 @@ The ``routes`` command displays a tree view of the routing table
    :alt: starlite info
 
 
-Sessions
+sessions
 ^^^^^^^^
 
 This command and its subcommands provide management utilities for
 :ref:`server-side session backends <lib/usage/middleware/builtin-middleware:server-side sessions>`.
 
-Delete
+delete
 ~~~~~~
 
 The ``delete`` subcommand deletes a specific session from the backend.
@@ -133,7 +160,7 @@ The ``delete`` subcommand deletes a specific session from the backend.
 
    starlite sessions delete cc3debc7-1ab6-4dc8-a220-91934a473717
 
-Clear
+clear
 ~~~~~
 
 The ``clear`` subcommand clears all sessions from the backend.
@@ -147,7 +174,7 @@ OpenAPI
 
 This command provides utilities to generate OpenAPI schema and TypeScript types.
 
-Schema
+schema
 ~~~~~~
 
 The ``schema`` subcommand generates OpenAPI specs from the Starlite application, serializing these as either JSON or YAML.
@@ -158,7 +185,7 @@ filename using the ``--output`` flag. For example:
 
    starlite openapi schema --output my-specs.yaml
 
-TypeScript
+typescript
 ~~~~~~~~~~
 
 The ``typescript`` subcommand generates TypeScript definitions from the Starlite application's OpenAPI specs.  For example:

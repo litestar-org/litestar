@@ -16,15 +16,13 @@ from starlite.connection import ASGIConnection
 from starlite.enums import ScopeType
 from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.serialization import decode_json, encode_json
-
 from starlite.utils import get_serializer_from_scope
 
 __all__ = ("BaseBackendConfig", "BaseSessionBackend", "SessionMiddleware")
 
 
 if TYPE_CHECKING:
-    from starlite.types import ASGIApp, Message, Receive, Scope, ScopeSession, Send
-    from starlite.types import Scopes
+    from starlite.types import ASGIApp, Message, Receive, Scope, Scopes, ScopeSession, Send
 
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 

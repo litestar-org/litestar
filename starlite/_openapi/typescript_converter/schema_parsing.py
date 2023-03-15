@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, Literal, Optional, Set, Union, cast, overload, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Set, Union, cast, overload
 
 from pydantic_openapi_schema.v3_1_0 import Schema
 

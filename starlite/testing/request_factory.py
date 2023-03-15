@@ -16,9 +16,10 @@ from starlite.types import HTTPScope, RouteHandlerType
 from starlite.types.asgi_types import ASGIVersion
 
 if TYPE_CHECKING:
+    from httpx._types import FileTypes
+
     from starlite.datastructures.cookie import Cookie
     from starlite.handlers.http_handlers import HTTPRouteHandler
-    from httpx._types import FileTypes
 
 
 def _create_default_route_handler() -> HTTPRouteHandler:
