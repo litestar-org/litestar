@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import importlib.util
 import sys
 from pathlib import Path
@@ -130,7 +132,7 @@ def mock_confirm_ask(mocker: MockerFixture) -> Generator["MagicMock", None, None
     ]
 )
 def _app_file_content(request: FixtureRequest) -> tuple[str, str]:
-    return cast(tuple[str, str], request.param)
+    return cast("tuple[str, str]", request.param)
 
 
 @pytest.fixture
