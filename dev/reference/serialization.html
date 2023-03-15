@@ -629,24 +629,6 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="starlite.serialization.encode_for_media_type">
-<span class="sig-prename descclassname"><span class="pre">starlite.serialization.</span></span><span class="sig-name descname"><span class="pre">encode_for_media_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">media_type:</span> <span class="pre">starlite.enums.MediaType</span> <span class="pre">|</span> <span class="pre">str,</span> <span class="pre">obj:</span> <span class="pre">~typing.Any,</span> <span class="pre">enc_hook:</span> <span class="pre">~typing.Optional[~typing.Callable[[~typing.Any],</span> <span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">default_serializer&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#starlite.serialization.encode_for_media_type" title="Permalink to this definition">#</a></dt>
-<dd><p>Encode <code class="docutils literal notranslate"><span class="pre">obj</span></code> into <code class="docutils literal notranslate"><span class="pre">media_type</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>media_type</strong> – Serialization format.</p></li>
-<li><p><strong>obj</strong> – Object to be serialized.</p></li>
-<li><p><strong>enc_hook</strong> – Optional callable to support non-natively supported types (ignored for DTO types).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">media_type</span></code> as bytes.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="starlite.serialization.encode_json">
 <span class="sig-prename descclassname"><span class="pre">starlite.serialization.</span></span><span class="sig-name descname"><span class="pre">encode_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">obj:</span> <span class="pre">~typing.Any,</span> <span class="pre">default:</span> <span class="pre">~typing.Optional[~typing.Callable[[~typing.Any],</span> <span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">default_serializer&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a></span></span><a class="headerlink" href="#starlite.serialization.encode_json" title="Permalink to this definition">#</a></dt>
 <dd><p>Encode a value into JSON.</p>
@@ -758,15 +740,6 @@
    <code class="docutils literal notranslate">
     <span class="pre">
      default_serializer()
-    </span>
-   </code>
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.serialization.encode_for_media_type">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     encode_for_media_type()
     </span>
    </code>
   </a>
