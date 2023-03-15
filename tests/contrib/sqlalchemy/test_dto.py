@@ -9,8 +9,9 @@ from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column
 from typing_extensions import Annotated
 
-from starlite.contrib.sqlalchemy.dto import DTO_INFO_KEY, ModelT, SQLAlchemyDTO
+from starlite.contrib.sqlalchemy.dto import ModelT, SQLAlchemyDTO
 from starlite.dto import DTOConfig, DTOField, Mark, Purpose
+from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.enums import MediaType
 from starlite.serialization import encode_for_media_type
 
@@ -23,13 +24,13 @@ if TYPE_CHECKING:
 def fx_base() -> type[DeclarativeBase]:
     class Base(DeclarativeBase):
         id: Mapped[UUID] = mapped_column(
-            default=uuid4, primary_key=True, info={DTO_INFO_KEY: DTOField(mark=Mark.READ_ONLY)}
+            default=uuid4, primary_key=True, info={DTO_FIELD_META_KEY: DTOField(mark=Mark.READ_ONLY)}
         )
         created: Mapped[datetime] = mapped_column(
-            default=datetime.now, info={DTO_INFO_KEY: DTOField(mark=Mark.READ_ONLY)}
+            default=datetime.now, info={DTO_FIELD_META_KEY: DTOField(mark=Mark.READ_ONLY)}
         )
         updated: Mapped[datetime] = mapped_column(
-            default=datetime.now, info={DTO_INFO_KEY: DTOField(mark=Mark.READ_ONLY)}
+            default=datetime.now, info={DTO_FIELD_META_KEY: DTOField(mark=Mark.READ_ONLY)}
         )
 
         # noinspection PyMethodParameters
@@ -157,7 +158,7 @@ def test_write_dto_for_model_field_unsupported_default(base: type[DeclarativeBas
 def test_dto_for_private_model_field(purpose: Purpose | None, base: type[DeclarativeBase]) -> None:
     class Model(base):
         field: Mapped[datetime] = mapped_column(
-            info={DTO_INFO_KEY: DTOField(mark=Mark.PRIVATE)},
+            info={DTO_FIELD_META_KEY: DTOField(mark=Mark.PRIVATE)},
         )
 
     dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=purpose)]]

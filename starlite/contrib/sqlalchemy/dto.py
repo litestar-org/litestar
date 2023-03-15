@@ -10,6 +10,7 @@ from typing_extensions import Self, get_args, get_origin, get_type_hints
 
 from starlite.dto import AbstractDTO, DTOField, Purpose
 from starlite.dto.backends.pydantic import PydanticDTOBackend
+from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import FieldDefinition, NestedFieldDefinition
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
@@ -27,8 +28,6 @@ if TYPE_CHECKING:
 
 
 __all__ = ("SQLAlchemyDTO", "ModelT")
-
-DTO_INFO_KEY = "__dto__"
 
 ModelT = TypeVar("ModelT", bound="DeclarativeBase")
 AnyDeclarativeT = TypeVar("AnyDeclarativeT", bound="DeclarativeBase")
@@ -164,7 +163,7 @@ def set_field_definition_default(field_definition: FieldDefinition, elem: Column
 
 
 def _get_dto_field(elem: Column | RelationshipProperty) -> DTOField:
-    return elem.info.get(DTO_INFO_KEY, DTOField())
+    return elem.info.get(DTO_FIELD_META_KEY, DTOField())
 
 
 def _inspect_model(

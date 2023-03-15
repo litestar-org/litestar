@@ -12,7 +12,14 @@ if TYPE_CHECKING:
     from .types import FieldDefinitionsType, FieldMappingType
 
 
-__all__ = ("DTOConfig", "DTOField")
+__all__ = (
+    "DTO_FIELD_META_KEY",
+    "DTOConfig",
+    "DTOField",
+)
+
+
+DTO_FIELD_META_KEY = "__dto__"
 
 
 @dataclass
