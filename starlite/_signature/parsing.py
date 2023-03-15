@@ -10,9 +10,8 @@ from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
 from starlite._signature.models import PydanticSignatureModel, SignatureModel
-from starlite._signature.utils import get_fn_type_hints
+from starlite._signature.utils import get_fn_type_hints, is_generic_controller
 from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
-from starlite.controller.generic_controller import GenericController
 from starlite.datastructures import ImmutableState
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
@@ -154,9 +153,8 @@ def parse_fn_signature(
     fn_type_hints = get_fn_type_hints(fn)
     return_annotation = fn_type_hints.get("return", signature.empty)
 
-    owner_is_generic_controller = owner and isinstance(owner, GenericController)
-    if owner_is_generic_controller:
-        return_annotation = cast("GenericController", owner).get_parameter_annotation(return_annotation)
+    if is_generic_controller(owner):
+        return_annotation = owner.get_parameter_annotation(return_annotation)
 
     parameters = (
         ParsedSignatureParameter.from_parameter(
@@ -186,8 +184,8 @@ def parse_fn_signature(
         if isinstance(parameter.default, ParameterKwarg) and parameter.default.value_type is not Empty:
             parameter.annotation = parameter.default.value_type
 
-        if owner_is_generic_controller:
-            parameter.annotation = cast("GenericController", owner).get_parameter_annotation(parameter.annotation)
+        if is_generic_controller(owner):
+            parameter.annotation = owner.get_parameter_annotation(parameter.annotation)
 
         if plugin := get_plugin_for_value(value=parameter.annotation, plugins=plugins):
             parameter.annotation = get_type_annotation_from_plugin(parameter, plugin, field_plugin_mappings)

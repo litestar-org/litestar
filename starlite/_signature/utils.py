@@ -8,15 +8,20 @@ from typing import TYPE_CHECKING, Any, cast
 from typing_extensions import get_type_hints
 
 from starlite.connection import Request, WebSocket
+from starlite.controller.generic_controller import GenericController
 from starlite.datastructures import Headers, ImmutableState, State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Receive, Scope, Send, WebSocketScope
 
-__all__ = ("get_fn_type_hints", "get_signature_model")
+__all__ = ("get_fn_type_hints", "get_signature_model", "is_generic_controller")
 
 
 if TYPE_CHECKING:
+    from typing import TypeGuard
+
     from starlite._signature.models import SignatureModel
+    from starlite.controller import Controller
+    from starlite.router import Router
 
 
 STARLITE_GLOBAL_NAMES = {
@@ -78,3 +83,15 @@ def get_fn_type_hints(fn: Any) -> dict[str, Any]:
     types = vars(typing)
     namespace = {**STARLITE_GLOBAL_NAMES, **module_namespace, **types}
     return get_type_hints(fn_to_inspect, globalns=namespace)
+
+
+def is_generic_controller(item: Controller | Router | None) -> TypeGuard[GenericController]:
+    """Detect if ``item`` is a :class:`GenericController` instance.
+
+    Args:
+        item: anything
+
+    Returns:
+        Type-guarded isinstance check for ``GenericController`` types.
+    """
+    return isinstance(item, GenericController)
