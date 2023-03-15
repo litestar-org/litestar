@@ -1,5 +1,4 @@
 from examples.middleware.session.cookies_full_example import app
-
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.testing import TestClient
 

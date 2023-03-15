@@ -1,18 +1,19 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
-from asyncio import AbstractEventLoop, get_event_loop_policy
-import asyncio
 
+import asyncio
+import sys
+import timeit
+from asyncio import AbstractEventLoop, get_event_loop_policy
 from datetime import datetime
 from pathlib import Path
-import timeit
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Iterator
 from uuid import UUID, uuid4
-import asyncpg
-from sqlalchemy.engine import URL
 
+import asyncpg
 import pytest
 from sqlalchemy import NullPool, insert
+from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -26,6 +27,9 @@ from tests.contrib.sqlalchemy.models import Author, AuthorRepository, BookReposi
 
 if TYPE_CHECKING:
     from pytest_docker.plugin import Services
+
+
+pytestmark = pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform")
 
 
 here = Path(__file__).parent

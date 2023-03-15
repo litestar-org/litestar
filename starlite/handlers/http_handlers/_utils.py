@@ -12,9 +12,9 @@ from starlite.utils import is_async_callable
 
 if TYPE_CHECKING:
     from starlite.app import Starlite
-    from starlite.datastructures import Cookie, ResponseHeader
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
+    from starlite.datastructures import Cookie, ResponseHeader
     from starlite.dto import AbstractDTO
     from starlite.plugins import SerializationPluginProtocol
     from starlite.response import Response

@@ -11,15 +11,15 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from starlite.datastructures import MutableScopeHeaders
 from starlite.datastructures.cookie import Cookie
+from starlite.enums import ScopeType
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
 from starlite.serialization import decode_json, encode_json
 from starlite.types import Empty, Scopes
-
-from starlite.enums import ScopeType
 from starlite.utils.dataclass import extract_dataclass_fields
+
 from .base import ONE_DAY_IN_SECONDS, BaseBackendConfig, BaseSessionBackend
 
 __all__ = ("ClientSideSessionBackend", "CookieBackendConfig")

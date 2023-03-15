@@ -29,6 +29,12 @@ class Version(NamedTuple):
     release_level: _ReleaseLevel
     serial: int
 
+    def formatted(self, short: bool = False) -> str:
+        version = f"{self.major}.{self.minor}.{self.patch}"
+        if not short:
+            version += f"{self.release_level}{self.serial}"
+        return version
+
 
 def parse_version(raw_version: str) -> Version:
     """Parse a version string into a :class:`Version`"""

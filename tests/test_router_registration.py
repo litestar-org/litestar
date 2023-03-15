@@ -10,9 +10,9 @@ from starlite import (
     patch,
     post,
     put,
+    websocket,
 )
 from starlite import route as route_decorator
-from starlite import websocket
 from starlite.exceptions import ImproperlyConfiguredException
 
 

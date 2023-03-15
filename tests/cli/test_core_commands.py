@@ -7,6 +7,7 @@ from _pytest.monkeypatch import MonkeyPatch
 from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
+from starlite import __version__ as starlite_version
 from starlite.cli._utils import LoadedApp
 from starlite.cli.main import starlite_group as cli_command
 from tests.cli import (
@@ -80,7 +81,7 @@ def test_run_command(
     else:
         web_concurrency = 1
 
-    path = create_app_file(custom_app_file or "asgi.py")
+    path = create_app_file(custom_app_file or "app.py")
 
     result = runner.invoke(cli_command, args)
 
@@ -174,3 +175,10 @@ def test_run_command_force_debug(
     runner.invoke(cli_command, "run --debug")
 
     assert mock_app.debug is True
+
+
+@pytest.mark.parametrize("short", [True, False])
+def test_version_command(short: bool, runner: CliRunner) -> None:
+    result = runner.invoke(cli_command, "version --short" if short else "version")
+
+    assert result.output.strip() == starlite_version.formatted(short=short)

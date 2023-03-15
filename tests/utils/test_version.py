@@ -26,3 +26,8 @@ def test_parse_version(raw_version: str, expected: Version) -> None:
 def test_parse_invalid_version(raw_version: str) -> None:
     with pytest.raises(ValueError):
         parse_version(raw_version)
+
+
+@pytest.mark.parametrize("short,expected_output", [(True, "2.0.0"), (False, "2.0.0alpha1")])
+def test_formatted(short: bool, expected_output: str) -> None:
+    assert parse_version("2.0.0alpha1").formatted(short=short) == expected_output

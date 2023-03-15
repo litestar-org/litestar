@@ -1,5 +1,4 @@
 from examples.datastructures.headers import cache_control
-
 from starlite.testing import TestClient
 
 

@@ -3,8 +3,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Type
 from pydantic import BaseModel
 from pydantic_factories.utils import is_pydantic_model
 from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
-from tortoise.fields import ReverseRelation
-from tortoise.fields.relational import RelationalField
 
 from starlite.exceptions import MissingDependencyException
 from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginProtocol
@@ -19,9 +17,12 @@ except ImportError as e:
 
 
 from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
-
-from tortoise.contrib.pydantic import PydanticModel, pydantic_model_creator  # type: ignore[attr-defined]  # pyright: ignore
-
+from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
+    PydanticModel,  # pyright: ignore
+    pydantic_model_creator,  # pyright: ignore
+)
+from tortoise.fields import ReverseRelation
+from tortoise.fields.relational import RelationalField
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import Schema

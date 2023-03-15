@@ -9,8 +9,8 @@ from anyio.streams.stapled import StapledObjectStream
 from starlite.testing.client.base import BaseTestClient
 
 if TYPE_CHECKING:
-    from starlite.types import LifeSpanReceiveMessage  # noqa: F401
     from starlite.types import (
+        LifeSpanReceiveMessage,  # noqa: F401
         LifeSpanSendMessage,
         LifeSpanShutdownEvent,
         LifeSpanStartupEvent,

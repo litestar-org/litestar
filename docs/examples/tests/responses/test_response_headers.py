@@ -4,7 +4,6 @@ from examples.responses.response_headers_1 import app
 from examples.responses.response_headers_2 import app as app_2
 from examples.responses.response_headers_3 import app as app_3
 from examples.responses.response_headers_4 import app as app_4
-
 from starlite.testing import TestClient
 
 

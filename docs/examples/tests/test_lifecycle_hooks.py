@@ -2,7 +2,6 @@ from examples.lifecycle_hooks.after_request import app as after_request_app
 from examples.lifecycle_hooks.after_response import app as after_response_app
 from examples.lifecycle_hooks.before_request import app as before_request_app
 from examples.lifecycle_hooks.layered_hooks import app as layered_hooks_app
-
 from starlite.testing import TestClient
 
 
