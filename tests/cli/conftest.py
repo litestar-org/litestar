@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import importlib.util
 import sys
 from pathlib import Path
 from shutil import rmtree
-from typing import TYPE_CHECKING, Callable, Generator, List, Optional, Protocol, Union, cast
+from typing import TYPE_CHECKING, Callable, Generator, Protocol, cast
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -24,8 +26,8 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[List[str]], None]:
-    def patcher(paths: List[str]) -> None:
+def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[list[str]], None]:
+    def patcher(paths: list[str]) -> None:
         from starlite.cli._utils import AUTODISCOVERY_FILE_NAMES
 
         old_paths = AUTODISCOVERY_FILE_NAMES[::]
@@ -50,9 +52,9 @@ def tmp_project_dir(monkeypatch: MonkeyPatch, tmp_path: Path) -> Path:
 class CreateAppFileFixture(Protocol):
     def __call__(
         self,
-        file: Union[str, Path],
-        directory: Optional[Union[str, Path]] = None,
-        content: Optional[str] = None,
+        file: str | Path,
+        directory: str | Path | None = None,
+        content: str | None = None,
         init_content: str = "",
     ) -> Path:
         ...
@@ -71,9 +73,9 @@ def create_app_file(
     request: FixtureRequest,
 ) -> CreateAppFileFixture:
     def _create_app_file(
-        file: Union[str, Path],
-        directory: Optional[Union[str, Path]] = None,
-        content: Optional[str] = None,
+        file: str | Path,
+        directory: str | Path | None = None,
+        content: str | None = None,
         init_content: str = "",
     ) -> Path:
         base = tmp_project_dir
@@ -130,7 +132,7 @@ def mock_confirm_ask(mocker: MockerFixture) -> Generator["MagicMock", None, None
     ]
 )
 def _app_file_content(request: FixtureRequest) -> tuple[str, str]:
-    return cast(tuple[str, str], request.param)
+    return cast("tuple[str, str]", request.param)
 
 
 @pytest.fixture
