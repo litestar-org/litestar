@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from starlite.exceptions import StarliteException
 from typing_extensions import Self, get_args, get_origin
+
+from starlite.exceptions import StarliteException
 
 from .base import Controller
 
