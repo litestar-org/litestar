@@ -4,6 +4,7 @@ from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
+from starlite.dto import AbstractDTO
 from starlite.enums import HttpMethod
 from starlite.exceptions import ValidationException
 from starlite.plugins import get_plugin_for_value
@@ -15,7 +16,6 @@ if TYPE_CHECKING:
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
     from starlite.datastructures import Cookie, ResponseHeader
-    from starlite.dto import AbstractDTO
     from starlite.plugins import SerializationPluginProtocol
     from starlite.response import Response
     from starlite.response_containers import ResponseContainer
@@ -79,9 +79,10 @@ def create_data_handler(
         if isawaitable(data):
             data = await data
 
-        if return_dto:
-            data = return_dto(data=data)
-
+        if isinstance(data, AbstractDTO):
+            data = data.to_encodable_type(media_type=media_type)
+        elif return_dto:
+            data = return_dto(data=data).to_encodable_type(media_type=media_type)
         elif plugins:
             data = await normalize_response_data(data=data, plugins=plugins)
 

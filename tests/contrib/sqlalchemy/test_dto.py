@@ -13,7 +13,7 @@ from starlite.contrib.sqlalchemy.dto import ModelT, SQLAlchemyDTO
 from starlite.dto import DTOConfig, DTOField, Mark, Purpose
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.enums import MediaType
-from starlite.serialization import encode_for_media_type
+from starlite.serialization import encode_json
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -172,7 +172,7 @@ def test_dto_for_private_model_field(purpose: Purpose | None, base: type[Declara
         )
     )
     serializable = dto_instance.to_encodable_type(MediaType.JSON)
-    assert b"field" not in encode_for_media_type(MediaType.JSON, serializable)
+    assert b"field" not in encode_json(serializable)
     assert "field" not in vars(
         get_model_from_dto(
             dto_type,

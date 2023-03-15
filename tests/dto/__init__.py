@@ -36,7 +36,7 @@ class ExampleDTO(AbstractDTO[SupportedT], Generic[SupportedT]):
     dto_backend_type = PydanticDTOBackend
     dto_backend: ClassVar[PydanticDTOBackend]
 
-    def to_encodable_type(self, _: str | MediaType) -> SupportedT:
+    def to_encodable_type(self, media_type: str | MediaType) -> SupportedT:
         return self.data
 
     @classmethod
