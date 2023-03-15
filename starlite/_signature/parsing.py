@@ -10,7 +10,7 @@ from pydantic_factories import ModelFactory
 from typing_extensions import get_args
 
 from starlite._signature.models import PydanticSignatureModel, SignatureModel
-from starlite._signature.utils import get_fn_type_hints, is_generic_controller
+from starlite._signature.utils import get_fn_type_hints, get_return_annotation_from_type_hints, is_generic_controller
 from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
 from starlite.datastructures import ImmutableState
 from starlite.exceptions import ImproperlyConfiguredException
@@ -151,10 +151,7 @@ def parse_fn_signature(
     parsed_params: list[ParsedSignatureParameter] = []
     dependency_names: set[str] = set()
     fn_type_hints = get_fn_type_hints(fn)
-    return_annotation = fn_type_hints.get("return", signature.empty)
-
-    if is_generic_controller(owner):
-        return_annotation = owner.get_parameter_annotation(return_annotation)
+    return_annotation = get_return_annotation_from_type_hints(fn_type_hints, owner)
 
     parameters = (
         ParsedSignatureParameter.from_parameter(
