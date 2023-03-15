@@ -9,8 +9,9 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from typing import Any, Callable
 
-    from starlite.types import EmptyType
     from typing_extensions import TypeAlias
+
+    from starlite.types import EmptyType
 
 __all__ = (
     "DataT",

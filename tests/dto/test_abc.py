@@ -6,8 +6,8 @@ from unittest.mock import MagicMock
 import pytest
 from typing_extensions import Annotated, get_args, get_origin
 
-from starlite.dto.exc import InvalidAnnotation
 from starlite.dto.config import DTOConfig
+from starlite.dto.exc import InvalidAnnotation
 
 from . import ExampleDTO, Model, SupportedT
 

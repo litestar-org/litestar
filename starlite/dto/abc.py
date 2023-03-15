@@ -8,9 +8,9 @@ from typing_extensions import Annotated, get_args, get_origin
 
 from starlite.enums import MediaType
 
-from .exc import InvalidAnnotation
 from .config import DTOConfig, DTOField
 from .enums import Mark, Purpose
+from .exc import InvalidAnnotation
 from .types import DataT
 
 if TYPE_CHECKING:

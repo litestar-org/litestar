@@ -8,11 +8,11 @@ from sqlalchemy import inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped
 from typing_extensions import Self, get_args, get_origin, get_type_hints
 
-from starlite.enums import MediaType
-from starlite.exceptions import SerializationException
 from starlite.dto import AbstractDTO, DTOField, Purpose
 from starlite.dto.backends.pydantic import PydanticDTOBackend
 from starlite.dto.types import FieldDefinition, NestedFieldDefinition
+from starlite.enums import MediaType
+from starlite.exceptions import SerializationException
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar

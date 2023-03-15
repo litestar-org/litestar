@@ -9,7 +9,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column
 from typing_extensions import Annotated
 
-from starlite.contrib.sqlalchemy.dto import DTO_INFO_KEY, SQLAlchemyDTO, ModelT
+from starlite.contrib.sqlalchemy.dto import DTO_INFO_KEY, ModelT, SQLAlchemyDTO
 from starlite.dto import DTOConfig, DTOField, Mark, Purpose
 from starlite.enums import MediaType
 from starlite.serialization import encode_for_media_type
