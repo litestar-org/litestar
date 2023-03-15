@@ -44,6 +44,7 @@ from starlite.utils import (
     unique,
 )
 from starlite.utils.dataclass import extract_dataclass_fields
+from starlite.stores.registry import StoreRegistry
 
 __all__ = ("HandlerIndex", "Starlite")
 
@@ -55,6 +56,9 @@ if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler
+
+    from starlite.stores.base import Store
+
     from starlite.logging.config import BaseLoggingConfig
     from starlite.openapi.spec import SecurityRequirement
     from starlite.openapi.spec.open_api import OpenAPI
@@ -155,6 +159,7 @@ class Starlite(Router):
         "openapi_schema_plugins",
         "state",
         "static_files_config",
+        "stores",
         "template_engine",
         "websocket_class",
     )
@@ -201,6 +206,7 @@ class Starlite(Router):
         security: OptionalSequence[SecurityRequirement] = None,
         state: State | None = None,
         static_files_config: OptionalSequence[StaticFilesConfig] = None,
+        stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
         template_config: TemplateConfig | None = None,
         type_encoders: TypeEncodersMap | None = None,
@@ -281,6 +287,10 @@ class Starlite(Router):
                 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
             state: An optional :class:`State <.datastructures.State>` for application state.
             static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
+            stores: Central registry of :class:`Store <.stores.base.Store>` to be made available and be used throughout
+                the application. Can be either dictionary mapping strings to :class:`Store <.stores.base.Store>` to be
+                passed to a :class:`StoreRegistry <.stores.registry.StoreRegistry>` or an instance of
+                :class:`StoreRegistry <.stores.registry.StoreRegistry>`.
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.
             template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
@@ -337,6 +347,7 @@ class Starlite(Router):
             security=list(security or []),
             state=state or State(),
             static_files_config=list(static_files_config or []),
+            stores=stores,
             tags=list(tags or []),
             template_config=template_config,
             type_encoders=type_encoders,
@@ -414,6 +425,8 @@ class Starlite(Router):
             self.register(static_config.to_static_files_app())
 
         self.asgi_handler = self._create_asgi_handler()
+
+        self.stores = config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
 
     async def __call__(
         self,

@@ -4,7 +4,7 @@ import math
 import shutil
 from datetime import timedelta
 from typing import TYPE_CHECKING
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 
 import anyio
 import pytest
@@ -12,7 +12,9 @@ from _pytest.fixtures import FixtureRequest
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.stores.file import FileStore
+from starlite.stores.memory import MemoryStore
 from starlite.stores.redis import RedisStore
+from starlite.stores.registry import StoreRegistry
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
@@ -247,3 +249,48 @@ async def test_memory_delete_expired(store_fixture: str, request: FixtureRequest
 
     assert not any([await store.exists(key) for key in expect_expired])
     assert all([await store.exists(key) for key in expect_not_expired])
+
+
+def test_registry_default_store(memory_store: MemoryStore) -> None:
+    registry = StoreRegistry({"default": memory_store})
+
+    assert registry.default is memory_store
+
+
+def test_registry_default_store_no_default() -> None:
+    registry = StoreRegistry()
+    assert registry.default is registry.get("default")
+
+
+def test_registry_get(memory_store: MemoryStore) -> None:
+    default_factory = MagicMock()
+    default_factory.return_value = memory_store
+    registry = StoreRegistry(default_factory=default_factory)
+    default_factory.reset_mock()
+
+    assert registry.get("foo") is memory_store
+    assert registry.get("foo") is memory_store
+    assert "foo" in registry._stores
+    default_factory.assert_called_once_with("foo")
+
+
+def test_registry_register(memory_store: MemoryStore) -> None:
+    registry = StoreRegistry()
+
+    registry.register("foo", memory_store)
+
+    assert registry.get("foo") is memory_store
+
+
+def test_registry_register_exist_raises(memory_store: MemoryStore) -> None:
+    registry = StoreRegistry({"foo": memory_store})
+
+    with pytest.raises(ValueError):
+        registry.register("foo", memory_store)
+
+
+def test_registry_register_exist_override(memory_store: MemoryStore) -> None:
+    registry = StoreRegistry({"foo": memory_store})
+
+    registry.register("foo", memory_store, override=True)
+    assert registry.get("foo") is memory_store

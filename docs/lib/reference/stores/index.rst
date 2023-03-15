@@ -7,3 +7,4 @@ stores
     file
     memory
     redis
+    registry

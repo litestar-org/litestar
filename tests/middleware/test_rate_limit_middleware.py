@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from freezegun import freeze_time
 
-from starlite import Request, get
+from starlite import Request, get, Starlite
 from starlite.middleware.rate_limit import (
     DURATION_VALUES,
     CacheObject,
@@ -14,7 +14,7 @@ from starlite.middleware.rate_limit import (
 from starlite.serialization import decode_json, encode_json
 from starlite.static_files.config import StaticFilesConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
-from starlite.testing import create_test_client
+from starlite.testing import create_test_client, TestClient
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -28,13 +28,13 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
 
     config = RateLimitConfig(rate_limit=(unit, 1))
     cache_key = "RateLimitMiddleware::testclient"
+    app = Starlite(route_handlers=[handler], middleware=[config.middleware])
+    store = app.stores.get("rate_limit")
 
-    with freeze_time() as frozen_time, create_test_client(
-        route_handlers=[handler], middleware=[config.middleware]
-    ) as client:
+    with freeze_time() as frozen_time, TestClient(app=app) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        cached_value = await config.store.get(cache_key)
+        cached_value = await store.get(cache_key)
         assert cached_value
         cache_object = CacheObject(**decode_json(cached_value))
         assert len(cache_object.history) == 1
@@ -66,17 +66,19 @@ async def test_reset() -> None:
 
     config = RateLimitConfig(rate_limit=("second", 1))
     cache_key = "RateLimitMiddleware::testclient"
+    app = Starlite(route_handlers=[handler], middleware=[config.middleware])
+    store = app.stores.get("rate_limit")
 
-    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
+    with TestClient(app=app) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        cached_value = await config.store.get(cache_key)
+        cached_value = await store.get(cache_key)
         assert cached_value
         cache_object = CacheObject(**decode_json(cached_value))
         assert cache_object.reset == int(time() + 1)
 
         cache_object.reset -= 2
-        await config.store.set(cache_key, encode_json(cache_object))
+        await store.set(cache_key, encode_json(cache_object))
 
         response = client.get("/")
         assert response.status_code == HTTP_200_OK

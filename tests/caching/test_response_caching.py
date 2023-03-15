@@ -4,9 +4,9 @@ from time import sleep
 import pytest
 from freezegun import freeze_time
 
-from starlite import Request, get
+from starlite import Request, get, Starlite
 from starlite.config.cache import CacheConfig
-from starlite.testing import create_test_client
+from starlite.testing import create_test_client, TestClient
 
 from . import after_request_handler, slow_handler
 
@@ -72,13 +72,15 @@ async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str) -> Non
     def custom_cache_key_builder(request: Request) -> str:
         return request.url.path + ":::cached"
 
-    with create_test_client(
-        route_handlers=[
-            get("/cached", sync_to_thread=sync_to_thread, cache=True, cache_key_builder=custom_cache_key_builder)(
-                slow_handler
-            )
-        ]
-    ) as client:
+    route_handler = get(
+        "/cached", sync_to_thread=sync_to_thread, cache=True, cache_key_builder=custom_cache_key_builder
+    )(slow_handler)
+
+    app = Starlite(
+        [route_handler],
+    )
+
+    with TestClient(app) as client:
         client.get("/cached")
-        value = await client.app.cache_config.store.get("/cached:::cached")
+        value = await app.cache_config.get_store_from_app(app).get("/cached:::cached")
         assert value

@@ -9,6 +9,10 @@ from starlite.events.emitter import SimpleEventEmitter
 from starlite.config.cache import CacheConfig
 
 if TYPE_CHECKING:
+    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
+    from starlite.stores.base import Store
+    from starlite.stores.registry import StoreRegistry
+
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
@@ -174,6 +178,12 @@ class AppConfig:
     """A :class:`State` <.datastructures.State>` instance holding application state."""
     static_files_config: list[StaticFilesConfig] = field(default_factory=list)
     """An instance or list of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`."""
+    stores: StoreRegistry | dict[str, Store] | None = None
+    """Central registry of :class:`Store <.stores.base.Store>` to be made available and be used throughout the
+    application. Can be either dictionary mapping strings to :class:`Store <.stores.base.Store>` to be passed to a
+    :class:`StoreRegistry <.stores.registry.StoreRegistry>` or an instance of
+    :class:`StoreRegistry <.stores.registry.StoreRegistry>`.
+    """
     tags: list[str] = field(default_factory=list)
     """A list of string tags that will be appended to the schema of all route handlers under the application."""
     template_config: TemplateConfig | None = field(default=None)
