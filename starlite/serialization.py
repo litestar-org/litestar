@@ -70,7 +70,6 @@ def _enc_pattern(pattern: Pattern) -> Any:
 
 
 DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
-    # dto
     Path: str,
     PurePath: str,
     # pydantic specific types

@@ -291,7 +291,6 @@ def create_pydantic_signature_model(
             )
         else:
             field_info = FieldInfo(default=..., parsed_parameter=parameter)
-
         if parameter.should_skip_validation:
             field_type = Any
             if isinstance(parameter.default, DependencyKwarg):
