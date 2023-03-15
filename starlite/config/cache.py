@@ -4,15 +4,14 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
 
-
 __all__ = ("CacheConfig", "default_cache_key_builder")
 
 
 if TYPE_CHECKING:
+    from starlite import Starlite
     from starlite.connection import Request
     from starlite.stores.base import Store
     from starlite.types import CacheKeyBuilder
-    from starlite import Starlite
 
 
 def default_cache_key_builder(request: Request[Any, Any, Any]) -> str:

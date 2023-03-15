@@ -4,7 +4,7 @@ import math
 import shutil
 from datetime import timedelta
 from typing import TYPE_CHECKING
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
 
 import anyio
 import pytest
@@ -18,6 +18,7 @@ from starlite.stores.registry import StoreRegistry
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
+
     from starlite.stores.base import Store
 
 

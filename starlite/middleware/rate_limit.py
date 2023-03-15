@@ -17,10 +17,10 @@ __all__ = ("CacheObject", "RateLimitConfig", "RateLimitMiddleware")
 if TYPE_CHECKING:
     from typing import Awaitable
 
-    from starlite.connection import Request
-    from starlite.types import ASGIApp, Message, Receive, Scope, Send, SyncOrAsyncUnion
-    from starlite.stores.base import Store
     from starlite import Starlite
+    from starlite.connection import Request
+    from starlite.stores.base import Store
+    from starlite.types import ASGIApp, Message, Receive, Scope, Send, SyncOrAsyncUnion
 
 
 DurationUnit = Literal["second", "minute", "hour", "day"]

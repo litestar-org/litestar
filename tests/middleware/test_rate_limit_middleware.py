@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from freezegun import freeze_time
 
-from starlite import Request, get, Starlite
+from starlite import Request, Starlite, get
 from starlite.middleware.rate_limit import (
     DURATION_VALUES,
     CacheObject,
@@ -14,7 +14,7 @@ from starlite.middleware.rate_limit import (
 from starlite.serialization import decode_json, encode_json
 from starlite.static_files.config import StaticFilesConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
-from starlite.testing import create_test_client, TestClient
+from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from pathlib import Path

@@ -9,10 +9,9 @@ from starlite.testing.client import AsyncTestClient, TestClient
 from starlite.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
-    from starlite.config.cache import CacheConfig
-
     from starlite import Request, WebSocket
     from starlite.config.allowed_hosts import AllowedHostsConfig
+    from starlite.config.cache import CacheConfig
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig

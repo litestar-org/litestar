@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import anyio
 from anyio import Lock
 
-from .base import Store, StorageObject
+from .base import StorageObject, Store
 
 __all__ = ("MemoryStore",)
 

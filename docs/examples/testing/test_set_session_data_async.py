@@ -2,10 +2,9 @@ from typing import Any, Dict
 
 from starlite import Request, Starlite, get
 from starlite.middleware.session.server_side import ServerSideSessionConfig
-from starlite.stores.memory import MemoryStore
 from starlite.testing import AsyncTestClient
 
-session_config = ServerSideSessionConfig(store=MemoryStore())
+session_config = ServerSideSessionConfig()
 
 
 @get(path="/test")

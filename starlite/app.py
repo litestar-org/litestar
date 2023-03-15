@@ -11,9 +11,9 @@ from starlite._asgi import ASGIRouter
 from starlite._asgi.utils import get_route_handlers, wrap_in_exception_handler
 from starlite._openapi.path_item import create_path_item
 from starlite._signature import create_signature_model
-from starlite.config.cache import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
+from starlite.config.cache import CacheConfig
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
@@ -34,6 +34,7 @@ from starlite.plugins import (
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.static_files.base import StaticFiles
+from starlite.stores.registry import StoreRegistry
 from starlite.types import Empty
 from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import (
@@ -44,7 +45,6 @@ from starlite.utils import (
     unique,
 )
 from starlite.utils.dataclass import extract_dataclass_fields
-from starlite.stores.registry import StoreRegistry
 
 __all__ = ("HandlerIndex", "Starlite")
 
@@ -56,14 +56,12 @@ if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler
-
-    from starlite.stores.base import Store
-
     from starlite.logging.config import BaseLoggingConfig
     from starlite.openapi.spec import SecurityRequirement
     from starlite.openapi.spec.open_api import OpenAPI
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
+    from starlite.stores.base import Store
     from starlite.template.config import TemplateConfig
     from starlite.types import (
         AfterExceptionHookHandler,

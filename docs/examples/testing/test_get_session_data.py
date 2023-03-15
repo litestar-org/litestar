@@ -1,10 +1,8 @@
 from starlite import Request, Starlite, post
 from starlite.middleware.session.server_side import ServerSideSessionConfig
-from starlite.stores.memory import MemoryStore
-
 from starlite.testing import TestClient
 
-session_config = ServerSideSessionConfig(store=MemoryStore())
+session_config = ServerSideSessionConfig()
 
 
 @post(path="/test")

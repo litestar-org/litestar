@@ -7,6 +7,7 @@ import pytest
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware.session.server_side import ServerSideSessionConfig
 from starlite.serialization import encode_json
+from starlite.stores.memory import MemoryStore
 
 if TYPE_CHECKING:
     from starlite.middleware.session.server_side import ServerSideSessionBackend
@@ -21,64 +22,70 @@ def session_data() -> bytes:
     return generate_session_data()
 
 
-async def test_get_set(server_side_session_backend: "ServerSideSessionBackend", session_data: bytes) -> None:
-    await server_side_session_backend.set("foo", session_data)
-    loaded = await server_side_session_backend.get("foo")
+async def test_get_set(
+    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes, memory_store: MemoryStore
+) -> None:
+    await server_side_session_backend.set("foo", session_data, memory_store)
+    loaded = await server_side_session_backend.get("foo", memory_store)
 
     assert loaded == session_data
 
 
 async def test_get_renew_on_access(
-    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes
+    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes, memory_store: MemoryStore
 ) -> None:
     server_side_session_backend.config.max_age = 1
     server_side_session_backend.config.renew_on_access = True
 
-    await server_side_session_backend.set("foo", session_data)
+    await server_side_session_backend.set("foo", session_data, memory_store)
     server_side_session_backend.config.max_age = 10
 
-    await server_side_session_backend.get("foo")
+    await server_side_session_backend.get("foo", memory_store)
 
     await anyio.sleep(1.01)
 
-    assert await server_side_session_backend.get("foo") is not None
+    assert await server_side_session_backend.get("foo", memory_store) is not None
 
 
 async def test_get_set_multiple_returns_correct_identity(
-    server_side_session_backend: "ServerSideSessionBackend",
+    server_side_session_backend: "ServerSideSessionBackend", memory_store: MemoryStore
 ) -> None:
     foo_data = generate_session_data()
     bar_data = generate_session_data()
-    await server_side_session_backend.set("foo", foo_data)
-    await server_side_session_backend.set("bar", bar_data)
+    await server_side_session_backend.set("foo", foo_data, memory_store)
+    await server_side_session_backend.set("bar", bar_data, memory_store)
 
-    loaded = await server_side_session_backend.get("foo")
+    loaded = await server_side_session_backend.get("foo", memory_store)
 
     assert loaded == foo_data
 
 
-async def test_delete(server_side_session_backend: "ServerSideSessionBackend") -> None:
-    await server_side_session_backend.set("foo", generate_session_data())
-    await server_side_session_backend.set("bar", generate_session_data())
+async def test_delete(server_side_session_backend: "ServerSideSessionBackend", memory_store: MemoryStore) -> None:
+    await server_side_session_backend.set("foo", generate_session_data(), memory_store)
+    await server_side_session_backend.set("bar", generate_session_data(), memory_store)
 
-    await server_side_session_backend.delete("foo")
+    await server_side_session_backend.delete("foo", memory_store)
 
-    assert not await server_side_session_backend.get("foo")
-    assert await server_side_session_backend.get("bar")
-
-
-async def test_delete_idempotence(server_side_session_backend: "ServerSideSessionBackend", session_data: bytes) -> None:
-    await server_side_session_backend.set("foo", session_data)
-
-    await server_side_session_backend.delete("foo")
-    await server_side_session_backend.delete("foo")  # ensure this doesn't raise an error
+    assert not await server_side_session_backend.get("foo", memory_store)
+    assert await server_side_session_backend.get("bar", memory_store)
 
 
-async def test_max_age_expires(server_side_session_backend: "ServerSideSessionBackend", session_data: bytes) -> None:
+async def test_delete_idempotence(
+    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes, memory_store: MemoryStore
+) -> None:
+    await server_side_session_backend.set("foo", session_data, memory_store)
+
+    await server_side_session_backend.delete("foo", memory_store)
+    await server_side_session_backend.delete("foo", memory_store)  # ensure this doesn't raise an error
+
+
+async def test_max_age_expires(
+    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes, memory_store: MemoryStore
+) -> None:
     server_side_session_backend.config.max_age = 1
-    await server_side_session_backend.set("foo", session_data)
+    await server_side_session_backend.set("foo", session_data, memory_store)
     await anyio.sleep(1)
-    assert not await server_side_session_backend.get("foo")
+    assert not await server_side_session_backend.get("foo", memory_store)
 
 
 @pytest.mark.parametrize(
@@ -93,9 +100,9 @@ async def test_max_age_expires(server_side_session_backend: "ServerSideSessionBa
 def test_key_validation(server_side_session_backend: "ServerSideSessionBackend", key: str, should_raise: bool) -> None:
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
-            ServerSideSessionConfig(key=key, store=server_side_session_backend.store)
+            ServerSideSessionConfig(key=key)
     else:
-        ServerSideSessionConfig(key=key, store=server_side_session_backend.store)
+        ServerSideSessionConfig(key=key)
 
 
 @pytest.mark.parametrize(
@@ -112,6 +119,6 @@ def test_max_age_validation(
 ) -> None:
     if should_raise:
         with pytest.raises(ImproperlyConfiguredException):
-            ServerSideSessionConfig(key="a", max_age=max_age, store=server_side_session_backend.store)
+            ServerSideSessionConfig(key="a", max_age=max_age)
     else:
-        ServerSideSessionConfig(key="a", max_age=max_age, store=server_side_session_backend.store)
+        ServerSideSessionConfig(key="a", max_age=max_age)

@@ -148,8 +148,8 @@ def session_backend_config(request: pytest.FixtureRequest) -> Union[ServerSideSe
 
 
 @pytest.fixture()
-def server_side_session_config(store: Store) -> ServerSideSessionConfig:
-    return ServerSideSessionConfig(store=store)
+def server_side_session_config() -> ServerSideSessionConfig:
+    return ServerSideSessionConfig()
 
 
 @pytest.fixture()
@@ -169,7 +169,7 @@ def session_backend(request: pytest.FixtureRequest) -> BaseSessionBackend:
 
 @pytest.fixture()
 def session_backend_config_memory(memory_store: MemoryStore) -> ServerSideSessionConfig:
-    return ServerSideSessionConfig(store=memory_store)
+    return ServerSideSessionConfig()
 
 
 @pytest.fixture

@@ -8,6 +8,7 @@ from starlite import HttpMethod, Request, Starlite, get, post
 from starlite.datastructures import Cookie, MultiDict
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.middleware.session.server_side import ServerSideSessionConfig
+from starlite.stores.base import Store
 from starlite.stores.redis import RedisStore
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from tests import Pet, PetFactory
@@ -194,12 +195,11 @@ async def test_request_factory_post_put_patch(factory: Callable, method: HttpMet
 
 @pytest.fixture()
 def skip_for_trio_redis(
-    session_backend_config: "BaseBackendConfig",
-    test_client_backend: "AnyIOBackend",
+    session_backend_config: "BaseBackendConfig", test_client_backend: "AnyIOBackend", store: Store
 ) -> None:
     if (
         isinstance(session_backend_config, ServerSideSessionConfig)
-        and isinstance(session_backend_config.store, RedisStore)
+        and isinstance(store, RedisStore)
         and test_client_backend == "trio"
     ):
         pytest.skip("fakeredis does not always play well with trio, so skip this for now")
@@ -231,9 +231,7 @@ def test_test_client_set_session_data(
 @pytest.mark.usefixtures("skip_for_trio_redis")
 @pytest.mark.parametrize("with_domain", [False, True])
 def test_test_client_get_session_data(
-    with_domain: bool,
-    session_backend_config: "BaseBackendConfig",
-    test_client_backend: "AnyIOBackend",
+    with_domain: bool, session_backend_config: "BaseBackendConfig", test_client_backend: "AnyIOBackend", store: Store
 ) -> None:
     session_data = {"foo": "bar"}
 
@@ -244,7 +242,9 @@ def test_test_client_get_session_data(
     def set_session_data(request: Request) -> None:
         request.session.update(session_data)
 
-    app = Starlite(route_handlers=[set_session_data], middleware=[session_backend_config.middleware])
+    app = Starlite(
+        route_handlers=[set_session_data], middleware=[session_backend_config.middleware], stores={"session": store}
+    )
 
     with TestClient(app=app, session_config=session_backend_config, backend=test_client_backend) as client:
         client.post("/test")

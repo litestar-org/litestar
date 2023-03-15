@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from anyio import Path
 from anyio.to_thread import run_sync
 
-from .base import Store, StorageObject
+from .base import StorageObject, Store
 
 __all__ = ("FileStore",)
 

@@ -5,13 +5,11 @@ from typing import TYPE_CHECKING, Any, Sequence
 
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.datastructures import State
-from starlite.events.emitter import SimpleEventEmitter
 from starlite.config.cache import CacheConfig
+from starlite.events.emitter import SimpleEventEmitter
 
 if TYPE_CHECKING:
     from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-    from starlite.stores.base import Store
-    from starlite.stores.registry import StoreRegistry
 
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
@@ -26,6 +24,8 @@ if TYPE_CHECKING:
     from starlite.openapi.spec import SecurityRequirement
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
+    from starlite.stores.base import Store
+    from starlite.stores.registry import StoreRegistry
     from starlite.template.config import TemplateConfig
     from starlite.types import (
         AfterExceptionHookHandler,

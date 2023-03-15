@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from starlite import Starlite
@@ -13,18 +14,11 @@ if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
     from click.testing import CliRunner
     from pytest_mock import MockerFixture
-    from starlite.stores.memory import MemoryStore
 
 
-def test_get_session_backend(memory_store: MemoryStore) -> None:
-    session_middleware = ServerSideSessionConfig(store=memory_store).middleware
-    app = Starlite(
-        [],
-        middleware=[
-            RateLimitConfig(rate_limit=("second", 1)).middleware,
-            session_middleware,
-        ],
-    )
+def test_get_session_backend() -> None:
+    session_middleware = ServerSideSessionConfig().middleware
+    app = Starlite([], middleware=[RateLimitConfig(rate_limit=("second", 1)).middleware, session_middleware])
 
     assert get_session_backend(app) is session_middleware.kwargs["backend"]
 
