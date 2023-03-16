@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, cast
 from typing_extensions import get_type_hints
 
 from starlite.connection import Request, WebSocket
-from starlite.controller.generic_controller import GenericController
 from starlite.datastructures import Headers, ImmutableState, State
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Receive, Scope, Send, WebSocketScope
@@ -26,6 +25,7 @@ if TYPE_CHECKING:
 
     from starlite._signature.models import SignatureModel
     from starlite.controller import Controller
+    from starlite.controller.generic_controller import GenericController
     from starlite.router import Router
 
 
@@ -77,13 +77,6 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     if hasattr(fn_to_inspect, "__func__"):
         fn_to_inspect = fn_to_inspect.__func__
 
-    try:
-        module = sys.modules[fn_to_inspect.__module__]
-    except AttributeError:
-        module_namespace = {}
-    else:
-        module_namespace = vars(module)
-
     # Order important. If a starlite name has been overridden in the function module, we want
     # to use that instead of the starlite one.
     namespace = {
@@ -122,4 +115,6 @@ def is_generic_controller(item: Controller | Router | None) -> TypeGuard[Generic
     Returns:
         Type-guarded isinstance check for ``GenericController`` types.
     """
+    from starlite.controller.generic_controller import GenericController
+
     return isinstance(item, GenericController)
