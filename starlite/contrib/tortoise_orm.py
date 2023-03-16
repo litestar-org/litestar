@@ -1,32 +1,32 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Type
 
 from pydantic import BaseModel
-from pydantic_factories.utils import is_pydantic_model
-from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 
 from starlite.exceptions import MissingDependencyException
+from starlite.openapi.spec.schema import SchemaDataContainer
 from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginProtocol
+from starlite.utils import is_pydantic_model_class
 
 __all__ = ("TortoiseORMPlugin",)
 
 
 try:
     import tortoise  # noqa: F401
+    from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
+    from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
+        PydanticModel,  # pyright: ignore
+        pydantic_model_creator,  # pyright: ignore
+    )
+    from tortoise.fields import ReverseRelation
+    from tortoise.fields.relational import RelationalField
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
 
 
-from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
-from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
-    PydanticModel,  # pyright: ignore
-    pydantic_model_creator,  # pyright: ignore
-)
-from tortoise.fields import ReverseRelation
-from tortoise.fields.relational import RelationalField
-
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import Schema
     from typing_extensions import TypeGuard
+
+    from starlite.openapi.spec import Schema
 
 
 class TortoiseORMPlugin(SerializationPluginProtocol[Model, BaseModel], OpenAPISchemaPluginProtocol[Model]):
@@ -48,7 +48,7 @@ class TortoiseORMPlugin(SerializationPluginProtocol[Model, BaseModel], OpenAPISc
         ) in model_class._meta.fields_map.items():
             if field_name in pydantic_model.__fields__:
                 if (
-                    is_pydantic_model(pydantic_model.__fields__[field_name].type_)
+                    is_pydantic_model_class(pydantic_model.__fields__[field_name].type_)
                     and "." in pydantic_model.__fields__[field_name].type_.__name__
                 ):
                     sub_model_name = pydantic_model.__fields__[field_name].type_.__name__.split(".")[-2]
@@ -118,6 +118,6 @@ class TortoiseORMPlugin(SerializationPluginProtocol[Model, BaseModel], OpenAPISc
             model_class: A table class.
 
         Returns:
-            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+            An :class:`OpenAPI <starlite.openapi.spec.schema.Schema>` instance.
         """
-        return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))
+        return SchemaDataContainer(data_container=self.to_data_container_class(model_class=model_class))

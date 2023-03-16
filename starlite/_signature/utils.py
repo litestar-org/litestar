@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from starlite.router import Router
 
 
-STARLITE_GLOBAL_NAMES = {
+_GLOBAL_NAMES = {
     "Headers": Headers,
     "ImmutableState": ImmutableState,
     "Receive": Receive,
@@ -54,11 +54,12 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
         raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
 
 
-def get_fn_type_hints(fn: Any) -> dict[str, Any]:
+def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
     """Resolve type hints for ``fn``.
 
     Args:
         fn: Thing that is having its signature modelled.
+        namespace: Extra names for resolution of forward references.
 
     Returns:
         Mapping of names to types.
@@ -85,8 +86,12 @@ def get_fn_type_hints(fn: Any) -> dict[str, Any]:
 
     # Order important. If a starlite name has been overridden in the function module, we want
     # to use that instead of the starlite one.
-    types = vars(typing)
-    namespace = {**STARLITE_GLOBAL_NAMES, **module_namespace, **types}
+    namespace = {
+        **_GLOBAL_NAMES,
+        **vars(typing),
+        **vars(sys.modules[fn_to_inspect.__module__]),
+        **(namespace or {}),
+    }
     return get_type_hints(fn_to_inspect, globalns=namespace)
 
 

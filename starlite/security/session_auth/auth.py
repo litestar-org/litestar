@@ -3,10 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generic, Iterable
 
-from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement, SecurityScheme
-
 from starlite.middleware.base import DefineMiddleware
 from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackendT
+from starlite.openapi.spec import Components, SecurityRequirement, SecurityScheme
 from starlite.security.base import AbstractSecurityConfig, UserType
 from starlite.security.session_auth.middleware import MiddlewareWrapper, SessionAuthMiddleware
 
@@ -109,10 +108,10 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
         """Create OpenAPI documentation for the Session Authentication schema used.
 
         Returns:
-            An :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` instance.
+            An :class:`Components <starlite.openapi.spec.components.Components>` instance.
         """
         return Components(
-            securitySchemes={
+            security_schemes={
                 "sessionCookie": SecurityScheme(
                     type="apiKey",
                     name=self.session_backend_config.key,
@@ -126,10 +125,10 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
     def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
-        :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
+        :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>` for the auth
         backend.
 
         Returns:
-            An OpenAPI 3.1 :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
+            An OpenAPI 3.1 :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>` dictionary.
         """
         return {"sessionCookie": []}

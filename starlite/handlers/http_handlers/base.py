@@ -5,8 +5,10 @@ from inspect import Signature
 from typing import TYPE_CHECKING, AnyStr, Mapping, cast
 
 from starlite._layers.utils import narrow_response_cookies, narrow_response_headers
+from starlite._signature.utils import get_signature_model
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.datastructures import Cookie, ResponseHeader
+from starlite.datastructures.cookie import Cookie
+from starlite.datastructures.response_header import ResponseHeader
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
@@ -48,15 +50,14 @@ from starlite.utils import AsyncCallable, Ref, is_async_callable, is_class_and_s
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
 
-    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-
-    from starlite._openapi.datastructures import ResponseSpec
     from starlite.app import Starlite
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.datastructures.headers import Header
     from starlite.di import Provide
+    from starlite.openapi.datastructures import ResponseSpec
+    from starlite.openapi.spec import SecurityRequirement
     from starlite.plugins import SerializationPluginProtocol
     from starlite.types import MaybePartial  # noqa: F401
 
@@ -402,7 +403,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             cookies = self.resolve_response_cookies()
             type_encoders = self.resolve_type_encoders()
 
-            if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):  # type: ignore
+            return_annotation = get_signature_model(self).return_annotation
+            if is_class_and_subclass(return_annotation, ResponseContainer):  # type: ignore
                 handler = create_response_container_handler(
                     after_request=after_request,
                     cookies=cookies,
@@ -411,13 +413,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     status_code=self.status_code,
                 )
 
-            elif is_class_and_subclass(self.signature.return_annotation, Response):
+            elif is_class_and_subclass(return_annotation, Response):
                 handler = create_response_handler(cookies=cookies, after_request=after_request)
 
-            elif is_async_callable(self.signature.return_annotation) or self.signature.return_annotation in {
-                ASGIApp,
-                "ASGIApp",
-            }:
+            elif is_async_callable(return_annotation) or return_annotation is ASGIApp:
                 handler = create_generic_asgi_response_handler(cookies=cookies, after_request=after_request)
 
             else:
@@ -428,7 +427,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     headers=headers,
                     media_type=media_type,
                     response_class=response_class,
-                    return_annotation=self.signature.return_annotation,
+                    return_annotation=return_annotation,
                     status_code=self.status_code,
                     type_encoders=type_encoders,
                 )

@@ -4,13 +4,12 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Literal, TypeVar
 
-from pydantic_openapi_schema.v3_1_0 import Components, OAuthFlow, OAuthFlows, SecurityRequirement, SecurityScheme
-
 from starlite.contrib.jwt.jwt_token import Token
 from starlite.contrib.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
 from starlite.datastructures import Cookie
 from starlite.enums import MediaType
 from starlite.middleware import DefineMiddleware
+from starlite.openapi.spec import Components, OAuthFlow, OAuthFlows, SecurityRequirement, SecurityScheme
 from starlite.security.base import AbstractSecurityConfig
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.types import ControllerRouterHandler, Empty, Guard, Scopes, SyncOrAsyncUnion, TypeEncodersMap
@@ -70,15 +69,15 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         """Create OpenAPI documentation for the JWT auth schema used.
 
         Returns:
-            An :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` instance.
+            An :class:`Components <starlite.openapi.spec.components.Components>` instance.
         """
         return Components(
-            securitySchemes={
+            security_schemes={
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="http",
                     scheme="Bearer",
                     name=self.auth_header,
-                    bearerFormat="JWT",
+                    bearer_format="JWT",
                     description=self.description,
                 )
             }
@@ -88,11 +87,11 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
     def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
-        :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>`
+        :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>`
 
         Returns:
             An OpenAPI 3.1
-            :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>`
+            :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>`
             dictionary.
         """
         return {self.openapi_security_scheme_name: []}
@@ -206,7 +205,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         Returns:
             The encoded token formatted for the HTTP headers
         """
-        security = self.openapi_components.securitySchemes.get(self.openapi_security_scheme_name, None)  # type: ignore
+        security = self.openapi_components.security_schemes.get(self.openapi_security_scheme_name, None)  # type: ignore
         return f"{security.scheme} {encoded_token}" if isinstance(security, SecurityScheme) else encoded_token
 
 
@@ -349,16 +348,16 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
         """Create OpenAPI documentation for the JWT Cookie auth scheme.
 
         Returns:
-            A :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` instance.
+            A :class:`Components <starlite.openapi.spec.components.Components>` instance.
         """
         return Components(
-            securitySchemes={
+            security_schemes={
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="http",
                     scheme="Bearer",
                     name=self.key,
                     security_scheme_in="cookie",
-                    bearerFormat="JWT",
+                    bearer_format="JWT",
                     description=self.description,
                 )
             }
@@ -569,10 +568,10 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
         """Create an OpenAPI OAuth2 flow for the password bearer authentication scheme.
 
         Returns:
-            An :class:`OAuthFlow <pydantic_openapi_schema.v3_1_0.oauth_flow.OAuthFlow>` instance.
+            An :class:`OAuthFlow <starlite.openapi.spec.oauth_flow.OAuthFlow>` instance.
         """
         return OAuthFlow(
-            tokenUrl=self.token_url,
+            token_url=self.token_url,
             scopes=self.oauth_scopes,
         )
 
@@ -581,17 +580,17 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
         """Create OpenAPI documentation for the OAUTH2 Password bearer auth scheme.
 
         Returns:
-            An :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` instance.
+            An :class:`Components <starlite.openapi.spec.components.Components>` instance.
         """
         return Components(
-            securitySchemes={
+            security_schemes={
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="oauth2",
                     scheme="Bearer",
                     name=self.auth_header,
                     security_scheme_in="header",
                     flows=OAuthFlows(password=self.oauth_flow),  # pyright: reportGeneralTypeIssues=false
-                    bearerFormat="JWT",
+                    bearer_format="JWT",
                     description=self.description,
                 )
             }

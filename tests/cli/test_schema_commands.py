@@ -21,7 +21,8 @@ def test_openapi_schema_command(
     mock_path_write_text = mocker.patch("pathlib.Path.write_text")
     command = "schema openapi"
 
-    schema = openapi_test_app.openapi_schema.dict(by_alias=True, exclude_none=True)  # type: ignore[union-attr]
+    assert openapi_test_app.openapi_schema
+    schema = openapi_test_app.openapi_schema.to_schema()
 
     expected_content = json_dumps(schema, indent=4)
     if filename:

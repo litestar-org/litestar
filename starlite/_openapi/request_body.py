@@ -1,12 +1,11 @@
-from typing import TYPE_CHECKING, List, Optional, Union
+from __future__ import annotations
 
-from pydantic_openapi_schema.v3_1_0.media_type import (
-    MediaType as OpenAPISchemaMediaType,
-)
-from pydantic_openapi_schema.v3_1_0.request_body import RequestBody
+from typing import TYPE_CHECKING
 
-from starlite._openapi.schema import create_schema, update_schema_with_signature_field
+from starlite._openapi.schema_generation import create_schema
 from starlite.enums import RequestEncodingType
+from starlite.openapi.spec.media_type import OpenAPIMediaType
+from starlite.openapi.spec.request_body import RequestBody
 from starlite.params import BodyKwarg
 
 __all__ = ("create_request_body",)
@@ -14,17 +13,20 @@ __all__ = ("create_request_body",)
 
 if TYPE_CHECKING:
     from starlite._signature.models import SignatureField
-    from starlite.plugins.base import OpenAPISchemaPluginProtocol
+    from starlite.openapi.spec import Schema
+    from starlite.plugins import OpenAPISchemaPluginProtocol
 
 
 def create_request_body(
-    field: "SignatureField", generate_examples: bool, plugins: List["OpenAPISchemaPluginProtocol"]
-) -> Optional[RequestBody]:
+    field: "SignatureField",
+    generate_examples: bool,
+    plugins: list["OpenAPISchemaPluginProtocol"],
+    schemas: dict[str, "Schema"],
+) -> RequestBody | None:
     """Create a RequestBody model for the given RouteHandler or return None."""
-    media_type: Union[RequestEncodingType, str] = RequestEncodingType.JSON
+    media_type: RequestEncodingType | str = RequestEncodingType.JSON
     if isinstance(field.kwarg_model, BodyKwarg) and field.kwarg_model.media_type:
         media_type = field.kwarg_model.media_type
 
-    schema = create_schema(field=field, generate_examples=generate_examples, plugins=plugins)
-    update_schema_with_signature_field(schema=schema, signature_field=field)
-    return RequestBody(required=True, content={media_type: OpenAPISchemaMediaType(media_type_schema=schema)})
+    schema = create_schema(field=field, generate_examples=generate_examples, plugins=plugins, schemas=schemas)
+    return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema)})

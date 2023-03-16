@@ -8,8 +8,6 @@ from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.events.emitter import SimpleEventEmitter
 
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
@@ -20,6 +18,7 @@ if TYPE_CHECKING:
     from starlite.events.listener import EventListener
     from starlite.logging.config import BaseLoggingConfig
     from starlite.openapi.config import OpenAPIConfig
+    from starlite.openapi.spec import SecurityRequirement
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
     from starlite.template.config import TemplateConfig
@@ -171,7 +170,7 @@ class AppConfig:
     """
     security: list[SecurityRequirement] = field(default_factory=list)
     """A list of dictionaries that will be added to the schema of all route handlers in the application. See
-    :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for details.
+    :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>` for details.
     """
     static_files_config: list[StaticFilesConfig] = field(default_factory=list)
     """An instance or list of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`."""

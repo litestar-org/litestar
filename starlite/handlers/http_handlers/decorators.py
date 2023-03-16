@@ -13,12 +13,11 @@ from .base import HTTPRouteHandler
 if TYPE_CHECKING:
     from typing import Any
 
-    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-
-    from starlite._openapi.datastructures import ResponseSpec
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
+    from starlite.openapi.datastructures import ResponseSpec
+    from starlite.openapi.spec import SecurityRequirement
     from starlite.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,

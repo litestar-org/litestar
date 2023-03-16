@@ -5,7 +5,6 @@ from functools import partial
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
-from pydantic_openapi_schema import construct_open_api_with_schema_class
 from typing_extensions import Self, TypedDict
 
 from starlite._asgi import ASGIRouter
@@ -26,6 +25,7 @@ from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.logging.config import LoggingConfig, get_logger_placeholder
 from starlite.middleware.cors import CORSMiddleware
 from starlite.openapi.config import OpenAPIConfig
+from starlite.openapi.spec.components import Components
 from starlite.plugins import (
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
@@ -49,9 +49,6 @@ __all__ = ("HandlerIndex", "Starlite")
 
 
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-    from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
-
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
@@ -59,6 +56,8 @@ if TYPE_CHECKING:
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler
     from starlite.logging.config import BaseLoggingConfig
+    from starlite.openapi.spec import SecurityRequirement
+    from starlite.openapi.spec.open_api import OpenAPI
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
     from starlite.template.config import TemplateConfig
@@ -285,7 +284,7 @@ class Starlite(Router):
                 callable decorated by the route handler decorators.
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See
-                :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>`
+                :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>`
                 for details.
             static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
@@ -763,6 +762,14 @@ class Starlite(Router):
 
         operation_ids: list[str] = []
 
+        if not self._openapi_schema.components:
+            self._openapi_schema.components = Components()
+            schemas = self._openapi_schema.components.schemas = {}
+        elif not self._openapi_schema.components.schemas:
+            schemas = self._openapi_schema.components.schemas = {}
+        else:
+            schemas = {}
+
         for route in self.routes:
             if (
                 isinstance(route, HTTPRoute)
@@ -775,6 +782,7 @@ class Starlite(Router):
                     plugins=self.openapi_schema_plugins,
                     use_handler_docstrings=self.openapi_config.use_handler_docstrings,
                     operation_id_creator=self.openapi_config.operation_id_creator,
+                    schemas=schemas,
                 )
                 self._openapi_schema.paths[route.path_format or "/"] = path_item
 
@@ -785,10 +793,6 @@ class Starlite(Router):
                             f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
                         )
                     operation_ids.append(operation_id)
-
-        self._openapi_schema = construct_open_api_with_schema_class(
-            open_api_schema=self._openapi_schema, by_alias=self.openapi_config.by_alias
-        )
 
     async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.

@@ -259,26 +259,31 @@ def create_pydantic_signature_model(
     field_definitions: dict[str, tuple[Any, Any]] = {}
 
     for parameter in parsed_params:
-        if parameter.should_skip_validation:
-            if isinstance(parameter.default, DependencyKwarg):
-                field_definitions[parameter.name] = (
-                    Any,
-                    parameter.default.default if parameter.default.default is not Empty else None,
-                )
-            else:
-                field_definitions[parameter.name] = (Any, ...)
-        elif isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
-            field_info = FieldInfo(**asdict(parameter.default), kwargs_model=parameter.default)
-            field_info.default = parameter.default.default if parameter.default.default is not Empty else Undefined
-            field_definitions[parameter.name] = (parameter.annotation, field_info)
-        elif ModelFactory.is_constrained_field(parameter.default):
-            field_definitions[parameter.name] = (parameter.default, ...)
-        elif parameter.default_defined:
-            field_definitions[parameter.name] = (parameter.annotation, parameter.default)
-        elif not parameter.optional:
-            field_definitions[parameter.name] = (parameter.annotation, ...)
+        if isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
+            field_info = FieldInfo(
+                **asdict(parameter.default), kwargs_model=parameter.default, parsed_parameter=parameter
+            )
         else:
-            field_definitions[parameter.name] = (parameter.annotation, None)
+            field_info = FieldInfo(default=..., parsed_parameter=parameter)
+        if parameter.should_skip_validation:
+            field_type = Any
+            if isinstance(parameter.default, DependencyKwarg):
+                field_info.default = parameter.default.default if parameter.default.default is not Empty else None
+        elif isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
+            field_type = parameter.annotation
+            field_info.default = parameter.default.default if parameter.default.default is not Empty else Undefined
+        elif ModelFactory.is_constrained_field(parameter.default):
+            field_type = parameter.default
+        elif parameter.default_defined:
+            field_type = parameter.annotation
+            field_info.default = parameter.default
+        elif not parameter.optional:
+            field_type = parameter.annotation
+        else:
+            field_type = parameter.annotation
+            field_info.default = None
+
+        field_definitions[parameter.name] = (field_type, field_info)
 
     model: type[PydanticSignatureModel] = create_model(  # type: ignore
         f"{fn_name}_signature_model",

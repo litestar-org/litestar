@@ -80,20 +80,21 @@ def test_session_auth_openapi(session_backend_config_memory: "ServerSideSessionC
         session_backend_config=session_backend_config_memory,
     )
     app = Starlite(on_app_init=[session_auth.on_app_init])
-    assert app.openapi_schema.dict(exclude_none=True) == {  # type: ignore
+    assert app.openapi_schema.to_schema() == {  # type: ignore
         "openapi": "3.1.0",
         "info": {"title": "Starlite API", "version": "1.0.0"},
         "servers": [{"url": "/"}],
         "paths": {},
         "components": {
+            "schemas": {},
             "securitySchemes": {
                 "sessionCookie": {
                     "type": "apiKey",
                     "description": "Session cookie authentication.",
                     "name": session_backend_config_memory.key,
-                    "security_scheme_in": "cookie",
+                    "in": "cookie",
                 }
-            }
+            },
         },
         "security": [{"sessionCookie": []}],
     }
