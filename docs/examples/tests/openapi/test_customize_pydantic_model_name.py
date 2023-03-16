@@ -4,9 +4,9 @@ from starlite.testing import TestClient
 
 def test_schema_generation() -> None:
     with TestClient(app=customize_pydantic_model_name.app) as client:
-        assert client.app.openapi_schema.dict(exclude_none=True) == {
-            "openapi": "3.1.0",
+        assert client.app.openapi_schema.to_schema() == {
             "info": {"title": "Starlite API", "version": "1.0.0"},
+            "openapi": "3.1.0",
             "servers": [{"url": "/"}],
             "paths": {
                 "/id": {
@@ -18,9 +18,7 @@ def test_schema_generation() -> None:
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
                                 "content": {
-                                    "application/json": {
-                                        "media_type_schema": {"ref": "#/components/schemas/IdContainer"}
-                                    }
+                                    "application/json": {"schema": {"$ref": "#/components/schemas/IdContainer"}}
                                 },
                             }
                         },
@@ -31,7 +29,7 @@ def test_schema_generation() -> None:
             "components": {
                 "schemas": {
                     "IdContainer": {
-                        "properties": {"id": {"type": "string", "schema_format": "uuid", "title": "Id"}},
+                        "properties": {"id": {"type": "string", "format": "uuid", "description": "Any UUID string"}},
                         "type": "object",
                         "required": ["id"],
                         "title": "IdContainer",

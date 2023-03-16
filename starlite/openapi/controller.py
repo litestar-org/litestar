@@ -1,9 +1,11 @@
+from __future__ import annotations
+
+from copy import copy
 from functools import cached_property
-from typing import TYPE_CHECKING, Callable, Dict, Literal, cast
+from typing import TYPE_CHECKING, Callable, Literal, cast
 
 from yaml import dump as dump_yaml
 
-from starlite.connection import Request
 from starlite.controller import Controller
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
@@ -16,7 +18,8 @@ __all__ = ("OpenAPIController", "OpenAPISchemaResponse")
 
 
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
+    from starlite.connection.request import Request
+    from starlite.openapi.spec.open_api import OpenAPI
 
 MSG_OPENAPI_NOT_INITIALIZED = "Starlite has not been instantiated with OpenAPIConfig"
 
@@ -28,12 +31,12 @@ class OpenAPISchemaResponse(Response):
         """Handle rendering of schema into the correct format - either YAML or JSON.
 
         Args:
-            content: The :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.open_api.OpenAPI>` instance to render.
+            content: The :class:`OpenAPI <starlite.openapi.spec.open_api.OpenAPI>` instance to render.
 
         Returns:
             Rendered bytes.
         """
-        content_dict = content.dict(by_alias=True, exclude_none=True)
+        content_dict = content.to_schema()
         if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
             return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
         return encode_json(content_dict)
@@ -94,7 +97,7 @@ class OpenAPIController(Controller):
             request: A :class:`Starlite <.connection.Request>` instance.
 
         Returns:
-            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.open_api.OpenAPI>` instance.
+            An :class:`OpenAPI <starlite.openapi.spec.open_api.OpenAPI>` instance.
 
         Raises:
             ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
@@ -143,7 +146,7 @@ class OpenAPIController(Controller):
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
     @cached_property
-    def render_methods_map(self) -> Dict[Literal["redoc", "swagger", "elements"], Callable[[Request], str]]:
+    def render_methods_map(self) -> dict[Literal["redoc", "swagger", "elements"], Callable[[Request], str]]:
         """Map render method names to render methods.
 
         Returns:
@@ -303,14 +306,13 @@ class OpenAPIController(Controller):
             A rendered html string.
         """
         schema = self.get_schema_from_request(request)
+
         # Note: Fix for Swagger rejection OpenAPI >=3.1
         if not self._dumped_modified_schema:
-            schema_copy = schema.copy()
+            schema_copy = copy(schema)
             schema_copy.openapi = "3.0.3"
 
-            self._dumped_modified_schema = encode_json(schema_copy.json(by_alias=True, exclude_none=True)).decode(
-                "utf-8"
-            )
+            self._dumped_modified_schema = encode_json(schema_copy.to_schema()).decode("utf-8")
 
         head = f"""
           <head>
@@ -412,7 +414,7 @@ class OpenAPIController(Controller):
         schema = self.get_schema_from_request(request)
 
         if not self._dumped_schema:
-            self._dumped_schema = encode_json(schema.json(by_alias=True, exclude_none=True)).decode("utf-8")
+            self._dumped_schema = encode_json(schema.to_schema()).decode("utf-8")
 
         head = f"""
           <head>

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ["ConflictError", "NotFoundError", "RepositoryError"]
+__all__ = ("ConflictError", "NotFoundError", "RepositoryError")
 
 
 class RepositoryError(Exception):

@@ -17,13 +17,13 @@ from uuid import UUID
 
 from pydantic import BaseModel, conint, constr, create_model
 from pydantic_factories import ModelFactory
-from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 
 from starlite.di import Provide
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
+from starlite.openapi.spec.schema import SchemaDataContainer
 from starlite.plugins import InitPluginProtocol, SerializationPluginProtocol
 
 try:
@@ -45,10 +45,10 @@ __all__ = ("SQLAlchemyPlugin",)
 
 
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import Schema
     from typing_extensions import TypeGuard
 
     from starlite.app import Starlite
+    from starlite.openapi.spec import Schema
 
     from .config import SQLAlchemyConfig
 
@@ -454,6 +454,6 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
             model_class: A table class.
 
         Returns:
-            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+            An :class:`OpenAPI <starlite.openapi.spec.schema.Schema>` instance.
         """
-        return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))
+        return SchemaDataContainer(data_container=self.to_data_container_class(model_class=model_class))

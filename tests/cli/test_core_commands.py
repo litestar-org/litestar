@@ -85,7 +85,7 @@ def test_run_command(
 
     result = runner.invoke(cli_command, args)
 
-    assert result.exception is None
+    assert result.exception is None, result.stdout
     assert result.exit_code == 0
 
     expected_args = ["uvicorn", f"{path.stem}:app", f"--host={host}", f"--port={port}"]

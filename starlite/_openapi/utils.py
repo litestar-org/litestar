@@ -1,49 +1,24 @@
-import re
-from typing import TYPE_CHECKING, List, Union
+from __future__ import annotations
 
-from starlite._openapi.enums import OpenAPIType
-from starlite.exceptions import ImproperlyConfiguredException
+import re
+from typing import TYPE_CHECKING, Union
+
 from starlite.types.internal_types import PathParameterDefinition
 
-__all__ = ("default_operation_id_creator", "get_openapi_type_for_complex_type", "pascal_case_to_text")
-
-
 if TYPE_CHECKING:
-    from starlite._signature.models import SignatureField
     from starlite.handlers.http_handlers import HTTPRouteHandler
     from starlite.types import Method
 
-CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")
+
+__all__ = ("default_operation_id_creator",)
+
 SEPARATORS_CLEANUP_PATTERN = re.compile(r"[!#$%&'*+\-.^_`|~:]+")
-
-
-def pascal_case_to_text(string: str) -> str:
-    """Given a 'PascalCased' string, return its split form- 'Pascal Cased'."""
-    return " ".join(re.split(CAPITAL_LETTERS_PATTERN, string)).strip()
-
-
-def get_openapi_type_for_complex_type(field: "SignatureField") -> "OpenAPIType":
-    """We are dealing with complex types in this case.
-
-    The problem here is that the Python typing system is too crude to define OpenAPI objects properly.
-    """
-    if field.is_mapping:
-        return OpenAPIType.OBJECT
-    if field.is_non_string_sequence or field.is_non_string_iterable:
-        return OpenAPIType.ARRAY
-
-    raise ImproperlyConfiguredException(  # pragma: no cover
-        f"Parameter '{field.name}' with type '{field.field_type}' could not be mapped to an Open API type. "
-        f"This can occur if a user-defined generic type is resolved as a parameter. If '{field.name}' should "
-        "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
-        f"`{field.name}: ... = Dependency(...)`."
-    )
 
 
 def default_operation_id_creator(
     route_handler: "HTTPRouteHandler",
     http_method: "Method",
-    path_components: List[Union[str, "PathParameterDefinition"]],
+    path_components: list[Union[str, "PathParameterDefinition"]],
 ) -> str:
     """Create a unique 'operationId' for an OpenAPI PathItem entry.
 

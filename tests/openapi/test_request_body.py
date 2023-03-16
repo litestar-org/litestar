@@ -23,7 +23,9 @@ def test_create_request_body() -> None:
         for route_handler, _ in route.route_handler_map.values():  # type: ignore
             handler_fields = route_handler.signature_model.fields  # type: ignore
             if "data" in handler_fields:
-                request_body = create_request_body(field=handler_fields["data"], generate_examples=True, plugins=[])
+                request_body = create_request_body(
+                    field=handler_fields["data"], generate_examples=True, plugins=[], schemas={}
+                )
                 assert request_body
 
 
@@ -47,16 +49,16 @@ def test_upload_file_request_body_generation() -> None:
         return None
 
     app = Starlite(route_handlers=[handle_form_upload, handle_file_upload, handle_file_list_upload])
-    schema_dict = app.openapi_schema.dict(exclude_none=True)  # type: ignore[union-attr]
+    schema_dict = app.openapi_schema.to_schema()  # type: ignore[union-attr]
     paths = schema_dict["paths"]
     components = schema_dict["components"]
-    assert paths["/file-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["media_type_schema"] == {
+    assert paths["/file-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
         "type": "string",
-        "schema_format": "binary",
+        "format": "binary",
         "contentMediaType": "application/octet-stream",
     }
-    assert paths["/file-list-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["media_type_schema"] == {
-        "items": {"type": "string", "schema_format": "binary", "contentMediaType": "application/octet-stream"},
+    assert paths["/file-list-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
+        "items": {"type": "string", "format": "binary", "contentMediaType": "application/octet-stream"},
         "type": "array",
     }
     assert components == {
@@ -65,15 +67,13 @@ def test_upload_file_request_body_generation() -> None:
                 "properties": {
                     "cv": {
                         "type": "string",
-                        "schema_format": "binary",
+                        "format": "binary",
                         "contentMediaType": "application/octet-stream",
-                        "title": "Cv",
                     },
                     "image": {
                         "type": "string",
-                        "schema_format": "binary",
+                        "format": "binary",
                         "contentMediaType": "application/octet-stream",
-                        "title": "Image",
                     },
                 },
                 "type": "object",

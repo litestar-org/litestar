@@ -23,7 +23,7 @@ API reference
     handlers
     logging/index
     middleware/index
-    openapi
+    openapi/index
     pagination
     params
     partial

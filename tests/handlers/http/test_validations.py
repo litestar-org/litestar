@@ -18,7 +18,7 @@ from tests import Person
 
 def test_route_handler_validation_http_method() -> None:
     # doesn't raise for http methods
-    for value in (*list(HttpMethod), *list(map(lambda x: x.upper(), list(HttpMethod)))):  # noqa: C417
+    for value in (*list(HttpMethod), *list(map(lambda x: x.upper(), list(HttpMethod)))):
         assert route(http_method=value)  # type: ignore
 
     # raises for invalid values

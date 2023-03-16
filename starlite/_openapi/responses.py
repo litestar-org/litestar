@@ -1,23 +1,33 @@
+from __future__ import annotations
+
+import re
 from copy import copy
+from dataclasses import asdict
 from http import HTTPStatus
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Tuple, Type
+from typing import TYPE_CHECKING, Any, Iterator
 
-from pydantic_openapi_schema.v3_1_0 import Response
-from pydantic_openapi_schema.v3_1_0.header import Header
-from pydantic_openapi_schema.v3_1_0.media_type import MediaType as OpenAPISchemaMediaType
-from pydantic_openapi_schema.v3_1_0.schema import Schema
 from typing_extensions import get_args, get_origin
 
-from starlite._openapi.enums import OpenAPIFormat, OpenAPIType
-from starlite._openapi.schema import create_schema
-from starlite._openapi.utils import pascal_case_to_text
+from starlite._openapi.schema_generation import create_schema
 from starlite._signature.models import SignatureField
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException
+from starlite.openapi.spec import OpenAPIResponse
+from starlite.openapi.spec.enums import OpenAPIFormat, OpenAPIType
+from starlite.openapi.spec.header import OpenAPIHeader
+from starlite.openapi.spec.media_type import OpenAPIMediaType
+from starlite.openapi.spec.schema import Schema
 from starlite.response import Response as StarliteResponse
 from starlite.response_containers import File, Redirect, Stream, Template
 from starlite.utils import get_enum_string_value, get_name, is_class_and_subclass
+
+if TYPE_CHECKING:
+    from starlite.datastructures.cookie import Cookie
+    from starlite.handlers.http_handlers import HTTPRouteHandler
+    from starlite.openapi.spec.responses import Responses
+    from starlite.plugins import OpenAPISchemaPluginProtocol
+
 
 __all__ = (
     "create_additional_responses",
@@ -27,13 +37,12 @@ __all__ = (
     "create_success_response",
 )
 
+CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")
 
-if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0.responses import Responses
 
-    from starlite.datastructures.cookie import Cookie
-    from starlite.handlers.http_handlers import HTTPRouteHandler
-    from starlite.plugins.base import OpenAPISchemaPluginProtocol
+def pascal_case_to_text(string: str) -> str:
+    """Given a 'PascalCased' string, return its split form- 'Pascal Cased'."""
+    return " ".join(re.split(CAPITAL_LETTERS_PATTERN, string)).strip()
 
 
 def create_cookie_schema(cookie: "Cookie") -> Schema:
@@ -52,11 +61,14 @@ def create_cookie_schema(cookie: "Cookie") -> Schema:
 
 
 def create_success_response(
-    route_handler: "HTTPRouteHandler", generate_examples: bool, plugins: List["OpenAPISchemaPluginProtocol"]
-) -> Response:
+    route_handler: "HTTPRouteHandler",
+    generate_examples: bool,
+    plugins: list["OpenAPISchemaPluginProtocol"],
+    schemas: dict[str, "Schema"],
+) -> OpenAPIResponse:
     """Create the schema for a success response."""
     signature = route_handler.signature
-    default_descriptions: Dict[Any, str] = {
+    default_descriptions: dict[Any, str] = {
         Stream: "Stream Response",
         Redirect: "Redirect Response",
         File: "File Download",
@@ -70,64 +82,69 @@ def create_success_response(
     if signature.return_annotation not in {signature.empty, None, Redirect, File, Stream}:
         return_annotation = signature.return_annotation
         if signature.return_annotation is Template:
-            return_annotation = str  # since templates return str
+            return_annotation = str
             route_handler.media_type = get_enum_string_value(MediaType.HTML)
         elif is_class_and_subclass(get_origin(signature.return_annotation), StarliteResponse):
             return_annotation = get_args(signature.return_annotation)[0] or Any
 
-        schema = create_schema(
+        result = create_schema(
             field=SignatureField.create(field_type=return_annotation),
             generate_examples=generate_examples,
             plugins=plugins,
+            schemas=schemas,
         )
-        schema.contentEncoding = route_handler.content_encoding
-        schema.contentMediaType = route_handler.content_media_type
-        response = Response(
+
+        schema = result if isinstance(result, Schema) else schemas[result.value]
+
+        schema.content_encoding = route_handler.content_encoding
+        schema.content_media_type = route_handler.content_media_type
+
+        response = OpenAPIResponse(
             content={
-                route_handler.media_type: OpenAPISchemaMediaType(
-                    media_type_schema=schema,
+                route_handler.media_type: OpenAPIMediaType(
+                    schema=result,
                 )
             },
             description=description,
         )
 
     elif signature.return_annotation is Redirect:
-        response = Response(
+        response = OpenAPIResponse(
             content=None,
             description=description,
             headers={
-                "location": Header(
-                    param_schema=Schema(type=OpenAPIType.STRING), description="target path for the redirect"
+                "location": OpenAPIHeader(
+                    schema=Schema(type=OpenAPIType.STRING), description="target path for the redirect"
                 )
             },
         )
 
     elif signature.return_annotation in (File, Stream):
-        response = Response(
+        response = OpenAPIResponse(
             content={
-                route_handler.media_type: OpenAPISchemaMediaType(
-                    media_type_schema=Schema(
+                route_handler.media_type: OpenAPIMediaType(
+                    schema=Schema(
                         type=OpenAPIType.STRING,
-                        contentEncoding=route_handler.content_encoding or "application/octet-stream",
-                        contentMediaType=route_handler.content_media_type,
+                        content_encoding=route_handler.content_encoding or "application/octet-stream",
+                        content_media_type=route_handler.content_media_type,
                     ),
                 )
             },
             description=description,
             headers={
-                "content-length": Header(
-                    param_schema=Schema(type=OpenAPIType.STRING), description="File size in bytes"
+                "content-length": OpenAPIHeader(
+                    schema=Schema(type=OpenAPIType.STRING), description="File size in bytes"
                 ),
-                "last-modified": Header(
-                    param_schema=Schema(type=OpenAPIType.STRING, schema_format=OpenAPIFormat.DATE_TIME),
+                "last-modified": OpenAPIHeader(
+                    schema=Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.DATE_TIME),
                     description="Last modified data-time in RFC 2822 format",
                 ),
-                "etag": Header(param_schema=Schema(type=OpenAPIType.STRING), description="Entity tag"),
+                "etag": OpenAPIHeader(schema=Schema(type=OpenAPIType.STRING), description="Entity tag"),
             },
         )
 
     else:
-        response = Response(
+        response = OpenAPIResponse(
             content=None,
             description=description,
         )
@@ -136,32 +153,34 @@ def create_success_response(
         response.headers = {}
 
     for response_header in route_handler.resolve_response_headers():
-        header = Header()
-        for attribute_name, attribute_value in response_header.dict(exclude_none=True).items():
+        header = OpenAPIHeader()
+        for attribute_name, attribute_value in ((k, v) for k, v in asdict(response_header).items() if v is not None):
             if attribute_name == "value":
-                header.param_schema = create_schema(
+                header.schema = create_schema(
                     field=SignatureField.create(field_type=type(attribute_value)),
                     generate_examples=False,
                     plugins=plugins,
+                    schemas=schemas,
                 )
 
             elif attribute_name != "documentation_only":
                 setattr(header, attribute_name, attribute_value)
+
         response.headers[response_header.name] = header
 
     if cookies := route_handler.resolve_response_cookies():
-        response.headers["Set-Cookie"] = Header(
-            param_schema=Schema(
-                allOf=[create_cookie_schema(cookie=cookie) for cookie in sorted(cookies, key=attrgetter("key"))]
+        response.headers["Set-Cookie"] = OpenAPIHeader(
+            schema=Schema(
+                all_of=[create_cookie_schema(cookie=cookie) for cookie in sorted(cookies, key=attrgetter("key"))]
             )
         )
 
     return response
 
 
-def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tuple[str, Response]]:
+def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tuple[str, OpenAPIResponse]]:
     """Create the schema for error responses, if any."""
-    grouped_exceptions: Dict[int, List[Type[HTTPException]]] = {}
+    grouped_exceptions: dict[int, list[type[HTTPException]]] = {}
     for exc in exceptions:
         if not grouped_exceptions.get(exc.status_code):
             grouped_exceptions[exc.status_code] = []
@@ -175,7 +194,7 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
                     "status_code": Schema(type=OpenAPIType.INTEGER),
                     "detail": Schema(type=OpenAPIType.STRING),
                     "extra": Schema(
-                        type=[OpenAPIType.NULL, OpenAPIType.OBJECT, OpenAPIType.ARRAY], additionalProperties=Schema()
+                        type=[OpenAPIType.NULL, OpenAPIType.OBJECT, OpenAPIType.ARRAY], additional_properties=Schema()
                     ),
                 },
                 description=pascal_case_to_text(get_name(exc)),
@@ -184,31 +203,34 @@ def create_error_responses(exceptions: List[Type[HTTPException]]) -> Iterator[Tu
             for exc in exception_group
         ]
         if len(exceptions_schemas) > 1:  # noqa: SIM108
-            schema = Schema(oneOf=exceptions_schemas)  # type:ignore[arg-type]
+            schema = Schema(one_of=exceptions_schemas)
         else:
             schema = exceptions_schemas[0]
-        yield str(status_code), Response(
+        yield str(status_code), OpenAPIResponse(
             description=HTTPStatus(status_code).description,
-            content={MediaType.JSON: OpenAPISchemaMediaType(media_type_schema=schema)},
+            content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
         )
 
 
 def create_additional_responses(
-    route_handler: "HTTPRouteHandler", plugins: List["OpenAPISchemaPluginProtocol"]
-) -> Iterator[Tuple[str, Response]]:
+    route_handler: "HTTPRouteHandler",
+    plugins: list["OpenAPISchemaPluginProtocol"],
+    schemas: dict[str, "Schema"],
+) -> Iterator[tuple[str, OpenAPIResponse]]:
     """Create the schema for additional responses, if any."""
     if not route_handler.responses:
         return
 
     for status_code, additional_response in route_handler.responses.items():
         schema = create_schema(
-            field=SignatureField.create(field_type=additional_response.model),
+            field=SignatureField.create(field_type=additional_response.data_container),
             generate_examples=additional_response.generate_examples,
             plugins=plugins,
+            schemas=schemas,
         )
-        yield str(status_code), Response(
+        yield str(status_code), OpenAPIResponse(
             description=additional_response.description,
-            content={additional_response.media_type: OpenAPISchemaMediaType(media_type_schema=schema)},
+            content={additional_response.media_type: OpenAPIMediaType(schema=schema)},
         )
 
 
@@ -216,15 +238,14 @@ def create_responses(
     route_handler: "HTTPRouteHandler",
     raises_validation_error: bool,
     generate_examples: bool,
-    plugins: List["OpenAPISchemaPluginProtocol"],
-) -> Optional["Responses"]:
+    plugins: list["OpenAPISchemaPluginProtocol"],
+    schemas: dict[str, "Schema"],
+) -> Responses | None:
     """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
 
-    responses: "Responses" = {
+    responses: Responses = {
         str(route_handler.status_code): create_success_response(
-            route_handler=route_handler,
-            generate_examples=generate_examples,
-            plugins=plugins,
+            generate_examples=generate_examples, plugins=plugins, route_handler=route_handler, schemas=schemas
         ),
     }
 
@@ -234,7 +255,9 @@ def create_responses(
     for status_code, response in create_error_responses(exceptions=exceptions):
         responses[status_code] = response
 
-    for status_code, response in create_additional_responses(route_handler, plugins):
+    for status_code, response in create_additional_responses(
+        route_handler=route_handler, plugins=plugins, schemas=schemas
+    ):
         responses[status_code] = response
 
     return responses or None

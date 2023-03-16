@@ -7,18 +7,14 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, TypeVar
 from starlite import Response
 from starlite.utils.sync import AsyncCallable
 
-__all__ = ("AbstractSecurityConfig",)
-
-
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import Components, SecurityRequirement
-
     from starlite.config.app import AppConfig
     from starlite.connection import ASGIConnection
     from starlite.di import Provide
     from starlite.enums import MediaType, OpenAPIMediaType
     from starlite.middleware.authentication import AbstractAuthenticationMiddleware
     from starlite.middleware.base import DefineMiddleware
+    from starlite.openapi.spec import Components, SecurityRequirement
     from starlite.types import (
         ControllerRouterHandler,
         Guard,
@@ -28,6 +24,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
 
+__all__ = ("AbstractSecurityConfig",)
 
 UserType = TypeVar("UserType")
 AuthType = TypeVar("AuthType")
@@ -151,7 +148,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
         """Create OpenAPI documentation for the JWT auth schema used.
 
         Returns:
-            An :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` instance.
+            An :class:`Components <starlite.openapi.spec.components.Components>` instance.
         """
         raise NotImplementedError
 
@@ -160,11 +157,11 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     def security_requirement(self) -> SecurityRequirement:  # pragma: no cover
         """Return OpenAPI 3.1.
 
-        :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for the auth
+        :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>` for the auth
         backend.
 
         Returns:
-            An OpenAPI 3.1 :data:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
+            An OpenAPI 3.1 :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>` dictionary.
         """
         raise NotImplementedError
 

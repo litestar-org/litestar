@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
+from typing import Dict
 
 import pytest
 from pydantic import BaseModel
+from typing_extensions import TypedDict
 
 from starlite import MediaType, Response, Starlite, get
-from starlite._openapi.datastructures import ResponseSpec
-from starlite._openapi.enums import OpenAPIType
 from starlite._openapi.responses import (
     create_additional_responses,
     create_error_responses,
@@ -19,8 +20,12 @@ from starlite.exceptions import (
     PermissionDeniedException,
     ValidationException,
 )
+from starlite.openapi.datastructures import ResponseSpec
+from starlite.openapi.spec import OpenAPIHeader, OpenAPIMediaType, Reference, Schema
+from starlite.openapi.spec.enums import OpenAPIType
 from starlite.response.base import T
 from starlite.response_containers import File, Redirect, Stream, Template
+from starlite.routes import HTTPRoute
 from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_307_TEMPORARY_REDIRECT,
@@ -33,13 +38,15 @@ from tests.openapi.utils import PersonController, PetController, PetException
 
 def test_create_responses() -> None:
     for route in Starlite(route_handlers=[PersonController]).routes:
-        for route_handler, _ in route.route_handler_map.values():  # type: ignore
+        assert isinstance(route, HTTPRoute)
+        for route_handler, _ in route.route_handler_map.values():
             if route_handler.include_in_schema:
                 responses = create_responses(
                     route_handler=route_handler,
                     raises_validation_error=True,
                     generate_examples=True,
                     plugins=[],
+                    schemas={},
                 )
                 assert responses
                 assert str(route_handler.status_code) in responses
@@ -50,6 +57,7 @@ def test_create_responses() -> None:
         raises_validation_error=False,
         generate_examples=True,
         plugins=[],
+        schemas={},
     )
     assert responses
     assert str(HTTP_400_BAD_REQUEST) not in responses
@@ -71,42 +79,55 @@ def test_create_error_responses() -> None:
             ]
         )
     )
+    assert pet_exc_response
     assert pet_exc_response[0] == str(PetException.status_code)
     assert pet_exc_response[1].description == HTTPStatus(PetException.status_code).description
-    assert pet_exc_response[1].content[MediaType.JSON]  # type: ignore
-    pet_exc_response_schema = pet_exc_response[1].content[MediaType.JSON].media_type_schema  # type: ignore
-    assert pet_exc_response_schema.examples  # type: ignore
-    assert pet_exc_response_schema.properties  # type: ignore
-    assert pet_exc_response_schema.description  # type: ignore
-    assert pet_exc_response_schema.required  # type: ignore
-    assert pet_exc_response_schema.type  # type: ignore
-    assert not pet_exc_response_schema.oneOf  # type: ignore
+    assert pet_exc_response[1].content
+    assert pet_exc_response[1].content[MediaType.JSON]
+    pet_exc_response_schema = pet_exc_response[1].content[MediaType.JSON].schema
+    assert isinstance(pet_exc_response_schema, Schema)
+    assert pet_exc_response_schema.examples
+    assert pet_exc_response_schema.properties
+    assert pet_exc_response_schema.description
+    assert pet_exc_response_schema.required
+    assert pet_exc_response_schema.type
+    assert not pet_exc_response_schema.one_of
 
     assert permission_denied_exc_response[0] == str(PermissionDeniedException.status_code)
     assert (
         permission_denied_exc_response[1].description == HTTPStatus(PermissionDeniedException.status_code).description
     )
-    assert permission_denied_exc_response[1].content[MediaType.JSON]  # type: ignore
-    media_type_schema = permission_denied_exc_response[1].content[MediaType.JSON].media_type_schema  # type: ignore
-    assert media_type_schema.examples  # type: ignore
-    assert media_type_schema.properties  # type: ignore
-    assert media_type_schema.description  # type: ignore
-    assert media_type_schema.required  # type: ignore
-    assert media_type_schema.type  # type: ignore
-    assert not media_type_schema.oneOf  # type: ignore
+    assert permission_denied_exc_response[1].content
+    assert permission_denied_exc_response[1].content[MediaType.JSON]
+    schema = permission_denied_exc_response[1].content[MediaType.JSON].schema
 
+    assert isinstance(schema, Schema)
+    assert schema.examples
+    assert schema.properties
+    assert schema.description
+    assert schema.required
+    assert schema.type
+    assert not schema.one_of
+
+    assert validation_exc_response
     assert validation_exc_response[0] == str(ValidationException.status_code)
     assert validation_exc_response[1].description == HTTPStatus(ValidationException.status_code).description
-    assert validation_exc_response[1].content[MediaType.JSON]  # type: ignore
-    media_type_schema = validation_exc_response[1].content[MediaType.JSON].media_type_schema  # type: ignore
-    assert media_type_schema.oneOf  # type: ignore
-    assert len(media_type_schema.oneOf) == 2  # type: ignore
-    for schema in media_type_schema.oneOf:  # type: ignore
-        assert schema.examples  # type: ignore
+
+    assert validation_exc_response[1].content
+    assert validation_exc_response[1].content[MediaType.JSON]
+
+    schema = validation_exc_response[1].content[MediaType.JSON].schema
+    assert isinstance(schema, Schema)
+    assert schema.one_of
+    assert len(schema.one_of) == 2
+
+    for schema in schema.one_of:
+        assert isinstance(schema, Schema)
+        assert schema.examples
         assert schema.description
-        assert schema.properties  # type: ignore
-        assert schema.required  # type: ignore
-        assert schema.type  # type: ignore
+        assert schema.properties
+        assert schema.required
+        assert schema.type
 
 
 def test_create_success_response_with_headers() -> None:
@@ -120,12 +141,22 @@ def test_create_success_response_with_headers() -> None:
     def handler() -> list:
         return []
 
-    response = create_success_response(handler, True, plugins=[])
+    response = create_success_response(handler, True, plugins=[], schemas={})
     assert response.description == "test"
-    assert response.content[handler.media_type.value].media_type_schema.contentEncoding == "base64"  # type: ignore
-    assert response.content[handler.media_type.value].media_type_schema.contentMediaType == "image/png"  # type: ignore
-    assert response.headers["special-header"].param_schema.type == OpenAPIType.STRING  # type: ignore
-    assert response.headers["special-header"].description == "super-duper special"  # type: ignore
+
+    assert response.content
+    assert isinstance(handler.media_type, MediaType)
+    schema = response.content[handler.media_type.value].schema
+    assert isinstance(schema, Schema)
+    assert schema.content_encoding == "base64"
+    assert schema.content_media_type == "image/png"
+
+    assert isinstance(response.headers, dict)
+    assert isinstance(response.headers["special-header"], OpenAPIHeader)
+    assert response.headers["special-header"].description == "super-duper special"
+    headers_schema = response.headers["special-header"].schema
+    assert isinstance(headers_schema, Schema)
+    assert headers_schema.type == OpenAPIType.STRING
 
 
 def test_create_success_response_with_cookies() -> None:
@@ -139,8 +170,13 @@ def test_create_success_response_with_cookies() -> None:
     def handler() -> list:
         return []
 
-    response = create_success_response(handler, True, plugins=[])
-    assert response.headers["Set-Cookie"].param_schema.dict(exclude_none=True) == {  # type: ignore
+    response = create_success_response(handler, True, plugins=[], schemas={})
+
+    assert isinstance(response.headers, dict)
+    assert isinstance(response.headers["Set-Cookie"], OpenAPIHeader)
+    schema = response.headers["Set-Cookie"].schema
+    assert isinstance(schema, Schema)
+    assert schema.to_schema() == {
         "allOf": [
             {
                 "description": "the first cookie",
@@ -159,8 +195,16 @@ def test_create_success_response_with_response_class() -> None:
     def handler() -> Response[Person]:
         return Response(content=PersonFactory.build())
 
-    response = create_success_response(handler, True, plugins=[])
-    assert response.content["application/json"].media_type_schema.schema_class is Person  # type: ignore
+    schemas: Dict[str, Schema] = {}
+    response = create_success_response(handler, True, plugins=[], schemas=schemas)
+
+    assert response.content
+    reference = response.content["application/json"].schema
+
+    assert isinstance(reference, Reference)
+    key = reference.ref.split("/")[-1]
+    assert isinstance(schemas[key], Schema)
+    assert key == Person.__name__
 
 
 def test_create_success_response_with_stream() -> None:
@@ -168,7 +212,7 @@ def test_create_success_response_with_stream() -> None:
     def handler() -> Stream:
         return Stream(iterator=iter([]))
 
-    response = create_success_response(handler, True, plugins=[])
+    response = create_success_response(handler, True, plugins=[], schemas={})
     assert response.description == "Stream Response"
 
 
@@ -177,10 +221,14 @@ def test_create_success_response_redirect() -> None:
     def redirect_handler() -> Redirect:
         return Redirect(path="/target")
 
-    response = create_success_response(redirect_handler, True, plugins=[])
+    response = create_success_response(redirect_handler, True, plugins=[], schemas={})
     assert response.description == "Redirect Response"
-    assert response.headers["location"].param_schema.type == OpenAPIType.STRING  # type: ignore
-    assert response.headers["location"].description  # type: ignore
+    assert response.headers
+    location = response.headers["location"]
+    assert isinstance(location, OpenAPIHeader)
+    assert isinstance(location.schema, Schema)
+    assert location.schema.type == OpenAPIType.STRING
+    assert location.description
 
 
 def test_create_success_response_file_data() -> None:
@@ -188,14 +236,24 @@ def test_create_success_response_file_data() -> None:
     def file_handler() -> File:
         return File(path=Path("test_responses.py"))
 
-    response = create_success_response(file_handler, True, plugins=[])
+    response = create_success_response(file_handler, True, plugins=[], schemas={})
     assert response.description == "File Download"
-    assert response.headers["content-length"].param_schema.type == OpenAPIType.STRING  # type: ignore
-    assert response.headers["content-length"].description  # type: ignore
-    assert response.headers["last-modified"].param_schema.type == OpenAPIType.STRING  # type: ignore
-    assert response.headers["last-modified"].description  # type: ignore
-    assert response.headers["etag"].param_schema.type == OpenAPIType.STRING  # type: ignore
-    assert response.headers["etag"].description  # type: ignore
+    assert response.headers
+
+    assert isinstance(response.headers["content-length"], OpenAPIHeader)
+    assert isinstance(response.headers["content-length"].schema, Schema)
+    assert response.headers["content-length"].schema.type == OpenAPIType.STRING
+    assert response.headers["content-length"].description
+
+    assert isinstance(response.headers["last-modified"], OpenAPIHeader)
+    assert isinstance(response.headers["last-modified"].schema, Schema)
+    assert response.headers["last-modified"].schema.type == OpenAPIType.STRING
+    assert response.headers["last-modified"].description
+
+    assert isinstance(response.headers["etag"], OpenAPIHeader)
+    assert isinstance(response.headers["etag"].schema, Schema)
+    assert response.headers["etag"].schema.type == OpenAPIType.STRING
+    assert response.headers["etag"].description
 
 
 def test_create_success_response_template() -> None:
@@ -203,42 +261,65 @@ def test_create_success_response_template() -> None:
     def template_handler() -> Template:
         return Template(name="none")
 
-    response = create_success_response(template_handler, True, plugins=[])
+    response = create_success_response(template_handler, True, plugins=[], schemas={})
     assert response.description == "Request fulfilled, document follows"
-    assert response.content[MediaType.HTML]  # type: ignore
+    assert response.content
+    assert response.content[MediaType.HTML.value]
 
 
 def test_create_additional_responses() -> None:
-    class ServerError(BaseModel):
-        pass
+    @dataclass
+    class ServerError:
+        message: str
 
     class AuthenticationError(BaseModel):
-        pass
+        message: str
+
+    class UnknownError(TypedDict):
+        message: str
 
     @get(
         responses={
-            401: ResponseSpec(model=AuthenticationError, description="Authentication error"),
-            500: ResponseSpec(model=ServerError, generate_examples=False, media_type=MediaType.TEXT),
+            401: ResponseSpec(data_container=AuthenticationError, description="Authentication error"),
+            500: ResponseSpec(data_container=ServerError, generate_examples=False, media_type=MediaType.TEXT),
+            505: ResponseSpec(data_container=UnknownError),
         }
     )
     def handler() -> Person:
         return PersonFactory.build()
 
-    responses = create_additional_responses(handler, plugins=[])
+    schemas: Dict[str, Schema] = {}
+    responses = create_additional_responses(handler, plugins=[], schemas=schemas)
 
     first_response = next(responses)
     assert first_response[0] == "401"
     assert first_response[1].description == "Authentication error"
-    media_type_schema = first_response[1].content["application/json"].media_type_schema  # type: ignore
-    assert media_type_schema.schema_class is AuthenticationError  # type: ignore
-    assert media_type_schema.examples  # type: ignore
+
+    assert first_response[1].content
+    assert isinstance(first_response[1].content["application/json"], OpenAPIMediaType)
+    reference = first_response[1].content["application/json"].schema
+    assert isinstance(reference, Reference)
+    schema = schemas[reference.ref.split("/")[-1]]
+    assert isinstance(schema, Schema)
+    assert schema.title == "AuthenticationError"
+    assert schema.examples
 
     second_response = next(responses)
     assert second_response[0] == "500"
     assert second_response[1].description == "Additional response"
-    media_type_schema = second_response[1].content["text/plain"].media_type_schema  # type: ignore
-    assert media_type_schema.schema_class is ServerError  # type: ignore
-    assert not media_type_schema.examples  # type: ignore
+
+    assert second_response[1].content
+    assert isinstance(second_response[1].content["text/plain"], OpenAPIMediaType)
+    reference = second_response[1].content["text/plain"].schema
+    assert isinstance(reference, Reference)
+    schema = schemas[reference.ref.split("/")[-1]]
+    assert isinstance(schema, Schema)
+    assert schema.title == "ServerError"
+    assert not schema.examples
+
+    third_response = next(responses)
+    assert third_response[0] == "505"
+    assert third_response[1].description == "Additional response"
 
     with pytest.raises(StopIteration):
         next(responses)
@@ -246,13 +327,13 @@ def test_create_additional_responses() -> None:
 
 def test_additional_responses_overlap_with_other_responses() -> None:
     class OkResponse(BaseModel):
-        pass
+        message: str
 
-    @get(responses={200: ResponseSpec(model=OkResponse, description="Overwritten response")})
+    @get(responses={200: ResponseSpec(data_container=OkResponse, description="Overwritten response")})
     def handler() -> Person:
         return PersonFactory.build()
 
-    responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
+    responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[], schemas={})
 
     assert responses is not None
     assert responses["200"] is not None
@@ -261,16 +342,16 @@ def test_additional_responses_overlap_with_other_responses() -> None:
 
 def test_additional_responses_overlap_with_raises() -> None:
     class ErrorResponse(BaseModel):
-        pass
+        message: str
 
     @get(
         raises=[ValidationException],
-        responses={400: ResponseSpec(model=ErrorResponse, description="Overwritten response")},
+        responses={400: ResponseSpec(data_container=ErrorResponse, description="Overwritten response")},
     )
     def handler() -> Person:
         raise ValidationException()
 
-    responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[])
+    responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[], schemas={})
 
     assert responses is not None
     assert responses["400"] is not None
@@ -285,5 +366,11 @@ def test_create_response_for_response_subclass() -> None:
     def handler() -> CustomResponse[Person]:
         return CustomResponse(content=PersonFactory.build())
 
-    response = create_success_response(handler, True, plugins=[])
-    assert response.content["application/json"].media_type_schema.schema_class is Person  # type: ignore
+    schemas: Dict[str, Schema] = {}
+    response = create_success_response(handler, True, plugins=[], schemas=schemas)
+    assert response.content
+    assert isinstance(response.content["application/json"], OpenAPIMediaType)
+    reference = response.content["application/json"].schema
+    assert isinstance(reference, Reference)
+    schema = schemas[reference.value]
+    assert schema.title == "Person"

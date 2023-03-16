@@ -1,11 +1,11 @@
 from typing import Any, List
 
 import pytest
-from pydantic_openapi_schema.v3_1_0 import Schema
 
-from starlite._openapi.enums import OpenAPIType
 from starlite._openapi.typescript_converter.schema_parsing import parse_schema
 from starlite._openapi.typescript_converter.types import TypeScriptIntersection
+from starlite.openapi.spec import Schema
+from starlite.openapi.spec.enums import OpenAPIType
 
 object_schema_1 = Schema(
     type=OpenAPIType.OBJECT,
@@ -34,11 +34,11 @@ object_schema_2 = Schema(
 string_schema = Schema(type=[OpenAPIType.STRING])
 number_schema = Schema(type=[OpenAPIType.NUMBER])
 nullable_integer_schema = Schema(type=[OpenAPIType.INTEGER, OpenAPIType.NULL])
-array_schema = Schema(type=OpenAPIType.ARRAY, items=Schema(oneOf=[object_schema_1, object_schema_2]))
+array_schema = Schema(type=OpenAPIType.ARRAY, items=Schema(one_of=[object_schema_1, object_schema_2]))
 
 
 def test_parse_schema_handle_all_of() -> None:
-    result = parse_schema(Schema(allOf=[object_schema_1, object_schema_2]))
+    result = parse_schema(Schema(all_of=[object_schema_1, object_schema_2]))
     assert isinstance(result, TypeScriptIntersection)
     assert (
         result.write()
@@ -48,7 +48,7 @@ def test_parse_schema_handle_all_of() -> None:
 
 def test_parse_schema_handle_one_of() -> None:
     result = parse_schema(
-        Schema(oneOf=[object_schema_1, object_schema_2, number_schema, string_schema, nullable_integer_schema])
+        Schema(one_of=[object_schema_1, object_schema_2, number_schema, string_schema, nullable_integer_schema])
     )
     assert (
         result.write() == "null | number | number | string | {\n"

@@ -1,17 +1,8 @@
-from copy import copy
-from typing import Any, List, Optional, Tuple, TypeVar, Union, cast
+from __future__ import annotations
 
-from pydantic import BaseModel
-from pydantic_openapi_schema.v3_1_0 import (
-    Components,
-    OpenAPI,
-    Operation,
-    Parameter,
-    Reference,
-    RequestBody,
-    Responses,
-    Schema,
-)
+from copy import copy
+from dataclasses import fields
+from typing import Any, TypeVar, cast
 
 from starlite._openapi.typescript_converter.schema_parsing import (
     normalize_typescript_namespace,
@@ -26,6 +17,16 @@ from starlite._openapi.typescript_converter.types import (
     TypeScriptUnion,
 )
 from starlite.enums import HttpMethod, ParamType
+from starlite.openapi.spec import (
+    Components,
+    OpenAPI,
+    Operation,
+    Parameter,
+    Reference,
+    RequestBody,
+    Responses,
+    Schema,
+)
 
 __all__ = (
     "convert_openapi_to_typescript",
@@ -37,27 +38,32 @@ __all__ = (
     "resolve_ref",
 )
 
+from starlite.openapi.spec.base import BaseSchemaObject
 
-T = TypeVar("T", bound=Union[BaseModel, dict, list])
-
-
-def _deref_model(model: BaseModel, components: Components) -> BaseModel:
-    for field in model.__fields__:
-        if value := getattr(model, field, None):
-            if isinstance(value, Reference):
-                setattr(model, field, deref_container(resolve_ref(value, components=components), components=components))
-            elif isinstance(value, (Schema, (dict, list))):
-                setattr(model, field, deref_container(value, components=components))
-    return model
+T = TypeVar("T")
 
 
-def _deref_dict(values: dict, components: Components) -> dict:
-    for key, value in values.items():
-        if isinstance(value, Reference):
-            values[key] = deref_container(resolve_ref(value, components=components), components=components)
-        elif isinstance(value, (Schema, (dict, list))):
-            values[key] = deref_container(value, components=components)
-    return values
+def _deref_schema_object(value: BaseSchemaObject, components: Components) -> BaseSchemaObject:
+    for field in fields(value):
+        if field_value := getattr(value, field.name, None):
+            if isinstance(field_value, Reference):
+                setattr(
+                    value,
+                    field.name,
+                    deref_container(resolve_ref(field_value, components=components), components=components),
+                )
+            elif isinstance(field_value, (Schema, dict, list)):
+                setattr(value, field.name, deref_container(field_value, components=components))
+    return value
+
+
+def _deref_dict(value: dict, components: Components) -> dict:
+    for k, v in value.items():
+        if isinstance(v, Reference):
+            value[k] = deref_container(resolve_ref(v, components=components), components=components)
+        elif isinstance(v, (Schema, dict, list)):
+            value[k] = deref_container(v, components=components)
+    return value
 
 
 def _deref_list(values: list, components: Components) -> list:
@@ -79,14 +85,15 @@ def deref_container(open_api_container: T, components: Components) -> T:
     Returns:
         A dereferenced object.
     """
-
-    if isinstance(open_api_container, BaseModel):
-        return cast("T", _deref_model(open_api_container.copy(), components))
+    if isinstance(open_api_container, BaseSchemaObject):
+        return cast("T", _deref_schema_object(open_api_container, components))
 
     if isinstance(open_api_container, dict):
         return cast("T", _deref_dict(copy(open_api_container), components))
 
-    return cast("T", _deref_list(copy(open_api_container), components))  # type: ignore
+    if isinstance(open_api_container, list):
+        return cast("T", _deref_list(copy(open_api_container), components))
+    raise ValueError(f"unexpected container type {type(open_api_container).__name__}")  # pragma: no cover
 
 
 def resolve_ref(ref: Reference, components: Components) -> Schema:
@@ -111,7 +118,7 @@ def resolve_ref(ref: Reference, components: Components) -> Schema:
     return current
 
 
-def get_openapi_type(value: Union[Reference, T], components: Components) -> T:
+def get_openapi_type(value: Reference | T, components: Components) -> T:
     """Extract or dereference an OpenAPI container type.
 
     Args:
@@ -122,14 +129,16 @@ def get_openapi_type(value: Union[Reference, T], components: Components) -> T:
         The extracted container.
     """
     if isinstance(value, Reference):
-        return cast("T", deref_container(resolve_ref(value, components=components), components=components))
-    return deref_container(value, components=components)
+        resolved_ref = resolve_ref(value, components=components)
+        return cast("T", deref_container(open_api_container=resolved_ref, components=components))
+
+    return deref_container(open_api_container=value, components=components)
 
 
 def parse_params(
-    params: List[Parameter],
+    params: list[Parameter],
     components: Components,
-) -> Tuple[TypeScriptInterface, ...]:
+) -> tuple[TypeScriptInterface, ...]:
     """Parse request parameters.
 
     Args:
@@ -139,13 +148,13 @@ def parse_params(
     Returns:
         A tuple of resolved interfaces.
     """
-    cookie_params: List[TypeScriptProperty] = []
-    header_params: List[TypeScriptProperty] = []
-    path_params: List[TypeScriptProperty] = []
-    query_params: List[TypeScriptProperty] = []
+    cookie_params: list[TypeScriptProperty] = []
+    header_params: list[TypeScriptProperty] = []
+    path_params: list[TypeScriptProperty] = []
+    query_params: list[TypeScriptProperty] = []
 
     for param in params:
-        if param.param_schema and (schema := get_openapi_type(param.param_schema, components)):
+        if param.schema and (schema := get_openapi_type(param.schema, components)):
             ts_prop = TypeScriptProperty(
                 key=normalize_typescript_namespace(param.name, allow_quoted=True),
                 required=param.required,
@@ -160,7 +169,7 @@ def parse_params(
             else:
                 query_params.append(ts_prop)
 
-    result: List[TypeScriptInterface] = []
+    result: list[TypeScriptInterface] = []
 
     if cookie_params:
         result.append(TypeScriptInterface("CookieParameters", tuple(cookie_params)))
@@ -188,11 +197,9 @@ def parse_request_body(body: RequestBody, components: Components) -> TypeScriptT
     if not body.content:
         return TypeScriptType("RequestBody", undefined)
 
-    if (
-        content := [
-            get_openapi_type(v.media_type_schema, components) for v in body.content.values() if v.media_type_schema
-        ]
-    ) and (schema := content[0]):
+    if (content := [get_openapi_type(v.schema, components) for v in body.content.values() if v.schema]) and (
+        schema := content[0]
+    ):
         return TypeScriptType(
             "RequestBody",
             parse_schema(schema) if body.required else TypeScriptUnion((parse_schema(content[0]), undefined)),
@@ -201,7 +208,7 @@ def parse_request_body(body: RequestBody, components: Components) -> TypeScriptT
     return TypeScriptType("RequestBody", undefined)
 
 
-def parse_responses(responses: Responses, components: Components) -> Tuple[TypeScriptNamespace, ...]:
+def parse_responses(responses: Responses, components: Components) -> tuple[TypeScriptNamespace, ...]:
     """Parse a given Operation's Responses object.
 
     Args:
@@ -211,20 +218,14 @@ def parse_responses(responses: Responses, components: Components) -> Tuple[TypeS
     Returns:
         A tuple of namespaces, mapping response codes to data.
     """
-    result: List[TypeScriptNamespace] = []
+    result: list[TypeScriptNamespace] = []
     for http_status, response in [
         (status, get_openapi_type(res, components=components)) for status, res in responses.items()
     ]:
         if (
             response
             and response.content
-            and (
-                content := [
-                    get_openapi_type(v.media_type_schema, components)
-                    for v in response.content.values()
-                    if v.media_type_schema
-                ]
-            )
+            and (content := [get_openapi_type(v.schema, components) for v in response.content.values() if v.schema])
         ):
             ts_type = parse_schema(content[0])
         else:
@@ -268,7 +269,7 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
     if not openapi_schema.components:  # pragma: no cover
         raise ValueError("OpenAPI schema has no components")
 
-    operations: List[TypeScriptNamespace] = []
+    operations: list[TypeScriptNamespace] = []
 
     for path_item in openapi_schema.paths.values():
         shared_params = [
@@ -276,8 +277,8 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
         ]
         for method in HttpMethod:
             if (
-                operation := cast("Optional[Operation]", getattr(path_item, method.lower(), "None"))
-            ) and operation.operationId:
+                operation := cast("Operation | None", getattr(path_item, method.lower(), "None"))
+            ) and operation.operation_id:
                 params = parse_params(
                     [
                         *(
@@ -291,10 +292,10 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
                 )
                 request_body = (
                     parse_request_body(
-                        get_openapi_type(operation.requestBody, components=openapi_schema.components),
+                        get_openapi_type(operation.request_body, components=openapi_schema.components),
                         components=openapi_schema.components,
                     )
-                    if operation.requestBody
+                    if operation.request_body
                     else None
                 )
 
@@ -302,7 +303,7 @@ def convert_openapi_to_typescript(openapi_schema: OpenAPI, namespace: str = "API
 
                 operations.append(
                     TypeScriptNamespace(
-                        normalize_typescript_namespace(operation.operationId, allow_quoted=False),
+                        normalize_typescript_namespace(operation.operation_id, allow_quoted=False),
                         tuple(container for container in (*params, request_body, *responses) if container),
                     )
                 )

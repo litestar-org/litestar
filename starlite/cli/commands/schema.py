@@ -37,9 +37,9 @@ def generate_openapi_schema(app: Starlite, output: Path) -> None:
         raise StarliteCLIException("Starlite application does not have an OpenAPI schema")
 
     if output.suffix in (".yml", ".yaml"):
-        content = dump_yaml(app.openapi_schema.dict(by_alias=True, exclude_none=True), default_flow_style=False)
+        content = dump_yaml(app.openapi_schema.to_schema(), default_flow_style=False)
     else:
-        content = dumps(app.openapi_schema.dict(by_alias=True, exclude_none=True), indent=4)
+        content = dumps(app.openapi_schema.to_schema(), indent=4)
 
     try:
         output.write_text(content)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import BaseConfig, BaseModel, ValidationError
 from typing_extensions import get_args, get_origin
@@ -140,6 +140,11 @@ class SignatureField:
             return self.kwarg_model.required
 
         return not (self.is_optional or self.is_any) and (self.is_empty or self.default_value is None)
+
+    @property
+    def is_literal(self) -> bool:
+        """Check if the field type is Literal."""
+        return get_origin(self.field_type) is Literal
 
     @classmethod
     def create(

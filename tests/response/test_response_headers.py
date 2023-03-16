@@ -1,11 +1,11 @@
 from typing import Dict
 
 import pytest
-from pydantic import ValidationError
 
 from starlite import Controller, HttpMethod, Router, Starlite, get, post
 from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
 from starlite.datastructures.headers import Header
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import TestClient, create_test_client
 
@@ -75,7 +75,7 @@ def test_response_headers_mapping_unresolved() -> None:
 
 def test_response_headers_validation() -> None:
     ResponseHeader(name="test", documentation_only=True)
-    with pytest.raises(ValidationError):
+    with pytest.raises(ImproperlyConfiguredException):
         ResponseHeader(name="test")
 
 

@@ -19,6 +19,7 @@ from typing import (
     Sequence,
     Set,
     Tuple,
+    Type,
     TypeVar,
 )
 
@@ -33,41 +34,56 @@ from typing_extensions import (
     is_typeddict,
 )
 
+from starlite.types import DataclassProtocol, Empty
 from starlite.types.builtin_types import UNION_TYPES, NoneType
 
 if TYPE_CHECKING:
     from starlite.types.builtin_types import (
-        DataclassClass,
-        DataclassClassOrInstance,
         TypedDictClass,
     )
+
+try:
+    from pydantic import BaseModel
+except ImportError:  # pragma: no cover
+    BaseModel = Empty  # type: ignore
+
 
 P = ParamSpec("P")
 T = TypeVar("T")
 
 
-def _get_origin(annotation: Any) -> Any:
-    origin = get_origin(annotation)
-    return origin if origin not in (Annotated, Required, NotRequired) else get_args(annotation)[0]
+def get_origin_or_inner_type(annotation: Any) -> Any:
+    """Get origin or unwrap it. Returns None for non-generic types.
+
+    Args:
+        annotation: A type annotation.
+
+    Returns:
+        Any type.
+    """
+
+    if origin := get_origin(annotation):
+        return origin if origin not in (Annotated, Required, NotRequired) else get_args(annotation)[0]
+    return None
 
 
-def is_class_and_subclass(value: Any, t_type: type[T]) -> TypeGuard[type[T]]:
+def is_class_and_subclass(annotation: Any, t_type: type[T]) -> TypeGuard[type[T]]:
     """Return ``True`` if ``value`` is a ``class`` and is a subtype of ``t_type``.
 
     See https://github.com/starlite-api/starlite/issues/367
 
     Args:
-        value: The value to check if is class and subclass of ``t_type``.
+        annotation: The value to check if is class and subclass of ``t_type``.
         t_type: Type used for :func:`issubclass` check of ``value``
 
     Returns:
         bool
     """
-    origin = _get_origin(value)
-    if not origin and not isclass(value):
+    origin = get_origin_or_inner_type(annotation)
+    if not origin and not isclass(annotation):
         return False
     try:
-        return issubclass(origin or value, t_type)
+        return issubclass(origin or annotation, t_type)
     except TypeError:  # pragma: no cover
         return False
 
@@ -93,7 +109,7 @@ def is_mapping(annotation: Any) -> TypeGuard[Mapping[Any, Any]]:
     Returns:
         A typeguard determining whether the type can be cast as :class:`Mapping <typing.Mapping>`.
     """
-    _type = _get_origin(annotation) or annotation
+    _type = get_origin_or_inner_type(annotation) or annotation
     return isclass(_type) and issubclass(_type, (dict, defaultdict, DefaultDict, Mapping))
 
 
@@ -106,7 +122,7 @@ def is_non_string_iterable(annotation: Any) -> TypeGuard[Iterable[Any]]:
     Returns:
         A typeguard determining whether the type can be cast as :class:`Iterable <typing.Iterable>` that is not a string.
     """
-    origin = _get_origin(annotation)
+    origin = get_origin_or_inner_type(annotation)
     if not origin and not isclass(annotation):
         return False
     try:
@@ -127,7 +143,7 @@ def is_non_string_sequence(annotation: Any) -> TypeGuard[Sequence[Any]]:
     Returns:
         A typeguard determining whether the type can be cast as :class`Sequence <typing.Sequence>` that is not a string.
     """
-    origin = _get_origin(annotation)
+    origin = get_origin_or_inner_type(annotation)
     if not origin and not isclass(annotation):
         return False
     try:
@@ -163,7 +179,7 @@ def is_any(annotation: Any) -> TypeGuard[Any]:
     return (
         annotation is Any
         or getattr(annotation, "_name", "") == "typing.Any"
-        or (get_origin(annotation) in UNION_TYPES and Any in get_args(annotation))
+        or (get_origin_or_inner_type(annotation) in UNION_TYPES and Any in get_args(annotation))
     )
 
 
@@ -176,7 +192,7 @@ def is_union(annotation: Any) -> bool:
     Returns:
         A boolean determining whether the type is :data:`Union typing.Union>`.
     """
-    return _get_origin(annotation) in UNION_TYPES
+    return get_origin_or_inner_type(annotation) in UNION_TYPES
 
 
 def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
@@ -189,42 +205,62 @@ def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
         A typeguard determining whether the type is :data:`Union typing.Union>` with a
             None value or :data:`Optional <typing.Optional>` which is equivalent.
     """
-    origin = _get_origin(annotation)
-    return origin is Optional or (get_origin(annotation) in UNION_TYPES and NoneType in get_args(annotation))
+    origin = get_origin_or_inner_type(annotation)
+    return origin is Optional or (
+        get_origin_or_inner_type(annotation) in UNION_TYPES and NoneType in get_args(annotation)
+    )
 
 
-def is_dataclass_class(value: Any) -> TypeGuard[DataclassClass]:
-    """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`, narrowing to type only, not
-        instance.
-
-    Args:
-        value: tested to determine if type of :class:`dataclasses.dataclass`.
-
-    Returns:
-        ``True`` if ``value`` is a ``dataclass`` type.
-    """
-    return is_dataclass(value) and isinstance(value, type)
-
-
-def is_dataclass_class_or_instance(value: Any) -> TypeGuard[DataclassClassOrInstance]:
+def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
     """Wrap :func:`is_dataclass <dataclasses.is_dataclass>` in a :data:`typing.TypeGuard`.
 
     Args:
-        value: tested to determine if instance or type of :class:`dataclasses.dataclass`.
+        annotation: tested to determine if instance or type of :class:`dataclasses.dataclass`.
 
     Returns:
         ``True`` if instance or type of ``dataclass``.
     """
-    return is_dataclass(value)  # type:ignore[no-any-return]
+    try:
+        return isclass(annotation) and is_dataclass(annotation)
+    except TypeError:  # pragma: no cover
+        return False
 
 
-def is_typed_dict(value: Any) -> TypeGuard[TypedDictClass]:
+def is_typed_dict(annotation: Any) -> TypeGuard[TypedDictClass]:
     """Wrap :func:`typing.is_typeddict` in a :data:`typing.TypeGuard`.
 
     Args:
-        value: tested to determine if instance or type of :class:`typing.TypedDict`.
+        annotation: tested to determine if instance or type of :class:`typing.TypedDict`.
 
     Returns:
         ``True`` if instance or type of ``TypedDict``.
     """
-    return is_typeddict(value)
+    return is_typeddict(annotation)
+
+
+def is_pydantic_model_class(annotation: Any) -> "TypeGuard[Type[BaseModel]]":  # pyright: ignore
+    """Given a type annotation determine if the annotation is a subclass of pydantic's BaseModel.
+
+    Args:
+        annotation: A type.
+
+    Returns:
+        A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
+    """
+    if BaseModel is not Empty:  # type: ignore[comparison-overlap]
+        return is_class_and_subclass(annotation, BaseModel)
+    return False  # pragma: no cover
+
+
+def is_pydantic_model_instance(annotation: Any) -> "TypeGuard[BaseModel]":  # pyright: ignore
+    """Given a type annotation determine if the annotation is an instance of pydantic's BaseModel.
+
+    Args:
+        annotation: A type.
+
+    Returns:
+        A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
+    """
+    if BaseModel is not Empty:  # type: ignore[comparison-overlap]
+        return isinstance(annotation, BaseModel)
+    return False  # pragma: no cover
