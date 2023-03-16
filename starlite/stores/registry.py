@@ -62,7 +62,7 @@ class StoreRegistry:
         store = self._stores.get(name)
         if not store:
             store = self._stores[name] = self._default_factory(name)
-        return store  # noqa: RET504
+        return store
 
     @property
     def default(self) -> Store:
