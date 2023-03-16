@@ -1,8 +1,8 @@
 from pydantic import BaseModel, Json, conint
-from pydantic_openapi_schema.v3_1_0.example import Example
-from pydantic_openapi_schema.v3_1_0.external_documentation import ExternalDocumentation
 
 from starlite import Starlite, get
+from starlite.openapi.spec.example import Example
+from starlite.openapi.spec.external_documentation import ExternalDocumentation
 from starlite.params import Parameter
 
 

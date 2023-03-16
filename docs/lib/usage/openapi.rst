@@ -8,15 +8,14 @@ Starlite has first class OpenAPI support offering the following features:
 - Builtin support for static documentation site generation using several different libraries.
 - Simple configuration using pydantic based classes.
 
-Pydantic-OpenAPI-schema
------------------------
 
-Starlite generates the `latest version of the OpenAPI specification <https://spec.openapis.org/oas/latest.html>`_ using
-the `pydantic-openapi-schema <https://github.com/starlite-api/pydantic-openapi-schema>`_ library, which is bundled as part
-of Starlite and is also maintained by the `starlite-api <https://github.com/starlite-api>`_ GitHub organization.
+Starlite includes a complete implementation of the `latest version of the OpenAPI specification <https://spec.openapis.org/oas/latest.html>`_
+using Python dataclasses. This implementation is used as a basis for generating OpenAPI specs, supporting builtins including
+`dataclasses` and `TypedDict`, as well as Pydantic models and any 3rd party entities for which a plugin is implemented.
 
-This library offers a full implementation of the OpenAPI specification as pydantic models, and is as such a powerful and
-type correct foundation for schema generation using python.
+This is also highly configurable - and users can customize the OpenAPI spec in a variety of ways - ranging from passing
+configuration globally, to settings specific kwargs on route handler decorators.
+
 
 .. seealso::
 
@@ -154,7 +153,7 @@ app instance itself. For example:
 
    from starlite import Starlite, get
    from starlite.config.openapi import OpenAPIConfig
-   from pydantic_openapi_schema.v3_1_0 import Components, SecurityScheme, Tag
+   from starlite.openapi.spec import Components, SecurityScheme, Tag
 
 
    @get(
@@ -337,8 +336,8 @@ The above will result in an OpenAPI schema object that looks like this:
                            "headers": {},
                            "content": {
                                "application/json": {
-                                   "media_type_schema": {
-                                       "ref": "#/components/schemas/IdContainer"
+                                   "schema": {
+                                       "$ref": "#/components/schemas/IdContainer"
                                    }
                                }
                            }
@@ -352,7 +351,7 @@ The above will result in an OpenAPI schema object that looks like this:
            "schemas": {
                "IdContainer": {
                    "properties": {
-                       "id": {"type": "string", "schema_format": "uuid", "title": "Id"}
+                       "id": {"type": "string", "format": "uuid", "title": "Id"}
                    },
                    "type": "object",
                    "required": ["id"],

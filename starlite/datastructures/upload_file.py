@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any
 
 from anyio.to_thread import run_sync
 
-from starlite._openapi.enums import OpenAPIType
 from starlite.constants import ONE_MEGABYTE
+from starlite.openapi.spec.enums import OpenAPIType
 
 __all__ = ("UploadFile",)
 

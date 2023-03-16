@@ -55,7 +55,6 @@ opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
-pydantic-openapi-schema = ">=1.5.0"
 python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
@@ -202,7 +201,7 @@ select = [
     "A", # flake8-builtins
     "B", # flake8-bugbear
     "BLE", # flake8-blind-except
-    "C4", # flake8-comprehensions
+    "C40", # flake8-comprehensions
     "C90", # mccabe
     "D", # pydocstyle
     "DJ", # flake8-django

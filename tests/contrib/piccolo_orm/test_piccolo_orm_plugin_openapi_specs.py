@@ -1,5 +1,8 @@
+from typing import Any
+
 from starlite import Starlite
 from starlite.contrib.piccolo_orm import PiccoloORMPlugin
+from starlite.openapi.spec import OpenAPIResponse, Reference, RequestBody, Schema
 from tests.contrib.piccolo_orm.endpoints import (
     create_concert,
     retrieve_studio,
@@ -9,50 +12,72 @@ from tests.contrib.piccolo_orm.endpoints import (
 
 def test_piccolo_orm_plugin_openapi_spec_generation() -> None:
     app = Starlite(route_handlers=[retrieve_studio, retrieve_venues, create_concert], plugins=[PiccoloORMPlugin()])
-    schema = app.openapi_schema
-    assert len(schema.paths) == 3  # type: ignore
+    schema: Any = app.openapi_schema
+    assert schema
+    assert schema.paths
+    assert len(schema.paths) == 3
 
-    concert_path = schema.paths["/concert"]  # type: ignore
-    studio_path = schema.paths["/studio"]  # type: ignore
-    venues_path = schema.paths["/venues"]  # type: ignore
+    concert_path = schema.paths["/concert"]
+    studio_path = schema.paths["/studio"]
+    venues_path = schema.paths["/venues"]
 
-    assert (
-        concert_path.post.requestBody.content["application/json"].media_type_schema.ref  # type: ignore
-        == "#/components/schemas/ConcertRequestBody"
-    )
-    assert (
-        studio_path.get.responses["200"].content["application/json"].media_type_schema.ref  # type: ignore
-        == "#/components/schemas/RecordingStudio"
-    )
-    assert (
-        venues_path.get.responses["200"].content["application/json"].media_type_schema.items.ref  # type: ignore
-        == "#/components/schemas/Venue"
-    )
+    assert concert_path.post
+    request_body = concert_path.post.request_body
+    assert isinstance(request_body, RequestBody)
+    assert request_body.content
+    schema = request_body.content["application/json"].schema
+    assert isinstance(schema, Reference)
 
-    assert schema.components.schemas["ConcertRequestBody"].dict(exclude_none=True) == {  # type: ignore
+    assert schema.ref == "#/components/schemas/ConcertRequestBody"
+
+    assert studio_path.get
+    assert studio_path.get.responses
+    assert isinstance(studio_path.get.responses["200"], OpenAPIResponse)
+    assert studio_path.get.responses["200"].content
+    schema = studio_path.get.responses["200"].content["application/json"].schema
+    assert isinstance(schema, Reference)
+    assert schema.ref == "#/components/schemas/RecordingStudio"
+
+    assert venues_path.get
+    assert venues_path.get.responses
+    assert isinstance(venues_path.get.responses["200"], OpenAPIResponse)
+    assert venues_path.get.responses["200"].content
+    schema = venues_path.get.responses["200"].content["application/json"].schema
+    assert isinstance(schema, Schema)
+    items = schema.items
+    assert isinstance(items, Reference)
+    assert items.ref == "#/components/schemas/Venue"
+
+    assert app.openapi_schema
+    assert app.openapi_schema.components
+    assert app.openapi_schema.components.schemas
+    assert app.openapi_schema.components.schemas["ConcertRequestBody"].to_schema() == {
         "properties": {
-            "band_1": {"type": "integer", "title": "Band 1"},
-            "band_2": {"type": "integer", "title": "Band 2"},
-            "venue": {"type": "integer", "title": "Venue"},
+            "band_1": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
+            "band_2": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
+            "venue": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
         },
         "type": "object",
+        "required": [],
         "title": "ConcertRequestBody",
     }
-    assert schema.components.schemas["RecordingStudio"].dict(exclude_none=True) == {  # type: ignore
+    assert app.openapi_schema.components.schemas["RecordingStudio"].to_schema() == {
         "properties": {
-            "id": {"type": "integer", "title": "Id"},
-            "facilities": {"type": "string", "schema_format": "json", "title": "Facilities"},
-            "facilities_b": {"type": "string", "schema_format": "json", "title": "Facilities B"},
+            "id": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
+            "facilities": {"oneOf": [{"type": "null"}, {"type": "string"}]},
+            "facilities_b": {"oneOf": [{"type": "null"}, {"type": "string"}]},
         },
         "type": "object",
+        "required": [],
         "title": "RecordingStudio",
     }
-    assert schema.components.schemas["Venue"].dict(exclude_none=True) == {  # type: ignore
+    assert app.openapi_schema.components.schemas["Venue"].to_schema() == {
         "properties": {
-            "id": {"type": "integer", "title": "Id"},
-            "name": {"type": "string", "maxLength": 100, "title": "Name"},
-            "capacity": {"type": "integer", "title": "Capacity"},
+            "id": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
+            "name": {"oneOf": [{"type": "null"}, {"type": "string", "maxLength": 100}]},
+            "capacity": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
         },
         "type": "object",
+        "required": [],
         "title": "Venue",
     }

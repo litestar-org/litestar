@@ -24,7 +24,7 @@ from starlite.utils.predicates import (
 )
 
 if TYPE_CHECKING:
-    from typing import ClassVar
+    from typing import ClassVar, Literal
 
     from .parsing import ParsedSignatureParameter
 
@@ -152,6 +152,11 @@ class SignatureField:
             return self.kwarg_model.required
 
         return not (self.is_optional or self.is_any) and (self.is_empty or self.default_value is None)
+
+    @property
+    def is_literal(self) -> bool:
+        """Check if the field type is Literal."""
+        return get_origin(self.field_type) is Literal
 
     @property
     def parsed_parameter(self) -> ParsedSignatureParameter:

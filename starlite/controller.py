@@ -17,10 +17,9 @@ __all__ = ("Controller",)
 
 
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.dto import AbstractDTO
+    from starlite.openapi.spec import SecurityRequirement
     from starlite.response import Response
     from starlite.router import Router
     from starlite.types import (

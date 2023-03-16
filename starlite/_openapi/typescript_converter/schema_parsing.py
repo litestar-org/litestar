@@ -1,9 +1,8 @@
+from __future__ import annotations
+
 import re
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Set, Union, cast, overload
+from typing import TYPE_CHECKING, Any, Literal, overload
 
-from pydantic_openapi_schema.v3_1_0 import Schema
-
-from starlite._openapi.enums import OpenAPIType
 from starlite._openapi.typescript_converter.types import (
     TypeScriptAnonymousInterface,
     TypeScriptArray,
@@ -15,6 +14,8 @@ from starlite._openapi.typescript_converter.types import (
     TypeScriptProperty,
     TypeScriptUnion,
 )
+from starlite.openapi.spec import Schema
+from starlite.openapi.spec.enums import OpenAPIType
 
 __all__ = ("create_interface", "is_schema_value", "normalize_typescript_namespace", "parse_schema", "parse_type_schema")
 
@@ -25,7 +26,7 @@ openapi_typescript_equivalent_types = Literal[
     "string", "boolean", "number", "null", "Record<string, unknown>", "unknown[]"
 ]
 
-openapi_to_typescript_type_map: Dict[OpenAPIType, openapi_typescript_equivalent_types] = {
+openapi_to_typescript_type_map: dict[OpenAPIType, openapi_typescript_equivalent_types] = {
     OpenAPIType.ARRAY: "unknown[]",
     OpenAPIType.BOOLEAN: "boolean",
     OpenAPIType.INTEGER: "number",
@@ -71,18 +72,18 @@ def is_schema_value(value: Any) -> "TypeGuard[Schema]":
 
 
 @overload
-def create_interface(properties: Dict[str, Schema], required: Optional[Set[str]]) -> TypeScriptAnonymousInterface:
+def create_interface(properties: dict[str, Schema], required: set[str] | None) -> TypeScriptAnonymousInterface:
     ...
 
 
 @overload
-def create_interface(properties: Dict[str, Schema], required: Optional[Set[str]], name: str) -> TypeScriptInterface:
+def create_interface(properties: dict[str, Schema], required: set[str] | None, name: str) -> TypeScriptInterface:
     ...
 
 
 def create_interface(
-    properties: Dict[str, Schema], required: Optional[Set[str]] = None, name: Optional[str] = None
-) -> Union[TypeScriptAnonymousInterface, TypeScriptInterface]:
+    properties: dict[str, Schema], required: set[str] | None = None, name: str | None = None
+) -> TypeScriptAnonymousInterface | TypeScriptInterface:
     """Create a typescript interface from the given schema.properties values.
 
     Args:
@@ -108,7 +109,7 @@ def create_interface(
     )
 
 
-def parse_type_schema(schema: Schema) -> Union[TypeScriptPrimitive, TypeScriptLiteral, TypeScriptUnion]:
+def parse_type_schema(schema: Schema) -> TypeScriptPrimitive | TypeScriptLiteral | TypeScriptUnion:
     """Parse an OpenAPI schema representing a primitive type(s).
 
     Args:
@@ -123,13 +124,10 @@ def parse_type_schema(schema: Schema) -> Union[TypeScriptPrimitive, TypeScriptLi
         return TypeScriptLiteral(value=schema.const)
     if isinstance(schema.type, list):
         return TypeScriptUnion(
-            tuple(
-                TypeScriptPrimitive(openapi_to_typescript_type_map[cast("OpenAPIType", s_type)])
-                for s_type in schema.type
-            )
+            tuple(TypeScriptPrimitive(openapi_to_typescript_type_map[s_type]) for s_type in schema.type)
         )
-    if schema.type in openapi_to_typescript_type_map:
-        return TypeScriptPrimitive(openapi_to_typescript_type_map[cast("OpenAPIType", schema.type)])
+    if schema.type in openapi_to_typescript_type_map and isinstance(schema.type, OpenAPIType):
+        return TypeScriptPrimitive(openapi_to_typescript_type_map[schema.type])
     raise TypeError(f"received an unexpected openapi type: {schema.type}")  # pragma: no cover
 
 
@@ -142,10 +140,10 @@ def parse_schema(schema: Schema) -> TypeScriptElement:
     Returns:
         A typescript type.
     """
-    if schema.allOf:
-        return TypeScriptIntersection(tuple(parse_schema(s) for s in schema.allOf if is_schema_value(s)))
-    if schema.oneOf:
-        return TypeScriptUnion(tuple(parse_schema(s) for s in schema.oneOf if is_schema_value(s)))
+    if schema.all_of:
+        return TypeScriptIntersection(tuple(parse_schema(s) for s in schema.all_of if is_schema_value(s)))
+    if schema.one_of:
+        return TypeScriptUnion(tuple(parse_schema(s) for s in schema.one_of if is_schema_value(s)))
     if is_schema_value(schema.items):
         return TypeScriptArray(parse_schema(schema.items))
     if schema.type == OpenAPIType.OBJECT:

@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import pytest
-from pydantic_openapi_schema.v3_1_0 import Components, SecurityScheme
 
 from starlite import get
 from starlite.di import Provide
@@ -10,6 +9,7 @@ from starlite.middleware.session.server_side import (
     ServerSideSessionConfig,
 )
 from starlite.openapi.config import OpenAPIConfig
+from starlite.openapi.spec import Components, SecurityScheme
 from starlite.security.session_auth import SessionAuth
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
@@ -75,14 +75,15 @@ def test_abstract_security_config_registers_route_handlers(
         (
             OpenAPIConfig(title="Starlite API", version="1.0.0", components=None),
             {
+                "schemas": {},
                 "securitySchemes": {
                     "sessionCookie": {
                         "type": "apiKey",
                         "description": "Session cookie authentication.",
                         "name": "session",
-                        "security_scheme_in": "cookie",
+                        "in": "cookie",
                     }
-                }
+                },
             },
         ),
         (
@@ -91,7 +92,7 @@ def test_abstract_security_config_registers_route_handlers(
                 version="1.0.0",
                 components=[
                     Components(
-                        securitySchemes={
+                        security_schemes={
                             "app": SecurityScheme(
                                 type="http",
                                 name="test",
@@ -103,15 +104,16 @@ def test_abstract_security_config_registers_route_handlers(
                 ],
             ),
             {
+                "schemas": {},
                 "securitySchemes": {
-                    "app": {"type": "http", "description": "test.", "name": "test", "security_scheme_in": "cookie"},
+                    "app": {"type": "http", "description": "test.", "name": "test", "in": "cookie"},
                     "sessionCookie": {
                         "type": "apiKey",
                         "description": "Session cookie authentication.",
                         "name": "session",
-                        "security_scheme_in": "cookie",
+                        "in": "cookie",
                     },
-                }
+                },
             },
         ),
         (
@@ -119,26 +121,27 @@ def test_abstract_security_config_registers_route_handlers(
                 title="Starlite API",
                 version="1.0.0",
                 components=Components(
-                    securitySchemes={
+                    security_schemes={
                         "app": SecurityScheme(
                             type="http",
                             name="test",
-                            security_scheme_in="cookie",  # pyright: ignore
+                            security_scheme_in="cookie",
                             description="test.",
                         )
                     }
                 ),
             ),
             {
+                "schemas": {},
                 "securitySchemes": {
                     "sessionCookie": {
                         "type": "apiKey",
                         "description": "Session cookie authentication.",
                         "name": "session",
-                        "security_scheme_in": "cookie",
+                        "in": "cookie",
                     },
-                    "app": {"type": "http", "description": "test.", "name": "test", "security_scheme_in": "cookie"},
-                }
+                    "app": {"type": "http", "description": "test.", "name": "test", "in": "cookie"},
+                },
             },
         ),
     ),
@@ -154,7 +157,7 @@ def test_abstract_security_config_setting_openapi_components(
             assert client.app.openapi_schema
             assert client.app.openapi_config
             assert client.app.openapi_config.components
-            assert client.app.openapi_config.components.dict(exclude_none=True) == expected
+            assert client.app.openapi_config.components.to_schema() == expected
         else:
             assert not client.app.openapi_config
 

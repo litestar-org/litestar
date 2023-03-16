@@ -3,10 +3,11 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 from pydantic import BaseModel, Field
-from pydantic_openapi_schema.v3_1_0 import Components, Example, Header
 
 from starlite import Starlite, get
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.openapi.config import OpenAPIConfig
+from starlite.openapi.spec import Components, Example, OpenAPIHeader, OpenAPIType, Schema
 
 if TYPE_CHECKING:
     from starlite.handlers.http_handlers import HTTPRouteHandler
@@ -14,19 +15,21 @@ if TYPE_CHECKING:
 
 @pytest.mark.skipif(version_info < (3, 10), reason="pydantic serialization differences in lower python versions")
 def test_merged_components_correct() -> None:
-    components_one = Components(headers={"one": Header()})
-    components_two = Components(headers={"two": Header()})
+    components_one = Components(headers={"one": OpenAPIHeader()}, schemas={"test": Schema(type=OpenAPIType.STRING)})
+    components_two = Components(headers={"two": OpenAPIHeader()})
     components_three = Components(examples={"example-one": Example(summary="an example")})
     config = OpenAPIConfig(
         title="my title", version="1.0.0", components=[components_one, components_two, components_three]
     )
     openapi = config.to_openapi_schema()
-    assert openapi.components.dict(exclude_none=True) == {  # type: ignore[union-attr]
+    assert openapi.components
+    assert openapi.components.to_schema() == {
+        "schemas": {"test": {"type": "string"}},
         "examples": {"example-one": {"summary": "an example"}},
         "headers": {
             "one": {
                 "name": "",
-                "param_in": "header",
+                "in": "header",
                 "required": False,
                 "deprecated": False,
                 "allowEmptyValue": False,
@@ -34,7 +37,7 @@ def test_merged_components_correct() -> None:
             },
             "two": {
                 "name": "",
-                "param_in": "header",
+                "in": "header",
                 "required": False,
                 "deprecated": False,
                 "allowEmptyValue": False,
@@ -52,27 +55,13 @@ def test_by_alias() -> None:
     def handler() -> ModelWithAlias:
         return ModelWithAlias(second="abc")
 
-    app = Starlite(
-        route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=True)
-    )
+    app = Starlite(route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0"))
 
     assert app.openapi_schema
-    assert app.openapi_schema.dict(exclude_none=True)["components"]["schemas"]["ModelWithAlias"] == {
-        "properties": {"second": {"type": "string", "title": "Second"}},
+    assert app.openapi_schema.to_schema()["components"]["schemas"]["ModelWithAlias"] == {
+        "properties": {"second": {"type": "string"}},
         "type": "object",
         "required": ["second"],
-        "title": "ModelWithAlias",
-    }
-
-    app = Starlite(
-        route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0", by_alias=False)
-    )
-
-    assert app.openapi_schema
-    assert app.openapi_schema.dict(exclude_none=True)["components"]["schemas"]["ModelWithAlias"] == {
-        "properties": {"first": {"type": "string", "title": "Second"}},
-        "type": "object",
-        "required": ["first"],
         "title": "ModelWithAlias",
     }
 
@@ -94,7 +83,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
         openapi_config=OpenAPIConfig(title="my title", version="1.0.0", operation_id_creator=operation_id_creator),
     )
 
-    assert app.openapi_schema.dict(exclude_none=True)["paths"] == {  # type: ignore[union-attr]
+    assert app.openapi_schema.to_schema()["paths"] == {  # type: ignore[union-attr]
         "/1": {
             "get": {
                 "deprecated": False,
@@ -112,3 +101,8 @@ def test_allows_customization_of_operation_id_creator() -> None:
             }
         },
     }
+
+
+def test_raises_exception_when_no_config_in_place() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        Starlite(route_handlers=[], openapi_config=None).update_openapi_schema()
