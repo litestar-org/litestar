@@ -17,6 +17,7 @@ import pytest
 
 from starlite import Request, get
 from starlite.datastructures import MultiDict
+from starlite.di import Provide
 from starlite.params import Parameter
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
@@ -106,21 +107,26 @@ from starlite.testing import create_test_client
 def test_query_params(params_dict: dict, should_raise: bool) -> None:
     test_path = "/test"
 
+    def response_dep(page_size: int) -> int:
+        return page_size
+
     @get(path=test_path)
     def test_method(
+        response: int,
         page: int,
         page_size: int = Parameter(query="pageSize", gt=0, le=100),
         brands: List[str] = Parameter(min_items=1, max_items=3),
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
-    ) -> None:
+    ) -> int:
         assert page
         assert page_size
         assert brands
         assert from_date or from_date is None
         assert to_date or to_date is None
+        return response
 
-    with create_test_client(test_method) as client:
+    with create_test_client(test_method, dependencies={"response": Provide(response_dep)}) as client:
         response = client.get(f"{test_path}?{urlencode(params_dict, doseq=True)}")
         if should_raise:
             assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
