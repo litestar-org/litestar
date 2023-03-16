@@ -576,12 +576,13 @@ class Schema(BaseSchemaObject):
     """
 
     format: OpenAPIFormat | None = None
-    """From OpenAPI: See [Data Type
-    Formats<https://spec.openapis.org/oas/v3.1.0#dataTypeFormat) for further
-    details. While relying on JSON Schema's defined formats, the OAS offers a
-    few additional predefined formats.
+    """From OpenAPI:
+
+    See `Data Type Formats <https://spec.openapis.org/oas/v3.1.0#dataTypeFormat>`_ for further details. While relying on
+    JSON Schema's defined formats, the OAS offers a few additional predefined formats.
 
     From JSON Schema:
+
     Structural validation alone may be insufficient to allow an
     application to correctly utilize certain values.  The "format"
     annotation keyword is defined to allow schema authors to convey

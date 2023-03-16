@@ -39,8 +39,8 @@ class BaseSchemaObject:
     """Base class for schema spec objects"""
 
     def to_schema(self) -> dict[str, Any]:
-        """Transform the spec dataclass object into a string keyed dictionary.
-        This method traverses all nested values recursively.
+        """Transform the spec dataclass object into a string keyed dictionary. This method traverses all nested values
+        recursively.
         """
         result: dict[str, Any] = {}
 
