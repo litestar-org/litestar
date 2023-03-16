@@ -373,7 +373,7 @@ class Schema(BaseSchemaObject):
     """The value of this keyword MUST be either a string or an array.  If it is
     an array, elements of the array MUST be strings and MUST be unique.
 
-    String values MUST be one of the six primitive types (``"null"``, ``"boolean"``, ``"object"``, ``"array"``, 
+    String values MUST be one of the six primitive types (``"null"``, ``"boolean"``, ``"object"``, ``"array"``,
     ``"number"``, and ``"string"``), or ``"integer"`` which matches any number with a zero fractional part.
 
     An instance validates if and only if the instance is in any of the sets listed for this keyword.
@@ -445,7 +445,7 @@ class Schema(BaseSchemaObject):
     than, or equal to, the value of this keyword.
 
     The length of a string instance is defined as the number of its
-    characters as defined by RFC 8259 [RFC8259].
+    characters as defined by :rfc:`8259`.
     """
 
     min_length: int | None = None
@@ -455,7 +455,7 @@ class Schema(BaseSchemaObject):
     greater than, or equal to, the value of this keyword.
 
     The length of a string instance is defined as the number of its
-    characters as defined by RFC 8259 [RFC8259].
+    characters as defined by :rfc:`8259`.
 
     Omitting this keyword has the same behavior as a value of 0.
     """
@@ -612,9 +612,9 @@ class Schema(BaseSchemaObject):
     by this property.
 
     Possible values indicating base 16, 32, and 64 encodings with several
-    variations are listed in RFC 4648 [RFC4648].  Additionally, sections
-    6.7 and 6.8 of RFC 2045 [RFC2045] provide encodings used in MIME.  As
-    "base64" is defined in both RFCs, the definition from RFC 4648 SHOULD
+    variations are listed in :rfc:`4648`.  Additionally, sections
+    6.7 and 6.8 of :rfc:`2045` provide encodings used in MIME.  As
+    "base64" is defined in both RFCs, the definition from :rfc:`4648` SHOULD
     be assumed unless the string is specifically intended for use in a
     MIME context.  Note that all of these encodings result in strings
     consisting only of 7-bit ASCII characters.  Therefore, this keyword
@@ -633,7 +633,7 @@ class Schema(BaseSchemaObject):
     describes the decoded string.
 
     The value of this property MUST be a string, which MUST be a media
-    type, as defined by RFC 2046 [RFC2046].
+    type, as defined by :rfc:`2046`.
     """
 
     content_schema: Reference | Schema | None = None
