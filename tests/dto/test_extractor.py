@@ -7,12 +7,13 @@ import pytest
 
 from starlite._signature.models import SignatureField
 from starlite.dto.kwarg_extractor import create_dto_extractor
+from starlite.dto.stdlib.dataclass import DataclassDTO
 
-from . import ExampleDTO, Model
+from . import Model
 
 
 async def test_extractor_for_scalar_annotation() -> None:
-    dto_type = ExampleDTO[Model]
+    dto_type = DataclassDTO[Model]
     dto_type.on_startup(Model)
 
     class FakeParsedParameter:
@@ -29,17 +30,17 @@ async def test_extractor_for_scalar_annotation() -> None:
     )
     extractor = create_dto_extractor(signature_field)
     data = await extractor(AsyncMock(body=AsyncMock(return_value=b'{"a": 1, "b": "two"}')))
-    assert isinstance(data, ExampleDTO)
+    assert isinstance(data, DataclassDTO)
 
 
 @pytest.mark.parametrize("generic_collection", [List, FrozenSet, Tuple, Set])
 async def test_extractor_for_collection_annotation(generic_collection: Any) -> None:
-    dto_type = ExampleDTO[generic_collection[Model]]
+    dto_type = DataclassDTO[generic_collection[Model]]
     dto_type.on_startup(generic_collection[Model])
 
     class FakeParsedParameter:
         annotation = dto_type
-        dto = False
+        dto = None
 
     signature_field = SignatureField(
         children=None,
@@ -51,6 +52,6 @@ async def test_extractor_for_collection_annotation(generic_collection: Any) -> N
     )
     extractor = create_dto_extractor(signature_field)
     data = await extractor(AsyncMock(body=AsyncMock(return_value=b'[{"a": 1, "b": "two"}]')))
-    assert isinstance(data, ExampleDTO)
+    assert isinstance(data, DataclassDTO)
     for item in data.data:
         assert isinstance(item, Model)

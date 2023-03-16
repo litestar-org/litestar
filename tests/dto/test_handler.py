@@ -3,20 +3,21 @@ from __future__ import annotations
 import pytest
 
 from starlite import Controller, Router, Starlite, post
+from starlite.dto.stdlib.dataclass import DataclassDTO
 from starlite.types import Empty, EmptyType
 
-from . import ExampleDTO, Model
+from . import Model
 
 
 @pytest.mark.parametrize("layer", ["app", "router", "controller", "handler"])
 def test_dto_layer_resolution(layer: str) -> None:
-    data_dto = ExampleDTO[Model]
-    ret_dto = ExampleDTO[Model]
+    data_dto = DataclassDTO[Model]
+    ret_dto = DataclassDTO[Model]
 
-    def get_data(layer_name: str) -> type[ExampleDTO] | EmptyType:
+    def get_data(layer_name: str) -> type[DataclassDTO] | EmptyType:
         return data_dto if layer == layer_name else Empty
 
-    def get_ret(layer_name: str) -> type[ExampleDTO] | EmptyType:
+    def get_ret(layer_name: str) -> type[DataclassDTO] | EmptyType:
         return ret_dto if layer == layer_name else Empty
 
     class MyController(Controller):

@@ -22,22 +22,19 @@ __all__ = ["MsgspecDTOBackend"]
 MsgspecField = NewType("MsgspecField", type)
 
 
-class MsgspecDTOBackend(AbstractDTOBackend):
-    def __init__(self, model: type[Struct]) -> None:
-        self.model = model
-
-    def raw_to_dict(self, raw: bytes, media_type: MediaType | str) -> dict[str, Any]:
+class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
+    def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Any:
         if media_type == MediaType.JSON:
-            model_instance = decode_json(raw, type_=self.model)
+            model_instance = decode_json(raw, type_=self.annotation)
         elif media_type == MediaType.MESSAGEPACK:
-            model_instance = decode_msgpack(raw, type_=self.model)
+            model_instance = decode_msgpack(raw, type_=self.annotation)
         else:
             raise SerializationException(f"Unsupported media type: '{media_type}'")
-        return to_builtins(model_instance)  # type:ignore[no-any-return]
+        return to_builtins(model_instance)
 
     @classmethod
-    def from_field_definitions(cls, field_definitions: FieldDefinitionsType) -> Any:
-        return cls(_create_msgspec_struct_for_field_definitions(str(uuid4()), field_definitions))
+    def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:
+        return cls(annotation, _create_msgspec_struct_for_field_definitions(str(uuid4()), field_definitions))
 
 
 def _create_msgspec_field(field_definition: FieldDefinition) -> MsgspecField | None:
@@ -76,4 +73,4 @@ def _create_msgspec_struct_for_field_definitions(
             )
         else:
             struct_fields.append(_create_struct_field_def(k, v.field_type, _create_msgspec_field(v)))
-    return defstruct(model_name, struct_fields)
+    return defstruct(model_name, struct_fields, frozen=True)

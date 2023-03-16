@@ -12,6 +12,7 @@ from .config import DTOConfig, DTOField
 from .enums import Mark, Purpose
 from .exc import InvalidAnnotation
 from .types import DataT
+from .utils import parse_config_from_annotated
 
 if TYPE_CHECKING:
     from typing import ClassVar
@@ -50,16 +51,13 @@ class AbstractDTO(ABC, Generic[DataT]):
         """
         self.data = data
 
-    def __class_getitem__(cls, item: TypeVar | type | type[Annotated[TypeVar | type, DTOConfig, ...]]) -> type[Self]:
+    def __class_getitem__(cls, item: TypeVar | type[Any]) -> type[Self]:
         if isinstance(item, TypeVar):
             return cls
 
         config: DTOConfig
         if get_origin(item) is Annotated:
-            item, expected_config, *_ = get_args(item)
-            if not isinstance(expected_config, DTOConfig):
-                raise InvalidAnnotation("Annotation metadata must be an instance of `DTOConfig`.")
-            config = expected_config
+            item, config = parse_config_from_annotated(item)
         else:
             config = getattr(cls, "config", DTOConfig())
 
@@ -173,7 +171,7 @@ class AbstractDTO(ABC, Generic[DataT]):
         Use this to do things like type inspection on models that should not occur during compile time.
         """
         cls.field_definitions = cls.parse_model(cls.model_type)
-        cls.dto_backend = cls.dto_backend_type.from_field_definitions(cls.field_definitions)
+        cls.dto_backend = cls.dto_backend_type.from_field_definitions(cls.annotation, cls.field_definitions)
 
     @classmethod
     def on_startup(cls, resolved_handler_annotation: Any) -> None:

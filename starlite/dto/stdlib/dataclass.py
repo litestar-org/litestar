@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, MutableMapping
+from collections.abc import Iterable as CollectionsIterable
 from dataclasses import MISSING, Field, fields
 from inspect import getmodule
 from typing import TYPE_CHECKING, Generic, TypeVar
@@ -15,21 +15,19 @@ from starlite.enums import MediaType
 from starlite.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar
-
-    from msgspec import Struct
+    from typing import Any, ClassVar, Iterable
 
     from starlite.dto.types import FieldDefinitionsType
     from starlite.types import DataclassProtocol
 
 
-__all__ = ("DataclassDTO", "ModelT")
+__all__ = ("DataclassDTO", "DataT")
 
-ModelT = TypeVar("ModelT", bound="DataclassProtocol")
+DataT = TypeVar("DataT", bound="DataclassProtocol | Iterable[DataclassProtocol]")
 AnyDataclass = TypeVar("AnyDataclass", bound="DataclassProtocol")
 
 
-class DataclassDTO(AbstractDTO[ModelT], Generic[ModelT]):
+class DataclassDTO(AbstractDTO[DataT], Generic[DataT]):
     """Support for domain modelling with dataclasses."""
 
     dto_backend_type = MsgspecDTOBackend
@@ -96,36 +94,49 @@ class DataclassDTO(AbstractDTO[ModelT], Generic[ModelT]):
 
     @classmethod
     def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
-        parsed = cls.dto_backend.raw_to_dict(raw, media_type)
-        return cls(data=cls._build(cls.model_type, parsed, cls.field_definitions))
+        parsed = cls.dto_backend.parse_raw(raw, media_type)
+        return cls(data=cls._build_data(cls.annotation, parsed, cls.field_definitions))
 
-    def to_encodable_type(self, media_type: str | MediaType) -> Struct:
-        return decode_json(encode_json(self.data), self.dto_backend.model)
+    def to_encodable_type(self, media_type: str | MediaType) -> Any:
+        return decode_json(encode_json(self.data), self.dto_backend.annotation)
 
     @classmethod
-    def _build(
-        cls, model_type: type[AnyDataclass], data: MutableMapping[str, Any], field_definitions: FieldDefinitionsType
-    ) -> AnyDataclass:
-        """Create an instance of `model_type`.
+    def _build_data(
+        cls,
+        annotation: type[Any],
+        data: Any,
+        field_definitions: FieldDefinitionsType,
+    ) -> Any:
+        """Create instance or iterable of instances of ``cls.model_type``.
 
-        Fill the bound dataclass recursively with values from the serde instance.
+        Args:
+            annotation: the annotation received by the DTO on type narrowing.
+            data: primitive data that has been parsed and validated via the backend.
+            field_definitions: model field definitions.
+
+        Returns:
+            Data parsed into ``annotation``.
         """
+        origin = get_origin(annotation)
+        if origin:
+            return origin(cls._build_data(cls.model_type, item, field_definitions) for item in data)
+
         for k, v in data.items():
             field_definition = field_definitions[k]
             if isinstance(field_definition, FieldDefinition):
                 continue
 
-            if isinstance(v, MutableMapping):
-                data[k] = cls._build(field_definition.nested_type, v, field_definition.nested_field_definitions)
-            elif isinstance(v, Iterable):
+            if isinstance(v, dict):
+                data[k] = cls._build_data(field_definition.nested_type, v, field_definition.nested_field_definitions)
+            elif isinstance(v, CollectionsIterable):
                 if field_definition.origin is None:
                     raise RuntimeError("Unexpected origin value for collection type.")
                 data[k] = field_definition.origin(
-                    cls._build(field_definition.nested_type, item, field_definition.nested_field_definitions)
+                    cls._build_data(field_definition.nested_type, item, field_definition.nested_field_definitions)
                     for item in v
                 )
 
-        return model_type(**data)
+        return annotation(**data)
 
 
 def set_field_definition_default(field_definition: FieldDefinition, dc_field: Field) -> None:

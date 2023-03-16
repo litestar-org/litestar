@@ -4,16 +4,17 @@ from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
 from starlite._signature.parsing import create_signature_model
+from starlite.dto.stdlib.dataclass import DataclassDTO
 
-from . import ExampleDTO, Model
+from . import Model
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
 
 
 def test_create_signature_model(monkeypatch: MonkeyPatch) -> None:
-    data_dto = ExampleDTO[Model]
-    ret_dto = ExampleDTO[Model]
+    data_dto = DataclassDTO[Model]
+    ret_dto = DataclassDTO[Model]
     mocks = []
     for dto in data_dto, ret_dto:
         mock = MagicMock()

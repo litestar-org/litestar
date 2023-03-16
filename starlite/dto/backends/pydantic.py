@@ -22,18 +22,15 @@ if TYPE_CHECKING:
     from starlite.dto.types import FieldDefinition, FieldDefinitionsType
 
 
-class PydanticDTOBackend(AbstractDTOBackend):
-    def __init__(self, model: type[BaseModel]) -> None:
-        self.model = model
-
-    def raw_to_dict(self, raw: bytes, media_type: MediaType | str) -> dict[str, Any]:
+class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
+    def parse_raw(self, raw: bytes, media_type: MediaType | str) -> dict[str, Any]:
         if media_type != MediaType.JSON:
             raise SerializationException(f"Unsupported media type: '{media_type}'")
         return self.model.parse_raw(raw).dict()
 
     @classmethod
-    def from_field_definitions(cls, field_definitions: FieldDefinitionsType) -> Any:
-        return cls(_create_pydantic_model_for_field_definitions(str(uuid4()), field_definitions))
+    def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:
+        return cls(annotation, _create_pydantic_model_for_field_definitions(str(uuid4()), field_definitions))
 
 
 def _create_pydantic_field_info(field_definition: FieldDefinition) -> FieldInfo:

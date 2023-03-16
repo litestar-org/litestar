@@ -112,7 +112,7 @@ class SQLAlchemyDTO(AbstractDTO[ModelT], Generic[ModelT]):
     def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
         if media_type != MediaType.JSON:
             raise SerializationException(f"Unsupported media type: '{media_type}'")
-        parsed = cls.dto_backend.raw_to_dict(raw, media_type)
+        parsed = cls.dto_backend.parse_raw(raw, media_type)
         return cls(data=cls._to_mapped(cls.model_type, parsed, cls.field_definitions))
 
     def to_encodable_type(self, media_type: str | MediaType) -> BaseModel:
