@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from pydantic import BaseConfig, BaseModel, ValidationError
 from typing_extensions import get_args, get_origin
@@ -24,7 +24,7 @@ from starlite.utils.predicates import (
 )
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Literal
+    from typing import ClassVar
 
     from .parsing import ParsedSignatureParameter
 
