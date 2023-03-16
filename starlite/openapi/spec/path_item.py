@@ -70,7 +70,7 @@ class PathItem(BaseSchemaObject):
     """A definition of a TRACE operation on this path."""
 
     servers: list[Server] | None = None
-    """An alternative `server` array to service all operations in this path."""
+    """An alternative ``server`` array to service all operations in this path."""
 
     parameters: list[Parameter | Reference] | None = None
     """A list of parameters that are applicable for all the operations

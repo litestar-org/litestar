@@ -65,12 +65,12 @@ class Operation(BaseSchemaObject):
     request_body: RequestBody | Reference | None = None
     """The request body applicable for this operation.
 
-    The `requestBody` is fully supported in HTTP methods where the HTTP 1.1 specification
+    The ``requestBody`` is fully supported in HTTP methods where the HTTP 1.1 specification
     `RFC7231 <https://tools.ietf.org/html/rfc7231#section-4.3.1>`_ has explicitly defined semantics for request bodies.
     In other cases where the HTTP spec is vague (such as `GET <https://tools.ietf.org/html/rfc7231#section-4.3.1>`_,
     `HEAD <https://tools.ietf.org/html/rfc7231#section-4.3.2>`_
     and `DELETE <https://tools.ietf.org/html/rfc7231#section-4.3.5>`_),
-    `requestBody` is permitted but does not have well-defined semantics and SHOULD be avoided if possible.
+    ``requestBody`` is permitted but does not have well-defined semantics and SHOULD be avoided if possible.
     """
 
     responses: Responses | None = None
@@ -104,8 +104,8 @@ class Operation(BaseSchemaObject):
     """
 
     servers: list[Server] | None = None
-    """An alternative `server` array to service this operation.
+    """An alternative ``server`` array to service this operation.
 
-    If an alternative `server` object is specified at the Path Item
+    If an alternative ``server`` object is specified at the Path Item
     Object or Root level, it will be overridden by this value.
     """

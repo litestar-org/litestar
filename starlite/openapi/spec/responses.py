@@ -14,7 +14,7 @@ The documentation is not necessarily expected to cover all possible HTTP respons
 because they may not be known in advance.
 However, documentation is expected to cover a successful operation response and any known errors.
 
-The `default` MAY be used as a default response object for all HTTP codes
+The ``default`` MAY be used as a default response object for all HTTP codes
 that are not covered individually by the specification.
 
 The `Responses Object` MUST contain at least one response code, and it
@@ -39,7 +39,7 @@ A `Reference Object <https://spec.openapis.org/oas/v3.1.0#referenceObject>`_ can
 that is defined in the `OpenAPI Object's components/responses <https://spec.openapis.org/oas/v3.1.0#componentsResponses>`_ section.
 This field MUST be enclosed in quotation marks (for example, "200") for compatibility between JSON and YAML.
 To define a range of response codes, this field MAY contain the uppercase wildcard character `X`.
-For example, `2XX` represents all response codes between `[200-299]`.
+For example, ``2XX`` represents all response codes between `[200-299]`.
 Only the following range definitions are allowed: `1XX`, `2XX`, `3XX`, `4XX`, and `5XX`.
 If a response is defined using an explicit code,
 the explicit code definition takes precedence over the range definition for that code.

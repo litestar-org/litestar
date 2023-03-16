@@ -26,12 +26,12 @@ class Parameter(BaseSchemaObject):
     **REQUIRED**. The name of the parameter.
     Parameter names are *case sensitive*.
 
-    - If `in <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_ is `"path"`, the `name` field MUST correspond to a template expression occurring
+    - If `in <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_ is `"path"`, the ``name`` field MUST correspond to a template expression occurring
       within the `path <https://spec.openapis.org/oas/v3.1.0#pathsPath>`_ field in the `Paths Object <https://spec.openapis.org/oas/v3.1.0#pathsObject>`_.
       See `Path Templating <https://spec.openapis.org/oas/v3.1.0#pathTemplating>`_ for further information.
-    - If `in <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_ is `"header"` and the `name` field is `"Accept"`, `"Content-Type"` or `"Authorization"`,
+    - If `in <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_ is `"header"` and the ``name`` field is `"Accept"`, `"Content-Type"` or `"Authorization"`,
       the parameter definition SHALL be ignored.
-    - For all other cases, the `name` corresponds to the parameter name used by the `in <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_ property.
+    - For all other cases, the ``name`` corresponds to the parameter name used by the `in <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_ property.
     """
 
     param_in: str
@@ -66,11 +66,11 @@ class Parameter(BaseSchemaObject):
 
     allow_empty_value: bool = False
     """Sets the ability to pass empty-valued parameters. This is valid only for
-    `query` parameters and allows sending a parameter with an empty value.
+    ``query`` parameters and allows sending a parameter with an empty value.
     Default value is `false`. If.
 
     `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`_ is used, and if behavior is `n/a` (cannot be
-    serialized), the value of `allowEmptyValue` SHALL be ignored. Use of this property is NOT RECOMMENDED, as it is
+    serialized), the value of ``allowEmptyValue`` SHALL be ignored. Use of this property is NOT RECOMMENDED, as it is
     likely to be removed in a later revision.
 
     The rules for serialization of the parameter are specified in one of two ways.
@@ -82,14 +82,14 @@ class Parameter(BaseSchemaObject):
     """Describes how the parameter value will be serialized depending on the
     type of the parameter value. Default values (based on value of `in`):
 
-    - for `query` - `form`;
-    - for `path` - `simple`;
-    - for `header` - `simple`;
-    - for `cookie` - `form`.
+    - for ``query`` - `form`;
+    - for ``path`` - `simple`;
+    - for ``header`` - `simple`;
+    - for ``cookie`` - `form`.
     """
 
     explode: bool | None = None
-    """When this is true, parameter values of type `array` or `object` generate
+    """When this is true, parameter values of type ``array`` or ``object`` generate
     separate parameters for each value of the array or key-value pair of the
     map.
 
@@ -105,16 +105,16 @@ class Parameter(BaseSchemaObject):
     `RFC3986 <https://tools.ietf.org/html/rfc3986#section-2.2>`_ `:/?#[]@!$&'()*+,;=` to be included without percent-
     encoding.
 
-    This property only applies to parameters with an `in` value of `query`. The default value is `false`.
+    This property only applies to parameters with an ``in`` value of `query`. The default value is `false`.
     """
 
     example: Any | None = None
     """Example of the parameter's potential value.
 
     The example SHOULD match the specified schema and encoding
-    properties if present. The `example` field is mutually exclusive of
-    the `examples` field. Furthermore, if referencing a `schema` that
-    contains an example, the `example` value SHALL _override_ the
+    properties if present. The ``example`` field is mutually exclusive of
+    the ``examples`` field. Furthermore, if referencing a ``schema`` that
+    contains an example, the ``example`` value SHALL _override_ the
     example provided by the schema. To represent examples of media types
     that cannot naturally be represented in JSON or YAML, a string value
     can contain the example with escaping where necessary.
@@ -123,14 +123,14 @@ class Parameter(BaseSchemaObject):
     examples: dict[str, Example | Reference] | None = None
     """Examples of the parameter's potential value. Each example SHOULD contain
     a value in the correct format as specified in the parameter encoding. The
-    `examples` field is mutually exclusive of the `example` field. Furthermore,
-    if referencing a `schema` that contains an example, the `examples` value
+    ``examples`` field is mutually exclusive of the ``example`` field. Furthermore,
+    if referencing a ``schema`` that contains an example, the ``examples`` value
     SHALL _override_ the example provided by the schema.
 
     For more complex scenarios, the `content <https://spec.openapis.org/oas/v3.1.0#parameterContent>`_ property
     can define the media type and schema of the parameter.
-    A parameter MUST contain either a `schema` property, or a `content` property, but not both.
-    When `example` or `examples` are provided in conjunction with the `schema` object,
+    A parameter MUST contain either a ``schema`` property, or a ``content`` property, but not both.
+    When ``example`` or ``examples`` are provided in conjunction with the ``schema`` object,
     the example MUST follow the prescribed serialization strategy for the parameter.
     """
 

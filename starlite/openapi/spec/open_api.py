@@ -40,7 +40,7 @@ class OpenAPI(BaseSchemaObject):
     """
     **REQUIRED**. This string MUST be the `version number <https://spec.openapis.org/oas/v3.1.0#versions>`_
     of the OpenAPI Specification that the OpenAPI document uses.
-    The `openapi` field SHOULD be used by tooling to interpret the OpenAPI document.
+    The ``openapi`` field SHOULD be used by tooling to interpret the OpenAPI document.
     This is *not* related to the API `info.version <https://spec.openapis.org/oas/v3.1.0#infoVersion>`_ string.
     """
 
@@ -56,7 +56,7 @@ class OpenAPI(BaseSchemaObject):
     """An array of Server Objects, which provide connectivity information to a
     target server.
 
-    If the `servers` property is not provided, or is an empty array,
+    If the ``servers`` property is not provided, or is an empty array,
     the default value would be a `Server Object <https://spec.openapis.org/oas/v3.1.0#serverObject>`_
     with a `url <https://spec.openapis.org/oas/v3.1.0#serverUrl>`_ value of `/`.
     """
@@ -68,7 +68,7 @@ class OpenAPI(BaseSchemaObject):
     """The incoming webhooks that MAY be received as part of this API and that
     the API consumer MAY choose to implement.
 
-    Closely related to the `callbacks` feature, this section describes requests initiated other than by an API call,
+    Closely related to the ``callbacks`` feature, this section describes requests initiated other than by an API call,
     for example by an out of band registration.
     The key name is a unique string to refer to each webhook,
     while the (optionally referenced) Path Item Object describes a request

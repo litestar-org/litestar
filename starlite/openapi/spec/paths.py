@@ -20,7 +20,7 @@ Patterned Fields
 A relative path to an individual endpoint.
 The field name MUST begin with a forward slash (`/`).
 The path is **appended** (no relative URL resolution) to the expanded URL
-from the `Server Object <https://spec.openapis.org/oas/v3.1.0#serverObject>`_'s `url` field in order to construct the full URL.
+from the `Server Object <https://spec.openapis.org/oas/v3.1.0#serverObject>`_'s ``url`` field in order to construct the full URL.
 `Path templating <https://spec.openapis.org/oas/v3.1.0#pathTemplating>`_ is allowed.
 When matching URLs, concrete (non-templated) paths would be matched before their templated counterparts.
 Templated paths with the same hierarchy but different templated names MUST NOT exist as they are identical.

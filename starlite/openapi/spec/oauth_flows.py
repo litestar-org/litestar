@@ -24,11 +24,11 @@ class OAuthFlows(BaseSchemaObject):
     client_credentials: OAuthFlow | None = None
     """Configuration for the OAuth Client Credentials flow.
 
-    Previously called `application` in OpenAPI 2.0.
+    Previously called ``application`` in OpenAPI 2.0.
     """
 
     authorization_code: OAuthFlow | None = None
     """Configuration for the OAuth Authorization Code flow.
 
-    Previously called `accessCode` in OpenAPI 2.0.
+    Previously called ``accessCode`` in OpenAPI 2.0.
     """

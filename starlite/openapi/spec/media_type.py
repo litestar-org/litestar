@@ -29,10 +29,10 @@ class OpenAPIMediaType(BaseSchemaObject):
 
     The example object SHOULD be in the correct format as specified by the media type.
 
-    The `example` field is mutually exclusive of the `examples` field.
+    The ``example`` field is mutually exclusive of the ``examples`` field.
 
-    Furthermore, if referencing a `schema` which contains an example,
-    the `example` value SHALL _override_ the example provided by the schema.
+    Furthermore, if referencing a ``schema`` which contains an example,
+    the ``example`` value SHALL _override_ the example provided by the schema.
     """
 
     examples: dict[str, Example | Reference] | None = None
@@ -40,10 +40,10 @@ class OpenAPIMediaType(BaseSchemaObject):
 
     Each example object SHOULD match the media type and specified schema if present.
 
-    The `examples` field is mutually exclusive of the `example` field.
+    The ``examples`` field is mutually exclusive of the ``example`` field.
 
-    Furthermore, if referencing a `schema` which contains an example,
-    the `examples` value SHALL _override_ the example provided by the schema.
+    Furthermore, if referencing a ``schema`` which contains an example,
+    the ``examples`` value SHALL _override_ the example provided by the schema.
     """
 
     encoding: dict[str, Encoding] | None = None
@@ -51,6 +51,6 @@ class OpenAPIMediaType(BaseSchemaObject):
 
     The key, being the property name, MUST exist in the schema as a
     property. The encoding object SHALL only apply to `requestBody`
-    objects when the media type is `multipart` or `application/x-www-
+    objects when the media type is ``multipart`` or `application/x-www-
     form-urlencoded`.
     """

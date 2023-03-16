@@ -20,8 +20,8 @@ class Encoding(BaseSchemaObject):
     """The Content-Type for encoding a specific property. Default value depends
     on the property type:
 
-    for `object` - `application/json`;
-    for `array` - the default is defined based on the inner type;
+    for ``object`` - `application/json`;
+    for ``array`` - the default is defined based on the inner type;
     for all other cases the default is `application/octet-stream`.
 
     The value can be a specific media type (e.g. `application/json`), a wildcard media type (e.g. `image/*`),
@@ -42,7 +42,7 @@ class Encoding(BaseSchemaObject):
     its type.
 
     See `Parameter Object <https://spec.openapis.org/oas/v3.1.0#parameterObject>`_ for details on the `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`_ property.
-    The behavior follows the same values as `query` parameters, including default values.
+    The behavior follows the same values as ``query`` parameters, including default values.
     This property SHALL be ignored if the request body media type
     is not `application/x-www-form-urlencoded` or `multipart/form-data`.
     If a value is explicitly defined,
@@ -50,7 +50,7 @@ class Encoding(BaseSchemaObject):
     """
 
     explode: bool = False
-    """When this is true, property values of type `array` or `object` generate
+    """When this is true, property values of type ``array`` or ``object`` generate
     separate parameters for each value of the array, or key-value-pair of the
     map.
 
