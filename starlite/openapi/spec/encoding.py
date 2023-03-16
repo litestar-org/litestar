@@ -41,7 +41,7 @@ class Encoding(BaseSchemaObject):
     """Describes how a specific property value will be serialized depending on
     its type.
 
-    See `Parameter Object <https://spec.openapis.org/oas/v3.1.0#parameterObject>`_ for details on the `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`_ property.
+    See `Parameter Object <https://spec.openapis.org/oas/v3.1.0#parameterObject>`_ for details on the `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`__ property.
     The behavior follows the same values as ``query`` parameters, including default values.
     This property SHALL be ignored if the request body media type
     is not `application/x-www-form-urlencoded` or `multipart/form-data`.

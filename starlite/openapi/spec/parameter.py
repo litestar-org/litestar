@@ -69,12 +69,12 @@ class Parameter(BaseSchemaObject):
     ``query`` parameters and allows sending a parameter with an empty value.
     Default value is `false`. If.
 
-    `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`_ is used, and if behavior is `n/a` (cannot be
+    `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`__ is used, and if behavior is `n/a` (cannot be
     serialized), the value of ``allowEmptyValue`` SHALL be ignored. Use of this property is NOT RECOMMENDED, as it is
     likely to be removed in a later revision.
 
     The rules for serialization of the parameter are specified in one of two ways.
-    For simpler scenarios, a `schema <https://spec.openapis.org/oas/v3.1.0#parameterSchema>`_ and `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`_
+    For simpler scenarios, a `schema <https://spec.openapis.org/oas/v3.1.0#parameterSchema>`_ and `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`__
     can describe the structure and syntax of the parameter.
     """
 
@@ -94,7 +94,7 @@ class Parameter(BaseSchemaObject):
     map.
 
     For other types of parameters this property has no effect.
-    When `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`_ is `form`, the default value is `true`.
+    When `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`__ is `form`, the default value is `true`.
     For all other styles, the default value is `false`.
     """
 
