@@ -41,12 +41,12 @@ class Encoding(BaseSchemaObject):
     """Describes how a specific property value will be serialized depending on
     its type.
 
-    See [Parameter Object](https://spec.openapis.org/oas/v3.1.0#parameterObject) for details on the [style](https://spec.openapis.org/oas/v3.1.0#parameterStyle) property.
+    See `Parameter Object <https://spec.openapis.org/oas/v3.1.0#parameterObject>`_ for details on the `style <https://spec.openapis.org/oas/v3.1.0#parameterStyle>`_ property.
     The behavior follows the same values as `query` parameters, including default values.
     This property SHALL be ignored if the request body media type
     is not `application/x-www-form-urlencoded` or `multipart/form-data`.
     If a value is explicitly defined,
-    then the value of [contentType](https://spec.openapis.org/oas/v3.1.0#encodingContentType) (implicit or explicit) SHALL be ignored.
+    then the value of `contentType <https://spec.openapis.org/oas/v3.1.0#encodingContentType>`_ (implicit or explicit) SHALL be ignored.
     """
 
     explode: bool = False
@@ -55,24 +55,24 @@ class Encoding(BaseSchemaObject):
     map.
 
     For other types of properties this property has no effect.
-    When [style](https://spec.openapis.org/oas/v3.1.0#encodingStyle) is `form`, the default value is `true`.
+    When `style <https://spec.openapis.org/oas/v3.1.0#encodingStyle>`_ is `form`, the default value is `true`.
     For all other styles, the default value is `false`.
     This property SHALL be ignored if the request body media type
     is not `application/x-www-form-urlencoded` or `multipart/form-data`.
     If a value is explicitly defined,
-    then the value of [contentType](https://spec.openapis.org/oas/v3.1.0#encodingContentType) (implicit or explicit) SHALL be ignored.
+    then the value of `contentType <https://spec.openapis.org/oas/v3.1.0#encodingContentType>`_ (implicit or explicit) SHALL be ignored.
     """
 
     allow_reserved: bool = False
     """Determines whether the parameter value SHOULD allow reserved characters,
     as defined by.
 
-    [RFC3986](https://tools.ietf.org/html/rfc3986#section-2.2) `:/?#[]@!$&'()*+,;=` to be included without percent-
+    `RFC3986 <https://tools.ietf.org/html/rfc3986#section-2.2>`_ `:/?#[]@!$&'()*+,;=` to be included without percent-
     encoding.
 
     The default value is `false`.
     This property SHALL be ignored if the request body media type
     is not `application/x-www-form-urlencoded` or `multipart/form-data`.
     If a value is explicitly defined,
-    then the value of [contentType](https://spec.openapis.org/oas/v3.1.0#encodingContentType) (implicit or explicit) SHALL be ignored.
+    then the value of `contentType <https://spec.openapis.org/oas/v3.1.0#encodingContentType>`_ (implicit or explicit) SHALL be ignored.
     """

@@ -19,11 +19,11 @@ class SecurityScheme(BaseSchemaObject):
     an API key (either as a header, a cookie parameter or as a query parameter),
     mutual TLS (use of a client certificate),
     OAuth2's common flows (implicit, password, client credentials and authorization code)
-    as defined in [RFC6749](https://tools.ietf.org/html/rfc6749),
-    and [OpenID Connect Discovery](https://tools.ietf.org/html/draft-ietf-oauth-discovery-06).
+    as defined in `RFC6749 <https://tools.ietf.org/html/rfc6749>`_,
+    and `OpenID Connect Discovery <https://tools.ietf.org/html/draft-ietf-oauth-discovery-06>`_.
 
     Please note that as of 2020, the implicit flow is about to be deprecated by
-    [OAuth 2.0 Security Best Current Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics).
+    `OAuth 2.0 Security Best Current Practice <https://tools.ietf.org/html/draft-ietf-oauth-security-topics>`_.
     Recommended for most use case is Authorization Code Grant flow with PKCE.
     """
 
@@ -35,7 +35,7 @@ class SecurityScheme(BaseSchemaObject):
     description: str | None = None
     """A description for security scheme.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for
     rich text representation.
     """
 
@@ -52,10 +52,10 @@ class SecurityScheme(BaseSchemaObject):
     scheme: str | None = None
     """
     **REQUIRED** for `http`. The name of the HTTP Authorization scheme to be used in the
-    [Authorization header as defined in RFC7235](https://tools.ietf.org/html/rfc7235#section-5.1).
+    `Authorization header as defined in RFC7235 <https://tools.ietf.org/html/rfc7235#section-5.1>`_.
 
     The values used SHOULD be registered in the
-    [IANA Authentication Scheme registry](https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml).
+    `IANA Authentication Scheme registry <https://www.iana.org/assignments/http-authschemes/http-authschemes.xhtml>`_.
     """
 
     bearer_format: str | None = None

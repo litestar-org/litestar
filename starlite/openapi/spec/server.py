@@ -27,7 +27,7 @@ class Server(BaseSchemaObject):
     description: str | None = None
     """An optional string describing the host designated by the URL.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for
     rich text representation.
     """
 

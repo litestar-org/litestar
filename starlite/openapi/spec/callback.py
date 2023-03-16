@@ -22,5 +22,5 @@ Patterned Fields
 
 A Path Item Object used to define a callback request and expected responses.
 
-A [complete example](https://github.com/OAI/OpenAPI-Specification/blob/main/examples/v3.1/webhook-example.yaml) is available.
+A `complete example <https://github.com/OAI/OpenAPI-Specification/blob/main/examples/v3.1/webhook-example.yaml>`_ is available.
 """

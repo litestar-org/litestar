@@ -26,17 +26,17 @@ default: Optional[Union[Response, Reference]]
 
 The documentation of responses other than the ones declared for specific HTTP response codes.
 Use this field to cover undeclared responses.
-A [Reference Object](https://spec.openapis.org/oas/v3.1.0#referenceObject) can link to a response
-that the [OpenAPI Object's components/responses](https://spec.openapis.org/oas/v3.1.0#componentsResponses) section defines.
+A `Reference Object <https://spec.openapis.org/oas/v3.1.0#referenceObject>`_ can link to a response
+that the `OpenAPI Object's components/responses <https://spec.openapis.org/oas/v3.1.0#componentsResponses>`_ section defines.
 
 Patterned Fields
 {httpStatusCode}: Optional[Union[Response, Reference]]
 
-Any [HTTP status code](https://spec.openapis.org/oas/v3.1.0#httpCodes) can be used as the property name,
+Any `HTTP status code <https://spec.openapis.org/oas/v3.1.0#httpCodes>`_ can be used as the property name,
 but only one property per code, to describe the expected response for that HTTP status code.
 
-A [Reference Object](https://spec.openapis.org/oas/v3.1.0#referenceObject) can link to a response
-that is defined in the [OpenAPI Object's components/responses](https://spec.openapis.org/oas/v3.1.0#componentsResponses) section.
+A `Reference Object <https://spec.openapis.org/oas/v3.1.0#referenceObject>`_ can link to a response
+that is defined in the `OpenAPI Object's components/responses <https://spec.openapis.org/oas/v3.1.0#componentsResponses>`_ section.
 This field MUST be enclosed in quotation marks (for example, "200") for compatibility between JSON and YAML.
 To define a range of response codes, this field MAY contain the uppercase wildcard character `X`.
 For example, `2XX` represents all response codes between `[200-299]`.

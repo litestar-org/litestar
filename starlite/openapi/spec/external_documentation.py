@@ -20,6 +20,6 @@ class ExternalDocumentation(BaseSchemaObject):
     description: str | None = None
     """A short description of the target documentation.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for
     rich text representation.
     """

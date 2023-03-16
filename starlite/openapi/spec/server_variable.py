@@ -17,9 +17,9 @@ class ServerVariable(BaseSchemaObject):
     """
     **REQUIRED**. The default value to use for substitution,
     which SHALL be sent if an alternate value is _not_ supplied.
-    Note this behavior is different than the [Schema Object's](https://spec.openapis.org/oas/v3.1.0#schemaObject) treatment of default values,
+    Note this behavior is different than the `Schema Object's <https://spec.openapis.org/oas/v3.1.0#schemaObject>`_ treatment of default values,
     because in those cases parameter values are optional.
-    If the [enum](https://spec.openapis.org/oas/v3.1.0#serverVariableEnum) is defined, the value MUST exist in the enum's values.
+    If the `enum <https://spec.openapis.org/oas/v3.1.0#serverVariableEnum>`_ is defined, the value MUST exist in the enum's values.
     """
 
     enum: list[str] | None = None
@@ -32,6 +32,6 @@ class ServerVariable(BaseSchemaObject):
     description: str | None = None
     """An optional description for the server variable.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for
     rich text representation.
     """

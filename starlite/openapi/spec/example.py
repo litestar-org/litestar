@@ -14,7 +14,7 @@ class Example(BaseSchemaObject):
     description: str | None = None
     """Long description for the example.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for
     rich text representation.
     """
 
@@ -33,5 +33,5 @@ class Example(BaseSchemaObject):
     documents.
 
     The `value` field and `externalValue` field are mutually exclusive.
-    See the rules for resolving [Relative References](https://spec.openapis.org/oas/v3.1.0#relativeReferencesURI).
+    See the rules for resolving `Relative References <https://spec.openapis.org/oas/v3.1.0#relativeReferencesURI>`_.
     """

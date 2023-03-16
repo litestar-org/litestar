@@ -43,12 +43,12 @@ def _recursive_hash(value: Hashable | Sequence | Mapping | DataclassProtocol | t
 class Schema(BaseSchemaObject):
     """The Schema Object allows the definition of input and output data types.
     These types can be objects, but also primitives and arrays. This object is
-    a superset of the [JSON Schema Specification Draft
-    2020-12](https://tools.ietf.org/html/draft-bhutton-json-schema-00).
+    a superset of the
+    `JSON Schema Specification Draft 2020-12 <https://tools.ietf.org/html/draft-bhutton-json-schema-00>`.
 
     For more information about the properties,
-    see [JSON Schema Core](https://tools.ietf.org/html/draft-wright-json-schema-00)
-    and [JSON Schema Validation](https://tools.ietf.org/html/draft-wright-json-schema-validation-00).
+    see `JSON Schema Core <https://tools.ietf.org/html/draft-wright-json-schema-00>`_
+    and `JSON Schema Validation <https://tools.ietf.org/html/draft-wright-json-schema-validation-00>`_.
 
     Unless stated otherwise, the property definitions follow those of JSON Schema
     and do not add any additional semantics.
@@ -56,7 +56,7 @@ class Schema(BaseSchemaObject):
     OAS also defers the definition of semantics to the application consuming the OpenAPI document.
 
     The following properties are taken directly from the
-    [JSON Schema Core](https://tools.ietf.org/html/draft-wright-json-schema-00)
+    `JSON Schema Core <https://tools.ietf.org/html/draft-wright-json-schema-00>`_
     and follow the same specifications:
     """
 
@@ -365,7 +365,7 @@ class Schema(BaseSchemaObject):
     schema.
 
     The following properties are taken directly from the
-    [JSON Schema Validation](https://tools.ietf.org/html/draft-wright-json-schema-validation-00)
+    `JSON Schema Validation <https://tools.ietf.org/html/draft-wright-json-schema-validation-00>`_
     and follow the same specifications:
     """
 
@@ -373,11 +373,10 @@ class Schema(BaseSchemaObject):
     """The value of this keyword MUST be either a string or an array.  If it is
     an array, elements of the array MUST be strings and MUST be unique.
 
-    String values MUST be one of the six primitive types ("null", "boolean", "object", "array", "number", or "string"), or "integer"
-    which matches any number with a zero fractional part.
+    String values MUST be one of the six primitive types (``"null"``, ``"boolean"``, ``"object"``, ``"array"``, 
+    ``"number"``, and ``"string"``), or ``"integer"`` which matches any number with a zero fractional part.
 
-    An instance validates if and only if the instance is in any of the
-    sets listed for this keyword.
+    An instance validates if and only if the instance is in any of the sets listed for this keyword.
     """
 
     enum: Sequence[Any] | None = None
@@ -659,7 +658,7 @@ class Schema(BaseSchemaObject):
     description: str | None = None
     """From OpenAPI:
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation.
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for rich text representation.
 
     From JSON Schema:
     The value "description" MUST be a string.
@@ -780,7 +779,7 @@ class Schema(BaseSchemaObject):
 
     The discriminator is an object name that is used to differentiate between other schemas
     which may satisfy the payload description.
-    See [Composition and Inheritance](https://spec.openapis.org/oas/v3.1.0#schemaComposition) for more details.
+    See `Composition and Inheritance <https://spec.openapis.org/oas/v3.1.0#schemaComposition>`_ for more details.
     """
 
     xml: XML | None = None

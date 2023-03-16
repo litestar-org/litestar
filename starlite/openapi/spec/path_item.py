@@ -18,7 +18,7 @@ __all__ = ("PathItem",)
 class PathItem(BaseSchemaObject):
     """Describes the operations available on a single path.
 
-    A Path Item MAY be empty, due to [ACL constraints](https://spec.openapis.org/oas/v3.1.0#securityFiltering).
+    A Path Item MAY be empty, due to `ACL constraints <https://spec.openapis.org/oas/v3.1.0#securityFiltering>`_.
     The path itself is still exposed to the documentation viewer
     but they will not know which operations and parameters are available.
     """
@@ -30,7 +30,7 @@ class PathItem(BaseSchemaObject):
 
     In case a Path Item Object field appears both in the defined object and the referenced object,
     the behavior is undefined.
-    See the rules for resolving [Relative References](https://spec.openapis.org/oas/v3.1.0#relativeReferencesURI).
+    See the rules for resolving `Relative References <https://spec.openapis.org/oas/v3.1.0#relativeReferencesURI>`_.
     """
 
     summary: str | None = None
@@ -41,7 +41,7 @@ class PathItem(BaseSchemaObject):
     """An optional, string description, intended to apply to all operations in
     this path.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for
     rich text representation.
     """
 
@@ -77,10 +77,10 @@ class PathItem(BaseSchemaObject):
     described under this path. These parameters can be overridden at the
     operation level, but cannot be removed there. The list MUST NOT include
     duplicated parameters. A unique parameter is defined by a combination of a
-    [name](https://spec.openapis.org/oas/v3.1.0#parameterName) and.
+    `name <https://spec.openapis.org/oas/v3.1.0#parameterName>`_ and.
 
-    [location](https://spec.openapis.org/oas/v3.1.0#parameterIn). The list can use the [Reference
+    `location <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_. The list can use the [Reference
     Object](https://spec.openapis.org/oas/v3.1.0#referenceObject) to link to parameters that are defined at the.
 
-    [OpenAPI Object's components/parameters](https://spec.openapis.org/oas/v3.1.0#componentsParameters).
+    `OpenAPI Object's components/parameters <https://spec.openapis.org/oas/v3.1.0#componentsParameters>`_.
     """

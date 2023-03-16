@@ -24,20 +24,20 @@ class OpenAPIResponse(BaseSchemaObject):
     description: str
     """
     **REQUIRED**. A short description of the response.
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation.
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for rich text representation.
     """
 
     headers: dict[str, OpenAPIHeader | Reference] | None = None
     """
     Maps a header name to its definition.
-    [RFC7230](https://tools.ietf.org/html/rfc7230#page-22) states header names are case insensitive.
+    `RFC7230 <https://tools.ietf.org/html/rfc7230#page-22>`_ states header names are case insensitive.
     If a response header is defined with the name `"Content-Type"`, it SHALL be ignored.
     """
 
     content: dict[str, OpenAPIMediaType] | None = None
     """
     A map containing descriptions of potential response payloads.
-    The key is a media type or [media type range](https://tools.ietf.org/html/rfc7231#appendix-D)
+    The key is a media type or `media type range <https://tools.ietf.org/html/rfc7231#appendix-D>`_
     and the value describes it.
 
     For responses that match multiple keys, only the most specific key is applicable. e.g. text/plain overrides text/*

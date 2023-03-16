@@ -29,7 +29,7 @@ class Info(BaseSchemaObject):
     version: str
     """
     **REQUIRED**. The version of the OpenAPI document
-    (which is distinct from the [OpenAPI Specification version](https://spec.openapis.org/oas/v3.1.0#oasVersion)) or the API implementation version).
+    (which is distinct from the `OpenAPI Specification version <https://spec.openapis.org/oas/v3.1.0#oasVersion>`_) or the API implementation version).
     """
 
     summary: str | None = None
@@ -38,7 +38,7 @@ class Info(BaseSchemaObject):
     description: str | None = None
     """A description of the API.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for
     rich text representation.
     """
 

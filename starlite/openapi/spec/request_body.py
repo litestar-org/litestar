@@ -18,7 +18,7 @@ class RequestBody(BaseSchemaObject):
     content: dict[str, OpenAPIMediaType]
     """
     **REQUIRED**. The content of the request body.
-    The key is a media type or [media type range](https://tools.ietf.org/html/rfc7231#appendix-D)
+    The key is a media type or `media type range <https://tools.ietf.org/html/rfc7231#appendix-D>`_
     and the value describes it.
 
     For requests that match multiple keys, only the most specific key is applicable. e.g. text/plain overrides text/*
@@ -28,7 +28,7 @@ class RequestBody(BaseSchemaObject):
     """A brief description of the request body. This could contain examples of
     use.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for
     rich text representation.
     """
 

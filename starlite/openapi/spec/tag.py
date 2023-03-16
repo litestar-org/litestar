@@ -28,7 +28,7 @@ class Tag(BaseSchemaObject):
     description: str | None = None
     """A short description for the tag.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for
     rich text representation.
     """
 
