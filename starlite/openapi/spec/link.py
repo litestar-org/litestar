@@ -28,10 +28,10 @@ class Link(BaseSchemaObject):
     operation_ref: str | None = None
     """A relative or absolute URI reference to an OAS operation.
 
-    This field is mutually exclusive of the ``operationId`` field, and MUST point to an 
-    `Operation Object <https://spec.openapis.org/oas/v3.1.0#operationObject>`_. Relative ``operationRef`` values MAY be 
+    This field is mutually exclusive of the ``operationId`` field, and MUST point to an
+    `Operation Object <https://spec.openapis.org/oas/v3.1.0#operationObject>`_. Relative ``operationRef`` values MAY be
     used to locate an existing `Operation Object <https://spec.openapis.org/oas/v3.1.0#operationObject>`_ in the OpenAPI
-    definition. See the rules for resolving 
+    definition. See the rules for resolving
     `Relative References <https://spec.openapis.org/oas/v3.1.0#relativeReferencesURI>`_
     """
 
@@ -42,17 +42,17 @@ class Link(BaseSchemaObject):
     """
 
     parameters: dict[str, Any] | None = None
-    """A map representing parameters to pass to an operation as specified with ``operationId`` or identified via 
-    ``operationRef``. The key is the parameter name to be used, whereas the value can be a constant or an expression to 
+    """A map representing parameters to pass to an operation as specified with ``operationId`` or identified via
+    ``operationRef``. The key is the parameter name to be used, whereas the value can be a constant or an expression to
     be evaluated and passed to the linked operation.
 
-    The parameter name can be qualified using the 
-    `parameter location <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_ ``[{in}.]{name}`` for operations that use 
+    The parameter name can be qualified using the
+    `parameter location <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_ ``[{in}.]{name}`` for operations that use
     the same parameter name in different locations (e.g. path.id).
     """
 
     request_body: Any | None = None
-    """A literal value or `{expression} <https://spec.openapis.org/oas/v3.1.0#runtimeExpression>`_ to use as a request 
+    """A literal value or `{expression} <https://spec.openapis.org/oas/v3.1.0#runtimeExpression>`_ to use as a request
     body when calling the target operation."""
 
     description: str | None = None

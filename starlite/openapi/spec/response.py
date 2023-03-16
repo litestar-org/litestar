@@ -22,30 +22,27 @@ class OpenAPIResponse(BaseSchemaObject):
     """
 
     description: str
-    """
-    **REQUIRED**. A short description of the response.
+    """**REQUIRED**. A short description of the response.
     `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for rich text representation.
     """
 
     headers: dict[str, OpenAPIHeader | Reference] | None = None
-    """
-    Maps a header name to its definition.
+    """Maps a header name to its definition.
     `RFC7230 <https://tools.ietf.org/html/rfc7230#page-22>`_ states header names are case insensitive.
-    If a response header is defined with the name `"Content-Type"`, it SHALL be ignored.
+    If a response header is defined with the name ``Content-Type``, it SHALL be ignored.
     """
 
     content: dict[str, OpenAPIMediaType] | None = None
-    """
-    A map containing descriptions of potential response payloads.
-    The key is a media type or `media type range <https://tools.ietf.org/html/rfc7231#appendix-D>`_
-    and the value describes it.
+    """A map containing descriptions of potential response payloads. The key is a media type or
+    `media type range <https://tools.ietf.org/html/rfc7231#appendix-D>`_ and the value describes it.
 
-    For responses that match multiple keys, only the most specific key is applicable. e.g. text/plain overrides text/*
+    For responses that match multiple keys, only the most specific key is applicable. e.g. ``text/plain`` overrides
+    ``text/*``
     """
 
     links: dict[str, Link | Reference] | None = None
-    """
-    A map of operations links that can be followed from the response.
-    The key of the map is a short name for the link,
-    following the naming constraints of the names for `Component Objects <https://spec.openapis.org/oas/v3.1.0#componentsObject).
+    """A map of operations links that can be followed from the response.
+
+    The key of the map is a short name for the link, following the naming constraints of the names for
+    `Component Objects <https://spec.openapis.org/oas/v3.1.0#componentsObject>`_.
     """

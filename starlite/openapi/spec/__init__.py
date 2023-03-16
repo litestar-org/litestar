@@ -1,6 +1,6 @@
-from .components import Components
 from .base import BaseSchemaObject
 from .callback import Callback
+from .components import Components
 from .contact import Contact
 from .discriminator import Discriminator
 from .encoding import Encoding

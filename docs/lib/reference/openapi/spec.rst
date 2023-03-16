@@ -1,5 +1,5 @@
-openapi-spec
-============
+spec
+====
 
 
 .. automodule:: starlite.openapi.spec

@@ -13,30 +13,24 @@ class OAuthFlow(BaseSchemaObject):
 
     authorization_url: str | None = None
     """
-    **REQUIRED** for `oauth2 ("implicit", "authorizationCode")`.
-    The authorization URL to be used for this flow.
-    This MUST be in the form of a URL.
-    The OAuth2 standard requires the use of TLS.
+    **REQUIRED** for ``oauth2`` ("implicit", "authorizationCode"). The authorization URL to be used for this flow. This
+    MUST be in the form of a URL. The OAuth2 standard requires the use of TLS.
     """
 
     token_url: str | None = None
     """
-    **REQUIRED** for `oauth2 ("password", "clientCredentials", "authorizationCode")`.
-    The token URL to be used for this flow.
-    This MUST be in the form of a URL.
-    The OAuth2 standard requires the use of TLS.
+    **REQUIRED** for ``oauth2`` ("password", "clientCredentials", "authorizationCode"). The token URL to be used for
+    this flow. This MUST be in the form of a URL. The OAuth2 standard requires the use of TLS.
     """
 
     refresh_url: str | None = None
     """The URL to be used for obtaining refresh tokens.
 
-    This MUST be in the form of a URL. The OAuth2 standard requires the
-    use of TLS.
+    This MUST be in the form of a URL. The OAuth2 standard requires the use of TLS.
     """
 
     scopes: dict[str, str] | None = None
     """
-    **REQUIRED** for `oauth2`. The available scopes for the OAuth2 security scheme.
-    A map between the scope name and a short description for it.
-    The map MAY be empty.
+    **REQUIRED** for ``oauth2``. The available scopes for the OAuth2 security scheme. A map between the scope name and a
+    short description for it the map MAY be empty.
     """
