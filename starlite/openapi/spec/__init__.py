@@ -1,5 +1,4 @@
-from starlite.openapi.spec.components import Components
-
+from .components import Components
 from .base import BaseSchemaObject
 from .callback import Callback
 from .contact import Contact

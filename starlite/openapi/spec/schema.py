@@ -44,7 +44,7 @@ class Schema(BaseSchemaObject):
     """The Schema Object allows the definition of input and output data types.
     These types can be objects, but also primitives and arrays. This object is
     a superset of the
-    `JSON Schema Specification Draft 2020-12 <https://tools.ietf.org/html/draft-bhutton-json-schema-00>`.
+    `JSON Schema Specification Draft 2020-12 <https://tools.ietf.org/html/draft-bhutton-json-schema-00>`_.
 
     For more information about the properties,
     see `JSON Schema Core <https://tools.ietf.org/html/draft-wright-json-schema-00>`_
@@ -633,7 +633,7 @@ class Schema(BaseSchemaObject):
     describes the decoded string.
 
     The value of this property MUST be a string, which MUST be a media
-    type, as defined by :rfc:`2046`.
+    type, as defined by :rfc:`2046`
     """
 
     content_schema: Reference | Schema | None = None
