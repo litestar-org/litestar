@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Sequence
 
 from starlite.config.allowed_hosts import AllowedHostsConfig
-from starlite.config.request_cache import RequestCacheConfig
+from starlite.config.response_cache import ResponseCacheConfig
 from starlite.datastructures import State
 from starlite.events.emitter import SimpleEventEmitter
 
@@ -161,7 +161,7 @@ class AppConfig:
     """A list of :class:`Cookie <.datastructures.Cookie>`."""
     response_headers: Sequence[ResponseHeader] = field(default_factory=list)
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
-    request_cache_config: RequestCacheConfig = field(default_factory=RequestCacheConfig)
+    response_cache_config: ResponseCacheConfig = field(default_factory=ResponseCacheConfig)
     """Configures caching behavior of the application."""
     route_handlers: list[ControllerRouterHandler] = field(default_factory=list)
     """A required list of route handlers, which can include instances of :class:`Router <.router.Router>`,

@@ -13,7 +13,7 @@ from starlite._openapi.path_item import create_path_item
 from starlite._signature import create_signature_model
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
-from starlite.config.request_cache import RequestCacheConfig
+from starlite.config.response_cache import ResponseCacheConfig
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
@@ -151,8 +151,8 @@ class Starlite(Router):
         "on_startup",
         "openapi_config",
         "openapi_schema_plugins",
-        "request_cache_config",
         "request_class",
+        "response_cache_config",
         "route_map",
         "serialization_plugins",
         "state",
@@ -175,7 +175,7 @@ class Starlite(Router):
         before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
         before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
         before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-        request_cache_config: RequestCacheConfig | None = None,
+        response_cache_config: ResponseCacheConfig | None = None,
         cache_control: CacheControlHeader | None = None,
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
@@ -276,7 +276,7 @@ class Starlite(Router):
                 response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
             response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
-            request_cache_config: Configures caching behavior of the application.
+            response_cache_config: Configures caching behavior of the application.
             route_handlers: A sequence of route handlers, which can include instances of
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
                 callable decorated by the route handler decorators.
@@ -316,7 +316,7 @@ class Starlite(Router):
             before_send=list(before_send or []),
             before_shutdown=list(before_shutdown or []),
             before_startup=list(before_startup or []),
-            request_cache_config=request_cache_config or RequestCacheConfig(),
+            response_cache_config=response_cache_config or ResponseCacheConfig(),
             cache_control=cache_control,
             compression_config=compression_config,
             cors_config=cors_config,
@@ -361,7 +361,7 @@ class Starlite(Router):
         self.before_send = as_async_callable_list(config.before_send)
         self.before_shutdown = as_async_callable_list(config.before_shutdown)
         self.before_startup = as_async_callable_list(config.before_startup)
-        self.request_cache_config = config.request_cache_config
+        self.response_cache_config = config.response_cache_config
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config

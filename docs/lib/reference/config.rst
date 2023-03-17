@@ -17,5 +17,5 @@ config
 .. automodule:: starlite.config.csrf
     :members:
 
-.. automodule:: starlite.config.request_cache
+.. automodule:: starlite.config.response_cache
     :members:

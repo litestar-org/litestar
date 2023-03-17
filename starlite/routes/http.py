@@ -225,7 +225,7 @@ class HTTPRoute(BaseRoute):
             A cached response instance, if existing.
         """
 
-        cache_config = request.app.request_cache_config
+        cache_config = request.app.response_cache_config
         cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
         store = cache_config.get_store_from_app(request.app)
 
@@ -241,7 +241,7 @@ class HTTPRoute(BaseRoute):
         response: Response | ASGIApp, request: Request, route_handler: HTTPRouteHandler
     ) -> None:
         """Pickles and caches a response object."""
-        cache_config = request.app.request_cache_config
+        cache_config = request.app.response_cache_config
         cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
 
         expires_in: int | None = None

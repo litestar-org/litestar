@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
 
-__all__ = ("RequestCacheConfig", "default_cache_key_builder")
+__all__ = ("ResponseCacheConfig", "default_cache_key_builder")
 
 
 if TYPE_CHECKING:
@@ -29,11 +29,11 @@ def default_cache_key_builder(request: Request[Any, Any, Any]) -> str:
 
 
 @dataclass
-class RequestCacheConfig:
+class ResponseCacheConfig:
     """Configuration for response caching.
 
     To enable response caching, pass an instance of this class to :class:`Starlite <.app.Starlite>` using the
-    ``request_cache_config`` key.
+    ``response_cache_config`` key.
     """
 
     default_expiration: int = field(default=60)

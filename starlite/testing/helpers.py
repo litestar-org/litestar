@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
-    from starlite.config.request_cache import RequestCacheConfig
+    from starlite.config.response_cache import ResponseCacheConfig
     from starlite.datastructures import State
     from starlite.events import BaseEventEmitterBackend, EventListener
     from starlite.logging.config import BaseLoggingConfig
@@ -58,7 +58,7 @@ def create_test_client(
     before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
     before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
     before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-    cache_config: RequestCacheConfig | None = None,
+    cache_config: ResponseCacheConfig | None = None,
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
     csrf_config: CSRFConfig | None = None,
@@ -198,7 +198,7 @@ def create_test_client(
             before_send=before_send,
             before_shutdown=before_shutdown,
             before_startup=before_startup,
-            request_cache_config=cache_config,
+            response_cache_config=cache_config,
             compression_config=compression_config,
             cors_config=cors_config,
             csrf_config=csrf_config,
@@ -248,7 +248,7 @@ def create_async_test_client(
     before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
     before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
     before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-    cache_config: RequestCacheConfig | None = None,
+    cache_config: ResponseCacheConfig | None = None,
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
     csrf_config: CSRFConfig | None = None,
@@ -388,7 +388,7 @@ def create_async_test_client(
             before_send=before_send,
             before_shutdown=before_shutdown,
             before_startup=before_startup,
-            request_cache_config=cache_config,
+            response_cache_config=cache_config,
             compression_config=compression_config,
             cors_config=cors_config,
             csrf_config=csrf_config,

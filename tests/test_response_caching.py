@@ -7,7 +7,7 @@ from uuid import uuid4
 import pytest
 
 from starlite import Request, Starlite, get
-from starlite.config.request_cache import RequestCacheConfig
+from starlite.config.response_cache import ResponseCacheConfig
 from starlite.stores.base import Store
 from starlite.testing import TestClient, create_test_client
 
@@ -75,7 +75,7 @@ def test_default_expiration(mock: MagicMock, frozen_datetime: "FrozenDateTimeFac
         return mock()  # type: ignore[no-any-return]
 
     with create_test_client(
-        [handler], after_request=after_request_handler, cache_config=RequestCacheConfig(default_expiration=1)
+        [handler], after_request=after_request_handler, cache_config=ResponseCacheConfig(default_expiration=1)
     ) as client:
         first_response = client.get("/cached-default")
         second_response = client.get("/cached-default")
@@ -110,7 +110,7 @@ async def test_non_default_store_name(mock: MagicMock) -> None:
     def handler() -> str:
         return mock()  # type: ignore[no-any-return]
 
-    app = Starlite([handler], request_cache_config=RequestCacheConfig(store="some_store"))
+    app = Starlite([handler], response_cache_config=ResponseCacheConfig(store="some_store"))
 
     with TestClient(app=app) as client:
         response_one = client.get("/")
