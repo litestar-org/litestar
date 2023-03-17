@@ -183,14 +183,13 @@ class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):
     httponly: bool = field(default=True)
     """Forbids javascript to access the cookie via 'Document.cookie'."""
     samesite: Literal["lax", "strict", "none"] = field(default="lax")
-    """Controls whether or not a cookie is sent with cross-site requests.
-
-    Defaults to ``lax``.
-    """
+    """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``."""
     exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the session middleware."""
     exclude_opt_key: str = field(default="skip_session")
     """An identifier to use on routes to disable the session middleware for a particular route."""
+    store: str = "sessions"
+    """Name of the :class:`Store <.stores.base.Store>` to use"""
 
     def __post_init__(self) -> None:
         if len(self.key) < 1 or len(self.key) > 256:
@@ -198,6 +197,6 @@ class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):
         if self.max_age < 1:
             raise ImproperlyConfiguredException("max_age must be greater than 0")
 
-    @staticmethod
-    def get_store_from_app(app: Starlite) -> Store:
-        return app.stores.get("sessions")
+    def get_store_from_app(self, app: Starlite) -> Store:
+        """Get the store defined in :attr:`store` from an :class:`Starlite <.app.Starlite>` instance"""
+        return app.stores.get(self.store)

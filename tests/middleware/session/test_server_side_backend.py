@@ -4,10 +4,12 @@ from typing import TYPE_CHECKING
 import anyio
 import pytest
 
+from starlite import Request, Starlite, get
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware.session.server_side import ServerSideSessionConfig
 from starlite.serialization import encode_json
 from starlite.stores.memory import MemoryStore
+from starlite.testing import TestClient
 
 if TYPE_CHECKING:
     from starlite.middleware.session.server_side import ServerSideSessionBackend
@@ -20,6 +22,38 @@ def generate_session_data() -> bytes:
 @pytest.fixture
 def session_data() -> bytes:
     return generate_session_data()
+
+
+async def test_non_default_store(memory_store: MemoryStore) -> None:
+    @get("/")
+    def handler(request: Request) -> None:
+        request.set_session({"foo": "bar"})
+        return
+
+    app = Starlite([handler], middleware=[ServerSideSessionConfig().middleware], stores={"sessions": memory_store})
+
+    with TestClient(app) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+        assert await memory_store.exists(res.cookies["session"])
+
+
+async def test_set_store_name(memory_store: MemoryStore) -> None:
+    @get("/")
+    def handler(request: Request) -> None:
+        request.set_session({"foo": "bar"})
+        return
+
+    app = Starlite(
+        [handler],
+        middleware=[ServerSideSessionConfig(store="some_store").middleware],
+        stores={"some_store": memory_store},
+    )
+
+    with TestClient(app) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+        assert await memory_store.exists(res.cookies["session"])
 
 
 async def test_get_set(
