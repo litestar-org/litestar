@@ -40,7 +40,9 @@ class RequestCacheConfig:
     """Default cache expiration in seconds."""
     key_builder: CacheKeyBuilder = field(default=default_cache_key_builder)
     """:class:`CacheKeyBuilder <.types.CacheKeyBuilder>`. Defaults to :func:`default_cache_key_builder`."""
+    store: str = "request_cache"
+    """Name of the :class:`Store <.stores.base.Store>` to use"""
 
-    @staticmethod
-    def get_store_from_app(app: Starlite) -> Store:
-        return app.stores.get("request_cache")
+    def get_store_from_app(self, app: Starlite) -> Store:
+        """Get the store defined in :attr:`store` from an :class:`Starlite <.app.Starlite>` instance"""
+        return app.stores.get(self.store)

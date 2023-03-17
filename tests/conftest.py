@@ -7,6 +7,7 @@ from typing import (
     AsyncGenerator,
     Callable,
     Dict,
+    Generator,
     Optional,
     Tuple,
     TypeVar,
@@ -14,6 +15,7 @@ from typing import (
 )
 from uuid import uuid4
 
+from freezegun import freeze_time
 from piccolo.conf.apps import Finder
 from piccolo.table import create_db_tables, drop_db_tables
 from pytest_lazyfixture import lazy_fixture
@@ -33,6 +35,7 @@ from starlite.stores.base import Store
 if TYPE_CHECKING:
     from types import ModuleType
 
+    from freezegun.api import FrozenDateTimeFactory
     from pytest import MonkeyPatch
 
     from starlite import Starlite
@@ -279,3 +282,9 @@ def create_module(tmp_path: Path, monkeypatch: "MonkeyPatch") -> "Callable[[str]
 @pytest.fixture(scope="module")
 def mock_db() -> MemoryStore:
     return MemoryStore()
+
+
+@pytest.fixture()
+def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
+    with freeze_time() as frozen:
+        yield cast("FrozenDateTimeFactory", frozen)
