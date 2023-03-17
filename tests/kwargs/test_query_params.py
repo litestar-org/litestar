@@ -15,8 +15,9 @@ from urllib.parse import urlencode
 
 import pytest
 
-from starlite import Request, get
+from starlite import MediaType, Request, get
 from starlite.datastructures import MultiDict
+from starlite.di import Provide
 from starlite.params import Parameter
 from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from starlite.testing import create_test_client
@@ -223,3 +224,17 @@ def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[st
         assert request_values["second"] == params["second"]
         assert request_values["query"].get("first") == params["first"]
         assert request_values["query"].get("second") == params["second"]
+
+
+def test_query_param_dependency_with_alias() -> None:
+    def qp_dependency(page_size: int = Parameter(query="pageSize", gt=0, le=100)) -> int:
+        return page_size
+
+    @get("/", media_type=MediaType.TEXT)
+    def handler(page_size_dep: int) -> int:
+        return page_size_dep
+
+    with create_test_client(handler, dependencies={"page_size_dep": Provide(qp_dependency)}) as client:
+        response = client.get("/?pageSize=1")
+        assert response.status_code == HTTP_200_OK, response.text
+        assert response.text == "1"

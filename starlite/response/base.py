@@ -244,6 +244,9 @@ class Response(Generic[T]):
                 if not content:
                     return b""
 
+                if not isinstance(content, (str, bytes)):
+                    content = str(content)
+
                 return content.encode(self.encoding)  # type: ignore
 
             if self.media_type == MediaType.MESSAGEPACK:
