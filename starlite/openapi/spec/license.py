@@ -15,7 +15,7 @@ class License(BaseSchemaObject):
     """**REQUIRED**. The license name used for the API."""
 
     identifier: str | None = None
-    """An 
+    """An
     `SPDX <https://spdx.org/spdx-specification-21-web-version#h.jxpfx0ykyb60>`_ license expression for the API.
 
     The ``identifier`` field is mutually exclusive of the ``url`` field.

@@ -69,10 +69,10 @@ class PathItem(BaseSchemaObject):
     """An alternative ``server`` array to service all operations in this path."""
 
     parameters: list[Parameter | Reference] | None = None
-    """A list of parameters that are applicable for all the operations described under this path. These parameters can 
-    be overridden at the operation level, but cannot be removed there. The list MUST NOT include duplicated parameters. 
+    """A list of parameters that are applicable for all the operations described under this path. These parameters can
+    be overridden at the operation level, but cannot be removed there. The list MUST NOT include duplicated parameters.
     A unique parameter is defined by a combination of a `name <https://spec.openapis.org/oas/v3.1.0#parameterName>`_ and
-    `location <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_. The list can use the 
+    `location <https://spec.openapis.org/oas/v3.1.0#parameterIn>`_. The list can use the
     `Reference Object <https://spec.openapis.org/oas/v3.1.0#referenceObject>`_ to link to parameters that are defined at
     the `OpenAPI Object's components/parameters <https://spec.openapis.org/oas/v3.1.0#componentsParameters>`_.
     """

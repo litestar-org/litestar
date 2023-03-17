@@ -38,9 +38,9 @@ class OpenAPI(BaseSchemaObject):
 
     openapi: str = "3.1.0"
     """
-    **REQUIRED**. This string MUST be the 
-    `version number <https://spec.openapis.org/oas/v3.1.0#versions>`_ of the OpenAPI Specification that the OpenAPI 
-    document uses. The ``openapi`` field SHOULD be used by tooling to interpret the OpenAPI document. This is *not* 
+    **REQUIRED**. This string MUST be the
+    `version number <https://spec.openapis.org/oas/v3.1.0#versions>`_ of the OpenAPI Specification that the OpenAPI
+    document uses. The ``openapi`` field SHOULD be used by tooling to interpret the OpenAPI document. This is *not*
     related to the API `info.version <https://spec.openapis.org/oas/v3.1.0#infoVersion>`_ string.
     """
 

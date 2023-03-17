@@ -66,7 +66,7 @@ class Operation(BaseSchemaObject):
     :rfc:`7231` has explicitly defined semantics for request bodies. In other cases where the HTTP spec is vague (such
     as `GET <https://tools.ietf.org/html/rfc7231#section-4.3.1>`_,
     `HEAD <https://tools.ietf.org/html/rfc7231#section-4.3.2>`_ and
-    `DELETE <https://tools.ietf.org/html/rfc7231#section-4.3.5>`_, ``requestBody`` is permitted but does not have 
+    `DELETE <https://tools.ietf.org/html/rfc7231#section-4.3.5>`_, ``requestBody`` is permitted but does not have
     well-defined semantics and SHOULD be avoided if possible.
     """
 

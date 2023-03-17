@@ -32,41 +32,41 @@ class Components(BaseSchemaObject):
     """
 
     schemas: dict[str, Schema] | None = None
-    """An object to hold reusable 
+    """An object to hold reusable
     `Schema Objects <https://spec.openapis.org/oas/v3.1.0#schemaObject>`_"""
 
     responses: dict[str, OpenAPIResponse | Reference] | None = None
-    """An object to hold reusable 
+    """An object to hold reusable
     `Response Objects <https://spec.openapis.org/oas/v3.1.0#responseObject>`_"""
 
     parameters: dict[str, Parameter | Reference] | None = None
-    """An object to hold reusable 
+    """An object to hold reusable
     `Parameter Objects <https://spec.openapis.org/oas/v3.1.0#parameterObject>`_"""
 
     examples: dict[str, Example | Reference] | None = None
-    """An object to hold reusable 
+    """An object to hold reusable
     `Example Objects <https://spec.openapis.org/oas/v3.1.0#exampleObject>`_"""
 
     request_bodies: dict[str, RequestBody | Reference] | None = None
-    """An object to hold reusable 
+    """An object to hold reusable
     `Request Body Objects <https://spec.openapis.org/oas/v3.1.0#requestBodyObject>`_"""
 
     headers: dict[str, OpenAPIHeader | Reference] | None = None
-    """An object to hold reusable 
+    """An object to hold reusable
     `Header  Objects <https://spec.openapis.org/oas/v3.1.0#headerObject>`_"""
 
     security_schemes: dict[str, SecurityScheme | Reference] | None = None
-    """An object to hold reusable 
+    """An object to hold reusable
     `Security Scheme  Objects <https://spec.openapis.org/oas/v3.1.0#securitySchemeObject>`_"""
 
     links: dict[str, Link | Reference] | None = None
-    """An object to hold reusable 
+    """An object to hold reusable
     `Link Objects <https://spec.openapis.org/oas/v3.1.0#linkObject>`_"""
 
     callbacks: dict[str, Callback | Reference] | None = None
-    """An object to hold reusable 
+    """An object to hold reusable
     `Callback Objects <https://spec.openapis.org/oas/v3.1.0#callbackObject>`_"""
 
     path_items: dict[str, PathItem | Reference] | None = None
-    """An object to hold reusable 
+    """An object to hold reusable
     `Path Item Object <https://spec.openapis.org/oas/v3.1.0#pathItemObject>`_"""
