@@ -129,7 +129,7 @@ class Router:
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
                 function decorated by the route handler decorators.
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
-                See :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>`
+                See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`
                 for details.
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.

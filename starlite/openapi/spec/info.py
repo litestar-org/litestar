@@ -16,9 +16,8 @@ __all__ = ("Info",)
 class Info(BaseSchemaObject):
     """The object provides metadata about the API.
 
-    The metadata MAY be used by the clients if needed, and MAY be
-    presented in editing or documentation generation tools for
-    convenience.
+    The metadata MAY be used by the clients if needed, and MAY be presented in editing or documentation generation tools
+    for convenience.
     """
 
     title: str
@@ -28,8 +27,8 @@ class Info(BaseSchemaObject):
 
     version: str
     """
-    **REQUIRED**. The version of the OpenAPI document
-    (which is distinct from the [OpenAPI Specification version](https://spec.openapis.org/oas/v3.1.0#oasVersion)) or the API implementation version).
+    **REQUIRED**. The version of the OpenAPI document which is distinct from the
+    `OpenAPI Specification version <https://spec.openapis.org/oas/v3.1.0#oasVersion>`_ or the API implementation version
     """
 
     summary: str | None = None
@@ -38,15 +37,11 @@ class Info(BaseSchemaObject):
     description: str | None = None
     """A description of the API.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
-    rich text representation.
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for rich text representation.
     """
 
     terms_of_service: str | None = None
-    """A URL to the Terms of Service for the API.
-
-    MUST be in the form of a URL.
-    """
+    """A URL to the Terms of Service for the API. MUST be in the form of a URL."""
 
     contact: Contact | None = None
     """The contact information for the exposed API."""

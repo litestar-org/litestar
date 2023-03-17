@@ -4,10 +4,7 @@ __all__ = ("OpenAPIFormat", "OpenAPIType")
 
 
 class OpenAPIFormat(str, Enum):
-    """Formats extracted from:
-
-    https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-00#page-13
-    """
+    """Formats extracted from: https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-00#page-13"""
 
     DATE = "date"
     DATE_TIME = "date-time"

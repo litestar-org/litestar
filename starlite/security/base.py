@@ -157,11 +157,11 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
     def security_requirement(self) -> SecurityRequirement:  # pragma: no cover
         """Return OpenAPI 3.1.
 
-        :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>` for the auth
+        :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for the auth
         backend.
 
         Returns:
-            An OpenAPI 3.1 :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>` dictionary.
+            An OpenAPI 3.1 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` dictionary.
         """
         raise NotImplementedError
 

@@ -64,7 +64,7 @@ class OpenAPIConfig:
     """API Security requirements information.
 
     Should be an instance of
-        :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>`.
+        :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`.
     """
     components: Components | list[Components] | None = field(default=None)
     """API Components information.
