@@ -27,7 +27,9 @@ class XML(BaseSchemaObject):
     """The URI of the namespace definition. Value MUST be in the form of an absolute URI."""
 
     prefix: str | None = None
-    """The prefix to be used for the `xmlName <https://spec.openapis.org/oas/v3.1.0#xmlName>`_"""
+    """The prefix to be used for the 
+    `xmlName <https://spec.openapis.org/oas/v3.1.0#xmlName>`_
+    """
 
     attribute: bool = False
     """Declares whether the property definition translates to an attribute instead of an element. Default value is

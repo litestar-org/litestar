@@ -52,8 +52,9 @@ class Link(BaseSchemaObject):
     """
 
     request_body: Any | None = None
-    """A literal value or `{expression} <https://spec.openapis.org/oas/v3.1.0#runtimeExpression>`_ to use as a request
-    body when calling the target operation."""
+    """A literal value or 
+    `{expression} <https://spec.openapis.org/oas/v3.1.0#runtimeExpression>`_ to use as a request body when calling the 
+    target operation."""
 
     description: str | None = None
     """A description of the link.
