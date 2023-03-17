@@ -34,18 +34,18 @@ class StoreRegistry:
         self._stores = stores or {}
         self._default_factory = default_factory
 
-    def register(self, name: str, store: Store, override: bool = False) -> None:
+    def register(self, name: str, store: Store, allow_override: bool = False) -> None:
         """Register a new :class:`Store <.base.Store>`.
 
         Args:
             name: Name to register the store under
             store: The store to register
-            override: Whether to allow overriding an existing store of the same name
+            allow_override: Whether to allow overriding an existing store of the same name
 
         Raises:
             ValueError: If a store is already registered under this name and ``override`` is not ``True``
         """
-        if not override and name in self._stores:
+        if not allow_override and name in self._stores:
             raise ValueError(f"Store with the name {name!r} already exists")
         self._stores[name] = store
 

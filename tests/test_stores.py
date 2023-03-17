@@ -321,5 +321,5 @@ def test_registry_register_exist_raises(memory_store: MemoryStore) -> None:
 def test_registry_register_exist_override(memory_store: MemoryStore) -> None:
     registry = StoreRegistry({"foo": memory_store})
 
-    registry.register("foo", memory_store, override=True)
+    registry.register("foo", memory_store, allow_override=True)
     assert registry.get("foo") is memory_store
