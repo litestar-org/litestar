@@ -14,6 +14,7 @@ from starlite.middleware.rate_limit import (
 from starlite.serialization import decode_json, encode_json
 from starlite.static_files.config import StaticFilesConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
+from starlite.stores.base import Store
 from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
@@ -57,6 +58,40 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
 
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
+
+
+async def test_non_default_store(memory_store: Store) -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    app = Starlite(
+        [handler], middleware=[RateLimitConfig(("second", 10)).middleware], stores={"rate_limit": memory_store}
+    )
+
+    with TestClient(app) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+
+    assert await memory_store.exists("RateLimitMiddleware::testclient")
+
+
+async def test_set_store_name(memory_store: Store) -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    app = Starlite(
+        [handler],
+        middleware=[RateLimitConfig(("second", 10), store="some_store").middleware],
+        stores={"some_store": memory_store},
+    )
+
+    with TestClient(app) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+
+    assert await memory_store.exists("RateLimitMiddleware::testclient")
 
 
 async def test_reset() -> None:

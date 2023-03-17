@@ -237,6 +237,8 @@ class RateLimitConfig:
     """Key to use for the rate limit reset header."""
     rate_limit_limit_header_key: str = field(default="RateLimit-Limit")
     """Key to use for the rate limit limit header."""
+    store: str = "rate_limit"
+    """Name of the :class:`Store <.stores.base.Store>` to use"""
 
     def __post_init__(self) -> None:
         if self.check_throttle_handler:
@@ -267,6 +269,6 @@ class RateLimitConfig:
         """
         return DefineMiddleware(self.middleware_class, config=self)
 
-    @staticmethod
-    def get_store_from_app(app: Starlite) -> Store:
-        return app.stores.get("rate_limit")
+    def get_store_from_app(self, app: Starlite) -> Store:
+        """Get the store defined in :attr:`store` from an :class:`Starlite <.app.Starlite>` instance"""
+        return app.stores.get(self.store)
