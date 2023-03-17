@@ -19,20 +19,16 @@ class Server(BaseSchemaObject):
     """
     **REQUIRED**. A URL to the target host.
 
-    This URL supports Server Variables and MAY be relative,
-    to indicate that the host location is relative to the location where the OpenAPI document is being served.
-    Variable substitutions will be made when a variable is named in `{`brackets`}`.
+    This URL supports Server Variables and MAY be relative, to indicate that the host location is relative to the
+    location where the OpenAPI document is being served. Variable substitutions will be made when a variable is named in
+    ``{brackets}``.
     """
 
     description: str | None = None
     """An optional string describing the host designated by the URL.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
-    rich text representation.
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for rich text representation.
     """
 
     variables: dict[str, ServerVariable] | None = None
-    """A map between a variable name and its value.
-
-    The value is used for substitution in the server's URL template.
-    """
+    """A map between a variable name and its value. The value is used for substitution in the server's URL template."""

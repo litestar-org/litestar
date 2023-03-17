@@ -125,10 +125,10 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
     def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
-        :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>` for the auth
+        :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for the auth
         backend.
 
         Returns:
-            An OpenAPI 3.1 :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>` dictionary.
+            An OpenAPI 3.1 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` dictionary.
         """
         return {"sessionCookie": []}

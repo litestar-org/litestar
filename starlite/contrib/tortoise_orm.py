@@ -12,16 +12,17 @@ __all__ = ("TortoiseORMPlugin",)
 
 try:
     import tortoise  # noqa: F401
-    from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
-    from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
-        PydanticModel,  # pyright: ignore
-        pydantic_model_creator,  # pyright: ignore
-    )
-    from tortoise.fields import ReverseRelation
-    from tortoise.fields.relational import RelationalField
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
 
+
+from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
+from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
+    PydanticModel,  # pyright: ignore
+    pydantic_model_creator,  # pyright: ignore
+)
+from tortoise.fields import ReverseRelation
+from tortoise.fields.relational import RelationalField
 
 if TYPE_CHECKING:
     from typing_extensions import TypeGuard
