@@ -13,7 +13,7 @@ from starlite._openapi.path_item import create_path_item
 from starlite._signature import create_signature_model
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
-from starlite.config.cache import CacheConfig
+from starlite.config.request_cache import RequestCacheConfig
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
@@ -138,7 +138,6 @@ class Starlite(Router):
         "before_send",
         "before_shutdown",
         "before_startup",
-        "cache_config",
         "compression_config",
         "cors_config",
         "csrf_config",
@@ -151,10 +150,11 @@ class Starlite(Router):
         "on_shutdown",
         "on_startup",
         "openapi_config",
+        "openapi_schema_plugins",
+        "request_cache_config",
         "request_class",
         "route_map",
         "serialization_plugins",
-        "openapi_schema_plugins",
         "state",
         "static_files_config",
         "stores",
@@ -175,7 +175,7 @@ class Starlite(Router):
         before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
         before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
         before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-        cache_config: CacheConfig | None = None,
+        request_cache_config: RequestCacheConfig | None = None,
         cache_control: CacheControlHeader | None = None,
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
@@ -236,7 +236,6 @@ class Starlite(Router):
                 the ASGI shutdown, before any 'on_shutdown' hooks are called.
             before_startup: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
                 the ASGI startup, before any 'on_startup' hooks are called.
-            cache_config: Configures caching behavior of the application.
             cache_control: A ``cache-control`` header of type
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` to add to route handlers of
                 this app. Can be overridden by route handlers.
@@ -277,6 +276,7 @@ class Starlite(Router):
                 response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
             response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
+            request_cache_config: Configures caching behavior of the application.
             route_handlers: A sequence of route handlers, which can include instances of
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
                 callable decorated by the route handler decorators.
@@ -316,7 +316,7 @@ class Starlite(Router):
             before_send=list(before_send or []),
             before_shutdown=list(before_shutdown or []),
             before_startup=list(before_startup or []),
-            cache_config=cache_config or CacheConfig(),
+            request_cache_config=request_cache_config or RequestCacheConfig(),
             cache_control=cache_control,
             compression_config=compression_config,
             cors_config=cors_config,
@@ -361,7 +361,7 @@ class Starlite(Router):
         self.before_send = as_async_callable_list(config.before_send)
         self.before_shutdown = as_async_callable_list(config.before_shutdown)
         self.before_startup = as_async_callable_list(config.before_startup)
-        self.cache_config = config.cache_config
+        self.request_cache_config = config.request_cache_config
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config

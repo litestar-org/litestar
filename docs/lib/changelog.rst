@@ -128,7 +128,7 @@ Replace Pydantic models with dataclasses **[Breaking]**
 
     - :class:`starlite.config.allowed_hosts.AllowedHostsConfig`
     - :class:`starlite.config.app.AppConfig`
-    - :class:`starlite.config.cache.CacheConfig`
+    - :class:`starlite.config.request_cache.RequestCacheConfig`
     - :class:`starlite.config.compression.CompressionConfig`
     - :class:`starlite.config.cors.CORSConfig`
     - :class:`starlite.config.csrf.CSRFConfig`

@@ -5,7 +5,7 @@ import pytest
 from freezegun import freeze_time
 
 from starlite import Request, Starlite, get
-from starlite.config.cache import CacheConfig
+from starlite.config.request_cache import RequestCacheConfig
 from starlite.testing import TestClient, create_test_client
 
 from . import after_request_handler, slow_handler
@@ -57,7 +57,7 @@ def test_default_expiration() -> None:
     with create_test_client(
         route_handlers=[get("/cached-default", cache=True)(slow_handler)],
         after_request=after_request_handler,
-        cache_config=CacheConfig(default_expiration=1),
+        cache_config=RequestCacheConfig(default_expiration=1),
     ) as client:
         first_response = client.get("/cached-default")
         second_response = client.get("/cached-default")
@@ -82,5 +82,5 @@ async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str) -> Non
 
     with TestClient(app) as client:
         client.get("/cached")
-        value = await app.cache_config.get_store_from_app(app).get("/cached:::cached")
+        value = await app.request_cache_config.get_store_from_app(app).get("/cached:::cached")
         assert value

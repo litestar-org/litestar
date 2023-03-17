@@ -4,13 +4,11 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Sequence
 
 from starlite.config.allowed_hosts import AllowedHostsConfig
+from starlite.config.request_cache import RequestCacheConfig
 from starlite.datastructures import State
-from starlite.config.cache import CacheConfig
 from starlite.events.emitter import SimpleEventEmitter
 
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
-
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
@@ -104,8 +102,6 @@ class AppConfig:
 
     This hook is called during the ASGI startup, before any callables in the ``on_startup`` list have been called.
     """
-    cache_config: CacheConfig = field(default_factory=CacheConfig)
-    """Configures caching behavior of the application."""
     cache_control: CacheControlHeader | None = field(default=None)
     """A ``cache-control`` header of type :class:`CacheControlHeader <.datastructures.CacheControlHeader>` to add to
     route handlers of this app.
@@ -165,6 +161,8 @@ class AppConfig:
     """A list of :class:`Cookie <.datastructures.Cookie>`."""
     response_headers: Sequence[ResponseHeader] = field(default_factory=list)
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
+    request_cache_config: RequestCacheConfig = field(default_factory=RequestCacheConfig)
+    """Configures caching behavior of the application."""
     route_handlers: list[ControllerRouterHandler] = field(default_factory=list)
     """A required list of route handlers, which can include instances of :class:`Router <.router.Router>`,
     subclasses of :class:`Controller <.controller.Controller>` or any function decorated by the route handler

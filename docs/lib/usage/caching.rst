@@ -17,7 +17,7 @@ expected. Starlite comes with a simple mechanism for caching:
        ...
 
 By setting ``cache=True`` in the route handler, caching for the route handler will be enabled for the
-:attr:`CacheConfig.default_expiration <.config.cache.CacheConfig.default_expiration>`.
+:attr:`RequestCacheConfig.default_expiration <.config.request_cache.RequestCacheConfig.default_expiration>`.
 
 Alternatively you can specify the number of seconds to cache the responses from the given handler like so:
 
@@ -35,7 +35,7 @@ Configuration
 -------------
 
 You can configure caching behaviour on the application level by passing an instance of
-:class:`CacheConfig <.config.cache.CacheConfig>` to the :class:`Starlite instance <.app.Starlite>`.
+:class:`RequestCacheConfig <.config.request_cache.RequestCacheConfig>` to the :class:`Starlite instance <.app.Starlite>`.
 
 
 Changing where data is stored
@@ -46,12 +46,12 @@ any :class:`Store <.stores.base.Store>`, for example :class:`RedisStore <.stores
 
 .. code-block:: python
 
-   from starlite.config.cache import CacheConfig
+   from starlite.config.cache import RequestCacheConfig
    from starlite.stores.redis import RedisStore
 
    redis_store = RedisStore(url="redis://localhost/", port=6379, db=0)
 
-   cache_config = CacheConfig(store=redis_store)
+   cache_config = RequestCacheConfig(store=redis_store)
 
 
 Specifying a cache key builder
@@ -63,14 +63,14 @@ Starlite uses the request's path + sorted query parameters as the cache key. Thi
 .. code-block:: python
 
     from starlite import Starlite, Request
-    from starlite.config.cache import CacheConfig
+    from starlite.config.cache import RequestCacheConfig
 
 
     def key_builder(request: Request) -> str:
         return request.url.path + request.headers.get("my-header", "")
 
 
-    app = Starlite([], cache_config=CacheConfig(key_builder=key_builder))
+    app = Starlite([], cache_config=RequestCacheConfig(key_builder=key_builder))
 
 
 .. code-block:: python
