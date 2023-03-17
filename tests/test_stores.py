@@ -4,7 +4,7 @@ import math
 import shutil
 import string
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from unittest.mock import MagicMock, Mock, patch
 
 import anyio
@@ -20,7 +20,7 @@ from starlite.stores.registry import StoreRegistry
 if TYPE_CHECKING:
     from redis.asyncio import Redis
 
-    from starlite.stores.base import Store
+    from starlite.stores.base import NamespacedStore, Store
 
 
 @pytest.fixture()
@@ -72,9 +72,11 @@ async def test_expires(store: Store) -> None:
 
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
 async def test_get_and_renew(store: Store, renew_for: int | timedelta) -> None:
-    await store.set("foo", b"bar", expires_in=1)
+    expiry = 0.01 if not isinstance(store, RedisStore) else 1  # redis doesn't allow fractional values
+
+    await store.set("foo", b"bar", expires_in=expiry)  # type: ignore[arg-type]
     await store.get("foo", renew_for=renew_for)
-    await anyio.sleep(1.01)
+    await anyio.sleep(expiry + 0.01)
 
     stored_value = await store.get("foo")
 
@@ -135,7 +137,7 @@ async def test_expires_in(store: Store) -> None:
 
 @patch("starlite.stores.redis.Redis")
 @patch("starlite.stores.redis.ConnectionPool.from_url")
-def test_redis_backend_with_client_default(connection_pool_from_url_mock: Mock, mock_redis: Mock) -> None:
+def test_redis_with_client_default(connection_pool_from_url_mock: Mock, mock_redis: Mock) -> None:
     url = "redis://localhost"
     backend = RedisStore.with_client(url=url)
     connection_pool_from_url_mock.assert_called_once_with(
@@ -147,7 +149,7 @@ def test_redis_backend_with_client_default(connection_pool_from_url_mock: Mock, 
 
 @patch("starlite.stores.redis.Redis")
 @patch("starlite.stores.redis.ConnectionPool.from_url")
-def test_redis_backend_with_non_default(connection_pool_from_url_mock: Mock, mock_redis: Mock) -> None:
+def test_redis_with_non_default(connection_pool_from_url_mock: Mock, mock_redis: Mock) -> None:
     url = "redis://localhost"
     db = 2
     port = 1234
@@ -159,26 +161,6 @@ def test_redis_backend_with_non_default(connection_pool_from_url_mock: Mock, moc
     )
     mock_redis.assert_called_once_with(connection_pool=connection_pool_from_url_mock.return_value)
     assert backend._redis is mock_redis.return_value
-
-
-async def test_file_backend_init_directory(file_store: FileStore) -> None:
-    shutil.rmtree(file_store.path)
-    await file_store.set("foo", b"bar")
-
-
-async def test_file_backend_path(file_store: FileStore) -> None:
-    await file_store.set("foo", b"bar")
-
-    assert await (file_store.path / "foo").exists()
-
-
-async def test_redis_namespaced_get_set(redis_store: RedisStore) -> None:
-    foo_namespaced = redis_store.with_namespace("foo")
-    await redis_store.set("foo", b"starlite namespace")
-    await foo_namespaced.set("foo", b"foo namespace")
-
-    assert await redis_store.get("foo") == b"starlite namespace"
-    assert await foo_namespaced.get("foo") == b"foo namespace"
 
 
 async def test_redis_delete_all(redis_store: RedisStore) -> None:
@@ -194,28 +176,6 @@ async def test_redis_delete_all(redis_store: RedisStore) -> None:
 
     assert not any([await redis_store.get(key) for key in keys])
     assert await redis_store._redis.get("test_key") == b"test_value"  # check it doesn't delete other values
-
-
-async def test_redis_delete_all_namespace_does_not_propagate_up(redis_store: RedisStore) -> None:
-    foo_namespace = redis_store.with_namespace("FOO")
-    await foo_namespace.set("foo", b"foo-value")
-    await redis_store.set("bar", b"bar-value")
-
-    await foo_namespace.delete_all()
-
-    assert await foo_namespace.get("foo") is None
-    assert await redis_store.get("bar") == b"bar-value"
-
-
-async def test_redis_delete_all_namespace_propagates_down(redis_store: RedisStore) -> None:
-    foo_namespace = redis_store.with_namespace("FOO")
-    await foo_namespace.set("foo", b"foo-value")
-    await redis_store.set("bar", b"bar-value")
-
-    await redis_store.delete_all()
-
-    assert await foo_namespace.get("foo") is None
-    assert await redis_store.get("bar") is None
 
 
 async def test_redis_delete_all_no_namespace_raises(fake_redis: Redis) -> None:
@@ -241,6 +201,64 @@ def test_redis_with_namespace(redis_store: RedisStore) -> None:
 def test_redis_namespace_explicit_none(fake_redis: Redis) -> None:
     assert RedisStore.with_client(url="redis://127.0.0.1", namespace=None).namespace is None
     assert RedisStore(redis=fake_redis, namespace=None).namespace is None
+
+
+async def test_file_init_directory(file_store: FileStore) -> None:
+    shutil.rmtree(file_store.path)
+    await file_store.set("foo", b"bar")
+
+
+async def test_file_path(file_store: FileStore) -> None:
+    await file_store.set("foo", b"bar")
+
+    assert await (file_store.path / "foo").exists()
+
+
+def test_file_with_namespace(file_store: FileStore) -> None:
+    namespaced = file_store.with_namespace("foo")
+    assert namespaced.path == file_store.path / "foo"
+
+
+@pytest.mark.parametrize("invalid_char", string.punctuation)
+def test_file_with_namespace_invalid_namespace_char(file_store: FileStore, invalid_char: str) -> None:
+    with pytest.raises(ValueError):
+        file_store.with_namespace("foo" + invalid_char)
+
+
+@pytest.fixture(params=["redis_store", "file_store"])
+def namespaced_store(request: FixtureRequest) -> NamespacedStore:
+    return cast("NamespacedStore", request.getfixturevalue(request.param))
+
+
+async def test_namespaced_store_get_set(namespaced_store: NamespacedStore) -> None:
+    foo_namespaced = namespaced_store.with_namespace("foo")
+    await namespaced_store.set("bar", b"starlite namespace")
+    await foo_namespaced.set("bar", b"foo namespace")
+
+    assert await namespaced_store.get("bar") == b"starlite namespace"
+    assert await foo_namespaced.get("bar") == b"foo namespace"
+
+
+async def test_namespaced_store_does_not_propagate_up(namespaced_store: NamespacedStore) -> None:
+    foo_namespace = namespaced_store.with_namespace("FOO")
+    await foo_namespace.set("foo", b"foo-value")
+    await namespaced_store.set("bar", b"bar-value")
+
+    await foo_namespace.delete_all()
+
+    assert await foo_namespace.get("foo") is None
+    assert await namespaced_store.get("bar") == b"bar-value"
+
+
+async def test_namespaced_store_delete_all_propagates_down(namespaced_store: NamespacedStore) -> None:
+    foo_namespace = namespaced_store.with_namespace("FOO")
+    await foo_namespace.set("foo", b"foo-value")
+    await namespaced_store.set("bar", b"bar-value")
+
+    await namespaced_store.delete_all()
+
+    assert await foo_namespace.get("foo") is None
+    assert await namespaced_store.get("bar") is None
 
 
 @pytest.mark.parametrize("store_fixture", ["memory_store", "file_store"])

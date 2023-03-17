@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from anyio import Path
 from anyio.to_thread import run_sync
 
-from .base import StorageObject, Store
+from .base import NamespacedStore, StorageObject
 
 __all__ = ("FileStore",)
 
@@ -24,7 +24,7 @@ def _safe_file_name(name: str) -> str:
     return "".join(c if c.isalnum() else str(ord(c)) for c in name)
 
 
-class FileStore(Store):
+class FileStore(NamespacedStore):
     """File based, thread and process safe, asynchronous key/value store."""
 
     __slots__ = {"path": "file path"}
@@ -36,6 +36,12 @@ class FileStore(Store):
             path: Path to store data under
         """
         self.path = Path(path)
+
+    def with_namespace(self, namespace: str) -> FileStore:
+        """Return a new instance of :class:`FileStore`, using  a sub-path of the current store's path."""
+        if not namespace.isalnum():
+            raise ValueError(f"Invalid namespace: {namespace!r}")
+        return FileStore(self.path / namespace)
 
     def _path_from_key(self, key: str) -> Path:
         return self.path / _safe_file_name(key)

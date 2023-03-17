@@ -9,12 +9,12 @@ from redis.asyncio.connection import ConnectionPool
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Empty, EmptyType
 
-from .base import Store
+from .base import NamespacedStore
 
 __all__ = ("RedisStore",)
 
 
-class RedisStore(Store):
+class RedisStore(NamespacedStore):
     """Redis based, thread and process safe asynchronous key/value store."""
 
     __slots__ = ("_redis",)

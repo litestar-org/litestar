@@ -4,4 +4,4 @@ base
 
 .. automodule:: starlite.stores.base
 
-    :members: Store
+    :members: Store, NamespacedStore
