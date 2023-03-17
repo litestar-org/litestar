@@ -1,0 +1,77 @@
+name: "Feature Request"
+description: Create an issue for a new feature request
+title: "Enhancement: <title>"
+labels: ["enhancement", "triage required"]
+body:
+  - type: textarea
+    id: implementation_pr
+    attributes:
+      label: "Implementation PR"
+      description: Link to the PR that implements the feature, if applicable
+      placeholder: "#PullRequestID"
+    validations:
+      required: false
+  - type: textarea
+    id: reference_issues
+    attributes:
+      label: "Reference Issues"
+      description: Link to any related issues, if applicable
+      placeholder: "#IssuesIDs"
+    validations:
+      required: false
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Summary"
+      description: Provide a brief summary of your feature request
+      placeholder: Describe in a few lines your feature request
+    validations:
+      required: true
+  - type: textarea
+    id: basic_example
+    attributes:
+      label: "Basic Example"
+      description: Indicate here some basic examples of your feature.
+      placeholder: Provide some basic example of your feature request
+    validations:
+      required: false
+  - type: textarea
+    id: drawbacks
+    attributes:
+      label: "Drawbacks and Impact"
+      description: What are the drawbacks or impacts of your feature request?
+      placeholder: Describe any the drawbacks or impacts of your feature request
+    validations:
+      required: false
+  - type: textarea
+    id: unresolved_question
+    attributes:
+      label: "Unresolved questions"
+      description: What, if any, unresolved questions do you have about your feature request?
+      placeholder: Identify any unresolved issues.
+    validations:
+      required: false
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "Additional Context"
+      description: Add any other context or screenshots about the feature request here.
+      placeholder: Identify any other context about the feature request here.
+    validations:
+      required: false
+  - type: checkboxes
+    id: contribution-guidelines
+    attributes:
+      label: Contribution Guidelines
+      description: By submitting this issue, you agree to follow Starlite's [Contribution Guidelines](https://starliteproject.dev/community/contribution-guide/index.html)
+      options:
+        - label: I agree to follow Starlite's Contribution Guidelines
+          required: true
+  - type: checkboxes
+    id: code-of-conduct
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow Starlite's [Code of Conduct](https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow Starlite's Code of Conduct
+          required: true
