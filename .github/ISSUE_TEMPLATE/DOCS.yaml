@@ -1,7 +1,10 @@
 name: "Feature Request"
 description: Create an issue for documentation changes
 title: "Docs: <title>"
-labels: ["docs", "triage required"]
+name: "Documentation Update"
+description: Create an issue for documentation changes
+title: "Docs: <title>"
+labels: ["docs"]
 body:
   - type: textarea
     id: implementation_pr
