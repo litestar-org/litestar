@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>storage &#8212; Starlite Framework</title>
+    <title>openapi &#8212; Starlite Framework</title>
   
   
   
@@ -46,13 +46,13 @@
     <script src="../../../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lib/reference/storage/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lib/reference/openapi/index';</script>
     <script src="../../../_static/versioning.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="base" href="base.html" />
-    <link rel="prev" title="static_files" href="../static_files.html" />
+    <link rel="next" title="openapi" href="openapi.html" />
+    <link rel="prev" title="server_side" href="../middleware/session/server_side.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -481,9 +481,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../openapi/openapi.html">openapi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../openapi/spec.html">spec</a></li>
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">openapi</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spec.html">spec</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
@@ -500,11 +500,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../static_files.html">static_files</a></li>
-<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">storage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html">redis</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../storage/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage/redis.html">redis</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../template.html">template</a></li>
@@ -549,74 +549,12 @@
             
             <article class="bd-article" role="main">
               
-  <section id="storage">
-<h1>storage<a class="headerlink" href="#storage" title="Permalink to this heading">#</a></h1>
+  <section id="openapi">
+<h1>openapi<a class="headerlink" href="#openapi" title="Permalink to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="base.html">base</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="base.html#starlite.storage.base.Storage"><code class="docutils literal notranslate"><span class="pre">Storage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.Storage.set"><code class="docutils literal notranslate"><span class="pre">Storage.set()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.Storage.get"><code class="docutils literal notranslate"><span class="pre">Storage.get()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.Storage.delete"><code class="docutils literal notranslate"><span class="pre">Storage.delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.Storage.delete_all"><code class="docutils literal notranslate"><span class="pre">Storage.delete_all()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.Storage.exists"><code class="docutils literal notranslate"><span class="pre">Storage.exists()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.Storage.expires_in"><code class="docutils literal notranslate"><span class="pre">Storage.expires_in()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="base.html#starlite.storage.base.StorageObject"><code class="docutils literal notranslate"><span class="pre">StorageObject</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.StorageObject.new"><code class="docutils literal notranslate"><span class="pre">StorageObject.new()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.StorageObject.expired"><code class="docutils literal notranslate"><span class="pre">StorageObject.expired</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.StorageObject.expires_in"><code class="docutils literal notranslate"><span class="pre">StorageObject.expires_in</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.StorageObject.to_bytes"><code class="docutils literal notranslate"><span class="pre">StorageObject.to_bytes()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="base.html#starlite.storage.base.StorageObject.from_bytes"><code class="docutils literal notranslate"><span class="pre">StorageObject.from_bytes()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="file.html">file</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="file.html#starlite.storage.file.FileStorage"><code class="docutils literal notranslate"><span class="pre">FileStorage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="file.html#starlite.storage.file.FileStorage.__init__"><code class="docutils literal notranslate"><span class="pre">FileStorage.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#starlite.storage.file.FileStorage.path"><code class="docutils literal notranslate"><span class="pre">FileStorage.path</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#starlite.storage.file.FileStorage.set"><code class="docutils literal notranslate"><span class="pre">FileStorage.set()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#starlite.storage.file.FileStorage.get"><code class="docutils literal notranslate"><span class="pre">FileStorage.get()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#starlite.storage.file.FileStorage.delete"><code class="docutils literal notranslate"><span class="pre">FileStorage.delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#starlite.storage.file.FileStorage.delete_all"><code class="docutils literal notranslate"><span class="pre">FileStorage.delete_all()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#starlite.storage.file.FileStorage.delete_expired"><code class="docutils literal notranslate"><span class="pre">FileStorage.delete_expired()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#starlite.storage.file.FileStorage.exists"><code class="docutils literal notranslate"><span class="pre">FileStorage.exists()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html#starlite.storage.file.FileStorage.expires_in"><code class="docutils literal notranslate"><span class="pre">FileStorage.expires_in()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="memory.html">memory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="memory.html#starlite.storage.memory.MemoryStorage"><code class="docutils literal notranslate"><span class="pre">MemoryStorage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#starlite.storage.memory.MemoryStorage.__init__"><code class="docutils literal notranslate"><span class="pre">MemoryStorage.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#starlite.storage.memory.MemoryStorage.set"><code class="docutils literal notranslate"><span class="pre">MemoryStorage.set()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#starlite.storage.memory.MemoryStorage.get"><code class="docutils literal notranslate"><span class="pre">MemoryStorage.get()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#starlite.storage.memory.MemoryStorage.delete"><code class="docutils literal notranslate"><span class="pre">MemoryStorage.delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#starlite.storage.memory.MemoryStorage.delete_all"><code class="docutils literal notranslate"><span class="pre">MemoryStorage.delete_all()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#starlite.storage.memory.MemoryStorage.delete_expired"><code class="docutils literal notranslate"><span class="pre">MemoryStorage.delete_expired()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#starlite.storage.memory.MemoryStorage.exists"><code class="docutils literal notranslate"><span class="pre">MemoryStorage.exists()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="memory.html#starlite.storage.memory.MemoryStorage.expires_in"><code class="docutils literal notranslate"><span class="pre">MemoryStorage.expires_in()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="redis.html">redis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="redis.html#starlite.storage.redis.RedisStorage"><code class="docutils literal notranslate"><span class="pre">RedisStorage</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#starlite.storage.redis.RedisStorage.__init__"><code class="docutils literal notranslate"><span class="pre">RedisStorage.__init__()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#starlite.storage.redis.RedisStorage.with_client"><code class="docutils literal notranslate"><span class="pre">RedisStorage.with_client()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#starlite.storage.redis.RedisStorage.with_namespace"><code class="docutils literal notranslate"><span class="pre">RedisStorage.with_namespace()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#starlite.storage.redis.RedisStorage.set"><code class="docutils literal notranslate"><span class="pre">RedisStorage.set()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#starlite.storage.redis.RedisStorage.get"><code class="docutils literal notranslate"><span class="pre">RedisStorage.get()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#starlite.storage.redis.RedisStorage.delete"><code class="docutils literal notranslate"><span class="pre">RedisStorage.delete()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#starlite.storage.redis.RedisStorage.delete_all"><code class="docutils literal notranslate"><span class="pre">RedisStorage.delete_all()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#starlite.storage.redis.RedisStorage.exists"><code class="docutils literal notranslate"><span class="pre">RedisStorage.exists()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html#starlite.storage.redis.RedisStorage.expires_in"><code class="docutils literal notranslate"><span class="pre">RedisStorage.expires_in()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="openapi.html">openapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spec.html">spec</a></li>
 </ul>
 </div>
 </section>
@@ -629,17 +567,17 @@
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="../static_files.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="../middleware/session/server_side.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">static_files</p>
+          <p class="prev-next-title">server_side</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="base.html" title="next page">
+  <a class='right-next' id="next-link" href="openapi.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">base</p>
+      <p class="prev-next-title">openapi</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>

@@ -481,7 +481,11 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../openapi.html">openapi</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../openapi/spec.html">spec</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../partial.html">partial</a></li>
@@ -489,14 +493,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../response.html">response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../router.html">router</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../storage/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../storage/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../storage/memory.html">memory</a></li>
@@ -508,7 +512,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -619,11 +623,11 @@ Once provided, they can access via the <code class="docutils literal notranslate
 
 <dl class="py property">
 <dt class="sig sig-object py" id="starlite.contrib.jwt.BaseJWTAuth.openapi_components">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">openapi_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://starlite-api.github.io/pydantic-openapi-schema/reference/pydantic_openapi_schema/v3_1_0/components/#pydantic_openapi_schema.v3_1_0.components.Components" title="(in pydantic-openapi-schema v0.0.0)"><span class="pre">Components</span></a></em><a class="headerlink" href="#starlite.contrib.jwt.BaseJWTAuth.openapi_components" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">openapi_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../openapi/spec.html#starlite.openapi.spec.Components" title="starlite.openapi.spec.components.Components"><span class="pre">Components</span></a></em><a class="headerlink" href="#starlite.contrib.jwt.BaseJWTAuth.openapi_components" title="Permalink to this definition">#</a></dt>
 <dd><p>Create OpenAPI documentation for the JWT auth schema used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An <a class="reference external" href="https://starlite-api.github.io/pydantic-openapi-schema/reference/pydantic_openapi_schema/v3_1_0/components/#pydantic_openapi_schema.v3_1_0.components.Components" title="(in pydantic-openapi-schema v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Components</span></code></a> instance.</p>
+<dd class="field-odd"><p>An <a class="reference internal" href="../openapi/spec.html#starlite.openapi.spec.Components" title="starlite.openapi.spec.components.Components"><code class="xref py py-class docutils literal notranslate"><span class="pre">Components</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -632,11 +636,11 @@ Once provided, they can access via the <code class="docutils literal notranslate
 <dt class="sig sig-object py" id="starlite.contrib.jwt.BaseJWTAuth.security_requirement">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">security_requirement</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.11)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.11)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.contrib.jwt.BaseJWTAuth.security_requirement" title="Permalink to this definition">#</a></dt>
 <dd><p>Return OpenAPI 3.1.</p>
-<p><a class="reference external" href="https://starlite-api.github.io/pydantic-openapi-schema/reference/pydantic_openapi_schema/v3_1_0/security_requirement/#pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement" title="(in pydantic-openapi-schema v0.0.0)"><code class="xref py py-data docutils literal notranslate"><span class="pre">SecurityRequirement</span></code></a></p>
+<p><a class="reference internal" href="../openapi/spec.html#starlite.openapi.spec.SecurityRequirement" title="starlite.openapi.spec.SecurityRequirement"><code class="xref py py-data docutils literal notranslate"><span class="pre">SecurityRequirement</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>An OpenAPI 3.1
-<a class="reference external" href="https://starlite-api.github.io/pydantic-openapi-schema/reference/pydantic_openapi_schema/v3_1_0/security_requirement/#pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement" title="(in pydantic-openapi-schema v0.0.0)"><code class="xref py py-data docutils literal notranslate"><span class="pre">SecurityRequirement</span></code></a>
+<a class="reference internal" href="../openapi/spec.html#starlite.openapi.spec.SecurityRequirement" title="starlite.openapi.spec.SecurityRequirement"><code class="xref py py-data docutils literal notranslate"><span class="pre">SecurityRequirement</span></code></a>
 dictionary.</p>
 </dd>
 </dl>
@@ -1057,11 +1061,11 @@ processed.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="starlite.contrib.jwt.JWTCookieAuth.openapi_components">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">openapi_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://starlite-api.github.io/pydantic-openapi-schema/reference/pydantic_openapi_schema/v3_1_0/components/#pydantic_openapi_schema.v3_1_0.components.Components" title="(in pydantic-openapi-schema v0.0.0)"><span class="pre">Components</span></a></em><a class="headerlink" href="#starlite.contrib.jwt.JWTCookieAuth.openapi_components" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">openapi_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../openapi/spec.html#starlite.openapi.spec.Components" title="starlite.openapi.spec.components.Components"><span class="pre">Components</span></a></em><a class="headerlink" href="#starlite.contrib.jwt.JWTCookieAuth.openapi_components" title="Permalink to this definition">#</a></dt>
 <dd><p>Create OpenAPI documentation for the JWT Cookie auth scheme.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A <a class="reference external" href="https://starlite-api.github.io/pydantic-openapi-schema/reference/pydantic_openapi_schema/v3_1_0/components/#pydantic_openapi_schema.v3_1_0.components.Components" title="(in pydantic-openapi-schema v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Components</span></code></a> instance.</p>
+<dd class="field-odd"><p>A <a class="reference internal" href="../openapi/spec.html#starlite.openapi.spec.Components" title="starlite.openapi.spec.components.Components"><code class="xref py py-class docutils literal notranslate"><span class="pre">Components</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1371,22 +1375,22 @@ processed.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="starlite.contrib.jwt.OAuth2PasswordBearerAuth.oauth_flow">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">oauth_flow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://starlite-api.github.io/pydantic-openapi-schema/reference/pydantic_openapi_schema/v3_1_0/oauth_flow/#pydantic_openapi_schema.v3_1_0.oauth_flow.OAuthFlow" title="(in pydantic-openapi-schema v0.0.0)"><span class="pre">OAuthFlow</span></a></em><a class="headerlink" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.oauth_flow" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">oauth_flow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../openapi/spec.html#starlite.openapi.spec.OAuthFlow" title="starlite.openapi.spec.oauth_flow.OAuthFlow"><span class="pre">OAuthFlow</span></a></em><a class="headerlink" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.oauth_flow" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an OpenAPI OAuth2 flow for the password bearer authentication scheme.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An <a class="reference external" href="https://starlite-api.github.io/pydantic-openapi-schema/reference/pydantic_openapi_schema/v3_1_0/oauth_flow/#pydantic_openapi_schema.v3_1_0.oauth_flow.OAuthFlow" title="(in pydantic-openapi-schema v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuthFlow</span></code></a> instance.</p>
+<dd class="field-odd"><p>An <a class="reference internal" href="../openapi/spec.html#starlite.openapi.spec.OAuthFlow" title="starlite.openapi.spec.oauth_flow.OAuthFlow"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuthFlow</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="starlite.contrib.jwt.OAuth2PasswordBearerAuth.openapi_components">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">openapi_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://starlite-api.github.io/pydantic-openapi-schema/reference/pydantic_openapi_schema/v3_1_0/components/#pydantic_openapi_schema.v3_1_0.components.Components" title="(in pydantic-openapi-schema v0.0.0)"><span class="pre">Components</span></a></em><a class="headerlink" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.openapi_components" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">openapi_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../openapi/spec.html#starlite.openapi.spec.Components" title="starlite.openapi.spec.components.Components"><span class="pre">Components</span></a></em><a class="headerlink" href="#starlite.contrib.jwt.OAuth2PasswordBearerAuth.openapi_components" title="Permalink to this definition">#</a></dt>
 <dd><p>Create OpenAPI documentation for the OAUTH2 Password bearer auth scheme.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An <a class="reference external" href="https://starlite-api.github.io/pydantic-openapi-schema/reference/pydantic_openapi_schema/v3_1_0/components/#pydantic_openapi_schema.v3_1_0.components.Components" title="(in pydantic-openapi-schema v0.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Components</span></code></a> instance.</p>
+<dd class="field-odd"><p>An <a class="reference internal" href="../openapi/spec.html#starlite.openapi.spec.Components" title="starlite.openapi.spec.components.Components"><code class="xref py py-class docutils literal notranslate"><span class="pre">Components</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
