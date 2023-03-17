@@ -285,10 +285,10 @@ class Starlite(Router):
                 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
             state: An optional :class:`State <.datastructures.State>` for application state.
             static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
-            stores: Central registry of :class:`Store <.stores.base.Store>` to be made available and be used throughout
-                the application. Can be either dictionary mapping strings to :class:`Store <.stores.base.Store>` to be
-                passed to a :class:`StoreRegistry <.stores.registry.StoreRegistry>` or an instance of
-                :class:`StoreRegistry <.stores.registry.StoreRegistry>`.
+            stores: Central registry of :class:`Store <.stores.base.Store>` that will be available throughout the
+                application. If this is a dictionary to it will be passed to a
+                :class:`StoreRegistry <.stores.registry.StoreRegistry>`. If it is a
+                :class:`StoreRegistry <.stores.registry.StoreRegistry>`, this instance will be used directly.
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.
             template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
