@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import unicodedata
 from tempfile import mkstemp
 from typing import TYPE_CHECKING
 
@@ -18,6 +19,11 @@ if TYPE_CHECKING:
     from os import PathLike
 
 
+def _safe_file_name(name: str) -> str:
+    name = unicodedata.normalize("NFKD", name)
+    return "".join(c if c.isalnum() else str(ord(c)) for c in name)
+
+
 class FileStore(Store):
     """File based, thread and process safe, asynchronous key/value store."""
 
@@ -30,6 +36,9 @@ class FileStore(Store):
             path: Path to store data under
         """
         self.path = Path(path)
+
+    def _path_from_key(self, key: str) -> Path:
+        return self.path / _safe_file_name(key)
 
     @staticmethod
     async def _load_from_path(path: Path) -> StorageObject | None:
@@ -72,7 +81,7 @@ class FileStore(Store):
             ``None``
         """
         await self.path.mkdir(exist_ok=True)
-        path = self.path / key
+        path = self._path_from_key(key)
         if isinstance(value, str):
             value = value.encode("utf-8")
         storage_obj = StorageObject.new(data=value, expires_in=expires_in)
@@ -91,7 +100,7 @@ class FileStore(Store):
             The value associated with ``key`` if it exists and is not expired, else
             ``None``
         """
-        path = self.path / key
+        path = self._path_from_key(key)
         storage_obj = await self._load_from_path(path)
 
         if not storage_obj:
@@ -114,7 +123,7 @@ class FileStore(Store):
         Args:
             key: Key of the value to delete
         """
-        path = self.path / key
+        path = self._path_from_key(key)
         await path.unlink(missing_ok=True)
 
     async def delete_all(self) -> None:
@@ -141,13 +150,13 @@ class FileStore(Store):
 
     async def exists(self, key: str) -> bool:
         """Check if a given ``key`` exists."""
-        path = self.path / key
+        path = self._path_from_key(key)
         return await path.exists()
 
     async def expires_in(self, key: str) -> int | None:
         """Get the time in seconds ``key`` expires in. If no such ``key`` exists or no
         expiry time was set, return ``None``.
         """
-        if storage_obj := await self._load_from_path(self.path / key):
+        if storage_obj := await self._load_from_path(self._path_from_key(key)):
             return storage_obj.expires_in
         return None

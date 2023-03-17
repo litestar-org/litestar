@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import shutil
+import string
 from datetime import timedelta
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, Mock, patch
@@ -47,6 +48,15 @@ async def test_set(store: Store) -> None:
     for key, value in values.items():
         stored_value = await store.get(key)
         assert stored_value == value if isinstance(value, bytes) else value.encode("utf-8")
+
+
+@pytest.mark.parametrize("key", [*list(string.punctuation), "foo\xc3\xbc", ".."])
+async def test_set_special_chars_key(store: Store, key: str) -> None:
+    # ensure that stores handle special chars correctly
+    value = b"value"
+
+    await store.set(key, value)
+    assert await store.get(key) == value
 
 
 async def test_expires(store: Store) -> None:
