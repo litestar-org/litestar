@@ -178,9 +178,8 @@ class AppConfig:
     """An instance or list of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`."""
     stores: StoreRegistry | dict[str, Store] | None = None
     """Central registry of :class:`Store <.stores.base.Store>` to be made available and be used throughout the
-    application. Can be either a dictionary mapping strings to :class:`Store <.stores.base.Store>` instances 
-, or an instance of
-    :class:`StoreRegistry <.stores.registry.StoreRegistry>`.
+    application. Can be either a dictionary mapping strings to :class:`Store <.stores.base.Store>` instances, or an 
+    instance of :class:`StoreRegistry <.stores.registry.StoreRegistry>`.
     """
     tags: list[str] = field(default_factory=list)
     """A list of string tags that will be appended to the schema of all route handlers under the application."""
