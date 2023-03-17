@@ -270,5 +270,5 @@ class RateLimitConfig:
         return DefineMiddleware(self.middleware_class, config=self)
 
     def get_store_from_app(self, app: Starlite) -> Store:
-        """Get the store defined in :attr:`store` from an :class:`Starlite <.app.Starlite>` instance"""
+        """Get the store defined in :attr:`store` from an :class:`Starlite <.app.Starlite>` instance."""
         return app.stores.get(self.store)

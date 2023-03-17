@@ -86,7 +86,7 @@ class NamespacedStore(Store):
 
     @abstractmethod
     def with_namespace(self, namespace: str) -> Self:
-        """Return a new instance of :class:`NamespacedStore`, which exist in a child namespace of the current namespace.
+        """Return a new instance of :class:`NamespacedStore`, which exists in a child namespace of the current namespace.
         Bulk actions on the parent namespace should affect all child namespaces, whereas other operations on all
         namespaces should be isolated.
         """
