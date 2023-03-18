@@ -505,7 +505,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             statement = statement.where(field < before)
         if after is not None:
             statement = statement.where(field > before)
-        return statement  # noqa: RET504
+        return statement
 
     def _filter_select_by_kwargs(self, statement: SelectT, **kwargs: Any) -> SelectT:
         for key, val in kwargs.items():

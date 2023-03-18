@@ -12,6 +12,7 @@ from uuid import UUID, uuid4
 
 import asyncmy
 import pytest
+from asyncmy.errors import OperationalError
 from sqlalchemy import NullPool, insert
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import (
@@ -84,7 +85,7 @@ async def db_responsive(host: str) -> bool:
     """
     try:
         conn = await asyncmy.connect(host=host, port=3360, user="app", db="db", password="super-secret")
-    except (ConnectionError):
+    except (ConnectionError, OperationalError):
         return False
 
     try:
