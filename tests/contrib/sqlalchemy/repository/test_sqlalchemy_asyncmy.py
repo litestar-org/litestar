@@ -106,7 +106,7 @@ async def _containers(docker_ip: str, docker_services: Services) -> None:  # pyl
         docker_ip:
         docker_services:
     """
-    await wait_until_responsive(timeout=30.0, pause=0.5, check=db_responsive, host=docker_ip)
+    await wait_until_responsive(timeout=60.0, pause=0.1, check=db_responsive, host=docker_ip)
 
 
 @pytest.fixture(name="engine")
