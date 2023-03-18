@@ -2,12 +2,21 @@ version: "3"
 
 services:
   postgres:
-    image: postgres
+    image: postgres:latest
     ports:
       - "5423:5432" # use a non-standard port here
     environment:
       POSTGRES_PASSWORD: super-secret
-
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3360:3306" # use a non-standard port here
+    environment:
+      MYSQL_ROOT_PASSWORD: super-secret
+      MYSQL_PASSWORD: super-secret
+      MYSQL_USER: app
+      MYSQL_DATABASE: db
+      MYSQL_ROOT_HOST: "127.0.0.1"
   redis:
     image: redis
     ports:
