@@ -16,7 +16,7 @@ services:
       MYSQL_PASSWORD: super-secret
       MYSQL_USER: app
       MYSQL_DATABASE: db
-      MYSQL_ROOT_HOST: "127.0.0.1"
+      MYSQL_ROOT_HOST: "%"
   redis:
     image: redis
     ports:
