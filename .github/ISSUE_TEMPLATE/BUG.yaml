@@ -43,7 +43,7 @@ body:
         4. See error
       render: bash
     validations:
-      required: true
+      required: false
   - type: textarea
     id: screenshot
     attributes:
@@ -62,15 +62,11 @@ body:
       render: bash
     validations:
       required: false
-  - type: checkboxes
+  - type: textarea
     id: version
     attributes:
       label: "Starlite Version"
       description: What version of Starlite are you using when encountering this issue?
-      options:
-        - label: "1.51.x"
-        - label: "2.x.x"
-        - label: "Other (Please specify in the description above)"
     validations:
       required: true
   - type: checkboxes
@@ -84,7 +80,7 @@ body:
         - label: "Windows"
         - label: "Other (Please specify in the description above)"
     validations:
-      required: true
+      required: false
   - type: checkboxes
     id: contribution-guidelines
     attributes:

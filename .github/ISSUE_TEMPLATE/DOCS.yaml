@@ -4,22 +4,6 @@ title: "Docs: <title>"
 labels: ["docs"]
 body:
   - type: textarea
-    id: implementation_pr
-    attributes:
-      label: "Implementation PR"
-      description: Link to the PR that implements the documentation change, if applicable
-      placeholder: "#PullRequestID"
-    validations:
-      required: false
-  - type: textarea
-    id: reference_issues
-    attributes:
-      label: "Reference Issues"
-      description: Link to any related issues, if applicable
-      placeholder: "#IssuesIDs"
-    validations:
-      required: false
-  - type: textarea
     id: summary
     attributes:
       label: "Summary"
@@ -27,14 +11,6 @@ body:
       placeholder: Describe in a few lines your feature request
     validations:
       required: true
-  - type: textarea
-    id: basic_example
-    attributes:
-      label: "Basic Example"
-      description: Indicate here some basic examples of your feature.
-      placeholder: Provide some basic example of your feature request
-    validations:
-      required: false
   - type: checkboxes
     id: contribution-guidelines
     attributes:
