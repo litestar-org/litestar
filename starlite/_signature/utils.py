@@ -35,7 +35,7 @@ _GLOBAL_NAMES = {
 This allows users to include these names within an `if TYPE_CHECKING:` block in their handler module.
 """
 
-if sys.version_info < (3, 9):
+if sys.version_info < (3, 9):  # pragma: no cover
     from typing import Dict, FrozenSet, List, Set, Tuple
 
     _GLOBAL_NAMES.update({"dict": Dict, "frozenset": FrozenSet, "list": List, "set": Set, "tuple": Tuple})
