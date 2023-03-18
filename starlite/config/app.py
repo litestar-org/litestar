@@ -177,7 +177,7 @@ class AppConfig:
     """
     security: list[SecurityRequirement] = field(default_factory=list)
     """A list of dictionaries that will be added to the schema of all route handlers in the application. See
-    :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>` for details.
+    :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
     """
     static_files_config: list[StaticFilesConfig] = field(default_factory=list)
     """An instance or list of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`."""

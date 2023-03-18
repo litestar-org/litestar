@@ -108,13 +108,17 @@ ignore_missing_refs = {
     "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
 }
 
+
 auto_pytabs_min_version = (3, 8)
 auto_pytabs_max_version = (3, 11)
 auto_pytabs_compat_mode = True
 
 autosectionlabel_prefix_document = True
 
-suppress_warnings = ["autosectionlabel.*"]
+suppress_warnings = [
+    "autosectionlabel.*",
+    "ref.python",  # TODO: remove when https://github.com/sphinx-doc/sphinx/issues/4961 is fixed
+]
 
 html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]

@@ -12,14 +12,10 @@ class ExternalDocumentation(BaseSchemaObject):
     """Allows referencing an external resource for extended documentation."""
 
     url: str
-    """
-    **REQUIRED**. The URL for the target documentation.
-    Value MUST be in the form of a URL.
-    """
+    """**REQUIRED**. The URL for the target documentation. Value MUST be in the form of a URL."""
 
     description: str | None = None
     """A short description of the target documentation.
 
-    [CommonMark syntax](https://spec.commonmark.org/) MAY be used for
-    rich text representation.
+    `CommonMark syntax <https://spec.commonmark.org/>`_ MAY be used for rich text representation.
     """

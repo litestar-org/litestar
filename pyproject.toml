@@ -201,7 +201,7 @@ select = [
     "A", # flake8-builtins
     "B", # flake8-bugbear
     "BLE", # flake8-blind-except
-    "C40", # flake8-comprehensions
+    "C4", # flake8-comprehensions
     "C90", # mccabe
     "D", # pydocstyle
     "DJ", # flake8-django

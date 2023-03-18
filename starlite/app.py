@@ -289,8 +289,7 @@ class Starlite(Router):
                 callable decorated by the route handler decorators.
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See
-                :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>`
-                for details.
+                :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
             static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.
