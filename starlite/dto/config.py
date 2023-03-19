@@ -4,11 +4,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from collections.abc import Mapping
-    from typing import Any, Iterable
+from .enums import Mark
 
-    from .enums import Mark, Purpose
+if TYPE_CHECKING:
+    from typing import Iterable
+
+    from .enums import Purpose
     from .types import FieldDefinition, FieldMappingType
 
 
@@ -28,8 +29,6 @@ class DTOField:
 
     mark: Mark | None = None
     """Mark the field as read-only, or private."""
-    field_type: Any | None = None
-    """Override the field type for this attribute."""
 
 
 @dataclass
@@ -55,5 +54,18 @@ class DTOConfig:
     """The maximum number of times a self-referencing nested field should be followed."""
     max_nested_depth: int = 1
     """The maximum depth of nested items allowed for data transfer."""
-    backend_kwargs: Mapping[str, Any] = field(default_factory=dict)
-    """Kwargs passed through to the DTO backend instance."""
+
+
+def dto_field(mark: str | Mark) -> dict[str, DTOField]:
+    """Create a field metadata mapping.
+
+    Args:
+        mark: A DTO mark for the field, e.g., "read-only".
+
+    Returns:
+        A dict for setting as field metadata, such as the dataclass "metadata" field key, or the SQLAlchemy "info"
+        field.
+
+        Marking a field automates its inclusion/exclusion from DTO field definitions, depending on the DTO's purpose.
+    """
+    return {DTO_FIELD_META_KEY: DTOField(mark=Mark(mark))}
