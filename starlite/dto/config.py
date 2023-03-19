@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
-    from typing import Any
+    from typing import Any, Iterable
 
     from .enums import Mark, Purpose
-    from .types import FieldDefinitionsType, FieldMappingType
+    from .types import FieldDefinition, FieldMappingType
 
 
 __all__ = (
@@ -49,20 +49,8 @@ class DTOConfig:
     """Explicitly include fields on the generated DTO, incompatible with ``exclude``."""
     field_mapping: FieldMappingType = field(default_factory=dict)
     """Mapping of field names, to new name, or tuple of new name, new type."""
-    field_definitions: FieldDefinitionsType = field(default_factory=dict)
-    """Additional fields for transferred data.
-
-    Key is the name of the new field, and value is a tuple of type and default value pairs.
-
-    Add a new field called "new_field", that is a string, and required:
-        {"new_field": (str, ...)}
-
-    Add a new field called "new_field", that is a string, and not-required:
-        {"new_field": (str, "default")}
-
-    Add a new field called "new_field", that may be `None`:
-        {"new_field": (str | None, None)}
-    """
+    field_definitions: Iterable[FieldDefinition] = field(default_factory=list)
+    """Additional fields for data transfer."""
     partial: bool = field(default=False)
     """DTO should allow incomplete object representation."""
     max_nested_recursion: int = 0

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
+from itertools import chain
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from typing_extensions import Annotated, get_args, get_origin
@@ -188,7 +189,7 @@ class AbstractDTO(ABC, Generic[DataT]):
             {"new_field": (str | None, None)}
         """
         defined_fields: dict[str, FieldDefinition | NestedFieldDefinition] = {}
-        for field_definition in cls.generate_field_definitions(model_type):
+        for field_definition in chain(cls.generate_field_definitions(model_type), cls.config.field_definitions):
             if cls.should_exclude_field(field_definition):
                 continue
 

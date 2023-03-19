@@ -9,6 +9,7 @@ from typing_extensions import Annotated, get_args, get_origin
 from starlite.dto.config import DTOConfig
 from starlite.dto.exc import InvalidAnnotation
 from starlite.dto.stdlib.dataclass import DataclassDTO, DataT
+from starlite.dto.types import FieldDefinition
 from starlite.enums import MediaType
 
 from . import Model
@@ -119,3 +120,11 @@ def test_from_bytes() -> None:
     dto_type.postponed_cls_init()
     dto_instance = dto_type.from_bytes(b'{"a":1,"b":"two"}', media_type=MediaType.JSON)
     assert dto_instance.data == Model(a=1, b="two")
+
+
+def test_config_field_definitions() -> None:
+    new_def = FieldDefinition(field_name="z", field_type=str, default="something")
+    config = DTOConfig(field_definitions=[new_def])
+    dto_type = DataclassDTO[Annotated[Model, config]]
+    dto_type.postponed_cls_init()
+    assert dto_type.field_definitions["z"] is new_def
