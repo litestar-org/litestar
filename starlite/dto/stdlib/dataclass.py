@@ -3,19 +3,19 @@ from __future__ import annotations
 from dataclasses import MISSING, fields
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from typing_extensions import Self, get_args
+from typing_extensions import get_args
 
 from starlite.dto import AbstractDTO
 from starlite.dto.backends.msgspec import MsgspecDTOBackend
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import FieldDefinition
 from starlite.dto.utils import get_model_type_hints
-from starlite.enums import MediaType
 from starlite.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Generator, Iterable
 
+    from starlite.enums import MediaType
     from starlite.types import DataclassProtocol
 
 
@@ -56,11 +56,6 @@ class DataclassDTO(AbstractDTO[DataT], Generic[DataT]):
         if not args:
             return hasattr(field_definition.field_type, "__dataclass_fields__")
         return any(hasattr(a, "__dataclass_fields__") for a in args)
-
-    @classmethod
-    def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
-        parsed = cls.dto_backend.parse_raw(raw, media_type)
-        return cls(data=cls.build_data(cls.annotation, parsed, cls.field_definitions))
 
     def to_encodable_type(self, media_type: str | MediaType) -> Any:
         return decode_json(encode_json(self.data), self.dto_backend.annotation)

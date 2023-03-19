@@ -58,7 +58,7 @@ class NestedFieldDefinition:
         if self.origin:
             if hasattr(self.field_definition.field_type, "copy_with"):
                 return self.field_definition.field_type.copy_with(inner_type)  # pyright: ignore
-            return self.origin[inner_type]
+            return self.origin[inner_type]  # pragma: no cover
         return inner_type
 
 

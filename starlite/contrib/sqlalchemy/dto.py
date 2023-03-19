@@ -4,15 +4,13 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from sqlalchemy import inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped
-from typing_extensions import Self, get_args, get_origin
+from typing_extensions import get_args, get_origin
 
 from starlite.dto import AbstractDTO
 from starlite.dto.backends.pydantic import PydanticDTOBackend
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import FieldDefinition
 from starlite.dto.utils import get_model_type_hints
-from starlite.enums import MediaType
-from starlite.exceptions import SerializationException
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Generator, Iterable
@@ -21,6 +19,7 @@ if TYPE_CHECKING:
     from sqlalchemy import Column
     from sqlalchemy.orm import RelationshipProperty
 
+    from starlite.enums import MediaType
 
 __all__ = ("SQLAlchemyDTO", "DataT")
 
@@ -37,7 +36,7 @@ class SQLAlchemyDTO(AbstractDTO[DataT], Generic[DataT]):
     @classmethod
     def generate_field_definitions(cls, model_type: type[DeclarativeBase]) -> Generator[FieldDefinition, None, None]:
         mapper = inspect(model_type)
-        if mapper is None:
+        if mapper is None:  # pragma: no cover
             raise RuntimeError("Unexpected `None` value for mapper.")
 
         columns = mapper.columns
@@ -77,13 +76,6 @@ class SQLAlchemyDTO(AbstractDTO[DataT], Generic[DataT]):
         if not args:
             return issubclass(field_definition.field_type, DeclarativeBase)
         return any(issubclass(a, DeclarativeBase) for a in args)
-
-    @classmethod
-    def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
-        if media_type != MediaType.JSON:
-            raise SerializationException(f"Unsupported media type: '{media_type}'")
-        parsed = cls.dto_backend.parse_raw(raw, media_type)
-        return cls(data=cls.build_data(cls.model_type, parsed, cls.field_definitions))
 
     def to_encodable_type(self, media_type: str | MediaType) -> BaseModel:
         return self.dto_backend.model.from_orm(self.data)  # type:ignore[pydantic-unexpected]
