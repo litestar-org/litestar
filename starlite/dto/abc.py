@@ -129,7 +129,7 @@ class AbstractDTO(ABC, Generic[DataT]):
             if isinstance(v, dict):
                 data[k] = cls.build_data(field_definition.nested_type, v, field_definition.nested_field_definitions)
             elif isinstance(v, Iterable):
-                if field_definition.origin is None:
+                if field_definition.origin is None:  # pragma: no cover
                     raise RuntimeError("Unexpected origin value for collection type.")
                 data[k] = field_definition.origin(
                     cls.build_data(field_definition.nested_type, item, field_definition.nested_field_definitions)

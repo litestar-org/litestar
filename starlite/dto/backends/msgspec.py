@@ -73,4 +73,4 @@ def _create_msgspec_struct_for_field_definitions(
             )
         else:
             struct_fields.append(_create_struct_field_def(k, v.field_type, _create_msgspec_field(v)))
-    return defstruct(model_name, struct_fields, frozen=True)
+    return defstruct(model_name, struct_fields, frozen=True, kw_only=True)

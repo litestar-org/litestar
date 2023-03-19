@@ -9,6 +9,7 @@ from typing_extensions import Annotated, get_args, get_origin
 from starlite.dto.config import DTOConfig
 from starlite.dto.exc import InvalidAnnotation
 from starlite.dto.stdlib.dataclass import DataclassDTO, DataT
+from starlite.enums import MediaType
 
 from . import Model
 
@@ -111,3 +112,10 @@ def test_overwrite_config() -> None:
     config = DTOConfig()
     dto = generic_dto[Annotated[Model, config]]  # pyright: ignore
     assert dto.config is config
+
+
+def test_from_bytes() -> None:
+    dto_type = DataclassDTO[Model]
+    dto_type.postponed_cls_init()
+    dto_instance = dto_type.from_bytes(b'{"a":1,"b":"two"}', media_type=MediaType.JSON)
+    assert dto_instance.data == Model(a=1, b="two")

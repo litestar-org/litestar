@@ -6,7 +6,7 @@ from sqlalchemy import inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped
 from typing_extensions import Self, get_args, get_origin
 
-from starlite.dto import AbstractDTO, DTOField
+from starlite.dto import AbstractDTO
 from starlite.dto.backends.pydantic import PydanticDTOBackend
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import FieldDefinition
@@ -53,7 +53,7 @@ class SQLAlchemyDTO(AbstractDTO[DataT], Generic[DataT]):
                 (type_hint,) = get_args(type_hint)  # noqa: PLW2901
 
             field_def = FieldDefinition(
-                field_name=key, field_type=type_hint, dto_field=elem.info.get(DTO_FIELD_META_KEY, DTOField())
+                field_name=key, field_type=type_hint, dto_field=elem.info.get(DTO_FIELD_META_KEY)
             )
 
             default = getattr(elem, "default", None)

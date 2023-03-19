@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from typing_extensions import Self, get_args
 
-from starlite.dto import AbstractDTO, DTOField
+from starlite.dto import AbstractDTO
 from starlite.dto.backends.msgspec import MsgspecDTOBackend
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import FieldDefinition
@@ -39,7 +39,7 @@ class DataclassDTO(AbstractDTO[DataT], Generic[DataT]):
                 continue
 
             field_def = FieldDefinition(
-                field_name=key, field_type=type_hint, dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY, DTOField())
+                field_name=key, field_type=type_hint, dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY)
             )
 
             if dc_field.default is not MISSING:

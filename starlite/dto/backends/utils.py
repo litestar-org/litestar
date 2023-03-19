@@ -25,5 +25,5 @@ def build_annotation_for_backend(annotation: Any, model: type[Any]) -> Any:
         return model
     try:
         return origin[model]
-    except TypeError:
+    except TypeError:  # pragma: no cover
         return annotation.copy_with((model,))
