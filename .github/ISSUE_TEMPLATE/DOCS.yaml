@@ -1,0 +1,29 @@
+name: "Documentation Update"
+description: Create an issue for documentation changes
+title: "Docs: <title>"
+labels: ["docs"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Summary"
+      description: Provide a brief summary of your feature request
+      placeholder: Describe in a few lines your feature request
+    validations:
+      required: true
+  - type: checkboxes
+    id: contribution-guidelines
+    attributes:
+      label: Contribution Guidelines
+      description: By submitting this issue, you agree to follow Starlite's [Contribution Guidelines](https://starliteproject.dev/community/contribution-guide/index.html)
+      options:
+        - label: I agree to follow Starlite's Contribution Guidelines
+          required: true
+  - type: checkboxes
+    id: code-of-conduct
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow Starlite's [Code of Conduct](https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow Starlite's Code of Conduct
+          required: true
