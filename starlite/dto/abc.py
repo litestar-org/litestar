@@ -8,14 +8,14 @@ from typing_extensions import Annotated, get_args, get_origin
 
 from starlite.enums import MediaType
 
-from .config import DTOConfig, DTOField
+from .config import DTOConfig
 from .enums import Mark, Purpose
 from .exc import InvalidAnnotation
-from .types import DataT
+from .types import DataT, FieldDefinition, NestedFieldDefinition
 from .utils import parse_config_from_annotated
 
 if TYPE_CHECKING:
-    from typing import ClassVar
+    from typing import ClassVar, Generator
 
     from typing_extensions import Self
 
@@ -70,6 +70,8 @@ class AbstractDTO(ABC, Generic[DataT]):
 
         return type(f"{cls.__name__}[{item}]", (cls,), cls_dict)
 
+    # Runtime methods
+
     @abstractmethod
     def to_encodable_type(self, media_type: str | MediaType) -> bytes | StarliteEncodableType:
         """Encode data held by the DTO type to a type supported by starlite serialization.
@@ -90,7 +92,6 @@ class AbstractDTO(ABC, Generic[DataT]):
         """
 
     @classmethod
-    @abstractmethod
     def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
         """Construct an instance from bytes.
 
@@ -101,9 +102,66 @@ class AbstractDTO(ABC, Generic[DataT]):
         Returns:
             AbstractDTO instance.
         """
+        parsed = cls.dto_backend.parse_raw(raw, media_type)
+        return cls(data=cls.build_data(cls.annotation, parsed, cls.field_definitions))
+
+    @classmethod
+    def build_data(cls, annotation: type[Any], data: Any, field_definitions: FieldDefinitionsType) -> Any:
+        """Create instance or iterable of instances of ``cls.model_type``.
+
+        Args:
+            annotation: the annotation received by the DTO on type narrowing.
+            data: primitive data that has been parsed and validated via the backend.
+            field_definitions: model field definitions.
+
+        Returns:
+            Data parsed into ``annotation``.
+        """
+        origin = get_origin(annotation)
+        if origin:
+            return origin(cls.build_data(cls.model_type, item, field_definitions) for item in data)
+
+        for k, v in data.items():
+            field_definition = field_definitions[k]
+            if isinstance(field_definition, FieldDefinition):
+                continue
+
+            if isinstance(v, dict):
+                data[k] = cls.build_data(field_definition.nested_type, v, field_definition.nested_field_definitions)
+            elif isinstance(v, Iterable):
+                if field_definition.origin is None:
+                    raise RuntimeError("Unexpected origin value for collection type.")
+                data[k] = field_definition.origin(
+                    cls.build_data(field_definition.nested_type, item, field_definition.nested_field_definitions)
+                    for item in v
+                )
+
+        return annotation(**data)
+
+    # Model generation
 
     @classmethod
     @abstractmethod
+    def generate_field_definitions(cls, model_type: type[Any]) -> Generator[FieldDefinition, None, None]:
+        """Generate ``FieldDefinition`` instances from ``model_type``.
+
+        Yields:
+            ``FieldDefinition`` instances.
+        """
+
+    @classmethod
+    @abstractmethod
+    def detect_nested(cls, field_definition: FieldDefinition) -> bool:
+        """Return ``True`` if ``field_definition`` represents a nested model field.
+
+        Args:
+            field_definition: inspect type to determine if field definition represents a nested model.
+
+        Returns:
+            ``True`` if ``field_definition`` represents a nested model field.
+        """
+
+    @classmethod
     def parse_model(cls, model_type: Any, nested_depth: int = 0, recursive_depth: int = 0) -> FieldDefinitionsType:
         """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
 
@@ -129,6 +187,43 @@ class AbstractDTO(ABC, Generic[DataT]):
             Add a new field called "new_field", that may be `None`:
             {"new_field": (str | None, None)}
         """
+        defined_fields: dict[str, FieldDefinition | NestedFieldDefinition] = {}
+        for field_definition in cls.generate_field_definitions(model_type):
+            if cls.should_exclude_field(field_definition):
+                continue
+
+            if cls.detect_nested(field_definition):
+                nested_field_definition = cls.handle_nested(field_definition, nested_depth, recursive_depth)
+                if nested_field_definition is not None:
+                    defined_fields[field_definition.field_name] = nested_field_definition
+                continue
+
+            defined_fields[field_definition.field_name] = field_definition
+        return defined_fields
+
+    @classmethod
+    def handle_nested(
+        cls, field_definition: FieldDefinition, nested_depth: int, recursive_depth: int
+    ) -> NestedFieldDefinition | None:
+        if nested_depth == cls.config.max_nested_depth:
+            return None
+
+        args = get_args(field_definition.field_type)
+        origin = get_origin(field_definition.field_type)
+        nested = NestedFieldDefinition(
+            field_definition=field_definition,
+            origin=origin,
+            args=args,
+            nested_type=args[0] if args else field_definition.field_type,
+        )
+
+        if (is_recursive := nested.is_recursive(cls.model_type)) and recursive_depth == cls.config.max_nested_recursion:
+            return None
+
+        nested.nested_field_definitions = cls.parse_model(
+            nested.nested_type, nested_depth + 1, recursive_depth + is_recursive
+        )
+        return nested
 
     @staticmethod
     def get_model_type(item: type) -> Any:
@@ -147,17 +242,17 @@ class AbstractDTO(ABC, Generic[DataT]):
         return item
 
     @classmethod
-    def should_exclude_field(cls, field_name: str, field_type: type, dto_field: DTOField | None) -> bool:
+    def should_exclude_field(cls, field_definition: FieldDefinition) -> bool:
         """Returns ``True`` where a field should be excluded from data transfer.
 
         Args:
-            field_name: the string name of the model field.
-            field_type: type annotation of the field.
-            dto_field: optional field configuration object.
+            field_definition: defined DTO field
 
         Returns:
             ``True`` if the field should not be included in any data transfer.
         """
+        field_name = field_definition.field_name
+        dto_field = field_definition.dto_field
         excluded = field_name in cls.config.exclude
         not_included = cls.config.include and field_name not in cls.config.include
         private = dto_field and dto_field.mark is Mark.PRIVATE

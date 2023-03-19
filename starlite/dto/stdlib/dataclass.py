@@ -1,23 +1,21 @@
 from __future__ import annotations
 
-from collections.abc import Iterable as CollectionsIterable
-from dataclasses import MISSING, Field, fields
-from inspect import getmodule
+from dataclasses import MISSING, fields
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from typing_extensions import Self, get_args, get_origin, get_type_hints
+from typing_extensions import Self, get_args
 
-from starlite.dto import AbstractDTO, DTOField, Purpose
+from starlite.dto import AbstractDTO, DTOField
 from starlite.dto.backends.msgspec import MsgspecDTOBackend
 from starlite.dto.config import DTO_FIELD_META_KEY
-from starlite.dto.types import FieldDefinition, NestedFieldDefinition
+from starlite.dto.types import FieldDefinition
+from starlite.dto.utils import get_model_type_hints
 from starlite.enums import MediaType
 from starlite.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Iterable
+    from typing import Any, ClassVar, Generator, Iterable
 
-    from starlite.dto.types import FieldDefinitionsType
     from starlite.types import DataclassProtocol
 
 
@@ -34,123 +32,35 @@ class DataclassDTO(AbstractDTO[DataT], Generic[DataT]):
     dto_backend: ClassVar[MsgspecDTOBackend]
 
     @classmethod
-    def parse_model(
-        cls, model_type: type[DataclassProtocol], nested_depth: int = 0, recursive_depth: int = 0
-    ) -> FieldDefinitionsType:
-        defined_fields: dict[str, FieldDefinition | NestedFieldDefinition] = {}
+    def generate_field_definitions(cls, model_type: type[DataclassProtocol]) -> Generator[FieldDefinition, None, None]:
         dc_fields = {f.name: f for f in fields(model_type)}
-        for key, type_hint in get_type_hints(model_type, localns=_get_localns(model_type)).items():
+        for key, type_hint in get_model_type_hints(model_type).items():
             if not (dc_field := dc_fields.get(key)):
                 continue
 
-            dto_field = _get_dto_field(dc_field)
+            field_def = FieldDefinition(
+                field_name=key, field_type=type_hint, dto_field=dc_field.metadata.get(DTO_FIELD_META_KEY, DTOField())
+            )
 
-            if cls.should_exclude_field(key, type_hint, dto_field):
-                continue
+            if dc_field.default is not MISSING:
+                field_def.default = dc_field.default
 
-            field_definition = FieldDefinition(field_type=type_hint)
-            if cls.config.purpose is not Purpose.READ:
-                set_field_definition_default(field_definition, dc_field)
+            if dc_field.default_factory is not MISSING:
+                field_def.default_factory = dc_field.default_factory
 
-            if cls._detect_nested(type_hint):
-                nested_field_definition = cls._handle_nested(field_definition, nested_depth, recursive_depth)
-                if nested_field_definition is not None:
-                    defined_fields[key] = nested_field_definition
-                continue
-
-            defined_fields[key] = field_definition
-        return defined_fields
+            yield field_def
 
     @classmethod
-    def _detect_nested(cls, field_type: type) -> bool:
-        args = get_args(field_type)
-        if not args:
-            return hasattr(field_type, "__dataclass_fields__")
-        return any(hasattr(a, "__dataclass_fields__") for a in args)
-
-    @classmethod
-    def _handle_nested(
-        cls, field_definition: FieldDefinition, nested_depth: int, recursive_depth: int
-    ) -> NestedFieldDefinition | None:
-        if nested_depth == cls.config.max_nested_depth:
-            return None
-
+    def detect_nested(cls, field_definition: FieldDefinition) -> bool:
         args = get_args(field_definition.field_type)
-        origin = get_origin(field_definition.field_type)
-        nested = NestedFieldDefinition(
-            field_definition=field_definition,
-            origin=origin,
-            args=args,
-            nested_type=args[0] if args else field_definition.field_type,
-        )
-
-        if (is_recursive := nested.is_recursive(cls.model_type)) and recursive_depth == cls.config.max_nested_recursion:
-            return None
-
-        nested.nested_field_definitions = cls.parse_model(
-            nested.nested_type, nested_depth + 1, recursive_depth + is_recursive
-        )
-        return nested
+        if not args:
+            return hasattr(field_definition.field_type, "__dataclass_fields__")
+        return any(hasattr(a, "__dataclass_fields__") for a in args)
 
     @classmethod
     def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
         parsed = cls.dto_backend.parse_raw(raw, media_type)
-        return cls(data=cls._build_data(cls.annotation, parsed, cls.field_definitions))
+        return cls(data=cls.build_data(cls.annotation, parsed, cls.field_definitions))
 
     def to_encodable_type(self, media_type: str | MediaType) -> Any:
         return decode_json(encode_json(self.data), self.dto_backend.annotation)
-
-    @classmethod
-    def _build_data(
-        cls,
-        annotation: type[Any],
-        data: Any,
-        field_definitions: FieldDefinitionsType,
-    ) -> Any:
-        """Create instance or iterable of instances of ``cls.model_type``.
-
-        Args:
-            annotation: the annotation received by the DTO on type narrowing.
-            data: primitive data that has been parsed and validated via the backend.
-            field_definitions: model field definitions.
-
-        Returns:
-            Data parsed into ``annotation``.
-        """
-        origin = get_origin(annotation)
-        if origin:
-            return origin(cls._build_data(cls.model_type, item, field_definitions) for item in data)
-
-        for k, v in data.items():
-            field_definition = field_definitions[k]
-            if isinstance(field_definition, FieldDefinition):
-                continue
-
-            if isinstance(v, dict):
-                data[k] = cls._build_data(field_definition.nested_type, v, field_definition.nested_field_definitions)
-            elif isinstance(v, CollectionsIterable):
-                if field_definition.origin is None:
-                    raise RuntimeError("Unexpected origin value for collection type.")
-                data[k] = field_definition.origin(
-                    cls._build_data(field_definition.nested_type, item, field_definition.nested_field_definitions)
-                    for item in v
-                )
-
-        return annotation(**data)
-
-
-def set_field_definition_default(field_definition: FieldDefinition, dc_field: Field) -> None:
-    if dc_field.default is not MISSING:
-        field_definition.default = dc_field.default
-
-    if dc_field.default_factory is not MISSING:
-        field_definition.default_factory = dc_field.default_factory
-
-
-def _get_dto_field(dc_field: Field) -> DTOField:
-    return dc_field.metadata.get(DTO_FIELD_META_KEY, DTOField())
-
-
-def _get_localns(model: type[DataclassProtocol]) -> dict[str, Any]:
-    model_module = getmodule(model)
-    return vars(model_module) if model_module is not None else {}

@@ -9,7 +9,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column
 from typing_extensions import Annotated
 
-from starlite.contrib.sqlalchemy.dto import ModelT, SQLAlchemyDTO
+from starlite.contrib.sqlalchemy.dto import DataT, SQLAlchemyDTO
 from starlite.dto import DTOConfig, DTOField, Mark, Purpose
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.enums import MediaType
@@ -65,7 +65,7 @@ def fx_raw_author() -> bytes:
 T = TypeVar("T")
 
 
-def get_model_from_dto(dto_type: SQLAlchemyDTO[ModelT], raw_data: bytes) -> ModelT:
+def get_model_from_dto(dto_type: SQLAlchemyDTO[DataT], raw_data: bytes) -> DataT:
     dto_type.postponed_cls_init()
     dto_instance = dto_type.from_bytes(raw_data, MediaType.JSON)
     return dto_instance.data

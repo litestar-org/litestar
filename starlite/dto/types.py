@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import TypeAlias
 
+    from starlite.dto.config import DTOField
     from starlite.types import EmptyType
 
 __all__ = (
@@ -25,9 +26,11 @@ __all__ = (
 
 @dataclass
 class FieldDefinition:
+    field_name: str
     field_type: type
     default: Any = field(default=Empty)
     default_factory: Callable[[], Any] | EmptyType = field(default=Empty)
+    dto_field: DTOField | None = field(default=None)
 
 
 @dataclass
@@ -41,7 +44,7 @@ class NestedFieldDefinition:
     nested_field_definitions: FieldDefinitionsType = field(default_factory=dict)
 
     def is_recursive(self, model_type: type) -> bool:
-        """Indicate if :attribute:`nested_type` is a subtype of ``model_type``.
+        """Indicate if ``nested_type`` is a subtype of ``model_type``.
 
         Args:
             model_type: type that is having a DTO generated.
