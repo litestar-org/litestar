@@ -90,7 +90,7 @@ class MemoryStore(Store):
         """Delete expired items.
 
         Since expired items are normally only cleared on access (i.e. when calling
-        :meth:`.get` or :meth:`.set`, this method should be called in regular intervals
+        :meth:`.get`), this method should be called in regular intervals
         to free memory.
         """
         async with self._lock:
