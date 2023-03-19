@@ -87,11 +87,11 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
     def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
-        :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>`
+        :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`
 
         Returns:
             An OpenAPI 3.1
-            :data:`SecurityRequirement <starlite.openapi.spec.security_requirement.SecurityRequirement>`
+            :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`
             dictionary.
         """
         return {self.openapi_security_scheme_name: []}

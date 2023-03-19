@@ -15,13 +15,7 @@ class Contact(BaseSchemaObject):
     """The identifying name of the contact person/organization."""
 
     url: str | None = None
-    """The URL pointing to the contact information.
-
-    MUST be in the form of a URL.
-    """
+    """The URL pointing to the contact information. MUST be in the form of a URL."""
 
     email: str | None = None
-    """The email address of the contact person/organization.
-
-    MUST be in the form of an email address.
-    """
+    """The email address of the contact person/organization. MUST be in the form of an email address."""
