@@ -20,9 +20,19 @@ third party integration (for example plugins).
 Built-in stores
 ---------------
 
-- :class:`MemoryStore <starlite.stores.memory.MemoryStore>`: A simple in-memory store
-- :class:`FileStore <starlite.stores.file.FileStore>`: File-based store
-- :class:`RedisStore <starlite.stores.redis.RedisStore>`: Redis based store
+:class:`MemoryStore <starlite.stores.memory.MemoryStore>`
+    A simple in-memory store, using a dictionary to hold data. This store offers no persistence but is suitable for
+    basic applications such as caching and has generally the lowest overhead. This is the default store used by Starlite
+    internally.
+
+:class:`FileStore <starlite.stores.file.FileStore>`
+    A store that saves data as files on disk. Persistence is built in, and data is easy to extract and back up.
+    It is slower compared to in-memory solutions, and primarily suitable for situations when larger amounts of data
+    need to be stored, is particularly long-lived, or persistence has a very high importance. Offers `namespacing`_.
+
+:class:`RedisStore <starlite.stores.redis.RedisStore>`
+    A store backend by `redis <https://redis.io/>`_. It offers all the guarantees and features of Redis, making it
+    suitable for almost all applications. Offers `namespacing`_.
 
 .. admonition:: Why not memcached?
     :class: info
@@ -34,7 +44,7 @@ Built-in stores
 
 
 Interacting with a store
-++++++++++++++++++++++++
+------------------------
 
 The most fundamental operations of a store are:
 
@@ -44,7 +54,7 @@ The most fundamental operations of a store are:
 
 
 Getting and setting values
-**************************
+++++++++++++++++++++++++++
 
 
 .. code-block:: python
@@ -64,7 +74,7 @@ Getting and setting values
 
 
 Setting an expiry time
-**********************
+++++++++++++++++++++++
 
 The :meth:`set <.base.Store.set>` method has an optional parameter ``expires_in``, allowing to specify a time after
 which a stored value should expire.
@@ -181,7 +191,7 @@ When using the :class:`FileStore <.file.FileStore>`, deleting expired items on s
 
 
 What can be stored
-******************
+++++++++++++++++++
 
 Stores generally operate on :class:`bytes`; They accept bytes to store, and will return bytes. For convenience, the
 :meth:`set <.base.Store.set>` method also allows to pass in strings, which will be UTF-8 encoded before being stored.
@@ -200,6 +210,33 @@ to store a very wide variety of data.
     object back. However, this is not reflected in the store's typing, as the underlying :class:`Store <.base.Store>`
     interface does not guarantee this behaviour, and it is not guaranteed that
     :class:`MemoryStore <.memory.MemoryStore>` will always behave in this case.
+
+
+Namespacing
++++++++++++
+
+When stores are being used for more than one purpose, some extra bookkeeping is required to safely perform bulk
+operations such as :class:`delete_all <.base.Store.delete_all>`. If for example a
+:class:`RedisStore <.redis.RedisStore>` was used, simply issuing a `FLUSHALL <https://redis.io/commands/flushall/>`_
+command might have unforeseen consequences.
+
+To help with this, some stores offer namespacing capabilities, allowing to build a simple hierarchy of stores.
+These come with the additional :meth:`with_namespace <.base.NamespacedStore.with_namespace>` method, which returns a
+new :class:`NamespacedStore <.base.NamespacedStore>` instance. Once a namespaced store is created, operations on it
+will only affect itself and its child namespaces.
+
+When using the :class:`RedisStore <.redis.RedisStore>`, this allows to re-use the same underlying
+:class:`Redis <redis.asyncio.Redis>` instance and connection, while ensuring isolation.
+
+.. info::
+    :class:`RedisStore <.redis.RedisStore>` uses the ``STARLITE`` namespace by default; all keys created by this store,
+    will use the ``STARLITE`` prefix when storing data in redis.
+    :meth:`RedisStore.delete_all <.redis.RedisStore.delete_all>` is implemented in such a way that it will only delete
+    keys matching the current namespace, making it safe and side-effect free.
+
+    This can be turned off by explicitly passing ``namespace=None`` to the store when creating a new instance.
+
+
 
 
 
