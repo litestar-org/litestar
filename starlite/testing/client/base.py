@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import warnings
 from contextlib import contextmanager
 from http.cookiejar import CookieJar
 from typing import TYPE_CHECKING, Any, Generator, Generic, Mapping, TypeVar, cast
+from warnings import warn
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 
@@ -83,10 +83,11 @@ class BaseTestClient(Generic[T]):
         cookies: CookieTypes | None = None,
     ):
         if "." not in base_url:
-            warnings.warn(
+            warn(
                 f"The base_url {base_url!r} might cause issues. Try adding a domain name such as .local: "
                 f"'{base_url}.local'",
                 UserWarning,
+                stacklevel=1,
             )
         self._session_backend: BaseSessionBackend | None = None
         if session_config:

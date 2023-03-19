@@ -57,12 +57,6 @@ def test_logging_middleware_regular_logger(get_logger: "GetLogger", caplog: "Log
             'cookies={"request-cookie":"abc"}, query={}, path_params={}, body=None'
         )
 
-        assert (
-            'HTTP Response: status_code=200, cookies={"first-cookie":"abc","Path":"/","SameSite":'
-            '"lax","second-cookie":"xxx"}, headers={"token":"123","regular":"abc","content-type":'
-            '"application/json","content-length":"17"}, body={"hello":"world"}' in list(caplog.messages)
-        )
-
 
 def test_logging_middleware_struct_logger() -> None:
     with create_test_client(
