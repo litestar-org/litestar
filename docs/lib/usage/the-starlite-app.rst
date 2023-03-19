@@ -31,7 +31,7 @@ Startup and Shutdown
 
 You can pass a list of callables - either sync or async functions, methods or class instances - to the ``on_startup``
 / ``on_shutdown`` kwargs of the :class:`Starlite <starlite.app.Starlite>` instance. Those will be called in
-order, once the ASGI server (uvicorn, daphne etc.) emits the respective event.
+order, once the ASGI server (uvicorn, hypercorn etc.) emits the respective event.
 
 .. mermaid::
 

@@ -21,7 +21,7 @@ def test_regular_options_request(http_methods: List["Method"]) -> None:
 
     with create_test_client(handler) as client:
         response = client.options("/")
-        assert response.status_code == HTTP_204_NO_CONTENT
+        assert response.status_code == HTTP_204_NO_CONTENT, response.text
         assert response.headers.get("Allow") == ", ".join(sorted({*http_methods, "OPTIONS"}))
 
 
