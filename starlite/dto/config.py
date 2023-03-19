@@ -51,8 +51,6 @@ class DTOConfig:
     """Mapping of field names, to new name, or tuple of new name, new type."""
     field_definitions: Iterable[FieldDefinition] = field(default_factory=list)
     """Additional fields for data transfer."""
-    partial: bool = field(default=False)
-    """DTO should allow incomplete object representation."""
     max_nested_recursion: int = 0
     """The maximum number of times a self-referencing nested field should be followed."""
     max_nested_depth: int = 1

@@ -68,7 +68,7 @@ DataT = TypeVar("DataT")
 FieldDefinitionsType: TypeAlias = "Mapping[str, FieldDefinition | NestedFieldDefinition]"
 """Generic representation of names and types."""
 
-FieldMappingType: TypeAlias = "Mapping[str, tuple[str, type]]"
+FieldMappingType: TypeAlias = "Mapping[str, str | FieldDefinition]"
 """Type of the field mappings configuration property."""
 
 StarliteEncodableType: TypeAlias = "Any"

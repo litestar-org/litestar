@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
+from copy import copy
 from itertools import chain
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
@@ -43,6 +44,7 @@ class AbstractDTO(ABC, Generic[DataT]):
     """DTO backend instance."""
 
     _postponed_cls_init_called: ClassVar[bool]
+    _reverse_field_mappings: dict[str, FieldDefinition]
 
     def __init__(self, data: DataT) -> None:
         """Create an AbstractDTO type.
@@ -65,7 +67,11 @@ class AbstractDTO(ABC, Generic[DataT]):
         if isinstance(item, str):
             raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
 
-        cls_dict = {"config": config, "_postponed_cls_init_called": False}
+        cls_dict: dict[str, Any] = {
+            "config": config,
+            "_postponed_cls_init_called": False,
+            "_reverse_field_mappings": {},
+        }
         if not isinstance(item, TypeVar):
             cls_dict.update(annotation=item, model_type=cls.get_model_type(item))
 
@@ -192,6 +198,15 @@ class AbstractDTO(ABC, Generic[DataT]):
         for field_definition in chain(cls.generate_field_definitions(model_type), cls.config.field_definitions):
             if cls.should_exclude_field(field_definition):
                 continue
+
+            if field_mapping := cls.config.field_mapping.get(field_definition.field_name):
+                if isinstance(field_mapping, str):
+                    cls._reverse_field_mappings[field_mapping] = field_definition
+                    field_definition = copy(field_definition)  # noqa: PLW2901
+                    field_definition.field_name = field_mapping
+                else:
+                    cls._reverse_field_mappings[field_mapping.field_name] = field_definition
+                    field_definition = field_mapping  # noqa: PLW2901
 
             if cls.detect_nested(field_definition):
                 nested_field_definition = cls.handle_nested(field_definition, nested_depth, recursive_depth)

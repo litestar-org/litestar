@@ -128,3 +128,22 @@ def test_config_field_definitions() -> None:
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.postponed_cls_init()
     assert dto_type.field_definitions["z"] is new_def
+
+
+def test_config_field_mapping() -> None:
+    config = DTOConfig(field_mapping={"a": "z"})
+    dto_type = DataclassDTO[Annotated[Model, config]]
+    dto_type.postponed_cls_init()
+    assert "a" not in dto_type.field_definitions
+    assert "z" in dto_type.field_definitions
+
+
+def test_config_field_mapping_new_definition() -> None:
+    config = DTOConfig(field_mapping={"a": FieldDefinition(field_name="z", field_type=str)})
+    dto_type = DataclassDTO[Annotated[Model, config]]
+    dto_type.postponed_cls_init()
+    assert "a" not in dto_type.field_definitions
+    z = dto_type.field_definitions["z"]
+    assert isinstance(z, FieldDefinition)
+    assert z.field_name == "z"
+    assert z.field_type is str
