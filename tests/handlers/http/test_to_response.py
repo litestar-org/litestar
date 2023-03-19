@@ -197,7 +197,7 @@ def test_to_response_returning_redirect_response_from_redirect() -> None:
 
     with create_test_client(route_handlers=[redirect_handler, proxy_handler]) as client:
         response = client.get("/test")
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == HTTP_200_OK, response.json()
         assert response.json() == {"message": "redirected by before request hook"}
 
 
