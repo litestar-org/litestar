@@ -402,12 +402,7 @@ class ResponseDataExtractor:
             The Response's cookies dict.
         """
         cookie_string = ";".join(
-            list(
-                map(
-                    lambda x: x[1].decode("latin-1"),
-                    filter(lambda x: x[0].lower() == b"set-cookie", messages[0]["headers"]),
-                )
-            )
+            [x[1].decode("latin-1") for x in filter(lambda x: x[0].lower() == b"set-cookie", messages[0]["headers"])]
         )
         if cookie_string:
             parsed_cookies = parse_cookie_string(cookie_string)
