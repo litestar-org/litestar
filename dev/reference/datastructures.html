@@ -1,10 +1,13 @@
 
+
 <!DOCTYPE html>
 
-<html lang="en">
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>datastructures &#8212; Starlite Framework</title>
   
@@ -16,15 +19,15 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link href="../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
@@ -32,8 +35,8 @@
     <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -44,7 +47,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/design-tabs.js"></script>
-    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'lib/reference/datastructures';</script>
     <script src="../../_static/versioning.js"></script>
@@ -53,74 +56,85 @@
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="di" href="di.html" />
     <link rel="prev" title="data_extractors" href="data_extractors.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
   <label class="overlay overlay-primary" for="__primary"></label>
-
   
-  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
   <label class="overlay overlay-secondary" for="__secondary"></label>
-
   
   <div class="search-button__wrapper">
     <div class="search-button__overlay"></div>
     <div class="search-button__search-container">
-      
-<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
   <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-    </div>
+</form></div>
   </div>
-
   
-  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
   <label class="sidebar-toggle primary-toggle" for="__primary">
-      <span class="fa-solid fa-bars"></span>
+    <span class="fa-solid fa-bars"></span>
   </label>
-  <div id="navbar-start">
-    
-    
   
-
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
 
 <a class="navbar-brand logo" href="../../index.html">
-
   
   
   
   
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.svg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../../_static/logo.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-  
-
-  
-    <img src="../../_static/logo.svg" class="logo__image only-light" alt="Logo image">
-    <img src="../../_static/logo.svg" class="logo__image only-dark" alt="Logo image">
-  
-  
-</a>
+</a></div>
     
   </div>
-
+  
   
   <div class=" navbar-header-items">
-    <div id="navbar-center" class="mr-auto">
+    
+    <div class="me-auto navbar-header-items__center">
       
-      <div class="navbar-center-item">
-        
+        <div class="navbar-item">
 
 
 <nav class="navbar-nav">
@@ -181,31 +195,40 @@
             
         
     </ul>
-</nav>
-      </div>
+</nav></div>
       
     </div>
-
-    <div id="navbar-end">
+    
+    
+    <div class="navbar-header-items__end">
       
-        <div class="navbar-end-item navbar-persistent--container">
+        <div class="navbar-item navbar-persistent--container">
           
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
         </div>
       
-        <div class="navbar-end-item navbar-persistent--container">
-          <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
+  </button>
+`);
+</script>
         </div>
       
       
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -214,7 +237,8 @@
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-github"></i></span>
+          
+          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -225,55 +249,62 @@
           
           
           
-          <a href="https://discord.gg/X3FJqy8d2j" title="Discord" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-discord"></i></span>
+          
+          <a href="https://discord.gg/X3FJqy8d2j" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord"></i></span>
             <label class="sr-only">Discord</label></a>
         </li>
-      </ul>
-      </div>
+</ul></div>
       
     </div>
+    
   </div>
-
-
   
   
     <div class="navbar-persistent--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
-  <i class="fa-solid fa-magnifying-glass"></i>
-</button>
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
     </div>
   
-    <div class="navbar-persistent--mobile"><button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
     <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
     <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
-</button>
+  </button>
+`);
+</script>
     </div>
   
 
   
-  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
       <span class="fa-solid fa-outdent"></span>
-  </label>
+    </label>
   
-
 </div>
-  </nav>
-  
 
+    </nav>
+  
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
       <div class="bd-sidebar-primary bd-sidebar">
         
+
   
   <div class="sidebar-header-items sidebar-primary__section">
     
     
       <div class="sidebar-header-items__center">
-      
-      <div class="navbar-center-item">
         
+          <div class="navbar-item">
 
 
 <nav class="navbar-nav">
@@ -334,18 +365,16 @@
             
         
     </ul>
-</nav>
+</nav></div>
+        
       </div>
-      
-      </div>
-    
-
     
     
-    <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
         <li class="nav-item">
           
           
@@ -354,7 +383,8 @@
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-github"></i></span>
+          
+          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -365,24 +395,21 @@
           
           
           
-          <a href="https://discord.gg/X3FJqy8d2j" title="Discord" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-discord"></i></span>
+          
+          <a href="https://discord.gg/X3FJqy8d2j" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord"></i></span>
             <label class="sr-only">Discord</label></a>
         </li>
-      </ul>
+</ul></div>
+        
       </div>
-      
-    </div>
     
   </div>
-
   
-  <div class="sidebar-start-items sidebar-primary__section">
-    <div class="sidebar-start-items__item"><nav class="bd-links" id="bd-docs-nav" aria-label="Section navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">
-    Section Navigation
-  </p>
-  <div class="bd-toc-item navbar-nav">
-    <p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/the-starlite-app.html">The Starlite App</a></li>
@@ -519,36 +546,65 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
 </ul>
-
-  </div>
-</nav>
+</div>
+</nav></div>
     </div>
-  </div>
   
-
   
-  <div class="sidebar-end-items sidebar-primary__section">
-    <div class="sidebar-end-items__item">
-    </div>
+  <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
-
   
   <div id="rtd-footer-container"></div>
 
+
       </div>
+      
       <main id="main-content" class="bd-main">
         
         
-        <div class="bd-content">
-          <div class="bd-article-container">
-            
-            <div class="bd-header-article">
-                
-            </div>
-            
-            
-            <article class="bd-article" role="main">
+          <div class="bd-content">
+            <div class="bd-article-container">
               
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Starlite library documentation</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">API reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">datastructures</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
   <section id="module-starlite.datastructures">
 <span id="datastructures"></span><h1>datastructures<a class="headerlink" href="#module-starlite.datastructures" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
@@ -1832,1296 +1888,259 @@ multidict and pass them back to <a class="reference internal" href="#starlite.da
 </section>
 
 
-            </article>
-            
-            
-            
-            <footer class="bd-footer-article">
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="data_extractors.html" title="previous page">
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="data_extractors.html"
+       title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
-          <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">data_extractors</p>
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">data_extractors</p>
       </div>
-  </a>
-  <a class='right-next' id="next-link" href="di.html" title="next page">
-  <div class="prev-next-info">
-      <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">di</p>
-  </div>
-  <i class="fa-solid fa-angle-right"></i>
-  </a>
+    </a>
+    <a class="right-next"
+       href="di.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">di</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
-            </footer>
-            
-          </div>
-          
-          
-          
-            <div class="bd-sidebar-secondary bd-toc">
+                </footer>
               
-<div class="toc-item">
-  
-<div class="tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-</div>
-<nav id="bd-toc-nav" class="page-toc">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.Address">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     Address
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Address.host">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Address.host
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Address.port">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Address.port
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Address.__new__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Address.__new__()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     CacheControlHeader
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.max_age">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.max_age
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.s_maxage">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.s_maxage
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.no_cache">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.no_cache
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.no_store">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.no_store
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.private">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.private
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.public">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.public
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.no_transform">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.no_transform
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.must_revalidate">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.must_revalidate
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.proxy_revalidate">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.proxy_revalidate
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.must_understand">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.must_understand
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.immutable">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.immutable
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.stale_while_revalidate">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.stale_while_revalidate
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.from_header">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.from_header()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.prevent_storing">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       CacheControlHeader.prevent_storing()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.Cookie">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     Cookie
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.key">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.key
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.path">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.path
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.value">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.value
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.max_age">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.max_age
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.expires">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.expires
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.domain">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.domain
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.secure">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.secure
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.httponly">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.httponly
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.samesite">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.samesite
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.description">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.description
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.documentation_only">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.documentation_only
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.simple_cookie">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.simple_cookie
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.to_header">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.to_header()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.to_encoded_header">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.to_encoded_header()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.dict">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.dict
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Cookie.__eq__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Cookie.__eq__()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.ETag">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     ETag
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ETag.from_header">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ETag.from_header()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ETag.validate_value">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ETag.validate_value()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.FormMultiDict">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     FormMultiDict
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.FormMultiDict.close">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       FormMultiDict.close()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.Header">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     Header
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Header.documentation_only">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Header.documentation_only
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Header.from_header">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Header.from_header()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Header.to_header">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Header.to_header()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.Headers">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     Headers
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Headers.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Headers.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Headers.from_scope">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Headers.from_scope()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.Headers.to_header_list">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       Headers.to_header_list()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableMultiDict">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     ImmutableMultiDict
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableMultiDict.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableMultiDict.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableMultiDict.mutable_copy">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableMultiDict.mutable_copy()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     ImmutableState
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__bool__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.__bool__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__getitem__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.__getitem__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__iter__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.__iter__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__len__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.__len__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__getattr__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.__getattr__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__copy__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.__copy__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.mutable_copy">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.mutable_copy()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.dict">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.dict()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__get_validators__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.__get_validators__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.validate">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ImmutableState.validate()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.MultiDict">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     MultiDict
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MultiDict.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MultiDict.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MultiDict.immutable">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MultiDict.immutable()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.MultiMixin">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     MultiMixin
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MultiMixin.dict">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MultiMixin.dict()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MultiMixin.multi_items">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MultiMixin.multi_items()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     MutableScopeHeaders
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MutableScopeHeaders.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.from_message">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MutableScopeHeaders.from_message()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.add">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MutableScopeHeaders.add()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.getall">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MutableScopeHeaders.getall()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.extend_header_value">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MutableScopeHeaders.extend_header_value()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__getitem__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MutableScopeHeaders.__getitem__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__setitem__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MutableScopeHeaders.__setitem__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__delitem__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MutableScopeHeaders.__delitem__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__len__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MutableScopeHeaders.__len__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__iter__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MutableScopeHeaders.__iter__()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     ResponseHeader
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.name">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.name
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.documentation_only">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.documentation_only
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.value">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.value
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.description">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.description
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.required">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.required
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.deprecated">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.deprecated
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.allow_empty_value">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.allow_empty_value
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.style">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.style
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.explode">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.explode
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.allow_reserved">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.allow_reserved
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.example">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.example
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.examples">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.examples
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.__post_init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ResponseHeader.__post_init__()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.State">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     State
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.State.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       State.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.State.__delitem__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       State.__delitem__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.State.__setitem__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       State.__setitem__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.State.__setattr__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       State.__setattr__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.State.__delattr__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       State.__delattr__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.State.copy">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       State.copy()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.State.immutable_copy">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       State.immutable_copy()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.UploadFile">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     UploadFile
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       UploadFile.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.rolled_to_disk">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       UploadFile.rolled_to_disk
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.write">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       UploadFile.write()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.read">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       UploadFile.read()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.seek">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       UploadFile.seek()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.close">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       UploadFile.close()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.__modify_schema__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       UploadFile.__modify_schema__()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.datastructures.URL">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     URL
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.scheme">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.scheme
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.netloc">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.netloc
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.path">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.path
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.fragment">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.fragment
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.query">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.query
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.username">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.username
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.password">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.password
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.port">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.port
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.hostname">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.hostname
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.__new__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.__new__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.from_components">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.from_components()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.from_scope">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.from_scope()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.with_replacements">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.with_replacements()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.datastructures.URL.query_params">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       URL.query_params
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
-
-</nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
-</div>
-
-<div class="toc-item">
-  
-</div>
-
             </div>
-          
-          
-        </div>
-        <footer class="bd-footer-content">
-          <div class="bd-footer-content__inner">
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Address"><code class="docutils literal notranslate"><span class="pre">Address</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Address.host"><code class="docutils literal notranslate"><span class="pre">Address.host</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Address.port"><code class="docutils literal notranslate"><span class="pre">Address.port</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Address.__new__"><code class="docutils literal notranslate"><span class="pre">Address.__new__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.max_age"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.max_age</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.s_maxage"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.s_maxage</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.no_cache"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.no_cache</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.no_store"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.no_store</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.private"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.private</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.public"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.public</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.no_transform"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.no_transform</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.must_revalidate"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.must_revalidate</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.proxy_revalidate"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.proxy_revalidate</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.must_understand"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.must_understand</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.immutable"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.immutable</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.stale_while_revalidate"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.stale_while_revalidate</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.from_header"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.from_header()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.CacheControlHeader.prevent_storing"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.prevent_storing()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie"><code class="docutils literal notranslate"><span class="pre">Cookie</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.key"><code class="docutils literal notranslate"><span class="pre">Cookie.key</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.path"><code class="docutils literal notranslate"><span class="pre">Cookie.path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.value"><code class="docutils literal notranslate"><span class="pre">Cookie.value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.max_age"><code class="docutils literal notranslate"><span class="pre">Cookie.max_age</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.expires"><code class="docutils literal notranslate"><span class="pre">Cookie.expires</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.domain"><code class="docutils literal notranslate"><span class="pre">Cookie.domain</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.secure"><code class="docutils literal notranslate"><span class="pre">Cookie.secure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.httponly"><code class="docutils literal notranslate"><span class="pre">Cookie.httponly</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.__init__"><code class="docutils literal notranslate"><span class="pre">Cookie.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.samesite"><code class="docutils literal notranslate"><span class="pre">Cookie.samesite</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.description"><code class="docutils literal notranslate"><span class="pre">Cookie.description</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.documentation_only"><code class="docutils literal notranslate"><span class="pre">Cookie.documentation_only</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.simple_cookie"><code class="docutils literal notranslate"><span class="pre">Cookie.simple_cookie</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.to_header"><code class="docutils literal notranslate"><span class="pre">Cookie.to_header()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.to_encoded_header"><code class="docutils literal notranslate"><span class="pre">Cookie.to_encoded_header()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.dict"><code class="docutils literal notranslate"><span class="pre">Cookie.dict</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Cookie.__eq__"><code class="docutils literal notranslate"><span class="pre">Cookie.__eq__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ETag"><code class="docutils literal notranslate"><span class="pre">ETag</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ETag.from_header"><code class="docutils literal notranslate"><span class="pre">ETag.from_header()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ETag.validate_value"><code class="docutils literal notranslate"><span class="pre">ETag.validate_value()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.FormMultiDict"><code class="docutils literal notranslate"><span class="pre">FormMultiDict</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.FormMultiDict.close"><code class="docutils literal notranslate"><span class="pre">FormMultiDict.close()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Header"><code class="docutils literal notranslate"><span class="pre">Header</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Header.documentation_only"><code class="docutils literal notranslate"><span class="pre">Header.documentation_only</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Header.from_header"><code class="docutils literal notranslate"><span class="pre">Header.from_header()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Header.to_header"><code class="docutils literal notranslate"><span class="pre">Header.to_header()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Headers"><code class="docutils literal notranslate"><span class="pre">Headers</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Headers.__init__"><code class="docutils literal notranslate"><span class="pre">Headers.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Headers.from_scope"><code class="docutils literal notranslate"><span class="pre">Headers.from_scope()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.Headers.to_header_list"><code class="docutils literal notranslate"><span class="pre">Headers.to_header_list()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableMultiDict"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableMultiDict.__init__"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableMultiDict.mutable_copy"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict.mutable_copy()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState"><code class="docutils literal notranslate"><span class="pre">ImmutableState</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__init__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__bool__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__bool__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__getitem__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__getitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__iter__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__iter__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__len__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__len__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__getattr__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__getattr__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__copy__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__copy__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.mutable_copy"><code class="docutils literal notranslate"><span class="pre">ImmutableState.mutable_copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.dict"><code class="docutils literal notranslate"><span class="pre">ImmutableState.dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.__get_validators__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__get_validators__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ImmutableState.validate"><code class="docutils literal notranslate"><span class="pre">ImmutableState.validate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MultiDict"><code class="docutils literal notranslate"><span class="pre">MultiDict</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MultiDict.__init__"><code class="docutils literal notranslate"><span class="pre">MultiDict.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MultiDict.immutable"><code class="docutils literal notranslate"><span class="pre">MultiDict.immutable()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MultiMixin"><code class="docutils literal notranslate"><span class="pre">MultiMixin</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MultiMixin.dict"><code class="docutils literal notranslate"><span class="pre">MultiMixin.dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MultiMixin.multi_items"><code class="docutils literal notranslate"><span class="pre">MultiMixin.multi_items()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__init__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.from_message"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.from_message()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.add"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.add()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.getall"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.getall()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.extend_header_value"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.extend_header_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__getitem__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__getitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__setitem__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__setitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__delitem__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__delitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__len__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__len__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.MutableScopeHeaders.__iter__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__iter__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader"><code class="docutils literal notranslate"><span class="pre">ResponseHeader</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.name"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.documentation_only"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.documentation_only</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.value"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.description"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.description</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.required"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.required</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.deprecated"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.deprecated</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.allow_empty_value"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.allow_empty_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.__init__"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.style"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.style</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.explode"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.explode</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.allow_reserved"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.allow_reserved</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.example"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.example</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.examples"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.examples</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.ResponseHeader.__post_init__"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.__post_init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.State.__init__"><code class="docutils literal notranslate"><span class="pre">State.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.State.__delitem__"><code class="docutils literal notranslate"><span class="pre">State.__delitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.State.__setitem__"><code class="docutils literal notranslate"><span class="pre">State.__setitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.State.__setattr__"><code class="docutils literal notranslate"><span class="pre">State.__setattr__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.State.__delattr__"><code class="docutils literal notranslate"><span class="pre">State.__delattr__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.State.copy"><code class="docutils literal notranslate"><span class="pre">State.copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.State.immutable_copy"><code class="docutils literal notranslate"><span class="pre">State.immutable_copy()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.UploadFile"><code class="docutils literal notranslate"><span class="pre">UploadFile</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.__init__"><code class="docutils literal notranslate"><span class="pre">UploadFile.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.rolled_to_disk"><code class="docutils literal notranslate"><span class="pre">UploadFile.rolled_to_disk</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.write"><code class="docutils literal notranslate"><span class="pre">UploadFile.write()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.read"><code class="docutils literal notranslate"><span class="pre">UploadFile.read()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.seek"><code class="docutils literal notranslate"><span class="pre">UploadFile.seek()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.close"><code class="docutils literal notranslate"><span class="pre">UploadFile.close()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.UploadFile.__modify_schema__"><code class="docutils literal notranslate"><span class="pre">UploadFile.__modify_schema__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL"><code class="docutils literal notranslate"><span class="pre">URL</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.scheme"><code class="docutils literal notranslate"><span class="pre">URL.scheme</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.netloc"><code class="docutils literal notranslate"><span class="pre">URL.netloc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.path"><code class="docutils literal notranslate"><span class="pre">URL.path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.fragment"><code class="docutils literal notranslate"><span class="pre">URL.fragment</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.query"><code class="docutils literal notranslate"><span class="pre">URL.query</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.username"><code class="docutils literal notranslate"><span class="pre">URL.username</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.password"><code class="docutils literal notranslate"><span class="pre">URL.password</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.port"><code class="docutils literal notranslate"><span class="pre">URL.port</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.hostname"><code class="docutils literal notranslate"><span class="pre">URL.hostname</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.__new__"><code class="docutils literal notranslate"><span class="pre">URL.__new__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.from_components"><code class="docutils literal notranslate"><span class="pre">URL.from_components()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.from_scope"><code class="docutils literal notranslate"><span class="pre">URL.from_scope()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.with_replacements"><code class="docutils literal notranslate"><span class="pre">URL.with_replacements()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.datastructures.URL.query_params"><code class="docutils literal notranslate"><span class="pre">URL.query_params</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
             
           </div>
-        </footer>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
         
       </main>
     </div>
   </div>
-
   
-    
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
 
-  <footer class="bd-footer"><div class="bd-footer__inner container">
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
   
-  <div class="footer-item">
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
     
-<p class="copyright">
-
-    &copy; Copyright 2023, Starlite-API.<br>
-
-</p>
-
-  </div>
-  
-  <div class="footer-item">
-    <p class="theme-version">
-    Built with the
-    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
-        PyData Sphinx Theme
-    </a>
-    0.12.0.
-</p>
-  </div>
-  
-  <div class="footer-item">
+      © Copyright 2023, Starlite-API.
+      <br/>
     
-<p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
-</p>
-
-  </div>
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+</p></div>
+      
+    </div>
   
 </div>
+
   </footer>
   </body>
 </html>
