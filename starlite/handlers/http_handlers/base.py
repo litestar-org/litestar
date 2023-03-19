@@ -4,6 +4,8 @@ from enum import Enum
 from inspect import Signature
 from typing import TYPE_CHECKING, AnyStr, Mapping, cast
 
+from typing_extensions import TypedDict
+
 from starlite._layers.utils import narrow_response_cookies, narrow_response_headers
 from starlite._signature.utils import get_signature_model
 from starlite.constants import REDIRECT_STATUS_CODES
@@ -65,6 +67,11 @@ if TYPE_CHECKING:
 __all__ = ("HTTPRouteHandler", "route")
 
 
+class ResponseHandlerMap(TypedDict):
+    default_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType
+    response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType
+
+
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     """HTTP Route Decorator.
 
@@ -75,8 +82,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "_resolved_after_response",
         "_resolved_before_request",
         "_resolved_data_dto",
-        "_resolved_response_handler",
         "_resolved_return_dto",
+        "_response_handler_mapping",
         "after_request",
         "after_response",
         "background",
@@ -272,8 +279,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self._resolved_after_response: AfterResponseHookHandler | None | EmptyType = Empty
         self._resolved_before_request: BeforeRequestHookHandler | None | EmptyType = Empty
         self._resolved_data_dto: type[AbstractDTO] | None | EmptyType = Empty
-        self._resolved_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._resolved_return_dto: type[AbstractDTO] | None | EmptyType = Empty
+        self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
@@ -349,7 +356,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                         {Cookie(key=key, value=value) for key, value in layer_response_cookies.items()}
                     )
                 else:
-                    response_cookies.update(layer_response_cookies)
+                    response_cookies.update(cast("set[Cookie]", layer_response_cookies))
         return frozenset(response_cookies)
 
     def resolve_before_request(self) -> BeforeRequestHookHandler | None:
@@ -391,17 +398,18 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         return cast("AfterResponseHookHandler | None", self._resolved_after_response)
 
-    def resolve_response_handler(
-        self,
-    ) -> Callable[[Any], Awaitable[ASGIApp]]:
+    def get_response_handler(self, is_response_type_data: bool = False) -> Callable[[Any], Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.
 
         This method is memoized so the computation occurs only once.
 
+        Args:
+            is_response_type_data: Whether to return a handler for 'Response' instances.
+
         Returns:
             Async Callable to handle an HTTP Request
         """
-        if self._resolved_response_handler is Empty:
+        if self._response_handler_mapping["default_handler"] is Empty:
             after_request_handlers: list[AsyncCallable] = [
                 layer.after_request for layer in self.ownership_layers if layer.after_request  # type: ignore[misc]
             ]
@@ -418,23 +426,36 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
             return_annotation = get_signature_model(self).return_annotation
 
-            if is_class_and_subclass(return_annotation, ResponseContainer):  # type: ignore
-                handler = create_response_container_handler(
+            if before_request_handler := self.resolve_before_request():
+                before_request_handler_signature = Signature.from_callable(before_request_handler)
+                if (
+                    before_request_handler_signature.return_annotation
+                    and before_request_handler_signature.return_annotation is not Signature.empty
+                ):
+                    return_annotation = before_request_handler_signature.return_annotation
+
+            self._response_handler_mapping["response_type_handler"] = create_response_handler(
+                cookies=cookies, after_request=after_request
+            )
+
+            if is_class_and_subclass(return_annotation, Response):
+                self._response_handler_mapping["default_handler"] = self._response_handler_mapping[
+                    "response_type_handler"
+                ]
+            elif is_class_and_subclass(return_annotation, ResponseContainer):  # type: ignore
+                self._response_handler_mapping["default_handler"] = create_response_container_handler(
                     after_request=after_request,
                     cookies=cookies,
                     headers=headers,
                     media_type=media_type,
                     status_code=self.status_code,
                 )
-
-            elif is_class_and_subclass(return_annotation, Response):
-                handler = create_response_handler(cookies=cookies, after_request=after_request)
-
             elif is_async_callable(return_annotation) or return_annotation is ASGIApp:
-                handler = create_generic_asgi_response_handler(cookies=cookies, after_request=after_request)
-
+                self._response_handler_mapping["default_handler"] = create_generic_asgi_response_handler(
+                    cookies=cookies, after_request=after_request
+                )
             else:
-                handler = create_data_handler(
+                self._response_handler_mapping["default_handler"] = create_data_handler(
                     after_request=after_request,
                     background=self.background,
                     cookies=cookies,
@@ -445,8 +466,12 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     type_encoders=type_encoders,
                 )
 
-            self._resolved_response_handler = handler
-        return self._resolved_response_handler  # type:ignore[return-value]
+        return cast(
+            "Callable[[Any], Awaitable[ASGIApp]]",
+            self._response_handler_mapping["response_type_handler"]
+            if is_response_type_data
+            else self._response_handler_mapping["default_handler"],
+        )
 
     def resolve_data_dto(self) -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.
@@ -501,7 +526,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         Returns:
             A Response instance
         """
-        response_handler = self.resolve_response_handler()
+        response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
         return await response_handler(app=app, data=data, plugins=plugins, request=request, return_dto=self.resolve_return_dto())  # type: ignore
 
     def _validate_handler_function(self) -> None:

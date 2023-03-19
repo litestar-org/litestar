@@ -62,7 +62,7 @@ def warn_deprecation(
     text = ". ".join(parts)
     warning_class = PendingDeprecationWarning if pending else DeprecationWarning
 
-    warn(text, warning_class)
+    warn(text, warning_class, stacklevel=1)
 
 
 def deprecated(

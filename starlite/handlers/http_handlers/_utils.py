@@ -51,7 +51,23 @@ def create_data_handler(
     status_code: int,
     type_encoders: TypeEncodersMap | None,
 ) -> AsyncAnyCallable:
-    """Create a handler function for arbitrary data."""
+    """Create a handler function for arbitrary data.
+
+    Args:
+        after_request: An after request handler.
+        background: A background task or background tasks.
+        cookies: A set of pre-defined cookies.
+        headers: A set of response headers.
+        media_type: The response media type.
+        response_class: The response class to use.
+        return_annotation: The return annotation.
+        status_code: The response status code.
+        type_encoders: A mapping of types to encoder functions.
+
+    Returns:
+        A handler function.
+
+    """
     normalized_headers = [
         (name.lower().encode("latin-1"), value.encode("latin-1")) for name, value in normalize_headers(headers).items()
     ]
@@ -91,9 +107,16 @@ def create_data_handler(
     return handler
 
 
-@lru_cache(1024)
 def filter_cookies(local_cookies: frozenset[Cookie], layered_cookies: frozenset[Cookie]) -> list[Cookie]:
-    """Given two sets of cookies, return a unique list of cookies, that are not marked as documentation_only."""
+    """Given two sets of cookies, return a unique list of cookies, that are not marked as documentation_only.
+
+    Args:
+        local_cookies: Cookies returned from the local scope.
+        layered_cookies: Cookies returned from the layers.
+
+    Returns:
+        A unified list of cookies
+    """
     return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]
 
 
@@ -101,7 +124,15 @@ def create_generic_asgi_response_handler(
     after_request: AfterRequestHookHandler | None,
     cookies: frozenset[Cookie],
 ) -> AsyncAnyCallable:
-    """Create a handler function for Responses."""
+    """Create a handler function for Responses.
+
+    Args:
+        after_request: An after request handler.
+        cookies: A set of pre-defined cookies.
+
+    Returns:
+        A handler function.
+    """
 
     async def handler(data: "ASGIApp", **kwargs: Any) -> "ASGIApp":
         if hasattr(data, "set_cookie"):
@@ -161,7 +192,18 @@ def create_response_container_handler(
     media_type: str,
     status_code: int,
 ) -> AsyncAnyCallable:
-    """Create a handler function for ResponseContainers."""
+    """Create a handler function for ResponseContainers.
+
+    Args:
+        after_request: An after request handler.
+        cookies: A set of pre-defined cookies.
+        headers: A set of response headers.
+        media_type: The response media type.
+        status_code: The response status code.
+
+    Returns:
+        A handler function.
+    """
     normalized_headers = normalize_headers(headers)
 
     async def handler(data: ResponseContainer, app: "Starlite", request: "Request", **kwargs: Any) -> "ASGIApp":
@@ -182,7 +224,15 @@ def create_response_handler(
     after_request: AfterRequestHookHandler | None,
     cookies: frozenset[Cookie],
 ) -> AsyncAnyCallable:
-    """Create a handler function for Starlite Responses."""
+    """Create a handler function for Starlite Responses.
+
+    Args:
+        after_request: An after request handler.
+        cookies: A set of pre-defined cookies.
+
+    Returns:
+        A handler function.
+    """
 
     async def handler(data: Response, **kwargs: Any) -> "ASGIApp":
         data.cookies = filter_cookies(frozenset(data.cookies), cookies)

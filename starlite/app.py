@@ -507,7 +507,6 @@ class Starlite(Router):
                 if isinstance(route_handler, HTTPRouteHandler):
                     route_handler.resolve_before_request()
                     route_handler.resolve_after_response()
-                    route_handler.resolve_response_handler()
 
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
