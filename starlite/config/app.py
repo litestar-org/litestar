@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Sequence
 
 from starlite.cache.config import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
+from starlite.datastructures import State
 from starlite.events.emitter import SimpleEventEmitter
 
 if TYPE_CHECKING:
@@ -39,7 +40,6 @@ if TYPE_CHECKING:
         ResponseType,
         TypeEncodersMap,
     )
-    from starlite.types.composite_types import InitialStateType
 
 __all__ = ("AppConfig",)
 
@@ -131,8 +131,6 @@ class AppConfig:
     """A dictionary that maps handler functions to status codes and/or exception types."""
     guards: list[Guard] = field(default_factory=list)
     """A list of :class:`Guard <.types.Guard>` callables."""
-    initial_state: InitialStateType = field(default_factory=dict)
-    """An object from which to initialize the app state."""
     listeners: list[EventListener] = field(default_factory=list)
     """A list of :class:`EventListener <.events.listener.EventListener>`."""
     logging_config: BaseLoggingConfig | None = field(default=None)
@@ -172,6 +170,8 @@ class AppConfig:
     """A list of dictionaries that will be added to the schema of all route handlers in the application. See
     :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
     """
+    state: State = field(default_factory=State)
+    """A :class:`State` <.datastructures.State>` instance holding application state."""
     static_files_config: list[StaticFilesConfig] = field(default_factory=list)
     """An instance or list of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`."""
     tags: list[str] = field(default_factory=list)

@@ -75,7 +75,6 @@ if TYPE_CHECKING:
         ExceptionHandlersMap,
         GetLogger,
         Guard,
-        InitialStateType,
         LifeSpanHandler,
         LifeSpanHookHandler,
         LifeSpanReceive,
@@ -188,7 +187,6 @@ class Starlite(Router):
         event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: OptionalSequence[Guard] = None,
-        initial_state: InitialStateType | None = None,
         listeners: OptionalSequence[EventListener] = None,
         logging_config: BaseLoggingConfig | EmptyType | None = Empty,
         middleware: OptionalSequence[Middleware] = None,
@@ -205,6 +203,7 @@ class Starlite(Router):
         response_cookies: ResponseCookies | None = None,
         response_headers: OptionalSequence[ResponseHeader] = None,
         security: OptionalSequence[SecurityRequirement] = None,
+        state: State | None = None,
         static_files_config: OptionalSequence[StaticFilesConfig] = None,
         tags: Sequence[str] | None = None,
         template_config: TemplateConfig | None = None,
@@ -253,7 +252,6 @@ class Starlite(Router):
                 :class:`BaseEventEmitterBackend <.events.emitter.BaseEventEmitterBackend>`.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
-            initial_state: An object from which to initialize the app state.
             listeners: A sequence of :class:`EventListener <.events.listener.EventListener>`.
             logging_config: A subclass of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`.
             middleware: A sequence of :class:`Middleware <.types.Middleware>`.
@@ -285,6 +283,7 @@ class Starlite(Router):
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See
                 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+            state: An optional :class:`State <.datastructures.State>` for application state.
             static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.
@@ -324,7 +323,6 @@ class Starlite(Router):
             event_emitter_backend=event_emitter_backend,
             exception_handlers=exception_handlers or {},
             guards=list(guards or []),
-            initial_state=dict(initial_state or {}),
             listeners=list(listeners or []),
             logging_config=cast("BaseLoggingConfig | None", logging_config),
             middleware=list(middleware or []),
@@ -341,6 +339,7 @@ class Starlite(Router):
             response_headers=response_headers or [],
             route_handlers=list(route_handlers) if route_handlers is not None else [],
             security=list(security or []),
+            state=state or State(),
             static_files_config=list(static_files_config or []),
             tags=list(tags or []),
             template_config=template_config,
@@ -369,7 +368,7 @@ class Starlite(Router):
         self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
         self.openapi_schema_plugins = [p for p in config.plugins if isinstance(p, OpenAPISchemaPluginProtocol)]
         self.request_class = config.request_class or Request
-        self.state = State(config.initial_state, deep_copy=True)
+        self.state = config.state
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket

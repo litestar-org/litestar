@@ -7,6 +7,7 @@ import pytest
 
 from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
 from starlite.config.app import AppConfig
+from starlite.datastructures import State
 from starlite.events.emitter import SimpleEventEmitter
 from starlite.logging.config import LoggingConfig
 from starlite.router import Router
@@ -36,7 +37,6 @@ def app_config_object() -> AppConfig:
         event_emitter_backend=SimpleEventEmitter,
         exception_handlers={},
         guards=[],
-        initial_state={},
         listeners=[],
         logging_config=None,
         middleware=[],
@@ -131,14 +131,14 @@ def test_app_debug_update_logging_config() -> None:
     assert app.logging_config.loggers["starlite"]["level"] == "DEBUG"  # type: ignore[attr-defined]
 
 
-def test_set_initial_state() -> None:
-    def set_initial_state_in_hook(app_config: AppConfig) -> AppConfig:
-        assert isinstance(app_config.initial_state, dict)
-        app_config.initial_state["c"] = "D"  # pyright:ignore
-        app_config.initial_state["e"] = "f"  # pyright:ignore
+def test_set_state() -> None:
+    def modify_state_in_hook(app_config: AppConfig) -> AppConfig:
+        assert isinstance(app_config.state, State)
+        app_config.state["c"] = "D"
+        app_config.state["e"] = "f"
         return app_config
 
-    app = Starlite(initial_state={"a": "b", "c": "d"}, on_app_init=[set_initial_state_in_hook])
+    app = Starlite(state=State({"a": "b", "c": "d"}), on_app_init=[modify_state_in_hook])
     assert app.state._state == {"a": "b", "c": "D", "e": "f"}
 
 

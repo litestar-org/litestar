@@ -79,8 +79,8 @@ Therefore, state offers an easy way to share contextual data between disparate p
 Initializing Application State
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can pass an object from which the application state will be instantiated using the ``initial_state`` kwarg of the
-Starlite constructor:
+To seed application state, you can pass a :class:`State <.datastructures.state.State>` object to the ``state`` kwarg of
+the Starlite constructor:
 
 .. literalinclude:: /examples/application_state/passing_initial_state.py
     :caption: Using Application State
@@ -89,12 +89,15 @@ Starlite constructor:
 
 .. note::
 
-    The `initial_state` can be a dictionary, an instance of :class:`ImmutableState <.datastructures.state.ImmutableState>`
-    or :class:`State <.datastructures.state.State>`, or a list of tuples containing key/value pairs.
+    :class:`State <.datastructures.state.State>` can be initialized with a dictionary, an instance of
+    :class:`ImmutableState <.datastructures.state.ImmutableState>` or :class:`State <.datastructures.state.State>`,
+    or a list of tuples containing key/value pairs.
 
 .. attention::
 
-    Any value passed to ``initial_state`` will be deep copied - to prevent mutation from outside the application context.
+    You may instruct :class:`State <.datastructures.state.State>` to deep copy initialized data to prevent mutation from
+    outside the application context. To do this, pass ``deep_copy=True`` to the :class:`State <.datastructures.state.State>`
+    constructor.
 
 Injecting Application State into Route Handlers and Dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

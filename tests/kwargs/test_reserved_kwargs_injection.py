@@ -40,7 +40,7 @@ def test_application_immutable_state_injection() -> None:
         assert state
         return cast("str", state.msg)
 
-    with create_test_client(route_handler, initial_state={"called": False}) as client:
+    with create_test_client(route_handler, state=State({"called": False})) as client:
         client.app.state.msg = "hello"
         assert not client.app.state.called
         response = client.get("/")
@@ -55,7 +55,7 @@ def test_application_state_injection(state_typing: Type[State]) -> None:
         state.called = True  # type: ignore
         return cast("str", state.msg)  # type: ignore
 
-    with create_test_client(route_handler, initial_state={"called": False}) as client:
+    with create_test_client(route_handler, state=State({"called": False})) as client:
         client.app.state.msg = "hello"
         assert not client.app.state.called
         response = client.get("/")

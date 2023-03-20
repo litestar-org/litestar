@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
+    from starlite.datastructures import State
     from starlite.events import BaseEventEmitterBackend, EventListener
     from starlite.logging.config import BaseLoggingConfig
     from starlite.middleware.session.base import BaseBackendConfig
@@ -32,7 +33,6 @@ if TYPE_CHECKING:
         Dependencies,
         ExceptionHandlersMap,
         Guard,
-        InitialStateType,
         LifeSpanHandler,
         LifeSpanHookHandler,
         Middleware,
@@ -66,7 +66,6 @@ def create_test_client(
     event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
     exception_handlers: ExceptionHandlersMap | None = None,
     guards: OptionalSequence[Guard] = None,
-    initial_state: InitialStateType | None = None,
     listeners: OptionalSequence[EventListener] = None,
     logging_config: BaseLoggingConfig | None = None,
     middleware: OptionalSequence[Middleware] = None,
@@ -82,6 +81,7 @@ def create_test_client(
     response_class: ResponseType | None = None,
     root_path: str = "",
     session_config: BaseBackendConfig | None = None,
+    state: State | None = None,
     static_files_config: OptionalSequence[StaticFilesConfig] = None,
     template_config: TemplateConfig | None = None,
     websocket_class: type[WebSocket] | None = None,
@@ -171,6 +171,7 @@ def create_test_client(
         response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
             response.
         root_path: Path prefix for requests.
+        state: An optional :class:`State <.datastructures.State>` for application state.
         static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
         session_config: Configuration for Session Middleware class to create raw session cookies for request to the
             route handlers.
@@ -205,7 +206,6 @@ def create_test_client(
             event_emitter_backend=event_emitter_backend,
             exception_handlers=exception_handlers,
             guards=guards,
-            initial_state=initial_state,
             listeners=listeners,
             logging_config=logging_config,
             middleware=middleware,
@@ -219,6 +219,7 @@ def create_test_client(
             request_class=request_class,
             response_class=response_class,
             route_handlers=route_handlers,
+            state=state,
             static_files_config=static_files_config,
             template_config=template_config,
             websocket_class=websocket_class,
@@ -255,7 +256,6 @@ def create_async_test_client(
     event_emitter_backend: type[BaseEventEmitterBackend] = SimpleEventEmitter,
     exception_handlers: ExceptionHandlersMap | None = None,
     guards: OptionalSequence[Guard] = None,
-    initial_state: InitialStateType | None = None,
     listeners: OptionalSequence[EventListener] = None,
     logging_config: BaseLoggingConfig | None = None,
     middleware: OptionalSequence[Middleware] = None,
@@ -271,6 +271,7 @@ def create_async_test_client(
     response_class: ResponseType | None = None,
     root_path: str = "",
     session_config: BaseBackendConfig | None = None,
+    state: State | None = None,
     static_files_config: OptionalSequence[StaticFilesConfig] = None,
     template_config: TemplateConfig | None = None,
     websocket_class: type[WebSocket] | None = None,
@@ -360,6 +361,7 @@ def create_async_test_client(
             wrapping them in an HTTP response.
         response_class: A custom subclass of [starlite.response.Response] to be used as the app's default response.
         root_path: Path prefix for requests.
+        state: An optional :class:`State <.datastructures.State>` for application state.
         static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
         session_config: Configuration for Session Middleware class to create raw session cookies for request to the
             route handlers.
@@ -394,7 +396,6 @@ def create_async_test_client(
             event_emitter_backend=event_emitter_backend,
             exception_handlers=exception_handlers,
             guards=guards,
-            initial_state=initial_state,
             listeners=listeners,
             logging_config=logging_config,
             middleware=middleware,
@@ -408,6 +409,7 @@ def create_async_test_client(
             request_class=request_class,
             response_class=response_class,
             route_handlers=route_handlers,
+            state=state,
             static_files_config=static_files_config,
             template_config=template_config,
             websocket_class=websocket_class,
