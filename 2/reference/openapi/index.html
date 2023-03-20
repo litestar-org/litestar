@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>memory &#8212; Starlite Framework</title>
+    <title>openapi &#8212; Starlite Framework</title>
   
   
   
@@ -46,13 +46,13 @@
     <script src="../../../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lib/reference/storage/memory';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lib/reference/openapi/index';</script>
     <script src="../../../_static/versioning.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="redis" href="redis.html" />
-    <link rel="prev" title="file" href="file.html" />
+    <link rel="next" title="openapi" href="openapi.html" />
+    <link rel="prev" title="server_side" href="../middleware/session/server_side.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -481,9 +481,9 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../openapi/openapi.html">openapi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../openapi/spec.html">spec</a></li>
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">openapi</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="spec.html">spec</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
@@ -500,11 +500,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../static_files.html">static_files</a></li>
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">storage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="file.html">file</a></li>
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="redis.html">redis</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../storage/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../storage/redis.html">redis</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../template.html">template</a></li>
@@ -549,99 +549,14 @@
             
             <article class="bd-article" role="main">
               
-  <section id="module-starlite.storage.memory">
-<span id="memory"></span><h1>memory<a class="headerlink" href="#module-starlite.storage.memory" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="starlite.storage.memory.MemoryStorage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.storage.memory.</span></span><span class="sig-name descname"><span class="pre">MemoryStorage</span></span><a class="headerlink" href="#starlite.storage.memory.MemoryStorage" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="base.html#starlite.storage.base.Storage" title="starlite.storage.base.Storage"><code class="xref py py-class docutils literal notranslate"><span class="pre">Storage</span></code></a></p>
-<p>In memory, thread-safe, asynchronous key/value store.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.storage.memory.MemoryStorage.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.storage.memory.MemoryStorage.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize <a class="reference internal" href="#starlite.storage.memory.MemoryStorage" title="starlite.storage.memory.MemoryStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStorage</span></code></a></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.storage.memory.MemoryStorage.set">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.storage.memory.MemoryStorage.set" title="Permalink to this definition">#</a></dt>
-<dd><p>Set a value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Key to associate the value with</p></li>
-<li><p><strong>value</strong> – Value to store</p></li>
-<li><p><strong>expires_in</strong> – Time in seconds before the key is considered expired</p></li>
+  <section id="openapi">
+<h1>openapi<a class="headerlink" href="#openapi" title="Permalink to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="openapi.html">openapi</a></li>
+<li class="toctree-l1"><a class="reference internal" href="spec.html">spec</a></li>
 </ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.storage.memory.MemoryStorage.get">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">renew_for</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.storage.memory.MemoryStorage.get" title="Permalink to this definition">#</a></dt>
-<dd><p>Get a value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Key associated with the value</p></li>
-<li><p><strong>renew_for</strong> – If given and the value had an initial expiry time set, renew the
-expiry time for <code class="docutils literal notranslate"><span class="pre">renew_for</span></code> seconds. If the value has not been set
-with an expiry time this is a no-op</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The value associated with <code class="docutils literal notranslate"><span class="pre">key</span></code> if it exists and is not expired, else
-<code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.storage.memory.MemoryStorage.delete">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.storage.memory.MemoryStorage.delete" title="Permalink to this definition">#</a></dt>
-<dd><p>Delete a value.</p>
-<p>If no such key exists, this is a no-op.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> – Key of the value to delete</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.storage.memory.MemoryStorage.delete_all">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.storage.memory.MemoryStorage.delete_all" title="Permalink to this definition">#</a></dt>
-<dd><p>Delete all stored values.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.storage.memory.MemoryStorage.delete_expired">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_expired</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.storage.memory.MemoryStorage.delete_expired" title="Permalink to this definition">#</a></dt>
-<dd><p>Delete expired items.</p>
-<p>Since expired items are normally only cleared on access (i.e. when calling
-<a class="reference internal" href="#starlite.storage.memory.MemoryStorage.get" title="starlite.storage.memory.MemoryStorage.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a> or <a class="reference internal" href="#starlite.storage.memory.MemoryStorage.set" title="starlite.storage.memory.MemoryStorage.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set()</span></code></a>, this method should be called in regular intervals
-to free memory.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.storage.memory.MemoryStorage.exists">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#starlite.storage.memory.MemoryStorage.exists" title="Permalink to this definition">#</a></dt>
-<dd><p>Check if a given <code class="docutils literal notranslate"><span class="pre">key</span></code> exists.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.storage.memory.MemoryStorage.expires_in">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expires_in</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.storage.memory.MemoryStorage.expires_in" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the time in seconds <code class="docutils literal notranslate"><span class="pre">key</span></code> expires in. If no such <code class="docutils literal notranslate"><span class="pre">key</span></code> exists or no
-expiry time was set, return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-</dd></dl>
-
-</dd></dl>
-
+</div>
 </section>
 
 
@@ -652,17 +567,17 @@ expiry time was set, return <code class="docutils literal notranslate"><span cla
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="file.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="../middleware/session/server_side.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">file</p>
+          <p class="prev-next-title">server_side</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="redis.html" title="next page">
+  <a class='right-next' id="next-link" href="openapi.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">redis</p>
+      <p class="prev-next-title">openapi</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
@@ -675,101 +590,6 @@ expiry time was set, return <code class="docutils literal notranslate"><span cla
           
             <div class="bd-sidebar-secondary bd-toc">
               
-<div class="toc-item">
-  
-<div class="tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-</div>
-<nav id="bd-toc-nav" class="page-toc">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.storage.memory.MemoryStorage">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     MemoryStorage
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.storage.memory.MemoryStorage.__init__">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MemoryStorage.__init__()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.storage.memory.MemoryStorage.set">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MemoryStorage.set()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.storage.memory.MemoryStorage.get">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MemoryStorage.get()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.storage.memory.MemoryStorage.delete">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MemoryStorage.delete()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.storage.memory.MemoryStorage.delete_all">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MemoryStorage.delete_all()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.storage.memory.MemoryStorage.delete_expired">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MemoryStorage.delete_expired()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.storage.memory.MemoryStorage.exists">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MemoryStorage.exists()
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.storage.memory.MemoryStorage.expires_in">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       MemoryStorage.expires_in()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
-
-</nav>
-</div>
-
 <div class="toc-item">
   
 <div id="searchbox"></div>
