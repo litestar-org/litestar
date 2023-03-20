@@ -37,10 +37,10 @@ Built-in stores
 .. admonition:: Why not memcached?
     :class: info
 
-    You might notice that memcached is missing from this list. The reason for this is simply that it's hard to support
-    memcached properly, since it's missing a lot of basic functionality like checking a key's expiry time, or something
-    like Redis' `SCAN <https://redis.io/commands/scan/>`_ command, which allows to implement pattern-based deletion of
-    keys.
+    Memcached is not a supported backend, and will likely also not be added in the future. The reason for this is simply
+    that it's hard to support memcached properly, since it's missing a lot of basic functionality like checking a key's
+    expiry time, or something like Redis' `SCAN <https://redis.io/commands/scan/>`_ command, which allows to implement
+    pattern-based deletion of keys.
 
 
 Interacting with a store
@@ -66,7 +66,7 @@ Getting and setting values
 
     async def main() -> None:
         value = await store.get("key")
-        print(value)  # this will print 'None', as we have not yet set a value for this key
+        print(value)  # this will print 'None', as no store with this key has been defined yet
 
         await store.set("key", b"value")
         value = await store.get("key")
@@ -154,11 +154,10 @@ second:
 
     memory_store = MemoryStore()
 
-
     async def after_response(request: Request) -> None:
         now = datetime.utcnow()
         last_cleared = request.app.state.get("store_last_cleared", now)
-        if datetime.utcnow() - last_cleared > timedelta(seconds=30):
+        if datetime.utcnow() - last_cleared > timedelta(seconds=30):269
             await memory_store.delete_expired()
             app.state["store_last_cleared"] = now
 
@@ -166,7 +165,7 @@ second:
     app = Starlite([], after_response=after_response)
 
 
-When using the :class:`FileStore <.file.FileStore>`, deleting expired items on startup is also an option:
+When using the :class:`FileStore <.file.FileStore>`, expired items may also be deleted on startup:
 
 .. code-block:: python
 
@@ -228,7 +227,7 @@ will only affect itself and its child namespaces.
 When using the :class:`RedisStore <.redis.RedisStore>`, this allows to re-use the same underlying
 :class:`Redis <redis.asyncio.Redis>` instance and connection, while ensuring isolation.
 
-.. info::
+.. note::
     :class:`RedisStore <.redis.RedisStore>` uses the ``STARLITE`` namespace by default; all keys created by this store,
     will use the ``STARLITE`` prefix when storing data in redis.
     :meth:`RedisStore.delete_all <.redis.RedisStore.delete_all>` is implemented in such a way that it will only delete
@@ -237,36 +236,70 @@ When using the :class:`RedisStore <.redis.RedisStore>`, this allows to re-use th
     This can be turned off by explicitly passing ``namespace=None`` to the store when creating a new instance.
 
 
+.. code-block:: python
+
+    from pathlib import Path
+    from starlite.stores.redis import RedisStore
+    from starlite import Starlite
+
+    root_store = RedisStore.with_client()
+    cache_store = root_store.with_namespace("cache")
+    session_store = root_store.with_namespace("sessions")
+
+    async def before_startup() -> None:
+        await session_store.delete_expired()
+
+    async def before_shutdown() -> None:
+        await cache_store.delete_all()
 
 
+    app = Starlite([], before_startup=[before_startup], before_shutdown=[before_shutdown])
 
-The registry
-------------
+Even though all three stores defined here use the same Redis instance, calling ``delete_all`` on the ``cache_store``
+will not affect data within the ``session_store``.
 
-Stores are configured through the :class:`registry <starlite.stores.registry.StoreRegistry>`, a central object which
-provides access to all registered stores as well as default factories. By default, this requires no configuration;
-Everything is set up to work out of the box.
+Defining stores hierarchically like this still allows to easily clear everything, by simply calling
+:meth:`delete_all <.base.Store.delete_all>` on the root store.
+
+
+Managing stores with the registry
+---------------------------------
+
+The :class:`StoreRegistry <starlite.stores.registry.StoreRegistry>` is a central place through which stores can be
+configured and managed, and can help to easily access stores set up and used by other parts of the application, Starlite
+internals or third party integrations. It is available throughout the whole application context via the
+:class:`Starlite.stores <starlite.app.Starlite>` attribute.
+
+It operates on a few basic principles:
+
+- An initial mapping of stores can be provided to the registry
+- Registered stores can be requested with :meth:`get <.registry.StoreRegistry.get>`
+- If a store has been requested that has not been registered yet, a store of that name will be created and registered
+  using the `default factory <the default factory>`_
 
 
 .. code-block:: python
 
     from starlite import Starlite
+    from starlite.stores.memory import MemoryStore
 
-    app = Starlite(...)
-    some_store = app.stores.get("some_store")
+    app = Starlite(..., stores={"memory": MemoryStore()})
+
+    memory_store = app.stores.get("memory")
+    # this is the previously defined store
+
+    some_other_store = app.stores.get("something_else")
+    # this will be a newly created instance
+
+    app.stores.get("something_else") is some_other store
+    # but subsequent requests will return the same instance
 
 
-In this example, we request a store ``"name"`` from the registry. Since it hasn't been previously configured, the
-registry will set up a new store using its default factory, and register it under the requested name. Subsequent calls
-to ``get("some_store")`` will then return the same store.
+This pattern offers isolation of stores, and an easy way to configure stores used by middlewares and other Starlite
+features or third party integrations.
 
-This means that you won't have to worry about side effects when dealing with specifically requested stores; The registry
-ensures that the store you request is unique, so you can safely call e.g.
-:meth:`delete_all <starlite.stores.base.Store.delete_all>` on an instance, without effecting other stores.
-
-This pattern of course also works the other way around. Using the
-:class:`RateLimitMiddleware <starlite.middleware.rate_limit.RateLimitMiddleware>` as an example, we can easily access
-its store the same way:
+In the following example, the store set up by the
+:class:`RateLimitMiddleware <starlite.middleware.rate_limit.RateLimitMiddleware>` is accessed via the registry:
 
 .. code-block:: python
 
@@ -277,10 +310,11 @@ its store the same way:
     rate_limit_store = app.stores.get("rate_limit")
 
 
-Configuration
-+++++++++++++
+This works because :class:`RateLimitMiddleware <starlite.middleware.rate_limit.RateLimitMiddleware>` will request
+its store internally via ``app.stores.get`` as well.
 
-You can provide a set of default stores to the application, which will then be made available via the registry:
+In addition to generating stores on the fly, a set of stores can be provided to the application, which will then be made
+available via the registry:
 
 .. code-block:: python
 
@@ -288,10 +322,46 @@ You can provide a set of default stores to the application, which will then be m
     from starlite.stores.redis import RedisStore
 
     app = Starlite(..., stores={"redis": RedisStore.with_client()})
-    # now you can do app.stores.get("redis") to gain access to this instance
+    # this can now be accessed through app.stores.get("redis")
 
 
-Using this mechanism, we can also control the stores used by various integrations, such as middlewares:
+The default factory
++++++++++++++++++++
+
+The pattern above is made possible by using the registry's default factory; A callable that gets invoked
+every time a store is requested that hasn't been registered yet. It's similar to the ``default`` argument to
+:meth:`dict.get`.
+
+By default, the default factory is a function that returns a new
+:class:`MemoryStore <starlite.stores.memory.MemoryStore>` instance. This behaviour can be changed by supplying a
+custom ``default_factory`` method to the registry.
+
+To make use of this, a registry instance can be passed directly to the application:
+
+.. code-block:: python
+
+    from starlite import Starlite
+    from starlite.stores.registry import StoreRegistry
+    from starlite.stores.memory import MemoryStore
+
+    memory_store = MemoryStore()
+
+
+    def default_factory(name: str) -> MemoryStore:
+        return memory_store
+
+
+    app = Starlite(..., stores=StoreRegistry(default_factory=default_factory))
+
+
+The registry will now return the same :class:`MemoryStore <starlite.stores.memory.MemoryStore>` every time an undefined
+store is being requested.
+
+
+Using the registry to configure integrations
+++++++++++++++++++++++++++++++++++++++++++++
+
+This mechanism also allows to control the stores used by various integrations, such as middlewares:
 
 .. code-block:: python
 
@@ -311,9 +381,9 @@ Using this mechanism, we can also control the stores used by various integration
     )
 
 
-In this example, we set up the registry with stores using the ``sessions`` and ``request_cache`` keys. These are not
-magic constants, but instead configuration values that can be changed. Those names just happen to be their default
-values. Adjusting those default values allows us to easily re-use stores, without the need for a more complex setup:
+In this example, the registry is being set up with stores using the ``sessions`` and ``request_cache`` keys. These are
+not magic constants, but instead configuration values that can be changed. Those names just happen to be their default
+values. Adjusting those default values allows to easily re-use stores, without the need for a more complex setup:
 
 .. code-block:: python
 
@@ -339,39 +409,11 @@ Now the rate limit middleware and response caching will use the ``redis`` store,
 ``file`` store.
 
 
-The default factory
-+++++++++++++++++++
+Setting up the default factory with namespacing
++++++++++++++++++++++++++++++++++++++++++++++++
 
-The pattern we've seen above is made possible by using the registry's default factory; A callable that gets invoked
-every time we request a store that hasn't been registered yet. It's similar to the ``default`` argument to
-:meth:`dict.get`.
-
-By default, the default factory is a function that returns a new
-:class:`MemoryStore <starlite.stores.memory.MemoryStore>` instance. This behaviour can be changed by supplying a
-custom ``default_factory`` method to the registry.
-
-To make use of this, we can pass a registry instance directly to the application:
-
-.. code-block:: python
-
-    from starlite import Starlite
-    from starlite.stores.registry import StoreRegistry
-    from starlite.stores.memory import MemoryStore
-
-    memory_store = MemoryStore()
-
-
-    def default_factory(name: str) -> MemoryStore:
-        return memory_store
-
-
-    app = Starlite(..., stores=StoreRegistry(default_factory=default_factory))
-
-
-Now we have a registry that will return the same :class:`MemoryStore <starlite.stores.memory.MemoryStore>` every time.
-
-When used in conjunction with a :class:`NamespacedStore <starlite.stores.base.NamespacedStore>`, this is a powerful
-pattern, allowing the easy creation of a store hierarchy.
+The default factory can be used in conjunction with `namespacing`_ to create isolated, hierarchically organized stores,
+with minimal boilerplate:
 
 .. code-block:: python
 
@@ -380,11 +422,10 @@ pattern, allowing the easy creation of a store hierarchy.
     from starlite import Starlite, get
     from starlite.middleware.rate_limit import RateLimitConfig
     from starlite.middleware.session.server_side import ServerSideSessionConfig
-    from starlite.stores.file import FileStore
+    from starlite.stores.redis import RedisStore
     from starlite.stores.registry import StoreRegistry
 
-    root_store = FileStore(Path("data"))
-
+    root_store = RedisStore.with_client()
 
     @get(cache=True)
     def cached_handler() -> str:
@@ -400,3 +441,6 @@ pattern, allowing the easy creation of a store hierarchy.
             ServerSideSessionConfig().middleware,
         ],
     )
+
+Without any extra configuration, every call to ``app.stores.get`` with a unique name will return a namespace for this
+name only, while re-using the underlying Redis instance.
