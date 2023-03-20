@@ -115,7 +115,7 @@ sphinx-toolbox = "*"
 sphinx-copybutton = "*"
 sphinxcontrib-mermaid = "*"
 auto-pytabs = { extras = ["sphinx"], version = "*" }
-pydata-sphinx-theme = "*"
+pydata-sphinx-theme = "0.12.0"
 
 
 [tool.poetry.extras]
