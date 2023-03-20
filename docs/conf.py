@@ -120,12 +120,9 @@ suppress_warnings = [
     "ref.python",  # TODO: remove when https://github.com/sphinx-doc/sphinx/issues/4961 is fixed
 ]
 
-html_theme = "pydata_sphinx_theme"
+html_theme = "starlite_sphinx_theme"
 html_static_path = ["_static"]
-html_css_files = ["style.css"]
 html_js_files = ["versioning.js"]
-html_favicon = "images/favicon.ico"
-html_logo = "images/logo.svg"
 html_show_sourcelink = False
 html_sidebars = {"about/*": []}
 html_title = "Starlite Framework"
@@ -134,9 +131,6 @@ html_additional_pages = {"index": "landing-page.html"}
 
 
 html_theme_options = {
-    "use_edit_page_button": False,
-    "show_toc_level": 4,
-    "navbar_align": "left",
     "icon_links": [
         {
             "name": "GitHub",
@@ -151,12 +145,6 @@ html_theme_options = {
             "type": "fontawesome",
         },
     ],
-    "navbar_end": ["navbar-icon-links"],
-    "navbar_persistent": ["search-button", "theme-switcher"],
-}
-
-
-html_context = {
     "navbar_items": {
         "Documentation": "lib/index",
         "Community": {
@@ -170,3 +158,5 @@ html_context = {
         "Release notes": "release-notes/index",
     }
 }
+
+
