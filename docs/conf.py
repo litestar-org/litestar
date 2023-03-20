@@ -160,7 +160,7 @@ html_context = {
     "navbar_items": {
         "Documentation": "lib/index",
         "Community": {
-            "Contribution guide": "community/contribution-guide/index",
+            "Contribution guide": "community/contribution-guide",
             "Code of Conduct": "https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md",
         },
         "About": {
