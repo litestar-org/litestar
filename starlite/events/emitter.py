@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from asyncio import Queue, Task, create_task, gather
+from asyncio import CancelledError, Queue, Task, create_task
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Coroutine, DefaultDict, Sequence, cast
+from contextlib import suppress
+from typing import TYPE_CHECKING, Any, DefaultDict, Sequence
 
 from starlite.exceptions import ImproperlyConfiguredException
 
@@ -70,7 +71,6 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
 
     __slots__ = ("_queue", "_worker_task")
 
-    _queue: Queue | None
     _worker_task: Task | None
 
     def __init__(self, listeners: Sequence[EventListener]):
@@ -80,7 +80,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
             listeners: A list of listeners.
         """
         super().__init__(listeners=listeners)
-        self._queue = None
+        self._queue: Queue = Queue()
         self._worker_task = None
 
     async def _worker(self) -> None:
@@ -89,9 +89,10 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         Returns:
             None
         """
-        while self._queue:
-            coroutines = cast("tuple[Coroutine[Any, Any, Any], ...]", await self._queue.get())
-            await gather(*coroutines)
+        while True:
+            fn, args, kwargs = await self._queue.get()
+            await fn(*args, *kwargs)
+            self._queue.task_done()
 
     async def on_startup(self) -> None:
         """Hook called on application startup, used to establish connection or perform other async operations.
@@ -99,11 +100,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         Returns:
             None
         """
-        try:
-            self._queue = Queue()
-            self._worker_task = create_task(self._worker())
-        except RuntimeError:
-            pass
+        self._worker_task = create_task(self._worker())
 
     async def on_shutdown(self) -> None:
         """Hook called on application shutdown, used to perform cleanup.
@@ -111,10 +108,14 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         Returns:
             None
         """
+
+        await self._queue.join()
+
         if self._worker_task:
             self._worker_task.cancel()
+            with suppress(CancelledError):
+                await self._worker_task
 
-        self._queue = None
         self._worker_task = None
 
     async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
@@ -128,11 +129,8 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         Returns:
             None
         """
-        if self._queue:
-            if listeners := self.listeners.get(event_id):
-                await self._queue.put(tuple(listener.fn(*args, **kwargs) for listener in listeners))
-                return
-            raise ImproperlyConfiguredException(f"no event listeners are registered for event ID: {event_id}")
-        raise ImproperlyConfiguredException(
-            f"{type(self).__name__} can only be used with a running asyncio compatible loop."
-        )
+        if listeners := self.listeners.get(event_id):
+            for listener in listeners:
+                self._queue.put_nowait((listener.fn, args, kwargs))
+            return
+        raise ImproperlyConfiguredException(f"no event listeners are registered for event ID: {event_id}")
