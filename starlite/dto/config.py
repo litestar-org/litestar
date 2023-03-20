@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from .enums import Mark
 
@@ -23,7 +23,7 @@ DTO_FIELD_META_KEY = "__dto__"
 class DTOField:
     """For configuring DTO behavior on model fields."""
 
-    mark: Mark | None = None
+    mark: Mark | Literal["read-only", "private"] | None = None
     """Mark the field as read-only, or private."""
 
 
@@ -31,7 +31,7 @@ class DTOField:
 class DTOConfig:
     """Control the generated DTO."""
 
-    purpose: Purpose | None = field(default=None)
+    purpose: Purpose | Literal["read", "write"] | None = field(default=None)
     """Configure the DTO for "read" or "write" operations.
 
     If "write", read-only fields are omitted from data transfer. If "read" or ``None``, read-only fields are included.
@@ -52,7 +52,7 @@ class DTOConfig:
     """The maximum depth of nested items allowed for data transfer."""
 
 
-def dto_field(mark: str | Mark) -> dict[str, DTOField]:
+def dto_field(mark: Literal["read-only", "private"] | Mark) -> dict[str, DTOField]:
     """Create a field metadata mapping.
 
     Args:
