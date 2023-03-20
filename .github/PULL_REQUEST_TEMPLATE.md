@@ -7,6 +7,10 @@
 - [ ] Have you updated the prose documentation?
 - [ ] Have you updated the reference documentation?
 
+By submitting this issue, you agree to: 
+- follow Starlite's [Code of Conduct](https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md)
+- follow Starlite's [Contribution Guidelines](https://starliteproject.dev/community/contribution-guide/index.html)
+
 ### Description
 
 [//]: # "Please describe your pull request for new release changelog purposes"
