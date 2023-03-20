@@ -63,11 +63,3 @@ class StoreRegistry:
         if not store:
             store = self._stores[name] = self._default_factory(name)
         return store
-
-    @property
-    def default(self) -> Store:
-        """Return the default store (i.e. the store registered under the name ``default``.
-
-        Equivalent to ``registry.get("default")``
-        """
-        return self.get("default")
