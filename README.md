@@ -46,7 +46,7 @@ pip install starlite
 ```
 
 **Starlite 2.0 is coming out soon**, bringing many new features and improvements.
-You can check out the alpha version by running instead
+You can check out the alpha version by instead running
 
 ```shell
 pip install starlite==2.0.0alpha1
