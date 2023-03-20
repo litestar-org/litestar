@@ -70,7 +70,7 @@ def test_default_serializer_returns_string() -> None:
 
 def test_config_connection_string_or_engine_instance_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        SQLAlchemyConfig(connection_string=None, engine_instance=None)
+        SQLAlchemyConfig(connection_string=None, engine_instance=None).create_engine()
 
     engine = create_async_engine(CONN_STR)
 
@@ -78,5 +78,5 @@ def test_config_connection_string_or_engine_instance_validation() -> None:
         SQLAlchemyConfig(connection_string=CONN_STR, engine_instance=engine)
 
     # these should be OK
-    SQLAlchemyConfig(engine_instance=engine)
-    SQLAlchemyConfig(connection_string=CONN_STR)
+    SQLAlchemyConfig(engine_instance=engine).create_engine()
+    SQLAlchemyConfig(connection_string=CONN_STR).create_engine()

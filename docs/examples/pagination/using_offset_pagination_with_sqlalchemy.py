@@ -47,7 +47,7 @@ sqlalchemy_plugin = SQLAlchemyPlugin(config=sqlalchemy_config)
 
 async def on_startup() -> None:
     """Initializes the database."""
-    async with sqlalchemy_config.engine.begin() as conn:
+    async with sqlalchemy_config.create_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 

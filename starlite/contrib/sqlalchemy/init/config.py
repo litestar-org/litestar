@@ -194,8 +194,6 @@ class SQLAlchemyConfig:
         if self.connection_string is not None and self.engine_instance is not None:
             raise ImproperlyConfiguredException("Only one of 'connection_string' or 'engine_instance' can be provided.")
 
-        self.before_send_handler = AsyncCallable(self.before_send_handler)  # type: ignore
-
     @property
     def engine_config_dict(self) -> dict[str, Any]:
         """Return the engine configuration as a dict.
@@ -205,7 +203,7 @@ class SQLAlchemyConfig:
         """
         return asdict_filter_empty(self.engine_config)
 
-    def engine(self) -> AsyncEngine:
+    def create_engine(self) -> AsyncEngine:
         """Return an engine. If none exists yet, create one.
 
         Returns:
@@ -226,18 +224,18 @@ class SQLAlchemyConfig:
             del engine_config["json_serializer"]
             return self.create_engine_callable(self.connection_string, **self.engine_config_dict)
 
-    def session_maker(self) -> async_sessionmaker:
-        """Get a sessionmaker. If none exists yet, create one.
+    def create_session_maker(self) -> async_sessionmaker:
+        """Get a session maker. If none exists yet, create one.
 
         Returns:
-            Getter that returns the session_maker instance used by the plugin.
+            Session factory used by the plugin.
         """
         if self.session_maker_instance:
             return self.session_maker_instance
 
         session_kws = asdict_filter_empty(self.session_config)
         if session_kws.get("bind") is None:
-            session_kws["bind"] = self.engine
+            session_kws["bind"] = self.create_engine()
         return self.session_maker_class(**session_kws)
 
     def create_db_session_dependency(self, state: State, scope: Scope) -> AsyncSession:
@@ -259,7 +257,10 @@ class SQLAlchemyConfig:
 
     def app_state(self) -> dict[str, Any]:
         """Key/value pairs to be stored in application state."""
-        return {self.engine_app_state_key: self.engine(), self.session_maker_app_state_key: self.session_maker()}
+        return {
+            self.engine_app_state_key: self.create_engine(),
+            self.session_maker_app_state_key: self.create_session_maker(),
+        }
 
     async def on_shutdown(self, state: State) -> None:
         """Disposes of the SQLAlchemy engine.
