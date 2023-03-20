@@ -789,8 +789,8 @@ other places.</p>
 </div>
 <section id="initializing-application-state">
 <h3>Initializing Application State<a class="headerlink" href="#initializing-application-state" title="Permalink to this heading">#</a></h3>
-<p>You can pass an object from which the application state will be instantiated using the <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> kwarg of the
-Starlite constructor:</p>
+<p>To seed application state, you can pass a <a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.State" title="starlite.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> object to the <code class="docutils literal notranslate"><span class="pre">state</span></code> kwarg of
+the Starlite constructor:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
@@ -802,18 +802,21 @@ Starlite constructor:</p>
     <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">initial_state</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">})</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
 </pre></div>
 </div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <cite>initial_state</cite> can be a dictionary, an instance of <a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.ImmutableState" title="starlite.datastructures.state.ImmutableState"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableState</span></code></a>
-or <a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.State" title="starlite.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>, or a list of tuples containing key/value pairs.</p>
+<p><a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.State" title="starlite.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> can be initialized with a dictionary, an instance of
+<a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.ImmutableState" title="starlite.datastructures.state.ImmutableState"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableState</span></code></a> or <a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.State" title="starlite.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>,
+or a list of tuples containing key/value pairs.</p>
 </div>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
-<p>Any value passed to <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> will be deep copied - to prevent mutation from outside the application context.</p>
+<p>You may instruct <a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.State" title="starlite.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> to deep copy initialized data to prevent mutation from
+outside the application context. To do this, pass <code class="docutils literal notranslate"><span class="pre">deep_copy=True</span></code> to the <a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.State" title="starlite.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>
+constructor.</p>
 </div>
 </section>
 <section id="injecting-application-state-into-route-handlers-and-dependencies">
