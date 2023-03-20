@@ -104,7 +104,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         """
         if sniffio.current_async_library() != "asyncio":
             return
-            
+
         self._queue = Queue()
         self._worker_task = create_task(self._worker())
 
