@@ -6,6 +6,8 @@ from collections import defaultdict
 from contextlib import suppress
 from typing import TYPE_CHECKING, Any, DefaultDict, Sequence
 
+import sniffio
+
 from starlite.exceptions import ImproperlyConfiguredException
 
 __all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
@@ -80,16 +82,16 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
             listeners: A list of listeners.
         """
         super().__init__(listeners=listeners)
-        self._queue: Queue = Queue()
+        self._queue: Queue | None = None
         self._worker_task = None
 
     async def _worker(self) -> None:
-        """Worker that runs in a separate thread and continuously pulls events from asyncio queue.
+        """Worker that runs in a separate task and continuously pulls events from asyncio queue.
 
         Returns:
             None
         """
-        while True:
+        while self._queue:
             fn, args, kwargs = await self._queue.get()
             await fn(*args, *kwargs)
             self._queue.task_done()
@@ -100,6 +102,9 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         Returns:
             None
         """
+        if sniffio.current_async_library() != "asyncio":
+            return
+        self._queue = Queue()
         self._worker_task = create_task(self._worker())
 
     async def on_shutdown(self) -> None:
@@ -109,7 +114,8 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
             None
         """
 
-        await self._queue.join()
+        if self._queue:
+            await self._queue.join()
 
         if self._worker_task:
             self._worker_task.cancel()
@@ -117,6 +123,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
                 await self._worker_task
 
         self._worker_task = None
+        self._queue = None
 
     async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
@@ -129,6 +136,12 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         Returns:
             None
         """
+        if not (self._worker_task and self._queue):
+            if sniffio.current_async_library() != "asyncio":
+                raise ImproperlyConfiguredException("This backend only supports asyncio")
+
+            raise ImproperlyConfiguredException("Worker not running")
+
         if listeners := self.listeners.get(event_id):
             for listener in listeners:
                 self._queue.put_nowait((listener.fn, args, kwargs))

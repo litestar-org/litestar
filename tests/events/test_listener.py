@@ -111,6 +111,14 @@ async def test_raises_when_not_initialized() -> None:
         await app.emit("x")
 
 
+async def test_raises_for_wrong_async_backend(async_listener: EventListener) -> None:
+    async with create_async_test_client([], listeners=[async_listener], backend="trio") as client:
+        assert not client.app.event_emitter._queue
+        assert not client.app.event_emitter._worker_task
+        with pytest.raises(ImproperlyConfiguredException):
+            await client.app.emit("test_event")
+
+
 async def test_raises_when_not_listener_are_registered_for_an_event_id(async_listener: EventListener) -> None:
     async with create_async_test_client(route_handlers=[], listeners=[async_listener]) as client:
         with pytest.raises(ImproperlyConfiguredException):
