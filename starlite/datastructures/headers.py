@@ -469,12 +469,13 @@ class Accept:
 
         Args:
             provided_types: A list of media types that can be provided as a response. These types
-                            can contain a wildcard '*' character in the main- or subtype part.
+                            can contain a wildcard ``*`` character in the main- or subtype part.
             default: The media type that is returned if none of the provided types match.
 
         Returns:
             The best matching media type. If the matching provided type contains wildcard characters,
-            they are replaced with the corresponding part of the accepted type.
+            they are replaced with the corresponding part of the accepted type. Otherwise the
+            provided type is returned as-is.
         """
         types = [_MediaType(t) for t in provided_types]
 
@@ -494,12 +495,12 @@ class Accept:
     def accepts(self, media_type: str) -> bool:
         """Check if the request accepts the specified media type.
 
-        If multiple media types can be provided, it is better to use `best_match()`.
+        If multiple media types can be provided, it is better to use :func:`best_match`.
 
         Args:
             media_type: The media type to check for.
 
         Returns:
-            True if the request accepts 'media_type'
+            True if the request accepts ``media_type``.
         """
         return self.best_match([media_type]) == media_type

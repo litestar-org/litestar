@@ -87,10 +87,10 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
 
     @property
     def accept(self) -> Accept:
-        """Parse the request's 'Accept' header, returning an 'Accept' instance.
+        """Parse the request's 'Accept' header, returning an :class:`Accept <starlite.datastructures.headers.Accept>` instance.
 
         Returns:
-            An 'Accept' instance, representing the list of acceptable media types.
+            An :class:`Accept <starlite.datastructures.headers.Accept>` instance, representing the list of acceptable media types.
         """
         if self._accept is Empty:
             self._accept = self.scope["_accept"] = Accept(self.headers.get("Accept", "*/*"))  # type: ignore[typeddict-unknown-key]
