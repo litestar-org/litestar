@@ -104,6 +104,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         """
         if sniffio.current_async_library() != "asyncio":
             return
+            
         self._queue = Queue()
         self._worker_task = create_task(self._worker())
 
@@ -138,7 +139,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         """
         if not (self._worker_task and self._queue):
             if sniffio.current_async_library() != "asyncio":
-                raise ImproperlyConfiguredException("This backend only supports asyncio")
+                raise ImproperlyConfiguredException("{type(self).__name__} only supports 'asyncio' based event loops")
 
             raise ImproperlyConfiguredException("Worker not running")
 
