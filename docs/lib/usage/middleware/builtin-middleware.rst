@@ -291,21 +291,10 @@ Server side session store data - as the name suggests - on the server instead of
 They use a cookie containing a session ID which is a randomly generated string to identify a client
 and load the appropriate data from the store
 
-.. literalinclude:: /examples/middleware/session/memory_storage.py
+.. literalinclude:: /examples/middleware/session/file_store.py
 
 
 .. seealso::
 
     - :doc:`/lib/usage/stores`
     - :class:`ServerSideSessionConfig <starlite.middleware.session.server_side.ServerSideSessionConfig>`
-
-
-Interacting with the store
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-In some situations you might want to access the store directly, outside a
-request. For example to delete a specific session's data, or delete expired sessions
-from the database when using the :class:`FileStore <.stores.file.FileStore>`:
-
-.. literalinclude:: /examples/middleware/session/backend_access_explicit.py
-    :language: python
