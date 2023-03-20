@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import anyio
 
@@ -9,7 +10,8 @@ from starlite.stores.redis import RedisStore
 from starlite.testing import TestClient
 
 
-def test_configure_integrations_set_names() -> None:
+@patch("starlite.stores.redis.Redis")
+async def test_configure_integrations_set_names(mock_redis: MagicMock) -> None:
     from examples.stores.configure_integrations_set_names import app
 
     assert isinstance(app.stores.get("redis"), RedisStore)
@@ -46,14 +48,6 @@ async def test_delete_expired_on_startup(tmp_path) -> None:
         assert not await file_store.exists("foo")
 
 
-async def test_expiry(monkeypatch) -> None:
-    pass
-
-
-async def test_expiry_renew_on_get() -> None:
-    pass
-
-
 async def test_get_set(capsys) -> None:
     from examples.stores.get_set import main
 
@@ -62,11 +56,7 @@ async def test_get_set(capsys) -> None:
     assert capsys.readouterr().out == "None\nb'value'\n"
 
 
-def test_namespacing() -> None:
-    pass
-
-
-def test_registry() -> None:
+async def test_registry() -> None:
     from examples.stores.registry import app, memory_store, some_other_store
 
     assert app.stores.get("memory") is memory_store
@@ -75,7 +65,7 @@ def test_registry() -> None:
     assert some_other_store is not memory_store
 
 
-def test_registry_access_integration() -> None:
+async def test_registry_access_integration() -> None:
     from examples.stores.registry_access_integration import app, rate_limit_store
 
     assert app.stores.get("rate_limit") is rate_limit_store
@@ -83,7 +73,8 @@ def test_registry_access_integration() -> None:
     assert app.middleware[0].kwargs["config"].get_store_from_app(app) is rate_limit_store
 
 
-def test_configure_integrations() -> None:
+@patch("starlite.stores.redis.Redis")
+async def test_configure_integrations(mock_redis: MagicMock) -> None:
     from examples.stores.registry_configure_integrations import app
 
     session_store = app.middleware[0].kwargs["backend"].config.get_store_from_app(app)
@@ -94,14 +85,15 @@ def test_configure_integrations() -> None:
     assert cache_store.path == Path("request-cache")
 
 
-def test_registry_default_factory() -> None:
+async def test_registry_default_factory() -> None:
     from examples.stores.registry_default_factory import app, memory_store
 
     assert app.stores.get("foo") is memory_store
     assert app.stores.get("bar") is memory_store
 
 
-def test_default_factory_namespacing() -> None:
+@patch("starlite.stores.redis.Redis")
+async def test_default_factory_namespacing(mock_redis: MagicMock) -> None:
     from examples.stores.registry_default_factory_namespacing import app, root_store
 
     foo_store = app.stores.get("foo")
