@@ -57,20 +57,8 @@ Getting and setting values
 ++++++++++++++++++++++++++
 
 
-.. code-block:: python
-
-    from starlite.stores.memory import MemoryStore
-
-    store = MemoryStore()
-
-
-    async def main() -> None:
-        value = await store.get("key")
-        print(value)  # this will print 'None', as no store with this key has been defined yet
-
-        await store.set("key", b"value")
-        value = await store.get("key")
-        print(value)
+.. literalinclude:: /examples/stores/get_set.py
+    :language: python
 
 
 Setting an expiry time
@@ -80,22 +68,8 @@ The :meth:`set <.base.Store.set>` method has an optional parameter ``expires_in`
 which a stored value should expire.
 
 
-.. code-block:: python
-
-    from asyncio import sleep
-    from starlite.stores.memory import MemoryStore
-
-    store = MemoryStore()
-
-
-    async def main() -> None:
-        await store.set("foo", b"bar", expires_in=1)
-        value = await store.get("foo")
-        print(value)
-
-        await sleep(1)
-        value = await store.get("foo")  # this will return 'None', since the key has expired
-        print(value)
+.. literalinclude:: /examples/stores/expiry.py
+    :language: python
 
 
 .. note::
@@ -108,27 +82,8 @@ which a stored value should expire.
 It is also possible to extend the expiry time on each access, which is useful for applications such as server side
 sessions or LRU caches:
 
-.. code-block:: python
-
-    from asyncio import sleep
-    from starlite.stores.memory import MemoryStore
-
-    store = MemoryStore()
-
-
-    async def main() -> None:
-        await store.set("foo", b"bar", expires_in=1)
-        await sleep(0.5)
-
-        await store.get(
-            "foo", renew_for=1
-        )  # this will reset the time to live to one second
-
-        await sleep(1)
-        # it has now been 1.5 seconds since the key was set with a life time of one second,
-        # so it should have expired however, since it was renewed for one second, it is still available
-        value = await store.get("foo")
-        print(value)
+.. literalinclude:: /examples/stores/expiry_renew_on_get.py
+    :language: python
 
 
 Deleting expired values
@@ -145,43 +100,14 @@ indefinitely.
 In this example, an :ref:`after_response <after_response>` handler is used to delete expired items at most every 30
 second:
 
-.. code-block:: python
-
-    from datetime import datetime, timedelta
-
-    from starlite import Starlite, Request
-    from starlite.stores.memory import MemoryStore
-
-    memory_store = MemoryStore()
-
-    async def after_response(request: Request) -> None:
-        now = datetime.utcnow()
-        last_cleared = request.app.state.get("store_last_cleared", now)
-        if datetime.utcnow() - last_cleared > timedelta(seconds=30):269
-            await memory_store.delete_expired()
-            app.state["store_last_cleared"] = now
-
-
-    app = Starlite([], after_response=after_response)
-
+.. literalinclude:: /examples/stores/delete_expired_after_response.py
+    :language: python
 
 When using the :class:`FileStore <.file.FileStore>`, expired items may also be deleted on startup:
 
-.. code-block:: python
 
-    from pathlib import Path
-
-    from starlite import Starlite
-    from starlite.stores.file import FileStore
-
-    file_store = FileStore(Path("data"))
-
-
-    async def on_startup() -> None:
-        await file_store.delete_expired()
-
-
-    app = Starlite([], on_startup=[on_startup])
+.. literalinclude:: /examples/stores/delete_expired_on_startup.py
+    :language: python
 
 
 .. note::
@@ -236,24 +162,8 @@ When using the :class:`RedisStore <.redis.RedisStore>`, this allows to re-use th
     This can be turned off by explicitly passing ``namespace=None`` to the store when creating a new instance.
 
 
-.. code-block:: python
-
-    from pathlib import Path
-    from starlite.stores.redis import RedisStore
-    from starlite import Starlite
-
-    root_store = RedisStore.with_client()
-    cache_store = root_store.with_namespace("cache")
-    session_store = root_store.with_namespace("sessions")
-
-    async def before_startup() -> None:
-        await session_store.delete_expired()
-
-    async def before_shutdown() -> None:
-        await cache_store.delete_all()
-
-
-    app = Starlite([], before_startup=[before_startup], before_shutdown=[before_shutdown])
+.. literalinclude:: /examples/stores/namespacing.py
+    :language: python
 
 Even though all three stores defined here use the same Redis instance, calling ``delete_all`` on the ``cache_store``
 will not affect data within the ``session_store``.
@@ -278,21 +188,8 @@ It operates on a few basic principles:
   using the `default factory <the default factory>`_
 
 
-.. code-block:: python
-
-    from starlite import Starlite
-    from starlite.stores.memory import MemoryStore
-
-    app = Starlite(..., stores={"memory": MemoryStore()})
-
-    memory_store = app.stores.get("memory")
-    # this is the previously defined store
-
-    some_other_store = app.stores.get("something_else")
-    # this will be a newly created instance
-
-    app.stores.get("something_else") is some_other store
-    # but subsequent requests will return the same instance
+.. literalinclude:: /examples/stores/registry.py
+    :language: python
 
 
 This pattern offers isolation of stores, and an easy way to configure stores used by middlewares and other Starlite
@@ -301,28 +198,12 @@ features or third party integrations.
 In the following example, the store set up by the
 :class:`RateLimitMiddleware <starlite.middleware.rate_limit.RateLimitMiddleware>` is accessed via the registry:
 
-.. code-block:: python
-
-    from starlite import Starlite
-    from starlite.middleware.rate_limit import RateLimitConfig
-
-    app = Starlite(..., rate_limit_config=RateLimitConfig(("second", 1)))
-    rate_limit_store = app.stores.get("rate_limit")
+.. literalinclude:: /examples/stores/registry_access_integration.py
+    :language: python
 
 
 This works because :class:`RateLimitMiddleware <starlite.middleware.rate_limit.RateLimitMiddleware>` will request
 its store internally via ``app.stores.get`` as well.
-
-In addition to generating stores on the fly, a set of stores can be provided to the application, which will then be made
-available via the registry:
-
-.. code-block:: python
-
-    from starlite import Starlite
-    from starlite.stores.redis import RedisStore
-
-    app = Starlite(..., stores={"redis": RedisStore.with_client()})
-    # this can now be accessed through app.stores.get("redis")
 
 
 The default factory
@@ -338,21 +219,8 @@ custom ``default_factory`` method to the registry.
 
 To make use of this, a registry instance can be passed directly to the application:
 
-.. code-block:: python
-
-    from starlite import Starlite
-    from starlite.stores.registry import StoreRegistry
-    from starlite.stores.memory import MemoryStore
-
-    memory_store = MemoryStore()
-
-
-    def default_factory(name: str) -> MemoryStore:
-        return memory_store
-
-
-    app = Starlite(..., stores=StoreRegistry(default_factory=default_factory))
-
+.. literalinclude:: /examples/stores/registry_default_factory.py
+    :language: python
 
 The registry will now return the same :class:`MemoryStore <starlite.stores.memory.MemoryStore>` every time an undefined
 store is being requested.
@@ -363,47 +231,16 @@ Using the registry to configure integrations
 
 This mechanism also allows to control the stores used by various integrations, such as middlewares:
 
-.. code-block:: python
-
-    from pathlib import Path
-    from starlite import Starlite
-    from starlite.middleware.session.server_side import ServerSideSessionConfig
-    from starlite.stores.redis import RedisStore
-    from starlite.stores.file import FileStore
-
-    app = Starlite(
-        ...,
-        stores={
-            "sessions": RedisStore.with_client(),
-            "request_cache": FileStore(Path("request-cache")),
-        },
-        middleware=[ServerSideSessionConfig().middleware],
-    )
+.. literalinclude:: /examples/stores/registry_configure_integrations.py
+    :language: python
 
 
 In this example, the registry is being set up with stores using the ``sessions`` and ``request_cache`` keys. These are
 not magic constants, but instead configuration values that can be changed. Those names just happen to be their default
 values. Adjusting those default values allows to easily re-use stores, without the need for a more complex setup:
 
-.. code-block:: python
-
-    from pathlib import Path
-    from starlite import Starlite
-    from starlite.middleware.session.server_side import ServerSideSessionConfig
-    from starlite.config.response_cache import ResponseCacheConfig
-    from starlite.middleware.rate_limit import RateLimitConfig
-    from starlite.stores.redis import RedisStore
-    from starlite.stores.file import FileStore
-
-    app = Starlite(
-        ...,
-        stores={"redis": RedisStore.with_client(), "file": FileStore(Path("data"))},
-        response_cache_config=ResponseCacheConfig(store="redis"),
-        middleware=[
-            ServerSideSessionConfig(store="file").middleware,
-            RateLimitConfig(rate_limit=("second", 10), store="redis"),
-        ],
-    )
+.. literalinclude:: /examples/stores/configure_integrations_set_names.py
+    :language: python
 
 Now the rate limit middleware and response caching will use the ``redis`` store, while sessions will be store in the
 ``file`` store.
@@ -415,32 +252,9 @@ Setting up the default factory with namespacing
 The default factory can be used in conjunction with `namespacing`_ to create isolated, hierarchically organized stores,
 with minimal boilerplate:
 
-.. code-block:: python
+.. literalinclude:: /examples/stores/registry_default_factory_namespacing.py
+    :language: python
 
-    from pathlib import Path
-
-    from starlite import Starlite, get
-    from starlite.middleware.rate_limit import RateLimitConfig
-    from starlite.middleware.session.server_side import ServerSideSessionConfig
-    from starlite.stores.redis import RedisStore
-    from starlite.stores.registry import StoreRegistry
-
-    root_store = RedisStore.with_client()
-
-    @get(cache=True)
-    def cached_handler() -> str:
-        # this will use app.stores.get("request_cache")
-        return "Hello, world!"
-
-
-    app = Starlite(
-        [cached_handler],
-        stores=StoreRegistry(default_factory=root_store.with_namespace),
-        middleware=[
-            RateLimitConfig(("second", 1)).middleware,
-            ServerSideSessionConfig().middleware,
-        ],
-    )
 
 Without any extra configuration, every call to ``app.stores.get`` with a unique name will return a namespace for this
 name only, while re-using the underlying Redis instance.

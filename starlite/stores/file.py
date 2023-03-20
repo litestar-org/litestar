@@ -86,6 +86,7 @@ class FileStore(NamespacedStore):
         Returns:
             ``None``
         """
+
         await self.path.mkdir(exist_ok=True)
         path = self._path_from_key(key)
         if isinstance(value, str):
