@@ -66,7 +66,7 @@ class RedisStore(NamespacedStore):
     @classmethod
     def with_client(
         cls,
-        url: str,
+        url: str = "redis://localhost:6379",
         *,
         db: int | None = None,
         port: int | None = None,
