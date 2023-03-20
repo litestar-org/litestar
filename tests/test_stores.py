@@ -279,17 +279,6 @@ async def test_memory_delete_expired(store_fixture: str, request: FixtureRequest
     assert all([await store.exists(key) for key in expect_not_expired])
 
 
-def test_registry_default_store(memory_store: MemoryStore) -> None:
-    registry = StoreRegistry({"default": memory_store})
-
-    assert registry.default is memory_store
-
-
-def test_registry_default_store_no_default() -> None:
-    registry = StoreRegistry()
-    assert registry.default is registry.get("default")
-
-
 def test_registry_get(memory_store: MemoryStore) -> None:
     default_factory = MagicMock()
     default_factory.return_value = memory_store
