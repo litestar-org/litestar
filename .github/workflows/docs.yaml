@@ -4,6 +4,8 @@ on:
     branches: [starlite-theme]
 jobs:
   docs:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
