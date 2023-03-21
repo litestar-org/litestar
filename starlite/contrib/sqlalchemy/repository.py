@@ -518,5 +518,4 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         return statement
 
     def _base_select(self, **kwargs: Any) -> Select[tuple[ModelT]]:
-        statement: Select[tuple[ModelT]] | None = kwargs.pop("base_select", None)
-        return statement if statement is not None else self.statement
+        return kwargs.pop("base_select", self.statement)
