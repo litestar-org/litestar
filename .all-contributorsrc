@@ -834,6 +834,15 @@
       "contributions": [
         "maintenance"
       ]
+    },
+    {
+      "login": "Galdanwing",
+      "name": "Antoine van der Horst",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29492757?v=4",
+      "profile": "https://github.com/Galdanwing",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
