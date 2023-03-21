@@ -42,15 +42,10 @@ def checkout(branch: str) -> None:
     subprocess.run(["git", "checkout", "-"], check=True)
 
 
-def add_to_versions_file(version: str) -> VersionSpec:
+def load_version_spec() -> VersionSpec:
     versions_file = Path("docs/_static/versions.json")
     version_spec: VersionSpec
     version_spec = json.loads(versions_file.read_text()) if versions_file.exists() else {"versions": [], "latest": ""}
-
-    if version not in version_spec["versions"]:
-        version_spec["versions"].append(version)
-
-    versions_file.write_text(json.dumps(version_spec))
 
     return version_spec
 
@@ -67,7 +62,7 @@ def build(output_dir: str, version: str | None) -> None:
     output_dir.mkdir()
     output_dir.joinpath(".nojekyll").touch(exist_ok=True)
 
-    version_spec = add_to_versions_file(version)
+    version_spec = load_version_spec()
     is_latest = version == version_spec["latest"]
 
     docs_src_path = Path("docs/_build/html")
@@ -81,9 +76,11 @@ def build(output_dir: str, version: str | None) -> None:
     # copy existing versions into our output dir to preserve them when cleaning the branch
     with checkout("gh-pages"):
         for other_version in version_spec["versions"]:
-            if other_version == version:
+            if other_version == version or other_version == "latest" and is_latest:
                 continue
-            shutil.copytree(Path(other_version), output_dir / other_version)
+            other_version_path = Path(other_version)
+            if other_version_path.exists():
+                shutil.copytree(other_version_path, output_dir / other_version)
 
 
 def main() -> None:
