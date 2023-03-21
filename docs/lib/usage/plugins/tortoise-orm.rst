@@ -20,10 +20,18 @@ import it and pass it to the :class:`Starlite <starlite.app.Starlite>` class:
        name = fields.TextField()
        created_at = fields.DatetimeField(auto_now_add=True)
        optional = fields.TextField(null=True)
+       # Add the reverse relations so that they can be used for type hinting.
        events: fields.ReverseRelation["Event"]
+
+       def is_medieval(self) -> bool:
+           """Check if the tournament is medieval, to be used as a computed field."""
+           return "medieval" in self.name
 
        class Meta:
            ordering = ["name"]
+
+       class PydanticMeta:
+           computed = ["is_medieval"]
 
 
    class Event(Model):
