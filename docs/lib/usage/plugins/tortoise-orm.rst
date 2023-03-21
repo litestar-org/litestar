@@ -136,7 +136,13 @@ An example of a Starlite app using the Tortoise ORM plugin with computed fields 
 
 
    app = Starlite(
-       route_handlers=[get_tournament, get_tournaments, create_tournament, create_event],
+       route_handlers=[
+           get_tournament,
+           get_tournaments,
+           create_tournament,
+           get_events,
+           create_event,
+       ],
        on_startup=[init_tortoise],
        on_shutdown=[shutdown_tortoise],
        plugins=[TortoiseORMPlugin()],
