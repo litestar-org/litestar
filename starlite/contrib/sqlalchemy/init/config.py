@@ -7,7 +7,6 @@ from starlite.exceptions import ImproperlyConfiguredException, MissingDependency
 from starlite.serialization import decode_json, encode_json
 from starlite.types import Empty
 from starlite.utils import (
-    AsyncCallable,
     delete_starlite_scope_state,
     get_starlite_scope_state,
     set_starlite_scope_state,
