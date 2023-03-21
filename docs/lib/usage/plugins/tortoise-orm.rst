@@ -103,6 +103,18 @@ import it and pass it to the :class:`Starlite <starlite.app.Starlite>` class:
        return data
 
 
+   @post("/tournaments/{tournament_id:int}/events")
+   async def create_event(tournament_id: int, data: Event) -> Event:
+       """By default, the tournament_id is not available in the data,
+       so we need to add it manually."""
+       assert isinstance(data, Event)
+       tournament = await Tournament.filter(id=tournament_id).first()
+       data.tournament = tournament
+       await data.save()
+       await data.refresh_from_db()
+       return data
+
+
    app = Starlite(
        route_handlers=[get_tournament, get_tournaments, create_tournament],
        on_startup=[init_tortoise],
