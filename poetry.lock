@@ -2986,9 +2986,9 @@ pydata-sphinx-theme = "^0.13.1"
 
 [package.source]
 type = "git"
-url = "git@github.com:starlite-api/starlite-sphinx-theme.git"
+url = "https://github.com/starlite-api/starlite-sphinx-theme.git"
 reference = "HEAD"
-resolved_reference = "8d38f35a05fde8de5c5cdd3504cc7d3d13ae6928"
+resolved_reference = "84943c96b7c4ea50fa6d107bce49c64bebdcd48a"
 
 [[package]]
 name = "structlog"
@@ -3305,4 +3305,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "8520d32829d08078a7adc13e978e652dd8c9cc22dd5dbb5bd82e6b5827ad207d"
+content-hash = "c016b617a6cb014b6d506ce2463ae868937e0245bd4e13a0a2f91bc5b1fabdf9"

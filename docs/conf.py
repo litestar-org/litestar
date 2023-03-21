@@ -18,7 +18,6 @@ extensions = [
     "sphinxcontrib.mermaid",
 ]
 
-templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
@@ -124,39 +123,25 @@ html_theme = "starlite_sphinx_theme"
 html_static_path = ["_static"]
 html_js_files = ["versioning.js"]
 html_show_sourcelink = False
-html_sidebars = {"about/*": []}
 html_title = "Starlite Framework"
-
-html_additional_pages = {"index": "landing-page.html"}
 
 
 html_theme_options = {
-    "icon_links": [
-        {
-            "name": "GitHub",
-            "url": "https://github.com/starlite-api/starlite",
-            "icon": "fa-brands fa-github",
-            "type": "fontawesome",
-        },
-        {
-            "name": "Discord",
-            "url": "https://discord.gg/X3FJqy8d2j",
-            "icon": "fa-brands fa-discord",
-            "type": "fontawesome",
-        },
-    ],
-    "navbar_items": {
-        "Documentation": "lib/index",
+    "use_page_nav": False,
+    "github_repo_name": "starlite",
+    "extra_navbar_items": {
         "Community": {
-            "Contribution guide": "community/contribution-guide",
+            "Contribution Guide": "contribution-guide",
             "Code of Conduct": "https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md",
         },
         "About": {
-            "Organization": "about/organization",
-            "Releases": "about/starlite-releases",
+            "Organization": "https://starliteproject.dev/about/organization",
+            "Releases": "https://starliteproject.dev/about/starlite-releases",
         },
-        "Release notes": "release-notes/index",
-    }
+        "Release notes": {
+            "2.0 migration guide": "release-notes/migration_guide_2.html",
+            "2.x Changelog": "https://docs.starliteproject.dev/2/release-notes/changelog.html",
+            "1.x Changelog": "https://docs.starliteproject.dev/1/changelog.html",
+        },
+    },
 }
-
-
