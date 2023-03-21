@@ -4,6 +4,8 @@ Tortoise ORM Plugin
 To use the :class:`TortoiseORMPlugin <.contrib.tortoise_orm.TortoiseORMPlugin>`
 import it and pass it to the :class:`Starlite <starlite.app.Starlite>` class:
 
+An example of a Starlite app using the Tortoise ORM plugin with computed fields and relations:
+
 .. code-block:: python
 
    from typing import cast
@@ -99,16 +101,34 @@ import it and pass it to the :class:`Starlite <starlite.app.Starlite>` class:
    async def create_tournament(data: Tournament) -> Tournament:
        assert isinstance(data, Tournament)
        await data.save()
-       await data.refresh_from_db()
        return data
 
 
    @post("/tournaments/{tournament_id:int}/events")
    async def create_event(tournament_id: int, data: Event) -> Event:
-       """By default, the tournament_id is not available in the data,
+       """By default, foreign keys are not available in the data keyword argument,
        so we need to add it manually."""
        assert isinstance(data, Event)
-       tournament = await Tournament.filter(id=tournament_id).first()
+       tournament = await Tournament.get(id=tournament_id)
+       data.tournament = tournament
+       await data.save()
+       await data.refresh_from_db()
+       return data
+
+
+   @get("/tournaments/{tournament_id:int}/events")
+   async def get_events(tournament_id: int) -> list[Event]:
+       tournament = await Tournament.get(id=tournament_id)
+       events = await tournament.events.all()
+       return cast("list[Event]", events)
+
+
+   @post("/tournaments/{tournament_id:int}/events")
+   async def create_event(tournament_id: int, data: Event) -> Event:
+       """By default, foreign keys are not available in the data keyword argument,
+       so we need to add it manually."""
+       assert isinstance(data, Event)
+       tournament = await Tournament.get(id=tournament_id)
        data.tournament = tournament
        await data.save()
        await data.refresh_from_db()
@@ -116,7 +136,7 @@ import it and pass it to the :class:`Starlite <starlite.app.Starlite>` class:
 
 
    app = Starlite(
-       route_handlers=[get_tournament, get_tournaments, create_tournament],
+       route_handlers=[get_tournament, get_tournaments, create_tournament, create_event],
        on_startup=[init_tortoise],
        on_shutdown=[shutdown_tortoise],
        plugins=[TortoiseORMPlugin()],
