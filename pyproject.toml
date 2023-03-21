@@ -65,6 +65,7 @@ typing-extensions = "*"
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
+async_timeout = { version = "*", python = ">=3.11" }
 asyncpg = "*"
 beautifulsoup4 = "*"
 brotli = "*"
