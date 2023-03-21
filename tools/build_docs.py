@@ -9,6 +9,22 @@ import subprocess
 from pathlib import Path
 from typing import TypedDict
 
+
+REDIRECT_TEMPLATE = """
+<!DOCTYPE HTML>
+<html lang="en-US">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="refresh" content="0; url={target}">
+        <title>Page Redirection</title>
+    </head>
+    <body>
+        You are being redirected. If this does not work, click <a href='{target}'>this link</a>
+    </body>
+</html>
+"""
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--version", required=False)
 parser.add_argument("output")
@@ -48,6 +64,8 @@ def build(output_dir: str, version: str | None) -> None:
     is_latest = version == version_spec["latest"]
 
     docs_src_path = Path("docs/_build/html")
+
+    docs_build_path.joinpath("index.html").write_text(REDIRECT_TEMPLATE.format(target="latest"))
 
     if is_latest:
         shutil.copytree(docs_src_path, docs_build_path / "latest", dirs_exist_ok=True)

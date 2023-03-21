@@ -1,7 +1,7 @@
 name: Documentation Building
 on:
   push:
-    branches: [starlite-theme]
+    branches: [starlite-theme, v1.51]
 jobs:
   docs:
     permissions:
@@ -32,3 +32,4 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs-build
+          clean: false
