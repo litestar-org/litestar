@@ -8,7 +8,6 @@ API reference
 
     app
     background_tasks
-    cache
     config
     connection
     contrib/index
@@ -34,7 +33,7 @@ API reference
     security/index
     serialization
     static_files
-    storage/index
+    stores/index
     template
     testing
     types

@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Sequence
 
-from starlite.cache.config import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
+from starlite.config.response_cache import ResponseCacheConfig
 from starlite.datastructures import State
 from starlite.events.emitter import SimpleEventEmitter
 from starlite.types import Empty
@@ -24,6 +24,8 @@ if TYPE_CHECKING:
     from starlite.openapi.spec import SecurityRequirement
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
+    from starlite.stores.base import Store
+    from starlite.stores.registry import StoreRegistry
     from starlite.template.config import TemplateConfig
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -103,8 +105,6 @@ class AppConfig:
 
     This hook is called during the ASGI startup, before any callables in the ``on_startup`` list have been called.
     """
-    cache_config: CacheConfig = field(default_factory=CacheConfig)
-    """Configures caching behavior of the application."""
     cache_control: CacheControlHeader | None = field(default=None)
     """A ``cache-control`` header of type :class:`CacheControlHeader <.datastructures.CacheControlHeader>` to add to
     route handlers of this app.
@@ -166,6 +166,8 @@ class AppConfig:
     """A list of :class:`Cookie <.datastructures.Cookie>`."""
     response_headers: Sequence[ResponseHeader] = field(default_factory=list)
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
+    response_cache_config: ResponseCacheConfig = field(default_factory=ResponseCacheConfig)
+    """Configures caching behavior of the application."""
     return_dto: type[AbstractDTO] | None | EmptyType = field(default=Empty)
     """DTO type to use for serializing outbound request data."""
     route_handlers: list[ControllerRouterHandler] = field(default_factory=list)
@@ -181,6 +183,11 @@ class AppConfig:
     """A :class:`State` <.datastructures.State>` instance holding application state."""
     static_files_config: list[StaticFilesConfig] = field(default_factory=list)
     """An instance or list of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`."""
+    stores: StoreRegistry | dict[str, Store] | None = None
+    """Central registry of :class:`Store <.stores.base.Store>` to be made available and be used throughout the
+    application. Can be either a dictionary mapping strings to :class:`Store <.stores.base.Store>` instances, or an
+    instance of :class:`StoreRegistry <.stores.registry.StoreRegistry>`.
+    """
     tags: list[str] = field(default_factory=list)
     """A list of string tags that will be appended to the schema of all route handlers under the application."""
     template_config: TemplateConfig | None = field(default=None)

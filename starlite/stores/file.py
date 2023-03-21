@@ -2,15 +2,16 @@ from __future__ import annotations
 
 import os
 import shutil
+import unicodedata
 from tempfile import mkstemp
 from typing import TYPE_CHECKING
 
 from anyio import Path
 from anyio.to_thread import run_sync
 
-from .base import Storage, StorageObject
+from .base import NamespacedStore, StorageObject
 
-__all__ = ("FileStorage",)
+__all__ = ("FileStore",)
 
 
 if TYPE_CHECKING:
@@ -18,7 +19,12 @@ if TYPE_CHECKING:
     from os import PathLike
 
 
-class FileStorage(Storage):
+def _safe_file_name(name: str) -> str:
+    name = unicodedata.normalize("NFKD", name)
+    return "".join(c if c.isalnum() else str(ord(c)) for c in name)
+
+
+class FileStore(NamespacedStore):
     """File based, thread and process safe, asynchronous key/value store."""
 
     __slots__ = {"path": "file path"}
@@ -30,6 +36,15 @@ class FileStorage(Storage):
             path: Path to store data under
         """
         self.path = Path(path)
+
+    def with_namespace(self, namespace: str) -> FileStore:
+        """Return a new instance of :class:`FileStore`, using  a sub-path of the current store's path."""
+        if not namespace.isalnum():
+            raise ValueError(f"Invalid namespace: {namespace!r}")
+        return FileStore(self.path / namespace)
+
+    def _path_from_key(self, key: str) -> Path:
+        return self.path / _safe_file_name(key)
 
     @staticmethod
     async def _load_from_path(path: Path) -> StorageObject | None:
@@ -71,8 +86,9 @@ class FileStorage(Storage):
         Returns:
             ``None``
         """
+
         await self.path.mkdir(exist_ok=True)
-        path = self.path / key
+        path = self._path_from_key(key)
         if isinstance(value, str):
             value = value.encode("utf-8")
         storage_obj = StorageObject.new(data=value, expires_in=expires_in)
@@ -91,7 +107,7 @@ class FileStorage(Storage):
             The value associated with ``key`` if it exists and is not expired, else
             ``None``
         """
-        path = self.path / key
+        path = self._path_from_key(key)
         storage_obj = await self._load_from_path(path)
 
         if not storage_obj:
@@ -114,14 +130,14 @@ class FileStorage(Storage):
         Args:
             key: Key of the value to delete
         """
-        path = self.path / key
+        path = self._path_from_key(key)
         await path.unlink(missing_ok=True)
 
     async def delete_all(self) -> None:
         """Delete all stored values.
 
         Note:
-            This deletes and recreates :attr:`FileStorage.path`
+            This deletes and recreates :attr:`FileStore.path`
         """
 
         await run_sync(shutil.rmtree, self.path)
@@ -131,7 +147,7 @@ class FileStorage(Storage):
         """Delete expired items.
 
         Since expired items are normally only cleared on access (i.e. when calling
-        :meth:`.get` or :meth:`.set`, this method should be called in regular intervals
+        :meth:`.get`), this method should be called in regular intervals
         to free disk space.
         """
         async for file in self.path.iterdir():
@@ -141,13 +157,13 @@ class FileStorage(Storage):
 
     async def exists(self, key: str) -> bool:
         """Check if a given ``key`` exists."""
-        path = self.path / key
+        path = self._path_from_key(key)
         return await path.exists()
 
     async def expires_in(self, key: str) -> int | None:
         """Get the time in seconds ``key`` expires in. If no such ``key`` exists or no
         expiry time was set, return ``None``.
         """
-        if storage_obj := await self._load_from_path(self.path / key):
+        if storage_obj := await self._load_from_path(self._path_from_key(key)):
             return storage_obj.expires_in
         return None

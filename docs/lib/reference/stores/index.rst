@@ -1,5 +1,5 @@
-storage
-=======
+stores
+======
 
 .. toctree::
 
@@ -7,3 +7,4 @@ storage
     file
     memory
     redis
+    registry
