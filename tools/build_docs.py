@@ -41,6 +41,7 @@ def build(output_dir: str, version: str | None) -> None:
     subprocess.run(["make", "docs"], check=True)
 
     docs_build_path = Path(output_dir)
+    docs_build_path.mkdir()
     docs_build_path.joinpath(".nojekyll").touch(exist_ok=True)
 
     version_spec = add_to_versions_file(version)
