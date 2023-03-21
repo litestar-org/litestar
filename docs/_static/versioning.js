@@ -1,5 +1,5 @@
 const loadVersions = async () => {
-    const res = await fetch(DOCUMENTATION_OPTIONS.URL_ROOT + "versions.json")
+    const res = await fetch(DOCUMENTATION_OPTIONS.URL_ROOT + "_static/versions.json")
     if (res.status !== 200) {
         return null
     }
