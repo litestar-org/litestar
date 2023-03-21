@@ -75,7 +75,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         super().__init__(**kwargs)
         self.session = session
-        self.statement = base_select or select(self.model_type)
+        self.statement = base_select if base_select is not None else select(self.model_type)
 
     async def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
