@@ -41,7 +41,7 @@ def test_query_params_optional() -> None:
 def test_query_params_types() -> None:
     with TestClient(app=query_params_types_app) as client:
         res = client.get("/?date=2022-11-28T13:22:06.916540&floating_number=0.1&number=42&strings=1&strings=2")
-        assert res.status_code == 200
+        assert res.status_code == 200, res.json()
         assert res.json() == {"datetime": "2022-11-29T13:22:06.916540", "int": 42, "float": 0.1, "list": ["1", "2"]}
 
 

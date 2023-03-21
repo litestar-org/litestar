@@ -40,7 +40,7 @@ __all__ = (
 if TYPE_CHECKING:
     from starlite._kwargs import KwargsModel
     from starlite._kwargs.parameter_definition import ParameterDefinition
-    from starlite._signature.models import SignatureField
+    from starlite._signature.field import SignatureField
     from starlite.connection import ASGIConnection, Request
 
 
