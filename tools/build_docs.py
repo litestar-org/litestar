@@ -11,7 +11,7 @@ from typing import TypedDict
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--version", required=False)
-parser.add_argument("output", required=True)
+parser.add_argument("output")
 
 
 class VersionSpec(TypedDict):

@@ -16,6 +16,12 @@ jobs:
           version: 1.4.0
           virtualenvs-create: false
           installer-parallel: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ hashFiles('**/poetry.lock') }}
       - name: Install App Dependencies
         run: poetry install --no-interaction --with docs
       - name: Build docs
