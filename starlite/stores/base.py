@@ -2,16 +2,20 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from msgspec import Struct
 from msgspec.msgpack import decode as msgpack_decode
 from msgspec.msgpack import encode as msgpack_encode
 
-__all__ = ("Storage", "StorageObject")
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
-class Storage(ABC):  # pragma: no cover
+__all__ = ("Store", "NamespacedStore", "StorageObject")
+
+
+class Store(ABC):  # pragma: no cover
     """Thread and process safe asynchronous key/value store."""
 
     @abstractmethod
@@ -71,6 +75,21 @@ class Storage(ABC):  # pragma: no cover
         expiry time was set, return ``None``.
         """
         raise NotImplementedError
+
+
+class NamespacedStore(Store):
+    """A subclass of :class:`Store`, offering hierarchical namespacing.
+
+    Bulk actions on a parent namespace should affect all child namespaces, whereas other operations on all namespaces
+    should be isolated.
+    """
+
+    @abstractmethod
+    def with_namespace(self, namespace: str) -> Self:
+        """Return a new instance of :class:`NamespacedStore`, which exists in a child namespace of the current namespace.
+        Bulk actions on the parent namespace should affect all child namespaces, whereas other operations on all
+        namespaces should be isolated.
+        """
 
 
 class StorageObject(Struct):

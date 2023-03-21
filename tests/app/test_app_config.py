@@ -5,8 +5,9 @@ from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
 
-from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
+from starlite.app import Starlite
 from starlite.config.app import AppConfig
+from starlite.config.response_cache import ResponseCacheConfig
 from starlite.datastructures import State
 from starlite.events.emitter import SimpleEventEmitter
 from starlite.logging.config import LoggingConfig
@@ -26,7 +27,7 @@ def app_config_object() -> AppConfig:
         before_send=[],
         before_shutdown=[],
         before_startup=[],
-        cache_config=DEFAULT_CACHE_CONFIG,
+        response_cache_config=ResponseCacheConfig(),
         cache_control=None,
         compression_config=None,
         cors_config=None,
@@ -85,9 +86,9 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # have been accessed during app instantiation.
     property_mocks: List[Tuple[str, Mock]] = []
     for field in fields(AppConfig):
-        if field.name == "cache_config":
-            property_mock = PropertyMock(return_value=DEFAULT_CACHE_CONFIG)
-        if field.name in ["event_emitter_backend", "cache_config"]:
+        if field.name == "response_cache_config":
+            property_mock = PropertyMock(return_value=ResponseCacheConfig())
+        if field.name in ["event_emitter_backend", "response_cache_config"]:
             property_mock = PropertyMock(return_value=Mock())
         else:
             # default iterable return value allows the mock properties that need to be iterated over in
