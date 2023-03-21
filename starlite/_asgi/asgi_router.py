@@ -205,6 +205,8 @@ class ASGIRouter:
         Calls the ``before_startup`` hook and ``after_startup`` hook handlers respectively before and after calling in
         the lifespan handlers.
         """
+        await self.app.event_emitter.on_startup()
+
         for hook in self.app.before_startup:
             await hook(self.app)
 
@@ -221,6 +223,8 @@ class ASGIRouter:
         Calls the ``before_shutdown`` hook and ``after_shutdown`` hook handlers respectively before and after calling in
         the lifespan handlers.
         """
+        await self.app.event_emitter.on_shutdown()
+
         for hook in self.app.before_shutdown:
             await hook(self.app)
 

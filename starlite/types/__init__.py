@@ -63,7 +63,6 @@ from .callable_types import (
 from .composite_types import (
     Dependencies,
     ExceptionHandlersMap,
-    InitialStateType,
     MaybePartial,
     Middleware,
     ParametersMap,
@@ -118,7 +117,6 @@ __all__ = (
     "HTTPScope",
     "HTTPSendMessage",
     "HTTPServerPushEvent",
-    "InitialStateType",
     "LifeSpanHandler",
     "LifeSpanHookHandler",
     "LifeSpanReceive",

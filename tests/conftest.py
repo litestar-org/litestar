@@ -81,11 +81,11 @@ async def scaffold_tortoise() -> AsyncGenerator:
 @pytest.fixture()
 async def scaffold_piccolo() -> AsyncGenerator:
     """Scaffolds Piccolo ORM and performs cleanup."""
-    TABLES = Finder().get_table_classes()
-    await drop_db_tables(*TABLES)
-    await create_db_tables(*TABLES)
+    tables = Finder().get_table_classes()
+    await drop_db_tables(*tables)
+    await create_db_tables(*tables)
     yield
-    await drop_db_tables(*TABLES)
+    await drop_db_tables(*tables)
 
 
 @pytest.fixture(

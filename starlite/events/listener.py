@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils import AsyncCallable
 
-__all__ = ("EventListener",)
+__all__ = ("EventListener", "listener")
 
 
 if TYPE_CHECKING:
@@ -26,7 +26,7 @@ class EventListener:
             *event_ids: The id of the event to listen to or a list of
                 event ids to listen to.
         """
-        self.event_ids: list[str] = list(event_ids)
+        self.event_ids: frozenset[str] = frozenset(event_ids)
 
     def __call__(self, fn: AnyCallable) -> EventListener:
         """Decorate a callable by wrapping it inside an instance of EventListener.
@@ -43,6 +43,9 @@ class EventListener:
         self.fn = AsyncCallable(fn)
 
         return self
+
+    def __hash__(self) -> int:
+        return hash(self.event_ids) + hash(self.fn)
 
 
 listener = EventListener
