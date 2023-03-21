@@ -2,7 +2,7 @@
 Creating Middleware
 ===================
 
-As mentioned in :doc:`using middleware </lib/usage/middleware/using-middleware>`, a middleware in Starlite
+As mentioned in :doc:`using middleware </usage/middleware/using-middleware>`, a middleware in Starlite
 is **any callable** that takes a kwarg called ``app``, which is the next ASGI handler, i.e. an
 :class:`ASGIApp <starlite.types.ASGIApp>`, and returns an ``ASGIApp``.
 

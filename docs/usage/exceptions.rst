@@ -15,7 +15,7 @@ Configuration Exceptions
 
 For missing extra dependencies, Starlite will raise either
 :class:`MissingDependencyException <starlite.exceptions.MissingDependencyException>`. For example, if you try to use the
-:doc:`SQLAlchemyPlugin </lib/usage/plugins/sqlalchemy>` without having SQLAlchemy installed, this will be raised when you
+:doc:`SQLAlchemyPlugin </usage/plugins/sqlalchemy>` without having SQLAlchemy installed, this will be raised when you
 start the application.
 
 For other configuration issues, Starlite will raise

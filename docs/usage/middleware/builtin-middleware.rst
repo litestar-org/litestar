@@ -188,7 +188,7 @@ Logging Middleware
 ------------------
 
 Starlite ships with a robust logging middleware that allows logging HTTP request and responses while building on
-the :ref:`app level logging configuration <lib/usage/the-starlite-app:logging>`:
+the :ref:`app level logging configuration <usage/the-starlite-app:logging>`:
 
 .. literalinclude:: /examples/middleware/logging_middleware.py
     :language: python
@@ -196,7 +196,7 @@ the :ref:`app level logging configuration <lib/usage/the-starlite-app:logging>`:
 
 The logging middleware uses the logger configuration defined on the application level, which allows for using both stdlib
 logging or `structlog <https://www.structlog.org/en/stable/index.html>`_ , depending on the configuration used
-(see :ref:`app level logging configuration <lib/usage/the-starlite-app:logging>` for more details).
+(see :ref:`app level logging configuration <usage/the-starlite-app:logging>` for more details).
 
 Obfuscating Logging Output
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -380,7 +380,7 @@ Database storage
 Database storage is currently offered through the
 :class:`SQLAlchemyBackend <starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend>`.
 It supports both sync and async-engines and integrates with the
-:doc:`SQLAlchemyPlugin </lib/usage/plugins/sqlalchemy>`. Expired sessions will only be deleted when trying to access them.
+:doc:`SQLAlchemyPlugin </usage/plugins/sqlalchemy>`. Expired sessions will only be deleted when trying to access them.
 They can be manually deleted using the
 :meth:`delete_expired <starlite.middleware.session.sqlalchemy_backend.BaseSQLAlchemyBackend.delete_expired>` method.
 

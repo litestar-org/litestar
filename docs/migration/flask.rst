@@ -128,7 +128,7 @@ Path parameters
 ..  seealso::
 
     To learn more about path parameters, check out this chapter
-    in the documentation: `Path parameters <lib/usage/3-parameters/0-path-parameters/>`_
+    in the documentation: `Path parameters <usage/3-parameters/0-path-parameters/>`_
 
 Request object
 ~~~~~~~~~~~~~~
@@ -200,11 +200,11 @@ Request methods
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
 | ``request.environ``             | ``request.scope``                                                                                     |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
-| ``request.files``               | Use ```UploadFile`` <lib/usage/4-request-data/#file-uploads>`__                                       |
+| ``request.files``               | Use ```UploadFile`` <usage/4-request-data/#file-uploads>`__                                           |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
-| ``request.form``                | ``request.form()``, prefer ```Body`` <lib/usage/4-request-data/#specifying-a-content-type>`__         |
+| ``request.form``                | ``request.form()``, prefer ```Body`` <usage/4-request-data/#specifying-a-content-type>`__             |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
-| ``request.get_json``            | ``request.json()``, prefer the ```data keyword argument`` <lib/usage/4-request-data/#request-body>`__ |
+| ``request.get_json``            | ``request.json()``, prefer the ```data keyword argument`` <usage/4-request-data/#request-body>`__     |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
 | ``request.headers``             | ``request.headers``                                                                                   |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
@@ -261,8 +261,8 @@ Request methods
 
     To learn more about requests,, check out these chapters in the documentation
 
-    * :doc:`/lib/usage/request-data`
-    * :doc:`/lib/reference/connection/index`
+    * :doc:`/usage/request-data`
+    * :doc:`/reference/connection/index`
 
 Static files
 ~~~~~~~~~~~~
@@ -282,7 +282,7 @@ in Starlite.
 ..  seealso::
 
     To learn more about static files, check out this chapter in the documentation:
-    `Static files <lib/usage/0-the-starlite-app/3-static-files/>`_
+    `Static files <usage/0-the-starlite-app/3-static-files/>`_
 
 Templates
 ~~~~~~~~~
@@ -332,7 +332,7 @@ In addition to Jinja, Starlite supports `Mako <https://www.makotemplates.org/>`_
 
 ..  seealso::
     To learn more about templates, check out this chapter in the documentation:
-    `Template engines <lib/usage/16-templating/0-template-engines/>`_
+    `Template engines <usage/16-templating/0-template-engines/>`_
 
 Setting cookies and headers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -390,8 +390,8 @@ Setting cookies and headers
     To learn more about response headers and cookies, check out these chapters in the
     documentation:
 
-    - :ref:`Response headers <lib/usage/responses:response headers>`
-    - :ref:`Response cookies <lib/usage/responses:response cookies>`
+    - :ref:`Response headers <usage/responses:response headers>`
+    - :ref:`Response cookies <usage/responses:response cookies>`
 
 Redirects
 ~~~~~~~~~
@@ -482,7 +482,7 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
 
 
 ..  seealso::
-    To learn more about exceptions, check out this chapter in the documentation: `Exceptions <lib/usage/17-exceptions>`_
+    To learn more about exceptions, check out this chapter in the documentation: `Exceptions <usage/17-exceptions>`_
 
 Setting status codes
 ~~~~~~~~~~~~~~~~~~~~
@@ -629,4 +629,4 @@ Error handling
 ..  seealso::
 
     To learn more about exception handling, check out this chapter in the documentation:
-    `Exception handling <lib/usage/17-exceptions/#exception-handling>`_
+    `Exception handling <usage/17-exceptions/#exception-handling>`_

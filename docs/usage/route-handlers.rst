@@ -62,7 +62,7 @@ And the value for this argument can be either a string path, as in the above exa
    def my_route_handler() -> None:
        ...
 
-This is particularly useful when you want to have optional :ref:`path parameters <lib/usage/parameters:Path Parameters>`:
+This is particularly useful when you want to have optional :ref:`path parameters <usage/parameters:Path Parameters>`:
 
 .. code-block:: python
 
@@ -83,9 +83,9 @@ kwargs are inspected by Starlite and then injected into the request handler.
 
 The following sources can be accessed using annotated function kwargs:
 
-- :ref:`path, query, header and cookie parameters <lib/usage/parameters:the parameter function>`
-- :doc:`/lib/usage/request-data`
-- :doc:`injected dependencies </lib/usage/dependency-injection>`
+- :ref:`path, query, header and cookie parameters <usage/parameters:the parameter function>`
+- :doc:`/usage/request-data`
+- :doc:`injected dependencies </usage/dependency-injection>`
 
 Additionally, you can specify the following special kwargs, what's called "reserved keywords" internally:
 
@@ -500,7 +500,7 @@ All route handler decorators accept a key called ``opt`` which accepts a diction
    def handler() -> None:
        ...
 
-This dictionary can be accessed by a :doc:`route guard </lib/usage/security/guards>`, or by accessing the ``route_handler``
+This dictionary can be accessed by a :doc:`route guard </usage/security/guards>`, or by accessing the ``route_handler``
 property on a :class:`request <starlite.connection.request.Request>`, or using the
 :class:`ASGI scope <starlite.types.Scope>` object directly.
 

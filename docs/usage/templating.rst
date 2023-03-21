@@ -131,7 +131,7 @@ Accessing the request instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The current :class:`Request <starlite.connection.request.Request>` is available within the
-template context under ``request``, which also provides access to the :doc:`app instance </lib/usage/the-starlite-app>`.
+template context under ``request``, which also provides access to the :doc:`app instance </usage/the-starlite-app>`.
 
 Accessing ``app.state.key`` for example would look like this:
 <strong>check_context_key: </strong>{{ check_context_key() }}
@@ -173,7 +173,7 @@ Adding CSRF inputs
 
 If you want to add a hidden ``<input>`` tag containing a
 `CSRF token <https://developer.mozilla.org/en-US/docs/Web/Security/Types_of_attacks#cross-site_request_forgery_csrf>`_,
-you first need to configure :ref:`CSRF protection <lib/usage/middleware/builtin-middleware:csrf>`.
+you first need to configure :ref:`CSRF protection <usage/middleware/builtin-middleware:csrf>`.
 With that in place, you can now insert the CSRF input field inside an HTML form:
 
 .. tab-set::
@@ -249,10 +249,10 @@ Built-in callables
 ``url_for``
     To access urls for route handlers you can use the ``url_for`` function. Its signature and behaviour
     matches :meth:`route_reverse <starlite.app.Starlite.route_reverse>` behaviour. More details about route handler indexing
-    can be found :ref:`here <lib/usage/route-handlers:route handler indexing>`.
+    can be found :ref:`here <usage/route-handlers:route handler indexing>`.
 
 ``csrf_token``
-    This function returns the request's unique :ref:`CSRF token <lib/usage/middleware/builtin-middleware:csrf>` You can use this
+    This function returns the request's unique :ref:`CSRF token <usage/middleware/builtin-middleware:csrf>` You can use this
     if you wish to insert the ``csrf_token`` into non-HTML based templates, or insert it into HTML templates not using a hidden input field but
     by some other means, for example inside a special ``<meta>`` tag.
 

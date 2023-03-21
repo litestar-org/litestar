@@ -4,7 +4,7 @@ Plugins
 Starlite supports extension through plugins, which allow for the following:
 
 
-1. Updating the :doc:`Starlite application </lib/usage/the-starlite-app>` during the init process
+1. Updating the :doc:`Starlite application </usage/the-starlite-app>` during the init process
 2. Serialization and deserialization of non-pydantic based 3rd party classes
 3. Automatic OpenAPI schema creation for 3rd party classes
 

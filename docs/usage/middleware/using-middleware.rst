@@ -53,7 +53,7 @@ because we declared it on the application level.
     Middlewares are part of Starlite's layered architecture* which means you can
     set them on every layer of the application.
 
-    You can read more about this here: :ref:`lib/usage/the-starlite-app:layered architecture`
+    You can read more about this here: :ref:`usage/the-starlite-app:layered architecture`
 
 
 Middleware Call Order
@@ -78,7 +78,7 @@ traversed in the usual order:
 Middlewares and Exceptions
 --------------------------
 
-When an exception is raised by a route handler or a :doc:`dependency </lib/usage/dependency-injection>`
+When an exception is raised by a route handler or a :doc:`dependency </usage/dependency-injection>`
 it will be transformed into a response by an `exception handler <../../17-exceptions#exception-handling>`_.
 This response will follow the normal "flow" of the application and therefore, middlewares are
 still applied to it.

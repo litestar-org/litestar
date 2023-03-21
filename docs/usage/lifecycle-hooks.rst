@@ -74,7 +74,7 @@ Layered hooks
     the layer closest to the route handler will take precedence.
 
     You can read more about this here:
-    :ref:`Layered architecture <lib/usage/the-starlite-app:layered architecture>`
+    :ref:`Layered architecture <usage/the-starlite-app:layered architecture>`
 
 
 .. literalinclude:: /examples/lifecycle_hooks/layered_hooks.py

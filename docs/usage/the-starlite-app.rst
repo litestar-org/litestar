@@ -23,7 +23,7 @@ and Route Handlers should be registered on it.
 .. seealso::
 
     To learn more about registering routes, check out this chapter in the documentation:
-    :ref:`lib/usage/routing:Registering Routes`
+    :ref:`usage/routing:Registering Routes`
 
 
 Startup and Shutdown
@@ -162,7 +162,7 @@ no file is found the application will look for a ``404.html`` file in order to r
 
 You can provide a ``name`` parameter to ``StaticFilesConfig`` to identify the given config and generate links to files in
 folders belonging to that config. ``name`` should be a unique string across all static configs and
-`route handlers <lib/usage/route-handlers:Route Handler Indexing>`_.
+`route handlers <usage/route-handlers:Route Handler Indexing>`_.
 
 .. code-block:: python
 
@@ -336,7 +336,7 @@ application ``state``.
 .. attention::
 
     This hook is not meant to handle exceptions - it just receives them to allow for side effects.
-    To handle exceptions you should define :ref:`exception handlers <lib/usage/exceptions:exception handling>`.
+    To handle exceptions you should define :ref:`exception handlers <usage/exceptions:exception handling>`.
 
 Before Send
 ^^^^^^^^^^^
@@ -395,16 +395,16 @@ Parameters that support layering are:
 * :ref:`after_request <after_request>`
 * :ref:`after_response <after_response>`
 * :ref:`before_request <before_request>`
-* :ref:`cache_control <lib/usage/responses:cache control>`
-* :doc:`dependencies </lib/usage/dependency-injection>`
-* :ref:`etag <lib/usage/responses:etag>`
-* :doc:`exception_handlers </lib/usage/exceptions>`
-* :doc:`guards </lib/usage/security/guards>`
-* :doc:`middleware </lib/usage/middleware/index>`
+* :ref:`cache_control <usage/responses:cache control>`
+* :doc:`dependencies </usage/dependency-injection>`
+* :ref:`etag <usage/responses:etag>`
+* :doc:`exception_handlers </usage/exceptions>`
+* :doc:`guards </usage/security/guards>`
+* :doc:`middleware </usage/middleware/index>`
 * :ref:`opt <handler_opts>`
-* :ref:`response_class <lib/usage/responses:custom responses>`
-* :ref:`response_cookies <lib/usage/responses:response cookies>`
-* :ref:`response_headers <lib/usage/responses:response headers>`
+* :ref:`response_class <usage/responses:custom responses>`
+* :ref:`response_cookies <usage/responses:response cookies>`
+* :ref:`response_headers <usage/responses:response headers>`
 * ``security``
 * ``tags``
 * ``type_encoders``

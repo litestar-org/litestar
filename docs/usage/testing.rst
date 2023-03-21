@@ -148,7 +148,7 @@ We would then be able to rewrite our test like so:
 Using sessions
 ++++++++++++++
 
-If you are using :ref:`session middleware <lib/usage/middleware/builtin-middleware:session middleware>` for session persistence
+If you are using :ref:`session middleware <usage/middleware/builtin-middleware:session middleware>` for session persistence
 across requests, then you might want to inject or inspect session data outside a request. For this,
 :class:`TestClient <.testing.TestClient>` provides two methods:
 
@@ -261,7 +261,7 @@ Another helper is the :class:`RequestFactory <starlite.testing.RequestFactory>` 
 you need to test logic that expects to receive a request object.
 
 For example, lets say we wanted to unit test a *guard* function in isolation, to which end we'll reuse the examples
-from the :doc:`route guards </lib/usage/security/guards>` documentation:
+from the :doc:`route guards </usage/security/guards>` documentation:
 
 
 .. code-block:: python

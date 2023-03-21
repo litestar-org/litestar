@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import importlib.metadata
 import os
 from functools import partial
@@ -99,8 +101,6 @@ def update_html_context(
 
 
 def setup(app: Sphinx) -> dict[str, bool]:
-    app.setup_extension("starlite_sphinx_theme")
-    app.setup_extension("pydata_sphinx_theme")
-    app.connect("html-page-context", update_html_context)
+    app.connect("html-page-context", update_html_context, priority=1000)
 
     return {"parallel_read_safe": True, "parallel_write_safe": True}

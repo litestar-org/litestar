@@ -22,9 +22,9 @@ regularly declared pydantic model.
     MyPy doesn't support using types defined using `Type[]` as a type, and MyPy will regard these as invalid types.
     There is currently no way to circumvent this (not even with a plugin) except using a # type: ignore comment.
 
-The :class:`DTOFactory <starlite.dto.DTOFactory>` class supports :doc:`plugins </lib/usage/plugins/index>`, for example, this
+The :class:`DTOFactory <starlite.dto.DTOFactory>` class supports :doc:`plugins </usage/plugins/index>`, for example, this
 is how it could be used with an SQLAlchemy declarative class using the
-:doc:`SQLAlchemyPlugin </lib/usage/plugins/sqlalchemy>`:
+:doc:`SQLAlchemyPlugin </usage/plugins/sqlalchemy>`:
 
 .. literalinclude:: /examples/data_transfer_objects/dto_basic.py
     :caption: Declaring a DTO
@@ -116,7 +116,7 @@ Add New Fields
 
 You add fields that do not exist in the original model by passing in a ``field_definitions`` dictionary. This dictionary
 should have field names as keys, and a tuple following the format supported by the
-`pydantic create_model helper <https://pydantic-docs.helpmanual.io/lib/usage/models/#dynamic-model-creation>`_:
+`pydantic create_model helper <https://pydantic-docs.helpmanual.io/usage/models/#dynamic-model-creation>`_:
 
 
 - For required fields use a tuple of type + ellipsis, for example ``(str, ...)``.

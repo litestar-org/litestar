@@ -78,7 +78,7 @@ Query Parameters
 ----------------
 
 Query parameters are defined as keyword arguments to handler functions. Every keyword argument
-that is not otherwise specified (for example as a :ref:`path parameter <lib/usage/parameters:path parameters>`)
+that is not otherwise specified (for example as a :ref:`path parameter <usage/parameters:path parameters>`)
 will be interpreted as a query parameter.
 
 .. literalinclude:: /examples/parameters/query_params.py
@@ -185,7 +185,7 @@ The Parameter Function
 -----------------------
 
 :class:`Parameter <.params.Parameter>` is a wrapper on top of the
-pydantic `Field function <https://pydantic-docs.helpmanual.io/lib/usage/schema/#field-customization>`_ that extends it with a
+pydantic `Field function <https://pydantic-docs.helpmanual.io/usage/schema/#field-customization>`_ that extends it with a
 set of Starlite specific kwargs. As such, you can use most of the kwargs of *Field* with Parameter and have the same
 parsing and validation. The additional kwargs accepted by ``Parameter`` are passed to the resulting pydantic ``FieldInfo``
 as an ``extra`` dictionary and have no effect on the working of pydantic itself.

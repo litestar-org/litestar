@@ -57,7 +57,7 @@ MediaType has the following members:
 
 You can also set any `IANA referenced <https://www.iana.org/assignments/media-types/media-types.xhtml>`_ media type
 string as the ``media_type``. While this will still affect the OpenAPI generation as expected, you might need to handle
-serialization using either a :ref:`custom response <lib/usage/responses:Custom Responses>` with serializer or by serializing
+serialization using either a :ref:`custom response <usage/responses:Custom Responses>` with serializer or by serializing
 the value in the route handler function.
 
 JSON responses
@@ -66,8 +66,8 @@ JSON responses
 As previously mentioned, the default ``media_type`` is ``MediaType.JSON``. which supports the following values:
 
 * :doc:`dataclasses <python:library/dataclasses>`
-* `pydantic dataclasses <https://docs.pydantic.dev/lib/usage/dataclasses/>`_
-* `pydantic models <https://docs.pydantic.dev/lib/usage/models/>`_
+* `pydantic dataclasses <https://docs.pydantic.dev/usage/dataclasses/>`_
+* `pydantic models <https://docs.pydantic.dev/usage/models/>`_
 * models from libraries that extend pydantic models
 * :class:`UUIDs <uuid.UUID>`
 * :doc:`datetime objects <python:library/datetime>`
@@ -75,7 +75,7 @@ As previously mentioned, the default ``media_type`` is ``MediaType.JSON``. which
 * container types such as :class:`dict` or :class:`list` containing supported types
 
 If you need to return other values and would like to extend serialization you can do
-this :ref:`custom responses <lib/usage/responses:Custom Responses>`.
+this :ref:`custom responses <usage/responses:Custom Responses>`.
 
 MessagePack responses
 +++++++++++++++++++++
@@ -134,7 +134,7 @@ For ``MediaType.HTML``, route handlers should return a :class:`str` or :class:`b
 
 .. tip::
 
-   It's a good idea to use a :ref:`template engine <lib/usage/templating:template engines>` for more complex HTML responses
+   It's a good idea to use a :ref:`template engine <usage/templating:template engines>` for more complex HTML responses
    and to write the template itself in a separate file rather than a string.
 
 
@@ -358,7 +358,7 @@ as you see fit, e.g.:
 
 In the above we use the ``response_headers`` kwarg to pass the ``name`` and ``description`` parameters for the ``Random-Header``
 to the OpenAPI documentation, but we set the value dynamically in as part of
-the :ref:`annotated response <lib/usage/responses:annotating responses>` we return. To this end we do not set a ``value``
+the :ref:`annotated response <usage/responses:annotating responses>` we return. To this end we do not set a ``value``
 for it and we designate it as ``documentation_only=True``.
 
 Setting Response Headers Using the After Request Hook
@@ -481,7 +481,7 @@ Dynamic Cookies
 
 While the above scheme works great for static cookie values, it doesn't allow for dynamic cookies. Because cookies are
 fundamentally a type of response header, we can utilize the same patterns we use for
-setting :ref:`dynamic headers <lib/usage/responses:dynamic headers>` also here.
+setting :ref:`dynamic headers <usage/responses:dynamic headers>` also here.
 
 Setting Response Cookies Using Annotated Responses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -495,7 +495,7 @@ as you see fit, e.g.:
 
 In the above we use the ``response_cookies`` kwarg to pass the ``key`` and ``description`` parameters for the ``Random-Header``
 to the OpenAPI documentation, but we set the value dynamically in as part of
-the :ref:`annotated response <lib/usage/responses:annotating responses>` we return. To this end we do not set a ``value``
+the :ref:`annotated response <usage/responses:annotating responses>` we return. To this end we do not set a ``value``
 for it and we designate it as ``documentation_only=True``.
 
 Setting Response Cookies Using the After Request Hook
@@ -627,7 +627,7 @@ Template Responses
 ------------------
 
 Template responses are used to render templates into HTML. To use a template response you must first
-:ref:`register a template engine <lib/usage/templating:registering a template engine>` on the application level. Once an
+:ref:`register a template engine <usage/templating:registering a template engine>` on the application level. Once an
 engine is in place, you can use a template response like so:
 
 .. code-block:: python
@@ -666,7 +666,7 @@ instances.
    set a response class on every layer of the application. If you have set a response
    class on multiple layers, the layer closes to the route handler will take precedence.
 
-   You can read more about this here: :ref:`lib/usage/the-starlite-app:layered architecture`
+   You can read more about this here: :ref:`usage/the-starlite-app:layered architecture`
 
 
 
@@ -784,7 +784,7 @@ Offset Pagination With SQLAlchemy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When retrieving paginated data from the database using SQLAlchemy, the Paginator instance requires an SQLAlchemy session
-instance to make queries. This can be achieved with :ref:`dependency injection <lib/usage/dependency-injection:dependency
+instance to make queries. This can be achieved with :ref:`dependency injection <usage/dependency-injection:dependency
 kwargs>`
 
 .. literalinclude:: /examples/datastructures/pagination/using_offset_pagination_with_sqlalchemy.py
@@ -792,7 +792,7 @@ kwargs>`
     :language: python
 
 
-See :ref:`SQLAlchemy plugin <lib/usage/plugins/sqlalchemy:SQLAlchemy Plugin>` for sqlalchemy integration.
+See :ref:`SQLAlchemy plugin <usage/plugins/sqlalchemy:SQLAlchemy Plugin>` for sqlalchemy integration.
 
 Cursor Pagination
 +++++++++++++++++

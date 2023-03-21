@@ -122,7 +122,7 @@ Sessions
 ^^^^^^^^
 
 This command and its subcommands provide management utilities for
-:ref:`server-side session backends <lib/usage/middleware/builtin-middleware:server-side sessions>`.
+:ref:`server-side session backends <usage/middleware/builtin-middleware:server-side sessions>`.
 
 Delete
 ~~~~~~

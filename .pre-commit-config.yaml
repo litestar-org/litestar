@@ -56,7 +56,7 @@ repos:
     rev: 6.3.0
     hooks:
       - id: pydocstyle
-        exclude: "test*|examples*|tools"
+        exclude: "test*|examples*|tools|docs/conf.py"
         additional_dependencies:
           - pydocstyle[toml]
   - repo: https://github.com/PyCQA/flake8

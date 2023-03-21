@@ -5,7 +5,7 @@ Routing Decorators
 ~~~~~~~~~~~~~~~~~~
 
 Starlite does not include any decorator as part of the ``Router`` or ``Starlite`` instances.
-Instead, all routes are declared using :doc:`route handlers </lib/usage/route-handlers>`, either as standalone functions or
+Instead, all routes are declared using :doc:`route handlers </usage/route-handlers>`, either as standalone functions or
 controller methods. The handler can then be registered on an application or router instance.
 
 .. tab-set::
@@ -62,7 +62,7 @@ controller methods. The handler can then be registered on an application or rout
 ..  seealso::
 
     To learn more about registering routes, check out this chapter
-    in the documentation: :ref:`registering routes <lib/usage/routing:registering routes>`
+    in the documentation: :ref:`registering routes <usage/routing:registering routes>`
 
 Routers and Routes
 ~~~~~~~~~~~~~~~~~~
@@ -70,10 +70,10 @@ Routers and Routes
 There are a few key differences between Starlite’s and Starlette’s ``Router`` class:
 
 1. The Starlite version is not an ASGI app
-2. The Starlite version does not include decorators: Use :doc:`route handlers </lib/usage/route-handlers>`.
-3. The Starlite version does not support lifecycle hooks: Those have to be handled on the application layer. See :doc:`lifecycle hooks </lib/usage/lifecycle-hooks>`
+2. The Starlite version does not include decorators: Use :doc:`route handlers </usage/route-handlers>`.
+3. The Starlite version does not support lifecycle hooks: Those have to be handled on the application layer. See :doc:`lifecycle hooks </usage/lifecycle-hooks>`
 
-If you are using Starlette’s ``Route``\ s, you will need to replace these with :doc:`route handlers </lib/usage/route-handlers>`.
+If you are using Starlette’s ``Route``\ s, you will need to replace these with :doc:`route handlers </usage/route-handlers>`.
 
 Host based routing
 ~~~~~~~~~~~~~~~~~~
@@ -86,7 +86,7 @@ Dependency Injection
 ~~~~~~~~~~~~~~~~~~~~
 
 The Starlite dependency injection system is different from the one used by FastAPI. You can read about it in
-the :doc:`dependency injection </lib/usage/dependency-injection>` section of the documentation.
+the :doc:`dependency injection </usage/dependency-injection>` section of the documentation.
 
 In FastAPI you declare dependencies either as a list of functions passed to the ``Router`` or ``FastAPI`` instances, or as a
 default function argument value wrapped in an instance of the ``Depends`` class.
@@ -181,13 +181,13 @@ and to easily access dependencies from higher levels.
 ..  seealso::
 
     To learn more about dependency injection, check out this chapter
-    in the documentation: `Dependency injection <lib/usage/6-dependency-injection/0-dependency-injection-intro/>`__
+    in the documentation: `Dependency injection <usage/6-dependency-injection/0-dependency-injection-intro/>`__
 
 Authentication
 ^^^^^^^^^^^^^^
 
 FastAPI promotes a pattern of using dependency injection for authentication. You can do the same in Starlite, but the
-preferred way of handling this is extending :doc:`/lib/usage/security/abstract-authentication-middleware`.
+preferred way of handling this is extending :doc:`/usage/security/abstract-authentication-middleware`.
 
 .. tab-set::
     .. tab-item:: FastAPI
@@ -232,7 +232,7 @@ preferred way of handling this is extending :doc:`/lib/usage/security/abstract-a
 ..  seealso::
 
     To learn more about security and authentication, check out this chapter in the
-    documentation: `Security <lib/usage/8-security/0-intro/>`_
+    documentation: `Security <usage/8-security/0-intro/>`_
 
 Dependency overrides
 ^^^^^^^^^^^^^^^^^^^^
@@ -261,4 +261,4 @@ Pure ASGI middleware is fully compatible, and can be used with any ASGI framewor
 that make use of FastAPI/Starlette specific middleware features such as
 Starlette’s `BaseHTTPMiddleware <https://www.starlette.io/middleware/#basehttpmiddleware>`_ are not compatible,
 but can be easily replaced by making use of `AbstractMiddleware
-<lib/usage/7-middleware/2-creating-middleware/2-using-abstract-middleware/>`_
+<usage/7-middleware/2-creating-middleware/2-using-abstract-middleware/>`_
