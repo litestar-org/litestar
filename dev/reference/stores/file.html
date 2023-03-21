@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>authentication &#8212; Starlite Framework</title>
+    <title>file &#8212; Starlite Framework</title>
   
   
   
@@ -46,13 +46,13 @@
     <script src="../../../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'lib/reference/middleware/authentication';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'lib/reference/stores/file';</script>
     <script src="../../../_static/versioning.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="compression" href="compression.html" />
-    <link rel="prev" title="allowed_hosts" href="allowed_hosts.html" />
+    <link rel="next" title="memory" href="memory.html" />
+    <link rel="prev" title="base" href="base.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -463,19 +463,19 @@
 <li class="toctree-l3"><a class="reference internal" href="../logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">middleware</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="allowed_hosts.html">allowed_hosts</a></li>
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="compression.html">compression</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cors.html">cors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="csrf.html">csrf</a></li>
-<li class="toctree-l3"><a class="reference internal" href="logging.html">logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="session/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="session/client_side.html">client_side</a></li>
-<li class="toctree-l4"><a class="reference internal" href="session/server_side.html">server_side</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/cors.html">cors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../middleware/session/server_side.html">server_side</a></li>
 </ul>
 </li>
 </ul>
@@ -499,12 +499,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../stores/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stores/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stores/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stores/redis.html">redis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stores/registry.html">registry</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">stores</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="base.html">base</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="registry.html">registry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../template.html">template</a></li>
@@ -549,94 +549,117 @@
             
             <article class="bd-article" role="main">
               
-  <section id="module-starlite.middleware.authentication">
-<span id="authentication"></span><h1>authentication<a class="headerlink" href="#module-starlite.middleware.authentication" title="Permalink to this heading">#</a></h1>
+  <section id="module-starlite.stores.file">
+<span id="file"></span><h1>file<a class="headerlink" href="#module-starlite.stores.file" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="starlite.middleware.authentication.AbstractAuthenticationMiddleware">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.authentication.</span></span><span class="sig-name descname"><span class="pre">AbstractAuthenticationMiddleware</span></span><a class="headerlink" href="#starlite.middleware.authentication.AbstractAuthenticationMiddleware" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
-<p>Abstract AuthenticationMiddleware that allows users to create their own AuthenticationMiddleware by extending it
-and overriding <a class="reference internal" href="#starlite.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request" title="starlite.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware.authenticate_request()</span></code></a>.</p>
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.stores.file.</span></span><span class="sig-name descname"><span class="pre">FileStore</span></span><a class="headerlink" href="#starlite.stores.file.FileStore" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#starlite.stores.base.NamespacedStore" title="starlite.stores.base.NamespacedStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamespacedStore</span></code></a></p>
+<p>File based, thread and process safe, asynchronous key/value store.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.authentication.AbstractAuthenticationMiddleware.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.ASGIApp" title="starlite.types.ASGIApp"><span class="pre">ASGIApp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_from_auth_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'exclude_from_auth'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scopes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.Scopes" title="starlite.types.Scopes"><span class="pre">Scopes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.authentication.AbstractAuthenticationMiddleware.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code>.</p>
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.stores.file.FileStore.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">FileStorage</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>app</strong> – An ASGIApp, this value is the next ASGI handler to call in the middleware stack.</p></li>
-<li><p><strong>exclude</strong> – A pattern or list of patterns to skip in the authentication middleware.</p></li>
-<li><p><strong>exclude_from_auth_key</strong> – An identifier to use on routes to disable authentication for a particular route.</p></li>
-<li><p><strong>scopes</strong> – ASGI scopes processed by the authentication middleware.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>path</strong> – Path to store data under</p>
 </dd>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#starlite.stores.file.FileStore.path" title="Permalink to this definition">#</a></dt>
+<dd><p>file path</p>
+</dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.authentication.AbstractAuthenticationMiddleware.__call__">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.Scope" title="starlite.types.Scope"><span class="pre">Scope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.Receive" title="starlite.types.Receive"><span class="pre">Receive</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#starlite.types.Send" title="starlite.types.Send"><span class="pre">Send</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.authentication.AbstractAuthenticationMiddleware.__call__" title="Permalink to this definition">#</a></dt>
-<dd><p>ASGI callable.</p>
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore.with_namespace">
+<span class="sig-name descname"><span class="pre">with_namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.stores.file.FileStore" title="starlite.stores.file.FileStore"><span class="pre">FileStore</span></a></span></span><a class="headerlink" href="#starlite.stores.file.FileStore.with_namespace" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a new instance of <a class="reference internal" href="#starlite.stores.file.FileStore" title="starlite.stores.file.FileStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileStore</span></code></a>, using  a sub-path of the current store’s path.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore.set">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.stores.file.FileStore.set" title="Permalink to this definition">#</a></dt>
+<dd><p>Set a value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><strong>key</strong> – Key to associate the value with</p></li>
+<li><p><strong>value</strong> – Value to store</p></li>
+<li><p><strong>expires_in</strong> – Time in seconds before the key is considered expired</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">authenticate_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#starlite.connection.ASGIConnection" title="starlite.connection.base.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.middleware.authentication.AuthenticationResult" title="starlite.middleware.authentication.AuthenticationResult"><span class="pre">AuthenticationResult</span></a></span></span><a class="headerlink" href="#starlite.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request" title="Permalink to this definition">#</a></dt>
-<dd><p>Receive the http connection and return an <a class="reference internal" href="#starlite.middleware.authentication.AuthenticationResult" title="starlite.middleware.authentication.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a>.</p>
-<div class="admonition-notes admonition">
-<p class="admonition-title">Notes</p>
-<ul class="simple">
-<li><p>This method must be overridden by subclasses.</p></li>
-</ul>
-</div>
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">renew_for</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">timedelta</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.stores.file.FileStore.get" title="Permalink to this definition">#</a></dt>
+<dd><p>Get a value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An <a class="reference internal" href="../connection.html#starlite.connection.ASGIConnection" title="starlite.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – Key associated with the value</p></li>
+<li><p><strong>renew_for</strong> – If given and the value had an initial expiry time set, renew the
+expiry time for <code class="docutils literal notranslate"><span class="pre">renew_for</span></code> seconds. If the value has not been set
+with an expiry time this is a no-op</p></li>
+</ul>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="../exceptions.html#starlite.exceptions.NotAuthorizedException" title="starlite.exceptions.NotAuthorizedException"><strong>NotAuthorizedException</strong></a><strong> | </strong><a class="reference internal" href="../exceptions.html#starlite.exceptions.PermissionDeniedException" title="starlite.exceptions.PermissionDeniedException"><strong>PermissionDeniedException</strong></a> – if authentication fails.</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An instance of <a class="reference internal" href="#starlite.middleware.authentication.AuthenticationResult" title="starlite.middleware.authentication.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a>.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value associated with <code class="docutils literal notranslate"><span class="pre">key</span></code> if it exists and is not expired, else
+<code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="starlite.middleware.authentication.AuthenticationResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.authentication.</span></span><span class="sig-name descname"><span class="pre">AuthenticationResult</span></span><a class="headerlink" href="#starlite.middleware.authentication.AuthenticationResult" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Pydantic model for authentication data.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.authentication.AuthenticationResult.user">
-<span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></em><a class="headerlink" href="#starlite.middleware.authentication.AuthenticationResult.user" title="Permalink to this definition">#</a></dt>
-<dd><p>The user model, this can be any value corresponding to a user of the API.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.authentication.AuthenticationResult.auth">
-<span class="sig-name descname"><span class="pre">auth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></em><a class="headerlink" href="#starlite.middleware.authentication.AuthenticationResult.auth" title="Permalink to this definition">#</a></dt>
-<dd><p>The auth value, this can for example be a JWT token.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.stores.file.FileStore.delete" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete a value.</p>
+<p>If no such key exists, this is a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> – Key of the value to delete</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.authentication.AuthenticationResult.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.authentication.AuthenticationResult.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore.delete_all">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.stores.file.FileStore.delete_all" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete all stored values.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This deletes and recreates <a class="reference internal" href="#starlite.stores.file.FileStore.path" title="starlite.stores.file.FileStore.path"><code class="xref py py-attr docutils literal notranslate"><span class="pre">FileStore.path</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore.delete_expired">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_expired</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.stores.file.FileStore.delete_expired" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete expired items.</p>
+<p>Since expired items are normally only cleared on access (i.e. when calling
+<a class="reference internal" href="#starlite.stores.file.FileStore.get" title="starlite.stores.file.FileStore.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a>), this method should be called in regular intervals
+to free disk space.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore.exists">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#starlite.stores.file.FileStore.exists" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if a given <code class="docutils literal notranslate"><span class="pre">key</span></code> exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.stores.file.FileStore.expires_in">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expires_in</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.stores.file.FileStore.expires_in" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the time in seconds <code class="docutils literal notranslate"><span class="pre">key</span></code> expires in. If no such <code class="docutils literal notranslate"><span class="pre">key</span></code> exists or no
+expiry time was set, return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -650,17 +673,17 @@ and overriding <a class="reference internal" href="#starlite.middleware.authenti
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="allowed_hosts.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="base.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">allowed_hosts</p>
+          <p class="prev-next-title">base</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="compression.html" title="next page">
+  <a class='right-next' id="next-link" href="memory.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">compression</p>
+      <p class="prev-next-title">memory</p>
   </div>
   <i class="fa-solid fa-angle-right"></i>
   </a>
@@ -681,75 +704,100 @@ and overriding <a class="reference internal" href="#starlite.middleware.authenti
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.middleware.authentication.AbstractAuthenticationMiddleware">
+  <a class="reference internal nav-link" href="#starlite.stores.file.FileStore">
    <code class="docutils literal notranslate">
     <span class="pre">
-     AbstractAuthenticationMiddleware
+     FileStore
     </span>
    </code>
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.authentication.AbstractAuthenticationMiddleware.__init__">
+    <a class="reference internal nav-link" href="#starlite.stores.file.FileStore.__init__">
      <code class="docutils literal notranslate">
       <span class="pre">
-       AbstractAuthenticationMiddleware.__init__()
+       FileStore.__init__()
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.authentication.AbstractAuthenticationMiddleware.__call__">
+    <a class="reference internal nav-link" href="#starlite.stores.file.FileStore.path">
      <code class="docutils literal notranslate">
       <span class="pre">
-       AbstractAuthenticationMiddleware.__call__()
+       FileStore.path
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request">
+    <a class="reference internal nav-link" href="#starlite.stores.file.FileStore.with_namespace">
      <code class="docutils literal notranslate">
       <span class="pre">
-       AbstractAuthenticationMiddleware.authenticate_request()
-      </span>
-     </code>
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#starlite.middleware.authentication.AuthenticationResult">
-   <code class="docutils literal notranslate">
-    <span class="pre">
-     AuthenticationResult
-    </span>
-   </code>
-  </a>
-  <ul class="visible nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.authentication.AuthenticationResult.user">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       AuthenticationResult.user
+       FileStore.with_namespace()
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.authentication.AuthenticationResult.auth">
+    <a class="reference internal nav-link" href="#starlite.stores.file.FileStore.set">
      <code class="docutils literal notranslate">
       <span class="pre">
-       AuthenticationResult.auth
+       FileStore.set()
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.authentication.AuthenticationResult.__init__">
+    <a class="reference internal nav-link" href="#starlite.stores.file.FileStore.get">
      <code class="docutils literal notranslate">
       <span class="pre">
-       AuthenticationResult.__init__()
+       FileStore.get()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.stores.file.FileStore.delete">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       FileStore.delete()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.stores.file.FileStore.delete_all">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       FileStore.delete_all()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.stores.file.FileStore.delete_expired">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       FileStore.delete_expired()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.stores.file.FileStore.exists">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       FileStore.exists()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.stores.file.FileStore.expires_in">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       FileStore.expires_in()
       </span>
      </code>
     </a>

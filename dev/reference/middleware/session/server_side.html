@@ -404,7 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/security/guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage/storage.html">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -430,7 +430,6 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../../index.html">API reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../cache.html">cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -500,11 +499,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../storage/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../storage/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../storage/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../storage/redis.html">redis</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../stores/registry.html">registry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../template.html">template</a></li>
@@ -575,11 +575,14 @@ implement to facilitate the storage of session data.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionBackend.get">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionBackend.get" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><span class="pre">Store</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionBackend.get" title="Permalink to this definition">#</a></dt>
 <dd><p>Retrieve data associated with <code class="docutils literal notranslate"><span class="pre">session_id</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>session_id</strong> – The session-ID</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session_id</strong> – The session-ID</p></li>
+<li><p><strong>store</strong> – Store to retrieve the session data from</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The session data, if existing, otherwise <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
@@ -589,7 +592,7 @@ implement to facilitate the storage of session data.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionBackend.set">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionBackend.set" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><span class="pre">Store</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionBackend.set" title="Permalink to this definition">#</a></dt>
 <dd><p>Store <code class="docutils literal notranslate"><span class="pre">data</span></code> under the <code class="docutils literal notranslate"><span class="pre">session_id</span></code> for later retrieval.</p>
 <p>If there is already data associated with <code class="docutils literal notranslate"><span class="pre">session_id</span></code>, replace
 it with <code class="docutils literal notranslate"><span class="pre">data</span></code> and reset its expiry time</p>
@@ -598,6 +601,7 @@ it with <code class="docutils literal notranslate"><span class="pre">data</span>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>session_id</strong> – The session-ID</p></li>
 <li><p><strong>data</strong> – Serialized session data</p></li>
+<li><p><strong>store</strong> – Store to save the session data in</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -608,11 +612,14 @@ it with <code class="docutils literal notranslate"><span class="pre">data</span>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionBackend.delete">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionBackend.delete" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><span class="pre">Store</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionBackend.delete" title="Permalink to this definition">#</a></dt>
 <dd><p>Delete the data associated with <code class="docutils literal notranslate"><span class="pre">session_id</span></code>. Fails silently if no such session-ID exists.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>session_id</strong> – The session-ID</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session_id</strong> – The session-ID</p></li>
+<li><p><strong>store</strong> – Store to delete the session data from</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -681,12 +688,6 @@ empty dictionary.</p>
 <dd><p>Bases: <a class="reference internal" href="base.html#starlite.middleware.session.base.BaseBackendConfig" title="starlite.middleware.session.base.BaseBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBackendConfig</span></code></a>[<a class="reference internal" href="#starlite.middleware.session.server_side.ServerSideSessionBackend" title="starlite.middleware.session.server_side.ServerSideSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSideSessionBackend</span></code></a>]</p>
 <p>Base configuration for server side backends.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionConfig.storage">
-<span class="sig-name descname"><span class="pre">storage</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../storage/base.html#starlite.storage.base.Storage" title="starlite.storage.base.Storage"><span class="pre">Storage</span></a></em><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.storage" title="Permalink to this definition">#</a></dt>
-<dd><p><a class="reference internal" href="../../storage/base.html#starlite.storage.base.Storage" title="starlite.storage.base.Storage"><code class="xref py py-class docutils literal notranslate"><span class="pre">.storage.base.Storage</span></code></a> to use</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionConfig.session_id_bytes">
 <span class="sig-name descname"><span class="pre">session_id_bytes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">32</span></em><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.session_id_bytes" title="Permalink to this definition">#</a></dt>
 <dd><p>Number of bytes used to generate a random session-ID.</p>
@@ -725,16 +726,16 @@ empty dictionary.</p>
 <p>Defaults to <code class="docutils literal notranslate"><span class="pre">'/'</span></code>.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storage:</span> <span class="pre">Storage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_id_bytes:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renew_on_access:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'session'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1209600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scopes:</span> <span class="pre">Scopes</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secure:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">httponly:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samesite:</span> <span class="pre">Literal['lax'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'strict'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'none']</span> <span class="pre">=</span> <span class="pre">'lax'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_opt_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'skip_session'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionConfig.domain">
 <span class="sig-name descname"><span class="pre">domain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.domain" title="Permalink to this definition">#</a></dt>
 <dd><p>Domain for which the cookie is valid.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session_id_bytes:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">renew_on_access:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'session'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1209600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scopes:</span> <span class="pre">~typing.Set[~typing.Literal[&lt;ScopeType.HTTP:</span> <span class="pre">'http'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;ScopeType.WEBSOCKET:</span> <span class="pre">'websocket'&gt;]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secure:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">httponly:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samesite:</span> <span class="pre">~typing.Literal['lax'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'strict'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'none']</span> <span class="pre">=</span> <span class="pre">'lax'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_opt_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'skip_session'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'sessions'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionConfig.secure">
@@ -751,8 +752,7 @@ empty dictionary.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionConfig.samesite">
 <span class="sig-name descname"><span class="pre">samesite</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'lax'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'strict'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lax'</span></em><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.samesite" title="Permalink to this definition">#</a></dt>
-<dd><p>Controls whether or not a cookie is sent with cross-site requests.</p>
-<p>Defaults to <code class="docutils literal notranslate"><span class="pre">lax</span></code>.</p>
+<dd><p>Controls whether or not a cookie is sent with cross-site requests. Defaults to <code class="docutils literal notranslate"><span class="pre">lax</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -765,6 +765,18 @@ empty dictionary.</p>
 <dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionConfig.exclude_opt_key">
 <span class="sig-name descname"><span class="pre">exclude_opt_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'skip_session'</span></em><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.exclude_opt_key" title="Permalink to this definition">#</a></dt>
 <dd><p>An identifier to use on routes to disable the session middleware for a particular route.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionConfig.store">
+<span class="sig-name descname"><span class="pre">store</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sessions'</span></em><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.store" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the <a class="reference internal" href="../../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a> to use</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.session.server_side.ServerSideSessionConfig.get_store_from_app">
+<span class="sig-name descname"><span class="pre">get_store_from_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../app.html#starlite.app.Starlite" title="starlite.app.Starlite"><span class="pre">Starlite</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><span class="pre">Store</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.get_store_from_app" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the store defined in <a class="reference internal" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.store" title="starlite.middleware.session.server_side.ServerSideSessionConfig.store"><code class="xref py py-attr docutils literal notranslate"><span class="pre">store</span></code></a> from an <a class="reference internal" href="../../app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> instance</p>
 </dd></dl>
 
 </dd></dl>
@@ -893,15 +905,6 @@ empty dictionary.</p>
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.storage">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       ServerSideSessionConfig.storage
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.session_id_bytes">
      <code class="docutils literal notranslate">
       <span class="pre">
@@ -947,19 +950,19 @@ empty dictionary.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.__init__">
+    <a class="reference internal nav-link" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.domain">
      <code class="docutils literal notranslate">
       <span class="pre">
-       ServerSideSessionConfig.__init__()
+       ServerSideSessionConfig.domain
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.domain">
+    <a class="reference internal nav-link" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.__init__">
      <code class="docutils literal notranslate">
       <span class="pre">
-       ServerSideSessionConfig.domain
+       ServerSideSessionConfig.__init__()
       </span>
      </code>
     </a>
@@ -1005,6 +1008,24 @@ empty dictionary.</p>
      <code class="docutils literal notranslate">
       <span class="pre">
        ServerSideSessionConfig.exclude_opt_key
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.store">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ServerSideSessionConfig.store
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.middleware.session.server_side.ServerSideSessionConfig.get_store_from_app">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ServerSideSessionConfig.get_store_from_app()
       </span>
      </code>
     </a>

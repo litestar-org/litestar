@@ -404,7 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../security/guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../storage.html">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -430,7 +430,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/cache.html">cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -500,11 +499,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/storage/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/storage/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/storage/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/storage/redis.html">redis</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/template.html">template</a></li>
@@ -827,7 +827,7 @@ addition to including <code class="docutils literal notranslate"><span class="pr
 <h2>Session Middleware<a class="headerlink" href="#session-middleware" title="Permalink to this heading">#</a></h2>
 <p>Starlite includes a <a class="reference internal" href="../../reference/middleware/session/base.html#starlite.middleware.session.base.SessionMiddleware" title="starlite.middleware.session.base.SessionMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionMiddleware</span></code></a>,
 offering client- and server-side sessions. Server-side sessions are backed by Starlite’s
-<a class="reference internal" href="../storage.html"><span class="doc">storage backends</span></a>, which offer support for:</p>
+<a class="reference internal" href="../stores.html"><span class="doc">stores</span></a>, which offer support for:</p>
 <ul class="simple">
 <li><p>In memory sessions</p></li>
 <li><p>File based sessions</p></li>
@@ -967,50 +967,25 @@ which can be installed together with starlite as an extra using <code class="doc
 <h3>Server-side sessions<a class="headerlink" href="#server-side-sessions" title="Permalink to this heading">#</a></h3>
 <p>Server side session store data - as the name suggests - on the server instead of the client.
 They use a cookie containing a session ID which is a randomly generated string to identify a client
-and load the appropriate data from the storage backend</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
+and load the appropriate data from the store</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
 <span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
+<span class="kn">from</span> <span class="nn">starlite.stores.file</span> <span class="kn">import</span> <span class="n">FileStore</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">ServerSideSessionConfig</span><span class="p">()</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
+    <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sessions&quot;</span><span class="p">:</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;session_data&quot;</span><span class="p">))},</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../storage.html"><span class="doc">Storage</span></a></p></li>
+<li><p><a class="reference internal" href="../stores.html"><span class="doc">Stores</span></a></p></li>
 <li><p><a class="reference internal" href="../../reference/middleware/session/server_side.html#starlite.middleware.session.server_side.ServerSideSessionConfig" title="starlite.middleware.session.server_side.ServerSideSessionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSideSessionConfig</span></code></a></p></li>
 </ul>
-</div>
-</section>
-<section id="interacting-with-the-storage-backend">
-<h3>Interacting with the storage backend<a class="headerlink" href="#interacting-with-the-storage-backend" title="Permalink to this heading">#</a></h3>
-<p>In some situations you might want to access the storage backend directly, outside a
-request. For example to delete a specific session’s data, or delete expired sessions
-from the database when using the <a class="reference internal" href="../../reference/storage/file.html#starlite.storage.file.FileStorage" title="starlite.storage.file.FileStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileStorage</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.file</span> <span class="kn">import</span> <span class="n">FileStorage</span>
-
-<span class="n">storage</span> <span class="o">=</span> <span class="n">FileStorage</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;.sessions&quot;</span><span class="p">))</span>
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">storage</span><span class="p">)</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">clear_expired_sessions</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete all expired sessions.&quot;&quot;&quot;</span>
-    <span class="k">await</span> <span class="n">storage</span><span class="o">.</span><span class="n">delete_expired</span><span class="p">()</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
-    <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
-    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">clear_expired_sessions</span><span class="p">],</span>
-    <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">clear_expired_sessions</span><span class="p">],</span>
-<span class="p">)</span>
-</pre></div>
 </div>
 </section>
 </section>
@@ -1126,11 +1101,6 @@ from the database when using the <a class="reference internal" href="../../refer
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#server-side-sessions">
      Server-side sessions
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#interacting-with-the-storage-backend">
-     Interacting with the storage backend
     </a>
    </li>
   </ul>

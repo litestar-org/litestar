@@ -404,7 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../usage/security/guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../usage/storage.html">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -430,7 +430,6 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">API reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../cache.html">cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -500,11 +499,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../storage/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../storage/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../storage/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../storage/redis.html">redis</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../stores/registry.html">registry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../template.html">template</a></li>
@@ -606,16 +606,16 @@ should be checked for rate limiting.</p>
 <dd><p>Boolean dictating whether to set the rate limit headers on the response.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.rate_limit.RateLimitConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rate_limit:</span> <span class="pre">tuple[DurationUnit,</span> <span class="pre">int],</span> <span class="pre">exclude:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">exclude_opt_key:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">check_throttle_handler:</span> <span class="pre">Callable[[Request[Any,</span> <span class="pre">Any,</span> <span class="pre">Any]],</span> <span class="pre">SyncOrAsyncUnion[bool]]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">middleware_class:</span> <span class="pre">type[RateLimitMiddleware]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'starlite.middleware.rate_limit.RateLimitMiddleware'&gt;,</span> <span class="pre">set_rate_limit_headers:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">rate_limit_policy_header_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'RateLimit-Policy',</span> <span class="pre">rate_limit_remaining_header_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'RateLimit-Remaining',</span> <span class="pre">rate_limit_reset_header_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'RateLimit-Reset',</span> <span class="pre">rate_limit_limit_header_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'RateLimit-Limit',</span> <span class="pre">cache_key_builder:</span> <span class="pre">Callable[[Request],</span> <span class="pre">str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.rate_limit.RateLimitConfig.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.rate_limit.RateLimitConfig.rate_limit_policy_header_key">
 <span class="sig-name descname"><span class="pre">rate_limit_policy_header_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RateLimit-Policy'</span></em><a class="headerlink" href="#starlite.middleware.rate_limit.RateLimitConfig.rate_limit_policy_header_key" title="Permalink to this definition">#</a></dt>
 <dd><p>Key to use for the rate limit policy header.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.rate_limit.RateLimitConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">rate_limit:</span> <span class="pre">tuple[DurationUnit,</span> <span class="pre">int],</span> <span class="pre">exclude:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">exclude_opt_key:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">check_throttle_handler:</span> <span class="pre">Callable[[Request[Any,</span> <span class="pre">Any,</span> <span class="pre">Any]],</span> <span class="pre">SyncOrAsyncUnion[bool]]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">middleware_class:</span> <span class="pre">type[RateLimitMiddleware]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'starlite.middleware.rate_limit.RateLimitMiddleware'&gt;,</span> <span class="pre">set_rate_limit_headers:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">rate_limit_policy_header_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'RateLimit-Policy',</span> <span class="pre">rate_limit_remaining_header_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'RateLimit-Remaining',</span> <span class="pre">rate_limit_reset_header_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'RateLimit-Reset',</span> <span class="pre">rate_limit_limit_header_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'RateLimit-Limit',</span> <span class="pre">store:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'rate_limit'</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.rate_limit.RateLimitConfig.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.middleware.rate_limit.RateLimitConfig.rate_limit_remaining_header_key">
@@ -635,6 +635,12 @@ should be checked for rate limiting.</p>
 <dd><p>Key to use for the rate limit limit header.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.middleware.rate_limit.RateLimitConfig.store">
+<span class="sig-name descname"><span class="pre">store</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rate_limit'</span></em><a class="headerlink" href="#starlite.middleware.rate_limit.RateLimitConfig.store" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the <a class="reference internal" href="../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a> to use</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="starlite.middleware.rate_limit.RateLimitConfig.middleware">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">middleware</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="base.html#starlite.middleware.base.DefineMiddleware" title="starlite.middleware.base.DefineMiddleware"><span class="pre">DefineMiddleware</span></a></em><a class="headerlink" href="#starlite.middleware.rate_limit.RateLimitConfig.middleware" title="Permalink to this definition">#</a></dt>
@@ -648,6 +654,12 @@ should be checked for rate limiting.</p>
 config kwarg value.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.middleware.rate_limit.RateLimitConfig.get_store_from_app">
+<span class="sig-name descname"><span class="pre">get_store_from_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../app.html#starlite.app.Starlite" title="starlite.app.Starlite"><span class="pre">Starlite</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><span class="pre">Store</span></a></span></span><a class="headerlink" href="#starlite.middleware.rate_limit.RateLimitConfig.get_store_from_app" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the store defined in <a class="reference internal" href="#starlite.middleware.rate_limit.RateLimitConfig.store" title="starlite.middleware.rate_limit.RateLimitConfig.store"><code class="xref py py-attr docutils literal notranslate"><span class="pre">store</span></code></a> from an <a class="reference internal" href="../app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> instance.</p>
 </dd></dl>
 
 </dd></dl>
@@ -704,11 +716,14 @@ config kwarg value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.rate_limit.RateLimitMiddleware.retrieve_cached_history">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">retrieve_cached_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.middleware.rate_limit.CacheObject" title="starlite.middleware.rate_limit.CacheObject"><span class="pre">CacheObject</span></a></span></span><a class="headerlink" href="#starlite.middleware.rate_limit.RateLimitMiddleware.retrieve_cached_history" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">retrieve_cached_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><span class="pre">Store</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.middleware.rate_limit.CacheObject" title="starlite.middleware.rate_limit.CacheObject"><span class="pre">CacheObject</span></a></span></span><a class="headerlink" href="#starlite.middleware.rate_limit.RateLimitMiddleware.retrieve_cached_history" title="Permalink to this definition">#</a></dt>
 <dd><p>Retrieve a list of time stamps for the given duration unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> – Cache key.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – Cache key.</p></li>
+<li><p><strong>store</strong> – A <a class="reference internal" href="../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a></p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An <a class="reference internal" href="#starlite.middleware.rate_limit.CacheObject" title="starlite.middleware.rate_limit.CacheObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheObject</span></code></a>.</p>
@@ -718,13 +733,14 @@ config kwarg value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.middleware.rate_limit.RateLimitMiddleware.set_cached_history">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_cached_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.middleware.rate_limit.CacheObject" title="starlite.middleware.rate_limit.CacheObject"><span class="pre">CacheObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.rate_limit.RateLimitMiddleware.set_cached_history" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_cached_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.middleware.rate_limit.CacheObject" title="starlite.middleware.rate_limit.CacheObject"><span class="pre">CacheObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><span class="pre">Store</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.rate_limit.RateLimitMiddleware.set_cached_history" title="Permalink to this definition">#</a></dt>
 <dd><p>Store history extended with the current timestamp in cache.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> – Cache key.</p></li>
 <li><p><strong>cache_object</strong> – A <a class="reference internal" href="#starlite.middleware.rate_limit.CacheObject" title="starlite.middleware.rate_limit.CacheObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheObject</span></code></a>.</p></li>
+<li><p><strong>store</strong> – A <a class="reference internal" href="../stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -899,19 +915,19 @@ config kwarg value.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.rate_limit.RateLimitConfig.__init__">
+    <a class="reference internal nav-link" href="#starlite.middleware.rate_limit.RateLimitConfig.rate_limit_policy_header_key">
      <code class="docutils literal notranslate">
       <span class="pre">
-       RateLimitConfig.__init__()
+       RateLimitConfig.rate_limit_policy_header_key
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.middleware.rate_limit.RateLimitConfig.rate_limit_policy_header_key">
+    <a class="reference internal nav-link" href="#starlite.middleware.rate_limit.RateLimitConfig.__init__">
      <code class="docutils literal notranslate">
       <span class="pre">
-       RateLimitConfig.rate_limit_policy_header_key
+       RateLimitConfig.__init__()
       </span>
      </code>
     </a>
@@ -944,10 +960,28 @@ config kwarg value.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.middleware.rate_limit.RateLimitConfig.store">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       RateLimitConfig.store
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#starlite.middleware.rate_limit.RateLimitConfig.middleware">
      <code class="docutils literal notranslate">
       <span class="pre">
        RateLimitConfig.middleware
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.middleware.rate_limit.RateLimitConfig.get_store_from_app">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       RateLimitConfig.get_store_from_app()
       </span>
      </code>
     </a>

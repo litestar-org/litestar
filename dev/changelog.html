@@ -440,8 +440,8 @@ similar interface to handlers. It currently features a simple in-memory, process
 backends that allow inter-process event dispatching are planned.</p>
 <p>Reference: <a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1105">starlite-api/starlite#1105</a></p>
 </dd>
-<dt>Unified storage interfaces <strong>[Breaking]</strong></dt><dd><p>Storage backends for server-side sessions and <a class="reference internal" href="reference/cache.html#starlite.cache.Cache" title="starlite.cache.Cache"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cache</span></code></a> have been unified and replaced
-by the <a class="reference internal" href="usage/storage.html"><span class="doc">storage module</span></a>, which implements generic asynchronous key/values stores backed
+<dt>Unified storage interfaces <strong>[Breaking]</strong></dt><dd><p>Storage backends for server-side sessions and <code class="docutils literal notranslate"><span class="pre">Cache</span> <span class="pre">&lt;starlite.cache.Cache&gt;</span></code> have been unified and replaced
+by the <code class="docutils literal notranslate"><span class="pre">starlite.storages</span></code>, which implements generic asynchronous key/values stores backed
 by memory, the file system or redis.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
@@ -496,7 +496,7 @@ models are:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="reference/config.html#starlite.config.allowed_hosts.AllowedHostsConfig" title="starlite.config.allowed_hosts.AllowedHostsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.allowed_hosts.AllowedHostsConfig</span></code></a></p></li>
 <li><p><a class="reference internal" href="reference/config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.app.AppConfig</span></code></a></p></li>
-<li><p><a class="reference internal" href="reference/cache.html#starlite.cache.CacheConfig" title="starlite.cache.CacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.cache.CacheConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="reference/config.html#starlite.config.response_cache.ResponseCacheConfig" title="starlite.config.response_cache.ResponseCacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.response_cache.ResponseCacheConfig</span></code></a></p></li>
 <li><p><a class="reference internal" href="reference/config.html#starlite.config.compression.CompressionConfig" title="starlite.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.compression.CompressionConfig</span></code></a></p></li>
 <li><p><a class="reference internal" href="reference/config.html#starlite.config.cors.CORSConfig" title="starlite.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.cors.CORSConfig</span></code></a></p></li>
 <li><p><a class="reference internal" href="reference/config.html#starlite.config.csrf.CSRFConfig" title="starlite.config.csrf.CSRFConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.csrf.CSRFConfig</span></code></a></p></li>

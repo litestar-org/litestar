@@ -404,7 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../storage.html">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -430,7 +430,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/cache.html">cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -500,11 +499,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/storage/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/storage/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/storage/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/storage/redis.html">redis</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/template.html">template</a></li>
@@ -582,7 +582,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">starlite.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
 <span class="kn">from</span> <span class="nn">starlite.security.session_auth</span> <span class="kn">import</span> <span class="n">SessionAuth</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
+<span class="kn">from</span> <span class="nn">starlite.stores.memory</span> <span class="kn">import</span> <span class="n">MemoryStore</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
@@ -611,6 +611,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">MOCK_DB</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">User</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">memory_store</span> <span class="o">=</span> <span class="n">MemoryStore</span><span class="p">()</span>
 
 
 <span class="c1"># The SessionAuth class requires a handler callable</span>
@@ -642,7 +643,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="c1"># are correct. If we are using passwords, we should check that</span>
     <span class="c1"># the password hashes match etc. We will simply assume that we</span>
     <span class="c1"># have done all of that we now have a user value:</span>
-    <span class="n">user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
@@ -667,7 +668,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="c1"># and we now have a user instance with an assigned ID value:</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">uuid4</span><span class="p">())</span>
 
-    <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
     <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">user</span>
     <span class="c1"># we are creating a session the same as we do in the</span>
     <span class="c1"># &#39;login_handler&#39; above:</span>
@@ -698,7 +699,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
     <span class="c1"># we must pass a config for a session backend.</span>
     <span class="c1"># all session backends are supported</span>
-    <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">()),</span>
+    <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
     <span class="c1"># exclude any URLs that should not have authentication.</span>
     <span class="c1"># We exclude the documentation URLs, signup and login.</span>
     <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/signup&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
@@ -734,7 +735,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">starlite.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
 <span class="kn">from</span> <span class="nn">starlite.security.session_auth</span> <span class="kn">import</span> <span class="n">SessionAuth</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
+<span class="kn">from</span> <span class="nn">starlite.stores.memory</span> <span class="kn">import</span> <span class="n">MemoryStore</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
@@ -763,6 +764,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">MOCK_DB</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">User</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">memory_store</span> <span class="o">=</span> <span class="n">MemoryStore</span><span class="p">()</span>
 
 
 <span class="c1"># The SessionAuth class requires a handler callable</span>
@@ -794,7 +796,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="c1"># are correct. If we are using passwords, we should check that</span>
     <span class="c1"># the password hashes match etc. We will simply assume that we</span>
     <span class="c1"># have done all of that we now have a user value:</span>
-    <span class="n">user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
@@ -819,7 +821,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="c1"># and we now have a user instance with an assigned ID value:</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">uuid4</span><span class="p">())</span>
 
-    <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
     <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">user</span>
     <span class="c1"># we are creating a session the same as we do in the</span>
     <span class="c1"># &#39;login_handler&#39; above:</span>
@@ -850,7 +852,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
     <span class="c1"># we must pass a config for a session backend.</span>
     <span class="c1"># all session backends are supported</span>
-    <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">()),</span>
+    <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
     <span class="c1"># exclude any URLs that should not have authentication.</span>
     <span class="c1"># We exclude the documentation URLs, signup and login.</span>
     <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/signup&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
@@ -886,7 +888,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">starlite.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
 <span class="kn">from</span> <span class="nn">starlite.security.session_auth</span> <span class="kn">import</span> <span class="n">SessionAuth</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
+<span class="kn">from</span> <span class="nn">starlite.stores.memory</span> <span class="kn">import</span> <span class="n">MemoryStore</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
@@ -915,6 +917,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">MOCK_DB</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">User</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">memory_store</span> <span class="o">=</span> <span class="n">MemoryStore</span><span class="p">()</span>
 
 
 <span class="c1"># The SessionAuth class requires a handler callable</span>
@@ -946,7 +949,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
     <span class="c1"># are correct. If we are using passwords, we should check that</span>
     <span class="c1"># the password hashes match etc. We will simply assume that we</span>
     <span class="c1"># have done all of that we now have a user value:</span>
-    <span class="n">user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
@@ -971,7 +974,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
     <span class="c1"># and we now have a user instance with an assigned ID value:</span>
     <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">uuid4</span><span class="p">())</span>
 
-    <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
     <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">user</span>
     <span class="c1"># we are creating a session the same as we do in the</span>
     <span class="c1"># &#39;login_handler&#39; above:</span>
@@ -1002,7 +1005,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
     <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
     <span class="c1"># we must pass a config for a session backend.</span>
     <span class="c1"># all session backends are supported</span>
-    <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">()),</span>
+    <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
     <span class="c1"># exclude any URLs that should not have authentication.</span>
     <span class="c1"># We exclude the documentation URLs, signup and login.</span>
     <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/signup&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>

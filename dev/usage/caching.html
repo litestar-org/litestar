@@ -404,7 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="security/guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -430,7 +430,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/cache.html">cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -500,11 +499,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/storage/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/storage/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/storage/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/storage/redis.html">redis</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
@@ -551,24 +551,6 @@
               
   <section id="caching">
 <h1>Caching<a class="headerlink" href="#caching" title="Permalink to this heading">#</a></h1>
-<section id="configuring-caching">
-<h2>Configuring caching<a class="headerlink" href="#configuring-caching" title="Permalink to this heading">#</a></h2>
-<p>You can configure caching behaviour on the application level by passing an instance of
-<a class="reference internal" href="../reference/cache.html#starlite.cache.CacheConfig" title="starlite.cache.config.CacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheConfig</span></code></a> to the <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span> <span class="pre">instance</span></code></a>.</p>
-<p>Here is an example of how to configure a cache backend</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">CacheConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.cache.redis_cache_backend</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">RedisCacheBackendConfig</span><span class="p">,</span>
-    <span class="n">RedisCacheBackend</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">config</span> <span class="o">=</span> <span class="n">RedisCacheBackendConfig</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;redis://localhost/&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">redis_backend</span> <span class="o">=</span> <span class="n">RedisCacheBackend</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-
-<span class="n">cache_config</span> <span class="o">=</span> <span class="n">CacheConfig</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="n">redis_backend</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
 <section id="response-caching">
 <h2>Response caching<a class="headerlink" href="#response-caching" title="Permalink to this heading">#</a></h2>
 <p>Sometimes it’s desirable to cache some responses, especially if these involve expensive calculations, or when polling is
@@ -581,8 +563,8 @@ expected. Starlite comes with a simple mechanism for caching:</p>
     <span class="o">...</span>
 </pre></div>
 </div>
-<p>By setting <code class="docutils literal notranslate"><span class="pre">cache=True</span></code> in the route handler, caching for the route handler will be enabled for the default duration,
-which is 60 seconds unless modified.</p>
+<p>By setting <code class="docutils literal notranslate"><span class="pre">cache=True</span></code> in the route handler, caching for the route handler will be enabled for the
+<a class="reference internal" href="../reference/config.html#starlite.config.response_cache.ResponseCacheConfig.default_expiration" title="starlite.config.response_cache.ResponseCacheConfig.default_expiration"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ResponseCacheConfig.default_expiration</span></code></a>.</p>
 <p>Alternatively you can specify the number of seconds to cache the responses from the given handler like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
 
@@ -592,61 +574,52 @@ which is 60 seconds unless modified.</p>
     <span class="o">...</span>
 </pre></div>
 </div>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h2>
+<p>You can configure caching behaviour on the application level by passing an instance of
+<a class="reference internal" href="../reference/config.html#starlite.config.response_cache.ResponseCacheConfig" title="starlite.config.response_cache.ResponseCacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseCacheConfig</span></code></a> to the <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span> <span class="pre">instance</span></code></a>.</p>
+<section id="changing-where-data-is-stored">
+<h3>Changing where data is stored<a class="headerlink" href="#changing-where-data-is-stored" title="Permalink to this heading">#</a></h3>
+<p>By default, caching will use the <a class="reference internal" href="../reference/stores/memory.html#starlite.stores.memory.MemoryStore" title="starlite.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a>, but it can be configured with
+any <a class="reference internal" href="../reference/stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a>, for example <a class="reference internal" href="../reference/stores/redis.html#starlite.stores.redis.RedisStore" title="starlite.stores.redis.RedisStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisStore</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.config.cache</span> <span class="kn">import</span> <span class="n">ResponseCacheConfig</span>
+<span class="kn">from</span> <span class="nn">starlite.stores.redis</span> <span class="kn">import</span> <span class="n">RedisStore</span>
+
+<span class="n">redis_store</span> <span class="o">=</span> <span class="n">RedisStore</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;redis://localhost/&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">cache_config</span> <span class="o">=</span> <span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="n">redis_store</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="specifying-a-cache-key-builder">
 <h3>Specifying a cache key builder<a class="headerlink" href="#specifying-a-cache-key-builder" title="Permalink to this heading">#</a></h3>
-<p>Starlite uses the request’s path + sorted query parameters as the cache key. You can provide a “Key Builder” function to
-the route handler if you want to generate different cache keys:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<p>Starlite uses the request’s path + sorted query parameters as the cache key. This can be adjusted by providing a
+“key builder” function, either at application or route handler level.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">starlite.config.cache</span> <span class="kn">import</span> <span class="n">ResponseCacheConfig</span>
 
 
-<span class="k">def</span> <span class="nf">my_custom_key_builder</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">key_builder</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my-header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_key_builder</span><span class="o">=</span><span class="n">my_custom_key_builder</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([],</span> <span class="n">cache_config</span><span class="o">=</span><span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="k">def</span> <span class="nf">key_builder</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my-header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="o">...</span>
 </pre></div>
 </div>
-<p>You can also specify the default cache key builder to use for the entire application (see below).</p>
 </section>
-</section>
-<section id="interacting-with-the-cache">
-<h2>Interacting with the cache<a class="headerlink" href="#interacting-with-the-cache" title="Permalink to this heading">#</a></h2>
-<p>The Starlite app’s cache is exposed as <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite.cache</span></code></a>, which makes it accessible via the
-<code class="docutils literal notranslate"><span class="pre">scope</span></code> object. For example, you can access the cache in a custom middleware thus:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">MiddlewareProtocol</span>
-<span class="kn">from</span> <span class="nn">starlite.types</span> <span class="kn">import</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span><span class="p">,</span> <span class="n">ASGIApp</span>
-
-
-<span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">MiddlewareProtocol</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">ASGIApp</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
-
-    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">cached_value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my-key&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">cached_value</span><span class="p">:</span>
-            <span class="o">...</span>
-</pre></div>
-</div>
-<p>The cache is also exposed as a property on the <a class="reference internal" href="../reference/connection.html#starlite.connection.ASGIConnection" title="starlite.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> and the
-<a class="reference internal" href="../reference/connection.html#starlite.connection.Request" title="starlite.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> and <a class="reference internal" href="../reference/connection.html#starlite.connection.WebSocket" title="starlite.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> classes that
-inherit from it. You can thus interact with the cache inside a route handler easily, for example by doing this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">my_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">cached_value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my-key&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">cached_value</span><span class="p">:</span>
-        <span class="o">...</span>
-</pre></div>
-</div>
-<div class="admonition attention">
-<p class="admonition-title">Attention</p>
-<p>Cache based operations are async because async locking is used to protect against race conditions, therefore you
-need to use an async route handler if you want to interact with the cache.</p>
-</div>
 </section>
 </section>
 
@@ -689,26 +662,26 @@ need to use an async route handler if you want to interact with the cache.</p>
 <nav id="bd-toc-nav" class="page-toc">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#configuring-caching">
-   Configuring caching
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#response-caching">
    Response caching
   </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#configuration">
+   Configuration
+  </a>
   <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#changing-where-data-is-stored">
+     Changing where data is stored
+    </a>
+   </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#specifying-a-cache-key-builder">
      Specifying a cache key builder
     </a>
    </li>
   </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#interacting-with-the-cache">
-   Interacting with the cache
-  </a>
  </li>
 </ul>
 

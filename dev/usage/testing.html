@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Plugins" href="plugins/index.html" />
-    <link rel="prev" title="Storage" href="storage.html" />
+    <link rel="prev" title="Stores" href="stores.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -404,7 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="security/guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="storage.html">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stores.html">Stores</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -430,7 +430,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/cache.html">cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -500,11 +499,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../reference/storage/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/storage/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/storage/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/storage/redis.html">redis</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
@@ -774,10 +774,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -803,10 +802,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -828,10 +826,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -861,10 +858,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -893,10 +889,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -921,10 +916,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.storage.memory</span> <span class="kn">import</span> <span class="n">MemoryStorage</span>
 <span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
-<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">MemoryStorage</span><span class="p">())</span>
+<span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span>
@@ -1224,11 +1218,11 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="storage.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="stores.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">Storage</p>
+          <p class="prev-next-title">Stores</p>
       </div>
   </a>
   <a class='right-next' id="next-link" href="plugins/index.html" title="next page">

@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="connection" href="connection.html" />
-    <link rel="prev" title="cache" href="cache.html" />
+    <link rel="prev" title="background_tasks" href="background_tasks.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="docsearch:language" content="en">
   </head>
@@ -404,7 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../usage/security/guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/storage.html">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -430,7 +430,6 @@
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">API reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cache.html">cache</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -500,11 +499,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="storage/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="storage/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="storage/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="storage/redis.html">redis</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="stores/registry.html">registry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="template.html">template</a></li>
@@ -682,12 +682,6 @@ bypassing the route handler.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.config.app.AppConfig.cache_config">
-<span class="sig-name descname"><span class="pre">cache_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="cache.html#starlite.cache.CacheConfig" title="starlite.cache.CacheConfig"><span class="pre">CacheConfig</span></a></em><a class="headerlink" href="#starlite.config.app.AppConfig.cache_config" title="Permalink to this definition">#</a></dt>
-<dd><p>Configures caching behavior of the application.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.config.app.AppConfig.cache_control">
 <span class="sig-name descname"><span class="pre">cache_control</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures.html#starlite.datastructures.CacheControlHeader" title="starlite.datastructures.CacheControlHeader"><span class="pre">CacheControlHeader</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#starlite.config.app.AppConfig.cache_control" title="Permalink to this definition">#</a></dt>
 <dd><p>A <code class="docutils literal notranslate"><span class="pre">cache-control</span></code> header of type <a class="reference internal" href="datastructures.html#starlite.datastructures.CacheControlHeader" title="starlite.datastructures.CacheControlHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheControlHeader</span></code></a> to add to
@@ -758,16 +752,16 @@ middleware.</p>
 <dd><p>A list of <a class="reference internal" href="events.html#starlite.events.EventListener" title="starlite.events.listener.EventListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventListener</span></code></a>.</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.config.app.AppConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">after_exception:</span> <span class="pre">list[AfterExceptionHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_request:</span> <span class="pre">AfterRequestHookHandler</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_response:</span> <span class="pre">AfterResponseHookHandler</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_shutdown:</span> <span class="pre">list[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_startup:</span> <span class="pre">list[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_hosts:</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">AllowedHostsConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_request:</span> <span class="pre">BeforeRequestHookHandler</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_send:</span> <span class="pre">list[BeforeMessageSendHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_shutdown:</span> <span class="pre">list[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_startup:</span> <span class="pre">list[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_config:</span> <span class="pre">CacheConfig</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_control:</span> <span class="pre">CacheControlHeader</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_config:</span> <span class="pre">CompressionConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cors_config:</span> <span class="pre">CORSConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csrf_config:</span> <span class="pre">CSRFConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Provide]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etag:</span> <span class="pre">ETag</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_emitter_backend:</span> <span class="pre">type[BaseEventEmitterBackend]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'starlite.events.emitter.SimpleEventEmitter'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception_handlers:</span> <span class="pre">ExceptionHandlersMap</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guards:</span> <span class="pre">list[Guard]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listeners:</span> <span class="pre">list[EventListener]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logging_config:</span> <span class="pre">BaseLoggingConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middleware:</span> <span class="pre">list[Middleware]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_shutdown:</span> <span class="pre">list[LifeSpanHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_startup:</span> <span class="pre">list[LifeSpanHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openapi_config:</span> <span class="pre">OpenAPIConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">ParametersMap</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugins:</span> <span class="pre">list[PluginProtocol]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_class:</span> <span class="pre">type[Request]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_class:</span> <span class="pre">ResponseType</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_cookies:</span> <span class="pre">ResponseCookies</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_headers:</span> <span class="pre">Sequence[ResponseHeader]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_handlers:</span> <span class="pre">list[ControllerRouterHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">security:</span> <span class="pre">list[SecurityRequirement]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state:</span> <span class="pre">State</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">static_files_config:</span> <span class="pre">list[StaticFilesConfig]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags:</span> <span class="pre">list[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_config:</span> <span class="pre">TemplateConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_encoders:</span> <span class="pre">TypeEncodersMap</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">websocket_class:</span> <span class="pre">type[WebSocket]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multipart_form_part_limit:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.config.app.AppConfig.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.config.app.AppConfig.logging_config">
 <span class="sig-name descname"><span class="pre">logging_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="logging/config.html#starlite.logging.config.BaseLoggingConfig" title="starlite.logging.config.BaseLoggingConfig"><span class="pre">BaseLoggingConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#starlite.config.app.AppConfig.logging_config" title="Permalink to this definition">#</a></dt>
 <dd><p>An instance of <a class="reference internal" href="logging/config.html#starlite.logging.config.BaseLoggingConfig" title="starlite.logging.config.BaseLoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoggingConfig</span></code></a> subclass.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.config.app.AppConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">after_exception:</span> <span class="pre">list[AfterExceptionHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_request:</span> <span class="pre">AfterRequestHookHandler</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_response:</span> <span class="pre">AfterResponseHookHandler</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_shutdown:</span> <span class="pre">list[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after_startup:</span> <span class="pre">list[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed_hosts:</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">AllowedHostsConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_request:</span> <span class="pre">BeforeRequestHookHandler</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_send:</span> <span class="pre">list[BeforeMessageSendHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_shutdown:</span> <span class="pre">list[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">before_startup:</span> <span class="pre">list[LifeSpanHookHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_control:</span> <span class="pre">CacheControlHeader</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression_config:</span> <span class="pre">CompressionConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cors_config:</span> <span class="pre">CORSConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">csrf_config:</span> <span class="pre">CSRFConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependencies:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Provide]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etag:</span> <span class="pre">ETag</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">event_emitter_backend:</span> <span class="pre">type[BaseEventEmitterBackend]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'starlite.events.emitter.SimpleEventEmitter'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exception_handlers:</span> <span class="pre">ExceptionHandlersMap</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guards:</span> <span class="pre">list[Guard]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listeners:</span> <span class="pre">list[EventListener]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logging_config:</span> <span class="pre">BaseLoggingConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middleware:</span> <span class="pre">list[Middleware]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_shutdown:</span> <span class="pre">list[LifeSpanHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_startup:</span> <span class="pre">list[LifeSpanHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">openapi_config:</span> <span class="pre">OpenAPIConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Any]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">ParametersMap</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plugins:</span> <span class="pre">list[PluginProtocol]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">request_class:</span> <span class="pre">type[Request]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_class:</span> <span class="pre">ResponseType</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_cookies:</span> <span class="pre">ResponseCookies</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_headers:</span> <span class="pre">Sequence[ResponseHeader]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_cache_config:</span> <span class="pre">ResponseCacheConfig</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_handlers:</span> <span class="pre">list[ControllerRouterHandler]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">security:</span> <span class="pre">list[SecurityRequirement]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state:</span> <span class="pre">State</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">static_files_config:</span> <span class="pre">list[StaticFilesConfig]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stores:</span> <span class="pre">StoreRegistry</span> <span class="pre">|</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Store]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags:</span> <span class="pre">list[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_config:</span> <span class="pre">TemplateConfig</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_encoders:</span> <span class="pre">TypeEncodersMap</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">websocket_class:</span> <span class="pre">type[WebSocket]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multipart_form_part_limit:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.config.app.AppConfig.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.config.app.AppConfig.middleware">
@@ -838,6 +832,12 @@ wherever you have access to <a class="reference internal" href="connection.html#
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.config.app.AppConfig.response_cache_config">
+<span class="sig-name descname"><span class="pre">response_cache_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#starlite.config.response_cache.ResponseCacheConfig" title="starlite.config.response_cache.ResponseCacheConfig"><span class="pre">ResponseCacheConfig</span></a></em><a class="headerlink" href="#starlite.config.app.AppConfig.response_cache_config" title="Permalink to this definition">#</a></dt>
+<dd><p>Configures caching behavior of the application.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.config.app.AppConfig.route_handlers">
 <span class="sig-name descname"><span class="pre">route_handlers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ControllerRouterHandler</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.app.AppConfig.route_handlers" title="Permalink to this definition">#</a></dt>
 <dd><p>A required list of route handlers, which can include instances of <a class="reference internal" href="router.html#starlite.router.Router" title="starlite.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Router</span></code></a>,
@@ -862,6 +862,14 @@ decorators.</p>
 <dt class="sig sig-object py" id="starlite.config.app.AppConfig.static_files_config">
 <span class="sig-name descname"><span class="pre">static_files_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="static_files.html#starlite.static_files.StaticFilesConfig" title="starlite.static_files.StaticFilesConfig"><span class="pre">StaticFilesConfig</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.config.app.AppConfig.static_files_config" title="Permalink to this definition">#</a></dt>
 <dd><p>An instance or list of <a class="reference internal" href="static_files.html#starlite.static_files.StaticFilesConfig" title="starlite.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.config.app.AppConfig.stores">
+<span class="sig-name descname"><span class="pre">stores</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="stores/registry.html#starlite.stores.registry.StoreRegistry" title="starlite.stores.registry.StoreRegistry"><span class="pre">StoreRegistry</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><span class="pre">Store</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#starlite.config.app.AppConfig.stores" title="Permalink to this definition">#</a></dt>
+<dd><p>Central registry of <a class="reference internal" href="stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a> to be made available and be used throughout the
+application. Can be either a dictionary mapping strings to <a class="reference internal" href="stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a> instances, or an
+instance of <a class="reference internal" href="stores/registry.html#starlite.stores.registry.StoreRegistry" title="starlite.stores.registry.StoreRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoreRegistry</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1212,6 +1220,58 @@ the ‘csrf_config’ key.</p>
 
 </dd></dl>
 
+<span class="target" id="module-starlite.config.response_cache"></span><dl class="py class">
+<dt class="sig sig-object py" id="starlite.config.response_cache.ResponseCacheConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">ResponseCacheConfig</span></span><a class="headerlink" href="#starlite.config.response_cache.ResponseCacheConfig" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Configuration for response caching.</p>
+<p>To enable response caching, pass an instance of this class to <a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> using the
+<code class="docutils literal notranslate"><span class="pre">response_cache_config</span></code> key.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.config.response_cache.ResponseCacheConfig.default_expiration">
+<span class="sig-name descname"><span class="pre">default_expiration</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></em><a class="headerlink" href="#starlite.config.response_cache.ResponseCacheConfig.default_expiration" title="Permalink to this definition">#</a></dt>
+<dd><p>Default cache expiration in seconds.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.config.response_cache.ResponseCacheConfig.key_builder">
+<span class="sig-name descname"><span class="pre">key_builder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#starlite.config.response_cache.ResponseCacheConfig.key_builder" title="Permalink to this definition">#</a></dt>
+<dd><p><a class="reference internal" href="types.html#starlite.types.CacheKeyBuilder" title="starlite.types.CacheKeyBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheKeyBuilder</span></code></a>. Defaults to <a class="reference internal" href="#starlite.config.response_cache.default_cache_key_builder" title="starlite.config.response_cache.default_cache_key_builder"><code class="xref py py-func docutils literal notranslate"><span class="pre">default_cache_key_builder()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.config.response_cache.ResponseCacheConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_expiration:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_builder:</span> <span class="pre">CacheKeyBuilder</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">default_cache_key_builder&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'request_cache'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.config.response_cache.ResponseCacheConfig.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.config.response_cache.ResponseCacheConfig.store">
+<span class="sig-name descname"><span class="pre">store</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'request_cache'</span></em><a class="headerlink" href="#starlite.config.response_cache.ResponseCacheConfig.store" title="Permalink to this definition">#</a></dt>
+<dd><p>Name of the <a class="reference internal" href="stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a> to use.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.config.response_cache.ResponseCacheConfig.get_store_from_app">
+<span class="sig-name descname"><span class="pre">get_store_from_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><span class="pre">Starlite</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="stores/base.html#starlite.stores.base.Store" title="starlite.stores.base.Store"><span class="pre">Store</span></a></span></span><a class="headerlink" href="#starlite.config.response_cache.ResponseCacheConfig.get_store_from_app" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the store defined in <a class="reference internal" href="#starlite.config.response_cache.ResponseCacheConfig.store" title="starlite.config.response_cache.ResponseCacheConfig.store"><code class="xref py py-attr docutils literal notranslate"><span class="pre">store</span></code></a> from an <a class="reference internal" href="app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> instance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="starlite.config.response_cache.default_cache_key_builder">
+<span class="sig-prename descclassname"><span class="pre">starlite.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">default_cache_key_builder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection.html#starlite.connection.Request" title="starlite.connection.Request"><span class="pre">Request</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></span><a class="headerlink" href="#starlite.config.response_cache.default_cache_key_builder" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a request object, returns a cache key by combining the path with the sorted query params.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> – request used to generate cache key.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A combination of url path and query parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -1222,11 +1282,11 @@ the ‘csrf_config’ key.</p>
             <footer class="bd-footer-article">
                 <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="cache.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="background_tasks.html" title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">cache</p>
+          <p class="prev-next-title">background_tasks</p>
       </div>
   </a>
   <a class='right-next' id="next-link" href="connection.html" title="next page">
@@ -1426,15 +1486,6 @@ the ‘csrf_config’ key.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.config.app.AppConfig.cache_config">
-     <code class="docutils literal notranslate">
-      <span class="pre">
-       AppConfig.cache_config
-      </span>
-     </code>
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#starlite.config.app.AppConfig.cache_control">
      <code class="docutils literal notranslate">
       <span class="pre">
@@ -1534,19 +1585,19 @@ the ‘csrf_config’ key.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.config.app.AppConfig.__init__">
+    <a class="reference internal nav-link" href="#starlite.config.app.AppConfig.logging_config">
      <code class="docutils literal notranslate">
       <span class="pre">
-       AppConfig.__init__()
+       AppConfig.logging_config
       </span>
      </code>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#starlite.config.app.AppConfig.logging_config">
+    <a class="reference internal nav-link" href="#starlite.config.app.AppConfig.__init__">
      <code class="docutils literal notranslate">
       <span class="pre">
-       AppConfig.logging_config
+       AppConfig.__init__()
       </span>
      </code>
     </a>
@@ -1651,6 +1702,15 @@ the ‘csrf_config’ key.</p>
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.config.app.AppConfig.response_cache_config">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AppConfig.response_cache_config
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#starlite.config.app.AppConfig.route_handlers">
      <code class="docutils literal notranslate">
       <span class="pre">
@@ -1682,6 +1742,15 @@ the ‘csrf_config’ key.</p>
      <code class="docutils literal notranslate">
       <span class="pre">
        AppConfig.static_files_config
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.config.app.AppConfig.stores">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       AppConfig.stores
       </span>
      </code>
     </a>
@@ -2125,6 +2194,71 @@ the ‘csrf_config’ key.</p>
     </a>
    </li>
   </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.config.response_cache.ResponseCacheConfig">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ResponseCacheConfig
+    </span>
+   </code>
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.config.response_cache.ResponseCacheConfig.default_expiration">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ResponseCacheConfig.default_expiration
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.config.response_cache.ResponseCacheConfig.key_builder">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ResponseCacheConfig.key_builder()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.config.response_cache.ResponseCacheConfig.__init__">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ResponseCacheConfig.__init__()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.config.response_cache.ResponseCacheConfig.store">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ResponseCacheConfig.store
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#starlite.config.response_cache.ResponseCacheConfig.get_store_from_app">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       ResponseCacheConfig.get_store_from_app()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#starlite.config.response_cache.default_cache_key_builder">
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     default_cache_key_builder()
+    </span>
+   </code>
+  </a>
  </li>
 </ul>
 

@@ -404,7 +404,7 @@
 <li class="toctree-l3"><a class="reference internal" href="usage/security/guards.html">Guards</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="usage/storage.html">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
@@ -430,7 +430,6 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference/app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/cache.html">cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/connection.html">connection</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -500,11 +499,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/storage/index.html">storage</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/storage/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/storage/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/storage/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/storage/redis.html">redis</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="reference/template.html">template</a></li>
@@ -575,7 +575,7 @@ with <a class="reference internal" href="usage/dependency-injection.html"><span 
 </dd>
 <dt><a class="reference internal" href="usage/middleware/builtin-middleware.html#client-side-sessions"><span class="std std-ref">Cookie based sessions</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[cryptography]</span></code></p>
 </dd>
-<dt><a class="reference internal" href="usage/storage.html"><span class="doc">Redis storage</span></a>:</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[redis]</span></code></p>
+<dt><a class="reference internal" href="usage/stores.html"><span class="doc">Redis store</span></a>:</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[redis]</span></code></p>
 </dd>
 <dt><a class="reference internal" href="usage/the-starlite-app.html#using-picologging"><span class="std std-ref">Picologging</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[picologging]</span></code></p>
 </dd>
@@ -873,7 +873,7 @@ for testing and POC work.</p></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/dependency-injection.html">Dependency Injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/middleware/index.html">Middleware</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/security/index.html">Security</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/storage.html">Storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/testing.html">Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/plugins/index.html">Plugins</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/dto.html">Data Transfer Objects (DTOs)</a></li>
@@ -889,7 +889,6 @@ for testing and POC work.</p></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/index.html">API reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference/app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/cache.html">cache</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/connection.html">connection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/contrib/index.html">contrib</a></li>
@@ -915,7 +914,7 @@ for testing and POC work.</p></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/security/index.html">security</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/static_files.html">static_files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/storage/index.html">storage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/stores/index.html">stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/types.html">types</a></li>
