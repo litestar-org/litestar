@@ -7,8 +7,8 @@ Stores
 
 
 When developing applications, oftentimes a simply storage mechanism is needed, for example when
-:doc:`caching response data</lib/usage/caching>` or storing data for
-:ref:`server-side sessions <lib/usage/middleware/builtin-middleware:Server-side sessions>`. In cases like these a
+:doc:`caching response data</usage/caching>` or storing data for
+:ref:`server-side sessions <usage/middleware/builtin-middleware:Server-side sessions>`. In cases like these a
 traditional database is often not needed, and a simple key/value store suffices.
 
 Starlite provides several low level key value stores, offering an asynchronous interface to store data in a thread-
