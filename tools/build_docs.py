@@ -74,7 +74,7 @@ def build(output_dir: str, version: str | None) -> None:
 
     # copy existing versions into our output dir to preserve them when cleaning the branch
     with checkout("gh-pages"):
-        for other_version in version_spec["versions"]:
+        for other_version in [*version_spec["versions"], "latest"]:
             if other_version == version:
                 continue
             other_version_path = Path(other_version)
