@@ -738,10 +738,7 @@ class Starlite(Router):
 
             async def wrapped_send(message: "Message") -> None:
                 for hook in self.before_send:
-                    if hook.num_expected_args > 2:
-                        await hook(message, self.state, scope)
-                    else:
-                        await hook(message, self.state)
+                    await hook(message, self.state, scope)
                 await send(message)
 
             return wrapped_send
