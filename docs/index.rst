@@ -210,8 +210,9 @@ Example Applications
 
 
 .. toctree::
+    :titlesonly:
     :caption: Documentation
-    :maxdepth: 2
+    :hidden:
 
     usage/index
     reference/index

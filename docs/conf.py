@@ -1,5 +1,13 @@
 import importlib.metadata
 import os
+from functools import partial
+from typing import Any
+
+from sphinx.addnodes import document
+from sphinx.application import Sphinx
+
+__all__ = ["setup", "update_html_context"]
+
 
 project = "Starlite"
 copyright = "2023, Starlite-API"
@@ -129,7 +137,11 @@ html_title = "Starlite Framework"
 html_theme_options = {
     "use_page_nav": False,
     "github_repo_name": "starlite",
+    "logo": {
+        "link": "https://starliteproject.dev",
+    },
     "extra_navbar_items": {
+        "Documentation": "index",
         "Community": {
             "Contribution Guide": "contribution-guide",
             "Code of Conduct": "https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md",
@@ -145,3 +157,17 @@ html_theme_options = {
         },
     },
 }
+
+
+def update_html_context(
+    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: document
+) -> None:
+    context["generate_toctree_html"] = partial(context["generate_toctree_html"], startdepth=0)
+
+
+def setup(app: Sphinx) -> dict[str, bool]:
+    app.setup_extension("starlite_sphinx_theme")
+    app.setup_extension("pydata_sphinx_theme")
+    app.connect("html-page-context", update_html_context)
+
+    return {"parallel_read_safe": True, "parallel_write_safe": True}
