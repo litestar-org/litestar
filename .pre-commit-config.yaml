@@ -55,6 +55,7 @@ repos:
           [
             aiosqlite,
             asyncpg,
+            async_timeout,
             beanie,
             beautifulsoup4,
             brotli,
@@ -104,6 +105,7 @@ repos:
           [
             aiosqlite,
             asyncpg,
+            async_timeout,
             beanie,
             beautifulsoup4,
             brotli,
