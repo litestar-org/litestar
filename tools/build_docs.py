@@ -9,21 +9,20 @@ import subprocess
 from pathlib import Path
 from typing import TypedDict
 
-
 REDIRECT_TEMPLATE = """
 <!DOCTYPE HTML>
 <html lang="en-US">
     <head>
+        <title>Page Redirection</title>
         <meta charset="UTF-8">
         <meta http-equiv="refresh" content="0; url={target}">
-        <title>Page Redirection</title>
+        <script type="text/javascript">window.location.href = "{target}"</script>
     </head>
     <body>
         You are being redirected. If this does not work, click <a href='{target}'>this link</a>
     </body>
 </html>
 """
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--version", required=False)
