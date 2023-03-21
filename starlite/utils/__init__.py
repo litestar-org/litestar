@@ -24,7 +24,7 @@ from .scope import (
     get_starlite_scope_state,
     set_starlite_scope_state,
 )
-from .sequence import find_index, unique
+from .sequence import compact, find_index, unique
 from .sync import (
     AsyncCallable,
     AsyncIteratorWrapper,
@@ -32,7 +32,7 @@ from .sync import (
     async_partial,
     is_async_callable,
 )
-from .types import annotation_is_iterable_of_type, make_non_optional_union
+from .typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
 
 __all__ = (
     "AsyncCallable",
@@ -41,6 +41,7 @@ __all__ = (
     "annotation_is_iterable_of_type",
     "as_async_callable_list",
     "async_partial",
+    "compact",
     "convert_dataclass_to_model",
     "convert_typeddict_to_model",
     "create_parsed_model_field",
@@ -49,6 +50,7 @@ __all__ = (
     "find_index",
     "get_enum_string_value",
     "get_name",
+    "get_origin_or_inner_type",
     "get_serializer_from_scope",
     "get_starlite_scope_state",
     "is_any",

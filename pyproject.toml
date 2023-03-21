@@ -7,7 +7,7 @@ maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
     "Peter Schutt <peter.github@proton.me>",
     "Cody Fincher <cody.fincher@gmail.com>",
-    "Janek Nouvertné <provinzkraut@posteo.de>"
+    "Janek Nouvertné <provinzkraut@posteo.de>",
 ]
 license = "MIT"
 readme = "README.md"
@@ -32,15 +32,15 @@ classifiers = [
     "Typing :: Typed",
 ]
 include = ["CHANGELOG.rst"]
-packages = [
-    { include = "starlite" },
-]
+packages = [{ include = "starlite" }]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 alembic = { version = "*", optional = true }
 anyio = ">=3"
+attrs = { version = "*", optional = true }
 brotli = { version = "*", optional = true }
+cattrs = { version = "*", optional = true }
 click = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 fast-query-parsers = "*"
@@ -55,7 +55,9 @@ opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
+python-dateutil = { version = "*", optional = true }
 python-jose = { version = "*", optional = true }
+pytimeparse = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
 rich = { version = ">=13.0.0", optional = true }
@@ -66,8 +68,10 @@ typing-extensions = "*"
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
 asyncpg = "*"
+attrs = "*"
 beautifulsoup4 = "*"
 brotli = "*"
+cattrs = "*"
 click = "*"
 cryptography = "*"
 fakeredis = { extras = ["lua"], version = ">=2.10.2" }
@@ -87,10 +91,13 @@ pre-commit = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
+pytest-lazy-fixture = "*"
 pytest-mock = "*"
-python-dotenv = "*"
 pytest_docker = "*"
+python-dateutil = "*"
+python-dotenv = "*"
 python-jose = "*"
+pytimeparse = "*"
 redis = "*"
 rich = "*"
 sqlalchemy = ">=2.0"
@@ -99,25 +106,24 @@ structlog = "*"
 tortoise-orm = ">=0.17.0"
 trio = "*"
 uvicorn = "*"
-pytest-lazy-fixture = "*"
 
 [tool.poetry.group.docs]
 optional = true
 
 [tool.poetry.group.docs.dependencies]
+auto-pytabs = { extras = ["sphinx"], version = "*" }
 black = "*"
 httpx = "*"
-uvicorn = "*"
-sphinx-autobuild = "*"
 sphinx = ">=5.3.0,<=6"
-sphinx-design = ">=0.3.0,<1"
+sphinx-autobuild = "*"
 sphinx-copybutton = ">=0.5.1"
+sphinx-design = ">=0.3.0,<1"
 sphinxcontrib-mermaid = ">=0.8.1,<1"
-auto-pytabs = { extras = ["sphinx"], version = "*" }
 starlite-sphinx-theme = { git = "https://github.com/starlite-api/starlite-sphinx-theme.git" }
-
+uvicorn = "*"
 
 [tool.poetry.extras]
+attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
 cli = ["click", "rich", "jsbeautifier"]
 cryptography = ["cryptography"]
@@ -127,9 +133,10 @@ opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
 sqlalchemy = ["sqlalchemy", "alembic"]
-standard = ["click", "jinja2", "jsbeautifier", "rich", ]
+standard = ["click", "jinja2", "jsbeautifier", "rich"]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
+
 full = [
     "brotli",
     "click",
@@ -167,7 +174,7 @@ exclude_lines = [
     'except ImportError as e:',
     'except ImportError:',
     '\.\.\.',
-    'raise NotImplementedError'
+    'raise NotImplementedError',
 ]
 
 [tool.pytest.ini_options]
@@ -175,9 +182,8 @@ addopts = "--ignore=examples"
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
-    "ignore::DeprecationWarning:pkg_resources:2803"
+    "ignore::DeprecationWarning:pkg_resources:2803",
 ]
-
 
 [tool.pyright]
 include = ["starlite", "tests", "examples"]
@@ -231,6 +237,7 @@ select = [
     "W", # pycodestyle - warning
     "YTT", # flake8-2020
 ]
+
 ignore = [
     "E501", # pycodestyle line too long, handled by black
     "D100", # pydocstyle - missing docstring in public module
@@ -246,7 +253,7 @@ ignore = [
     "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
     "UP037", # pyupgrade - removes quotes from type annotation
     "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
-    "B010" # flake8-bugbear - do not call setattr with a constant attribute value
+    "B010", # flake8-bugbear - do not call setattr with a constant attribute value
 ]
 line-length = 120
 src = ["starlite", "tests", "docs/examples"]
@@ -271,9 +278,55 @@ classmethod-decorators = [
 known-first-party = ["starlite", "tests", "examples"]
 
 [tool.ruff.per-file-ignores]
-"tests/**/*.*" = ["S101", "D", "ARG", "PGH", "B", "FBT", "PTH", "A", "TCH", "DTZ", "TRY", "EM", "S", "N", "SIM", "PLR", "BLE", "RSE", "C901", "PLW", "G", "PIE"]
+"tests/**/*.*" = [
+    "S101",
+    "D",
+    "ARG",
+    "PGH",
+    "B",
+    "FBT",
+    "PTH",
+    "A",
+    "TCH",
+    "DTZ",
+    "TRY",
+    "EM",
+    "S",
+    "N",
+    "SIM",
+    "PLR",
+    "BLE",
+    "RSE",
+    "C901",
+    "PLW",
+    "G",
+    "PIE",
+]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
-"docs/examples/tests/**/*.*" = ["S101", "D", "ARG", "PGH", "B", "FBT", "PTH", "A", "TCH", "DTZ", "TRY", "EM", "S", "N", "SIM", "PLR", "BLE", "RSE", "C901", "PLW", "G", "PIE"]
+"docs/examples/tests/**/*.*" = [
+    "S101",
+    "D",
+    "ARG",
+    "PGH",
+    "B",
+    "FBT",
+    "PTH",
+    "A",
+    "TCH",
+    "DTZ",
+    "TRY",
+    "EM",
+    "S",
+    "N",
+    "SIM",
+    "PLR",
+    "BLE",
+    "RSE",
+    "C901",
+    "PLW",
+    "G",
+    "PIE",
+]
 "docs/**/*.*" = ["S", "B", "DTZ", "A", "TCH", "ERA", "D", "RET"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]

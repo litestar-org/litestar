@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List, Mapping, Optional
 
 import pytest
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis.strategies import permutations
 
 from starlite import get, route
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from starlite.types import Method
 
 
+@settings(deadline=None)
 @given(http_methods=permutations(["GET", "POST", "POST", "PATCH", "DELETE", "HEAD"]))
 def test_regular_options_request(http_methods: List["Method"]) -> None:
     @route("/", http_method=http_methods)

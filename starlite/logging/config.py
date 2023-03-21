@@ -214,7 +214,7 @@ class LoggingConfig(BaseLoggingConfig):
 
         if "picologging" in str(encode_json(self.handlers)):
             try:
-                pass
+                import picologging  # noqa: F401
             except ImportError as e:
                 raise MissingDependencyException("picologging") from e
 
@@ -317,7 +317,7 @@ class StructLoggingConfig(BaseLoggingConfig):
             A 'logging.getLogger' like function.
         """
         try:
-            pass
+            import structlog  # noqa: F401
         except ImportError as e:
             raise MissingDependencyException("structlog") from e
 

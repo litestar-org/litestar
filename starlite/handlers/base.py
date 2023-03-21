@@ -3,7 +3,7 @@ from __future__ import annotations
 from copy import copy
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
-from starlite._signature.models import SignatureField
+from starlite._signature.field import SignatureField
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Dependencies, Empty, EmptyType, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
 from starlite.utils import AsyncCallable, Ref, get_name, normalize_path

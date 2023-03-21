@@ -12,7 +12,7 @@ from starlite._openapi.schema_generation.constrained_fields import (
     create_numerical_constrained_field_schema,
     create_string_constrained_field_schema,
 )
-from starlite._signature.models import SignatureField
+from starlite._signature.field import SignatureField
 from starlite.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from tests.openapi.utils import (
     constrained_collection,
