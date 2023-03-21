@@ -8,6 +8,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from typing import TypedDict
+from contextlib import contextmanager
 
 REDIRECT_TEMPLATE = """
 <!DOCTYPE HTML>
@@ -34,6 +35,13 @@ class VersionSpec(TypedDict):
     latest: str
 
 
+@contextmanager
+def checkout(branch: str) -> None:
+    subprocess.run(["git", "checkout", branch], check=True)
+    yield
+    subprocess.run(["git", "checkout", "-"], check=True)
+
+
 def add_to_versions_file(version: str) -> VersionSpec:
     versions_file = Path("docs/_static/versions.json")
     version_spec: VersionSpec
@@ -55,20 +63,27 @@ def build(output_dir: str, version: str | None) -> None:
 
     subprocess.run(["make", "docs"], check=True)
 
-    docs_build_path = Path(output_dir)
-    docs_build_path.mkdir()
-    docs_build_path.joinpath(".nojekyll").touch(exist_ok=True)
+    output_dir = Path(output_dir)
+    output_dir.mkdir()
+    output_dir.joinpath(".nojekyll").touch(exist_ok=True)
 
     version_spec = add_to_versions_file(version)
     is_latest = version == version_spec["latest"]
 
     docs_src_path = Path("docs/_build/html")
 
-    docs_build_path.joinpath("index.html").write_text(REDIRECT_TEMPLATE.format(target="latest"))
+    output_dir.joinpath("index.html").write_text(REDIRECT_TEMPLATE.format(target="latest"))
 
     if is_latest:
-        shutil.copytree(docs_src_path, docs_build_path / "latest", dirs_exist_ok=True)
-    shutil.copytree(docs_src_path, docs_build_path / version, dirs_exist_ok=True)
+        shutil.copytree(docs_src_path, output_dir / "latest", dirs_exist_ok=True)
+    shutil.copytree(docs_src_path, output_dir / version, dirs_exist_ok=True)
+
+    # copy existing versions into our output dir to preserve them when cleaning the branch
+    with checkout("gh-pages"):
+        for other_version in version_spec["versions"]:
+            if other_version == version:
+                continue
+            shutil.copytree(Path(other_version), output_dir / other_version)
 
 
 def main() -> None:
