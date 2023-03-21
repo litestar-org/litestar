@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from pydantic import BaseModel
 
     from starlite.app import Starlite
-    from starlite.cache import Cache
     from starlite.types import EmptyType
     from starlite.types.asgi_types import Message, Receive, Scope, Send
     from starlite.types.protocols import Logger
@@ -262,15 +261,6 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             ImproperlyConfiguredException: if ``log_config`` has not been passed to the Starlite constructor.
         """
         return self.app.get_logger()
-
-    @property
-    def cache(self) -> Cache:
-        """Return the ``Cache`` for this connection.
-
-        Returns:
-            A ``Cache`` instance.
-        """
-        return self.app.cache
 
     def set_session(self, value: dict[str, Any] | BaseModel | EmptyType) -> None:
         """Set the session in the connection's ``Scope``.
