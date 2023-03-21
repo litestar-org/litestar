@@ -214,7 +214,7 @@ class HTTPRoute(BaseRoute):
         return data, cleanup_group
 
     @staticmethod
-    async def _get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> "ASGIApp" | None:
+    async def _get_cached_response(request: Request, route_handler: HTTPRouteHandler) -> ASGIApp | None:
         """Retrieve and un-pickle the cached response, if existing.
 
         Args:
@@ -225,9 +225,11 @@ class HTTPRoute(BaseRoute):
             A cached response instance, if existing.
         """
 
-        cache = request.app.cache
-        cache_key = cache.build_cache_key(request=request, cache_key_builder=route_handler.cache_key_builder)
-        cached_response = await cache.get(key=cache_key)
+        cache_config = request.app.response_cache_config
+        cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
+        store = cache_config.get_store_from_app(request.app)
+
+        cached_response = await store.get(key=cache_key)
 
         if cached_response:
             return cast("ASGIApp", pickle.loads(cached_response))  # nosec
@@ -236,17 +238,21 @@ class HTTPRoute(BaseRoute):
 
     @staticmethod
     async def _set_cached_response(
-        response: "Response" | "ASGIApp", request: Request, route_handler: "HTTPRouteHandler"
+        response: Response | ASGIApp, request: Request, route_handler: HTTPRouteHandler
     ) -> None:
         """Pickles and caches a response object."""
-        cache = request.app.cache
-        cache_key = cache.build_cache_key(request, route_handler.cache_key_builder)
+        cache_config = request.app.response_cache_config
+        cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
 
-        await cache.set(
-            key=cache_key,
-            value=pickle.dumps(response, pickle.HIGHEST_PROTOCOL),
-            expiration=route_handler.cache if isinstance(route_handler.cache, int) else None,
-        )
+        expires_in: int | None = None
+        if route_handler.cache is True:
+            expires_in = cache_config.default_expiration
+        elif route_handler.cache is not False and isinstance(route_handler.cache, int):
+            expires_in = route_handler.cache
+
+        store = cache_config.get_store_from_app(request.app)
+
+        await store.set(key=cache_key, value=pickle.dumps(response, pickle.HIGHEST_PROTOCOL), expires_in=expires_in)
 
     def create_options_handler(self, path: str) -> HTTPRouteHandler:
         """Args:

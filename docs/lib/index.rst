@@ -28,7 +28,7 @@ Installation
     :ref:`Cookie based sessions <lib/usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install starlite[cryptography]`
 
-    :doc:`Redis storage </lib/usage/storage>`:
+    :doc:`Redis store </lib/usage/stores>`:
         :code:`pip install starlite[redis]`
 
     :ref:`Picologging <lib/usage/the-starlite-app:using picologging>`

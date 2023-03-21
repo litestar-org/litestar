@@ -5,22 +5,22 @@ from typing import TYPE_CHECKING
 import anyio
 from anyio import Lock
 
-from .base import Storage, StorageObject
+from .base import StorageObject, Store
 
-__all__ = ("MemoryStorage",)
+__all__ = ("MemoryStore",)
 
 
 if TYPE_CHECKING:
     from datetime import timedelta
 
 
-class MemoryStorage(Storage):
+class MemoryStore(Store):
     """In memory, thread-safe, asynchronous key/value store."""
 
     __slots__ = ("_store", "_lock")
 
     def __init__(self) -> None:
-        """Initialize :class:`MemoryStorage`"""
+        """Initialize :class:`MemoryStore`"""
         self._store: dict[str, StorageObject] = {}
         self._lock = Lock()
 
@@ -90,7 +90,7 @@ class MemoryStorage(Storage):
         """Delete expired items.
 
         Since expired items are normally only cleared on access (i.e. when calling
-        :meth:`.get` or :meth:`.set`, this method should be called in regular intervals
+        :meth:`.get`), this method should be called in regular intervals
         to free memory.
         """
         async with self._lock:

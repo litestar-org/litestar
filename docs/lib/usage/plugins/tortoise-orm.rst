@@ -4,6 +4,8 @@ Tortoise ORM Plugin
 To use the :class:`TortoiseORMPlugin <.contrib.tortoise_orm.TortoiseORMPlugin>`
 import it and pass it to the :class:`Starlite <starlite.app.Starlite>` class:
 
+An example of a Starlite app using the Tortoise ORM plugin with computed fields and relations:
+
 .. code-block:: python
 
    from typing import cast
@@ -20,10 +22,18 @@ import it and pass it to the :class:`Starlite <starlite.app.Starlite>` class:
        name = fields.TextField()
        created_at = fields.DatetimeField(auto_now_add=True)
        optional = fields.TextField(null=True)
+       # Add the reverse relations so that they can be used for type hinting.
        events: fields.ReverseRelation["Event"]
+
+       def is_medieval(self) -> bool:
+           """Check if the tournament is medieval, to be used as a computed field."""
+           return "medieval" in self.name
 
        class Meta:
            ordering = ["name"]
+
+       class PydanticMeta:
+           computed = ["is_medieval"]
 
 
    class Event(Model):
@@ -91,12 +101,48 @@ import it and pass it to the :class:`Starlite <starlite.app.Starlite>` class:
    async def create_tournament(data: Tournament) -> Tournament:
        assert isinstance(data, Tournament)
        await data.save()
+       return data
+
+
+   @post("/tournaments/{tournament_id:int}/events")
+   async def create_event(tournament_id: int, data: Event) -> Event:
+       """By default, foreign keys are not available in the data keyword argument,
+       so we need to add it manually."""
+       assert isinstance(data, Event)
+       tournament = await Tournament.get(id=tournament_id)
+       data.tournament = tournament
+       await data.save()
+       await data.refresh_from_db()
+       return data
+
+
+   @get("/tournaments/{tournament_id:int}/events")
+   async def get_events(tournament_id: int) -> list[Event]:
+       tournament = await Tournament.get(id=tournament_id)
+       events = await tournament.events.all()
+       return cast("list[Event]", events)
+
+
+   @post("/tournaments/{tournament_id:int}/events")
+   async def create_event(tournament_id: int, data: Event) -> Event:
+       """By default, foreign keys are not available in the data keyword argument,
+       so we need to add it manually."""
+       assert isinstance(data, Event)
+       tournament = await Tournament.get(id=tournament_id)
+       data.tournament = tournament
+       await data.save()
        await data.refresh_from_db()
        return data
 
 
    app = Starlite(
-       route_handlers=[get_tournament, get_tournaments, create_tournament],
+       route_handlers=[
+           get_tournament,
+           get_tournaments,
+           create_tournament,
+           get_events,
+           create_event,
+       ],
        on_startup=[init_tortoise],
        on_shutdown=[shutdown_tortoise],
        plugins=[TortoiseORMPlugin()],

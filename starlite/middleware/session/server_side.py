@@ -7,11 +7,7 @@ from typing import TYPE_CHECKING, Any, Literal
 from starlite.datastructures import Cookie, MutableScopeHeaders
 from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.middleware.session.base import (
-    ONE_DAY_IN_SECONDS,
-    BaseBackendConfig,
-    BaseSessionBackend,
-)
+from starlite.middleware.session.base import ONE_DAY_IN_SECONDS, BaseBackendConfig, BaseSessionBackend
 from starlite.types import Empty, Message, Scopes, ScopeSession
 from starlite.utils.dataclass import extract_dataclass_fields
 
@@ -19,8 +15,9 @@ __all__ = ("ServerSideSessionBackend", "ServerSideSessionConfig")
 
 
 if TYPE_CHECKING:
+    from starlite import Starlite
     from starlite.connection import ASGIConnection
-    from starlite.storage.base import Storage
+    from starlite.stores.base import Store
 
 
 class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
@@ -30,8 +27,6 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
     implement to facilitate the storage of session data.
     """
 
-    __slots__ = ("storage",)
-
     def __init__(self, config: ServerSideSessionConfig) -> None:
         """Initialize ``ServerSideSessionBackend``
 
@@ -39,21 +34,21 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             config: A subclass of ``ServerSideSessionConfig``
         """
         super().__init__(config=config)
-        self.storage = config.storage
 
-    async def get(self, session_id: str) -> bytes | None:
+    async def get(self, session_id: str, store: Store) -> bytes | None:
         """Retrieve data associated with ``session_id``.
 
         Args:
             session_id: The session-ID
+            store: Store to retrieve the session data from
 
         Returns:
             The session data, if existing, otherwise ``None``.
         """
         max_age = int(self.config.max_age) if self.config.max_age is not None else None
-        return await self.storage.get(session_id, renew_for=max_age if self.config.renew_on_access else None)
+        return await store.get(session_id, renew_for=max_age if self.config.renew_on_access else None)
 
-    async def set(self, session_id: str, data: bytes) -> None:
+    async def set(self, session_id: str, data: bytes, store: Store) -> None:
         """Store ``data`` under the ``session_id`` for later retrieval.
 
         If there is already data associated with ``session_id``, replace
@@ -62,23 +57,25 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         Args:
             session_id: The session-ID
             data: Serialized session data
+            store: Store to save the session data in
 
         Returns:
             None
         """
         expires_in = int(self.config.max_age) if self.config.max_age is not None else None
-        await self.storage.set(session_id, data, expires_in=expires_in)
+        await store.set(session_id, data, expires_in=expires_in)
 
-    async def delete(self, session_id: str) -> None:
+    async def delete(self, session_id: str, store: Store) -> None:
         """Delete the data associated with ``session_id``. Fails silently if no such session-ID exists.
 
         Args:
             session_id: The session-ID
+            store: Store to delete the session data from
 
         Returns:
             None
         """
-        await self.storage.delete(session_id)
+        await store.delete(session_id)
 
     def generate_session_id(self) -> str:
         """Generate a new session-ID, with
@@ -107,6 +104,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             None
         """
         scope = connection.scope
+        store = self.config.get_store_from_app(scope["app"])
         headers = MutableScopeHeaders.from_message(message)
         session_id = connection.cookies.get(self.config.key)
         if not session_id or session_id == "null":
@@ -115,14 +113,14 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         cookie_params = dict(extract_dataclass_fields(self.config, exclude_none=True, include=Cookie.__dict__))
 
         if scope_session is Empty:
-            await self.delete(session_id)
+            await self.delete(session_id, store=store)
             headers.add(
                 "Set-Cookie",
                 Cookie(value="null", key=self.config.key, expires=0, **cookie_params).to_header(header=""),
             )
         else:
             serialised_data = self.serialize_data(scope_session, scope)
-            await self.set(session_id=session_id, data=serialised_data)
+            await self.set(session_id=session_id, data=serialised_data, store=store)
             headers["Set-Cookie"] = Cookie(value=session_id, key=self.config.key, **cookie_params).to_header(header="")
 
     async def load_from_connection(self, connection: "ASGIConnection") -> dict[str, Any]:
@@ -143,7 +141,8 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         """
         session_id = connection.cookies.get(self.config.key)
         if session_id:
-            data = await self.get(session_id)
+            store = self.config.get_store_from_app(connection.scope["app"])
+            data = await self.get(session_id, store=store)
             if data is not None:
                 return self.deserialize_data(data)
         return {}
@@ -155,8 +154,6 @@ class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):
 
     _backend_class = ServerSideSessionBackend
 
-    storage: Storage
-    """:class:`.storage.base.Storage <Storage>` to use"""
     session_id_bytes: int = field(default=32)
     """Number of bytes used to generate a random session-ID."""
     renew_on_access: bool = field(default=False)
@@ -186,17 +183,20 @@ class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):
     httponly: bool = field(default=True)
     """Forbids javascript to access the cookie via 'Document.cookie'."""
     samesite: Literal["lax", "strict", "none"] = field(default="lax")
-    """Controls whether or not a cookie is sent with cross-site requests.
-
-    Defaults to ``lax``.
-    """
+    """Controls whether or not a cookie is sent with cross-site requests. Defaults to ``lax``."""
     exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the session middleware."""
     exclude_opt_key: str = field(default="skip_session")
     """An identifier to use on routes to disable the session middleware for a particular route."""
+    store: str = "sessions"
+    """Name of the :class:`Store <.stores.base.Store>` to use"""
 
     def __post_init__(self) -> None:
         if len(self.key) < 1 or len(self.key) > 256:
             raise ImproperlyConfiguredException("key must be a string with a length between 1-256")
         if self.max_age < 1:
             raise ImproperlyConfiguredException("max_age must be greater than 0")
+
+    def get_store_from_app(self, app: Starlite) -> Store:
+        """Get the store defined in :attr:`store` from an :class:`Starlite <.app.Starlite>` instance"""
+        return app.stores.get(self.store)
