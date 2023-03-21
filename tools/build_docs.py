@@ -6,9 +6,9 @@ import json
 import os
 import shutil
 import subprocess
+from contextlib import contextmanager
 from pathlib import Path
 from typing import TypedDict
-from contextlib import contextmanager
 
 REDIRECT_TEMPLATE = """
 <!DOCTYPE HTML>
@@ -44,10 +44,9 @@ def checkout(branch: str) -> None:
 
 def load_version_spec() -> VersionSpec:
     versions_file = Path("docs/_static/versions.json")
-    version_spec: VersionSpec
-    version_spec = json.loads(versions_file.read_text()) if versions_file.exists() else {"versions": [], "latest": ""}
-
-    return version_spec
+    if versions_file.exists():
+        return json.loads(versions_file.read_text())
+    return {"versions": [], "latest": ""}
 
 
 def build(output_dir: str, version: str | None) -> None:
@@ -75,8 +74,8 @@ def build(output_dir: str, version: str | None) -> None:
 
     # copy existing versions into our output dir to preserve them when cleaning the branch
     with checkout("gh-pages"):
-        for other_version in version_spec["versions"]:
-            if other_version == version or other_version == "latest" and is_latest:
+        for other_version in [*version_spec["versions"], "latest"]:
+            if other_version == version:
                 continue
             other_version_path = Path(other_version)
             if other_version_path.exists():
