@@ -153,8 +153,8 @@ For example, the following would raise an exception in python:
 
 
 
-The reason for this is that both listeners will receive two kwargs - `email` and `reason`. To avoid this, the previous example
-had `**kwargs` in both:
+The reason for this is that both listeners will receive two kwargs - ``email`` and ``reason``. To avoid this, the previous example
+had ``**kwargs`` in both:
 
 .. code-block:: python
 
