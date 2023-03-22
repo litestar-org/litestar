@@ -1,0 +1,66 @@
+table.docutils {
+  clear: left;
+  float: left;
+  margin: 0 1rem 1rem;
+}
+
+/* theme customization */
+
+html[data-theme="dark"] {
+  --color-background-primary: #1d2433;
+  --color-background-secondary: #0c101a;
+  --pst-color-on-background: #2e374a;
+  --pst-color-border: #2f2f2f;
+}
+
+html[data-theme="light"] {
+  --color-background-primary: #f8f9fb;
+  --color-background-secondary: #fff;
+}
+
+html[data-theme="light"],
+html[data-theme="dark"] {
+  --pst-color-background: var(--color-background-primary);
+  --pst-color-primary: #ffae57;
+}
+
+@media (min-width: 960px) {
+  .bd-page-width {
+    max-width: 100rem;
+  }
+}
+
+.bd-sidebar-primary {
+  display: block;
+  flex: 0 0 18%;
+}
+
+.bd-content,
+.bd-sidebar-secondary {
+  background-color: var(--color-background-secondary);
+}
+
+.sd-tab-content {
+  box-shadow: 0 -0.0625rem var(--sd-color-tabs-overline);
+}
+
+div.literal-block-wrapper,
+pre {
+  border: none;
+}
+
+.code-block-caption {
+  background-color: var(--pst-color-surface);
+}
+
+.navbar-persistent--mobile {
+  margin-left: unset;
+}
+
+.navbar-persistent--mobile:last-of-type {
+  padding-left: 1rem;
+}
+
+#navbar-icon-links a {
+  padding-top: 0.2rem;
+}
