@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import TYPE_CHECKING, Any, ClassVar, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, List, TypeVar
 from uuid import UUID, uuid4
 
 import pytest
@@ -115,6 +115,30 @@ def test_model_read_dto(author_model: type[DeclarativeBase], raw_author: bytes) 
             "dob": date(1890, 9, 15),
         },
     )
+
+
+def test_model_list_dto(author_model: type[DeclarativeBase]) -> None:
+    dto_type = SQLAlchemyDTO[List[author_model]]
+    dto_type.postponed_cls_init()
+    dto_instance = dto_type.from_bytes(
+        b"""[{
+        "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
+        "name": "Agatha Christie",
+        "dob": "1890-09-15",
+        "created": "0001-01-01T00:00:00",
+        "updated": "0001-01-01T00:00:00"
+    }]"""
+    )
+    encodable = dto_instance.to_encodable_type(MediaType.JSON)
+    assert [datum.dict() for datum in encodable] == [
+        {
+            "id": UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"),
+            "created": datetime(1, 1, 1, 0, 0),
+            "updated": datetime(1, 1, 1, 0, 0),
+            "name": "Agatha Christie",
+            "dob": date(1890, 9, 15),
+        }
+    ]
 
 
 def test_dto_exclude(author_model: type[DeclarativeBase], raw_author: bytes) -> None:

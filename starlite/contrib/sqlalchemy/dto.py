@@ -15,7 +15,6 @@ from starlite.dto.utils import get_model_type_hints
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Generator, Iterable
 
-    from pydantic import BaseModel
     from sqlalchemy import Column
     from sqlalchemy.orm import RelationshipProperty
 
@@ -77,5 +76,15 @@ class SQLAlchemyDTO(AbstractDTO[DataT], Generic[DataT]):
             return issubclass(field_definition.field_type, DeclarativeBase)
         return any(issubclass(a, DeclarativeBase) for a in args)
 
-    def to_encodable_type(self, media_type: str | MediaType) -> BaseModel:
-        return self.dto_backend.model.from_orm(self.data)  # type:ignore[pydantic-unexpected]
+    def to_encodable_type(self, media_type: str | MediaType) -> Any:
+        if isinstance(self.data, DeclarativeBase):
+            return self.dto_backend.model(**convert_declarative_to_dict(self.data))
+        type_ = get_origin(self.annotation) or self.annotation
+        return type_(
+            self.dto_backend.model(**convert_declarative_to_dict(datum))
+            for datum in self.data  # type:ignore[union-attr]
+        )
+
+
+def convert_declarative_to_dict(model: DeclarativeBase) -> dict[str, Any]:
+    return {col.name: getattr(model, col.name) for col in model.__table__.columns}

@@ -25,12 +25,12 @@ MsgspecField = NewType("MsgspecField", type)
 class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
     def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Any:
         if media_type == MediaType.JSON:
-            model_instance = decode_json(raw, type_=self.annotation)
+            transfer_data = decode_json(raw, type_=self.annotation)
         elif media_type == MediaType.MESSAGEPACK:
-            model_instance = decode_msgpack(raw, type_=self.annotation)
+            transfer_data = decode_msgpack(raw, type_=self.annotation)
         else:
             raise SerializationException(f"Unsupported media type: '{media_type}'")
-        return to_builtins(model_instance)
+        return to_builtins(transfer_data)
 
     @classmethod
     def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:

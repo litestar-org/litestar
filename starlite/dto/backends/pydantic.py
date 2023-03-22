@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from pydantic import BaseConfig, BaseModel, create_model
+from pydantic import BaseConfig, BaseModel, create_model, parse_raw_as
 from pydantic.fields import FieldInfo
 
 from starlite.dto.types import NestedFieldDefinition
@@ -23,10 +23,14 @@ if TYPE_CHECKING:
 
 
 class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
-    def parse_raw(self, raw: bytes, media_type: MediaType | str) -> dict[str, Any]:
-        if media_type != MediaType.JSON:
+    def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Any:
+        if media_type == MediaType.JSON:
+            transfer_data = parse_raw_as(self.annotation, raw)
+        else:
             raise SerializationException(f"Unsupported media type: '{media_type}'")
-        return self.model.parse_raw(raw).dict()
+        if isinstance(transfer_data, BaseModel):
+            return transfer_data.dict()
+        return type(transfer_data)(datum.dict() for datum in transfer_data)
 
     @classmethod
     def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:
