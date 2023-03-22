@@ -176,12 +176,14 @@ An "event emitter" is a class that inherits from :class:`BaseEventEmitterBackend
 and implements its abstract methods:
 
 - :meth:`on_startup <starlite.events.BaseEventEmitterBackend.on_startup>`: Called on application startup. This method
-allows for performing any required async setup.
+  allows for performing any required async setup.
 - :meth:`on_shutdown <starlite.events.BaseEventEmitterBackend.on_shutdown>`: Called on application shutdown. This method
-allows for performing any required async teardown and cleanup.
-- :meth:`emit <starlite.events.BaseEventEmitterBackend.emit>`: This is the method that performs the actual emitting logic.
+  allows for performing any required async teardown and cleanup.
+- :meth:`emit <starlite.events.BaseEventEmitterBackend.emit>`: This is the method that performs the actual emitting
+  logic.
 
 By default Starlite uses the :class:`SimpleEventEmitter <starlite.events.SimpleEventEmitter>`, which offers an in-memory
 based async queue. This solution works well if the system does not need to rely on complex behaviour, such as a retry
 mechanism, persistence, or scheduling/cron. For these more complex use cases, users should implement their own backend
-using either a DB/Key store that supports events (Redis, Postgres etc.), or a message broker, job queue or task queue technology.
+using either a DB/Key store that supports events (Redis, Postgres etc.), or a message broker, job queue or task queue
+technology.
