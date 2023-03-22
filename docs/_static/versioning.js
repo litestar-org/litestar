@@ -1,114 +1,104 @@
 const loadVersions = async () => {
-    const res = await fetch(DOCUMENTATION_OPTIONS.URL_ROOT + "versions.json")
-    if (res.status !== 200) {
-        return null
-    }
-    return await res.json()
-}
-
-
-const getCurrentVersion = (versions) => {
-    const baseURL = new URL(DOCUMENTATION_OPTIONS.URL_ROOT, window.location).href
-    const parts = window.location.href.replace(baseURL, "").split("/")
-    if (!parts.length) {
-        return null
-    }
-    const maybeVersion = parts[0]
-    if (maybeVersion === "lib") {
-        return versions.latest
-    }
-    if (versions.versions.includes(maybeVersion)) {
-        return maybeVersion
-    }
-    return null
-}
-
+  const res = await fetch(
+    DOCUMENTATION_OPTIONS.URL_ROOT + "_static/versions.json",
+  );
+  if (res.status !== 200) {
+    return null;
+  }
+  return await res.json();
+};
 
 const addVersionWarning = (currentVersion, latestVersion) => {
-    if (currentVersion === latestVersion) {
-        return
-    }
+  if (currentVersion === latestVersion) {
+    return;
+  }
 
-    const navbarMain = document.getElementById("navbar-main")
-    if (!navbarMain) {
-        return
-    }
+  const header = document.querySelector(".bd-header__inner")?.parentElement;
+  if (!header) {
+    return;
+  }
 
-    const container = document.createElement("div")
-    container.id = "version-warning"
+  const container = document.createElement("div");
+  container.id = "version-warning";
 
-    const warningText = document.createElement("span")
-    warningText.textContent = `You are viewing the documentation for ${currentVersion === "dev" ? "a preview" : "an outdated"} version of Starlite.`
-    container.appendChild(warningText)
+  const warningText = document.createElement("span");
+  warningText.textContent = `You are viewing the documentation for ${
+    currentVersion === "dev" ||
+    parseInt(currentVersion) > parseInt(latestVersion)
+      ? "a preview"
+      : "an outdated"
+  } version of Starlite.`;
+  container.appendChild(warningText);
 
-    const latestLink = document.createElement("a")
-    latestLink.textContent = "Click here to go to the latest version"
-    latestLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + "lib"
-    container.appendChild(latestLink)
+  const latestLink = document.createElement("a");
+  latestLink.textContent = "Click here to go to the latest version";
+  latestLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + "../latest";
+  container.appendChild(latestLink);
 
-    navbarMain.before(container)
-}
+  header.before(container);
+};
 
-
-const formatVersionName = (version, isLatest) => version + (isLatest ? " (latest)" : "")
-
+const formatVersionName = (version, isLatest) =>
+  version + (isLatest ? " (latest)" : "");
 
 const addVersionSelect = (currentVersion, versionSpec) => {
-    const navEnd = document.getElementById("navbar-end")
-    if (!navEnd) {
-        return
-    }
+  const navEnd = document.querySelector(".navbar-header-items__end");
 
-    const container = document.createElement("div")
-    container.classList.add("navbar-nav")
+  if (!navEnd) {
+    return;
+  }
 
-    const dropdown = document.createElement("div")
-    dropdown.classList.add("dropdown")
-    container.appendChild(dropdown)
+  const container = document.createElement("div");
+  container.classList.add("navbar-nav");
 
-    const dropdownToggle = document.createElement("button")
-    dropdownToggle.classList.add("btn", "dropdown-toggle", "nav-item")
-    dropdownToggle.setAttribute("data-toggle", "dropdown")
-    dropdownToggle.setAttribute("type", "button")
-    dropdownToggle.textContent = `Version: ${formatVersionName(currentVersion, currentVersion === versionSpec.latest)}`
-    dropdown.appendChild(dropdownToggle)
+  const dropdown = document.createElement("div");
+  dropdown.classList.add("dropdown");
+  container.appendChild(dropdown);
 
-    const dropdownContent = document.createElement("div")
-    dropdownContent.classList.add("dropdown-menu")
-    dropdown.appendChild(dropdownContent)
+  const dropdownToggle = document.createElement("button");
+  dropdownToggle.classList.add("btn", "dropdown-toggle", "nav-item");
+  dropdownToggle.setAttribute("data-bs-toggle", "dropdown");
+  dropdownToggle.setAttribute("type", "button");
+  dropdownToggle.textContent = `Version: ${formatVersionName(
+    currentVersion,
+    currentVersion === versionSpec.latest,
+  )}`;
+  dropdown.appendChild(dropdownToggle);
 
-    for (const version of versionSpec.versions) {
-        const navItem = document.createElement("li")
-        navItem.classList.add("nav-item")
+  const dropdownContent = document.createElement("div");
+  dropdownContent.classList.add("dropdown-menu");
+  dropdown.appendChild(dropdownContent);
 
-        const navLink = document.createElement("a")
-        navLink.classList.add("nav-link", "nav-internal")
-        navLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + version
-        navLink.textContent = formatVersionName(version, version === versionSpec.latest)
-        navItem.appendChild(navLink)
+  for (const version of versionSpec.versions) {
+    const navItem = document.createElement("li");
+    navItem.classList.add("nav-item");
 
-        dropdownContent.appendChild(navItem)
-    }
+    const navLink = document.createElement("a");
+    navLink.classList.add("nav-link", "nav-internal");
+    navLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + `../${version}`;
+    navLink.textContent = formatVersionName(
+      version,
+      version === versionSpec.latest,
+    );
+    navItem.appendChild(navLink);
 
-    navEnd.prepend(container)
-}
+    dropdownContent.appendChild(navItem);
+  }
 
+  navEnd.prepend(container);
+};
 
 const setupVersioning = (versions) => {
-    if (versions === null) {
-        return
-    }
+  if (versions === null) {
+    return;
+  }
 
-    const currentVersion = getCurrentVersion(versions)
-    if (currentVersion === null) {
-        return
-    }
+  const currentVersion = DOCUMENTATION_OPTIONS.VERSION;
 
-    addVersionWarning(currentVersion, versions.latest)
-    addVersionSelect(currentVersion, versions)
-}
-
+  addVersionWarning(currentVersion, versions.latest);
+  addVersionSelect(currentVersion, versions);
+};
 
 window.addEventListener("DOMContentLoaded", () => {
-    loadVersions().then(setupVersioning)
-})
+  loadVersions().then(setupVersioning);
+});

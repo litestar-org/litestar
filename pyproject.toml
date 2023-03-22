@@ -115,7 +115,7 @@ sphinx-toolbox = "^3.2.0"
 sphinx-copybutton = "^0.5.1"
 sphinxcontrib-mermaid = "^0.7.1"
 auto-pytabs = {extras = ["sphinx"], version = ">=0.1.1"}
-pydata-sphinx-theme = "^0.12.0"
+starlite-sphinx-theme = { git = "https://github.com/starlite-api/starlite-sphinx-theme.git" }
 
 
 [tool.poetry.extras]
