@@ -1,7 +1,7 @@
 name: docs
 on:
   workflow_run:
-    workflows: [Tests And Linting]
+    workflows: ["ci"]
     branches: [main, v1.51]
     types:
       - completed
