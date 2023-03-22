@@ -46,7 +46,7 @@ const addVersionWarning = (currentVersion, latestVersion) => {
 
   const latestLink = document.createElement("a");
   latestLink.textContent = "Click here to go to the latest version";
-  latestLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + "lib";
+  latestLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + "latest";
   container.appendChild(latestLink);
 
   navbarMain.before(container);
