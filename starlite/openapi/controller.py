@@ -332,7 +332,7 @@ class OpenAPIController(Controller):
             <div id='swagger-container'/>
             <script type="text/javascript">
             const ui = SwaggerUIBundle({{
-                spec: JSON.parse('{self._dumped_modified_schema}'),
+                spec: {self._dumped_modified_schema},
                 dom_id: '#swagger-container',
                 deepLinking: true,
                 showExtensions: true,
@@ -442,7 +442,7 @@ class OpenAPIController(Controller):
             <div id='redoc-container'/>
             <script type="text/javascript">
                 Redoc.init(
-                    JSON.parse('{self._dumped_schema}'),
+                    {self._dumped_schema},
                     undefined,
                     document.getElementById('redoc-container')
                 )
