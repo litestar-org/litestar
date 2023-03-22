@@ -1,4 +1,4 @@
-name: Documentation Building
+name: docs
 on:
   workflow_run:
     workflows: [Tests And Linting]
