@@ -49,7 +49,7 @@ importlib-metadata = { version = "*", python = "<3.10" }
 jinja2 = { version = ">=3.1.2", optional = true }
 jsbeautifier = { version = "*", optional = true }
 mako = { version = ">=1.2.4", optional = true }
-msgspec = ">=0.12.0"
+msgspec = "*"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
