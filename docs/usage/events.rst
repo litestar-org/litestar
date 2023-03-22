@@ -35,14 +35,14 @@ Starlite supports a simple implementation of the event emitter / listener patter
 
         # assuming we have now inserted a user, we want to send a welcome email.
         # To do this in a none-blocking fashion, we will emit an event to a listener, which will send the email,
-        # using a different async thread than the one where we are returning a response.
+        # using a different async block than the one where we are returning a response.
         await request.app.emit("user_created", email=data.email)
 
 
 
 
-The above example illustrates the power of this pattern - it allows us to perform async operations without blocking the
-main thread, and without slowing down the response cycle.
+The above example illustrates the power of this pattern - it allows us to perform async operations without blocking,
+and without slowing down the response cycle.
 
 Listening to Multiple Events
 ++++++++++++++++++++++++++++
@@ -183,7 +183,14 @@ and implements its abstract methods:
   logic.
 
 By default Starlite uses the :class:`SimpleEventEmitter <starlite.events.SimpleEventEmitter>`, which offers an in-memory
-based async queue. This solution works well if the system does not need to rely on complex behaviour, such as a retry
+based async queue.
+
+This solution works well if the system does not need to rely on complex behaviour, such as a retry
 mechanism, persistence, or scheduling/cron. For these more complex use cases, users should implement their own backend
 using either a DB/Key store that supports events (Redis, Postgres etc.), or a message broker, job queue or task queue
 technology.
+
+..  attention::
+    The :class:`SimpleEventEmitter <starlite.events.SimpleEventEmitter>` works only with ``asyncio`` due to the limitation
+    of ``trio`` on running tasks without awaiting them. If you want to use this functionality with ``trio``, you will need
+    to create a custom implementation for your use case.
