@@ -9,6 +9,8 @@ on:
     types: [published]
 jobs:
   docs:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release' || github.event.workflow_run.conclusion == 'success' }}
     steps:
@@ -22,16 +24,22 @@ jobs:
           version: 1.4.0
           virtualenvs-create: false
           installer-parallel: true
+          virtualenvs-in-project: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ hashFiles('**/poetry.lock') }}
       - name: Install App Dependencies
         run: poetry install --no-interaction --with docs
-      - name: Setup gh pages
-        run: |
-          git fetch origin gh-pages --depth=1
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-      - name: Deploy to GH-Pages (preview)
+      - name: Build docs (preview)
         if: ${{ github.event_name != 'release' && github.ref == 'refs/heads/main'}}
-        run: python tools/publish_docs.py --version dev --push
-      - name: Deploy to GH-Pages (release)
+        run: poetry run python tools/build_docs.py docs-build  --version=dev
+      - name: Build docs (release)
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
-        run: python tools/publish_docs.py --push
+        run: poetry run python tools/build_docs.py docs-build
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: docs-build
