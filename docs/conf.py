@@ -130,6 +130,7 @@ suppress_warnings = [
 html_theme = "starlite_sphinx_theme"
 html_static_path = ["_static"]
 html_js_files = ["versioning.js"]
+html_css_files = ["style.css"]
 html_show_sourcelink = False
 html_title = "Starlite Framework"
 
