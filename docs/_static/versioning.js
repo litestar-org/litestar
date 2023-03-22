@@ -8,22 +8,6 @@ const loadVersions = async () => {
   return await res.json();
 };
 
-const getCurrentVersion = (versions) => {
-  const baseURL = new URL(DOCUMENTATION_OPTIONS.URL_ROOT, window.location).href;
-  const parts = window.location.href.replace(baseURL, "").split("/");
-  if (!parts.length) {
-    return null;
-  }
-  const maybeVersion = parts[0];
-  if (maybeVersion === "lib") {
-    return versions.latest;
-  }
-  if (versions.versions.includes(maybeVersion)) {
-    return maybeVersion;
-  }
-  return null;
-};
-
 const addVersionWarning = (currentVersion, latestVersion) => {
   if (currentVersion === latestVersion) {
     return;
@@ -108,10 +92,7 @@ const setupVersioning = (versions) => {
     return;
   }
 
-  const currentVersion = getCurrentVersion(versions);
-  if (currentVersion === null) {
-    return;
-  }
+  const currentVersion = DOCUMENTATION_OPTIONS.VERSION;
 
   addVersionWarning(currentVersion, versions.latest);
   addVersionSelect(currentVersion, versions);
