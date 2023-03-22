@@ -32,7 +32,7 @@ const addVersionWarning = (currentVersion, latestVersion) => {
 
   const latestLink = document.createElement("a");
   latestLink.textContent = "Click here to go to the latest version";
-  latestLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + "latest";
+  latestLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + "../latest";
   container.appendChild(latestLink);
 
   header.before(container);
@@ -75,7 +75,7 @@ const addVersionSelect = (currentVersion, versionSpec) => {
 
     const navLink = document.createElement("a");
     navLink.classList.add("nav-link", "nav-internal");
-    navLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + version;
+    navLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + `../${version}`;
     navLink.textContent = formatVersionName(
       version,
       version === versionSpec.latest,
