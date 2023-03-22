@@ -39,6 +39,8 @@ jobs:
       - name: Build docs (release)
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
         run: poetry run python tools/build_docs.py docs-build
+      - name: Fetch gh pages
+        run: git fetch origin gh-pages --depth=1
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
