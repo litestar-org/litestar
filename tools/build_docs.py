@@ -79,7 +79,7 @@ def build(output_dir: str, version: str | None) -> None:
                 continue
             other_version_path = Path(other_version)
             if other_version_path.exists():
-                shutil.copytree(other_version_path, output_dir / other_version)
+                shutil.copytree(other_version_path, output_dir / other_version, dirs_exist_ok=True)
 
 
 def main() -> None:
