@@ -152,9 +152,9 @@ html_theme_options = {
             "Releases": "https://starliteproject.dev/about/starlite-releases",
         },
         "Release notes": {
-            "2.0 migration guide": "release-notes/migration_guide_2.html",
+            "2.0 migration guide": "release-notes/migration_guide_2",
             "2.x Changelog": "https://docs.starliteproject.dev/2/release-notes/changelog.html",
-            "1.x Changelog": "https://docs.starliteproject.dev/1/changelog.html",
+            "1.x Changelog": "https://docs.starliteproject.dev/1/release-notes/changelog.html",
         },
     },
 }
