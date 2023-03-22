@@ -4,6 +4,7 @@ Event Emitters and Listeners
 Starlite supports a simple implementation of the event emitter / listener pattern:
 
 .. code-block:: python
+
     from dataclasses import dataclass
 
     from starlite import Request, post
@@ -12,10 +13,12 @@ Starlite supports a simple implementation of the event emitter / listener patter
     from db import user_repository
     from utils.email import send_welcome_mail
 
+
     @listener("user_created")
     async def send_welcome_email_handler(email: str) -> None:
         # do something here to send an email
         await send_welcome_mail(email)
+
 
     @dataclass
     class CreateUserDTO:
@@ -37,6 +40,7 @@ Starlite supports a simple implementation of the event emitter / listener patter
 
 
 
+
 The above example illustrates the power of this pattern - it allows us to perform async operations without blocking the
 main thread, and without slowing down the response cycle.
 
@@ -46,15 +50,16 @@ Listening to Multiple Events
 Event listeners can listen to multiple events:
 
 .. code-block:: python
-    from enum import Enum
 
     from starlite.events import listener
 
-    @listener(["user_created", "password_changed"])
+
+    @listener("user_created", "password_changed")
     async def send_email_handler(email: str, message: str) -> None:
         # do something here to send an email
 
         await send_email(email, message)
+
 
 
 
@@ -64,6 +69,7 @@ Using Multiple Listeners
 You can also listen to the same events using multiple listeners:
 
 .. code-block:: python
+
     from uuid import UUID
     from dataclasses import dataclass
 
@@ -74,25 +80,29 @@ You can also listen to the same events using multiple listeners:
     from utils.client import client
     from utils.email import send_farewell_email
 
+
     @listener("user_deleted")
     async def send_farewell_email_handler(email: str, **kwargs) -> None:
         # do something here to send an email
         await send_farewell_email(email)
+
 
     @listener("user_deleted")
     async def notify_customer_support(reason: str, **kwargs) -> None:
         # do something here to send an email
         await client.post("some-url", reason)
 
+
     @dataclass
     class DeleteUserDTO:
         email: str
         reason: str
 
+
     @post("/users")
     async def delete_user_handler(data: UserDTO, request: Request) -> None:
         await user_repository.delete({"email": email})
-        await request.app.emit("user_deleted", email=data.email, reason: str)
+        await request.app.emit("user_deleted", email=data.email, reason="deleted")
 
 
 
@@ -106,7 +116,7 @@ The method :meth:`emit <starlite.events.BaseEventEmitterBackend.emit>` has the f
 
 .. code-block:: python
 
-    async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None
+    async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         ...
 
 
@@ -123,20 +133,23 @@ For example, the following would raise an exception in python:
     async def send_farewell_email_handler(email: str) -> None:
         await send_farewell_email(email)
 
+
     @listener("user_deleted")
     async def notify_customer_support(reason: str) -> None:
         # do something here to send an email
         await client.post("some-url", reason)
+
 
     @dataclass
     class DeleteUserDTO:
         email: str
         reason: str
 
+
     @post("/users")
     async def delete_user_handler(data: UserDTO, request: Request) -> None:
         await user_repository.delete({"email": email})
-        await request.app.emit("user_deleted", email=data.email, reason: str)
+        await request.app.emit("user_deleted", email=data.email, reason="deleted")
 
 
 
@@ -148,6 +161,7 @@ had `**kwargs` in both:
     @listener("user_deleted")
     async def send_farewell_email_handler(email: str, **kwargs) -> None:
         await send_farewell_email(email)
+
 
     @listener("user_deleted")
     async def notify_customer_support(reason: str, **kwargs) -> None:
