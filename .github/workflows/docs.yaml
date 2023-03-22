@@ -1,16 +1,20 @@
 name: Documentation Building
 on:
-  push:
-    branches: [starlite-theme, v1.51]
+  workflow_run:
+    workflows: [Tests And Linting]
+    branches: [main, v1.51]
+    types:
+      - completed
+  release:
+    types: [published]
 jobs:
   docs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v3
-      - name: Fetch pages branch
-        run: git fetch origin gh-pages --depth=1
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
@@ -20,7 +24,7 @@ jobs:
           version: 1.4.0
           virtualenvs-create: false
           installer-parallel: true
-          virtualenv-in-project: true
+          virtualenvs-in-project: true
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v3
@@ -29,7 +33,11 @@ jobs:
           key: venv-${{ hashFiles('**/poetry.lock') }}
       - name: Install App Dependencies
         run: poetry install --no-interaction --with docs
-      - name: Build docs
+      - name: Build docs (preview)
+        if: ${{ github.event_name != 'release' && github.ref == 'refs/heads/main'}}
+        run: poetry run python tools/build_docs.py docs-build  --version=dev
+      - name: Build docs (release)
+        if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
         run: poetry run python tools/build_docs.py docs-build
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
