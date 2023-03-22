@@ -13,8 +13,8 @@ const addVersionWarning = (currentVersion, latestVersion) => {
     return;
   }
 
-  const navbarMain = document.getElementById("navbar-main");
-  if (!navbarMain) {
+  const header = document.querySelector(".bd-header__inner")?.parentElement;
+  if (!header) {
     return;
   }
 
@@ -35,14 +35,15 @@ const addVersionWarning = (currentVersion, latestVersion) => {
   latestLink.href = DOCUMENTATION_OPTIONS.URL_ROOT + "latest";
   container.appendChild(latestLink);
 
-  navbarMain.before(container);
+  header.before(container);
 };
 
 const formatVersionName = (version, isLatest) =>
   version + (isLatest ? " (latest)" : "");
 
 const addVersionSelect = (currentVersion, versionSpec) => {
-  const navEnd = document.getElementById("navbar-end");
+  const navEnd = document.querySelector(".navbar-header-items__end");
+
   if (!navEnd) {
     return;
   }
@@ -56,7 +57,7 @@ const addVersionSelect = (currentVersion, versionSpec) => {
 
   const dropdownToggle = document.createElement("button");
   dropdownToggle.classList.add("btn", "dropdown-toggle", "nav-item");
-  dropdownToggle.setAttribute("data-toggle", "dropdown");
+  dropdownToggle.setAttribute("data-bs-toggle", "dropdown");
   dropdownToggle.setAttribute("type", "button");
   dropdownToggle.textContent = `Version: ${formatVersionName(
     currentVersion,
