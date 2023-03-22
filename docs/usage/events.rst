@@ -121,7 +121,7 @@ The method :meth:`emit <starlite.events.BaseEventEmitterBackend.emit>` has the f
 
 
 
-This means that it expects a string for `event_id` following by any number of positional and keyword arguments. While
+This means that it expects a string for ``event_id`` following by any number of positional and keyword arguments. While
 this is highly flexible, it also means you need to ensure the listeners for a given event can handle all the expected args
 and kwargs.
 
