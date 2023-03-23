@@ -379,6 +379,7 @@ develop third-party application configuration systems.
     :language: python
 
 
+.. _layered-architecture:
 
 Layered architecture
 --------------------
