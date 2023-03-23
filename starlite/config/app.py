@@ -179,6 +179,8 @@ class AppConfig:
     """A list of dictionaries that will be added to the schema of all route handlers in the application. See
     :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
     """
+    signature_namespace: dict[str, Any] = field(default_factory=dict)
+    """A mapping of names to types for use in forward reference resolution during signature modelling."""
     state: State = field(default_factory=State)
     """A :class:`State` <.datastructures.State>` instance holding application state."""
     static_files_config: list[StaticFilesConfig] = field(default_factory=list)

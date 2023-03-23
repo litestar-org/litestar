@@ -40,6 +40,7 @@ class BaseRouteHandler(Generic[T]):
         "_resolved_dependencies",
         "_resolved_guards",
         "_resolved_layered_parameters",
+        "_resolved_signature_namespace",
         "_resolved_type_encoders",
         "dependencies",
         "exception_handlers",
@@ -52,6 +53,7 @@ class BaseRouteHandler(Generic[T]):
         "paths",
         "signature",
         "signature_model",
+        "signature_namespace",
         "type_encoders",
     )
 
@@ -65,6 +67,7 @@ class BaseRouteHandler(Generic[T]):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
@@ -81,12 +84,14 @@ class BaseRouteHandler(Generic[T]):
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
         self._resolved_guards: list[Guard] | EmptyType = Empty
         self._resolved_layered_parameters: dict[str, SignatureField] | EmptyType = Empty
+        self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
 
         self.dependencies = dependencies
@@ -97,6 +102,7 @@ class BaseRouteHandler(Generic[T]):
         self.opt = dict(opt or {})
         self.owner: Controller | Router | None = None
         self.signature_model: type[SignatureModel] | None = None
+        self.signature_namespace = signature_namespace or {}
         self.paths = (
             {normalize_path(p) for p in path}
             if path and isinstance(path, list)
@@ -224,8 +230,8 @@ class BaseRouteHandler(Generic[T]):
     def resolve_opts(self) -> None:
         """Build the route handler opt dictionary by going from top to bottom.
 
-        If multiple layers define the same key, the value from the closest layer to the response handler will take
-        precedence.
+        When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
+        layer closest to the response handler will take precedence.
         """
 
         opt: dict[str, Any] = {}
@@ -233,6 +239,20 @@ class BaseRouteHandler(Generic[T]):
             opt.update(layer.opt or {})
 
         self.opt = opt
+
+    def resolve_signature_namespace(self) -> dict[str, Any]:
+        """Build the route handler signature namespace dictionary by going from top to bottom.
+
+        When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
+        layer closest to the response handler will take precedence.
+        """
+        if self._resolved_layered_parameters is Empty:
+            ns: dict[str, Any] = {}
+            for layer in self.ownership_layers:
+                ns.update(layer.signature_namespace)
+
+            self._resolved_signature_namespace = ns
+        return cast("dict[str, Any]", self._resolved_signature_namespace)
 
     async def authorize_connection(self, connection: "ASGIConnection") -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""

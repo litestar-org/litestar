@@ -27,7 +27,7 @@ def test_parses_values_from_connection_kwargs_with_plugin() -> None:
     def fn(a: AModel, b: int) -> None:
         pass
 
-    model = create_signature_model(fn, plugins=[APlugin()], dependency_name_set=set())
+    model = create_signature_model(fn, plugins=[APlugin()], dependency_name_set=set(), signature_namespace={})
     arbitrary_a = {"name": 1}
     result = model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a=arbitrary_a, b=1)
     assert result == {"a": AModel(name="1"), "b": 1}
@@ -40,7 +40,7 @@ def test_parses_values_from_connection_kwargs_without_plugin() -> None:
     def fn(a: MyModel) -> None:
         pass
 
-    model = create_signature_model(fn, [], set())
+    model = create_signature_model(fn, [], set(), signature_namespace={})
     result = model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a={"name": "my name"})
     assert result == {"a": MyModel(name="my name")}
 
@@ -49,7 +49,7 @@ def test_parses_values_from_connection_kwargs_raises() -> None:
     def fn(a: int) -> None:
         pass
 
-    model = create_signature_model(fn, [], set())
+    model = create_signature_model(fn, [], set(), signature_namespace={})
     with pytest.raises(ValidationException):
         model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a="not an int")
 
@@ -58,7 +58,7 @@ def test_resolve_field_value() -> None:
     def fn(a: AModel, b: int) -> None:
         pass
 
-    model: Any = create_signature_model(fn, [APlugin()], set())
+    model: Any = create_signature_model(fn, [APlugin()], set(), signature_namespace={})
     instance: "PydanticSignatureModel" = model(a={"name": "my name"}, b=2)
     assert instance._resolve_field_value("a") == AModel(name="my name")
     assert instance._resolve_field_value("b") == 2
@@ -69,7 +69,7 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     def my_fn(a: int, b: str, c: Optional[bytes], d: bytes = b"123", e: Optional[dict] = None) -> None:
         pass
 
-    model = create_signature_model(my_fn.fn.value, [], set())
+    model = create_signature_model(my_fn.fn.value, [], set(), signature_namespace={})
     fields = model.fields
     assert fields["a"].field_type is int
     assert not fields["a"].is_optional
@@ -91,7 +91,7 @@ def test_create_signature_validation() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        create_signature_model(my_fn.fn.value, [], set())
+        create_signature_model(my_fn.fn.value, [], set(), signature_namespace={})
 
 
 def test_create_function_signature_model_ignore_return_annotation() -> None:
@@ -99,13 +99,13 @@ def test_create_function_signature_model_ignore_return_annotation() -> None:
     async def health_check() -> None:
         return None
 
-    signature_model_type = create_signature_model(health_check.fn.value, [], set())
+    signature_model_type = create_signature_model(health_check.fn.value, [], set(), signature_namespace={})
     assert signature_model_type().to_dict() == {}
 
 
 def test_create_function_signature_model_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        create_signature_model(lru_cache(maxsize=0)(lambda x: x), [], set()).dict()  # type: ignore
+        create_signature_model(lru_cache(maxsize=0)(lambda x: x), [], set(), signature_namespace={}).dict()  # type: ignore
 
 
 def test_dependency_validation_failure_raises_500() -> None:
@@ -204,7 +204,7 @@ def test_signature_field_is_non_string_iterable() -> None:
     def fn(a: Iterable[int], b: Optional[Iterable[int]]) -> None:
         pass
 
-    model = create_signature_model(fn, plugins=[], dependency_name_set=set())
+    model = create_signature_model(fn, plugins=[], dependency_name_set=set(), signature_namespace={})
 
     assert model.fields["a"].is_non_string_iterable
     assert model.fields["b"].is_non_string_iterable
@@ -214,7 +214,7 @@ def test_signature_field_is_non_string_sequence() -> None:
     def fn(a: Sequence[int], b: OptionalSequence[int]) -> None:
         pass
 
-    model = create_signature_model(fn, plugins=[], dependency_name_set=set())
+    model = create_signature_model(fn, plugins=[], dependency_name_set=set(), signature_namespace={})
 
     assert model.fields["a"].is_non_string_sequence
     assert model.fields["b"].is_non_string_sequence

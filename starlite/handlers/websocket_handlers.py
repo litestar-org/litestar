@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from inspect import Signature
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
@@ -11,6 +11,8 @@ __all__ = ("WebsocketRouteHandler", "websocket")
 
 
 if TYPE_CHECKING:
+    from typing import Any, Mapping
+
     from starlite.types import (
         AsyncAnyCallable,
         Dependencies,
@@ -37,6 +39,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         middleware: list[Middleware] | None = None,
         name: str | None = None,
         opt: dict[str, Any] | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``WebsocketRouteHandler``
@@ -52,6 +55,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -63,6 +67,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             middleware=middleware,
             name=name,
             opt=opt,
+            signature_namespace=signature_namespace,
             **kwargs,
         )
 

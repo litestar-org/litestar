@@ -72,6 +72,7 @@ class Router:
         "return_dto",
         "routes",
         "security",
+        "signature_namespace",
         "tags",
         "type_encoders",
     )
@@ -98,6 +99,7 @@ class Router:
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         route_handlers: Sequence[ControllerRouterHandler],
         security: Sequence[SecurityRequirement] | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         tags: Sequence[str] | None = None,
         type_encoders: TypeEncodersMap | None = None,
     ) -> None:
@@ -140,6 +142,7 @@ class Router:
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`
                 for details.
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
@@ -165,6 +168,7 @@ class Router:
         self.return_dto = return_dto
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.security = list(security or [])
+        self.signature_namespace = signature_namespace or {}
         self.tags = list(tags or [])
         self.registered_route_handler_ids: set[int] = set()
         self.type_encoders = dict(type_encoders) if type_encoders is not None else None

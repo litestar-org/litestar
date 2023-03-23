@@ -90,7 +90,7 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         return data
 
     person_instance = PersonFactory.build()
-    test_function.signature_model = create_signature_model(test_function.fn.value, [], set())
+    test_function.signature_model = create_signature_model(test_function.fn.value, [], set(), signature_namespace={})
 
     response = await test_function.to_response(
         data=test_function.fn.value(data=person_instance),
