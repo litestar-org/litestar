@@ -28,7 +28,9 @@ def _create_parameters(app: Starlite, path: str) -> List["OpenAPIParameter"]:
     handler = route_handler.fn.value
     assert callable(handler)
 
-    handler_fields = create_signature_model(fn=handler, plugins=[], dependency_name_set=set()).fields
+    handler_fields = create_signature_model(
+        fn=handler, plugins=[], dependency_name_set=set(), signature_namespace={}
+    ).fields
     return create_parameter_for_handler(
         route_handler=route_handler,
         handler_fields=handler_fields,

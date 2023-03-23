@@ -59,6 +59,7 @@ class Controller:
         "response_cookies",
         "response_headers",
         "security",
+        "signature_namespace",
         "tags",
         "type_encoders",
     )
@@ -126,6 +127,8 @@ class Controller:
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""
     security: OptionalSequence[SecurityRequirement]
     """A sequence of dictionaries that to the schema of all route handlers under the controller."""
+    signature_namespace: dict[str, Any]
+    """A mapping of names to types for use in forward reference resolution during signature modelling."""
     type_encoders: TypeEncodersMap | None
     """A mapping of types to callables that transform them into types supported for serialization."""
 
@@ -150,6 +153,7 @@ class Controller:
 
         self.response_cookies = narrow_response_cookies(self.response_cookies)
         self.response_headers = narrow_response_headers(self.response_headers)
+        self.signature_namespace = self.signature_namespace or {}
 
         self.path = normalize_path(self.path or "/")
         self.owner = owner

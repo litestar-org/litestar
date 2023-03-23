@@ -147,6 +147,7 @@ class Starlite(Router):
         "logger",
         "logging_config",
         "multipart_form_part_limit",
+        "signature_namespace",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -202,6 +203,7 @@ class Starlite(Router):
         response_cookies: ResponseCookies | None = None,
         response_headers: OptionalSequence[ResponseHeader] = None,
         security: OptionalSequence[SecurityRequirement] = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         state: State | None = None,
         static_files_config: OptionalSequence[StaticFilesConfig] = None,
         stores: StoreRegistry | dict[str, Store] | None = None,
@@ -283,6 +285,7 @@ class Starlite(Router):
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See
                 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             state: An optional :class:`State <.datastructures.State>` for application state.
             static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
             stores: Central registry of :class:`Store <.stores.base.Store>` that will be available throughout the
@@ -343,6 +346,7 @@ class Starlite(Router):
             response_headers=response_headers or [],
             route_handlers=list(route_handlers) if route_handlers is not None else [],
             security=list(security or []),
+            signature_namespace=dict(signature_namespace or {}),
             state=state or State(),
             static_files_config=list(static_files_config or []),
             stores=stores,
@@ -399,6 +403,7 @@ class Starlite(Router):
             # route handlers are registered below
             route_handlers=[],
             security=config.security,
+            signature_namespace=config.signature_namespace,
             tags=config.tags,
             type_encoders=config.type_encoders,
         )
@@ -721,6 +726,7 @@ class Starlite(Router):
                 fn=cast("AnyCallable", route_handler.fn.value),
                 plugins=self.serialization_plugins,
                 dependency_name_set=route_handler.dependency_name_set,
+                signature_namespace=route_handler.resolve_signature_namespace(),
             )
 
         for provider in route_handler.resolve_dependencies().values():
@@ -729,6 +735,7 @@ class Starlite(Router):
                     fn=provider.dependency.value,
                     plugins=self.serialization_plugins,
                     dependency_name_set=route_handler.dependency_name_set,
+                    signature_namespace=route_handler.resolve_signature_namespace(),
                 )
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:

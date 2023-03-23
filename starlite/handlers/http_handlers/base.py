@@ -149,6 +149,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         raises: Sequence[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: Mapping[int, ResponseSpec] | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         security: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
@@ -198,6 +199,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -232,6 +234,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             middleware=middleware,
             name=name,
             opt=opt,
+            signature_namespace=signature_namespace,
             type_encoders=type_encoders,
             **kwargs,
         )
