@@ -21,7 +21,7 @@ def signature_model(monkeypatch: MonkeyPatch) -> type[SignatureModel]:
     def func(data: DataclassDTO[Model]) -> None:
         ...
 
-    return create_signature_model(func, [], set(), namespace={"ExampleDTO": DataclassDTO, "Model": Model})
+    return create_signature_model(func, [], set(), signature_namespace={"DataclassDTO": DataclassDTO, "Model": Model})
 
 
 def test_kwargs_model(signature_model: type[SignatureModel]) -> None:

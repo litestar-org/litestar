@@ -25,7 +25,7 @@ def test_create_signature_model(monkeypatch: MonkeyPatch) -> None:
         return data
 
     signature_model = create_signature_model(
-        func, plugins=[], dependency_name_set=set(), namespace={"data_dto": data_dto, "ret_dto": ret_dto}
+        func, plugins=[], dependency_name_set=set(), signature_namespace={"data_dto": data_dto, "ret_dto": ret_dto}
     )
     assert signature_model.fields["data"].has_dto_annotation
     assert signature_model.return_annotation is ret_dto
