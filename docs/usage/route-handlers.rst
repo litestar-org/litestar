@@ -75,6 +75,8 @@ This is particularly useful when you want to have optional :ref:`path parameters
    def my_route_handler(some_id: int = 1) -> None:
        ...
 
+.. _handler-function-kwargs:
+
 Handler function kwargs
 -----------------------
 
@@ -536,3 +538,91 @@ a router, and even on the app instance itself.
 
 The resulting dictionary is constructed by merging opt dictionaries of all levels. If multiple layers define the same
 key, the value from the closest layer to the response handler will take precedence.
+
+
+.. _signature_namespace:
+
+Signature namespace
+-------------------
+
+Starlite produces a model of the arguments to any handler or dependency function, called a "signature model" which is
+used for parsing and validation of raw data to be injected into the function.
+
+Building the model requires inspection of the names and types of the signature parameters at runtime, and so it is
+necessary for the types to be available within the scope of the module - something that linting tools such as ``ruff``
+or ``flake8-type-checking`` will actively monitor, and suggest against.
+
+For example, the name ``Model`` is *not* available at runtime in the following snippet:
+
+.. code-block:: python
+
+    from __future__ import annotations
+
+    from typing import TYPE_CHECKING
+
+    from starlite import Controller, post
+
+    if TYPE_CHECKING:
+        from domain import Model
+
+
+    class MyController(Controller):
+        @post()
+        def create_item(data: Model) -> Model:
+            return data
+
+
+In this example, Starlite will be unable to generate the signature model because the type ``Model`` does not exist in
+the module scope at runtime. We can address this on a case-by-case basis by silencing our linters, for example:
+
+.. code-block:: python
+
+    from __future__ import annotations
+
+    from typing import TYPE_CHECKING
+
+    from starlite import Controller, post
+
+    from domain import Model  # noqa: TC002
+
+However, this approach can get tedious, so as an alternative, Starlite accepts a ``signature_namespace`` mapping at
+every :ref:`layer <layered-architecture>` of the application. The following is a demonstration of how to use this
+pattern.
+
+This module defines our domain type in some central place.
+
+.. literalinclude:: /examples/signature_namespace/domain.py
+    :language: python
+
+This module defines our controller, note that we don't import ``Model`` into the runtime namespace, nor do we require
+any directives to control behavior of linters.
+
+.. literalinclude:: /examples/signature_namespace/controller.py
+    :language: python
+
+Finally, we ensure that our application knows that when it encounters the name "Model" when parsing signatures, that it
+should reference our domain ``Model`` type.
+
+.. literalinclude:: /examples/signature_namespace/app.py
+    :language: python
+
+Default signature namespace
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Starlite automatically adds some names to the signature namespace when parsing signature models in order to support
+injection of the :ref:`handler-function-kwargs`.
+
+These names are:
+
+* ``Headers``
+* ``ImmutableState``
+* ``Receive``
+* ``Request``
+* ``Scope``
+* ``Send``
+* ``State``
+* ``WebSocket``
+* ``WebSocketScope``
+
+The import of any of these names can be safely left inside an ``if TYPE_CHECKING:`` block without any configuration
+required.
