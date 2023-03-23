@@ -230,8 +230,8 @@ class BaseRouteHandler(Generic[T]):
     def resolve_opts(self) -> None:
         """Build the route handler opt dictionary by going from top to bottom.
 
-        If multiple layers define the same key, the value from the closest layer to the response handler will take
-        precedence.
+        When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
+        layer closest to the response handler will take precedence.
         """
 
         opt: dict[str, Any] = {}
@@ -243,8 +243,8 @@ class BaseRouteHandler(Generic[T]):
     def resolve_signature_namespace(self) -> dict[str, Any]:
         """Build the route handler signature namespace dictionary by going from top to bottom.
 
-        Names from layers are merged, if multiple layers define the same key, the value from the closest layer to the
-        response handler takes precedence.
+        When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
+        layer closest to the response handler will take precedence.
         """
         if self._resolved_layered_parameters is Empty:
             ns: dict[str, Any] = {}
