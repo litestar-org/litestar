@@ -93,7 +93,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         """
         while self._queue:
             fn, args, kwargs = await self._queue.get()
-            await fn(*args, *kwargs)
+            await fn(*args, **kwargs)
             self._queue.task_done()
 
     async def on_startup(self) -> None:

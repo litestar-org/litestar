@@ -38,17 +38,15 @@ def async_listener(mock: MagicMock) -> EventListener:
 
 @pytest.mark.parametrize("listener", [lazy_fixture("sync_listener"), lazy_fixture("async_listener")])
 def test_event_listener(mock: MagicMock, listener: EventListener) -> None:
-    test_value = {"key": "123"}
-
     @get("/")
     def route_handler(request: Request[Any, Any, Any]) -> None:
-        request.app.emit("test_event", test_value)
+        request.app.emit("test_event", "positional", keyword="keyword-value")
 
     with create_test_client(route_handlers=[route_handler], listeners=[listener]) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         sleep(0.01)
-        mock.assert_called_with(test_value)
+        mock.assert_called_with("positional", keyword="keyword-value")
 
 
 async def test_shutdown_awaits_pending(async_listener: EventListener, mock: MagicMock) -> None:
