@@ -36,7 +36,7 @@ Starlite supports a simple implementation of the event emitter / listener patter
         # assuming we have now inserted a user, we want to send a welcome email.
         # To do this in a none-blocking fashion, we will emit an event to a listener, which will send the email,
         # using a different async block than the one where we are returning a response.
-        await request.app.emit("user_created", email=data.email)
+        request.app.emit("user_created", email=data.email)
 
 
 
@@ -102,7 +102,7 @@ You can also listen to the same events using multiple listeners:
     @post("/users")
     async def delete_user_handler(data: UserDTO, request: Request) -> None:
         await user_repository.delete({"email": email})
-        await request.app.emit("user_deleted", email=data.email, reason="deleted")
+        request.app.emit("user_deleted", email=data.email, reason="deleted")
 
 
 
@@ -116,7 +116,7 @@ The method :meth:`emit <starlite.events.BaseEventEmitterBackend.emit>` has the f
 
 .. code-block:: python
 
-    async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
+    def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         ...
 
 
@@ -149,7 +149,7 @@ For example, the following would raise an exception in python:
     @post("/users")
     async def delete_user_handler(data: UserDTO, request: Request) -> None:
         await user_repository.delete({"email": email})
-        await request.app.emit("user_deleted", email=data.email, reason="deleted")
+        request.app.emit("user_deleted", email=data.email, reason="deleted")
 
 
 
@@ -191,6 +191,6 @@ using either a DB/Key store that supports events (Redis, Postgres etc.), or a me
 technology.
 
 ..  attention::
-    The :class:`SimpleEventEmitter <starlite.events.SimpleEventEmitter>` works only with ``asyncio`` due to the limitation
-    of ``trio`` on running tasks without awaiting them. If you want to use this functionality with ``trio``, you will need
-    to create a custom implementation for your use case.
+    The :class:`SimpleEventEmitter <starlite.events.SimpleEventEmitter>` works only with ``asyncio`` due to the
+    limitation of ``trio`` (intentionally) not supporting "worker tasks" - i.e. tasks that run in a detached state. If
+    you want to use this functionality with ``trio``, you will need to create a custom implementation for your use case.
