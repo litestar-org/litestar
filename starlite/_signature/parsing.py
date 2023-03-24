@@ -134,7 +134,7 @@ def parse_fn_signature(
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
     data_dto: type[AbstractDTO] | None,
-    signature_namespace: dict[str, Any] | None = None,
+    signature_namespace: dict[str, Any],
 ) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
 
@@ -143,7 +143,7 @@ def parse_fn_signature(
         plugins: A list of plugins.
         dependency_name_set: A set of dependency names
         data_dto: DTO type for "data" kwarg
-        signature_namespace: Extra names for resolution of forward references.
+        signature_namespace: mapping of names to types for forward reference resolution
 
     Returns:
         A tuple containing the following values for generating a signature model: a mapping of field definitions, the
@@ -212,7 +212,7 @@ def create_signature_model(
     dependency_name_set: set[str],
     data_dto: type[AbstractDTO] | None = None,
     return_dto: type[AbstractDTO] | None = None,
-    signature_namespace: dict[str, Any] | None = None,
+    signature_namespace: dict[str, Any],
 ) -> type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
@@ -223,7 +223,7 @@ def create_signature_model(
         dependency_name_set: A set of dependency names
         data_dto: DTO type for "data" kwarg
         return_dto: DTO type for return value
-        signature_namespace: Extra names for resolution of forward references.
+        signature_namespace: mapping of names to types for forward reference resolution
 
     Returns:
         A _signature model.
