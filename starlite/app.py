@@ -801,7 +801,7 @@ class Starlite(Router):
                         )
                     operation_ids.append(operation_id)
 
-    async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
+    def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
 
         Args:
@@ -812,4 +812,4 @@ class Starlite(Router):
         Returns:
             None
         """
-        await self.event_emitter.emit(event_id, *args, **kwargs)
+        self.event_emitter.emit(event_id, *args, **kwargs)
