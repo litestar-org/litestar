@@ -36,7 +36,7 @@ class BaseEventEmitterBackend(ABC):
                 self.listeners[event_id].add(listener)
 
     @abstractmethod
-    async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
+    def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
         """Emit an event to all attached listeners.
 
         Args:
@@ -126,7 +126,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         self._worker_task = None
         self._queue = None
 
-    async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
+    def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
 
         Args:
