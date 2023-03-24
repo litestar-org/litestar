@@ -610,7 +610,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/17198460?v=4",
       "profile": "https://github.com/ste-pool",
       "contributions": [
-        "code"
+        "code",
+        "infra"
       ]
     },
     {
@@ -833,6 +834,15 @@
       "profile": "https://gh.arielle.codes",
       "contributions": [
         "maintenance"
+      ]
+    },
+    {
+      "login": "Galdanwing",
+      "name": "Antoine van der Horst",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29492757?v=4",
+      "profile": "https://github.com/Galdanwing",
+      "contributions": [
+        "doc"
       ]
     }
   ],

@@ -8,7 +8,7 @@ from typing import Any, AsyncGenerator, Iterator
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy import NullPool, insert
+from sqlalchemy import NullPool, insert, select
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -145,6 +145,20 @@ async def test_repo_count_method(author_repo: AuthorRepository) -> None:
         author_repo (AuthorRepository): The author mock repository
     """
     assert await author_repo.count() == 2
+
+
+async def test_repo_base_select_override(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy base select override with sqlite.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    all_count = await author_repo.count()
+    filtered_count = await author_repo.count(
+        base_select=select(Author).where(Author.id == UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"))
+    )
+    assert all_count == 2
+    assert filtered_count == 1
 
 
 async def test_repo_list_and_count_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:

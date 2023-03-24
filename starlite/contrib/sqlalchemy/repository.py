@@ -4,7 +4,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Generic, Literal, Tuple, TypeVar, cast
 
-from sqlalchemy import delete, over, select, text, update
+from sqlalchemy import Select, delete, over, select, text, update
 from sqlalchemy import func as sql_func
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
@@ -20,7 +20,6 @@ if TYPE_CHECKING:
     from collections import abc
     from datetime import datetime
 
-    from sqlalchemy import Select
     from sqlalchemy.engine import Result
     from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -76,7 +75,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         super().__init__(**kwargs)
         self.session = session
-        self.statement = base_select or select(self.model_type)
+        self.statement = base_select if base_select is not None else select(self.model_type)
 
     async def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
@@ -194,7 +193,8 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             NotFoundError: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
-            statement = self._filter_select_by_kwargs(statement=self.statement, **{self.id_attribute: item_id})
+            statement = kwargs.pop("base_select", self.statement)
+            statement = self._filter_select_by_kwargs(statement=statement, **{self.id_attribute: item_id})
             instance = (await self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self.session.expunge(instance)
@@ -213,7 +213,8 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             NotFoundError: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
-            statement = self._filter_select_by_kwargs(statement=self.statement, **kwargs)
+            statement = kwargs.pop("base_select", self.statement)
+            statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
             instance = (await self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
             self.session.expunge(instance)
@@ -229,11 +230,12 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The retrieved instance or None
         """
         with wrap_sqlalchemy_exception():
-            statement = self._filter_select_by_kwargs(statement=self.statement, **kwargs)
+            statement = kwargs.pop("base_select", self.statement)
+            statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
             instance = (await self._execute(statement)).scalar_one_or_none()
             if instance:
                 self.session.expunge(instance)
-            return instance
+            return instance  # type: ignore
 
     async def get_or_create(self, **kwargs: Any) -> tuple[ModelT, bool]:
         """Get instance identified by ``kwargs`` or create if it doesn't exist.
@@ -259,7 +261,8 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query, ignoring pagination.
         """
-        statement = self.statement.with_only_columns(
+        statement = kwargs.pop("base_select", self.statement)
+        statement = statement.with_only_columns(
             sql_func.count(
                 self.model_type.id,  # type:ignore[attr-defined]
             ),
@@ -345,7 +348,8 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query, ignoring pagination.
         """
-        statement = self.statement.add_columns(
+        statement = kwargs.pop("base_select", self.statement)
+        statement = statement.add_columns(
             over(
                 sql_func.count(
                     self.model_type.id,  # type:ignore[attr-defined]
@@ -375,7 +379,8 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             The list of instances, after filtering applied.
         """
-        statement = self._apply_filters(*filters, statement=self.statement)
+        statement = kwargs.pop("base_select", self.statement)
+        statement = self._apply_filters(*filters, statement=statement)
         statement = self._filter_select_by_kwargs(statement, **kwargs)
 
         with wrap_sqlalchemy_exception():

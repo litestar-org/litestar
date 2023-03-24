@@ -49,7 +49,7 @@ importlib-metadata = { version = "*", python = "<3.10" }
 jinja2 = { version = ">=3.1.2", optional = true }
 jsbeautifier = { version = "*", optional = true }
 mako = { version = ">=1.2.4", optional = true }
-msgspec = ">=0.11.0"
+msgspec = "*"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
@@ -70,7 +70,7 @@ beautifulsoup4 = "*"
 brotli = "*"
 click = "*"
 cryptography = "*"
-fakeredis = { extras = ["lua"], version = ">=2.9.0" }
+fakeredis = { extras = ["lua"], version = ">=2.10.2" }
 freezegun = "*"
 fsspec = "*"
 greenlet = "*"
@@ -109,13 +109,12 @@ black = "*"
 httpx = "*"
 uvicorn = "*"
 sphinx-autobuild = "*"
-sphinx-design = "*"
-sphinx = "*"
-sphinx-toolbox = "*"
-sphinx-copybutton = "*"
-sphinxcontrib-mermaid = "*"
+sphinx = ">=5.3.0,<=6"
+sphinx-design = ">=0.3.0,<1"
+sphinx-copybutton = ">=0.5.1"
+sphinxcontrib-mermaid = ">=0.8.1,<1"
 auto-pytabs = { extras = ["sphinx"], version = "*" }
-pydata-sphinx-theme = "0.12.0"
+starlite-sphinx-theme = { git = "https://github.com/starlite-api/starlite-sphinx-theme.git" }
 
 
 [tool.poetry.extras]
@@ -273,6 +272,7 @@ known-first-party = ["starlite", "tests", "examples"]
 
 [tool.ruff.per-file-ignores]
 "tests/**/*.*" = ["S101", "D", "ARG", "PGH", "B", "FBT", "PTH", "A", "TCH", "DTZ", "TRY", "EM", "S", "N", "SIM", "PLR", "BLE", "RSE", "C901", "PLW", "G", "PIE"]
+"docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
 "docs/examples/tests/**/*.*" = ["S101", "D", "ARG", "PGH", "B", "FBT", "PTH", "A", "TCH", "DTZ", "TRY", "EM", "S", "N", "SIM", "PLR", "BLE", "RSE", "C901", "PLW", "G", "PIE"]
 "docs/**/*.*" = ["S", "B", "DTZ", "A", "TCH", "ERA", "D", "RET"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
@@ -280,3 +280,4 @@ known-first-party = ["starlite", "tests", "examples"]
 "starlite/handlers/**/*.*" = ["N801"]
 "starlite/params.py" = ["N802"]
 "starlite/exceptions/*.*" = ["N818"]
+"docs/examples/**" = ["T201"]

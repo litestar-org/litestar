@@ -37,6 +37,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         opt: Mapping[str, Any] | None = None,
         is_mount: bool = False,
         is_static: bool = False,
+        signature_namespace: Mapping[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``ASGIRouteHandler``.
@@ -56,12 +57,21 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
                 ``/some-path/sub-path/`` etc.
             is_static: A boolean dictating whether the handler's paths should be regarded as static paths. Static paths
                 are used to deliver static files.
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self.is_mount = is_mount or is_static
         self.is_static = is_static
-        super().__init__(path, exception_handlers=exception_handlers, guards=guards, name=name, opt=opt, **kwargs)
+        super().__init__(
+            path,
+            exception_handlers=exception_handlers,
+            guards=guards,
+            name=name,
+            opt=opt,
+            signature_namespace=signature_namespace,
+            **kwargs,
+        )
 
     def __call__(self, fn: AsyncAnyCallable) -> ASGIRouteHandler:
         """Replace a function with itself."""

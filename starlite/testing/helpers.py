@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal, Mapping, Sequence
 
-from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
+from starlite.app import Starlite
 from starlite.controller import Controller
 from starlite.events import SimpleEventEmitter
 from starlite.testing.client import AsyncTestClient, TestClient
@@ -10,11 +10,11 @@ from starlite.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
     from starlite import Request, WebSocket
-    from starlite.cache.config import CacheConfig
     from starlite.config.allowed_hosts import AllowedHostsConfig
     from starlite.config.compression import CompressionConfig
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
+    from starlite.config.response_cache import ResponseCacheConfig
     from starlite.datastructures import State
     from starlite.events import BaseEventEmitterBackend, EventListener
     from starlite.logging.config import BaseLoggingConfig
@@ -58,7 +58,7 @@ def create_test_client(
     before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
     before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
     before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-    cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+    cache_config: ResponseCacheConfig | None = None,
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
     csrf_config: CSRFConfig | None = None,
@@ -81,6 +81,7 @@ def create_test_client(
     response_class: ResponseType | None = None,
     root_path: str = "",
     session_config: BaseBackendConfig | None = None,
+    signature_namespace: Mapping[str, Any] | None = None,
     state: State | None = None,
     static_files_config: OptionalSequence[StaticFilesConfig] = None,
     template_config: TemplateConfig | None = None,
@@ -171,6 +172,7 @@ def create_test_client(
         response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
             response.
         root_path: Path prefix for requests.
+        signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
         state: An optional :class:`State <.datastructures.State>` for application state.
         static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
         session_config: Configuration for Session Middleware class to create raw session cookies for request to the
@@ -198,7 +200,7 @@ def create_test_client(
             before_send=before_send,
             before_shutdown=before_shutdown,
             before_startup=before_startup,
-            cache_config=cache_config,
+            response_cache_config=cache_config,
             compression_config=compression_config,
             cors_config=cors_config,
             csrf_config=csrf_config,
@@ -219,6 +221,7 @@ def create_test_client(
             request_class=request_class,
             response_class=response_class,
             route_handlers=route_handlers,
+            signature_namespace=signature_namespace,
             state=state,
             static_files_config=static_files_config,
             template_config=template_config,
@@ -248,7 +251,7 @@ def create_async_test_client(
     before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
     before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
     before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-    cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+    cache_config: ResponseCacheConfig | None = None,
     compression_config: CompressionConfig | None = None,
     cors_config: CORSConfig | None = None,
     csrf_config: CSRFConfig | None = None,
@@ -271,6 +274,7 @@ def create_async_test_client(
     response_class: ResponseType | None = None,
     root_path: str = "",
     session_config: BaseBackendConfig | None = None,
+    signature_namespace: Mapping[str, Any] | None = None,
     state: State | None = None,
     static_files_config: OptionalSequence[StaticFilesConfig] = None,
     template_config: TemplateConfig | None = None,
@@ -365,6 +369,7 @@ def create_async_test_client(
         static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
         session_config: Configuration for Session Middleware class to create raw session cookies for request to the
             route handlers.
+        signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
         template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
         websocket_class: An optional subclass of :class:`WebSocket <starlite.connection.websocket.WebSocket>` to use for
             websocket connections.
@@ -388,7 +393,7 @@ def create_async_test_client(
             before_send=before_send,
             before_shutdown=before_shutdown,
             before_startup=before_startup,
-            cache_config=cache_config,
+            response_cache_config=cache_config,
             compression_config=compression_config,
             cors_config=cors_config,
             csrf_config=csrf_config,
@@ -409,6 +414,7 @@ def create_async_test_client(
             request_class=request_class,
             response_class=response_class,
             route_handlers=route_handlers,
+            signature_namespace=signature_namespace,
             state=state,
             static_files_config=static_files_config,
             template_config=template_config,

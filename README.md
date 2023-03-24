@@ -20,7 +20,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-87-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-88-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -368,7 +368,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/srikanthccv/"><img src="https://avatars.githubusercontent.com/u/22846633?v=4?s=100" width="100px;" alt="Srikanth Chekuri"/><br /><sub><b>Srikanth Chekuri</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=srikanthccv" title="Tests">⚠️</a> <a href="https://github.com/starlite-api/starlite/commits?author=srikanthccv" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://lonelyviking.com"><img src="https://avatars.githubusercontent.com/u/78952809?v=4?s=100" width="100px;" alt="Michael Bosch"/><br /><sub><b>Michael Bosch</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=LonelyVikingMichael" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/sssssss340"><img src="https://avatars.githubusercontent.com/u/8406195?v=4?s=100" width="100px;" alt="sssssss340"/><br /><sub><b>sssssss340</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/issues?q=author%3Asssssss340" title="Bug reports">🐛</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ste-pool"><img src="https://avatars.githubusercontent.com/u/17198460?v=4?s=100" width="100px;" alt="ste-pool"/><br /><sub><b>ste-pool</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=ste-pool" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ste-pool"><img src="https://avatars.githubusercontent.com/u/17198460?v=4?s=100" width="100px;" alt="ste-pool"/><br /><sub><b>ste-pool</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=ste-pool" title="Code">💻</a> <a href="#infra-ste-pool" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Alc-Alc"><img src="https://avatars.githubusercontent.com/u/45509143?v=4?s=100" width="100px;" alt="Alc-Alc"/><br /><sub><b>Alc-Alc</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Alc-Alc" title="Documentation">📖</a> <a href="https://github.com/starlite-api/starlite/commits?author=Alc-Alc" title="Code">💻</a></td>
@@ -401,6 +401,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://nilsso.github.io"><img src="https://avatars.githubusercontent.com/u/567181?v=4?s=100" width="100px;" alt="Nils Olsson"/><br /><sub><b>Nils Olsson</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=nilsso" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://rileychase.net"><img src="https://avatars.githubusercontent.com/u/1491530?v=4?s=100" width="100px;" alt="Riley Chase"/><br /><sub><b>Riley Chase</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Nadock" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://gh.arielle.codes"><img src="https://avatars.githubusercontent.com/u/71233171?v=4?s=100" width="100px;" alt="arl"/><br /><sub><b>arl</b></sub></a><br /><a href="#maintenance-onerandomusername" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Galdanwing"><img src="https://avatars.githubusercontent.com/u/29492757?v=4?s=100" width="100px;" alt="Antoine van der Horst"/><br /><sub><b>Antoine van der Horst</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=Galdanwing" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

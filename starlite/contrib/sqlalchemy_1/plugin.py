@@ -223,6 +223,8 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
             sqlalchemy_type.TupleType: self.handle_tuple_type,  # pyright: ignore
             sqlalchemy_type.Unicode: self.handle_string_type,
             sqlalchemy_type.UnicodeText: self.handle_string_type,
+            sqlalchemy_type.Uuid: lambda x: UUID,
+            sqlalchemy_type.UUID: lambda x: UUID,
             sqlalchemy_type.VARBINARY: self.handle_string_type,
             sqlalchemy_type.VARCHAR: self.handle_string_type,
             # mssql

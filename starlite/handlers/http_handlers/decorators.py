@@ -11,7 +11,7 @@ from starlite.utils import is_class_and_subclass
 from .base import HTTPRouteHandler
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Mapping
 
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.datastructures import CacheControlHeader, ETag
@@ -65,6 +65,7 @@ class delete(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -125,6 +126,7 @@ class delete(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT``
                 and ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -178,6 +180,7 @@ class delete(HTTPRouteHandler):
             response_headers=response_headers,
             responses=responses,
             security=security,
+            signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,
@@ -215,6 +218,7 @@ class get(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -275,6 +279,7 @@ class get(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -329,6 +334,7 @@ class get(HTTPRouteHandler):
             response_headers=response_headers,
             responses=responses,
             security=security,
+            signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,
@@ -366,6 +372,7 @@ class head(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -430,6 +437,7 @@ class head(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -484,6 +492,7 @@ class head(HTTPRouteHandler):
             response_headers=response_headers,
             responses=responses,
             security=security,
+            signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,
@@ -535,6 +544,7 @@ class patch(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -595,6 +605,7 @@ class patch(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -648,6 +659,7 @@ class patch(HTTPRouteHandler):
             response_headers=response_headers,
             responses=responses,
             security=security,
+            signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,
@@ -685,6 +697,7 @@ class post(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -745,6 +758,7 @@ class post(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -797,6 +811,7 @@ class post(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            signature_namespace=signature_namespace,
             security=security,
             status_code=status_code,
             summary=summary,
@@ -835,6 +850,7 @@ class put(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -895,6 +911,7 @@ class put(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -948,6 +965,7 @@ class put(HTTPRouteHandler):
             response_headers=response_headers,
             responses=responses,
             security=security,
+            signature_namespace=signature_namespace,
             status_code=status_code,
             summary=summary,
             sync_to_thread=sync_to_thread,

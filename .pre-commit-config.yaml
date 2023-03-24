@@ -59,7 +59,7 @@ repos:
             beautifulsoup4,
             brotli,
             click,
-            fakeredis,
+            fakeredis>=2.10.2,
             fast-query-parsers,
             freezegun,
             fsspec,
@@ -96,7 +96,7 @@ repos:
             uvicorn,
           ]
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.299
+    rev: v1.1.300
     hooks:
       - id: pyright
         exclude: "test_apps|tools|docs|_openapi"
@@ -108,7 +108,7 @@ repos:
             beautifulsoup4,
             brotli,
             click,
-            fakeredis,
+            fakeredis>=2.10.2,
             fast-query-parsers,
             freezegun,
             fsspec,

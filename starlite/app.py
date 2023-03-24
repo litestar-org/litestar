@@ -11,9 +11,9 @@ from starlite._asgi import ASGIRouter
 from starlite._asgi.utils import get_route_handlers, wrap_in_exception_handler
 from starlite._openapi.path_item import create_path_item
 from starlite._signature import create_signature_model
-from starlite.cache.config import CacheConfig
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
+from starlite.config.response_cache import ResponseCacheConfig
 from starlite.connection import Request, WebSocket
 from starlite.datastructures.state import State
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
@@ -34,6 +34,7 @@ from starlite.plugins import (
 from starlite.router import Router
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from starlite.static_files.base import StaticFiles
+from starlite.stores.registry import StoreRegistry
 from starlite.types import Empty
 from starlite.types.internal_types import PathParameterDefinition
 from starlite.utils import (
@@ -60,6 +61,7 @@ if TYPE_CHECKING:
     from starlite.openapi.spec.open_api import OpenAPI
     from starlite.plugins import PluginProtocol
     from starlite.static_files.config import StaticFilesConfig
+    from starlite.stores.base import Store
     from starlite.template.config import TemplateConfig
     from starlite.types import (
         AfterExceptionHookHandler,
@@ -99,10 +101,6 @@ DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Starlite API", version="1.0.0")
 """The default OpenAPI config used if not configuration is explicitly passed to the
 :class:`Starlite <.app.Starlite>` instance constructor.
 """
-DEFAULT_CACHE_CONFIG = CacheConfig()
-"""The default cache config used if not configuration is explicitly passed to the
-:class:`Starlite <.app.Starlite>` instance constructor.
-"""
 
 
 class HandlerIndex(TypedDict):
@@ -140,7 +138,6 @@ class Starlite(Router):
         "before_send",
         "before_shutdown",
         "before_startup",
-        "cache",
         "compression_config",
         "cors_config",
         "csrf_config",
@@ -150,15 +147,18 @@ class Starlite(Router):
         "logger",
         "logging_config",
         "multipart_form_part_limit",
+        "signature_namespace",
         "on_shutdown",
         "on_startup",
         "openapi_config",
+        "openapi_schema_plugins",
         "request_class",
+        "response_cache_config",
         "route_map",
         "serialization_plugins",
-        "openapi_schema_plugins",
         "state",
         "static_files_config",
+        "stores",
         "template_engine",
         "websocket_class",
     )
@@ -176,7 +176,7 @@ class Starlite(Router):
         before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
         before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
         before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-        cache_config: CacheConfig = DEFAULT_CACHE_CONFIG,
+        response_cache_config: ResponseCacheConfig | None = None,
         cache_control: CacheControlHeader | None = None,
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
@@ -203,8 +203,10 @@ class Starlite(Router):
         response_cookies: ResponseCookies | None = None,
         response_headers: OptionalSequence[ResponseHeader] = None,
         security: OptionalSequence[SecurityRequirement] = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         state: State | None = None,
         static_files_config: OptionalSequence[StaticFilesConfig] = None,
+        stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
         template_config: TemplateConfig | None = None,
         type_encoders: TypeEncodersMap | None = None,
@@ -236,7 +238,6 @@ class Starlite(Router):
                 the ASGI shutdown, before any 'on_shutdown' hooks are called.
             before_startup: A sequence of :class:`life-span hook handlers <.types.LifeSpanHookHandler>`. Called during
                 the ASGI startup, before any 'on_startup' hooks are called.
-            cache_config: Configures caching behavior of the application.
             cache_control: A ``cache-control`` header of type
                 :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` to add to route handlers of
                 this app. Can be overridden by route handlers.
@@ -277,14 +278,20 @@ class Starlite(Router):
                 response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
             response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
+            response_cache_config: Configures caching behavior of the application.
             route_handlers: A sequence of route handlers, which can include instances of
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
                 callable decorated by the route handler decorators.
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See
                 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             state: An optional :class:`State <.datastructures.State>` for application state.
             static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
+            stores: Central registry of :class:`Store <.stores.base.Store>` that will be available throughout the
+                application. If this is a dictionary to it will be passed to a
+                :class:`StoreRegistry <.stores.registry.StoreRegistry>`. If it is a
+                :class:`StoreRegistry <.stores.registry.StoreRegistry>`, this instance will be used directly.
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.
             template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
@@ -312,7 +319,7 @@ class Starlite(Router):
             before_send=list(before_send or []),
             before_shutdown=list(before_shutdown or []),
             before_startup=list(before_startup or []),
-            cache_config=cache_config,
+            response_cache_config=response_cache_config or ResponseCacheConfig(),
             cache_control=cache_control,
             compression_config=compression_config,
             cors_config=cors_config,
@@ -339,8 +346,10 @@ class Starlite(Router):
             response_headers=response_headers or [],
             route_handlers=list(route_handlers) if route_handlers is not None else [],
             security=list(security or []),
+            signature_namespace=dict(signature_namespace or {}),
             state=state or State(),
             static_files_config=list(static_files_config or []),
+            stores=stores,
             tags=list(tags or []),
             template_config=template_config,
             type_encoders=type_encoders,
@@ -356,7 +365,7 @@ class Starlite(Router):
         self.before_send = as_async_callable_list(config.before_send)
         self.before_shutdown = as_async_callable_list(config.before_shutdown)
         self.before_startup = as_async_callable_list(config.before_startup)
-        self.cache = config.cache_config.to_cache()
+        self.response_cache_config = config.response_cache_config
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
@@ -394,6 +403,7 @@ class Starlite(Router):
             # route handlers are registered below
             route_handlers=[],
             security=config.security,
+            signature_namespace=config.signature_namespace,
             tags=config.tags,
             type_encoders=config.type_encoders,
         )
@@ -418,6 +428,8 @@ class Starlite(Router):
             self.register(static_config.to_static_files_app())
 
         self.asgi_handler = self._create_asgi_handler()
+
+        self.stores = config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
 
     async def __call__(
         self,
@@ -715,6 +727,7 @@ class Starlite(Router):
                 plugins=self.serialization_plugins,
                 dependency_name_set=route_handler.dependency_name_set,
                 owner=route_handler.owner,
+                signature_namespace=route_handler.resolve_signature_namespace(),
             )
 
         for provider in route_handler.resolve_dependencies().values():
@@ -723,6 +736,7 @@ class Starlite(Router):
                     fn=provider.dependency.value,
                     plugins=self.serialization_plugins,
                     dependency_name_set=route_handler.dependency_name_set,
+                    signature_namespace=route_handler.resolve_signature_namespace(),
                 )
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
@@ -739,10 +753,7 @@ class Starlite(Router):
 
             async def wrapped_send(message: "Message") -> None:
                 for hook in self.before_send:
-                    if hook.num_expected_args > 2:
-                        await hook(message, self.state, scope)
-                    else:
-                        await hook(message, self.state)
+                    await hook(message, self.state, scope)
                 await send(message)
 
             return wrapped_send
@@ -791,7 +802,7 @@ class Starlite(Router):
                         )
                     operation_ids.append(operation_id)
 
-    async def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
+    def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
 
         Args:
@@ -802,4 +813,4 @@ class Starlite(Router):
         Returns:
             None
         """
-        await self.event_emitter.emit(event_id, *args, **kwargs)
+        self.event_emitter.emit(event_id, *args, **kwargs)

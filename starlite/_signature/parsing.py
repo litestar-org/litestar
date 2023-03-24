@@ -131,6 +131,7 @@ def parse_fn_signature(
     fn: AnyCallable,
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
+    signature_namespace: dict[str, Any],
     owner: Controller | Router | None = None,
 ) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
@@ -139,6 +140,7 @@ def parse_fn_signature(
         fn: A callable.
         plugins: A list of plugins.
         dependency_name_set: A set of dependency names
+        signature_namespace: mapping of names to types for forward reference resolution
         owner: Controller or router that registered the handler.
 
     Returns:
@@ -151,7 +153,7 @@ def parse_fn_signature(
     field_plugin_mappings: dict[str, PluginMapping] = {}
     parsed_params: list[ParsedSignatureParameter] = []
     dependency_names: set[str] = set()
-    fn_type_hints = get_fn_type_hints(fn)
+    fn_type_hints = get_fn_type_hints(fn, namespace=signature_namespace)
     return_annotation = get_return_annotation_from_type_hints(fn_type_hints, owner)
 
     parameters = (
@@ -197,6 +199,7 @@ def create_signature_model(
     fn: AnyCallable,
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
+    signature_namespace: dict[str, Any],
     owner: Controller | Router | None = None,
 ) -> type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
@@ -205,7 +208,8 @@ def create_signature_model(
     Args:
         fn: A callable.
         plugins: A list of plugins.
-        dependency_name_set: A set of dependency names.
+        dependency_name_set: A set of dependency names
+        signature_namespace: mapping of names to types for forward reference resolution
         owner: Controller or router that registered the handler.
 
     Returns:
@@ -220,6 +224,7 @@ def create_signature_model(
         fn=unwrapped_fn,
         plugins=plugins,
         dependency_name_set=dependency_name_set,
+        signature_namespace=signature_namespace,
         owner=owner,
     )
 
