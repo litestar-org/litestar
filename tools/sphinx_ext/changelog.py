@@ -59,7 +59,7 @@ class ChangeDirective(SphinxDirective):
             change(
                 "",
                 change_node,
-                title=title,
+                title=self.state.inliner.parse(title, 0, self.state.memo, change_node)[0],
                 change_type=change_type,
                 breaking="breaking" in self.options,
             )
@@ -98,7 +98,7 @@ class ChangelogDirective(SphinxDirective):
             list_item = nodes.definition_list_item("")
 
             term = nodes.term()
-            term += nodes.Text(title)
+            term += title
             if change_node.attributes["breaking"]:
                 breaking_notice = nodes.inline("breaking", "breaking")
                 breaking_notice.attributes["classes"].append("breaking-change")
