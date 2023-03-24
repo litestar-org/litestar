@@ -37,11 +37,6 @@ class ChangeDirective(SphinxDirective):
         change_node = nodes.container("\n".join(self.content))
         change_node.attributes["classes"].append("changelog-change")
 
-        if "breaking" in self.options:
-            breaking_node = nodes.paragraph("", "breaking change")
-            breaking_node.attributes["classes"].append("breaking-change")
-            change_node.append(breaking_node)
-
         self.state.nested_parse(self.content, self.content_offset, change_node)
 
         reference_links = [
@@ -60,7 +55,15 @@ class ChangeDirective(SphinxDirective):
 
         change_node.append(references_paragraph)
 
-        return [change("", change_node, title=title, change_type=change_type)]
+        return [
+            change(
+                "",
+                change_node,
+                title=title,
+                change_type=change_type,
+                breaking="breaking" in self.options,
+            )
+        ]
 
 
 class ChangelogDirective(SphinxDirective):
@@ -93,10 +96,17 @@ class ChangelogDirective(SphinxDirective):
             title = change_node.attributes["title"]
 
             list_item = nodes.definition_list_item("")
+
             term = nodes.term()
             term += nodes.Text(title)
+            if change_node.attributes["breaking"]:
+                breaking_notice = nodes.inline("breaking", "breaking")
+                breaking_notice.attributes["classes"].append("breaking-change")
+                term += breaking_notice
+
             list_item += [term]
-            list_item += nodes.definition("foo", change_node.children[0])
+
+            list_item += nodes.definition("", change_node.children[0])
 
             nodes_to_remove.append(change_node)
 
