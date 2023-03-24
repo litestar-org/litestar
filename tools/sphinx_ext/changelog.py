@@ -10,10 +10,10 @@ _GH_BASE_URL = "https://github.com/starlite-api/starlite"
 
 
 def _parse_gh_reference(raw: str, type_: Literal["issues", "pull"]) -> list[str]:
-    return [f"{_GH_BASE_URL}/{type_}/{r.strip()}" for r in raw.split(" ")]
+    return [f"{_GH_BASE_URL}/{type_}/{r.strip()}" for r in raw.split(" ") if r]
 
 
-class change(nodes.General, nodes.Element):
+class Change(nodes.General, nodes.Element):
     pass
 
 
@@ -56,7 +56,7 @@ class ChangeDirective(SphinxDirective):
         change_node.append(references_paragraph)
 
         return [
-            change(
+            Change(
                 "",
                 change_node,
                 title=self.state.inliner.parse(title, 0, self.state.memo, change_node)[0],
@@ -82,8 +82,8 @@ class ChangelogDirective(SphinxDirective):
         self.state.nested_parse(self.content, self.content_offset, changelog_node)
 
         change_group_lists = {
-            "bugfix": nodes.definition_list(),
             "feature": nodes.definition_list(),
+            "bugfix": nodes.definition_list(),
             "misc": nodes.definition_list(),
         }
 
@@ -91,7 +91,7 @@ class ChangelogDirective(SphinxDirective):
 
         nodes_to_remove = []
 
-        for change_node in changelog_node.findall(change):
+        for change_node in changelog_node.findall(Change):
             change_type = change_node.attributes["change_type"]
             title = change_node.attributes["title"]
 

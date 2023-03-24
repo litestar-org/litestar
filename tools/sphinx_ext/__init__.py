@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from . import missing_references, run_examples, changelog
+from . import changelog, missing_references, run_examples
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
