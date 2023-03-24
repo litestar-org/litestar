@@ -18,3 +18,10 @@
     background-color: black;
   }
 }
+
+
+.breaking-change {
+    font-variant: all-small-caps;
+    margin-left: .4rem;
+    color: #f55353;
+}
