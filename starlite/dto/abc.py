@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from collections.abc import Iterable
 from copy import copy
 from itertools import chain
@@ -10,11 +10,12 @@ from typing_extensions import Annotated, get_args, get_origin
 
 from starlite.enums import MediaType
 
+from .backends.msgspec import MsgspecDTOBackend
 from .config import DTOConfig
 from .enums import Mark, Purpose
 from .exc import InvalidAnnotation
 from .types import DataT, FieldDefinition, NestedFieldDefinition
-from .utils import parse_config_from_annotated
+from .utils import build_data_from_struct, build_struct_from_model, parse_config_from_annotated
 
 if TYPE_CHECKING:
     from typing import ClassVar, Generator
@@ -24,10 +25,13 @@ if TYPE_CHECKING:
     from .backends.abc import AbstractDTOBackend
     from .types import FieldDefinitionsType, StarliteEncodableType
 
-__all__ = ("AbstractDTO",)
+__all__ = (
+    "AbstractDTO",
+    "MsgspecBackedDTO",
+)
 
 
-class AbstractDTO(ABC, Generic[DataT]):
+class AbstractDTO(Generic[DataT], metaclass=ABCMeta):
     """Base class for DTO types."""
 
     annotation: ClassVar[type[Any]]
@@ -99,6 +103,7 @@ class AbstractDTO(ABC, Generic[DataT]):
         """
 
     @classmethod
+    @abstractmethod
     def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
         """Construct an instance from bytes.
 
@@ -109,41 +114,6 @@ class AbstractDTO(ABC, Generic[DataT]):
         Returns:
             AbstractDTO instance.
         """
-        parsed = cls.dto_backend.parse_raw(raw, media_type)
-        return cls(data=cls.build_data(cls.annotation, parsed, cls.field_definitions))
-
-    @classmethod
-    def build_data(cls, annotation: type[Any], data: Any, field_definitions: FieldDefinitionsType) -> Any:
-        """Create instance or iterable of instances of ``cls.model_type``.
-
-        Args:
-            annotation: the annotation received by the DTO on type narrowing.
-            data: primitive data that has been parsed and validated via the backend.
-            field_definitions: model field definitions.
-
-        Returns:
-            Data parsed into ``annotation``.
-        """
-        origin = get_origin(annotation)
-        if origin:
-            return origin(cls.build_data(cls.model_type, item, field_definitions) for item in data)
-
-        for k, v in data.items():
-            field_definition = field_definitions[k]
-            if isinstance(field_definition, FieldDefinition):
-                continue
-
-            if isinstance(v, dict):
-                data[k] = cls.build_data(field_definition.nested_type, v, field_definition.nested_field_definitions)
-            elif isinstance(v, Iterable):
-                if field_definition.origin is None:  # pragma: no cover
-                    raise RuntimeError("Unexpected origin value for collection type.")
-                data[k] = field_definition.origin(
-                    cls.build_data(field_definition.nested_type, item, field_definition.nested_field_definitions)
-                    for item in v
-                )
-
-        return annotation(**data)
 
     # Model generation
 
@@ -304,3 +274,28 @@ class AbstractDTO(ABC, Generic[DataT]):
         if not cls._postponed_cls_init_called:
             cls._postponed_cls_init_called = True
             cls.postponed_cls_init()
+
+
+class MsgspecBackedDTO(AbstractDTO[DataT], Generic[DataT], metaclass=ABCMeta):
+    dto_backend_type = MsgspecDTOBackend
+    dto_backend: ClassVar[MsgspecDTOBackend]
+
+    @classmethod
+    def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
+        """Construct an instance from bytes.
+
+        Args:
+            raw: A byte representation of the DTO model.
+            media_type: serialization format.
+
+        Returns:
+            AbstractDTO instance.
+        """
+        parsed = cls.dto_backend.parse_raw(raw, media_type)
+        return cls(data=build_data_from_struct(cls.model_type, parsed, cls.field_definitions))  # type:ignore[arg-type]
+
+    def to_encodable_type(self, media_type: str | MediaType) -> Any:
+        if isinstance(self.data, self.model_type):
+            return build_struct_from_model(self.data, self.dto_backend.model)
+        type_ = get_origin(self.annotation) or self.annotation
+        return type_(build_struct_from_model(datum, self.dto_backend.model) for datum in self.data)  # pyright:ignore

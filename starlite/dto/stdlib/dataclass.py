@@ -5,17 +5,14 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from typing_extensions import get_args
 
-from starlite.dto import AbstractDTO
-from starlite.dto.backends.msgspec import MsgspecDTOBackend
+from starlite.dto.abc import MsgspecBackedDTO
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import FieldDefinition
 from starlite.dto.utils import get_model_type_hints
-from starlite.serialization import decode_json, encode_json
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Generator, Iterable
+    from typing import ClassVar, Generator, Iterable
 
-    from starlite.enums import MediaType
     from starlite.types import DataclassProtocol
 
 
@@ -25,11 +22,10 @@ DataT = TypeVar("DataT", bound="DataclassProtocol | Iterable[DataclassProtocol]"
 AnyDataclass = TypeVar("AnyDataclass", bound="DataclassProtocol")
 
 
-class DataclassDTO(AbstractDTO[DataT], Generic[DataT]):
+class DataclassDTO(MsgspecBackedDTO[DataT], Generic[DataT]):
     """Support for domain modelling with dataclasses."""
 
-    dto_backend_type = MsgspecDTOBackend
-    dto_backend: ClassVar[MsgspecDTOBackend]
+    model_type: ClassVar[type[DataclassProtocol]]
 
     @classmethod
     def generate_field_definitions(cls, model_type: type[DataclassProtocol]) -> Generator[FieldDefinition, None, None]:
@@ -56,6 +52,3 @@ class DataclassDTO(AbstractDTO[DataT], Generic[DataT]):
         if not args:
             return hasattr(field_definition.field_type, "__dataclass_fields__")
         return any(hasattr(a, "__dataclass_fields__") for a in args)
-
-    def to_encodable_type(self, media_type: str | MediaType) -> Any:
-        return decode_json(encode_json(self.data), self.dto_backend.annotation)

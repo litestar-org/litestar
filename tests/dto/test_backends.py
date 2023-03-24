@@ -4,7 +4,7 @@ import sys
 from typing import TYPE_CHECKING, List
 
 import pytest
-from msgspec import Struct
+from msgspec import Struct, to_builtins
 from pydantic import BaseModel
 
 from starlite.dto.backends.msgspec import MsgspecDTOBackend
@@ -58,16 +58,26 @@ def test_dto_backends(backend_type: type[AbstractDTOBackend]) -> None:
         ),
     }
     backend = backend_type.from_field_definitions(type, field_definitions)
-    assert backend.parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"}}', media_type=MediaType.JSON) == {
-        "a": 1,
-        "b": "b",
-        "c": [],
-        "nested": {"a": 1, "b": "two"},
-    }
+    if isinstance(backend, PydanticDTOBackend):
+        assert backend.parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"}}', media_type=MediaType.JSON) == {
+            "a": 1,
+            "b": "b",
+            "c": [],
+            "nested": {"a": 1, "b": "two"},
+        }
+    else:
+        assert to_builtins(backend.parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"}}', media_type=MediaType.JSON)) == {
+            "a": 1,
+            "b": "b",
+            "c": [],
+            "nested": {"a": 1, "b": "two"},
+        }
 
 
 def test_msgspec_backend_parse_raw_msgpack(msgspec_backend: MsgspecDTOBackend) -> None:
-    assert msgspec_backend.parse_raw(b"\x91\x82\xa1a\x01\xa1b\xa3two", media_type=MediaType.MESSAGEPACK) == [
+    assert to_builtins(
+        msgspec_backend.parse_raw(b"\x91\x82\xa1a\x01\xa1b\xa3two", media_type=MediaType.MESSAGEPACK)
+    ) == [
         {
             "a": 1,
             "b": "two",

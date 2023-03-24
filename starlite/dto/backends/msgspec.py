@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, NewType
+from typing import TYPE_CHECKING, NewType
 from uuid import uuid4
 
-from msgspec import Struct, defstruct, field, to_builtins
+from msgspec import Struct, defstruct, field
 
 from starlite.dto.types import NestedFieldDefinition
 from starlite.enums import MediaType
@@ -14,6 +14,8 @@ from starlite.types import Empty
 from .abc import AbstractDTOBackend
 
 if TYPE_CHECKING:
+    from typing import Any, Iterable
+
     from starlite.dto.types import FieldDefinition, FieldDefinitionsType
 
 __all__ = ["MsgspecDTOBackend"]
@@ -23,14 +25,14 @@ MsgspecField = NewType("MsgspecField", type)
 
 
 class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
-    def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Any:
+    def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Struct | Iterable[Struct]:
         if media_type == MediaType.JSON:
             transfer_data = decode_json(raw, type_=self.annotation)
         elif media_type == MediaType.MESSAGEPACK:
             transfer_data = decode_msgpack(raw, type_=self.annotation)
         else:
             raise SerializationException(f"Unsupported media type: '{media_type}'")
-        return to_builtins(transfer_data)
+        return transfer_data  # type:ignore[no-any-return]
 
     @classmethod
     def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:
@@ -66,7 +68,7 @@ def _create_msgspec_struct_for_field_definitions(
     for k, v in field_definitions.items():
         if isinstance(v, NestedFieldDefinition):
             nested_struct = _create_msgspec_struct_for_field_definitions(
-                f"{k}.nested.{str(uuid4())}", v.nested_field_definitions
+                f"{model_name}.{k}", v.nested_field_definitions
             )
             struct_fields.append(
                 _create_struct_field_def(k, v.make_field_type(nested_struct), _create_msgspec_field(v.field_definition))
