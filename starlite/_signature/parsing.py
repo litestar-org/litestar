@@ -210,9 +210,9 @@ def create_signature_model(
     fn: AnyCallable,
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
+    signature_namespace: dict[str, Any],
     data_dto: type[AbstractDTO] | None = None,
     return_dto: type[AbstractDTO] | None = None,
-    signature_namespace: dict[str, Any],
 ) -> type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
