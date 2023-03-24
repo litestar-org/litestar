@@ -32,7 +32,7 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
             transfer_data = decode_msgpack(raw, type_=self.annotation)
         else:
             raise SerializationException(f"Unsupported media type: '{media_type}'")
-        return transfer_data  # type:ignore[no-any-return]
+        return transfer_data  # type:ignore[return-value]
 
     @classmethod
     def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:

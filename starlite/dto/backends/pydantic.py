@@ -17,20 +17,18 @@ __all__ = ["PydanticDTOBackend"]
 
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Iterable
 
     from starlite.dto.types import FieldDefinition, FieldDefinitionsType
 
 
 class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
-    def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Any:
+    def parse_raw(self, raw: bytes, media_type: MediaType | str) -> BaseModel | Iterable[BaseModel]:
         if media_type == MediaType.JSON:
             transfer_data = parse_raw_as(self.annotation, raw)
         else:
             raise SerializationException(f"Unsupported media type: '{media_type}'")
-        if isinstance(transfer_data, BaseModel):
-            return transfer_data.dict()
-        return type(transfer_data)(datum.dict() for datum in transfer_data)
+        return transfer_data  # type:ignore[return-value]
 
     @classmethod
     def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:
