@@ -1,0 +1,33 @@
+<html>
+  <body>
+    <div id="messages"></div>
+    <div>
+      <input id="input" placeholder="Send a message" />
+      <button id="submit-message">Send</button>
+    </div>
+    <script>
+      const messagesEl = document.getElementById("messages");
+      const inputEl = document.getElementById("input");
+      const submitButton = document.getElementById("submit-message");
+
+      const writeMessage = ({ from, message }) => {
+        const messageEl = document.createElement("div");
+        messageEl.textContent = `${from}: ${message}`;
+        messagesEl.appendChild(messageEl);
+      };
+
+      const onSubmit = () => {
+        const message = inputEl.value;
+        socket.send(message);
+        inputEl.value = "";
+      };
+
+      const socket = new WebSocket(`ws://${window.location.host}/chat/`);
+      socket.addEventListener("message", (event) => {
+        writeMessage(JSON.parse(event.data));
+      });
+
+      submitButton.addEventListener("click", () => onSubmit());
+    </script>
+  </body>
+</html>
