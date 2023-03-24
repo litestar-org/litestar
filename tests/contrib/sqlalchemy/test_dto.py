@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, List, TypeVar
 from uuid import UUID, uuid4
 
 import pytest
+from msgspec import to_builtins
 from sqlalchemy import func
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_attr, mapped_column
 from typing_extensions import Annotated
@@ -130,13 +131,13 @@ def test_model_list_dto(author_model: type[DeclarativeBase]) -> None:
     }]"""
     )
     encodable = dto_instance.to_encodable_type(MediaType.JSON)
-    assert [datum.dict() for datum in encodable] == [
+    assert [to_builtins(datum) for datum in encodable] == [
         {
-            "id": UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"),
-            "created": datetime(1, 1, 1, 0, 0),
-            "updated": datetime(1, 1, 1, 0, 0),
+            "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
             "name": "Agatha Christie",
-            "dob": date(1890, 9, 15),
+            "dob": "1890-09-15",
         }
     ]
 
@@ -339,7 +340,7 @@ dto_type = SQLAlchemyDTO[A]
     assert vars(model)["a"] is None
 
 
-def test_dto_factory_self_referencing_relationships(
+def test_dto_self_referencing_relationships(
     create_module: "Callable[[str], ModuleType]",
 ) -> None:
     module = create_module(
@@ -368,7 +369,11 @@ class B(Base):
 dto_type = SQLAlchemyDTO[A]
 """
     )
-    model = get_model_from_dto(module.dto_type, b'{"id":1,"b_id":1,"b":{"id":1,"a_id":1,"a":{"id":1,"b_id":1}}}')
+    model = get_model_from_dto(module.dto_type, b'{"id":1,"b_id":1,"b":{"id":1,"a":{"id":1,"b_id":1}}}')
     assert isinstance(model, module.A)
     assert isinstance(model.b, module.B)
     assert isinstance(model.b.a, module.A)
+    encodable_type = module.dto_type(data=model).to_encodable_type("application/json")
+    assert encodable_type.id == 1
+    assert encodable_type.b_id == 1
+    assert encodable_type.b.id == 1

@@ -6,8 +6,7 @@ from sqlalchemy import inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped
 from typing_extensions import get_args, get_origin
 
-from starlite.dto import AbstractDTO
-from starlite.dto.backends.pydantic import PydanticDTOBackend
+from starlite.dto.abc import MsgspecBackedDTO
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import FieldDefinition
 from starlite.dto.utils import get_model_type_hints
@@ -18,7 +17,6 @@ if TYPE_CHECKING:
     from sqlalchemy import Column
     from sqlalchemy.orm import RelationshipProperty
 
-    from starlite.enums import MediaType
 
 __all__ = ("SQLAlchemyDTO", "DataT")
 
@@ -26,11 +24,10 @@ DataT = TypeVar("DataT", bound="DeclarativeBase | Iterable[DeclarativeBase]")
 AnyDeclarativeT = TypeVar("AnyDeclarativeT", bound="DeclarativeBase")
 
 
-class SQLAlchemyDTO(AbstractDTO[DataT], Generic[DataT]):
+class SQLAlchemyDTO(MsgspecBackedDTO[DataT], Generic[DataT]):
     """Support for domain modelling with SQLAlchemy."""
 
-    dto_backend_type = PydanticDTOBackend
-    dto_backend: ClassVar[PydanticDTOBackend]
+    model_type: ClassVar[type[DeclarativeBase]]
 
     @classmethod
     def generate_field_definitions(cls, model_type: type[DeclarativeBase]) -> Generator[FieldDefinition, None, None]:
@@ -75,16 +72,3 @@ class SQLAlchemyDTO(AbstractDTO[DataT], Generic[DataT]):
         if not args:
             return issubclass(field_definition.field_type, DeclarativeBase)
         return any(issubclass(a, DeclarativeBase) for a in args)
-
-    def to_encodable_type(self, media_type: str | MediaType) -> Any:
-        if isinstance(self.data, DeclarativeBase):
-            return self.dto_backend.model(**convert_declarative_to_dict(self.data))
-        type_ = get_origin(self.annotation) or self.annotation
-        return type_(
-            self.dto_backend.model(**convert_declarative_to_dict(datum))
-            for datum in self.data  # type:ignore[union-attr]
-        )
-
-
-def convert_declarative_to_dict(model: DeclarativeBase) -> dict[str, Any]:
-    return {col.name: getattr(model, col.name) for col in model.__table__.columns}
