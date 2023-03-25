@@ -1,13 +1,28 @@
 from pathlib import Path
+from typing import TYPE_CHECKING, Generator
 from unittest.mock import MagicMock, patch
 
 import anyio
+from freezegun import freeze_time
 
 from starlite import get
 from starlite.stores.file import FileStore
 from starlite.stores.memory import MemoryStore
 from starlite.stores.redis import RedisStore
 from starlite.testing import TestClient
+
+if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
+from typing import cast
+
+import pytest
+
+
+@pytest.fixture()
+def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
+    with freeze_time() as frozen:
+        yield cast("FrozenDateTimeFactory", frozen)
 
 
 @patch("starlite.stores.redis.Redis")
