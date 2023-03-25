@@ -488,6 +488,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usage/dto.html">Data Transfer Objects (DTOs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/events.html">Event Emitters and Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/openapi.html">OpenAPI integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/caching.html">Caching</a></li>
@@ -3884,6 +3885,8 @@ document.write(`
 </li>
       <li><a href="reference/handlers.html#starlite.handlers.HTTPRouteHandler.resolve_response_headers">resolve_response_headers() (starlite.handlers.HTTPRouteHandler method)</a>
 </li>
+      <li><a href="reference/handlers.html#starlite.handlers.BaseRouteHandler.resolve_signature_namespace">resolve_signature_namespace() (starlite.handlers.BaseRouteHandler method)</a>
+</li>
       <li><a href="reference/handlers.html#starlite.handlers.BaseRouteHandler.resolve_type_encoders">resolve_type_encoders() (starlite.handlers.BaseRouteHandler method)</a>
 </li>
       <li><a href="reference/response.html#starlite.response.Response">Response (class in starlite.response)</a>
@@ -4299,6 +4302,14 @@ document.write(`
 </li>
       <li><a href="reference/openapi/openapi.html#starlite.openapi.OpenAPIController.should_serve_endpoint">should_serve_endpoint() (starlite.openapi.OpenAPIController method)</a>
 </li>
+      <li><a href="reference/config.html#starlite.config.app.AppConfig.signature_namespace">signature_namespace (starlite.config.app.AppConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/controller.html#starlite.controller.Controller.signature_namespace">(starlite.controller.Controller attribute)</a>
+</li>
+        <li><a href="reference/openapi/openapi.html#starlite.openapi.OpenAPIController.signature_namespace">(starlite.openapi.OpenAPIController attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/datastructures.html#starlite.datastructures.Cookie.simple_cookie">simple_cookie (starlite.datastructures.Cookie property)</a>
 </li>
       <li><a href="reference/config.html#starlite.config.cors.CORSConfig.simple_headers">simple_headers (starlite.config.cors.CORSConfig property)</a>

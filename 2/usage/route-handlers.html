@@ -495,6 +495,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dto.html">Data Transfer Objects (DTOs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="events.html">Event Emitters and Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="caching.html">Caching</a></li>
@@ -721,7 +722,7 @@ key word:</p>
 </div>
 </section>
 <section id="handler-function-kwargs">
-<h2>Handler function kwargs<a class="headerlink" href="#handler-function-kwargs" title="Permalink to this heading">#</a></h2>
+<span id="id1"></span><h2>Handler function kwargs<a class="headerlink" href="#handler-function-kwargs" title="Permalink to this heading">#</a></h2>
 <p>Route handler functions or methods access various data by declaring these as annotated function kwargs. The annotated
 kwargs are inspected by Starlite and then injected into the request handler.</p>
 <p>The following sources can be accessed using annotated function kwargs:</p>
@@ -1113,7 +1114,7 @@ discouraged.</p>
 absolute URL.</p>
 </section>
 <section id="handler-opts">
-<span id="id1"></span><h2>Handler <code class="docutils literal notranslate"><span class="pre">opts</span></code><a class="headerlink" href="#handler-opts" title="Permalink to this heading">#</a></h2>
+<span id="id2"></span><h2>Handler <code class="docutils literal notranslate"><span class="pre">opts</span></code><a class="headerlink" href="#handler-opts" title="Permalink to this heading">#</a></h2>
 <p>All route handler decorators accept a key called <code class="docutils literal notranslate"><span class="pre">opt</span></code> which accepts a dictionary of arbitrary values, e.g.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
 
@@ -1145,6 +1146,106 @@ as a key in the opt dictionary:</p>
 a router, and even on the app instance itself.</p>
 <p>The resulting dictionary is constructed by merging opt dictionaries of all levels. If multiple layers define the same
 key, the value from the closest layer to the response handler will take precedence.</p>
+</section>
+</section>
+<section id="signature-namespace">
+<span id="id3"></span><h2>Signature namespace<a class="headerlink" href="#signature-namespace" title="Permalink to this heading">#</a></h2>
+<p>Starlite produces a model of the arguments to any handler or dependency function, called a “signature model” which is
+used for parsing and validation of raw data to be injected into the function.</p>
+<p>Building the model requires inspection of the names and types of the signature parameters at runtime, and so it is
+necessary for the types to be available within the scope of the module - something that linting tools such as <code class="docutils literal notranslate"><span class="pre">ruff</span></code>
+or <code class="docutils literal notranslate"><span class="pre">flake8-type-checking</span></code> will actively monitor, and suggest against.</p>
+<p>For example, the name <code class="docutils literal notranslate"><span class="pre">Model</span></code> is <em>not</em> available at runtime in the following snippet:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">post</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">domain</span> <span class="kn">import</span> <span class="n">Model</span>
+
+
+<span class="k">class</span> <span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+    <span class="nd">@post</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">create_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>In this example, Starlite will be unable to generate the signature model because the type <code class="docutils literal notranslate"><span class="pre">Model</span></code> does not exist in
+the module scope at runtime. We can address this on a case-by-case basis by silencing our linters, for example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">post</span>
+
+<span class="kn">from</span> <span class="nn">domain</span> <span class="kn">import</span> <span class="n">Model</span>  <span class="c1"># noqa: TC002</span>
+</pre></div>
+</div>
+<p>However, this approach can get tedious, so as an alternative, Starlite accepts a <code class="docutils literal notranslate"><span class="pre">signature_namespace</span></code> mapping at
+every <a class="reference internal" href="the-starlite-app.html#layered-architecture"><span class="std std-ref">layer</span></a> of the application. The following is a demonstration of how to use this
+pattern.</p>
+<p>This module defines our domain type in some central place.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">b</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
+<p>This module defines our controller, note that we don’t import <code class="docutils literal notranslate"><span class="pre">Model</span></code> into the runtime namespace, nor do we require
+any directives to control behavior of linters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">post</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.domain</span> <span class="kn">import</span> <span class="n">Model</span>
+
+
+<span class="k">class</span> <span class="nc">MyController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+    <span class="nd">@post</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">post_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>Finally, we ensure that our application knows that when it encounters the name “Model” when parsing signatures, that it
+should reference our domain <code class="docutils literal notranslate"><span class="pre">Model</span></code> type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
+
+<span class="kn">from</span> <span class="nn">.controller</span> <span class="kn">import</span> <span class="n">MyController</span>
+<span class="kn">from</span> <span class="nn">.domain</span> <span class="kn">import</span> <span class="n">Model</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">],</span> <span class="n">signature_namespace</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Model&quot;</span><span class="p">:</span> <span class="n">Model</span><span class="p">})</span>
+</pre></div>
+</div>
+<section id="default-signature-namespace">
+<h3>Default signature namespace<a class="headerlink" href="#default-signature-namespace" title="Permalink to this heading">#</a></h3>
+<p>Starlite automatically adds some names to the signature namespace when parsing signature models in order to support
+injection of the <a class="reference internal" href="#handler-function-kwargs"><span class="std std-ref">Handler function kwargs</span></a>.</p>
+<p>These names are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Headers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ImmutableState</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Receive</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Request</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Scope</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Send</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">State</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WebSocket</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WebSocketScope</span></code></p></li>
+</ul>
+<p>The import of any of these names can be safely left inside an <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">TYPE_CHECKING:</span></code> block without any configuration
+required.</p>
 </section>
 </section>
 </section>
@@ -1207,6 +1308,10 @@ key, the value from the closest layer to the response handler will take preceden
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#route-handler-indexing">Route handler indexing</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handler-opts">Handler <code class="docutils literal notranslate"><span class="pre">opts</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#passing-keyword-arguments-to-handlers">Passing keyword arguments to handlers</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signature-namespace">Signature namespace</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#default-signature-namespace">Default signature namespace</a></li>
 </ul>
 </li>
 </ul>

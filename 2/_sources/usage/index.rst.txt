@@ -17,6 +17,7 @@ Usage
     testing
     plugins/index
     dto
+    events
     openapi
     lifecycle-hooks
     caching

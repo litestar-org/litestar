@@ -495,6 +495,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/dto.html">Data Transfer Objects (DTOs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/events.html">Event Emitters and Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/openapi.html">OpenAPI integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/caching.html">Caching</a></li>
@@ -859,6 +860,12 @@ handlers under the controller.</p>
 <dt class="sig sig-object py" id="starlite.openapi.OpenAPIController.security">
 <span class="sig-name descname"><span class="pre">security</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../types.html#starlite.types.OptionalSequence" title="starlite.types.OptionalSequence"><span class="pre">OptionalSequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="spec.html#starlite.openapi.spec.SecurityRequirement" title="starlite.openapi.spec.SecurityRequirement"><span class="pre">SecurityRequirement</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.openapi.OpenAPIController.security" title="Permalink to this definition">#</a></dt>
 <dd><p>A sequence of dictionaries that to the schema of all route handlers under the controller.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="starlite.openapi.OpenAPIController.signature_namespace">
+<span class="sig-name descname"><span class="pre">signature_namespace</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.openapi.OpenAPIController.signature_namespace" title="Permalink to this definition">#</a></dt>
+<dd><p>A mapping of names to types for use in forward reference resolution during signature modelling.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1263,6 +1270,7 @@ handlers under the controller.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.openapi.OpenAPIController.response_cookies"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.response_cookies</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.openapi.OpenAPIController.response_headers"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.response_headers</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.openapi.OpenAPIController.security"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.security</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.openapi.OpenAPIController.signature_namespace"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.signature_namespace</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.openapi.OpenAPIController.tags"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.tags</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.openapi.OpenAPIController.type_encoders"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.type_encoders</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.openapi.OpenAPIController.should_serve_endpoint"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.should_serve_endpoint()</span></code></a></li>

@@ -495,6 +495,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dto.html">Data Transfer Objects (DTOs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="events.html">Event Emitters and Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lifecycle-hooks.html">Life Cycle Hooks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="caching.html">Caching</a></li>
@@ -670,8 +671,8 @@ or <a class="reference internal" href="../reference/handlers.html#starlite.handl
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
@@ -691,8 +692,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
 
 
@@ -711,7 +712,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
-<span class="o">{</span><span class="s2">&quot;param&quot;</span>:null<span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;hello&quot;</span>:<span class="s2">&quot;world&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -737,8 +738,8 @@ startup, and then close it gracefully upon shutdown.</p>
 <p>For example, lets create a database connection using the async engine from
 <a class="reference external" href="https://docs.sqlalchemy.org/en/latest/orm/extensions/asyncio.html">SQLAlchemy</a>. We create two functions, one to get or
 establish the connection, and another to close it, and then pass them to the Starlite constructor:</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Startup and Shutdown</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Startup and Shutdown</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseSettings</span>
@@ -792,8 +793,8 @@ wherever the scope mapping is available, e.g. in middleware, on <a class="refere
 <a class="reference internal" href="../reference/connection.html#starlite.connection.WebSocket" title="starlite.connection.websocket.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Websocket</span></code></a> instances (accessible as <code class="docutils literal notranslate"><span class="pre">request.app</span></code> / <code class="docutils literal notranslate"><span class="pre">socket.app</span></code>) and many
 other places.</p>
 <p>Therefore, state offers an easy way to share contextual data between disparate parts of the application, as seen below:</p>
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
@@ -843,8 +844,8 @@ other places.</p>
 <h3>Initializing Application State<a class="headerlink" href="#initializing-application-state" title="Permalink to this heading">#</a></h3>
 <p>To seed application state, you can pass a <a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.State" title="starlite.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> object to the <code class="docutils literal notranslate"><span class="pre">state</span></code> kwarg of
 the Starlite constructor:</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
 
@@ -893,8 +894,8 @@ state can lead to code that’s hard to reason about and bugs that are difficult
 different ASGI contexts. As such, this pattern should be used only when it is the best choice and in a limited fashion.
 To discourage its use, Starlite also offers a builtin <code class="docutils literal notranslate"><span class="pre">ImmutableState</span></code> class. You can use this class to type state and
 ensure that no mutation of state is allowed:</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Using Custom State</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Using Custom State</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">starlite.datastructures</span> <span class="kn">import</span> <span class="n">ImmutableState</span>
 
@@ -1067,8 +1068,8 @@ If a list is provided, it is called in the order it is given.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">before_startup</span></code> and <code class="docutils literal notranslate"><span class="pre">after_startup</span></code> hooks take a <a class="reference internal" href="../reference/types.html#starlite.types.LifeSpanHookHandler" title="starlite.types.LifeSpanHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that
 receives the Starlite application as an argument and run during the ASGI startup event. The callable is invoked
 respectively before or after the list of callables defined in the <code class="docutils literal notranslate"><span class="pre">on_startup</span></code> list of callables.</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Before and After Startup Hooks</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Before and After Startup Hooks</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
@@ -1113,8 +1114,8 @@ respectively before or after the list of callables defined in the <code class="d
 <p>The <code class="docutils literal notranslate"><span class="pre">before_shutdown</span></code> and <code class="docutils literal notranslate"><span class="pre">after_shutdown</span></code> are basically identical, with the difference being that the
 <a class="reference internal" href="../reference/types.html#starlite.types.LifeSpanHookHandler" title="starlite.types.LifeSpanHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">callable</span> <span class="pre">they</span> <span class="pre">receive</span></code></a> in callable is invoked respectively before or after the
 list of callables defined in the <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> list of callables.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Before and After Shutdown Hooks</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Before and After Shutdown Hooks</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
@@ -1159,8 +1160,8 @@ list of callables defined in the <code class="docutils literal notranslate"><spa
 <p>The <code class="docutils literal notranslate"><span class="pre">after_exception</span></code> hook takes a <a class="reference internal" href="../reference/types.html#starlite.types.AfterExceptionHookHandler" title="starlite.types.AfterExceptionHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called with
 three arguments: the <code class="docutils literal notranslate"><span class="pre">exception</span></code> that occurred, the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> of the request or websocket connection and the
 application <code class="docutils literal notranslate"><span class="pre">state</span></code>.</p>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
@@ -1214,8 +1215,8 @@ an ASGI message is sent. The hook receives the message instance and the applicat
 <input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
@@ -1259,8 +1260,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
@@ -1316,8 +1317,8 @@ develop third-party application configuration systems.</p>
 <p><cite>on_app_init</cite> handlers cannot be <cite>async def</cite> functions, as they are called within <cite>Starlite.__init__()</cite>, outside of
 an async context.</p>
 </div>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
@@ -1347,7 +1348,7 @@ an async context.</p>
 </section>
 </section>
 <section id="layered-architecture">
-<h2>Layered architecture<a class="headerlink" href="#layered-architecture" title="Permalink to this heading">#</a></h2>
+<span id="id2"></span><h2>Layered architecture<a class="headerlink" href="#layered-architecture" title="Permalink to this heading">#</a></h2>
 <p>Starlite has a layered architecture compromising of (generally speaking) 4 layers:</p>
 <ol class="arabic simple">
 <li><p>The application object</p></li>
