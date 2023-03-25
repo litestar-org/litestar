@@ -844,6 +844,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "zoni",
+      "name": "Nick Groenen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/145285?v=4",
+      "profile": "https://nick.groenen.me",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
