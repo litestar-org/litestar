@@ -13,7 +13,7 @@ from tests.contrib.tortoise_orm import (
 def test_tortoise_orm_plugin_openapi_spec_generation(scaffold_tortoise: Callable) -> None:
     app = Starlite(
         route_handlers=[create_tournament, get_tournament, get_tournaments],
-        plugins=[TortoiseORMPlugin()],
+        on_app_init=[TortoiseORMPlugin()],
     )
     schema = app.openapi_schema
 

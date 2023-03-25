@@ -64,5 +64,5 @@ async def get_company(company_id: int, async_session: AsyncSession) -> Company:
 app = Starlite(
     route_handlers=[create_company, get_company],
     on_startup=[on_startup],
-    plugins=[sqlalchemy_plugin],
+    on_app_init=[sqlalchemy_plugin],
 )

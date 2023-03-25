@@ -7,14 +7,10 @@ from starlite.openapi.spec.schema import SchemaDataContainer
 from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginProtocol
 from starlite.utils import is_pydantic_model_class
 
-__all__ = ("TortoiseORMPlugin",)
-
-
 try:
     import tortoise  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("tortoise-orm is not installed") from e
-
 
 from tortoise import Model, ModelMeta  # type: ignore[attr-defined]
 from tortoise.contrib.pydantic import (  # type: ignore[attr-defined]
@@ -27,7 +23,10 @@ from tortoise.fields.relational import RelationalField
 if TYPE_CHECKING:
     from typing_extensions import TypeGuard
 
+    from starlite.config.app import AppConfig
     from starlite.openapi.spec import Schema
+
+__all__ = ("TortoiseORMPlugin",)
 
 
 class TortoiseORMPlugin(SerializationPluginProtocol[Model, BaseModel], OpenAPISchemaPluginProtocol[Model]):
@@ -35,6 +34,10 @@ class TortoiseORMPlugin(SerializationPluginProtocol[Model, BaseModel], OpenAPISc
 
     _models_map: Dict[Type[Model], Type[PydanticModel]] = {}
     _data_models_map: Dict[Type[Model], Type[PydanticModel]] = {}
+
+    def __call__(self, app_config: "AppConfig") -> "AppConfig":
+        app_config.plugins.append(self)
+        return app_config
 
     @staticmethod
     def _create_pydantic_model(model_class: Type[Model], **kwargs: Any) -> "Type[PydanticModel]":

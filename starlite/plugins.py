@@ -21,7 +21,6 @@ from typing_extensions import TypeGuard, get_args
 from starlite.types.protocols import DataclassProtocol
 
 __all__ = (
-    "InitPluginProtocol",
     "OpenAPISchemaPluginProtocol",
     "PluginMapping",
     "PluginProtocol",
@@ -31,64 +30,10 @@ __all__ = (
 
 
 if TYPE_CHECKING:
-    from starlite.app import Starlite
     from starlite.openapi.spec import Schema
 
 ModelT = TypeVar("ModelT")
 DataContainerT = TypeVar("DataContainerT", bound=Union[BaseModel, DataclassProtocol, TypedDict])  # type: ignore[valid-type]
-
-
-@runtime_checkable
-class InitPluginProtocol(Protocol):
-    """Protocol used to define plugins that affect the application's init process."""
-
-    __slots__ = ()
-
-    def on_app_init(self, app: "Starlite") -> None:
-        """Receive the Starlite application instance before ``init`` is finalized and allow the plugin to update various
-        attributes.
-
-        Examples:
-            .. code-block: python
-                from starlite import Starlite, get
-                from starlite.plugins import InitPluginProtocol
-
-
-                @get("/my-path")
-                def my_route_handler() -> dict[str, str]:
-                    return {"hello": "world"}
-
-
-                class MyPlugin(InitPluginProtocol):
-                    def on_app_init(self, app: Starlite) -> None:
-                        # update app attributes
-
-                        app.after_request = ...
-                        app.after_response = ...
-                        app.before_request = ...
-                        app.dependencies.update({...})
-                        app.exception_handlers.update({...})
-                        app.guards.extend(...)
-                        app.middleware.extend(...)
-                        app.on_shutdown.extend(...)
-                        app.on_startup.extend(...)
-                        app.parameters.update({...})
-                        app.response_class = ...
-                        app.response_cookies.extend(...)
-                        app.response_headers.update(...)
-                        app.tags.extend(...)
-
-                        # register a route handler
-                        app.register(my_route_handler)
-
-
-        Args:
-            app: The :class:`Starlite <starlite.app.Starlite>` instance.
-
-        Returns:
-            None
-        """
-        return None  # noqa: R501
 
 
 @runtime_checkable
@@ -241,4 +186,4 @@ class PluginMapping(NamedTuple):
         return self.plugin.from_data_container_instance(self.model_class, value)
 
 
-PluginProtocol = Union[SerializationPluginProtocol, InitPluginProtocol, OpenAPISchemaPluginProtocol]
+PluginProtocol = Union[SerializationPluginProtocol, OpenAPISchemaPluginProtocol]

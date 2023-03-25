@@ -27,7 +27,6 @@ from starlite.middleware.cors import CORSMiddleware
 from starlite.openapi.config import OpenAPIConfig
 from starlite.openapi.spec.components import Components
 from starlite.plugins import (
-    InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
     SerializationPluginProtocol,
 )
@@ -407,9 +406,6 @@ class Starlite(Router):
             tags=config.tags,
             type_encoders=config.type_encoders,
         )
-
-        for plugin in (p for p in config.plugins if isinstance(p, InitPluginProtocol)):
-            plugin.on_app_init(app=self)
 
         for route_handler in config.route_handlers:
             self.register(route_handler)

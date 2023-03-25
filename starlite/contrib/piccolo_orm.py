@@ -6,8 +6,6 @@ from starlite.exceptions import MissingDependencyException
 from starlite.openapi.spec.schema import SchemaDataContainer
 from starlite.plugins import OpenAPISchemaPluginProtocol, SerializationPluginProtocol
 
-__all__ = ("PiccoloORMPlugin",)
-
 try:
     import piccolo  # noqa: F401
 except ImportError as e:
@@ -19,7 +17,10 @@ from piccolo.utils.pydantic import create_pydantic_model
 if TYPE_CHECKING:
     from typing_extensions import TypeGuard
 
+    from starlite.config.app import AppConfig
     from starlite.openapi.spec import Schema
+
+__all__ = ("PiccoloORMPlugin",)
 
 
 class PiccoloORMPlugin(SerializationPluginProtocol[Table, BaseModel], OpenAPISchemaPluginProtocol[Table]):
@@ -27,6 +28,10 @@ class PiccoloORMPlugin(SerializationPluginProtocol[Table, BaseModel], OpenAPISch
 
     _models_map: Dict[Type[Table], Type["BaseModel"]] = {}
     _data_models_map: Dict[Type[Table], Type["BaseModel"]] = {}
+
+    def __call__(self, app_config: "AppConfig") -> "AppConfig":
+        app_config.plugins.append(self)
+        return app_config
 
     def to_data_container_class(self, model_class: Type[Table], **kwargs: Any) -> Type["BaseModel"]:
         """Given a piccolo model_class instance, convert it to a subclass of the piccolo "BaseModel".

@@ -3,18 +3,14 @@ from typing import TYPE_CHECKING, Any, Dict, Type
 import pytest
 from pydantic import BaseModel
 
-from starlite import MediaType, Starlite, get
+from starlite import MediaType, get
 from starlite.plugins import (
-    InitPluginProtocol,
     PluginMapping,
     SerializationPluginProtocol,
 )
-from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from typing_extensions import TypeGuard
-
-    from starlite.datastructures import State
 
 
 class AModel:
@@ -69,23 +65,3 @@ def test_plugin_mapping_value_to_model_instance(input_value: Any, output_value: 
 @get("/", media_type=MediaType.TEXT)
 def greet() -> str:
     return "hello world"
-
-
-def test_plugin_on_app_init() -> None:
-    tag = "on_app_init_called"
-
-    def on_startup(state: "State") -> None:
-        state.called = True
-
-    class PluginWithInitOnly(InitPluginProtocol):
-        def on_app_init(self, app: "Starlite") -> None:
-            app.tags.append(tag)
-            app.on_startup.append(on_startup)
-            app.register(greet)
-
-    with create_test_client(plugins=[PluginWithInitOnly()]) as client:
-        response = client.get("/")
-        assert response.text == "hello world"
-
-        assert tag in client.app.tags
-        assert client.app.state.called

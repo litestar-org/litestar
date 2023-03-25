@@ -10,8 +10,6 @@ from starlite.exceptions import HTTPException
 from starlite.status_codes import HTTP_404_NOT_FOUND
 
 engine = create_engine("sqlite+pysqlite://")
-sqlalchemy_config = SQLAlchemyConfig(engine_instance=engine, use_async_engine=False)
-sqlalchemy_plugin = SQLAlchemyPlugin(config=sqlalchemy_config)
 
 Base = declarative_base()
 
@@ -52,8 +50,10 @@ def get_user(user_id: int, db_session: Session) -> User:
     return user
 
 
+sqlalchemy_config = SQLAlchemyConfig(engine_instance=engine, use_async_engine=False)
+
 app = Starlite(
     route_handlers=[get_user],
     on_startup=[on_startup],
-    plugins=[sqlalchemy_plugin],
+    on_app_init=[SQLAlchemyPlugin(config=sqlalchemy_config)],
 )

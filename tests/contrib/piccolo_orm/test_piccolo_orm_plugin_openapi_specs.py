@@ -11,7 +11,7 @@ from tests.contrib.piccolo_orm.endpoints import (
 
 
 def test_piccolo_orm_plugin_openapi_spec_generation() -> None:
-    app = Starlite(route_handlers=[retrieve_studio, retrieve_venues, create_concert], plugins=[PiccoloORMPlugin()])
+    app = Starlite(route_handlers=[retrieve_studio, retrieve_venues, create_concert], on_app_init=[PiccoloORMPlugin()])
     schema: Any = app.openapi_schema
     assert schema
     assert schema.paths

@@ -16,7 +16,7 @@ async def test_serializing_single_tortoise_model_instance(anyio_backend: str) ->
         route_handlers=[get_tournament],
         on_startup=[init_tortoise],
         on_shutdown=[cleanup],
-        plugins=[TortoiseORMPlugin()],
+        on_app_init=[TortoiseORMPlugin()],
     ) as client:
         response = client.get("/tournaments/1")
         assert response.status_code == HTTP_200_OK
@@ -37,7 +37,7 @@ async def test_serializing_list_of_tortoise_models(anyio_backend: str) -> None:
         route_handlers=[get_tournaments],
         on_startup=[init_tortoise],
         on_shutdown=[cleanup],
-        plugins=[TortoiseORMPlugin()],
+        on_app_init=[TortoiseORMPlugin()],
     ) as client:
         response = client.get("/tournaments")
         assert response.status_code == HTTP_200_OK
@@ -59,7 +59,7 @@ async def test_creating_a_tortoise_model(anyio_backend: str) -> None:
         route_handlers=[create_tournament],
         on_startup=[init_tortoise],
         on_shutdown=[cleanup],
-        plugins=[TortoiseORMPlugin()],
+        on_app_init=[TortoiseORMPlugin()],
     ) as client:
         response = client.post(
             "/tournaments",
