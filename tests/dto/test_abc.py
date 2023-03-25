@@ -93,7 +93,7 @@ def test_unexpected_annotated_metadata_argument() -> None:
 
 def test_extra_annotated_metadata_ignored() -> None:
     config = DTOConfig()
-    dto = DataclassDTO[Annotated[Model, config]]
+    dto = DataclassDTO[Annotated[Model, config, "a"]]
     assert dto.config is config
 
 
