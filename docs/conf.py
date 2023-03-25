@@ -89,7 +89,7 @@ html_theme_options = {
             "Releases": "https://starliteproject.dev/about/starlite-releases",
         },
         "Release notes": {
-            "1.x Changelog": "https://docs.starliteproject.dev/1/release-notes-changelog.html",
+            "1.x Changelog": "https://docs.starliteproject.dev/1/release-notes/changelog.html",
         },
     },
 }
