@@ -33,14 +33,14 @@ jobs:
           key: venv-${{ hashFiles('**/poetry.lock') }}
       - name: Install App Dependencies
         run: poetry install --no-interaction --with docs
+      - name: Fetch gh pages
+        run: git fetch origin gh-pages --depth=1
       - name: Build docs (preview)
         if: ${{ github.event_name != 'release' && github.ref == 'refs/heads/main'}}
         run: poetry run python tools/build_docs.py docs-build  --version=dev
       - name: Build docs (release)
         if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
         run: poetry run python tools/build_docs.py docs-build
-      - name: Fetch gh pages
-        run: git fetch origin gh-pages --depth=1
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
