@@ -3,7 +3,7 @@
 2.x Changelog
 =============
 
-.. changelog:: 2.0.0alpha1
+.. changelog:: 2.0.0alpha2
 
     .. change:: Repository contrib & SQLAlchemy repository
         :type: feature
@@ -69,6 +69,10 @@
         Add a new ``version`` command to the CLI which displays the currently installed
         version of Starlite
 
+        .. seealso::
+            :ref:`The version command <usage/cli:version>`
+
+
     .. change:: Enhance CLI autodiscovery logic
         :type: feature
         :breaking:
@@ -78,6 +82,9 @@
         :class:`Starlite <.app.Starlite>` instance or application factory able to return a ``Starlite`` instance within
         those or one of their submodules, giving priority to the canonical names app and application for application
         objects and submodules containing them.
+
+        .. seealso::
+            :ref:`CLI autodiscovery <usage/cli:autodiscovery>`
 
     .. change:: Configurable exception logging and traceback truncation
         :type: feature
@@ -101,8 +108,12 @@
             Configure how many lines of tracback are logged
 
         :attr:`exception_logging_handler <.logging.config.LoggingConfig.exception_logging_handler>`
-            A callable that receives three parameters - the ``app.logger````, the connection scope and the traceback
+            A callable that receives three parameters - the ``app.logger``, the connection scope and the traceback
             list, and should handle logging
+
+        .. seealso::
+            :class:`LoggingConfig <.logging.config.LoggingConfig>`
+
 
     .. change:: Allow overwriting default OpenAPI response descriptions
         :type: bugfix
@@ -111,6 +122,7 @@
 
         Fix https://github.com/starlite-api/starlite/issues/1292 by allowing to overwrite
         the default OpenAPI response description instead of raising :exc:`ImproperlyConfiguredException`.
+
 
     .. change:: Fix regression in path resolution that prevented 404's being raised for false paths
         :type: bugfix
@@ -132,6 +144,10 @@
         ``after_request`` hooks were not being called automatically when a :class:`Response <.response.Response>`
         instances was returned from a route handler directly.
 
+        .. seealso::
+            :ref:`after_request`
+
+
     .. change:: Fix ``SQLAlchemyPlugin`` raises error when using SQLAlchemy UUID
         :type: bugfix
         :pr: 1355
@@ -149,11 +165,13 @@
         `JSON.parse <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse>`_
         to throw an error. This was fixed by removing the call to ``JSON.parse``.
 
+
     .. change:: Fix CLI prints application info twice
         :type: bugfix
         :pr: 1322
 
         Fix an error where the CLI would print application info twice on startup
+
 
     .. change:: Update ``SimpleEventEmitter`` to use worker pattern
         :type: misc
@@ -162,6 +180,7 @@
         :class:`SimpleEventEmitter <.events.emitter.SimpleEventEmitter>` was updated to using an async worker, pulling
         emitted events from a queue and subsequently calling listeners. Previously listeners were called immediately,
         making the operation effectively "blocking".
+
 
     .. change:: Make ``BaseEventEmitterBackend.emit`` synchronous
         :type: misc
@@ -173,6 +192,7 @@
         :meth:`Starlite.emit <.app.Starlite.emit>` have been changed to synchronous function, allowing them to easily be
         used within synchronous route handlers.
 
+
     .. change:: Move 3rd party integration plugins to ``contrib``
         :type: misc
         :breaking:
@@ -180,6 +200,7 @@
 
         - Move ``plugins.piccolo_orm`` > ``contrib.piccolo_orm``
         - Move ``plugins.tortoise_orm`` > ``contrib.tortoise_orm``
+
 
     .. change:: Remove ``picologging`` dependency from the ``standard`` package extra
         :type: misc
@@ -189,6 +210,7 @@
         `picologging <https://github.com/microsoft/picologging>`_ has been removed form the ``standard`` package extra.
         If you have been previously relying on this, you need to change ``pip install starlite[standard]`` to
         ``pip install starlite[standard,picologging]``
+
 
     .. change:: Replace ``Starlite()`` ``initial_state`` keyword argument with ``state``
         :type: misc
@@ -225,6 +247,10 @@
         later on, accepting an additional ``scope`` parameter. Support for the 2 argument form has been dropped with
         this release.
 
+        .. seealso::
+            :ref:`before_send`
+
+
     .. change:: Standardize module exports
         :type: misc
         :pr: 1273
@@ -259,8 +285,6 @@
         - ``multipart``
         - ``parsers``
         - ``signature``
-
-
 
 
 
