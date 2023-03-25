@@ -11,6 +11,13 @@ Setting up the environment
 4. Install `pre-commit <https://pre-commit.com/>`_
 5. Run ``pre-commit install`` to install pre-commit hooks
 
+.. tip::
+  Many modern IDEs like PyCharm or VS Code will enable the poetry-managed virtualenv that is created in step 2 for you automatically.
+  If you're not using such an IDE then you will need to manually activate the virtualenv yourself otherwise you will encounter *"Command not found"* errors.
+
+  The easiest way to activate this virtualenv is by running ``poetry shell``, as described at `Using your virtual environment <https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment>`_ in poetry's documentation.
+
+  The rest of this document will assume this environment is active wherever commands are referenced.
 
 Code contributions
 ------------------
