@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import importlib
 import inspect
+import re
 from functools import cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Generator
@@ -43,7 +44,7 @@ def get_module_global_imports(module_import_path: str, reference_target_source_o
 
 
 def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | None:
-    ignore_refs = app.config["ignore_missing_refs"]
+    ignore_refs: dict[str | re.Pattern, set[str] | re.Pattern] = app.config["ignore_missing_refs"]
     if node.tagname != "pending_xref":  # type: ignore[attr-defined]
         return None
 
@@ -72,6 +73,14 @@ def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | No
     source = source_line.split(" ")[-1]
     if target in ignore_refs.get(source, []):
         return True
+    ignore_ref_rgs = {rg: targets for rg, targets in ignore_refs.items() if isinstance(rg, re.Pattern)}
+    for pattern, targets in ignore_ref_rgs.items():
+        if not pattern.match(source):
+            continue
+        if isinstance(targets, set) and target in targets:
+            return True
+        if targets.match(target):
+            return True
 
     return None
 
