@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta
 from functools import partial
+from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
@@ -299,12 +300,6 @@ class Starlite(Router):
             websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
         """
-        self._openapi_schema: OpenAPI | None = None
-        self.get_logger: GetLogger = get_logger_placeholder
-        self.logger: Logger | None = None
-        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
-        self.asgi_router = ASGIRouter(app=self)
-
         if logging_config is Empty:
             logging_config = LoggingConfig()
 
@@ -355,8 +350,17 @@ class Starlite(Router):
             type_encoders=type_encoders,
             websocket_class=websocket_class,
         )
-        for handler in on_app_init or []:
+        for handler in chain(
+            on_app_init or [],
+            (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
+        ):
             config = handler(config)
+
+        self._openapi_schema: OpenAPI | None = None
+        self.get_logger: GetLogger = get_logger_placeholder
+        self.logger: Logger | None = None
+        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
+        self.asgi_router = ASGIRouter(app=self)
 
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.after_exception = as_async_callable_list(config.after_exception)
@@ -407,9 +411,6 @@ class Starlite(Router):
             tags=config.tags,
             type_encoders=config.type_encoders,
         )
-
-        for plugin in (p for p in config.plugins if isinstance(p, InitPluginProtocol)):
-            plugin.on_app_init(app=self)
 
         for route_handler in config.route_handlers:
             self.register(route_handler)
