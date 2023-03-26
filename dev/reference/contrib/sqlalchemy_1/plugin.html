@@ -52,7 +52,7 @@
     <script>mermaid.initialize({startOnLoad:true});</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/contrib/sqlalchemy_1/plugin';</script>
     <script src="../../../_static/versioning.js"></script>
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="shortcut icon" href="../../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="types" href="types.html" />
@@ -689,15 +689,15 @@ passed, the plugin will establish a DB connection and hook handlers and dependen
 
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.on_app_init">
-<span class="sig-name descname"><span class="pre">on_app_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../app.html#starlite.app.Starlite" title="starlite.app.Starlite"><span class="pre">Starlite</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.on_app_init" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">on_app_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></span><a class="headerlink" href="#starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.on_app_init" title="Permalink to this definition">#</a></dt>
 <dd><p>If config has been passed to the plugin, it will initialize SQLAlchemy and add the dependencies as expected.</p>
 <p>Executed on the application’s init process.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>app</strong> – The <a class="reference internal" href="../../app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> application instance.</p>
+<dd class="field-odd"><p><strong>app_config</strong> – The <a class="reference internal" href="../../config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
+<dd class="field-even"><p>App config instance, after modifications.</p>
 </dd>
 </dl>
 </dd></dl>
