@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -19,6 +20,7 @@ from pydantic import BaseModel
 from typing_extensions import TypeGuard, get_args
 
 from starlite.types.protocols import DataclassProtocol
+from starlite.utils.predicates import is_class_and_subclass
 
 __all__ = (
     "InitPluginProtocol",
@@ -209,8 +211,8 @@ def get_plugin_for_value(
     if plugins:
         if value and isinstance(value, (list, tuple)):
             value = value[0]
-        if get_args(value):
-            value = get_args(value)[0]
+        if is_class_and_subclass(value, Iterable) and (args := get_args(value)):  # type:ignore[type-abstract]
+            value = args[0]
         for plugin in plugins:
             if plugin.is_plugin_supported_type(value):
                 return plugin
