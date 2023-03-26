@@ -1,5 +1,6 @@
 import importlib.metadata
 import os
+import re
 from functools import partial
 from typing import Any
 
@@ -91,8 +92,6 @@ nitpick_ignore_regex = [
     (r"py:obj", r"typing\..*"),
     (r"py:.*", r"httpx.*"),
     # type vars
-    ("py:.*", r"starlite\.plugins\.ModelT"),
-    ("py:.*", r"starlite\.plugins\.DataContainerT"),
     ("py:.*", r"starlite\.pagination\.C"),
     ("py:.*", r"starlite.middleware.session.base.ConfigT"),
     ("py:.*", r"multidict\..*"),
@@ -113,6 +112,7 @@ ignore_missing_refs = {
     "starlite.openapi.OpenAPIController.security": {"SecurityRequirement"},
     "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
     "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
+    re.compile(r"starlite\.plugins.*"): re.compile(".*(ModelT|DataContainerT)"),
 }
 
 
