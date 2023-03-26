@@ -12,7 +12,7 @@ from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
 from starlite.types import Empty
 
-__all__ = ["PydanticDTOBackend"]
+__all__ = ("PydanticDTOBackend",)
 
 
 if TYPE_CHECKING:
@@ -22,6 +22,8 @@ if TYPE_CHECKING:
 
 
 class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
+    __slots__ = ()
+
     def parse_raw(self, raw: bytes, media_type: MediaType | str) -> BaseModel | Iterable[BaseModel]:
         if media_type == MediaType.JSON:
             transfer_data = parse_raw_as(self.annotation, raw)

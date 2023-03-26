@@ -24,7 +24,7 @@ class MyStruct(Struct):
 
 @pytest.fixture(name="msgspec_backend")
 def fx_msgspec_backend() -> MsgspecDTOBackend:
-    return MsgspecDTOBackend(annotation=List[Model], model=MyStruct)
+    return MsgspecDTOBackend(annotation=List[Model], data_container_type=MyStruct)
 
 
 def test_dto_backend() -> None:
@@ -76,5 +76,5 @@ def test_msgspec_backend_iterable_annotation(msgspec_backend: MsgspecDTOBackend)
 
 
 def test_msgspec_backend_scalar_annotation() -> None:
-    msgspec_backend = MsgspecDTOBackend(annotation=Model, model=MyStruct)
+    msgspec_backend = MsgspecDTOBackend(annotation=Model, data_container_type=MyStruct)
     assert msgspec_backend.annotation == MyStruct

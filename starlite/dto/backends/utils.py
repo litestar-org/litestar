@@ -17,7 +17,7 @@ def build_annotation_for_backend(annotation: Any, model: type[T]) -> type[T] | t
 
     Args:
         annotation: The original annotation on the handler signature
-        model: The serde model for data transfer
+        model: The data container type
 
     Returns:
         Annotation with new inner type if applicable.

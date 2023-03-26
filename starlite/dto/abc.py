@@ -34,6 +34,8 @@ __all__ = (
 class AbstractDTO(Generic[DataT], metaclass=ABCMeta):
     """Base class for DTO types."""
 
+    __slots__ = ("data",)
+
     annotation: ClassVar[type[Any]]
     """The full annotation used to make the generic DTO concrete."""
     config: ClassVar[DTOConfig]
@@ -48,7 +50,7 @@ class AbstractDTO(Generic[DataT], metaclass=ABCMeta):
     """DTO backend instance."""
 
     _postponed_cls_init_called: ClassVar[bool]
-    _reverse_field_mappings: dict[str, FieldDefinition]
+    _reverse_field_mappings: ClassVar[dict[str, FieldDefinition]]
 
     def __init__(self, data: DataT) -> None:
         """Create an AbstractDTO type.
@@ -128,7 +130,7 @@ class AbstractDTO(Generic[DataT], metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def detect_nested(cls, field_definition: FieldDefinition) -> bool:
+    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
         """Return ``True`` if ``field_definition`` represents a nested model field.
 
         Args:
@@ -178,7 +180,7 @@ class AbstractDTO(Generic[DataT], metaclass=ABCMeta):
                     cls._reverse_field_mappings[field_mapping.field_name] = field_definition
                     field_definition = field_mapping  # noqa: PLW2901
 
-            if cls.detect_nested(field_definition):
+            if cls.detect_nested_field(field_definition):
                 nested_field_definition = cls.handle_nested(field_definition, nested_depth, recursive_depth)
                 if nested_field_definition is not None:
                     defined_fields[field_definition.field_name] = nested_field_definition
@@ -296,6 +298,9 @@ class MsgspecBackedDTO(AbstractDTO[DataT], Generic[DataT], metaclass=ABCMeta):
 
     def to_encodable_type(self, media_type: str | MediaType) -> Any:
         if isinstance(self.data, self.model_type):
-            return build_struct_from_model(self.data, self.dto_backend.model)
+            return build_struct_from_model(self.data, self.dto_backend.data_container_type)
         type_ = get_origin(self.annotation) or self.annotation
-        return type_(build_struct_from_model(datum, self.dto_backend.model) for datum in self.data)  # pyright:ignore
+        return type_(
+            build_struct_from_model(datum, self.dto_backend.data_container_type)
+            for datum in self.data  # pyright:ignore
+        )

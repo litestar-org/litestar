@@ -27,12 +27,13 @@ AnyDeclarativeT = TypeVar("AnyDeclarativeT", bound="DeclarativeBase")
 class SQLAlchemyDTO(MsgspecBackedDTO[DataT], Generic[DataT]):
     """Support for domain modelling with SQLAlchemy."""
 
+    __slots__ = ()
+
     model_type: ClassVar[type[DeclarativeBase]]
 
     @classmethod
     def generate_field_definitions(cls, model_type: type[DeclarativeBase]) -> Generator[FieldDefinition, None, None]:
-        mapper = inspect(model_type)
-        if mapper is None:  # pragma: no cover
+        if (mapper := inspect(model_type)) is None:  # pragma: no cover
             raise RuntimeError("Unexpected `None` value for mapper.")
 
         columns = mapper.columns
@@ -51,11 +52,8 @@ class SQLAlchemyDTO(MsgspecBackedDTO[DataT], Generic[DataT]):
                 field_name=key, field_type=type_hint, dto_field=elem.info.get(DTO_FIELD_META_KEY)
             )
 
-            default = getattr(elem, "default", None)
-            nullable = getattr(elem, "nullable", False)
-
-            if default is None:
-                if nullable:
+            if (default := getattr(elem, "default", None)) is None:
+                if getattr(elem, "nullable", False):
                     field_def.default = None
             elif default.is_scalar:
                 field_def.default = default.arg
@@ -67,8 +65,7 @@ class SQLAlchemyDTO(MsgspecBackedDTO[DataT], Generic[DataT]):
             yield field_def
 
     @classmethod
-    def detect_nested(cls, field_definition: FieldDefinition) -> bool:
-        args = get_args(field_definition.field_type)
-        if not args:
-            return issubclass(field_definition.field_type, DeclarativeBase)
-        return any(issubclass(a, DeclarativeBase) for a in args)
+    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
+        if args := get_args(field_definition.field_type):
+            return any(issubclass(a, DeclarativeBase) for a in args)
+        return issubclass(field_definition.field_type, DeclarativeBase)

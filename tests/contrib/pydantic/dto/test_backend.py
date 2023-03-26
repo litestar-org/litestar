@@ -23,7 +23,7 @@ class MyModel(BaseModel):
 
 @pytest.fixture(name="pydantic_backend")
 def fx_pydantic_backend() -> PydanticDTOBackend:
-    return PydanticDTOBackend(annotation=List[Model], model=MyModel)
+    return PydanticDTOBackend(annotation=List[Model], data_container_type=MyModel)
 
 
 def test_dto_backend() -> None:
@@ -64,5 +64,5 @@ def test_pydantic_backend_iterable_annotation(pydantic_backend: PydanticDTOBacke
 
 
 def test_pydantic_backend_scalar_annotation() -> None:
-    pydantic_backend = PydanticDTOBackend(annotation=Model, model=MyModel)
+    pydantic_backend = PydanticDTOBackend(annotation=Model, data_container_type=MyModel)
     assert pydantic_backend.annotation == MyModel

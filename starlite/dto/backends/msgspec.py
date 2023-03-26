@@ -25,6 +25,8 @@ MsgspecField = NewType("MsgspecField", type)
 
 
 class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
+    __slots__ = ()
+
     def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Struct | Iterable[Struct]:
         if media_type == MediaType.JSON:
             transfer_data = decode_json(raw, type_=self.annotation)

@@ -25,6 +25,8 @@ AnyDataclass = TypeVar("AnyDataclass", bound="DataclassProtocol")
 class DataclassDTO(MsgspecBackedDTO[DataT], Generic[DataT]):
     """Support for domain modelling with dataclasses."""
 
+    __slots__ = ()
+
     model_type: ClassVar[type[DataclassProtocol]]
 
     @classmethod
@@ -47,7 +49,7 @@ class DataclassDTO(MsgspecBackedDTO[DataT], Generic[DataT]):
             yield field_def
 
     @classmethod
-    def detect_nested(cls, field_definition: FieldDefinition) -> bool:
+    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
         args = get_args(field_definition.field_type)
         if not args:
             return hasattr(field_definition.field_type, "__dataclass_fields__")

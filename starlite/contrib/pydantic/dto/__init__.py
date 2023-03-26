@@ -15,13 +15,12 @@ from starlite.enums import MediaType
 
 from .backend import PydanticDTOBackend
 
-__all__ = ["PydanticBackedDTO", "PydanticDTO"]
-
-
 if TYPE_CHECKING:
     from typing import ClassVar, Generator, Iterable
 
     from typing_extensions import Self
+
+__all__ = ("PydanticBackedDTO", "PydanticDTO")
 
 
 PydanticDataT = TypeVar("PydanticDataT", bound="BaseModel | Iterable[BaseModel]")
@@ -33,6 +32,8 @@ class PydanticBackedDTO(AbstractDTO[DataT], Generic[DataT], metaclass=ABCMeta):
 
 
 class PydanticDTO(PydanticBackedDTO[PydanticDataT], Generic[PydanticDataT]):
+    __slots__ = ()
+
     model_type: ClassVar[type[BaseModel]]
 
     @classmethod
@@ -55,11 +56,10 @@ class PydanticDTO(PydanticBackedDTO[PydanticDataT], Generic[PydanticDataT]):
             yield field_def
 
     @classmethod
-    def detect_nested(cls, field_definition: FieldDefinition) -> bool:
-        args = get_args(field_definition.field_type)
-        if not args:
-            return issubclass(field_definition.field_type, BaseModel)
-        return any(issubclass(a, BaseModel) for a in args)
+    def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
+        if args := get_args(field_definition.field_type):
+            return any(issubclass(a, BaseModel) for a in args)
+        return issubclass(field_definition.field_type, BaseModel)
 
     @classmethod
     def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
@@ -77,7 +77,7 @@ class PydanticDTO(PydanticBackedDTO[PydanticDataT], Generic[PydanticDataT]):
 
     def to_encodable_type(self, media_type: str | MediaType) -> BaseModel | Iterable[BaseModel]:
         if isinstance(self.data, self.model_type):
-            return self.dto_backend.model.parse_obj(self.data.dict())
+            return self.dto_backend.data_container_type.parse_obj(self.data.dict())
         data = cast("Iterable[BaseModel]", self.data)
         return parse_obj_as(  # type:ignore[return-value]
             self.dto_backend.annotation, [datum.dict() for datum in data]

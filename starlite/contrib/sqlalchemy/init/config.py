@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable, Literal, cast
 
 from starlite.exceptions import ImproperlyConfiguredException, MissingDependencyException
@@ -11,6 +11,7 @@ from starlite.utils import (
     get_starlite_scope_state,
     set_starlite_scope_state,
 )
+from starlite.utils.dataclass import asdict_filter_empty
 
 try:
     import sqlalchemy  # noqa: F401
@@ -70,10 +71,6 @@ async def default_before_send_handler(message: Message, _: State, scope: Scope) 
     if session and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
         await session.close()
         delete_starlite_scope_state(scope, SESSION_SCOPE_KEY)
-
-
-def asdict_filter_empty(obj: Any) -> dict[str, Any]:
-    return {k: v for k, v in asdict(obj).items() if v is not Empty}
 
 
 @dataclass

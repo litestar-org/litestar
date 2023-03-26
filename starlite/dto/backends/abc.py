@@ -22,15 +22,17 @@ BackendT = TypeVar("BackendT")
 
 
 class AbstractDTOBackend(ABC, Generic[BackendT]):
-    def __init__(self, annotation: type[Any], model: type[BackendT]) -> None:
+    __slots__ = ("data_container_type", "annotation")
+
+    def __init__(self, annotation: type[Any], data_container_type: type[BackendT]) -> None:
         """Create dto backend instance.
 
         Args:
             annotation: Annotation received by the DTO.
-            model: Parsing/validation/serialization model.
+            data_container_type: Parsing/validation/serialization model.
         """
-        self.model = model
-        self.annotation = build_annotation_for_backend(annotation, model)
+        self.data_container_type = data_container_type
+        self.annotation = build_annotation_for_backend(annotation, data_container_type)
 
     @classmethod
     @abstractmethod

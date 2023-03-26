@@ -44,6 +44,6 @@ def test_dataclass_field_definitions_38(dto_type: type[DataclassDTO[Model]]) -> 
 
 
 def test_dataclass_detect_nested(dto_type: type[DataclassDTO[Model]]) -> None:
-    assert dto_type.detect_nested(FieldDefinition(field_name="a", field_type=Model)) is True
-    assert dto_type.detect_nested(FieldDefinition(field_name="a", field_type=List[Model])) is True
-    assert dto_type.detect_nested(FieldDefinition(field_name="a", field_type=int)) is False
+    assert dto_type.detect_nested_field(FieldDefinition(field_name="a", field_type=Model)) is True
+    assert dto_type.detect_nested_field(FieldDefinition(field_name="a", field_type=List[Model])) is True
+    assert dto_type.detect_nested_field(FieldDefinition(field_name="a", field_type=int)) is False
