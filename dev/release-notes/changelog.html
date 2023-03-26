@@ -1,0 +1,1229 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>2.x Changelog &#8212; Starlite Framework</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/starlite-sphinx-theme.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'release-notes/changelog';</script>
+    <script src="../_static/versioning.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+   
+
+<a class="navbar-brand logo" href="https://starliteproject.dev">
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.svg" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/logo.svg" class="logo__image only-dark" alt="Logo image"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+
+
+
+    <nav class="navbar-nav">
+        <ul id="navbar-main-elements" class="navbar-nav">
+            
+                
+                    <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="../index.html">Documentation</a>
+    </li>
+                
+            
+                
+                    <div class="nav-item dropdown">
+                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
+                                aria-haspopup="true">
+                            Community
+                        </button>
+                        <ul class="dropdown-menu">
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="../contribution-guide.html">Contribution Guide</a>
+    </li>
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
+    </li>
+                            
+                        </ul>
+                    </div>
+                
+            
+                
+                    <div class="nav-item dropdown">
+                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
+                                aria-haspopup="true">
+                            About
+                        </button>
+                        <ul class="dropdown-menu">
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="https://starliteproject.dev/about/organization">Organization</a>
+    </li>
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
+    </li>
+                            
+                        </ul>
+                    </div>
+                
+            
+                
+                    <div class="nav-item dropdown">
+                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
+                                aria-haspopup="true">
+                            Release notes
+                        </button>
+                        <ul class="dropdown-menu">
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="migration_guide_2.html">2.0 migration guide</a>
+    </li>
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
+    </li>
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
+    </li>
+                            
+                        </ul>
+                    </div>
+                
+            
+        </ul>
+    </nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/X3FJqy8d2j" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord"></i></span>
+            <label class="sr-only">Discord</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+
+
+
+
+    <nav class="navbar-nav">
+        <ul id="navbar-main-elements" class="navbar-nav">
+            
+                
+                    <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="../index.html">Documentation</a>
+    </li>
+                
+            
+                
+                    <div class="nav-item dropdown">
+                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
+                                aria-haspopup="true">
+                            Community
+                        </button>
+                        <ul class="dropdown-menu">
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="../contribution-guide.html">Contribution Guide</a>
+    </li>
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
+    </li>
+                            
+                        </ul>
+                    </div>
+                
+            
+                
+                    <div class="nav-item dropdown">
+                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
+                                aria-haspopup="true">
+                            About
+                        </button>
+                        <ul class="dropdown-menu">
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="https://starliteproject.dev/about/organization">Organization</a>
+    </li>
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
+    </li>
+                            
+                        </ul>
+                    </div>
+                
+            
+                
+                    <div class="nav-item dropdown">
+                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
+                                aria-haspopup="true">
+                            Release notes
+                        </button>
+                        <ul class="dropdown-menu">
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="migration_guide_2.html">2.0 migration guide</a>
+    </li>
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
+    </li>
+                            
+                                <li class="nav-item">
+        <a class="nav-link nav-internal"
+           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
+    </li>
+                            
+                        </ul>
+                    </div>
+                
+            
+        </ul>
+    </nav>
+</div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/X3FJqy8d2j" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord"></i></span>
+            <label class="sr-only">Discord</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../usage/the-starlite-app.html">The Starlite App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/routing.html">Routing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/route-handlers.html">Route handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/parameters.html">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/request-data.html">Request data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/guards.html">Guards</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/sqlalchemy.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/dto.html">Data Transfer Objects (DTOs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/events.html">Event Emitters and Listeners</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/openapi.html">OpenAPI integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/contrib/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/contrib/htmx.html">HTMX Request Class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/cli.html">CLI</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/htmx.html">HTMX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo_orm.html">piccolo_orm</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/config.html">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/plugin.html">plugin</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/types.html">types</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/tortoise_orm.html">tortoise_orm</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/dto.html">dto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/cors.html">cors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/partial.html">partial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/plugins.html">plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/response.html">response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/response_containers.html">response_containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/security/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">2.x Changelog</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="x-changelog">
+<h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.0.0alpha2">
+<h2>2.0.0alpha2<a class="headerlink" href="#2.0.0alpha2" title="Permalink to this heading">#</a></h2>
+<section id="2.0.0alpha2-feature">
+<h3>Features<a class="headerlink" href="#2.0.0alpha2-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Repository contrib &amp; SQLAlchemy repository</dt><dd><div class="changelog-change docutils container">
+<p>Add a a <code class="docutils literal notranslate"><span class="pre">repository</span></code> module to <code class="docutils literal notranslate"><span class="pre">contrib</span></code>, providing abstract base classes
+to implement the repository pattern. Also added was the <code class="docutils literal notranslate"><span class="pre">contrib.repository.sqlalchemy</span></code>
+module, implementing a SQLAlchemy repository, offering hand-tuned abstractions
+over commonly used tasks, such as handling of object sessions, inserting,
+updating and upserting individual models or collections.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1254">starlite-api/starlite#1254</a></span></p>
+</div>
+</dd>
+<dt>Data stores &amp; registry<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The <code class="docutils literal notranslate"><span class="pre">starlite.storage</span></code> module added in the previous version has been
+renamed <code class="docutils literal notranslate"><span class="pre">starlite.stores</span></code> to reduce ambiguity, and a new feature, the
+<a class="reference internal" href="../reference/stores/registry.html#starlite.stores.registry.StoreRegistry" title="starlite.stores.registry.StoreRegistry"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoreRegistry</span></code></a> has been introduced;
+It serves as a central place to manage stores and reduces the amount of
+configuration needed for various integrations.</p>
+<ul class="simple">
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">stores</span></code> kwarg to <code class="docutils literal notranslate"><span class="pre">Starlite</span></code> and <code class="docutils literal notranslate"><span class="pre">AppConfig</span></code> to allow seeding of the <code class="docutils literal notranslate"><span class="pre">StoreRegistry</span></code></p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">Starlite.stores</span></code> attribute, containing a <code class="docutils literal notranslate"><span class="pre">StoreRegistry</span></code></p></li>
+<li><p>Change <code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code> to use <code class="docutils literal notranslate"><span class="pre">app.stores</span></code></p></li>
+<li><p>Change request caching to use <code class="docutils literal notranslate"><span class="pre">app.stores</span></code></p></li>
+<li><p>Change server side sessions to use <code class="docutils literal notranslate"><span class="pre">app.stores</span></code></p></li>
+<li><p>Move <code class="docutils literal notranslate"><span class="pre">starlite.config.cache.CacheConfig</span></code> to  <a class="reference internal" href="../reference/config.html#starlite.config.response_cache.ResponseCacheConfig" title="starlite.config.response_cache.ResponseCacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.response_cache.ResponseCacheConfig</span></code></a></p></li>
+<li><p>Rename <code class="docutils literal notranslate"><span class="pre">Starlite.cache_config</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">Starlite.response_cache_config</span></code></p></li>
+<li><p>Rename <code class="docutils literal notranslate"><span class="pre">AppConfig.cache_config</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">response_cache_config</span></code></p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">starlite/cache</span></code> module</p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">ASGIConnection.cache</span></code> property</p></li>
+<li><p>Remove <code class="docutils literal notranslate"><span class="pre">Starlite.cache</span></code> attribute</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p><a class="reference internal" href="../reference/middleware/rate_limit.html#starlite.middleware.rate_limit.RateLimitMiddleware" title="starlite.middleware.rate_limit.RateLimitMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code></a>,
+<a class="reference internal" href="../reference/config.html#starlite.config.response_cache.ResponseCacheConfig" title="starlite.config.response_cache.ResponseCacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseCacheConfig</span></code></a>,
+and <a class="reference internal" href="../reference/middleware/session/server_side.html#starlite.middleware.session.server_side.ServerSideSessionConfig" title="starlite.middleware.session.server_side.ServerSideSessionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSideSessionConfig</span></code></a>
+instead of accepting a <code class="docutils literal notranslate"><span class="pre">storage</span></code> argument that could be passed a <code class="docutils literal notranslate"><span class="pre">Storage</span></code> instance now have to be
+configured via the <code class="docutils literal notranslate"><span class="pre">store</span></code> attribute, accepting a string key for the store to be used from the registry.
+The <code class="docutils literal notranslate"><span class="pre">store</span></code> attribute has a unique default set, guaranteeing a unique
+<a class="reference internal" href="../reference/stores/memory.html#starlite.stores.memory.MemoryStore" title="starlite.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a> instance is acquired for every one of them from the
+registry by default</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/stores.html"><span class="doc">Stores</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1330">starlite-api/starlite#1330</a></span></p>
+</div>
+</dd>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">starlite.__version__</span></code></dt><dd><div class="changelog-change docutils container">
+<p>Add a <code class="docutils literal notranslate"><span class="pre">__version__</span></code> constant to the <code class="docutils literal notranslate"><span class="pre">starlite</span></code> namespace, containing a
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>, holding information about the currently
+installed version of Starlite</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1277">starlite-api/starlite#1277</a></span></p>
+</div>
+</dd>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">starlite</span> <span class="pre">version</span></code> command to CLI</dt><dd><div class="changelog-change docutils container">
+<p>Add a new <code class="docutils literal notranslate"><span class="pre">version</span></code> command to the CLI which displays the currently installed
+version of Starlite</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/cli.html#version"><span class="std std-ref">The version command</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1322">starlite-api/starlite#1322</a></span></p>
+</div>
+</dd>
+<dt>Enhance CLI autodiscovery logic<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Update the CLI <a class="reference internal" href="../usage/cli.html#autodiscovery"><span class="std std-ref">Autodiscovery</span></a> to only consider canonical modules app and application, but every
+<a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> instance or application factory able to return a <code class="docutils literal notranslate"><span class="pre">Starlite</span></code> instance within
+those or one of their submodules, giving priority to the canonical names app and application for application
+objects and submodules containing them.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/cli.html#autodiscovery"><span class="std std-ref">CLI autodiscovery</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1322">starlite-api/starlite#1322</a></span></p>
+</div>
+</dd>
+<dt>Configurable exception logging and traceback truncation</dt><dd><div class="changelog-change docutils container">
+<p>Add three new configuration options to <a class="reference internal" href="../reference/logging/config.html#starlite.logging.config.BaseLoggingConfig" title="starlite.logging.config.BaseLoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoggingConfig</span></code></a>:</p>
+<dl>
+<dt><a class="reference internal" href="../reference/logging/config.html#starlite.logging.config.LoggingConfig.log_exceptions" title="starlite.logging.config.LoggingConfig.log_exceptions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">log_exceptions</span></code></a></dt><dd><p>Configure when exceptions are logged.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">always</span></code></dt><dd><p>Always log exceptions</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">debug</span></code></dt><dd><p>Log exceptions in debug mode only</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">never</span></code></dt><dd><p>Never log exception</p>
+</dd>
+</dl>
+</dd>
+<dt><a class="reference internal" href="../reference/logging/config.html#starlite.logging.config.LoggingConfig.traceback_line_limit" title="starlite.logging.config.LoggingConfig.traceback_line_limit"><code class="xref py py-attr docutils literal notranslate"><span class="pre">traceback_line_limit</span></code></a></dt><dd><p>Configure how many lines of tracback are logged</p>
+</dd>
+<dt><a class="reference internal" href="../reference/logging/config.html#starlite.logging.config.LoggingConfig.exception_logging_handler" title="starlite.logging.config.LoggingConfig.exception_logging_handler"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exception_logging_handler</span></code></a></dt><dd><p>A callable that receives three parameters - the <code class="docutils literal notranslate"><span class="pre">app.logger</span></code>, the connection scope and the traceback
+list, and should handle logging</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../reference/logging/config.html#starlite.logging.config.LoggingConfig" title="starlite.logging.config.LoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingConfig</span></code></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1296">starlite-api/starlite#1296</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.0.0alpha2-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha2-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Allow overwriting default OpenAPI response descriptions</dt><dd><div class="changelog-change docutils container">
+<p>Fix <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1292">starlite-api/starlite#1292</a> by allowing to overwrite
+the default OpenAPI response description instead of raising <a class="reference internal" href="../reference/exceptions.html#starlite.exceptions.ImproperlyConfiguredException" title="starlite.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1292">starlite-api/starlite#1292</a></span>, <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1293">starlite-api/starlite#1293</a></span></p>
+</div>
+</dd>
+<dt>Fix regression in path resolution that prevented 404’s being raised for false paths<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Invalid paths within controllers would under specific circumstances not raise a 404. This was a regression
+compared to <code class="docutils literal notranslate"><span class="pre">v1.51</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This has been marked as breaking since one user has reported to rely on this “feature”</p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1316">starlite-api/starlite#1316</a></span></p>
+</div>
+</dd>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">after_request</span></code> hook not being called on responses returned from handlers</dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">after_request</span></code> hooks were not being called automatically when a <a class="reference internal" href="../reference/response.html#starlite.response.Response" title="starlite.response.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a>
+instances was returned from a route handler directly.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/lifecycle-hooks.html#after-request"><span class="std std-ref">After Request</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1315">starlite-api/starlite#1315</a></span>, <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1344">starlite-api/starlite#1344</a></span></p>
+</div>
+</dd>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code> raises error when using SQLAlchemy UUID</dt><dd><div class="changelog-change docutils container">
+<p>An error would be raised when using the SQLAlchemy plugin with a
+<a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.UUID">sqlalchemy UUID</a> type. This
+was fixed by adding it to the provider map.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1355">starlite-api/starlite#1355</a></span></p>
+</div>
+</dd>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">JSON.parse</span></code> error in ReDoc and Swagger OpenAPI handlers</dt><dd><div class="changelog-change docutils container">
+<p>The HTML generated by the ReDoc and Swagger OpenAPI handlers would cause
+<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse">JSON.parse</a>
+to throw an error. This was fixed by removing the call to <code class="docutils literal notranslate"><span class="pre">JSON.parse</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1363ad">starlite-api/starlite#1363ad</a></span></p>
+</div>
+</dd>
+<dt>Fix CLI prints application info twice</dt><dd><div class="changelog-change docutils container">
+<p>Fix an error where the CLI would print application info twice on startup</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1322">starlite-api/starlite#1322</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.0.0alpha2-misc">
+<h3>Other changes<a class="headerlink" href="#2.0.0alpha2-misc" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Update <code class="docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code> to use worker pattern</dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/events.html#starlite.events.SimpleEventEmitter" title="starlite.events.emitter.SimpleEventEmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code></a> was updated to using an async worker, pulling
+emitted events from a queue and subsequently calling listeners. Previously listeners were called immediately,
+making the operation effectively “blocking”.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1346">starlite-api/starlite#1346</a></span></p>
+</div>
+</dd>
+<dt>Make <code class="docutils literal notranslate"><span class="pre">BaseEventEmitterBackend.emit</span></code> synchronous<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/events.html#starlite.events.BaseEventEmitterBackend" title="starlite.events.emitter.BaseEventEmitterBackend"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseEventEmitterBackend.emit</span></code></a>, and subsequently
+<a class="reference internal" href="../reference/events.html#starlite.events.SimpleEventEmitter" title="starlite.events.emitter.SimpleEventEmitter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SimpleEventEmitter.emit</span></code></a> and
+<a class="reference internal" href="../reference/app.html#starlite.app.Starlite.emit" title="starlite.app.Starlite.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Starlite.emit</span></code></a> have been changed to synchronous function, allowing them to easily be
+used within synchronous route handlers.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1376">starlite-api/starlite#1376</a></span></p>
+</div>
+</dd>
+<dt>Move 3rd party integration plugins to <code class="docutils literal notranslate"><span class="pre">contrib</span></code><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<ul class="simple">
+<li><p>Move <code class="docutils literal notranslate"><span class="pre">plugins.piccolo_orm</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">contrib.piccolo_orm</span></code></p></li>
+<li><p>Move <code class="docutils literal notranslate"><span class="pre">plugins.tortoise_orm</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">contrib.tortoise_orm</span></code></p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/Move">starlite-api/starlite#Move</a></span>, <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/3rd">starlite-api/starlite#3rd</a></span>, <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/party">starlite-api/starlite#party</a></span>, <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/integration">starlite-api/starlite#integration</a></span>, <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/plugins">starlite-api/starlite#plugins</a></span>, <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/to">starlite-api/starlite#to</a></span>, <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/``contrib``">starlite-api/starlite#``contrib``</a></span></p>
+</div>
+</dd>
+<dt>Remove <code class="docutils literal notranslate"><span class="pre">picologging</span></code> dependency from the <code class="docutils literal notranslate"><span class="pre">standard</span></code> package extra<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference external" href="https://github.com/microsoft/picologging">picologging</a> has been removed form the <code class="docutils literal notranslate"><span class="pre">standard</span></code> package extra.
+If you have been previously relying on this, you need to change <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[standard]</span></code> to
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[standard,picologging]</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1313">starlite-api/starlite#1313</a></span></p>
+</div>
+</dd>
+<dt>Replace <code class="docutils literal notranslate"><span class="pre">Starlite()</span></code> <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> keyword argument with <code class="docutils literal notranslate"><span class="pre">state</span></code><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The <code class="docutils literal notranslate"><span class="pre">initial_state</span></code> argument to <a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> has been replaced with a <code class="docutils literal notranslate"><span class="pre">state</span></code> keyword
+argument, accepting an optional <a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.State" title="starlite.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> instance.</p>
+<p>Existing code using this keyword argument will need to be changed from</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">initial_state</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="s2">&quot;key&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>to</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
+<span class="kn">from</span> <span class="nn">starlite.datastructures.state</span> <span class="kn">import</span> <span class="n">State</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="s2">&quot;key&quot;</span><span class="p">}))</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1350">starlite-api/starlite#1350</a></span></p>
+</div>
+</dd>
+<dt>Remove support for 2 argument form of <code class="docutils literal notranslate"><span class="pre">before_send</span></code><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">before_send</span></code> hook handlers initially accepted 2 arguments, but support for a 3 argument form was added
+later on, accepting an additional <code class="docutils literal notranslate"><span class="pre">scope</span></code> parameter. Support for the 2 argument form has been dropped with
+this release.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../reference/config.html#starlite.config.app.AppConfig.before_send" title="starlite.config.app.AppConfig.before_send"><span class="xref std std-ref">before_send</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1354">starlite-api/starlite#1354</a></span></p>
+</div>
+</dd>
+<dt>Standardize module exports<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>A large refactoring standardising the way submodules make their names available.</p>
+<p>The following public modules have changed their location:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config.openapi</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">openapi.config</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.logging</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">logging.config</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.template</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">template.config</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.static_files</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">static_files.config</span></code></p></li>
+</ul>
+<p>The following modules have been removed from the public namespace:
+- <code class="docutils literal notranslate"><span class="pre">asgi</span></code>
+- <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>
+- <code class="docutils literal notranslate"><span class="pre">middleware.utils</span></code>
+- <code class="docutils literal notranslate"><span class="pre">cli.utils</span></code>
+- <code class="docutils literal notranslate"><span class="pre">contrib.htmx.utils</span></code>
+- <code class="docutils literal notranslate"><span class="pre">handlers.utils</span></code>
+- <code class="docutils literal notranslate"><span class="pre">openapi.constants</span></code>
+- <code class="docutils literal notranslate"><span class="pre">openapi.enums</span></code>
+- <code class="docutils literal notranslate"><span class="pre">openapi.datastructures</span></code>
+- <code class="docutils literal notranslate"><span class="pre">openapi.parameters</span></code>
+- <code class="docutils literal notranslate"><span class="pre">openapi.path_item</span></code>
+- <code class="docutils literal notranslate"><span class="pre">openapi.request_body</span></code>
+- <code class="docutils literal notranslate"><span class="pre">openapi.responses</span></code>
+- <code class="docutils literal notranslate"><span class="pre">openapi.schema</span></code>
+- <code class="docutils literal notranslate"><span class="pre">openapi.typescript_converter</span></code>
+- <code class="docutils literal notranslate"><span class="pre">openapi.utils</span></code>
+- <code class="docutils literal notranslate"><span class="pre">multipart</span></code>
+- <code class="docutils literal notranslate"><span class="pre">parsers</span></code>
+- <code class="docutils literal notranslate"><span class="pre">signature</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1273">starlite-api/starlite#1273</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
+<section id="2.0.0alpha1">
+<h2>2.0.0alpha1<a class="headerlink" href="#2.0.0alpha1" title="Permalink to this heading">#</a></h2>
+<section id="2.0.0alpha1-feature">
+<h3>Features<a class="headerlink" href="#2.0.0alpha1-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Validation of controller route handler methods</dt><dd><div class="changelog-change docutils container">
+<p>Starlite will now validate that no duplicate handlers (that is, they have the same
+path and same method) exist.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1144">starlite-api/starlite#1144</a></span></p>
+</div>
+</dd>
+<dt>HTMX support</dt><dd><div class="changelog-change docutils container">
+<p>Basic support for HTMX requests and responses.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1086">starlite-api/starlite#1086</a></span></p>
+</div>
+</dd>
+<dt>Alternate constructor <code class="docutils literal notranslate"><span class="pre">Starlite.from_config</span></code></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/app.html#starlite.app.Starlite.from_config" title="starlite.app.Starlite.from_config"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Starlite.from_config</span></code></a> was added to the
+<a class="reference internal" href="../reference/app.html#starlite.app.Starlite" title="starlite.app.Starlite"><code class="xref py py-class docutils literal notranslate"><span class="pre">Starlite</span></code></a> class which allows to construct an instance
+from an <a class="reference internal" href="../reference/config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1190">starlite-api/starlite#1190</a></span></p>
+</div>
+</dd>
+<dt>Web concurrency option for CLI <code class="docutils literal notranslate"><span class="pre">run</span></code> command</dt><dd><div class="changelog-change docutils container">
+<p>A <code class="docutils literal notranslate"><span class="pre">--wc</span></code> / –web-concurrency` option was added to the <code class="docutils literal notranslate"><span class="pre">starlite</span> <span class="pre">run</span></code> command,
+enabling users to specify the amount of worker processes to use. A corresponding
+environment variable <code class="docutils literal notranslate"><span class="pre">WEB_CONCURRENCY</span></code> was added as well</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1218">starlite-api/starlite#1218</a></span></p>
+</div>
+</dd>
+<dt>Validation of <code class="docutils literal notranslate"><span class="pre">state</span></code> parameter in handler functions</dt><dd><div class="changelog-change docutils container">
+<p>Type annotations of the reserved <code class="docutils literal notranslate"><span class="pre">state</span></code> parameter in handler functions will
+now be validated such that annotations using an unsupported type will raise a
+<a class="reference internal" href="../reference/exceptions.html#starlite.exceptions.ImproperlyConfiguredException" title="starlite.exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1264">starlite-api/starlite#1264</a></span></p>
+</div>
+</dd>
+<dt>Generic application state</dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/connection.html#starlite.connection.ASGIConnection" title="starlite.connection.base.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> and its subclasses are now generic on <code class="docutils literal notranslate"><span class="pre">State</span></code>
+which allow to to fully type hint a request as <code class="docutils literal notranslate"><span class="pre">Request[UserType,</span> <span class="pre">AuthType,</span> <span class="pre">StateType]</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1030">starlite-api/starlite#1030</a></span></p>
+</div>
+</dd>
+<dt>Dependency injection of classes</dt><dd><div class="changelog-change docutils container">
+<p>Support using classes (not class instances, which were already supported) as dependency providers.
+With this, now every callable is supported as a dependency provider.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1143">starlite-api/starlite#1143</a></span></p>
+</div>
+</dd>
+<dt>Event bus</dt><dd><div class="changelog-change docutils container">
+<p>A simple event bus system for Starlite, supporting synchronous and asynchronous listeners and emitters, providing a
+similar interface to handlers. It currently features a simple in-memory, process-local backend. For the future,
+backends that allow inter-process event dispatching are planned.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1105">starlite-api/starlite#1105</a></span></p>
+</div>
+</dd>
+<dt>Unified storage interfaces<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Storage backends for server-side sessions and <code class="docutils literal notranslate"><span class="pre">Cache</span> <span class="pre">&lt;starlite.cache.Cache&gt;</span></code> have been unified and replaced
+by the <code class="docutils literal notranslate"><span class="pre">starlite.storages</span></code>, which implements generic asynchronous key/values stores backed
+by memory, the file system or redis.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This is a breaking change and you need to change your session / cache configuration accordingly</p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1184">starlite-api/starlite#1184</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.0.0alpha1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix resolving of relative paths in <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></dt><dd><div class="changelog-change docutils container">
+<p>Using a relative <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> did not resolve correctly and result in a <code class="docutils literal notranslate"><span class="pre">NotFoundException</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1256">starlite-api/starlite#1256</a></span></p>
+</div>
+</dd>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">--reload</span></code> flag to <code class="docutils literal notranslate"><span class="pre">starlite</span> <span class="pre">run</span></code> not working correctly</dt><dd><div class="changelog-change docutils container">
+<p>Passing the <code class="docutils literal notranslate"><span class="pre">--reload</span></code> flag to the <code class="docutils literal notranslate"><span class="pre">starlite</span> <span class="pre">run</span></code> command did not work correctly in all circumstances due to an
+issue with uvicorn. This was resolved by invoking uvicorn in a subprocess.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1191">starlite-api/starlite#1191</a></span></p>
+</div>
+</dd>
+<dt>Fix optional types generate incorrect OpenAPI schemas</dt><dd><div class="changelog-change docutils container">
+<p>An optional query parameter was incorrectly represented as</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;oneOf&quot;</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">null</span><span class="s2">&quot; },</span>
+  <span class="p">{</span> <span class="s2">&quot;oneOf&quot;</span><span class="p">:</span> <span class="p">[]</span> <span class="p">}</span>
+ <span class="p">]}</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1210">starlite-api/starlite#1210</a></span></p>
+</div>
+</dd>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code> is sending obfuscated session id to client</dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">LoggingMiddleware</span></code> would in some cases send obfuscated data to the client, due to a bug in the obfuscation
+function which obfuscated values in the input dictionary in-place.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1228">starlite-api/starlite#1228</a></span></p>
+</div>
+</dd>
+<dt>Fix missing <code class="docutils literal notranslate"><span class="pre">domain</span></code> configuration value for JWT cookie auth</dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/contrib/jwt.html#starlite.contrib.jwt.JWTCookieAuth" title="starlite.contrib.jwt.jwt_auth.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_auth.JWTCookieAuth</span></code></a> didn’t set the <code class="docutils literal notranslate"><span class="pre">domain</span></code> configuration value on the response
+cookie.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1223">starlite-api/starlite#1223</a></span></p>
+</div>
+</dd>
+<dt>Fix <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1201">starlite-api/starlite#1201</a>: Can not serve static file in <code class="docutils literal notranslate"><span class="pre">/</span></code> path</dt><dd><div class="changelog-change docutils container">
+<p>A validation error made it impossible to serve static files from the root path <code class="docutils literal notranslate"><span class="pre">/</span></code> .</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1201">starlite-api/starlite#1201</a></span></p>
+</div>
+</dd>
+<dt>Fix <a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1149">starlite-api/starlite#1149</a>: Middleware not excluding static path</dt><dd><div class="changelog-change docutils container">
+<p>A middleware’s <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter would sometimes not be honoured if the path was used to serve static files
+using <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/issues/1149">starlite-api/starlite#1149</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.0.0alpha1-misc">
+<h3>Other changes<a class="headerlink" href="#2.0.0alpha1-misc" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Relaxed type annotations</dt><dd><div class="changelog-change docutils container">
+<p>Type annotations across the library have been relaxed to more generic forms, for example
+<code class="docutils literal notranslate"><span class="pre">Iterable[str]</span></code> instead of <code class="docutils literal notranslate"><span class="pre">List[str]</span></code> or <code class="docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code> instead of <code class="docutils literal notranslate"><span class="pre">Dict[str,</span> <span class="pre">str]</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1140">starlite-api/starlite#1140</a></span></p>
+</div>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">type_encoders</span></code> support in <code class="docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">type_encoders</span></code> support has been added to
+<a class="reference internal" href="../reference/security/base.html#starlite.security.base.AbstractSecurityConfig" title="starlite.security.base.AbstractSecurityConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></a>, enabling support for customized
+<code class="docutils literal notranslate"><span class="pre">type_encoders</span></code> for example in <a class="reference internal" href="../reference/contrib/jwt.html#starlite.contrib.jwt.JWTAuth" title="starlite.contrib.jwt.jwt_auth.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1167">starlite-api/starlite#1167</a></span></p>
+</div>
+</dd>
+<dt>Renamed handler module names<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The modules containing route handlers have been renamed to prevent ambiguity between module and handler names.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">starlite.handlers.asgi</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">starlite.handlers.asgi_handlers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">starlite.handlers.http</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">starlite.handlers.http_handlers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">starlite.handlers.websocket</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">starlite.handlers.websocket_handlers</span></code></p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1170">starlite-api/starlite#1170</a></span></p>
+</div>
+</dd>
+<dt>New plugin protocols<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The plugin protocol has been split into three distinct protocols, covering different use cases:</p>
+<dl class="simple">
+<dt><a class="reference internal" href="../reference/plugins.html#starlite.plugins.InitPluginProtocol" title="starlite.plugins.InitPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a></dt><dd><p>Hook into an application’s initialization process</p>
+</dd>
+<dt><a class="reference internal" href="../reference/plugins.html#starlite.plugins.SerializationPluginProtocol" title="starlite.plugins.SerializationPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a></dt><dd><p>Extend the serialization and deserialization capabilities of an application</p>
+</dd>
+<dt><a class="reference internal" href="../reference/plugins.html#starlite.plugins.OpenAPISchemaPluginProtocol" title="starlite.plugins.OpenAPISchemaPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code></a></dt><dd><p>Extend OpenAPI schema generation</p>
+</dd>
+</dl>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1176">starlite-api/starlite#1176</a></span></p>
+</div>
+</dd>
+<dt>Unify response headers and cookies<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../usage/responses.html#response-headers"><span class="std std-ref">Response Headers</span></a> and <a class="reference internal" href="../usage/responses.html#response-cookies"><span class="std std-ref">Response Cookies</span></a> now have the same
+interface, along with the <code class="docutils literal notranslate"><span class="pre">headers</span></code> and <code class="docutils literal notranslate"><span class="pre">cookies</span></code> keyword arguments to
+<a class="reference internal" href="../reference/response.html#starlite.response.Response" title="starlite.response.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a>. They each allow to pass either a
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>, e.g. a dictionary, or a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a> of
+<a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.ResponseHeader" title="starlite.datastructures.response_header.ResponseHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseHeaders</span></code></a> or
+<a class="reference internal" href="../reference/datastructures.html#starlite.datastructures.Cookie" title="starlite.datastructures.cookie.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookies</span></code></a> respectively.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1209">starlite-api/starlite#1209</a></span></p>
+</div>
+</dd>
+<dt>Replace Pydantic models with dataclasses<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Several Pydantic models used for configuration have been replaced with dataclasses or plain classes. This change
+should be mostly non-breaking, unless you relied on those configuration objects being Pydantic models. The changed
+models are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/config.html#starlite.config.allowed_hosts.AllowedHostsConfig" title="starlite.config.allowed_hosts.AllowedHostsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.allowed_hosts.AllowedHostsConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/config.html#starlite.config.app.AppConfig" title="starlite.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.app.AppConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/config.html#starlite.config.response_cache.ResponseCacheConfig" title="starlite.config.response_cache.ResponseCacheConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.response_cache.ResponseCacheConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/config.html#starlite.config.compression.CompressionConfig" title="starlite.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.compression.CompressionConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/config.html#starlite.config.cors.CORSConfig" title="starlite.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.cors.CORSConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/config.html#starlite.config.csrf.CSRFConfig" title="starlite.config.csrf.CSRFConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.config.csrf.CSRFConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/logging/config.html#starlite.logging.config.LoggingConfig" title="starlite.logging.config.LoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.logging.config.LoggingConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/openapi/openapi.html#starlite.openapi.OpenAPIConfig" title="starlite.openapi.OpenAPIConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.openapi.OpenAPIConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/static_files.html#starlite.static_files.StaticFilesConfig" title="starlite.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.static_files.StaticFilesConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/template.html#starlite.template.TemplateConfig" title="starlite.template.TemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.template.TemplateConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/contrib/jwt.html#starlite.contrib.jwt.Token" title="starlite.contrib.jwt.jwt_token.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_token.Token</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/contrib/jwt.html#starlite.contrib.jwt.JWTAuth" title="starlite.contrib.jwt.jwt_auth.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_auth.JWTAuth</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/contrib/jwt.html#starlite.contrib.jwt.JWTCookieAuth" title="starlite.contrib.jwt.jwt_auth.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_auth.JWTCookieAuth</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/contrib/jwt.html#starlite.contrib.jwt.OAuth2Login" title="starlite.contrib.jwt.jwt_auth.OAuth2Login"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_auth.OAuth2Login</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/contrib/jwt.html#starlite.contrib.jwt.OAuth2PasswordBearerAuth" title="starlite.contrib.jwt.jwt_auth.OAuth2PasswordBearerAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.jwt.jwt_auth.OAuth2PasswordBearerAuth</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/contrib/opentelemetry.html#starlite.contrib.opentelemetry.OpenTelemetryConfig" title="starlite.contrib.opentelemetry.OpenTelemetryConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.contrib.opentelemetry.OpenTelemetryConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/middleware/logging.html#starlite.middleware.logging.LoggingMiddlewareConfig" title="starlite.middleware.logging.LoggingMiddlewareConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.middleware.logging.LoggingMiddlewareConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/middleware/rate_limit.html#starlite.middleware.rate_limit.RateLimitConfig" title="starlite.middleware.rate_limit.RateLimitConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.middleware.rate_limit.RateLimitConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/middleware/session/base.html#starlite.middleware.session.base.BaseBackendConfig" title="starlite.middleware.session.base.BaseBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.middleware.session.base.BaseBackendConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/middleware/session/client_side.html#starlite.middleware.session.client_side.CookieBackendConfig" title="starlite.middleware.session.client_side.CookieBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.middleware.session.client_side.CookieBackendConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/middleware/session/server_side.html#starlite.middleware.session.server_side.ServerSideSessionConfig" title="starlite.middleware.session.server_side.ServerSideSessionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.middleware.session.server_side.ServerSideSessionConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response_containers.html#starlite.response_containers.ResponseContainer" title="starlite.response_containers.ResponseContainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.response_containers.ResponseContainer</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response_containers.html#starlite.response_containers.File" title="starlite.response_containers.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.response_containers.File</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response_containers.html#starlite.response_containers.Redirect" title="starlite.response_containers.Redirect"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.response_containers.Redirect</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/response_containers.html#starlite.response_containers.Stream" title="starlite.response_containers.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.response_containers.Stream</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/base.html#starlite.security.base.AbstractSecurityConfig" title="starlite.security.base.AbstractSecurityConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.security.base.AbstractSecurityConfig</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/session_auth.html#starlite.security.session_auth.SessionAuth" title="starlite.security.session_auth.SessionAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.security.session_auth.SessionAuth</span></code></a></p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1242">starlite-api/starlite#1242</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy plugin moved to <code class="docutils literal notranslate"><span class="pre">contrib</span></code><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The <a class="reference internal" href="../reference/contrib/sqlalchemy_1/plugin.html#starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin" title="starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code></a> has moved to <code class="docutils literal notranslate"><span class="pre">starlite.contrib.sqlalchemy_1.plugin</span></code> and will only be compatible
+with the SQLAlchemy 1.4 release line. The newer SQLAlchemy 2.x releases will be supported by the
+<code class="docutils literal notranslate"><span class="pre">contrib.sqlalchemy</span></code> module.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1252">starlite-api/starlite#1252</a></span></p>
+</div>
+</dd>
+<dt>Cleanup of the <code class="docutils literal notranslate"><span class="pre">starlite</span></code> namespace<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The <code class="docutils literal notranslate"><span class="pre">starlite</span></code> namespace has been cleared up, removing many names from it, which now have to be imported from
+their respective submodules individually. This was both done to improve developer experience as well as reduce
+the time it takes to <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">starlite</span></code>.
+An overview of the changed import paths can be found in the
+<a class="reference internal" href="migration_guide_2.html#changed-module-paths"><span class="std std-ref">migration guide</span></a></p>
+<p>References: <span><a class="github reference external" href="https://github.com/starlite-api/starlite/pull/1135">starlite-api/starlite#1135</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha2">2.0.0alpha2</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha2-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha2-bugfix">Bugfixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha2-misc">Other changes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha1">2.0.0alpha1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha1-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha1-bugfix">Bugfixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha1-misc">Other changes</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            <div class="bd-footer-content__inner"></div>
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Starlite-API.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
