@@ -1,13 +1,17 @@
-from typing import TYPE_CHECKING, Any, Dict, Type
+from typing import TYPE_CHECKING, Any, Dict, List, Type
+from unittest.mock import MagicMock
 
 import pytest
 from pydantic import BaseModel
+from typing_extensions import get_origin
 
 from starlite import MediaType, Starlite, get
+from starlite.connection import Request
 from starlite.plugins import (
     InitPluginProtocol,
     PluginMapping,
     SerializationPluginProtocol,
+    get_plugin_for_value,
 )
 from starlite.testing import create_test_client
 
@@ -89,3 +93,14 @@ def test_plugin_on_app_init() -> None:
 
         assert tag in client.app.tags
         assert client.app.state.called
+
+
+@pytest.mark.parametrize(("value", "tested_type"), [(List[int], int), (Request[Any, Any, Any], Request)])
+def test_get_plugin_for_value(value: Any, tested_type: Any) -> None:
+    mock_plugin = MagicMock(spec=SerializationPluginProtocol)
+    mock_plugin.is_plugin_supported_type.return_value = False
+    get_plugin_for_value(value, [mock_plugin])
+    assert mock_plugin.is_plugin_supported_type.called_once()
+    call = mock_plugin.is_plugin_supported_type.mock_calls[0]
+    assert len(call.args) == 1
+    assert get_origin(call.args[0]) or call.args[0] is tested_type
