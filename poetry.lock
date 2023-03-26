@@ -932,19 +932,19 @@ files = [
 
 [[package]]
 name = "filelock"
-version = "3.10.4"
+version = "3.10.6"
 description = "A platform independent file lock."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "filelock-3.10.4-py3-none-any.whl", hash = "sha256:6d332dc5c896f18ba93a21d987155e97c434a96d3fe4042ca70d0b3b46e3b470"},
-    {file = "filelock-3.10.4.tar.gz", hash = "sha256:9fc1734dbddcdcd4aaa02c160dd94db5272b92dfa859b44ec8df28e160b751f0"},
+    {file = "filelock-3.10.6-py3-none-any.whl", hash = "sha256:52f119747b2b9c4730dac715a7b1ab34b8ee70fd9259cba158ee53da566387ff"},
+    {file = "filelock-3.10.6.tar.gz", hash = "sha256:409105becd604d6b176a483f855e7e8903c5cb2873e47f2c64f66a370c046aaf"},
 ]
 
 [package.extras]
 docs = ["furo (>=2022.12.7)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)"]
-testing = ["covdefaults (>=2.3)", "coverage (>=7.2.2)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-timeout (>=2.1)"]
+testing = ["covdefaults (>=2.3)", "coverage (>=7.2.2)", "diff-cover (>=7.5)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)", "pytest-timeout (>=2.1)"]
 
 [[package]]
 name = "freezegun"
@@ -1642,14 +1642,14 @@ sentinels = "*"
 
 [[package]]
 name = "mongomock-motor"
-version = "0.0.17"
+version = "0.0.18"
 description = "Library for mocking AsyncIOMotorClient built on top of mongomock."
 category = "dev"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "mongomock_motor-0.0.17-py3-none-any.whl", hash = "sha256:64d703dd2e652928c2e40f930c1d0aee27aa4d11dcd34f55ac5c6951fec32386"},
-    {file = "mongomock_motor-0.0.17.tar.gz", hash = "sha256:4e7ecd77c65bddf00ee7d46c1e86189aa0c5e6a4885c62e2a7083bf0d7264b16"},
+    {file = "mongomock_motor-0.0.18-py3-none-any.whl", hash = "sha256:87e9678ab459f868d4e4207b631c0abb932e6f33a98f81c516ca0d73a8cb0d2c"},
+    {file = "mongomock_motor-0.0.18.tar.gz", hash = "sha256:5d34aba038f133abd21ba3b4e1bb913aeeb0d7bf96264781c60a51336ee5b841"},
 ]
 
 [package.dependencies]
@@ -2027,19 +2027,19 @@ dev = ["black", "flaky", "hypothesis", "pre-commit", "pytest", "pytest-cov", "ri
 
 [[package]]
 name = "platformdirs"
-version = "3.1.1"
+version = "3.2.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.1.1-py3-none-any.whl", hash = "sha256:e5986afb596e4bb5bde29a79ac9061aa955b94fca2399b7aaac4090860920dd8"},
-    {file = "platformdirs-3.1.1.tar.gz", hash = "sha256:024996549ee88ec1a9aa99ff7f8fc819bb59e2c3477b410d90a16d32d6e707aa"},
+    {file = "platformdirs-3.2.0-py3-none-any.whl", hash = "sha256:ebe11c0d7a805086e99506aa331612429a72ca7cd52a1f0d277dc4adc20cb10e"},
+    {file = "platformdirs-3.2.0.tar.gz", hash = "sha256:d5b638ca397f25f979350ff789db335903d7ea010ab28903f57b27e1b16c2b08"},
 ]
 
 [package.extras]
 docs = ["furo (>=2022.12.7)", "proselint (>=0.13)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.22,!=1.23.4)"]
-test = ["appdirs (==1.4.4)", "covdefaults (>=2.2.2)", "pytest (>=7.2.1)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
+test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.2.2)", "pytest-cov (>=4)", "pytest-mock (>=3.10)"]
 
 [[package]]
 name = "pluggy"
@@ -2059,14 +2059,14 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pre-commit"
-version = "3.2.0"
+version = "3.2.1"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pre_commit-3.2.0-py2.py3-none-any.whl", hash = "sha256:f712d3688102e13c8e66b7d7dbd8934a6dda157e58635d89f7d6fecdca39ce8a"},
-    {file = "pre_commit-3.2.0.tar.gz", hash = "sha256:818f0d998059934d0f81bb3667e3ccdc32da6ed7ccaac33e43dc231561ddaaa9"},
+    {file = "pre_commit-3.2.1-py2.py3-none-any.whl", hash = "sha256:a06a7fcce7f420047a71213c175714216498b49ebc81fe106f7716ca265f5bb6"},
+    {file = "pre_commit-3.2.1.tar.gz", hash = "sha256:b5aee7d75dbba21ee161ba641b01e7ae10c5b91967ebf7b2ab0dfae12d07e1f1"},
 ]
 
 [package.dependencies]
@@ -2983,7 +2983,7 @@ pydata-sphinx-theme = "^0.13.1"
 type = "git"
 url = "https://github.com/starlite-api/starlite-sphinx-theme.git"
 reference = "HEAD"
-resolved_reference = "0c340345b5a69bf8ee6b7bf65d57578a9c4f77dc"
+resolved_reference = "72e2dca91723e440777025b6b18ffbcf813a5d5d"
 
 [[package]]
 name = "structlog"
