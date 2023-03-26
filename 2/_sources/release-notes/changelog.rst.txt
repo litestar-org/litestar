@@ -266,6 +266,7 @@
         - ``config.static_files`` > ``static_files.config``
 
         The following modules have been removed from the public namespace:
+
         - ``asgi``
         - ``kwargs``
         - ``middleware.utils``
