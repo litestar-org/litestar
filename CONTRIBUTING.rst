@@ -73,7 +73,7 @@ Writing and running tests
 
 Tests are contained within the ``tests`` directory, and follow the same directory structure as the ``starlite`` module.
 If you are adding a test case, it should be located within the correct submodule of ``tests``. E.g. tests for
-``starlite/utils./sync.py`` reside in ``tests/utils/test_sync.py``.
+``starlite/utils/sync.py`` reside in ``tests/utils/test_sync.py``.
 
 The ``Makefile`` includes several commands for running tests:
 
