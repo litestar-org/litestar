@@ -56,7 +56,7 @@ class InitPluginProtocol(Protocol):
 
                 @get("/my-path")
                 def my_route_handler(name: str) -> dict[str, str]:
-                    return {"hello": "world"}
+                    return {"hello": name}
 
                 class MyPlugin(InitPluginProtocol):
                     def on_app_init(self, app_config: AppConfig) -> AppConfig:
@@ -72,7 +72,7 @@ class InitPluginProtocol(Protocol):
         Returns:
             The app config object.
         """
-        return app_config
+        return app_config  # pragma: no cover
 
 
 @runtime_checkable
