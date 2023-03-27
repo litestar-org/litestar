@@ -1,12 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterable, cast
+from dataclasses import asdict, fields
+from typing import TYPE_CHECKING, cast
 
-__all__ = ("extract_dataclass_fields",)
-
+from starlite.types import DataclassProtocol, Empty
 
 if TYPE_CHECKING:
-    from starlite.types import DataclassProtocol
+    from typing import Any, Iterable
+
+__all__ = (
+    "asdict_filter_empty",
+    "extract_dataclass_fields",
+)
 
 
 def extract_dataclass_fields(
@@ -28,3 +33,46 @@ def extract_dataclass_fields(
         if (not exclude_none or getattr(dt, field_name) is not None)
         and ((include is not None and field_name in include) or include is None)
     )
+
+
+def asdict_filter_empty(obj: DataclassProtocol) -> dict[str, Any]:
+    """Same as stdlib's ``dataclasses.asdict`` with additional filtering for :class:`Empty<.types.Empty>`.
+
+    Args:
+        obj: A dataclass instance.
+
+    Returns:
+        ``obj`` converted into a ``dict`` of its fields, with any :class:`Empty<.types.Empty>` values excluded.
+    """
+    return {k: v for k, v in asdict(obj).items() if v is not Empty}
+
+
+def simple_asdict(obj: DataclassProtocol) -> dict[str, Any]:
+    """Recursively convert a dataclass instance into a ``dict`` of its fields, without using ``copy.deepcopy()``.
+
+    The standard library ``dataclasses.asdict()`` function uses ``copy.deepcopy()`` on any value that is not a
+    dataclass, dict, list or tuple, which presents a problem when the dataclass holds items that cannot be pickled.
+
+    This function provides an alternative that does not use ``copy.deepcopy()``, and is a much simpler implementation,
+    only recursing into other dataclasses.
+
+    Args:
+        obj: A dataclass instance.
+
+    Returns:
+        ``obj`` converted into a ``dict`` of its fields.
+    """
+    field_values = ((field.name, getattr(obj, field.name)) for field in fields(obj))
+    return {k: simple_asdict(v) if isinstance(v, DataclassProtocol) else v for k, v in field_values}
+
+
+def simple_asdict_filter_empty(obj: DataclassProtocol) -> dict[str, Any]:
+    """Same as asdict_filter_empty but uses ``simple_asdict``.
+
+    Args:
+        obj: A dataclass instance.
+
+    Returns:
+        ``obj`` converted into a ``dict`` of its fields, with any :class:`Empty<.types.Empty>` values excluded.
+    """
+    return {k: v for k, v in simple_asdict(obj).items() if v is not Empty}
