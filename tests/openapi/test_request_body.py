@@ -49,7 +49,7 @@ def test_upload_file_request_body_generation() -> None:
         return None
 
     app = Starlite(route_handlers=[handle_form_upload, handle_file_upload, handle_file_list_upload])
-    schema_dict = app.openapi_schema.to_schema()  # type: ignore[union-attr]
+    schema_dict = app.openapi_schema.to_schema()
     paths = schema_dict["paths"]
     components = schema_dict["components"]
     assert paths["/file-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {

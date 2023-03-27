@@ -362,7 +362,7 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
     assert jwt_auth.security_requirement == {"BearerToken": []}
 
     app = Starlite(on_app_init=[jwt_auth.on_app_init])
-    assert app.openapi_schema.to_schema() == {  # type: ignore
+    assert app.openapi_schema.to_schema() == {
         "openapi": "3.1.0",
         "info": {"title": "Starlite API", "version": "1.0.0"},
         "servers": [{"url": "/"}],

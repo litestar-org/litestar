@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Callable, Literal, cast
 
 from yaml import dump as dump_yaml
 
+from starlite.constants import OPENAPI_NOT_INITIALIZED
 from starlite.controller import Controller
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
@@ -20,8 +21,6 @@ __all__ = ("OpenAPIController", "OpenAPISchemaResponse")
 if TYPE_CHECKING:
     from starlite.connection.request import Request
     from starlite.openapi.spec.open_api import OpenAPI
-
-MSG_OPENAPI_NOT_INITIALIZED = "Starlite has not been instantiated with OpenAPIConfig"
 
 
 class OpenAPISchemaResponse(Response):
@@ -98,12 +97,7 @@ class OpenAPIController(Controller):
 
         Returns:
             An :class:`OpenAPI <starlite.openapi.spec.open_api.OpenAPI>` instance.
-
-        Raises:
-            ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
-        if not request.app.openapi_schema:  # pragma: no cover
-            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
         return request.app.openapi_schema
 
     def should_serve_endpoint(self, request: "Request") -> bool:
@@ -173,9 +167,6 @@ class OpenAPIController(Controller):
         Returns:
             A Response instance with the YAML object rendered into a string.
         """
-        if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
-
         if self.should_serve_endpoint(request):
             return OpenAPISchemaResponse(
                 content=self.get_schema_from_request(request), media_type=OpenAPIMediaType.OPENAPI_YAML
@@ -193,9 +184,6 @@ class OpenAPIController(Controller):
         Returns:
             A Response instance with the JSON object rendered into a string.
         """
-        if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
-
         if self.should_serve_endpoint(request):
             return OpenAPISchemaResponse(
                 content=self.get_schema_from_request(request), media_type=OpenAPIMediaType.OPENAPI_JSON
@@ -221,7 +209,7 @@ class OpenAPIController(Controller):
         """
         config = request.app.openapi_config
         if not config:  # pragma: no cover
-            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
+            raise ImproperlyConfiguredException(OPENAPI_NOT_INITIALIZED)
 
         render_method = self.render_methods_map[config.root_schema_site]
 
@@ -245,9 +233,6 @@ class OpenAPIController(Controller):
         Returns:
             A response with a rendered swagger documentation site
         """
-        if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
-
         if self.should_serve_endpoint(request):
             return Response(content=self.render_swagger_ui(request), media_type=MediaType.HTML)
         return Response(
@@ -267,9 +252,6 @@ class OpenAPIController(Controller):
         Returns:
             A response with a rendered stoplight elements documentation site
         """
-        if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
-
         if self.should_serve_endpoint(request):
             return Response(content=self.render_stoplight_elements(request), media_type=MediaType.HTML)
         return Response(content=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
@@ -285,9 +267,6 @@ class OpenAPIController(Controller):
         Returns:
             A response with a rendered redoc documentation site
         """
-        if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
-
         if self.should_serve_endpoint(request):
             return Response(content=self.render_redoc(request), media_type=MediaType.HTML)
         return Response(content=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)

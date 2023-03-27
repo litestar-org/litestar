@@ -16,3 +16,4 @@ SCOPE_STATE_NAMESPACE = "__starlite__"
 SCOPE_STATE_RESPONSE_COMPRESSED = "response_compressed"
 UNDEFINED_SENTINELS = {Undefined, Signature.empty, Empty, Ellipsis}
 SKIP_VALIDATION_NAMES = {"request", "socket", "scope", "receive", "send"}
+OPENAPI_NOT_INITIALIZED = "Starlite has not been instantiated with OpenAPIConfig"

@@ -16,6 +16,7 @@ from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
 from starlite.config.response_cache import ResponseCacheConfig
 from starlite.connection import Request, WebSocket
+from starlite.constants import OPENAPI_NOT_INITIALIZED
 from starlite.datastructures.state import State
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from starlite.exceptions import (
@@ -458,17 +459,24 @@ class Starlite(Router):
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
     @property
-    def openapi_schema(self) -> OpenAPI | None:
+    def openapi_schema(self) -> OpenAPI:
         """Access  the OpenAPI schema of the application.
 
         Returns:
             The :class:`OpenAPI`
             <pydantic_openapi_schema.open_api.OpenAPI> instance of the
-            application's.
+            application.
+
+        Raises:
+            ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
-        if self.openapi_config and not self._openapi_schema:
+        if not self.openapi_config:
+            raise ImproperlyConfiguredException(OPENAPI_NOT_INITIALIZED)
+
+        if not self._openapi_schema:
             self._openapi_schema = self.openapi_config.to_openapi_schema()
             self.update_openapi_schema()
+
         return self._openapi_schema
 
     @classmethod
