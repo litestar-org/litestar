@@ -19,6 +19,7 @@ from .pydantic import (
     create_parsed_model_field,
 )
 from .scope import (
+    delete_starlite_scope_state,
     get_serializer_from_scope,
     get_starlite_scope_state,
     set_starlite_scope_state,
@@ -43,6 +44,7 @@ __all__ = (
     "convert_dataclass_to_model",
     "convert_typeddict_to_model",
     "create_parsed_model_field",
+    "delete_starlite_scope_state",
     "deprecated",
     "find_index",
     "get_enum_string_value",

@@ -35,7 +35,7 @@ intersphinx_mapping = {
     "msgspec": ("https://jcristharif.com/msgspec/", None),
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
-    "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),
+    "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
     "click": ("https://click.palletsprojects.com/en/8.1.x/", None),
     "redis": ("https://redis-py.readthedocs.io/en/stable/", None),
     "picologging": ("https://microsoft.github.io/picologging", None),
@@ -113,6 +113,9 @@ ignore_missing_refs = {
     "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
     "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
     re.compile(r"starlite\.plugins.*"): re.compile(".*(ModelT|DataContainerT)"),
+    re.compile(r"starlite\.contrib\.sqlalchemy\.init_plugin\.config\.common.*"): re.compile(
+        ".*(ConnectionT|EngineT|SessionT|SessionMakerT)"
+    ),
 }
 
 
