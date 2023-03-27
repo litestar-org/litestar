@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 @get(path="/sqlalchemy-app")
 def async_sqlalchemy_init(db_session: Session, db_engine: Engine) -> str:
-    """Create a new company and return it."""
+    """Interact with SQLAlchemy engine and session."""
     one = db_session.execute(text("SELECT 1")).scalar_one()
 
     with db_engine.connect() as conn:
