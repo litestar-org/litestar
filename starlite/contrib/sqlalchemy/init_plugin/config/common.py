@@ -142,7 +142,7 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
         Returns:
             A string keyed dict of names to be added to the namespace for signature forward reference resolution.
         """
-        return {}
+        return {}  # pragma: no cover
 
     def create_engine(self) -> EngineT:
         """Return an engine. If none exists yet, create one.
