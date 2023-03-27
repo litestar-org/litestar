@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 __all__ = (
     "asdict_filter_empty",
     "extract_dataclass_fields",
+    "simple_asdict",
+    "simple_asdict_filter_empty",
 )
 
 
@@ -75,4 +77,9 @@ def simple_asdict_filter_empty(obj: DataclassProtocol) -> dict[str, Any]:
     Returns:
         ``obj`` converted into a ``dict`` of its fields, with any :class:`Empty<.types.Empty>` values excluded.
     """
-    return {k: v for k, v in simple_asdict(obj).items() if v is not Empty}
+    field_values = ((field.name, getattr(obj, field.name)) for field in fields(obj))
+    return {
+        k: simple_asdict_filter_empty(v) if isinstance(v, DataclassProtocol) else v
+        for k, v in field_values
+        if v is not Empty
+    }
