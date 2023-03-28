@@ -1,4 +1,4 @@
-from examples.request_data.request_data_1 import app as app
+from examples.request_data.request_data_1 import app
 from examples.request_data.request_data_2 import app as app_2
 from examples.request_data.request_data_3 import app as app_3
 from examples.request_data.request_data_4 import app as app_4
@@ -8,7 +8,6 @@ from examples.request_data.request_data_7 import app as app_7
 from examples.request_data.request_data_8 import app as app_8
 from examples.request_data.request_data_9 import app as app_9
 from examples.request_data.request_data_10 import app as app_10
-
 from starlite.testing import TestClient
 
 

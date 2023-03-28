@@ -1,9 +1,9 @@
 from pathlib import Path
 
 from starlite import Starlite, get
-from starlite.config.template import TemplateConfig
 from starlite.contrib.mako import MakoTemplateEngine
 from starlite.response_containers import Template
+from starlite.template.config import TemplateConfig
 
 
 @get(path="/")

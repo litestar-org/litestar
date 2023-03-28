@@ -4,13 +4,27 @@ from enum import Enum
 from inspect import Signature
 from typing import TYPE_CHECKING, AnyStr, Mapping, cast
 
+from typing_extensions import TypedDict
+
+from starlite._layers.utils import narrow_response_cookies, narrow_response_headers
+from starlite._signature.utils import get_signature_model
 from starlite.constants import REDIRECT_STATUS_CODES
-from starlite.datastructures import Cookie, ResponseHeader
+from starlite.datastructures.cookie import Cookie
+from starlite.datastructures.response_header import ResponseHeader
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
     ValidationException,
+)
+from starlite.handlers.base import BaseRouteHandler
+from starlite.handlers.http_handlers._utils import (
+    create_data_handler,
+    create_generic_asgi_response_handler,
+    create_response_container_handler,
+    create_response_handler,
+    get_default_status_code,
+    normalize_http_method,
 )
 from starlite.response import FileResponse, Response
 from starlite.response_containers import File, Redirect, ResponseContainer
@@ -35,21 +49,8 @@ from starlite.types import (
 )
 from starlite.utils import AsyncCallable, Ref, is_async_callable, is_class_and_subclass
 
-from ..base import BaseRouteHandler
-from ..utils import narrow_response_cookies, narrow_response_headers
-from ._utils import (
-    create_data_handler,
-    create_generic_asgi_response_handler,
-    create_response_container_handler,
-    create_response_handler,
-    get_default_status_code,
-    normalize_http_method,
-)
-
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
-
-    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
 
     from starlite.app import Starlite
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
@@ -58,13 +59,16 @@ if TYPE_CHECKING:
     from starlite.datastructures.headers import Header
     from starlite.di import Provide
     from starlite.openapi.datastructures import ResponseSpec
+    from starlite.openapi.spec import SecurityRequirement
     from starlite.plugins import SerializationPluginProtocol
-    from starlite.types import MaybePartial  # nopycln: import # noqa: F401
+    from starlite.types import MaybePartial  # noqa: F401
 
-__all__ = (
-    "HTTPRouteHandler",
-    "route",
-)
+__all__ = ("HTTPRouteHandler", "route")
+
+
+class ResponseHandlerMap(TypedDict):
+    default_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType
+    response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType
 
 
 class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
@@ -76,7 +80,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     __slots__ = (
         "_resolved_after_response",
         "_resolved_before_request",
-        "_resolved_response_handler",
+        "_response_handler_mapping",
         "after_request",
         "after_response",
         "background",
@@ -145,6 +149,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         raises: Sequence[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: Mapping[int, ResponseSpec] | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         security: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
@@ -155,44 +160,46 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments.
-                If not given defaults to ``'/'``
-            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is passed
+                If not given defaults to ``/``
+            after_request: A sync or async function executed before a :class:`Request <.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                :class:`Request <starlite.connection.Request>` object and should not return any values.
-            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
-                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+                :class:`Request <.connection.Request>` object and should not return any values.
+            background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
+                :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to ``None``.
             before_request: A sync or async function called immediately before calling the route handler. Receives
-                the `starlite.connection.Request`` instance and any non-``None`` return value is used for the response,
-                bypassing the route handler.
-            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a number
-                of seconds (e.g. ``120``) to cache the response.
+                the :class:`Request <.connection.Request>` instance and any non-``None`` return value is used for the
+                response, bypassing the route handler.
+            cache: Enables response caching if configured on the application level. Valid values are ``True`` or a
+                number of seconds (e.g. ``120``) to cache the response.
             cache_control: A ``cache-control`` header of type
-                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` that will be added to the response.
-            cache_key_builder: A :class:`cache-key builder function <starlite.types.CacheKeyBuilder>`. Allows for customization
+                :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
+            cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
-            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
-            etag: An ``etag`` header of type :class:`ETag <starlite.datastructures.ETag>` that will be added to the response.
+            dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
-            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
-            http_method: An :class:`http method string <starlite.types.Method>`, a member of the enum
-                :class:`HttpMethod <starlite.enums.HttpMethod>` or a list of these that correlates to the methods the
-                route handler function should handle.
-            media_type: A member of the :class:`MediaType <starlite.enums.MediaType>` enum or a string with a
-                valid IANA Media-Type.
-            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
+            guards: A sequence of :class:`Guard <.types.Guard>` callables.
+            http_method: An :class:`http method string <.types.Method>`, a member of the enum
+                :class:`HttpMethod <.enums.HttpMethod>` or a list of these that correlates to the methods the route
+                handler function should handle.
+            media_type: A member of the :class:`MediaType <.enums.MediaType>` enum or a string with a valid IANA
+                Media-Type.
+            middleware: A sequence of :class:`Middleware <.types.Middleware>`.
             name: A string identifying the route handler.
-            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>` or
-                wherever you have access to :class:`Request <starlite.connection.request.Request>` or :class:`ASGI Scope <starlite.types.Scope>`.
-            response_class: A custom subclass of :class:`Response <starlite.response.Response>` to be used as route handler's
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
+                wherever you have access to :class:`Request <.connection.Request>` or
+                :class:`ASGI Scope <.types.Scope>`.
+            response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
-            response_cookies: A sequence of :class:`Cookie <starlite.datastructures.Cookie>` instances.
-            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+            response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
@@ -227,6 +234,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             middleware=middleware,
             name=name,
             opt=opt,
+            signature_namespace=signature_namespace,
             type_encoders=type_encoders,
             **kwargs,
         )
@@ -262,7 +270,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: AfterResponseHookHandler | None | EmptyType = Empty
         self._resolved_before_request: BeforeRequestHookHandler | None | EmptyType = Empty
-        self._resolved_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
+        self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
@@ -286,7 +294,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            The default :class:`Response <starlite.response.Response>` class for the route handler.
+            The default :class:`Response <.response.Response>` class for the route handler.
         """
         for layer in list(reversed(self.ownership_layers)):
             if layer.response_class is not None:
@@ -297,7 +305,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """Return all header parameters in the scope of the handler function.
 
         Returns:
-            A dictionary mapping keys to :class:`ResponseHeader <starlite.datastructures.ResponseHeader>` instances.
+            A dictionary mapping keys to :class:`ResponseHeader <.datastructures.ResponseHeader>` instances.
         """
         resolved_response_headers: dict[str, ResponseHeader] = {}
 
@@ -326,7 +334,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         """Return a list of Cookie instances. Filters the list to ensure each cookie key is unique.
 
         Returns:
-            A list of :class:`Cookie <starlite.datastructures.Cookie>` instances.
+            A list of :class:`Cookie <.datastructures.Cookie>` instances.
         """
         response_cookies: set[Cookie] = set()
         for layer in reversed(self.ownership_layers):
@@ -338,7 +346,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                         {Cookie(key=key, value=value) for key, value in layer_response_cookies.items()}
                     )
                 else:
-                    response_cookies.update(layer_response_cookies)
+                    response_cookies.update(cast("set[Cookie]", layer_response_cookies))
         return frozenset(response_cookies)
 
     def resolve_before_request(self) -> BeforeRequestHookHandler | None:
@@ -348,7 +356,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional :class:`before request lifecycle hook handler <starlite.types.BeforeRequestHookHandler>`
+            An optional :class:`before request lifecycle hook handler <.types.BeforeRequestHookHandler>`
         """
         if self._resolved_before_request is Empty:
             before_request_handlers: list[AsyncCallable] = [
@@ -367,7 +375,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            An optional :class:`after response lifecycle hook handler <starlite.types.AfterResponseHookHandler>`
+            An optional :class:`after response lifecycle hook handler <.types.AfterResponseHookHandler>`
         """
         if self._resolved_after_response is Empty:
             after_response_handlers: list[AsyncCallable] = [
@@ -380,17 +388,18 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         return cast("AfterResponseHookHandler | None", self._resolved_after_response)
 
-    def resolve_response_handler(
-        self,
-    ) -> Callable[[Any], Awaitable[ASGIApp]]:
+    def get_response_handler(self, is_response_type_data: bool = False) -> Callable[[Any], Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.
 
         This method is memoized so the computation occurs only once.
 
+        Args:
+            is_response_type_data: Whether to return a handler for 'Response' instances.
+
         Returns:
             Async Callable to handle an HTTP Request
         """
-        if self._resolved_response_handler is Empty:
+        if self._response_handler_mapping["default_handler"] is Empty:
             after_request_handlers: list[AsyncCallable] = [
                 layer.after_request for layer in self.ownership_layers if layer.after_request  # type: ignore[misc]
             ]
@@ -405,56 +414,72 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             cookies = self.resolve_response_cookies()
             type_encoders = self.resolve_type_encoders()
 
-            if is_class_and_subclass(self.signature.return_annotation, ResponseContainer):  # type: ignore
-                handler = create_response_container_handler(
+            return_annotation = get_signature_model(self).return_annotation
+
+            if before_request_handler := self.resolve_before_request():
+                before_request_handler_signature = Signature.from_callable(before_request_handler)
+                if (
+                    before_request_handler_signature.return_annotation
+                    and before_request_handler_signature.return_annotation is not Signature.empty
+                ):
+                    return_annotation = before_request_handler_signature.return_annotation
+
+            self._response_handler_mapping["response_type_handler"] = create_response_handler(
+                cookies=cookies, after_request=after_request
+            )
+
+            if is_class_and_subclass(return_annotation, Response):
+                self._response_handler_mapping["default_handler"] = self._response_handler_mapping[
+                    "response_type_handler"
+                ]
+            elif is_class_and_subclass(return_annotation, ResponseContainer):  # type: ignore
+                self._response_handler_mapping["default_handler"] = create_response_container_handler(
                     after_request=after_request,
                     cookies=cookies,
                     headers=headers,
                     media_type=media_type,
                     status_code=self.status_code,
                 )
-
-            elif is_class_and_subclass(self.signature.return_annotation, Response):
-                handler = create_response_handler(cookies=cookies, after_request=after_request)
-
-            elif is_async_callable(self.signature.return_annotation) or self.signature.return_annotation in {
-                ASGIApp,
-                "ASGIApp",
-            }:
-                handler = create_generic_asgi_response_handler(cookies=cookies, after_request=after_request)
-
+            elif is_async_callable(return_annotation) or return_annotation is ASGIApp:
+                self._response_handler_mapping["default_handler"] = create_generic_asgi_response_handler(
+                    cookies=cookies, after_request=after_request
+                )
             else:
-                handler = create_data_handler(
+                self._response_handler_mapping["default_handler"] = create_data_handler(
                     after_request=after_request,
                     background=self.background,
                     cookies=cookies,
                     headers=headers,
                     media_type=media_type,
                     response_class=response_class,
-                    return_annotation=self.signature.return_annotation,
+                    return_annotation=return_annotation,
                     status_code=self.status_code,
                     type_encoders=type_encoders,
                 )
 
-            self._resolved_response_handler = handler
-        return self._resolved_response_handler  # type:ignore[return-value]
+        return cast(
+            "Callable[[Any], Awaitable[ASGIApp]]",
+            self._response_handler_mapping["response_type_handler"]
+            if is_response_type_data
+            else self._response_handler_mapping["default_handler"],
+        )
 
     async def to_response(
         self, app: "Starlite", data: Any, plugins: list["SerializationPluginProtocol"], request: "Request"
     ) -> "ASGIApp":
-        """Return a :class:`Response <starlite.Response>` from the handler by resolving and calling it.
+        """Return a :class:`Response <.response.Response>` from the handler by resolving and calling it.
 
         Args:
-            app: The :class:`Starlite <starlite.app.Starlite>` app instance
-            data: Either an instance of a :class:`ResponseContainer <starlite.datastructures.ResponseContainer>`,
+            app: The :class:`Starlite <.app.Starlite>` app instance
+            data: Either an instance of a :class:`ResponseContainer <.response_containers.ResponseContainer>`,
                 a Response instance or an arbitrary value.
             plugins: An optional mapping of plugins
-            request: A :class:`Request <starlite.connection.request.Request>` instance
+            request: A :class:`Request <.connection.Request>` instance
 
         Returns:
             A Response instance
         """
-        response_handler = self.resolve_response_handler()
+        response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
         return await response_handler(app=app, data=data, plugins=plugins, request=request)  # type: ignore
 
     def _validate_handler_function(self) -> None:

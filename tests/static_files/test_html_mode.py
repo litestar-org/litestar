@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING
 import pytest
 from fsspec.implementations.local import LocalFileSystem
 
-from starlite.config.static_files import StaticFilesConfig
 from starlite.file_system import BaseLocalFileSystem
+from starlite.static_files.config import StaticFilesConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from starlite.testing import create_test_client
 
@@ -53,4 +53,4 @@ def test_staticfiles_is_html_mode_raises_exception_when_no_404_html_is_present(
     with create_test_client([], static_files_config=[static_files_config]) as client:
         response = client.get("/static")
         assert response.status_code == HTTP_404_NOT_FOUND
-        assert response.json() == {"status_code": 404, "detail": "no file or directory match the path  was found"}
+        assert response.json() == {"status_code": 404, "detail": "no file or directory match the path . was found"}

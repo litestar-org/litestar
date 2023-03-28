@@ -4,15 +4,15 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, EmailStr, SecretStr
 
 from starlite import Request, Starlite, get, post
-from starlite.config.openapi import OpenAPIConfig
 from starlite.connection import ASGIConnection
 from starlite.exceptions import NotAuthorizedException
 from starlite.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
+from starlite.openapi.config import OpenAPIConfig
 from starlite.security.session_auth import SessionAuth
-from starlite.storage.memory import MemoryStorage
+from starlite.stores.memory import MemoryStore
 
 
 # Let's assume we have a User model that is a pydantic model.
@@ -41,6 +41,7 @@ class UserLoginPayload(BaseModel):
 
 
 MOCK_DB: Dict[str, User] = {}
+memory_store = MemoryStore()
 
 
 # The SessionAuth class requires a handler callable
@@ -72,7 +73,7 @@ async def login(data: UserLoginPayload, request: "Request[Any, Any, Any]") -> Us
     # are correct. If we are using passwords, we should check that
     # the password hashes match etc. We will simply assume that we
     # have done all of that we now have a user value:
-    user_id = await request.cache.get(data.email)
+    user_id = await memory_store.get(data.email)
 
     if not user_id:
         raise NotAuthorizedException
@@ -97,7 +98,7 @@ async def signup(data: UserCreatePayload, request: Request[Any, Any, Any]) -> Us
     # and we now have a user instance with an assigned ID value:
     user = User(name=data.name, email=data.email, id=uuid4())
 
-    await request.cache.set(data.email, str(user.id))
+    await memory_store.set(data.email, str(user.id))
     MOCK_DB[str(user.id)] = user
     # we are creating a session the same as we do in the
     # 'login_handler' above:
@@ -128,7 +129,7 @@ session_auth = SessionAuth[User, ServerSideSessionBackend](
     retrieve_user_handler=retrieve_user_handler,
     # we must pass a config for a session backend.
     # all session backends are supported
-    session_backend_config=ServerSideSessionConfig(storage=MemoryStorage()),
+    session_backend_config=ServerSideSessionConfig(),
     # exclude any URLs that should not have authentication.
     # We exclude the documentation URLs, signup and login.
     exclude=["/login", "/signup", "/schema"],

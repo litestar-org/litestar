@@ -11,12 +11,17 @@ from starlite.middleware.base import AbstractMiddleware, DefineMiddleware
 from starlite.serialization import decode_json, encode_json
 from starlite.utils import AsyncCallable
 
+__all__ = ("CacheObject", "RateLimitConfig", "RateLimitMiddleware")
+
+
 if TYPE_CHECKING:
     from typing import Awaitable
 
-    from starlite.cache import Cache
+    from starlite import Starlite
     from starlite.connection import Request
+    from starlite.stores.base import Store
     from starlite.types import ASGIApp, Message, Receive, Scope, Send, SyncOrAsyncUnion
+
 
 DurationUnit = Literal["second", "minute", "hour", "day"]
 
@@ -36,17 +41,7 @@ class CacheObject:
 class RateLimitMiddleware(AbstractMiddleware):
     """Rate-limiting middleware."""
 
-    __slots__ = (
-        "app",
-        "cache",
-        "check_throttle_handler",
-        "max_requests",
-        "unit",
-        "request_quota",
-        "config",
-    )
-
-    cache: Cache
+    __slots__ = ("app", "check_throttle_handler", "max_requests", "unit", "request_quota", "config")
 
     def __init__(self, app: ASGIApp, config: RateLimitConfig) -> None:
         """Initialize ``RateLimitMiddleware``.
@@ -74,24 +69,23 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        if not hasattr(self, "cache"):
-            self.cache = scope["app"].cache
-
-        request: Request[Any, Any, Any] = scope["app"].request_class(scope)
+        app = scope["app"]
+        request: Request[Any, Any, Any] = app.request_class(scope)
+        store = self.config.get_store_from_app(app)
         if await self.should_check_request(request=request):
             key = self.cache_key_from_request(request=request)
-            cache_object = await self.retrieve_cached_history(key)
+            cache_object = await self.retrieve_cached_history(key, store)
             if len(cache_object.history) >= self.max_requests:
                 raise TooManyRequestsException(
                     headers=self.create_response_headers(cache_object=cache_object)
                     if self.config.set_rate_limit_headers
                     else None
                 )
-            await self.set_cached_history(key=key, cache_object=cache_object)
+            await self.set_cached_history(key=key, cache_object=cache_object, store=store)
             if self.config.set_rate_limit_headers:
                 send = self.create_send_wrapper(send=send, cache_object=cache_object)
 
-        await self.app(scope, receive, send)
+        await self.app(scope, receive, send)  # pyright: ignore
 
     def create_send_wrapper(self, send: Send, cache_object: CacheObject) -> Send:
         """Create a ``send`` function that wraps the original send to inject response headers.
@@ -126,7 +120,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         """Get a cache-key from a ``Request``
 
         Args:
-            request: A :class:`Request <starlite.connection.Request>` instance.
+            request: A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A cache key.
@@ -142,18 +136,19 @@ class RateLimitMiddleware(AbstractMiddleware):
 
         return f"{type(self).__name__}::{identifier}"
 
-    async def retrieve_cached_history(self, key: str) -> CacheObject:
+    async def retrieve_cached_history(self, key: str, store: Store) -> CacheObject:
         """Retrieve a list of time stamps for the given duration unit.
 
         Args:
             key: Cache key.
+            store: A :class:`Store <.stores.base.Store>`
 
         Returns:
-            An instance of StorageObject.
+            An :class:`CacheObject`.
         """
         duration = DURATION_VALUES[self.unit]
         now = int(time())
-        cached_string = await self.cache.get(key)
+        cached_string = await store.get(key)
         if cached_string:
             cache_object = CacheObject(**decode_json(cached_string))
             if cache_object.reset <= now:
@@ -165,24 +160,25 @@ class RateLimitMiddleware(AbstractMiddleware):
 
         return CacheObject(history=[], reset=now + duration)
 
-    async def set_cached_history(self, key: str, cache_object: CacheObject) -> None:
+    async def set_cached_history(self, key: str, cache_object: CacheObject, store: Store) -> None:
         """Store history extended with the current timestamp in cache.
 
         Args:
             key: Cache key.
-            cache_object: An instance of StorageObject.
+            cache_object: A :class:`CacheObject`.
+            store: A :class:`Store <.stores.base.Store>`
 
         Returns:
             None
         """
         cache_object.history = [int(time()), *cache_object.history]
-        await self.cache.set(key, encode_json(cache_object), expiration=DURATION_VALUES[self.unit])
+        await store.set(key, encode_json(cache_object), expires_in=DURATION_VALUES[self.unit])
 
     async def should_check_request(self, request: "Request[Any, Any, Any]") -> bool:
         """Return a boolean indicating if a request should be checked for rate limiting.
 
         Args:
-            request: A :class:`Request <starlite.connection.Request>` instance.
+            request: A :class:`Request <.connection.Request>` instance.
 
         Returns:
             Boolean dictating whether the request should be checked for rate-limiting.
@@ -195,10 +191,10 @@ class RateLimitMiddleware(AbstractMiddleware):
         """Create ratelimit response headers.
 
         Notes:
-            * see the :func:`IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>`
+            * see the `IETF RateLimit draft <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>_`
 
         Args:
-            cache_object: An instance of Cache Object.
+            cache_object:A :class:`CacheObject`.
 
         Returns:
             A dict of http headers.
@@ -241,7 +237,8 @@ class RateLimitConfig:
     """Key to use for the rate limit reset header."""
     rate_limit_limit_header_key: str = field(default="RateLimit-Limit")
     """Key to use for the rate limit limit header."""
-    cache_key_builder: Callable[[Request], str] | None = field(default=None)
+    store: str = "rate_limit"
+    """Name of the :class:`Store <.stores.base.Store>` to use"""
 
     def __post_init__(self) -> None:
         if self.check_throttle_handler:
@@ -260,16 +257,18 @@ class RateLimitConfig:
                 # limit to 10 requests per minute, excluding the schema path
                 throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
 
-
                 @get("/")
                 def my_handler(request: Request) -> None:
                     ...
 
-
                 app = Starlite(route_handlers=[my_handler], middleware=[throttle_config.middleware])
 
-
         Returns:
-            An instance of DefineMiddleware including ``self`` as the config kwarg value.
+            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>` including ``self`` as the
+            config kwarg value.
         """
         return DefineMiddleware(self.middleware_class, config=self)
+
+    def get_store_from_app(self, app: Starlite) -> Store:
+        """Get the store defined in :attr:`store` from an :class:`Starlite <.app.Starlite>` instance."""
+        return app.stores.get(self.store)

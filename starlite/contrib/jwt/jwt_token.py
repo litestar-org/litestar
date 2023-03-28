@@ -8,6 +8,8 @@ from jose import JWSError, JWTError, jwt
 
 from starlite.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
+__all__ = ("Token",)
+
 
 def _normalize_datetime(value: datetime) -> datetime:
     """Convert the given value into UTC and strip microseconds.
@@ -74,7 +76,7 @@ class Token:
             A decoded Token instance.
 
         Raises:
-            :class:`NotAuthorizedException <starlite.exceptions.NotAuthorizedException>`: If token is invalid.
+            NotAuthorizedException: If the token is invalid.
         """
         try:
             payload = jwt.decode(token=encoded_token, key=secret, algorithms=[algorithm], options={"verify_aud": False})
@@ -95,7 +97,7 @@ class Token:
             An encoded token string.
 
         Raises:
-            :class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>`: If encoding fails.
+            ImproperlyConfiguredException: If encoding fails.
         """
         try:
             return cast(

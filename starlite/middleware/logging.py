@@ -25,6 +25,9 @@ from starlite.utils import (
     set_starlite_scope_state,
 )
 
+__all__ = ("LoggingMiddleware", "LoggingMiddlewareConfig")
+
+
 if TYPE_CHECKING:
     from starlite.connection import Request
     from starlite.types import (
@@ -40,10 +43,10 @@ if TYPE_CHECKING:
 try:
     from structlog.types import BindableLogger
 
-    structlog_installed = True  # pylint: disable=invalid-name
+    structlog_installed = True
 except ImportError:
     BindableLogger = object  # type: ignore
-    structlog_installed = False  # pylint: disable=invalid-name
+    structlog_installed = False
 
 
 class LoggingMiddleware(AbstractMiddleware):
@@ -151,7 +154,9 @@ class LoggingMiddleware(AbstractMiddleware):
         if self.is_struct_logger:
             self.logger.info(message, **values)
         else:
-            self.logger.info(f"{message}: " + ", ".join([f"{key}={value}" for key, value in values.items()]))
+            value_strings = [f"{key}={value}" for key, value in values.items()]
+            log_message = f"{message}: {', '.join(value_strings)}"
+            self.logger.info(log_message)
 
     def _serialize_value(self, serializer: Serializer | None, value: Any) -> Any:
         if not self.is_struct_logger and isinstance(value, (dict, list, tuple, set)):
@@ -342,18 +347,15 @@ class LoggingMiddlewareConfig:
 
                 logging_middleware_config = LoggingMiddlewareConfig()
 
-
                 @get("/")
                 def my_handler(request: Request) -> None:
                     ...
-
 
                 app = Starlite(
                     route_handlers=[my_handler],
                     logging_config=logging_config,
                     middleware=[logging_middleware_config.middleware],
                 )
-
 
         Returns:
             An instance of DefineMiddleware including ``self`` as the config kwarg value.

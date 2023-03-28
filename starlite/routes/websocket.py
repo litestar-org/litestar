@@ -7,10 +7,10 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.routes.base import BaseRoute
 
 if TYPE_CHECKING:
+    from starlite._kwargs import KwargsModel
+    from starlite._kwargs.cleanup import DependencyCleanupGroup
     from starlite.connection import WebSocket
     from starlite.handlers.websocket_handlers import WebsocketRouteHandler
-    from starlite.kwargs import KwargsModel
-    from starlite.kwargs.cleanup import DependencyCleanupGroup
     from starlite.types import Receive, Send, WebSocketScope
 
 

@@ -1,9 +1,11 @@
+from __future__ import annotations
+
+from copy import copy
 from functools import cached_property
-from typing import TYPE_CHECKING, Callable, Dict, Literal, cast
+from typing import TYPE_CHECKING, Callable, Literal, cast
 
 from yaml import dump as dump_yaml
 
-from starlite.connection import Request
 from starlite.controller import Controller
 from starlite.enums import MediaType, OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
@@ -12,8 +14,12 @@ from starlite.response import Response
 from starlite.serialization import encode_json
 from starlite.status_codes import HTTP_404_NOT_FOUND
 
+__all__ = ("OpenAPIController", "OpenAPISchemaResponse")
+
+
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0.open_api import OpenAPI
+    from starlite.connection.request import Request
+    from starlite.openapi.spec.open_api import OpenAPI
 
 MSG_OPENAPI_NOT_INITIALIZED = "Starlite has not been instantiated with OpenAPIConfig"
 
@@ -25,12 +31,12 @@ class OpenAPISchemaResponse(Response):
         """Handle rendering of schema into the correct format - either YAML or JSON.
 
         Args:
-            content: The :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.open_api.OpenAPI>` instance to render.
+            content: The :class:`OpenAPI <starlite.openapi.spec.open_api.OpenAPI>` instance to render.
 
         Returns:
             Rendered bytes.
         """
-        content_dict = content.dict(by_alias=True, exclude_none=True)
+        content_dict = content.to_schema()
         if self.media_type == OpenAPIMediaType.OPENAPI_YAML:
             return cast("bytes", dump_yaml(content_dict, default_flow_style=False).encode("utf-8"))
         return encode_json(content_dict)
@@ -88,10 +94,10 @@ class OpenAPIController(Controller):
         """Return the OpenAPI pydantic model from the request instance.
 
         Args:
-            request: A :class:`Starlite <starlite.connection.Request>` instance.
+            request: A :class:`Starlite <.connection.Request>` instance.
 
         Returns:
-            An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.open_api.OpenAPI>` instance.
+            An :class:`OpenAPI <starlite.openapi.spec.open_api.OpenAPI>` instance.
 
         Raises:
             ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
@@ -132,15 +138,15 @@ class OpenAPIController(Controller):
 
     @property
     def favicon(self) -> str:
-        """Return favicon `<link>` tag, if applicable.
+        """Return favicon ``<link>`` tag, if applicable.
 
         Returns:
-            A `<link>` tag if self.favicon_url is not empty, otherwise returns a placeholder meta tag.
+            A ``<link>`` tag if ``self.favicon_url`` is not empty, otherwise returns a placeholder meta tag.
         """
         return f"<link rel='icon' type='image/x-icon' href='{self.favicon_url}'>" if self.favicon_url else "<meta/>"
 
     @cached_property
-    def render_methods_map(self) -> Dict[Literal["redoc", "swagger", "elements"], Callable[[Request], str]]:
+    def render_methods_map(self) -> dict[Literal["redoc", "swagger", "elements"], Callable[[Request], str]]:
         """Map render method names to render methods.
 
         Returns:
@@ -158,11 +164,11 @@ class OpenAPIController(Controller):
         include_in_schema=False,
     )
     def retrieve_schema_yaml(self, request: Request) -> Response:
-        """Return the OpenAPI schema as YAML with an 'application/vnd.oai.openapi' Content-Type header.
+        """Return the OpenAPI schema as YAML with an ``application/vnd.oai.openapi`` Content-Type header.
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A Response instance with the YAML object rendered into a string.
@@ -178,11 +184,11 @@ class OpenAPIController(Controller):
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False)
     def retrieve_schema_json(self, request: Request) -> Response:
-        """Return the OpenAPI schema as JSON with an 'application/vnd.oai.openapi+json' Content-Type header.
+        """Return the OpenAPI schema as JSON with an ``application/vnd.oai.openapi+json`` Content-Type header.
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A Response instance with the JSON object rendered into a string.
@@ -200,13 +206,12 @@ class OpenAPIController(Controller):
     def root(self, request: Request) -> Response:
         """Render a static documentation site.
 
-         The site to be rendered is based on the ``root_schema_site`` value set in the
-         application's :class:`OpenAPIConfig <starlite.config.openapi.OpenAPIConfig>`.
-         Defaults to ``redoc``.
+         The site to be rendered is based on the ``root_schema_site`` value set in the application's
+         :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`. Defaults to ``redoc``.
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A response with the rendered site defined in root_schema_site.
@@ -235,10 +240,10 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
-            response: With a rendered swagger documentation site
+            A response with a rendered swagger documentation site
         """
         if not request.app.openapi_config:  # pragma: no cover
             raise ImproperlyConfiguredException(MSG_OPENAPI_NOT_INITIALIZED)
@@ -257,7 +262,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A response with a rendered stoplight elements documentation site
@@ -275,7 +280,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A response with a rendered redoc documentation site
@@ -295,20 +300,19 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A rendered html string.
         """
         schema = self.get_schema_from_request(request)
+
         # Note: Fix for Swagger rejection OpenAPI >=3.1
         if not self._dumped_modified_schema:
-            schema_copy = schema.copy()
+            schema_copy = copy(schema)
             schema_copy.openapi = "3.0.3"
 
-            self._dumped_modified_schema = encode_json(schema_copy.json(by_alias=True, exclude_none=True)).decode(
-                "utf-8"
-            )
+            self._dumped_modified_schema = encode_json(schema_copy.to_schema()).decode("utf-8")
 
         head = f"""
           <head>
@@ -328,7 +332,7 @@ class OpenAPIController(Controller):
             <div id='swagger-container'/>
             <script type="text/javascript">
             const ui = SwaggerUIBundle({{
-                spec: JSON.parse({self._dumped_modified_schema}),
+                spec: {self._dumped_modified_schema},
                 dom_id: '#swagger-container',
                 deepLinking: true,
                 showExtensions: true,
@@ -358,7 +362,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A rendered html string.
@@ -402,7 +406,7 @@ class OpenAPIController(Controller):
 
         Args:
             request:
-                A :class:`Request <starlite.connection.Request>` instance.
+                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A rendered html string.
@@ -410,7 +414,7 @@ class OpenAPIController(Controller):
         schema = self.get_schema_from_request(request)
 
         if not self._dumped_schema:
-            self._dumped_schema = encode_json(schema.json(by_alias=True, exclude_none=True)).decode("utf-8")
+            self._dumped_schema = encode_json(schema.to_schema()).decode("utf-8")
 
         head = f"""
           <head>
@@ -438,7 +442,7 @@ class OpenAPIController(Controller):
             <div id='redoc-container'/>
             <script type="text/javascript">
                 Redoc.init(
-                    JSON.parse({self._dumped_schema}),
+                    {self._dumped_schema},
                     undefined,
                     document.getElementById('redoc-container')
                 )

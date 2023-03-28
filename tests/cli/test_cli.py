@@ -5,11 +5,11 @@ from unittest.mock import MagicMock
 
 from click import group
 
+import starlite.cli._utils
 import starlite.cli.main
-import starlite.cli.utils
 from starlite import Starlite
+from starlite.cli._utils import _format_is_enabled
 from starlite.cli.main import starlite_group as cli_command
-from starlite.cli.utils import _format_is_enabled
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -53,7 +53,7 @@ def test_register_commands_from_entrypoint(mocker: "MockerFixture", runner: "Cli
     else:
         mocker.patch("importlib.metadata.entry_points", return_value=[mock_entry_point])
 
-    importlib.reload(starlite.cli.utils)
+    importlib.reload(starlite.cli._utils)
     cli_command = importlib.reload(starlite.cli.main).starlite_group
 
     result = runner.invoke(cli_command, f"--app={app_file.stem}:app custom-group custom-command")

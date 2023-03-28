@@ -3,6 +3,8 @@ from typing import Any
 from starlite.exceptions.base_exceptions import StarliteException
 from starlite.status_codes import WS_1000_NORMAL_CLOSURE
 
+__all__ = ("WebSocketDisconnect", "WebSocketException")
+
 
 class WebSocketException(StarliteException):
     """Exception class for websocket related events."""

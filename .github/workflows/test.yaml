@@ -24,13 +24,14 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-      - name: Set up python ${{ matrix.python-version }}
+      - name: Set up python ${{ inputs.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ inputs.python-version }}
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
+          version: 1.4.0
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
@@ -40,14 +41,14 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .venv
-          key: v1-venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: v1-venv-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Load cached pip wheels
         if: runner.os == 'Windows'
         id: cached-pip-wheels
         uses: actions/cache@v3
         with:
           path: ~/.cache
-          key: cache-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+          key: cache-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       - name: Install dependencies
         run: poetry install --no-interaction
       - name: Set pythonpath

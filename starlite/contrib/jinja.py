@@ -10,10 +10,12 @@ from starlite.template.base import (
     url_for_static_asset,
 )
 
+__all__ = ("JinjaTemplateEngine",)
+
+
 try:
-    from jinja2 import Environment, FileSystemLoader
+    from jinja2 import Environment, FileSystemLoader, pass_context
     from jinja2 import TemplateNotFound as JinjaTemplateNotFound
-    from jinja2 import pass_context
 except ImportError as e:
     raise MissingDependencyException("jinja2 is not installed") from e
 
@@ -40,6 +42,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
 
     def get_template(self, template_name: str) -> JinjaTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
+
         Args:
             template_name: A dotted path
 
@@ -47,7 +50,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate"]):
             JinjaTemplate instance
 
         Raises:
-            :class:`TemplateNotFoundException <starlite.exceptions.TemplateNotFoundException>`: if no template is found.
+            TemplateNotFoundException: if no template is found.
         """
         try:
             return self.engine.get_template(name=template_name)

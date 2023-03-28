@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from functools import lru_cache
 from inspect import isawaitable
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, Sequence, cast
 
 from typing_extensions import get_args
 
-from starlite.datastructures import Cookie, ResponseHeader
 from starlite.dto import DTO
 from starlite.enums import HttpMethod
 from starlite.exceptions import ValidationException
-from starlite.plugins.base import get_plugin_for_value
+from starlite.plugins import get_plugin_for_value
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from starlite.utils import (
     annotation_is_iterable_of_type,
@@ -19,11 +18,10 @@ from starlite.utils import (
 )
 
 if TYPE_CHECKING:
-    from typing import Any, Sequence
-
     from starlite.app import Starlite
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.connection import Request
+    from starlite.datastructures import Cookie, ResponseHeader
     from starlite.plugins import SerializationPluginProtocol
     from starlite.response import Response
     from starlite.response_containers import ResponseContainer
@@ -35,6 +33,18 @@ if TYPE_CHECKING:
         ResponseType,
         TypeEncodersMap,
     )
+
+__all__ = (
+    "create_data_handler",
+    "create_generic_asgi_response_handler",
+    "create_response_container_handler",
+    "create_response_handler",
+    "filter_cookies",
+    "get_default_status_code",
+    "normalize_headers",
+    "normalize_http_method",
+    "normalize_response_data",
+)
 
 
 def create_data_handler(
@@ -48,7 +58,23 @@ def create_data_handler(
     status_code: int,
     type_encoders: TypeEncodersMap | None,
 ) -> AsyncAnyCallable:
-    """Create a handler function for arbitrary data."""
+    """Create a handler function for arbitrary data.
+
+    Args:
+        after_request: An after request handler.
+        background: A background task or background tasks.
+        cookies: A set of pre-defined cookies.
+        headers: A set of response headers.
+        media_type: The response media type.
+        response_class: The response class to use.
+        return_annotation: The return annotation.
+        status_code: The response status code.
+        type_encoders: A mapping of types to encoder functions.
+
+    Returns:
+        A handler function.
+
+    """
     normalized_headers = [
         (name.lower().encode("latin-1"), value.encode("latin-1")) for name, value in normalize_headers(headers).items()
     ]
@@ -93,9 +119,16 @@ def create_data_handler(
     return handler
 
 
-@lru_cache(1024)
 def filter_cookies(local_cookies: frozenset[Cookie], layered_cookies: frozenset[Cookie]) -> list[Cookie]:
-    """Given two sets of cookies, return a unique list of cookies, that are not marked as documentation_only."""
+    """Given two sets of cookies, return a unique list of cookies, that are not marked as documentation_only.
+
+    Args:
+        local_cookies: Cookies returned from the local scope.
+        layered_cookies: Cookies returned from the layers.
+
+    Returns:
+        A unified list of cookies
+    """
     return [cookie for cookie in {*local_cookies, *layered_cookies} if not cookie.documentation_only]
 
 
@@ -103,7 +136,15 @@ def create_generic_asgi_response_handler(
     after_request: AfterRequestHookHandler | None,
     cookies: frozenset[Cookie],
 ) -> AsyncAnyCallable:
-    """Create a handler function for Responses."""
+    """Create a handler function for Responses.
+
+    Args:
+        after_request: An after request handler.
+        cookies: A set of pre-defined cookies.
+
+    Returns:
+        A handler function.
+    """
 
     async def handler(data: "ASGIApp", **kwargs: Any) -> "ASGIApp":
         if hasattr(data, "set_cookie"):
@@ -163,7 +204,18 @@ def create_response_container_handler(
     media_type: str,
     status_code: int,
 ) -> AsyncAnyCallable:
-    """Create a handler function for ResponseContainers."""
+    """Create a handler function for ResponseContainers.
+
+    Args:
+        after_request: An after request handler.
+        cookies: A set of pre-defined cookies.
+        headers: A set of response headers.
+        media_type: The response media type.
+        status_code: The response status code.
+
+    Returns:
+        A handler function.
+    """
     normalized_headers = normalize_headers(headers)
 
     async def handler(data: ResponseContainer, app: "Starlite", request: "Request", **kwargs: Any) -> "ASGIApp":
@@ -184,7 +236,15 @@ def create_response_handler(
     after_request: AfterRequestHookHandler | None,
     cookies: frozenset[Cookie],
 ) -> AsyncAnyCallable:
-    """Create a handler function for Starlite Responses."""
+    """Create a handler function for Starlite Responses.
+
+    Args:
+        after_request: An after request handler.
+        cookies: A set of pre-defined cookies.
+
+    Returns:
+        A handler function.
+    """
 
     async def handler(data: Response, **kwargs: Any) -> "ASGIApp":
         data.cookies = filter_cookies(frozenset(data.cookies), cookies)
@@ -208,10 +268,7 @@ def normalize_http_method(http_methods: HttpMethod | Method | Sequence[HttpMetho
         http_methods = [http_methods]  # pyright: ignore
 
     for method in http_methods:
-        if isinstance(method, HttpMethod):
-            method_name = method.value.upper()
-        else:
-            method_name = method.upper()
+        method_name = method.value.upper() if isinstance(method, HttpMethod) else method.upper()
         if method_name not in HTTP_METHOD_NAMES:
             raise ValidationException(f"Invalid HTTP method: {method_name}")
         output.add(method_name)

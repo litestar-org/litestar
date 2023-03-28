@@ -5,10 +5,12 @@ from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
 
-from starlite.app import DEFAULT_CACHE_CONFIG, Starlite
+from starlite.app import Starlite
 from starlite.config.app import AppConfig
-from starlite.config.logging import LoggingConfig
+from starlite.config.response_cache import ResponseCacheConfig
+from starlite.datastructures import State
 from starlite.events.emitter import SimpleEventEmitter
+from starlite.logging.config import LoggingConfig
 from starlite.router import Router
 
 
@@ -25,7 +27,7 @@ def app_config_object() -> AppConfig:
         before_send=[],
         before_shutdown=[],
         before_startup=[],
-        cache_config=DEFAULT_CACHE_CONFIG,
+        response_cache_config=ResponseCacheConfig(),
         cache_control=None,
         compression_config=None,
         cors_config=None,
@@ -36,7 +38,6 @@ def app_config_object() -> AppConfig:
         event_emitter_backend=SimpleEventEmitter,
         exception_handlers={},
         guards=[],
-        initial_state={},
         listeners=[],
         logging_config=None,
         middleware=[],
@@ -85,9 +86,9 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # have been accessed during app instantiation.
     property_mocks: List[Tuple[str, Mock]] = []
     for field in fields(AppConfig):
-        if field.name == "cache_config":
-            property_mock = PropertyMock(return_value=DEFAULT_CACHE_CONFIG)
-        if field.name in ["event_emitter_backend", "cache_config"]:
+        if field.name == "response_cache_config":
+            property_mock = PropertyMock(return_value=ResponseCacheConfig())
+        if field.name in ["event_emitter_backend", "response_cache_config"]:
             property_mock = PropertyMock(return_value=Mock())
         else:
             # default iterable return value allows the mock properties that need to be iterated over in
@@ -131,14 +132,14 @@ def test_app_debug_update_logging_config() -> None:
     assert app.logging_config.loggers["starlite"]["level"] == "DEBUG"  # type: ignore[attr-defined]
 
 
-def test_set_initial_state() -> None:
-    def set_initial_state_in_hook(app_config: AppConfig) -> AppConfig:
-        assert isinstance(app_config.initial_state, dict)
-        app_config.initial_state["c"] = "D"  # pyright:ignore
-        app_config.initial_state["e"] = "f"  # pyright:ignore
+def test_set_state() -> None:
+    def modify_state_in_hook(app_config: AppConfig) -> AppConfig:
+        assert isinstance(app_config.state, State)
+        app_config.state["c"] = "D"
+        app_config.state["e"] = "f"
         return app_config
 
-    app = Starlite(initial_state={"a": "b", "c": "d"}, on_app_init=[set_initial_state_in_hook])
+    app = Starlite(state=State({"a": "b", "c": "d"}), on_app_init=[modify_state_in_hook])
     assert app.state._state == {"a": "b", "c": "D", "e": "f"}
 
 

@@ -1,29 +1,31 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Literal, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
-from starlite.config.logging import BaseLoggingConfig, LoggingConfig
-from starlite.datastructures.state import State  # noqa: TC001
-from starlite.exceptions import (
-    ImproperlyConfiguredException,
-    MissingDependencyException,
-)
+from starlite.exceptions import ImproperlyConfiguredException, MissingDependencyException
+from starlite.logging.config import BaseLoggingConfig, LoggingConfig
 from starlite.serialization import decode_json, encode_json
 from starlite.utils import AsyncCallable
 
 try:
-    from sqlalchemy import create_engine
-    from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
-    from sqlalchemy.orm import Query, Session, sessionmaker
+    import sqlalchemy  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
+
+from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
+from sqlalchemy.orm import Query, Session, sessionmaker
+
+__all__ = ("SQLAlchemyConfig", "SQLAlchemyEngineConfig", "SQLAlchemySessionConfig")
+
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Engine
     from sqlalchemy.future import Engine as FutureEngine
     from sqlalchemy.pool import Pool
 
+    from starlite.datastructures.state import State
     from starlite.types import BeforeMessageSendHookHandler, Message, Scope
 
     from .types import SessionMakerInstanceProtocol, SessionMakerTypeProtocol
@@ -31,12 +33,7 @@ if TYPE_CHECKING:
 IsolationLevel = Literal["AUTOCOMMIT", "READ COMMITTED", "READ UNCOMMITTED", "REPEATABLE READ", "SERIALIZABLE"]
 
 SESSION_SCOPE_KEY = "_sql_alchemy_db_session"
-SESSION_TERMINUS_ASGI_EVENTS = {
-    "http.response.start",
-    "http.disconnect",
-    "websocket.disconnect",
-    "websocket.close",
-}
+SESSION_TERMINUS_ASGI_EVENTS = {"http.response.start", "http.disconnect", "websocket.disconnect", "websocket.close"}
 
 
 def serializer(value: Any) -> str:
@@ -62,7 +59,7 @@ async def default_before_send_handler(message: "Message", _: "State", scope: "Sc
     Returns:
         None
     """
-    session = cast("Optional[Union[Session, AsyncSession]]", scope.get(SESSION_SCOPE_KEY))
+    session = cast("Session | AsyncSession | None", scope.get(SESSION_SCOPE_KEY))
     if session and message["type"] in SESSION_TERMINUS_ASGI_EVENTS:
         if isinstance(session, AsyncSession):
             await session.close()
@@ -158,7 +155,7 @@ class SQLAlchemyConfig:
     dependency_key: str = field(default="db_session")
     """Key to use for the dependency injection of database sessions."""
     engine_app_state_key: str = field(default="db_engine")
-    """Key under which to store the SQLAlchemy engine in the application :class:`State <starlite.datastructures.State>`
+    """Key under which to store the SQLAlchemy engine in the application :class:`State <.datastructures.State>`
     instance.
     """
     engine_config: SQLAlchemyEngineConfig = field(default_factory=SQLAlchemyEngineConfig)
@@ -188,8 +185,8 @@ class SQLAlchemyConfig:
     session_maker_class: type[SessionMakerTypeProtocol] = field(default=sessionmaker)
     """Sessionmaker class to use."""
     session_maker_app_state_key: str = field(default="session_maker_class")
-    """Key under which to store the SQLAlchemy ``sessionmaker`` in the application :class:`State <starlite.datastructures.State>`
-    instance.
+    """Key under which to store the SQLAlchemy ``sessionmaker`` in the application
+    :class:`State <.datastructures.State>` instance.
     """
     session_maker_instance: SessionMakerInstanceProtocol | None = field(default=None)
     """Optional sessionmaker to use.
@@ -247,7 +244,7 @@ class SQLAlchemyConfig:
             self.engine_instance = create_engine_callable(
                 self.connection_string, **self.engine_config_dict  # type:ignore[arg-type]
             )
-        return cast("Union[Engine, FutureEngine, AsyncEngine]", self.engine_instance)
+        return cast("Engine | FutureEngine | AsyncEngine", self.engine_instance)
 
     @property
     def session_maker(self) -> sessionmaker:
@@ -268,11 +265,11 @@ class SQLAlchemyConfig:
             )
         return cast("sessionmaker", self.session_maker_instance)
 
-    def create_db_session_dependency(self, state: State, scope: Scope) -> Session | AsyncSession:
+    def create_db_session_dependency(self, state: State, scope: Scope) -> Union[Session, AsyncSession]:  # noqa: F821
         """Create a session instance.
 
         Args:
-            state: The 'application.state' instance.
+            state: The ``Starlite.state`` instance.
             scope: The current connection's scope.
 
         Returns:
@@ -282,13 +279,13 @@ class SQLAlchemyConfig:
         if not session:
             session_maker = cast("sessionmaker", state[self.session_maker_app_state_key])
             session = scope[SESSION_SCOPE_KEY] = session_maker()  # type: ignore
-        return cast("Union[Session, AsyncSession]", session)
+        return cast("Session | AsyncSession", session)
 
     def update_app_state(self, state: State) -> None:
         """Create a DB engine and stores it in the application state.
 
         Args:
-            state: The 'application.state' instance.
+            state: The ``Starlite.state`` instance.
 
         Returns:
             None
@@ -301,12 +298,12 @@ class SQLAlchemyConfig:
         """Disposes of the SQLAlchemy engine.
 
         Args:
-            state: The 'application.state' instance.
+            state: The ``Starlite.state`` instance.
 
         Returns:
             None
         """
-        engine = cast("Union[Engine, AsyncEngine]", state[self.engine_app_state_key])
+        engine = cast("Engine | AsyncEngine", state[self.engine_app_state_key])
         if isinstance(engine, AsyncEngine):
             await engine.dispose()
         else:
@@ -317,7 +314,7 @@ class SQLAlchemyConfig:
         """Add the SQLAlchemy loggers to the logging config.
 
         Notes:
-            - Currently only works with :class:`LoggingConfig <starlite.config.logging.LoggingConfig>`.
+            - Currently only works with :class:`LoggingConfig <.logging.config.LoggingConfig>`.
 
         Args:
             logging_config: Logging config.

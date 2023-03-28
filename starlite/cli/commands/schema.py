@@ -7,10 +7,13 @@ from jsbeautifier import Beautifier
 from yaml import dump as dump_yaml
 
 from starlite import Starlite
-from starlite.cli.utils import StarliteCLIException, StarliteGroup
-from starlite.openapi.typescript_converter.converter import (
+from starlite._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
+from starlite.cli._utils import StarliteCLIException, StarliteGroup
+
+__all__ = ("generate_openapi_schema", "generate_typescript_specs", "schema_group")
+
 
 beautifier = Beautifier()
 
@@ -34,9 +37,9 @@ def generate_openapi_schema(app: Starlite, output: Path) -> None:
         raise StarliteCLIException("Starlite application does not have an OpenAPI schema")
 
     if output.suffix in (".yml", ".yaml"):
-        content = dump_yaml(app.openapi_schema.dict(by_alias=True, exclude_none=True), default_flow_style=False)
+        content = dump_yaml(app.openapi_schema.to_schema(), default_flow_style=False)
     else:
-        content = dumps(app.openapi_schema.dict(by_alias=True, exclude_none=True), indent=4)
+        content = dumps(app.openapi_schema.to_schema(), indent=4)
 
     try:
         output.write_text(content)

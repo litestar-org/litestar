@@ -18,6 +18,9 @@ from starlite.status_codes import HTTP_200_OK
 from starlite.types.composite_types import StreamType
 from starlite.utils.sync import AsyncIteratorWrapper
 
+__all__ = ("StreamingResponse",)
+
+
 if TYPE_CHECKING:
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.enums import OpenAPIMediaType
@@ -25,7 +28,7 @@ if TYPE_CHECKING:
 
 
 class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
-    """An HTTP response that streams the response data as a series of ASGI 'http.response.body' events."""
+    """An HTTP response that streams the response data as a series of ASGI ``http.response.body`` events."""
 
     __slots__ = ("iterator",)
 
@@ -46,12 +49,13 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         Args:
             content: A sync or async iterator or iterable.
             status_code: An HTTP status code.
-            media_type: A value for the response 'Content-Type' header.
-            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
-                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
+            media_type: A value for the response ``Content-Type`` header.
+            background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
+                :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to None.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances to be set under the response 'Set-Cookie' header.
+            cookies: A list of :class:`Cookie <.datastructures.Cookie>` instances to be set under the response
+                ``Set-Cookie`` header.
             encoding: The encoding to be used for the response headers.
             is_head_response: Whether the response should send only the headers ("head" request) or also the content.
         """

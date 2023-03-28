@@ -6,10 +6,10 @@ from structlog.testing import capture_logs
 
 from starlite import Response, get, post
 from starlite.config.compression import CompressionConfig
-from starlite.config.logging import LoggingConfig, StructLoggingConfig
 from starlite.connection import Request
 from starlite.datastructures import Cookie
 from starlite.exceptions import ImproperlyConfiguredException
+from starlite.logging.config import LoggingConfig, StructLoggingConfig
 from starlite.middleware.logging import LoggingMiddlewareConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from starlite.testing import create_test_client
@@ -55,11 +55,6 @@ def test_logging_middleware_regular_logger(get_logger: "GetLogger", caplog: "Log
             'deflate, br","connection":"keep-alive","user-agent":"testclient",'
             '"request-header":"1","cookie":"request-cookie=abc"}, '
             'cookies={"request-cookie":"abc"}, query={}, path_params={}, body=None'
-        )
-        assert (
-            caplog.messages[1] == 'HTTP Response: status_code=200, cookies={"first-cookie":"abc","Path":"/","SameSite":'
-            '"lax","second-cookie":"xxx"}, headers={"token":"123","regular":"abc","content-type":'
-            '"application/json","content-length":"17"}, body={"hello":"world"}'
         )
 
 

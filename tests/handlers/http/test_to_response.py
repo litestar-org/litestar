@@ -10,6 +10,7 @@ from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.responses import Response as StarletteResponse
 
 from starlite import HttpMethod, MediaType, Request, Response, Starlite, get, route
+from starlite._signature import create_signature_model
 from starlite.background_tasks import BackgroundTask
 from starlite.datastructures import Cookie, ResponseHeader
 from starlite.exceptions import ImproperlyConfiguredException
@@ -20,7 +21,6 @@ from starlite.response import (
     TemplateResponse,
 )
 from starlite.response_containers import File, Redirect, Stream, Template
-from starlite.signature import create_signature_model
 from starlite.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from starlite.testing import RequestFactory, create_test_client
 from tests import Person, PersonFactory
@@ -90,7 +90,7 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         return data
 
     person_instance = PersonFactory.build()
-    test_function.signature_model = create_signature_model(test_function.fn.value, [], set())
+    test_function.signature_model = create_signature_model(test_function.fn.value, [], set(), signature_namespace={})
 
     response = await test_function.to_response(
         data=test_function.fn.value(data=person_instance),
@@ -197,7 +197,7 @@ def test_to_response_returning_redirect_response_from_redirect() -> None:
 
     with create_test_client(route_handlers=[redirect_handler, proxy_handler]) as client:
         response = client.get("/test")
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == HTTP_200_OK, response.json()
         assert response.json() == {"message": "redirected by before request hook"}
 
 

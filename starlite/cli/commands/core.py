@@ -3,16 +3,20 @@ from __future__ import annotations
 import inspect
 import multiprocessing
 import subprocess
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 from click import command, option
 from rich.tree import Tree
 
-from starlite import Starlite
-from starlite.cli.utils import StarliteEnv, console, show_app_info
+from starlite.cli._utils import StarliteEnv, console, show_app_info
 from starlite.routes import HTTPRoute, WebSocketRoute
 from starlite.utils.helpers import unwrap_partial
+
+__all__ = ("info_command", "routes_command", "run_command")
+
+if TYPE_CHECKING:
+    from starlite import Starlite
 
 
 def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
@@ -25,6 +29,14 @@ def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
             process_args.append(f"--{arg}={value}")
 
     return process_args
+
+
+@command(name="version")
+@option("-s", "--short", help="Exclude release level and serial information", is_flag=True, default=False)
+def version_command(short: bool) -> None:
+    from starlite import __version__
+
+    click.echo(__version__.formatted(short=short))
 
 
 @command(name="info")
@@ -114,10 +126,7 @@ def routes_command(app: Starlite) -> None:  # pragma: no cover
                     branch.add(" ".join(handler_info))
 
         else:
-            if isinstance(route, WebSocketRoute):
-                route_type = "WS"
-            else:
-                route_type = "ASGI"
+            route_type = "WS" if isinstance(route, WebSocketRoute) else "ASGI"
             branch = tree.add(f"[green]{route.path}[/green] ({route_type})")
             branch.add(f"[blue]{route.route_handler.name or route.route_handler.handler_name}[/blue]")
 

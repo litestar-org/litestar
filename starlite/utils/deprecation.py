@@ -7,6 +7,9 @@ from warnings import warn
 
 from typing_extensions import ParamSpec
 
+__all__ = ("deprecated", "warn_deprecation")
+
+
 T = TypeVar("T")
 P = ParamSpec("P")
 DeprecatedKind = Literal["function", "method", "classmethod", "attribute", "property", "class", "parameter", "import"]
@@ -59,7 +62,7 @@ def warn_deprecation(
     text = ". ".join(parts)
     warning_class = PendingDeprecationWarning if pending else DeprecationWarning
 
-    warn(text, warning_class)
+    warn(text, warning_class, stacklevel=1)
 
 
 def deprecated(

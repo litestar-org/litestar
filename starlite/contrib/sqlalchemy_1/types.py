@@ -9,6 +9,9 @@ from typing import (
     runtime_checkable,
 )
 
+__all__ = ("SessionMakerInstanceProtocol", "SessionMakerTypeProtocol", "SQLAlchemyBinaryType")
+
+
 if TYPE_CHECKING:
     from sqlalchemy.engine import Connection, Engine
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession

@@ -2,11 +2,9 @@ from pathlib import PurePosixPath
 from typing import Any, Optional
 
 import pytest
-from pydantic_openapi_schema.v3_1_0 import Info, OpenAPI
 
 from starlite import MediaType, get
 from starlite.datastructures import Cookie
-from starlite.enums import OpenAPIMediaType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.response import Response
 from starlite.serialization import default_serializer
@@ -91,7 +89,6 @@ def test_delete_cookie() -> None:
         assert response.cookies.get("test") is None
         # the commented out assert fails, because of the starlette test client's behaviour - which doesn't clear
         # cookies.
-        # assert client.cookies.get("test") is None
 
 
 @pytest.mark.parametrize(
@@ -158,8 +155,6 @@ def test_statuses_without_body(status: int, body: Optional[str], should_raise: b
         ({}, MediaType.TEXT, False),
         ({"abc": "def"}, MediaType.JSON, False),
         (Empty, MediaType.JSON, True),
-        (OpenAPI(info=Info(title="my-api", version="1")), OpenAPIMediaType.OPENAPI_JSON, False),
-        (OpenAPI(info=Info(title="my-api", version="1")), OpenAPIMediaType.OPENAPI_YAML, False),
     ),
 )
 def test_render_method(body: Any, media_type: MediaType, should_raise: bool) -> None:

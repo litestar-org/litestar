@@ -6,6 +6,9 @@ from starlite.datastructures import Headers, MutableScopeHeaders
 from starlite.enums import ScopeType
 from starlite.middleware.base import AbstractMiddleware
 
+__all__ = ("CORSMiddleware",)
+
+
 if TYPE_CHECKING:
     from starlite.config.cors import CORSConfig
     from starlite.types import ASGIApp, Message, Receive, Scope, Send

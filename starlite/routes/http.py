@@ -4,24 +4,20 @@ import pickle
 from itertools import chain
 from typing import TYPE_CHECKING, Any, cast
 
-from starlite.connection import Request
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.datastructures.headers import Headers
 from starlite.datastructures.upload_file import UploadFile
 from starlite.enums import HttpMethod, MediaType, ScopeType
-from starlite.exceptions import (
-    ClientException,
-    ImproperlyConfiguredException,
-    SerializationException,
-)
+from starlite.exceptions import ClientException, ImproperlyConfiguredException, SerializationException
 from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.response import Response
 from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 
 if TYPE_CHECKING:
-    from starlite.kwargs import KwargsModel
-    from starlite.kwargs.cleanup import DependencyCleanupGroup
+    from starlite._kwargs import KwargsModel
+    from starlite._kwargs.cleanup import DependencyCleanupGroup
+    from starlite.connection import Request
     from starlite.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
 
@@ -163,15 +159,11 @@ class HTTPRoute(BaseRoute):
                 route_handler=route_handler, parameter_model=parameter_model, request=request
             )
 
-        response: ASGIApp = (
-            response_data  # type: ignore[assignment]
-            if isinstance(response_data, Response)
-            else await route_handler.to_response(
-                app=scope["app"],
-                data=response_data,
-                plugins=request.app.serialization_plugins,
-                request=request,
-            )
+        response: ASGIApp = await route_handler.to_response(
+            app=scope["app"],
+            data=response_data,
+            plugins=request.app.serialization_plugins,
+            request=request,
         )
 
         if cleanup_group:
@@ -222,7 +214,7 @@ class HTTPRoute(BaseRoute):
         return data, cleanup_group
 
     @staticmethod
-    async def _get_cached_response(request: Request, route_handler: "HTTPRouteHandler") -> "ASGIApp" | None:
+    async def _get_cached_response(request: Request, route_handler: HTTPRouteHandler) -> ASGIApp | None:
         """Retrieve and un-pickle the cached response, if existing.
 
         Args:
@@ -233,33 +225,37 @@ class HTTPRoute(BaseRoute):
             A cached response instance, if existing.
         """
 
-        cache = request.app.cache
-        cache_key = cache.build_cache_key(request=request, cache_key_builder=route_handler.cache_key_builder)
-        cached_response = await cache.get(key=cache_key)
+        cache_config = request.app.response_cache_config
+        cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
+        store = cache_config.get_store_from_app(request.app)
+
+        cached_response = await store.get(key=cache_key)
 
         if cached_response:
-            return cast("ASGIApp", pickle.loads(cached_response))  # nosec # noqa: SCS113
+            return cast("ASGIApp", pickle.loads(cached_response))  # nosec
 
         return None
 
     @staticmethod
     async def _set_cached_response(
-        response: "Response" | "ASGIApp", request: Request, route_handler: "HTTPRouteHandler"
+        response: Response | ASGIApp, request: Request, route_handler: HTTPRouteHandler
     ) -> None:
         """Pickles and caches a response object."""
-        cache = request.app.cache
-        cache_key = cache.build_cache_key(request, route_handler.cache_key_builder)
+        cache_config = request.app.response_cache_config
+        cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
 
-        await cache.set(
-            key=cache_key,
-            value=pickle.dumps(response, pickle.HIGHEST_PROTOCOL),
-            expiration=route_handler.cache if isinstance(route_handler.cache, int) else None,
-        )
+        expires_in: int | None = None
+        if route_handler.cache is True:
+            expires_in = cache_config.default_expiration
+        elif route_handler.cache is not False and isinstance(route_handler.cache, int):
+            expires_in = route_handler.cache
+
+        store = cache_config.get_store_from_app(request.app)
+
+        await store.set(key=cache_key, value=pickle.dumps(response, pickle.HIGHEST_PROTOCOL), expires_in=expires_in)
 
     def create_options_handler(self, path: str) -> HTTPRouteHandler:
-        """
-
-        Args:
+        """Args:
             path: The route path
 
         Returns:
@@ -267,8 +263,8 @@ class HTTPRoute(BaseRoute):
         """
 
         def options_handler(scope: Scope) -> Response:
-            """
-            Handler function for OPTIONS requests.
+            """Handler function for OPTIONS requests.
+
             Args:
                 scope: The ASGI Scope.
 

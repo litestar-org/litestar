@@ -7,6 +7,9 @@ from typing import TYPE_CHECKING, Literal, Pattern
 
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 
+__all__ = ("CORSConfig",)
+
+
 if TYPE_CHECKING:
     from starlite.types import Method
 

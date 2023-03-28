@@ -4,10 +4,12 @@ from dataclasses import asdict, dataclass, field
 from http.cookies import SimpleCookie
 from typing import Any, Literal
 
+__all__ = ("Cookie",)
+
 
 @dataclass
 class Cookie:
-    """Container class for defining a cookie using the 'Set-Cookie' header.
+    """Container class for defining a cookie using the ``Set-Cookie`` header.
 
     See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie for more details regarding this header.
     """
@@ -17,7 +19,7 @@ class Cookie:
     path: str = "/"
     """Path fragment that must exist in the request url for the cookie to be valid.
 
-    Defaults to '/'.
+    Defaults to ``/``.
     """
     value: str | None = field(default=None)
     """Value for the cookie, if none given defaults to empty string."""
@@ -30,7 +32,7 @@ class Cookie:
     secure: bool | None = field(default=None)
     """Https is required for the cookie."""
     httponly: bool | None = field(default=None)
-    """Forbids javascript to access the cookie via 'Document.cookie'."""
+    """Forbids javascript to access the cookie via ``document.cookie``."""
     samesite: Literal["lax", "strict", "none"] = field(default="lax")
     """Controls whether or not a cookie is sent with cross-site requests.
 
@@ -46,7 +48,7 @@ class Cookie:
         """Get a simple cookie object from the values.
 
         Returns:
-            A SimpleCookie instance.
+            A :class:`SimpleCookie <http.cookies.SimpleCookie>`
         """
         simple_cookie: SimpleCookie = SimpleCookie()
         simple_cookie[self.key] = self.value or ""
@@ -56,9 +58,10 @@ class Cookie:
             if key in {"key", "value"}:
                 continue
             if value is not None:
+                updated_key = key
                 if key == "max_age":
-                    key = "max-age"
-                namespace[key] = value
+                    updated_key = "max-age"
+                namespace[updated_key] = value
 
         return simple_cookie
 
@@ -71,7 +74,7 @@ class Cookie:
         return self.simple_cookie.output(**kwargs).strip()
 
     def to_encoded_header(self) -> tuple[bytes, bytes]:
-        """Create encoded header for ASGI send.
+        """Create encoded header for ASGI ``send``.
 
         Returns:
             A two tuple of bytes.
@@ -92,7 +95,7 @@ class Cookie:
         }
 
     def __hash__(self) -> int:
-        return hash((self.key, self.path, self.domain or ""))
+        return hash((self.key, self.path, self.domain))
 
     def __eq__(self, other: Any) -> bool:
         """Determine whether two cookie instances are equal according to the cookie spec, i.e. hey have a similar path,

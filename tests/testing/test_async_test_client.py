@@ -83,7 +83,7 @@ async def test_client_interface(method: str, test_client_backend: "AnyIOBackend"
 
 
 @pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
-async def test_client_interface_context_manager(method: str, test_client_backend: "AnyIOBackend") -> None:  # noqa: C901
+async def test_client_interface_context_manager(method: str, test_client_backend: "AnyIOBackend") -> None:
     class MockController(Controller):
         @get("/")
         def mock_service_endpoint_get(self) -> dict:

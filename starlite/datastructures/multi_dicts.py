@@ -8,15 +8,14 @@ from multidict import MultiDictProxy, MultiMapping
 
 from starlite.datastructures.upload_file import UploadFile
 
+__all__ = ("FormMultiDict", "ImmutableMultiDict", "MultiDict", "MultiMixin")
+
+
 T = TypeVar("T")
 
 
 class MultiMixin(Generic[T], MultiMapping[T], ABC):
-    """Mixin providing common methods for multi dicts, used by.
-
-    :class:`ImmutableMultiDict <starlite.datastructures.multi_dicts.ImmutableMultiDict>` and
-    :class:`MultiDict <starlite.datastructures.multi_dicts.MultiDict>`
-    """
+    """Mixin providing common methods for multi dicts, used by :class:`ImmutableMultiDict` and :class:`MultiDict`"""
 
     def dict(self) -> dict[str, list[Any]]:
         """Return the multi-dict as a dict of lists.
@@ -43,8 +42,7 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
     def __init__(self, args: MultiMapping | Mapping[str, T] | Iterable[tuple[str, T]] | None = None) -> None:
         """Initialize ``MultiDict`` from a.
 
-        :class:`MultiMapping <multidict.MultiMapping>`, ``Mapping`` or an iterable of
-        tuples.
+        ``MultiMapping``, :class:`Mapping <typing.Mapping>` or an iterable of tuples.
 
         Args:
             args: Mapping-like structure to create the ``MultiDict`` from
@@ -54,7 +52,7 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
     def immutable(self) -> ImmutableMultiDict[T]:
         """Create an.
 
-        :class:`ImmutableMultiDict <starlite.datastructures.multi_dicts.ImmutableMultiDict>` view.
+        :class:`ImmutableMultiDict` view.
 
         Returns:
             An immutable multi dict
@@ -63,16 +61,12 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
 
 
 class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
-    """Immutable MultiDict, using.
-
-    :class:`MultiDictProxy <multidict.MultiDictProxy>`.
-    """
+    """Immutable MultiDict, using class:`MultiDictProxy <multidict.MultiDictProxy>`."""
 
     def __init__(self, args: MultiMapping | Mapping[str, Any] | Iterable[tuple[str, Any]] | None = None) -> None:
         """Initialize ``ImmutableMultiDict`` from a.
 
-        :class:`MultiMapping <multidict.MultiMapping>`, ``Mapping`` or an iterable of
-        tuples.
+        ``MultiMapping``, :class:`Mapping <typing.Mapping>` or an iterable of tuples.
 
         Args:
             args: Mapping-like structure to create the ``ImmutableMultiDict`` from
@@ -82,7 +76,7 @@ class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
     def mutable_copy(self) -> MultiDict[T]:
         """Create a mutable copy as a.
 
-        :class:`MultiDict <starlite.datastructures.multi_dicts.MultiDict>`
+        :class:`MultiDict`
 
         Returns:
             A mutable multi dict

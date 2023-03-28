@@ -2,39 +2,28 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Literal
+from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Literal, TypeVar
 
-from pydantic_openapi_schema.v3_1_0 import (
-    Components,
-    OAuthFlow,
-    OAuthFlows,
-    SecurityRequirement,
-    SecurityScheme,
-)
-
-from starlite.connection import ASGIConnection
 from starlite.contrib.jwt.jwt_token import Token
-from starlite.contrib.jwt.middleware import (
-    JWTAuthenticationMiddleware,
-    JWTCookieAuthenticationMiddleware,
-)
+from starlite.contrib.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
 from starlite.datastructures import Cookie
-from starlite.di import Provide
 from starlite.enums import MediaType
 from starlite.middleware import DefineMiddleware
-from starlite.security.base import AbstractSecurityConfig, UserType
+from starlite.openapi.spec import Components, OAuthFlow, OAuthFlows, SecurityRequirement, SecurityScheme
+from starlite.security.base import AbstractSecurityConfig
 from starlite.status_codes import HTTP_201_CREATED
-from starlite.types import (
-    ControllerRouterHandler,
-    Empty,
-    Guard,
-    Scopes,
-    SyncOrAsyncUnion,
-    TypeEncodersMap,
-)
+from starlite.types import ControllerRouterHandler, Empty, Guard, Scopes, SyncOrAsyncUnion, TypeEncodersMap
+
+__all__ = ("BaseJWTAuth", "JWTAuth", "JWTCookieAuth", "OAuth2Login", "OAuth2PasswordBearerAuth")
+
 
 if TYPE_CHECKING:
     from starlite import Response
+    from starlite.connection import ASGIConnection
+    from starlite.di import Provide
+
+
+UserType = TypeVar("UserType")
 
 
 class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
@@ -61,7 +50,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
     auth_header: str
     """Request header key from which to retrieve the token.
 
-    E.g. ``Authorization`` or 'X-Api-Key'.
+    E.g. ``Authorization`` or ``X-Api-Key``.
     """
     default_token_expiration: timedelta
     """The default value for token expiration."""
@@ -80,15 +69,15 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         """Create OpenAPI documentation for the JWT auth schema used.
 
         Returns:
-            An :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` instance.
+            An :class:`Components <starlite.openapi.spec.components.Components>` instance.
         """
         return Components(
-            securitySchemes={
+            security_schemes={
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="http",
                     scheme="Bearer",
                     name=self.auth_header,
-                    bearerFormat="JWT",
+                    bearer_format="JWT",
                     description=self.description,
                 )
             }
@@ -98,19 +87,22 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
     def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
-        :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>`
+        :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`
 
         Returns:
-            An OpenAPI 3.1 :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` dictionary.
+            An OpenAPI 3.1
+            :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`
+            dictionary.
         """
         return {self.openapi_security_scheme_name: []}
 
     @property
     def middleware(self) -> DefineMiddleware:
-        """Create ``JWTAuthenticationMiddleware`` wrapped in Starlite's ``DefineMiddleware``.
+        """Create :class:`JWTAuthenticationMiddleware` wrapped in
+        :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
 
         Returns:
-            An instance of :class:`DefineMiddleware <starlite.middleware.base.DefineMiddleware>`.
+            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
         """
         return DefineMiddleware(
             self.authentication_middleware_class,
@@ -136,13 +128,13 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         token_unique_jwt_id: str | None = None,
         send_token_as_response_body: bool = False,
     ) -> Response[Any]:
-        """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
+        """Create a response with a JWT header.
 
         Args:
             identifier: Unique identifier of the token subject. Usually this is a user ID or equivalent kind of value.
             response_body: An optional response body to send.
-            response_media_type: An optional 'Content-Type'. Defaults to 'application/json'.
-            response_status_code: An optional status code for the response. Defaults to '201 Created'.
+            response_media_type: An optional ``Content-Type``. Defaults to ``application/json``.
+            response_status_code: An optional status code for the response. Defaults to ``201``.
             token_expiration: An optional timedelta for the token expiration.
             token_issuer: An optional value of the token ``iss`` field.
             token_audience: An optional value for the token ``aud`` field.
@@ -151,7 +143,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
                 will be returned as the response body. Note: if a response body is passed this setting will be ignored.
 
         Returns:
-            A :class:`Response <starlite.response.Response>` instance.
+            A :class:`Response <.response.Response>` instance.
         """
         encoded_token = self.create_token(
             identifier=identifier,
@@ -213,7 +205,7 @@ class BaseJWTAuth(Generic[UserType], AbstractSecurityConfig[UserType, Token]):
         Returns:
             The encoded token formatted for the HTTP headers
         """
-        security = self.openapi_components.securitySchemes.get(self.openapi_security_scheme_name, None)  # type: ignore
+        security = self.openapi_components.security_schemes.get(self.openapi_security_scheme_name, None)  # type: ignore
         return f"{security.scheme} {encoded_token}" if isinstance(security, SecurityScheme) else encoded_token
 
 
@@ -263,7 +255,7 @@ class JWTAuth(Generic[UserType], BaseJWTAuth[UserType]):
     auth_header: str = field(default="Authorization")
     """Request header key from which to retrieve the token.
 
-    E.g. ``Authorization`` or 'X-Api-Key'.
+    E.g. ``Authorization`` or ``X-Api-Key``.
     """
     default_token_expiration: timedelta = field(default_factory=lambda: timedelta(days=1))
     """The default value for token expiration."""
@@ -282,8 +274,8 @@ class JWTAuth(Generic[UserType], BaseJWTAuth[UserType]):
 class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
     """JWT Cookie Authentication Configuration.
 
-    This class is an alternate entry point to the library, and it includes all the functionality of the ``JWTAuth`` class
-    and adds support for passing JWT tokens ``HttpOnly`` cookies.
+    This class is an alternate entry point to the library, and it includes all the functionality of the :class:`JWTAuth`
+    class and adds support for passing JWT tokens ``HttpOnly`` cookies.
     """
 
     token_secret: str
@@ -324,7 +316,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
     auth_header: str = field(default="Authorization")
     """Request header key from which to retrieve the token.
 
-    E.g. ``Authorization`` or 'X-Api-Key'.
+    E.g. ``Authorization`` or ``X-Api-Key``.
     """
     default_token_expiration: timedelta = field(default_factory=lambda: timedelta(days=1))
     """The default value for token expiration."""
@@ -335,7 +327,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
     path: str = field(default="/")
     """Path fragment that must exist in the request url for the cookie to be valid.
 
-    Defaults to '/'.
+    Defaults to ``/``.
     """
     domain: str | None = field(default=None)
     """Domain for which the cookie is valid."""
@@ -348,9 +340,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
     authentication_middleware_class: type[JWTCookieAuthenticationMiddleware] = field(
         default=JWTCookieAuthenticationMiddleware
     )
-    """The authentication middleware class to use.
-
-    Must inherit from :class:`JWTCookieAuthenticationMiddleware`
+    """The authentication middleware class to use. Must inherit from :class:`JWTCookieAuthenticationMiddleware`
     """
 
     @property
@@ -358,16 +348,16 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
         """Create OpenAPI documentation for the JWT Cookie auth scheme.
 
         Returns:
-            An :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` instance.
+            A :class:`Components <starlite.openapi.spec.components.Components>` instance.
         """
         return Components(
-            securitySchemes={
+            security_schemes={
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="http",
                     scheme="Bearer",
                     name=self.key,
                     security_scheme_in="cookie",
-                    bearerFormat="JWT",
+                    bearer_format="JWT",
                     description=self.description,
                 )
             }
@@ -375,10 +365,11 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
 
     @property
     def middleware(self) -> DefineMiddleware:
-        """Create ``JWTCookieAuthenticationMiddleware`` wrapped in Starlite's ``DefineMiddleware``.
+        """Create :class:`JWTCookieAuthenticationMiddleware` wrapped in
+            :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
 
         Returns:
-            An instance of :class:`DefineMiddleware <starlite.middleware.base.DefineMiddleware>`.
+            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
         """
         return DefineMiddleware(
             self.authentication_middleware_class,
@@ -405,7 +396,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
         token_unique_jwt_id: str | None = None,
         send_token_as_response_body: bool = False,
     ) -> Response[Any]:
-        """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
+        """Create a response with a JWT header.
 
         Args:
             identifier: Unique identifier of the token subject. Usually this is a user ID or equivalent kind of value.
@@ -420,7 +411,7 @@ class JWTCookieAuth(Generic[UserType], BaseJWTAuth[UserType]):
                 will be returned as the response body. Note: if a response body is passed this setting will be ignored.
 
         Returns:
-            A :class:`Response <starlite.response.Response>` instance.
+            A :class:`Response <.response.Response>` instance.
         """
 
         encoded_token = self.create_token(
@@ -475,9 +466,8 @@ class OAuth2Login:
 class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
     """OAUTH2 Schema for Password Bearer Authentication.
 
-    This class implements an OAUTH2 authentication flow entry point to the library, and it
-    includes all the functionality of the ``JWTAuth`` class and adds
-    support for passing JWT tokens ``HttpOnly`` cookies.
+    This class implements an OAUTH2 authentication flow entry point to the library, and it includes all the
+    functionality of the :class:`JWTAuth` class and adds support for passing JWT tokens ``HttpOnly`` cookies.
 
     ``token_url`` is the only additional argument that is required, and it should point at your login route
     """
@@ -535,7 +525,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
     path: str = field(default="/")
     """Path fragment that must exist in the request url for the cookie to be valid.
 
-    Defaults to '/'.
+    Defaults to ``/``.
     """
     domain: str | None = field(default=None)
     """Domain for which the cookie is valid."""
@@ -555,10 +545,11 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
 
     @property
     def middleware(self) -> DefineMiddleware:
-        """Create ``JWTCookieAuthenticationMiddleware`` wrapped in Starlite's ``DefineMiddleware``.
+        """Create ``JWTCookieAuthenticationMiddleware`` wrapped in
+            :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
 
         Returns:
-            An instance of :class:`DefineMiddleware <starlite.middleware.base.DefineMiddleware>`.
+            An instance of :class:`DefineMiddleware <.middleware.base.DefineMiddleware>`.
         """
         return DefineMiddleware(
             self.authentication_middleware_class,
@@ -577,10 +568,10 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
         """Create an OpenAPI OAuth2 flow for the password bearer authentication scheme.
 
         Returns:
-            An :class:`OAuthFlow <pydantic_openapi_schema.v3_1_0.oauth_flow.OAuthFlow>` instance.
+            An :class:`OAuthFlow <starlite.openapi.spec.oauth_flow.OAuthFlow>` instance.
         """
         return OAuthFlow(
-            tokenUrl=self.token_url,
+            token_url=self.token_url,
             scopes=self.oauth_scopes,
         )
 
@@ -589,17 +580,17 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
         """Create OpenAPI documentation for the OAUTH2 Password bearer auth scheme.
 
         Returns:
-            An :class:`Components <pydantic_openapi_schema.v3_1_0.components.Components>` instance.
+            An :class:`Components <starlite.openapi.spec.components.Components>` instance.
         """
         return Components(
-            securitySchemes={
+            security_schemes={
                 self.openapi_security_scheme_name: SecurityScheme(
                     type="oauth2",
                     scheme="Bearer",
                     name=self.auth_header,
                     security_scheme_in="header",
                     flows=OAuthFlows(password=self.oauth_flow),  # pyright: reportGeneralTypeIssues=false
-                    bearerFormat="JWT",
+                    bearer_format="JWT",
                     description=self.description,
                 )
             }
@@ -618,13 +609,13 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
         token_unique_jwt_id: str | None = None,
         send_token_as_response_body: bool = True,
     ) -> Response[Any]:
-        """Create a response with a JWT header. Calls the 'JWTAuth.store_token_handler' to persist the token ``sub``.
+        """Create a response with a JWT header.
 
         Args:
             identifier: Unique identifier of the token subject. Usually this is a user ID or equivalent kind of value.
             response_body: An optional response body to send.
-            response_media_type: An optional 'Content-Type'. Defaults to 'application/json'.
-            response_status_code: An optional status code for the response. Defaults to '201 Created'.
+            response_media_type: An optional ``Content-Type``. Defaults to ``application/json``.
+            response_status_code: An optional status code for the response. Defaults to ``201``.
             token_expiration: An optional timedelta for the token expiration.
             token_issuer: An optional value of the token ``iss`` field.
             token_audience: An optional value for the token ``aud`` field.
@@ -633,7 +624,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
                 Note: if a response body is passed this setting will be ignored.
 
         Returns:
-            A :class:`Response <starlite.response.Response>` instance.
+            A :class:`Response <.response.Response>` instance.
         """
         encoded_token = self.create_token(
             identifier=identifier,
@@ -660,7 +651,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType], BaseJWTAuth[UserType]):
             token_dto = OAuth2Login(
                 access_token=encoded_token,
                 expires_in=expires_in,
-                token_type="bearer",
+                token_type="bearer",  # noqa: S106
             )
             body = asdict(token_dto)
         else:

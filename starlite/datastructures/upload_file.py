@@ -6,14 +6,17 @@ from typing import TYPE_CHECKING, Any
 from anyio.to_thread import run_sync
 
 from starlite.constants import ONE_MEGABYTE
-from starlite.openapi.enums import OpenAPIType
+from starlite.openapi.spec.enums import OpenAPIType
+
+__all__ = ("UploadFile",)
+
 
 if TYPE_CHECKING:
     from pydantic.fields import ModelField
 
 
 class UploadFile:
-    """Representation of a file upload, modifying the pydantic schema."""
+    """Representation of a file upload"""
 
     __slots__ = ("filename", "file", "content_type", "headers")
 
@@ -36,7 +39,7 @@ class UploadFile:
         """
         self.filename = filename
         self.content_type = content_type
-        self.file = SpooledTemporaryFile(max_size=max_spool_size)  # pylint: disable=consider-using-with
+        self.file = SpooledTemporaryFile(max_size=max_spool_size)
         self.headers = headers or {}
 
         if file_data:

@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING
 
 from starlite.exceptions import ImproperlyConfiguredException
 
+__all__ = ("AllowedHostsConfig",)
+
+
 if TYPE_CHECKING:
     from starlite.types import Scopes
 

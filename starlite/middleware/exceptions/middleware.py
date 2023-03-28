@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from inspect import getmro
+from sys import exc_info
+from traceback import format_exception
 from typing import TYPE_CHECKING, Any, Type, cast
 
 from starlite.connection import Request
@@ -9,16 +11,21 @@ from starlite.datastructures import Headers
 from starlite.enums import ScopeType
 from starlite.exceptions import WebSocketException
 from starlite.middleware.cors import CORSMiddleware
-from starlite.middleware.exceptions.debug_response import create_debug_response
+from starlite.middleware.exceptions._debug_response import create_debug_response
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+
+__all__ = ("ExceptionHandlerMiddleware",)
+
 
 if TYPE_CHECKING:
     from starlite import Response
     from starlite.app import Starlite
+    from starlite.logging import BaseLoggingConfig
     from starlite.types import (
         ASGIApp,
         ExceptionHandler,
         ExceptionHandlersMap,
+        Logger,
         Receive,
         Scope,
         Send,
@@ -140,12 +147,11 @@ class ExceptionHandlerMiddleware:
         """
         try:
             await self.app(scope, receive, send)
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as e:  # noqa: BLE001
             starlite_app = scope["app"]
-            if self.debug and starlite_app.logger:
-                starlite_app.logger.debug(
-                    "exception raised on %s connection request to route %s", scope["type"], scope["path"], exc_info=True
-                )
+
+            if starlite_app.logging_config and (logger := starlite_app.logger):
+                self.handle_exception_logging(logger=logger, logging_config=starlite_app.logging_config, scope=scope)
 
             for hook in starlite_app.after_exception:
                 await hook(e, scope, starlite_app.state)
@@ -162,12 +168,15 @@ class ExceptionHandlerMiddleware:
     ) -> None:
         """Handle exception raised inside 'http' scope routes.
 
-        :param starlite_app: The starlite app instance.
-        :param scope: The ASGI connection scope.
-        :param receive: The ASGI receive function.
-        :param send: The ASGI send function.
-        :param exc: The caught exception.
-        :return: None.
+        Args:
+            starlite_app: The starlite app instance.
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+            exc: The caught exception.
+
+        Returns:
+            None.
         """
 
         headers = Headers.from_scope(scope=scope)
@@ -183,9 +192,12 @@ class ExceptionHandlerMiddleware:
     async def handle_websocket_exception(send: "Send", exc: Exception) -> None:
         """Handle exception raised inside 'websocket' scope routes.
 
-        :param send: The ASGI send function.
-        :param exc: The caught exception.
-        :return: None.
+        Args:
+            send: The ASGI send function.
+            exc: The caught exception.
+
+        Returns:
+            None.
         """
         if isinstance(exc, WebSocketException):
             code = exc.code
@@ -199,11 +211,30 @@ class ExceptionHandlerMiddleware:
     def default_http_exception_handler(self, request: Request, exc: Exception) -> Response[Any]:
         """Handle an HTTP exception by returning the appropriate response.
 
-        :param request: An HTTP Request instance.
-        :param exc: The caught exception.
-        :return: An HTTP response.
+        Args:
+            request: An HTTP Request instance.
+            exc: The caught exception.
+
+        Returns:
+            An HTTP response.
         """
         status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self.debug:
             return create_debug_response(request=request, exc=exc)
         return create_exception_response(exc)
+
+    def handle_exception_logging(self, logger: Logger, logging_config: BaseLoggingConfig, scope: Scope) -> None:
+        """Handle logging - if the starlite app has a logging config in place.
+
+        Args:
+            logger: A logger instance.
+            logging_config: Logging Config instance.
+            scope: The ASGI connection scope.
+
+        Returns:
+            None
+        """
+        if (
+            logging_config.log_exceptions == "always" or (logging_config.log_exceptions == "debug" and self.debug)
+        ) and logging_config.exception_logging_handler:
+            logging_config.exception_logging_handler(logger, scope, format_exception(*exc_info()))

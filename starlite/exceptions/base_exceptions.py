@@ -1,5 +1,7 @@
 from typing import Any
 
+__all__ = ("MissingDependencyException", "SerializationException", "StarliteException")
+
 
 class StarliteException(Exception):
     """Base exception class from which all Starlite exceptions inherit."""
@@ -10,8 +12,8 @@ class StarliteException(Exception):
         """Initialize ``StarliteException``.
 
         Args:
-            *args (Any): args are cast to ``str`` before passing to `Exception.__init__()`
-            detail (str, optional): detail of the exception.
+            *args: args are converted to :class:`str` before passing to :class:`Exception`
+            detail: detail of the exception.
         """
         self.detail = detail
         super().__init__(*(str(arg) for arg in args if arg), detail)

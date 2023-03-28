@@ -1,8 +1,16 @@
 from __future__ import annotations
 
-from typing import Any, Literal, TypedDict, Union
+from typing import TYPE_CHECKING, Any, Literal, TypedDict, Union
 
-from typing_extensions import Required
+__all__ = (
+    "HtmxHeaderType",
+    "LocationType",
+    "TriggerEventType",
+)
+
+if TYPE_CHECKING:
+    from typing_extensions import Required
+
 
 EventAfterType = Literal["receive", "settle", "swap", None]
 

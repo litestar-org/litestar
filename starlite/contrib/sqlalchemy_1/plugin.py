@@ -17,34 +17,39 @@ from uuid import UUID
 
 from pydantic import BaseModel, conint, constr, create_model
 from pydantic_factories import ModelFactory
-from pydantic_openapi_schema.utils.utils import OpenAPI310PydanticSchema
 
 from starlite.di import Provide
 from starlite.exceptions import (
     ImproperlyConfiguredException,
     MissingDependencyException,
 )
-from starlite.plugins.base import InitPluginProtocol, SerializationPluginProtocol
-
-from .types import SQLAlchemyBinaryType
+from starlite.openapi.spec.schema import SchemaDataContainer
+from starlite.plugins import InitPluginProtocol, SerializationPluginProtocol
 
 try:
-    from sqlalchemy import inspect
-    from sqlalchemy import types as sqlalchemy_type
-    from sqlalchemy.dialects import mssql, mysql, oracle, postgresql, sqlite
-    from sqlalchemy.exc import NoInspectionAvailable
-    from sqlalchemy.orm import DeclarativeMeta, InstanceState, Mapper
-    from sqlalchemy.sql.type_api import TypeEngine
+    import sqlalchemy  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("sqlalchemy is not installed") from e
 
 
+from sqlalchemy import inspect
+from sqlalchemy import types as sqlalchemy_type
+from sqlalchemy.dialects import mssql, mysql, oracle, postgresql, sqlite
+from sqlalchemy.exc import NoInspectionAvailable
+from sqlalchemy.orm import DeclarativeMeta, InstanceState, Mapper
+from sqlalchemy.sql.type_api import TypeEngine
+
+from .types import SQLAlchemyBinaryType
+
 if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import Schema
     from typing_extensions import TypeGuard
 
-    from starlite.app import Starlite
-    from starlite.plugins.sql_alchemy.config import SQLAlchemyConfig
+    from starlite.config.app import AppConfig
+    from starlite.openapi.spec import Schema
+
+    from .config import SQLAlchemyConfig
+
+__all__ = ("SQLAlchemyPlugin",)
 
 
 class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[DeclarativeMeta, BaseModel]):
@@ -59,29 +64,30 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
         ORM types.
 
         Args:
-            config: Optional :class:`SQLAlchemyConfig <starlite.plugins.sql_alchemy.SQLAlchemyConfig>` instance. If
+            config: Optional :class:`SQLAlchemyConfig <.contrib.sqlalchemy_1.config.SQLAlchemyConfig>` instance. If
                 passed, the plugin will establish a DB connection and hook handlers and dependencies.
         """
         self._model_namespace_map: Dict[str, "Type[BaseModel]"] = {}
         self._config = config
 
-    def on_app_init(self, app: "Starlite") -> None:
+    def on_app_init(self, app_config: "AppConfig") -> "AppConfig":
         """If config has been passed to the plugin, it will initialize SQLAlchemy and add the dependencies as expected.
 
         Executed on the application's init process.
 
         Args:
-            app: The :class:`Starlite <starlite.app.Starlite>` application instance.
+            app_config: The :class:`AppConfig <.config.app.AppConfig>` instance.
 
         Returns:
-            None
+            App config instance, after modifications.
         """
         if self._config is not None:
-            app.dependencies[self._config.dependency_key] = Provide(self._config.create_db_session_dependency)
-            app.before_send.append(self._config.before_send_handler)  # type: ignore[arg-type]
-            app.on_shutdown.append(self._config.on_shutdown)
-            self._config.config_sql_alchemy_logging(app.logging_config)
-            self._config.update_app_state(state=app.state)
+            app_config.dependencies[self._config.dependency_key] = Provide(self._config.create_db_session_dependency)
+            app_config.before_send.append(self._config.before_send_handler)  # type: ignore[arg-type]
+            app_config.on_startup.append(self._config.update_app_state)
+            app_config.on_shutdown.append(self._config.on_shutdown)
+            self._config.config_sql_alchemy_logging(app_config.logging_config)
+        return app_config
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[DeclarativeMeta]":
@@ -172,10 +178,9 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
     def providers_map(self) -> Dict[Type[TypeEngine], Callable[[Union[TypeEngine, Type[TypeEngine]]], Any]]:
         """Map of SQLAlchemy column types to provider functions.
 
-        This method is separated to allow for easy overriding in
-        subclasses.
+        This method is separated to allow for easy overriding in subclasses.
 
-        Returns
+        Returns:
             A dictionary mapping SQLAlchemy types to callables.
         """
         return {
@@ -218,6 +223,8 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
             sqlalchemy_type.TupleType: self.handle_tuple_type,  # pyright: ignore
             sqlalchemy_type.Unicode: self.handle_string_type,
             sqlalchemy_type.UnicodeText: self.handle_string_type,
+            sqlalchemy_type.Uuid: lambda x: UUID,
+            sqlalchemy_type.UUID: lambda x: UUID,
             sqlalchemy_type.VARBINARY: self.handle_string_type,
             sqlalchemy_type.VARCHAR: self.handle_string_type,
             # mssql
@@ -310,7 +317,7 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
         }
 
     def get_pydantic_type(self, column_type: Any) -> Any:
-        """Given a 'Column.type' value, return a type supported by pydantic.
+        """Given a ``Column.type`` value, return a type supported by pydantic.
 
         Args:
             column_type: The type of the SQLColumn.
@@ -445,7 +452,10 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
     def to_openapi_schema(self, model_class: Type[DeclarativeMeta]) -> "Schema":
         """Given a model class, transform it into an OpenAPI schema class.
 
-        :param model_class: A table class.
-        :return: An :class:`OpenAPI <pydantic_openapi_schema.v3_1_0.schema.Schema>` instance.
+        Args:
+            model_class: A table class.
+
+        Returns:
+            An :class:`OpenAPI <starlite.openapi.spec.schema.Schema>` instance.
         """
-        return OpenAPI310PydanticSchema(schema_class=self.to_data_container_class(model_class=model_class))
+        return SchemaDataContainer(data_container=self.to_data_container_class(model_class=model_class))

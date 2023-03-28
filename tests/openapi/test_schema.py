@@ -1,35 +1,35 @@
+from dataclasses import dataclass
 from enum import Enum
-from typing import Generic, TypeVar
-from unittest.mock import MagicMock
+from typing import Dict, Literal
 
 import pytest
 from pydantic import BaseModel
-from pydantic_openapi_schema.v3_1_0 import ExternalDocumentation
-from pydantic_openapi_schema.v3_1_0.example import Example
-from pydantic_openapi_schema.v3_1_0.schema import Schema
 
-from starlite import Controller, MediaType, Starlite, get
+from starlite import Controller, MediaType, get
+from starlite._openapi.schema_generation.schema import (
+    KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
+    _process_schema_result,
+    create_schema,
+    create_schema_for_annotation,
+)
+from starlite._signature.models import PydanticSignatureModel, SignatureField
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.di import Provide
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
-from starlite.openapi import schema
-from starlite.openapi.constants import KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP
-from starlite.openapi.schema import (
-    get_schema_for_field_type,
-    update_schema_with_signature_field,
-)
-from starlite.params import Parameter, ParameterKwarg
-from starlite.signature.models import PydanticSignatureModel, SignatureField
+from starlite.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
+from starlite.openapi.spec.example import Example
+from starlite.openapi.spec.schema import Schema
+from starlite.params import BodyKwarg, Parameter, ParameterKwarg
 from starlite.testing import create_test_client
-from tests import TypedDictPerson
+from tests import Person, Pet
 
 
-def test_update_schema_with_signature_field() -> None:
+def test_process_schema_result() -> None:
     test_str = "abc"
     kwarg_model = ParameterKwarg(
         examples=[Example(value=1)],
-        external_docs=ExternalDocumentation(url="https://example.com/docs"),  # type: ignore
+        external_docs=ExternalDocumentation(url="https://example.com/docs"),
         content_encoding="utf-8",
         default=test_str,
         title=test_str,
@@ -46,12 +46,15 @@ def test_update_schema_with_signature_field() -> None:
         max_length=1,
         regex="^[a-z]$",
     )
-    signature_field = SignatureField.create(field_type=str, kwarg_model=kwarg_model)
+    schemas: Dict[str, Schema] = {}
     schema = Schema()
-    update_schema_with_signature_field(
+    _process_schema_result(
         schema=schema,
-        signature_field=signature_field,
+        field=SignatureField.create(field_type=str, kwarg_model=kwarg_model),
+        generate_examples=False,
+        schemas=schemas,
     )
+    assert schema.title
     assert schema.const == test_str
     for signature_key, schema_key in KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
         assert getattr(schema, schema_key) == getattr(kwarg_model, signature_key)
@@ -96,37 +99,6 @@ def test_dependency_schema_generation() -> None:
         }
 
 
-def test_create_schema_for_generic_type_raises_improper_config() -> None:
-    T = TypeVar("T")
-
-    class GenericType(Generic[T]):
-        t: T
-
-    @get("/")
-    def handler_function(dep: GenericType[int]) -> None:
-        ...
-
-    app = Starlite(route_handlers=[handler_function])
-
-    with pytest.raises(ImproperlyConfiguredException):
-        app.openapi_schema
-
-
-def test_get_schema_for_field_type_typeddict(monkeypatch: pytest.MonkeyPatch) -> None:
-    return_value_mock = MagicMock()
-    convert_typeddict_to_model_mock = MagicMock(return_value=return_value_mock)
-    openapi_310_pydantic_schema_mock = MagicMock()
-    monkeypatch.setattr(schema, "OpenAPI310PydanticSchema", openapi_310_pydantic_schema_mock)
-    monkeypatch.setattr(schema, "convert_typeddict_to_model", convert_typeddict_to_model_mock)
-
-    class M(BaseModel):
-        data: TypedDictPerson
-
-    get_schema_for_field_type(PydanticSignatureModel.signature_field_from_model_field(M.__fields__["data"]), [])
-    convert_typeddict_to_model_mock.assert_called_once_with(TypedDictPerson)
-    openapi_310_pydantic_schema_mock.assert_called_once_with(schema_class=return_value_mock)
-
-
 def test_get_schema_for_field_type_enum() -> None:
     class Opts(str, Enum):
         opt1 = "opt1"
@@ -135,5 +107,73 @@ def test_get_schema_for_field_type_enum() -> None:
     class M(BaseModel):
         opt: Opts
 
-    schema = get_schema_for_field_type(PydanticSignatureModel.signature_field_from_model_field(M.__fields__["opt"]), [])
+    schema = create_schema_for_annotation(
+        annotation=PydanticSignatureModel.signature_field_from_model_field(M.__fields__["opt"]).field_type
+    )
+    assert schema
     assert schema.enum == ["opt1", "opt2"]
+
+
+def test_handling_of_literals() -> None:
+    @dataclass
+    class DataclassWithLiteral:
+        value: Literal["a", "b", "c"]
+        const: Literal[1]
+
+    schemas: Dict[str, Schema] = {}
+    result = create_schema(
+        field=SignatureField.create(name="", field_type=DataclassWithLiteral),
+        generate_examples=False,
+        plugins=[],
+        schemas=schemas,
+    )
+    assert isinstance(result, Reference)
+    schema = schemas["DataclassWithLiteral"]
+    assert isinstance(schema, Schema)
+    assert schema.properties
+    value = schema.properties["value"]
+    assert isinstance(value, Schema)
+    assert value.enum == ("a", "b", "c")
+    const = schema.properties["const"]
+    assert isinstance(const, Schema)
+    assert const.const == 1
+
+
+def test_schema_hashing() -> None:
+    schema = Schema(
+        one_of=[
+            Schema(type=OpenAPIType.STRING),
+            Schema(type=OpenAPIType.NUMBER),
+            Schema(type=OpenAPIType.OBJECT, properties={"key": Schema(type=OpenAPIType.STRING)}),
+        ],
+        examples=[Example(value=None), Example(value=[1, 2, 3])],
+    )
+    assert hash(schema)
+
+
+def test_title_validation() -> None:
+    schemas: Dict[str, Schema] = {}
+    create_schema(
+        field=SignatureField.create(name="Person", field_type=Person),
+        generate_examples=False,
+        plugins=[],
+        schemas=schemas,
+    )
+    assert schemas.get("Person")
+
+    create_schema(
+        field=SignatureField.create(name="Pet", field_type=Pet),
+        generate_examples=False,
+        plugins=[],
+        schemas=schemas,
+    )
+
+    assert schemas.get("Pet")
+
+    with pytest.raises(ImproperlyConfiguredException):
+        create_schema(
+            field=SignatureField.create(name="Person", field_type=Pet, kwarg_model=BodyKwarg(title="Person")),
+            generate_examples=False,
+            plugins=[],
+            schemas=schemas,
+        )

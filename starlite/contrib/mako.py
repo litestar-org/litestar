@@ -12,6 +12,9 @@ from starlite.template.base import (
     url_for_static_asset,
 )
 
+__all__ = ("MakoTemplate", "MakoTemplateEngine")
+
+
 try:
     from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
     from mako.lookup import TemplateLookup
@@ -73,6 +76,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
 
     def get_template(self, template_name: str) -> MakoTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
+
         Args:
             template_name: A dotted path
 
@@ -80,7 +84,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate]):
             MakoTemplate instance
 
         Raises:
-            :class:`TemplateNotFoundException <starlite.exceptions.TemplateNotFoundException>`: if no template is found.
+            TemplateNotFoundException: if no template is found.
         """
         try:
             return MakoTemplate(

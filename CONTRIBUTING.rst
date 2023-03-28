@@ -11,6 +11,13 @@ Setting up the environment
 4. Install `pre-commit <https://pre-commit.com/>`_
 5. Run ``pre-commit install`` to install pre-commit hooks
 
+.. tip::
+  Many modern IDEs like PyCharm or VS Code will enable the poetry-managed virtualenv that is created in step 2 for you automatically.
+  If your IDE / editor does not offer this functionality, then you will need to manually activate the virtualenv yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced within this document.
+
+  The easiest way to activate this virtualenv manually is by running ``poetry shell``, as described at `Using your virtual environment <https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment>`_ in poetry's documentation.
+
+  The rest of this document will assume this environment is active wherever commands are referenced.
 
 Code contributions
 ------------------
@@ -66,7 +73,7 @@ Writing and running tests
 
 Tests are contained within the ``tests`` directory, and follow the same directory structure as the ``starlite`` module.
 If you are adding a test case, it should be located within the correct submodule of ``tests``. E.g. tests for
-``starlite/utils./sync.py`` reside in ``tests/utils/test_sync.py``.
+``starlite/utils/sync.py`` reside in ``tests/utils/test_sync.py``.
 
 The ``Makefile`` includes several commands for running tests:
 
@@ -208,8 +215,8 @@ Creating a new release
    * Use ``vMAJOR.MINOR.PATCH`` (e.g. ``v1.2.3``) as both the tag and release title
    * Fill in the release description. You can use the "Generate release notes" function to get a draft for this
 
-3. Update ``CHANGELOG.rst`` by adding a new section, with the version number as a heading. Include the contents of the
-   release notes as they relate to changes in code
+3. Update ``CHANGELOG.rst`` by adding a new ``.. changelog:: <version number>`` entry, with the version number. Include
+   the contents of the release notes as they relate to changes in code
 4. Commit your changes and push to ``main``
 5. Publish the release
 6. Check that the "publish" `action <https://github.com/starlite-api/starlite/actions>`_ has run successfully

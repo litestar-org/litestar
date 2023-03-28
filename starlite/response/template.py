@@ -8,6 +8,9 @@ from starlite.enums import MediaType
 from starlite.response.base import Response
 from starlite.status_codes import HTTP_200_OK
 
+__all__ = ("TemplateResponse",)
+
+
 if TYPE_CHECKING:
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.template import TemplateEngineProtocol
@@ -33,19 +36,19 @@ class TemplateResponse(Response[bytes]):
         """Handle the rendering of a given template into a bytes string.
 
         Args:
-            template_name: Path-like name for the template to be rendered, e.g. "index.html".
+            template_name: Path-like name for the template to be rendered, e.g. ``index.html``.
             template_engine: The template engine class to use to render the response.
             status_code: A value for the response HTTP status code.
             context: A dictionary of key/value pairs to be passed to the temple engine's render method.
-            background: A :class:`BackgroundTask <starlite.datastructures.BackgroundTask>` instance or
-                :class:`BackgroundTasks <starlite.datastructures.BackgroundTasks>` to execute after the response is finished.
-                Defaults to None.
+            background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
+                :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
+                Defaults to ``None``.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
-            cookies: A list of :class:`Cookie <starlite.datastructures.Cookie>` instances to be set under the response
-                'Set-Cookie' header.
+            cookies: A list of :class:`Cookie <.datastructures.Cookie>` instances to be set under the response
+                ``Set-Cookie`` header.
             encoding: Content encoding
-            media_type: A string or member of the :class:`MediaType <starlite.enums.MediaType>` enum. If not set, try to infer
-                the media type based on the template name. If this fails, fall back to `text/plain`.
+            media_type: A string or member of the :class:`MediaType <.enums.MediaType>` enum. If not set, try to infer
+                the media type based on the template name. If this fails, fall back to ``text/plain``.
         """
         if media_type == MediaType.JSON:  # we assume this is the default
             suffixes = PurePath(template_name).suffixes

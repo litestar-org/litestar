@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
+from starlite._signature.utils import get_fn_type_hints
 from starlite.file_system import BaseLocalFileSystem
-from starlite.signature.utils import get_fn_type_hints
 from starlite.static_files import StaticFiles
 from starlite.types.asgi_types import Receive, Scope, Send
 from starlite.types.builtin_types import NoneType

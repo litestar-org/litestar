@@ -1,6 +1,6 @@
 from starlite import MediaType, Response, get
+from starlite.contrib.htmx._utils import HTMXHeaders
 from starlite.contrib.htmx.request import HTMXRequest
-from starlite.contrib.htmx.utils import HTMXHeaders
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 

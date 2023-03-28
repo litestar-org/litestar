@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from freezegun import freeze_time
 
-from starlite import Request, get
-from starlite.config.static_files import StaticFilesConfig
+from starlite import Request, Starlite, get
 from starlite.middleware.rate_limit import (
     DURATION_VALUES,
     CacheObject,
@@ -13,8 +12,10 @@ from starlite.middleware.rate_limit import (
     RateLimitConfig,
 )
 from starlite.serialization import decode_json, encode_json
+from starlite.static_files.config import StaticFilesConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
-from starlite.testing import create_test_client
+from starlite.stores.base import Store
+from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -28,14 +29,14 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
 
     config = RateLimitConfig(rate_limit=(unit, 1))
     cache_key = "RateLimitMiddleware::testclient"
+    app = Starlite(route_handlers=[handler], middleware=[config.middleware])
+    store = app.stores.get("rate_limit")
 
-    with freeze_time() as frozen_time, create_test_client(
-        route_handlers=[handler], middleware=[config.middleware]
-    ) as client:
-        cache = client.app.cache
+    with freeze_time() as frozen_time, TestClient(app=app) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        cached_value = await cache.get(cache_key)
+        cached_value = await store.get(cache_key)
+        assert cached_value
         cache_object = CacheObject(**decode_json(cached_value))
         assert len(cache_object.history) == 1
 
@@ -59,6 +60,40 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.status_code == HTTP_200_OK
 
 
+async def test_non_default_store(memory_store: Store) -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    app = Starlite(
+        [handler], middleware=[RateLimitConfig(("second", 10)).middleware], stores={"rate_limit": memory_store}
+    )
+
+    with TestClient(app) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+
+    assert await memory_store.exists("RateLimitMiddleware::testclient")
+
+
+async def test_set_store_name(memory_store: Store) -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    app = Starlite(
+        [handler],
+        middleware=[RateLimitConfig(("second", 10), store="some_store").middleware],
+        stores={"some_store": memory_store},
+    )
+
+    with TestClient(app) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+
+    assert await memory_store.exists("RateLimitMiddleware::testclient")
+
+
 async def test_reset() -> None:
     @get("/")
     def handler() -> None:
@@ -66,17 +101,19 @@ async def test_reset() -> None:
 
     config = RateLimitConfig(rate_limit=("second", 1))
     cache_key = "RateLimitMiddleware::testclient"
+    app = Starlite(route_handlers=[handler], middleware=[config.middleware])
+    store = app.stores.get("rate_limit")
 
-    with create_test_client(route_handlers=[handler], middleware=[config.middleware]) as client:
-        cache = client.app.cache
+    with TestClient(app=app) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
-        cached_value = await cache.get(cache_key)
+        cached_value = await store.get(cache_key)
+        assert cached_value
         cache_object = CacheObject(**decode_json(cached_value))
         assert cache_object.reset == int(time() + 1)
 
         cache_object.reset -= 2
-        await cache.set(cache_key, encode_json(cache_object))
+        await store.set(cache_key, encode_json(cache_object))
 
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
@@ -170,10 +207,7 @@ async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
     path1.write_text("styles content", "utf-8")
 
     static_files_config = StaticFilesConfig(directories=[tmpdir], path="/src/static")  # pyright: ignore
-    rate_limit_config = RateLimitConfig(
-        rate_limit=("minute", 1),
-        exclude=[r"^/src.*$"],
-    )
+    rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=[r"^/src.*$"])
     with create_test_client(
         [handler], static_files_config=[static_files_config], middleware=[rate_limit_config.middleware]
     ) as client:

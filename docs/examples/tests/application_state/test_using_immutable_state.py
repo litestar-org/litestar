@@ -1,5 +1,4 @@
 from examples.application_state.using_immutable_state import app
-
 from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import TestClient
 

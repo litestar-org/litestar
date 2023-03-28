@@ -1,6 +1,6 @@
 from starlite import Starlite, get
-from starlite.config.logging import LoggingConfig
 from starlite.exceptions import MissingDependencyException
+from starlite.logging.config import LoggingConfig
 from starlite.middleware.logging import LoggingMiddlewareConfig
 
 

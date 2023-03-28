@@ -50,7 +50,7 @@ def test_cleanup_is_being_performed(tmpdir: Path) -> None:
         upload_file = data
         assert not upload_file.file.closed
 
-    with create_test_client(handler) as client, open(path1, "rb") as f:  # noqa: PL123
+    with create_test_client(handler) as client, open(path1, "rb") as f:
         response = client.post("/form", files={"test": ("test.txt", f, "text/plain")})
         assert response.status_code == HTTP_201_CREATED
         assert upload_file

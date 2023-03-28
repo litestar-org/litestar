@@ -5,11 +5,11 @@ import pytest
 
 if TYPE_CHECKING:
     from pytest import LogCaptureFixture
+
     from starlite.types.callable_types import GetLogger
 
 from examples.middleware.logging_middleware import app
-
-from starlite.config.logging import LoggingConfig, default_handlers
+from starlite.logging.config import LoggingConfig, default_handlers
 from starlite.testing import TestClient
 
 

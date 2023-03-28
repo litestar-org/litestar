@@ -4,6 +4,7 @@ import pytest
 
 from starlite import Controller, Response, Router, get
 from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 from starlite.types import AfterRequestHookHandler
 
@@ -79,3 +80,18 @@ def test_after_request_handler_resolution(
     with create_test_client(route_handlers=router, after_request=app_after_request_handler) as client:
         response = client.get("/greetings/hello")
         assert response.json() == expected
+
+
+def test_after_request_handles_handlers_that_return_responses() -> None:
+    def after_request(response: Response) -> Response:
+        response.headers["Custom-Header-Name"] = "Custom Header Value"
+        return response
+
+    @get("/")
+    def handler() -> Response:
+        return Response("test")
+
+    with create_test_client(handler, after_request=after_request) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get("Custom-Header-Name") == "Custom Header Value"

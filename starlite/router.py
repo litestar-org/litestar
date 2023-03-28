@@ -4,44 +4,40 @@ from collections import defaultdict
 from copy import copy
 from typing import TYPE_CHECKING, Any, DefaultDict, Mapping, Sequence, cast
 
+from starlite._layers.utils import narrow_response_cookies, narrow_response_headers
 from starlite.controller import Controller
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi_handlers import ASGIRouteHandler
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
-from starlite.handlers.utils import narrow_response_cookies, narrow_response_headers
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-from starlite.types import (
-    AfterRequestHookHandler,
-    AfterResponseHookHandler,
-    BeforeRequestHookHandler,
-    ControllerRouterHandler,
-    ExceptionHandlersMap,
-    Guard,
-    Middleware,
-    ParametersMap,
-    ResponseCookies,
-    ResponseType,
-    RouteHandlerMapItem,
-    RouteHandlerType,
-    TypeEncodersMap,
-)
-from starlite.utils import (
-    find_index,
-    is_class_and_subclass,
-    join_paths,
-    normalize_path,
-    unique,
-)
+from starlite.utils import find_index, is_class_and_subclass, join_paths, normalize_path, unique
 from starlite.utils.sync import AsyncCallable
 
-if TYPE_CHECKING:
-    from pydantic_openapi_schema.v3_1_0 import SecurityRequirement
+__all__ = ("Router",)
 
+
+if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
+    from starlite.openapi.spec import SecurityRequirement
     from starlite.routes import BaseRoute
+    from starlite.types import (
+        AfterRequestHookHandler,
+        AfterResponseHookHandler,
+        BeforeRequestHookHandler,
+        ControllerRouterHandler,
+        ExceptionHandlersMap,
+        Guard,
+        Middleware,
+        ParametersMap,
+        ResponseCookies,
+        ResponseType,
+        RouteHandlerMapItem,
+        RouteHandlerType,
+        TypeEncodersMap,
+    )
     from starlite.types.composite_types import ResponseHeaders
 
 
@@ -71,6 +67,7 @@ class Router:
         "response_headers",
         "routes",
         "security",
+        "signature_namespace",
         "tags",
         "type_encoders",
     )
@@ -95,47 +92,50 @@ class Router:
         response_headers: ResponseHeaders | None = None,
         route_handlers: Sequence[ControllerRouterHandler],
         security: Sequence[SecurityRequirement] | None = None,
+        signature_namespace: Mapping[str, Any] | None = None,
         tags: Sequence[str] | None = None,
         type_encoders: TypeEncodersMap | None = None,
     ) -> None:
         """Initialize a ``Router``.
 
         Args:
-            after_request: A sync or async function executed before a :class:`Request <starlite.connection.Request>` is
-                passed to any route handler. If this function returns a value, the request will not reach the route
-                handler, and instead this value will be used.
+            after_request: A sync or async function executed before a :class:`Request <.connection.Request>` is passed
+                to any route handler. If this function returns a value, the request will not reach the route handler,
+                and instead this value will be used.
             after_response: A sync or async function called after the response has been awaited. It receives the
-                :class:`Request <starlite.connection.Request>` object and should not return any values.
+                :class:`Request <.connection.Request>` object and should not return any values.
             before_request: A sync or async function called immediately before calling the route handler. Receives
                 the :class:`starlite.connection.Request` instance and any non-``None`` return value is used for the
                 response, bypassing the route handler.
             cache_control: A ``cache-control`` header of type
-                :class:`CacheControlHeader <starlite.datastructures.CacheControlHeader>` to add to route handlers of
+                :class:`CacheControlHeader <.datastructures.CacheControlHeader>` to add to route handlers of
                 this router. Can be overridden by route handlers.
-            dependencies: A string keyed mapping of dependency :class:`Provider <starlite.datastructures.Provide>` instances.
-            etag: An ``etag`` header of type :class:`ETag <datastructures.ETag>` to add to route handlers of this app.
+            dependencies: A string keyed mapping of dependency :class:`Provide <.di.Provide>` instances.
+            etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
-            guards: A sequence of :class:`Guard <starlite.types.Guard>` callables.
-            middleware: A sequence of :class:`Middleware <starlite.types.Middleware>`.
-            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <starlite.types.Guard>`
-                or wherever you have access to :class:`Request <starlite.connection.request.Request>` or
-                :class:`ASGI Scope <starlite.types.Scope>`.
-            parameters: A mapping of :class:`Parameter <starlite.params.Parameter>` definitions available to all
-                application paths.
+            guards: A sequence of :data:`Guard <.types.Guard>` callables.
+            middleware: A sequence of :data:`Middleware <.types.Middleware>`.
+            opt: A string keyed mapping of arbitrary values that can be accessed in :data:`Guards <.types.Guard>` or
+                wherever you have access to :class:`Request <.connection.Request>` or
+                :data:`ASGI Scope <.types.Scope>`.
+            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions available to all application
+                paths.
             path: A path fragment that is prefixed to all route handlers, controllers and other routers associated
                 with the router instance.
-            response_class: A custom subclass of [starlite.response.Response] to be used as the default for all route
-                handlers, controllers and other routers associated with the router instance.
-            response_cookies: A sequence of [Cookie](starlite.datastructures.Cookie] instances.
-            response_headers: A string keyed mapping of :class:`ResponseHeader <starlite.datastructures.ResponseHeader>`
+            response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the default for
+                all route handlers, controllers and other routers associated with the router instance.
+            response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
+            response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
                 instances.
             route_handlers: A required sequence of route handlers, which can include instances of
-                :class:`Router <starlite.router.Router>`, subclasses of
-                :class:`Controller <starlite.controller.Controller>` or any function decorated by the route handler
-                decorators.
+                :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
+                function decorated by the route handler decorators.
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
-                See :class:`SecurityRequirement <pydantic_openapi_schema.v3_1_0.security_requirement.SecurityRequirement>` for details.
-            tags: A sequence of string tags that will be appended to the schema of all route handlers under the application.
+                See :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`
+                for details.
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
+            tags: A sequence of string tags that will be appended to the schema of all route handlers under the
+                application.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         """
 
@@ -157,6 +157,7 @@ class Router:
         self.response_headers = narrow_response_headers(response_headers)
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.security = list(security or [])
+        self.signature_namespace = signature_namespace or {}
         self.tags = list(tags or [])
         self.registered_route_handler_ids: set[int] = set()
         self.type_encoders = dict(type_encoders) if type_encoders is not None else None
@@ -168,9 +169,9 @@ class Router:
         """Register a Controller, Route instance or RouteHandler on the router.
 
         Args:
-            value: a subclass or instance of Controller, an instance of ``Router`` or a function/method that has been
-                decorated by any of the routing decorators, e.g. :class:`get <starlite.handlers.http_handlers.get>`,
-                :class:`post <starlite.handlers.http_handlers.post>`.
+            value: a subclass or instance of Controller, an instance of :class:`Router` or a function/method that has
+                been decorated by any of the routing decorators, e.g. :class:`get <.handlers.get>`,
+                :class:`post <.handlers.post>`.
 
         Returns:
             Collection of handlers added to the router.
@@ -192,9 +193,7 @@ class Router:
                     ]
                 ):
                     http_handlers.extend(existing_handlers)
-                    existing_route_index = find_index(
-                        self.routes, lambda x: x.path == path  # pylint: disable=cell-var-from-loop # noqa: B023
-                    )
+                    existing_route_index = find_index(self.routes, lambda x: x.path == path)  # noqa: B023
 
                     if existing_route_index == -1:  # pragma: no cover
                         raise ImproperlyConfiguredException("unable to find_index existing route index")

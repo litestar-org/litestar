@@ -1,20 +1,19 @@
 [tool.poetry]
 name = "starlite"
-version = "2.0.0alpha1"
+version = "2.0.0alpha2"
 description = "Performant, light and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
     "Peter Schutt <peter.github@proton.me>",
     "Cody Fincher <cody.fincher@gmail.com>",
-    "Janek Nouvertné <provinzkraut@posteo.de>",
-    "Konstantin Mikhailov <konstantin.mikhailov@proton.me>"
+    "Janek Nouvertné <provinzkraut@posteo.de>"
 ]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/starlite-api/starlite"
+homepage = "https://starliteproject.dev/"
 repository = "https://github.com/starlite-api/starlite"
-documentation = "https://starlite-api.github.io/starlite"
+documentation = "https://docs.starliteproject.dev/"
 keywords = ["api", "rest", "http", "asgi", "pydantic", "starlite", "framework", "websocket"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -32,7 +31,7 @@ classifiers = [
     "Topic :: Software Development",
     "Typing :: Typed",
 ]
-include = ["CHANGELOG.md"]
+include = ["CHANGELOG.rst"]
 packages = [
     { include = "starlite" },
 ]
@@ -42,21 +41,20 @@ python = ">=3.8,<4.0"
 alembic = { version = "*", optional = true }
 anyio = ">=3"
 brotli = { version = "*", optional = true }
-click = {version = "*", optional = true}
+click = { version = "*", optional = true }
 cryptography = { version = "*", optional = true }
 fast-query-parsers = "*"
 httpx = ">=0.22"
 importlib-metadata = { version = "*", python = "<3.10" }
 jinja2 = { version = ">=3.1.2", optional = true }
-jsbeautifier = {version = "*", optional = true}
+jsbeautifier = { version = "*", optional = true }
 mako = { version = ">=1.2.4", optional = true }
-msgspec = ">=0.11.0"
+msgspec = "*"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
 pydantic = "*"
 pydantic-factories = "*"
-pydantic-openapi-schema = ">=1.5.0"
 python-jose = { version = "*", optional = true }
 pyyaml = "*"
 redis = { version = "*", optional = true, extras = ["hiredis"] }
@@ -68,11 +66,12 @@ typing-extensions = "*"
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
+asyncpg = "*"
 beautifulsoup4 = "*"
 brotli = "*"
 click = "*"
 cryptography = "*"
-fakeredis = {extras = ["lua"], version = ">=2.9.0"}
+fakeredis = { extras = ["lua"], version = ">=2.10.2" }
 freezegun = "*"
 fsspec = "*"
 greenlet = "*"
@@ -91,33 +90,33 @@ pytest-asyncio = "*"
 pytest-cov = "*"
 pytest-mock = "*"
 python-dotenv = "*"
+pytest_docker = "*"
 python-jose = "*"
 redis = { version = "*", extras = ["hiredis"] }
 rich = "*"
 saq = "*"
-sqlalchemy = "^2.0"
+sqlalchemy = ">=2.0"
 starlette = "*"
 structlog = "*"
 tortoise-orm = ">=0.17.0"
 trio = "*"
 uvicorn = "*"
-pytest-lazy-fixture = "^0.6.3"
+pytest-lazy-fixture = "*"
 
 [tool.poetry.group.docs]
 optional = true
 
 [tool.poetry.group.docs.dependencies]
-black = "^22.12.0"
-httpx = "^0.23.2"
-uvicorn = "^0.20.0"
-sphinx-autobuild = "^2021.3.14"
-sphinx-design = "^0.3.0"
-sphinx = "^5.3.0"
-sphinx-toolbox = "^3.2.0"
-sphinx-copybutton = "^0.5.1"
-sphinxcontrib-mermaid = "^0.7.1"
-auto-pytabs = {extras = ["sphinx"], version = ">=0.1.1"}
-pydata-sphinx-theme = "^0.12.0"
+black = "*"
+httpx = "*"
+uvicorn = "*"
+sphinx-autobuild = "*"
+sphinx = ">=5.3.0,<=6"
+sphinx-design = ">=0.3.0,<1"
+sphinx-copybutton = ">=0.5.1"
+sphinxcontrib-mermaid = ">=0.8.1,<1"
+auto-pytabs = { extras = ["sphinx"], version = "*" }
+starlite-sphinx-theme = { git = "https://github.com/starlite-api/starlite-sphinx-theme.git" }
 
 
 [tool.poetry.extras]
@@ -131,7 +130,7 @@ picologging = ["picologging"]
 redis = ["redis"]
 saq = ["saq", "redis"]
 sqlalchemy = ["sqlalchemy", "alembic"]
-standard = ["click", "jinja2", "jsbeautifier", "rich",]
+standard = ["click", "jinja2", "jsbeautifier", "rich", ]
 structlog = ["structlog"]
 tortoise-orm = ["tortoise-orm"]
 full = [
@@ -152,7 +151,7 @@ full = [
 ]
 
 [tool.poetry.scripts]
-starlite = {callable = "starlite:__main__", extras = ["cli"] }
+starlite = { callable = "starlite:__main__", extras = ["cli"] }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -162,53 +161,6 @@ build-backend = "poetry.core.masonry.api"
 line-length = 120
 include = '\.pyi?$'
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-
-[tool.pylint.MESSAGE_CONTROL]
-disable = [
-    "cyclic-import",
-    "duplicate-code",
-    "fixme",
-    "import-outside-toplevel",
-    "invalid-name",
-    "line-too-long",
-    "missing-class-docstring",
-    "missing-function-docstring",
-    "missing-module-docstring",
-    "no-name-in-module",
-    "protected-access",
-    "super-init-not-called",
-    "too-few-public-methods",
-    "too-many-ancestors",
-    "too-many-arguments",
-    "too-many-branches",
-    "too-many-instance-attributes",
-    "too-many-lines",
-    "too-many-locals",
-    "too-many-return-statements",
-    "ungrouped-imports",
-    "unnecessary-ellipsis",
-    "unused-import",
-]
-enable = "useless-suppression"
-extension-pkg-allow-list = ["pydantic", "msgspec", "picologging"]
-
-[tool.pylint.REPORTS]
-reports = "no"
-
-[tool.pylint.FORMAT]
-max-line-length = "120"
-
-[tool.pylint.VARIABLES]
-ignored-argument-names = "args|kwargs|_|__"
-
-[tool.pylint.BASIC]
-no-docstring-rgx = "(__.*__|main|test.*|.*test|.*Test|^_.*)$"
-
-[tool.pylint.LOGGING]
-logging-modules = ["logging", "picologging", "structlog"]
 
 [tool.coverage.run]
 omit = ["*/tests/*", "starlite/contrib/sqlalchemy_1/*"]
@@ -231,8 +183,6 @@ filterwarnings = [
     "ignore::DeprecationWarning:pkg_resources:2803"
 ]
 
-[tool.pycln]
-all = true
 
 [tool.pyright]
 include = ["starlite", "tests", "examples"]
@@ -249,8 +199,90 @@ exclude = [
 [tool.slotscheck]
 strict-imports = false
 
-[tool.pydocstyle]
-add-ignore = "D100,D104,D105,D106,D202,D205,D415"
-add-select = "D401,D404,D417"
+[tool.ruff]
+select = [
+    "A", # flake8-builtins
+    "B", # flake8-bugbear
+    "BLE", # flake8-blind-except
+    "C4", # flake8-comprehensions
+    "C90", # mccabe
+    "D", # pydocstyle
+    "DJ", # flake8-django
+    "DTZ", # flake8-datetimez
+    "E", # pycodestyle errors
+    "ERA", # eradicate
+    "EXE", # flake8-executable
+    "F", # pyflakes
+    "G", # flake8-logging-format
+    "I", # isort
+    "ICN", # flake8-import-conventions
+    "ISC", # flake8-implicit-str-concat
+    "N", # pep8-naming
+    "PIE", # flake8-pie
+    "PLC", # pylint - convention
+    "PLE", # pylint - error
+    "PLW", # pylint - warning
+    "PTH", # flake8-use-pathlib
+    "Q", # flake8-quotes
+    "RET", # flake8-return
+    "RUF", # Ruff-specific rules
+    "S", # flake8-bandit
+    "SIM", # flake8-simplify
+    "T10", # flake8-debugger
+    "T20", # flake8-print
+    "TCH", # flake8-type-checking
+    "TID", # flake8-tidy-imports
+    "UP", # pyupgrade
+    "W", # pycodestyle - warning
+    "YTT", # flake8-2020
+]
+ignore = [
+    "E501", # pycodestyle line too long, handled by black
+    "D100", # pydocstyle - missing docstring in public module
+    "D101", # pydocstyle - missing docstring in public class
+    "D102", # pydocstyle - missing docstring in public method
+    "D103", # pydocstyle - missing docstring in public function
+    "D104", # pydocstyle - missing docstring in public package
+    "D105", # pydocstyle - missing docstring in magic method
+    "D106", # pydocstyle - missing docstring in public nested class
+    "D107", # pydocstyle - missing docstring in __init__
+    "D202", # pydocstyle - no blank lines allowed after function docstring
+    "D205", # pydocstyle - 1 blank line required between summary line and description
+    "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
+    "UP037", # pyupgrade - removes quotes from type annotation
+    "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
+    "B010" # flake8-bugbear - do not call setattr with a constant attribute value
+]
+line-length = 120
+src = ["starlite", "tests", "docs/examples"]
+target-version = "py38"
+
+[tool.ruff.pydocstyle]
 convention = "google"
-match_dir = "starlite"
+
+[tool.ruff.mccabe]
+max-complexity = 12
+
+[tool.ruff.pep8-naming]
+classmethod-decorators = [
+    "classmethod",
+    "pydantic.validator",
+    "pydantic.root_validator",
+    "sqlalchemy.ext.declarative.declared_attr",
+    "sqlalchemy.orm.declared_attr.directive",
+]
+
+[tool.ruff.isort]
+known-first-party = ["starlite", "tests", "examples"]
+
+[tool.ruff.per-file-ignores]
+"tests/**/*.*" = ["S101", "D", "ARG", "PGH", "B", "FBT", "PTH", "A", "TCH", "DTZ", "TRY", "EM", "S", "N", "SIM", "PLR", "BLE", "RSE", "C901", "PLW", "G", "PIE"]
+"docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
+"docs/examples/tests/**/*.*" = ["S101", "D", "ARG", "PGH", "B", "FBT", "PTH", "A", "TCH", "DTZ", "TRY", "EM", "S", "N", "SIM", "PLR", "BLE", "RSE", "C901", "PLW", "G", "PIE"]
+"docs/**/*.*" = ["S", "B", "DTZ", "A", "TCH", "ERA", "D", "RET"]
+"test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
+"tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
+"starlite/handlers/**/*.*" = ["N801"]
+"starlite/params.py" = ["N802"]
+"starlite/exceptions/*.*" = ["N818"]
+"docs/examples/**" = ["T201"]

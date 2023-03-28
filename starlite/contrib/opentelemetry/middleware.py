@@ -1,13 +1,20 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import AbstractMiddleware
 
+__all__ = ("OpenTelemetryInstrumentationMiddleware",)
+
+
 try:
-    from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
-    from opentelemetry.util.http import get_excluded_urls
+    import opentelemetry  # noqa: F401
 except ImportError as e:
     raise MissingDependencyException("OpenTelemetry dependencies are not installed") from e
+
+from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
+from opentelemetry.util.http import get_excluded_urls
 
 if TYPE_CHECKING:
     from starlite.contrib.opentelemetry import OpenTelemetryConfig
@@ -19,12 +26,12 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
 
     __slots__ = ("open_telemetry_middleware",)
 
-    def __init__(self, app: "ASGIApp", config: "OpenTelemetryConfig"):
+    def __init__(self, app: ASGIApp, config: OpenTelemetryConfig):
         """Middleware that adds OpenTelemetry instrumentation to the application.
 
         Args:
             app: The ``next`` ASGI app to call.
-            config: An instance of :class:`OpenTelemetryConfig <starlite.contrib.opentelemetry.OpenTelemetryConfig>`
+            config: An instance of :class:`OpenTelemetryConfig <.contrib.opentelemetry.OpenTelemetryConfig>`
         """
         super().__init__(app=app, scopes=config.scopes, exclude=config.exclude, exclude_opt_key=config.exclude_opt_key)
         self.open_telemetry_middleware = OpenTelemetryMiddleware(

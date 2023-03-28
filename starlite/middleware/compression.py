@@ -11,6 +11,9 @@ from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import AbstractMiddleware
 from starlite.utils import Ref, set_starlite_scope_state
 
+__all__ = ("CompressionFacade", "CompressionMiddleware")
+
+
 if TYPE_CHECKING:
     from starlite.config.compression import CompressionConfig
     from starlite.types import (

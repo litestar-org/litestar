@@ -105,7 +105,7 @@ def test_streaming_response() -> None:
         response = StreamingResponse(generator, media_type="text/plain", background=cleanup_task)
         await response(scope, receive, send)
 
-    assert filled_by_bg_task == ""
+    assert not filled_by_bg_task
     client = TestClient(app)
     response = client.get("/")
     assert response.text == "1, 2, 3, 4, 5"

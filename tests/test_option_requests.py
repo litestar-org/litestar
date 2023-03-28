@@ -21,8 +21,8 @@ def test_regular_options_request(http_methods: List["Method"]) -> None:
 
     with create_test_client(handler) as client:
         response = client.options("/")
-        assert response.status_code == HTTP_204_NO_CONTENT
-        assert response.headers.get("Allow") == ", ".join(sorted(set(http_methods + ["OPTIONS"])))
+        assert response.status_code == HTTP_204_NO_CONTENT, response.text
+        assert response.headers.get("Allow") == ", ".join(sorted({*http_methods, "OPTIONS"}))
 
 
 def test_cors_options_request_without_origin_passes() -> None:

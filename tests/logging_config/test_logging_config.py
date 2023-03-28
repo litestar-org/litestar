@@ -5,11 +5,11 @@ from unittest.mock import Mock, patch
 import pytest
 
 from starlite import Request, get
-from starlite.config.logging import (
+from starlite.logging.config import (
     LoggingConfig,
+    _get_default_handlers,
     default_handlers,
     default_picologging_handlers,
-    get_default_handlers,
 )
 from starlite.logging.picologging import (
     QueueListenerHandler as PicologgingQueueListenerHandler,
@@ -47,7 +47,7 @@ def test_correct_dict_config_called(
 
 @pytest.mark.parametrize("picologging_exists", [True, False])
 def test_correct_default_handlers_set(picologging_exists: bool) -> None:
-    with patch("starlite.config.logging.find_spec") as find_spec_mock:
+    with patch("starlite.logging.config.find_spec") as find_spec_mock:
         find_spec_mock.return_value = picologging_exists
         log_config = LoggingConfig()
 
@@ -132,7 +132,7 @@ def test_connection_logger(handlers: Any, listener: Any) -> None:
 
 def test_validation() -> None:
     logging_config = LoggingConfig(handlers={}, loggers={})
-    assert logging_config.handlers["queue_listener"] == get_default_handlers()["queue_listener"]
+    assert logging_config.handlers["queue_listener"] == _get_default_handlers()["queue_listener"]
     assert logging_config.loggers["starlite"]
 
 

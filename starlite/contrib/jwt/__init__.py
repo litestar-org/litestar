@@ -1,4 +1,5 @@
 from starlite.contrib.jwt.jwt_auth import (
+    BaseJWTAuth,
     JWTAuth,
     JWTCookieAuth,
     OAuth2Login,
@@ -11,6 +12,7 @@ from starlite.contrib.jwt.middleware import (
 )
 
 __all__ = (
+    "BaseJWTAuth",
     "JWTAuth",
     "JWTAuthenticationMiddleware",
     "JWTCookieAuth",

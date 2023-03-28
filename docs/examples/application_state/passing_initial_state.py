@@ -7,4 +7,4 @@ def handler(state: State) -> dict:
     return state.dict()
 
 
-app = Starlite(route_handlers=[handler], initial_state={"count": 100})
+app = Starlite(route_handlers=[handler], state=State({"count": 100}))

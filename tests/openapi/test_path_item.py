@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING, Any, Tuple, cast
 import pytest
 
 from starlite import Controller, Request, Router, Starlite, get
+from starlite._openapi.path_item import create_path_item
+from starlite._openapi.utils import default_operation_id_creator
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.http_handlers import HTTPRouteHandler
-from starlite.openapi.path_item import create_path_item
-from starlite.openapi.utils import default_operation_id_creator
 from starlite.utils import find_index
 from tests.openapi.utils import PersonController
 
@@ -55,18 +55,19 @@ def test_create_path_item(route: "HTTPRoute") -> None:
         plugins=[],
         use_handler_docstrings=False,
         operation_id_creator=default_operation_id_creator,
+        schemas={},
     )
     assert schema.delete
-    assert schema.delete.operationId == "ServiceIdPersonPersonIdDeletePerson"
+    assert schema.delete.operation_id == "ServiceIdPersonPersonIdDeletePerson"
     assert schema.delete.summary == "DeletePerson"
     assert schema.get
-    assert schema.get.operationId == "ServiceIdPersonPersonIdGetPersonById"
+    assert schema.get.operation_id == "ServiceIdPersonPersonIdGetPersonById"
     assert schema.get.summary == "GetPersonById"
     assert schema.patch
-    assert schema.patch.operationId == "ServiceIdPersonPersonIdPartialUpdatePerson"
+    assert schema.patch.operation_id == "ServiceIdPersonPersonIdPartialUpdatePerson"
     assert schema.patch.summary == "PartialUpdatePerson"
     assert schema.put
-    assert schema.put.operationId == "ServiceIdPersonPersonIdUpdatePerson"
+    assert schema.put.operation_id == "ServiceIdPersonPersonIdUpdatePerson"
     assert schema.put.summary == "UpdatePerson"
 
 
@@ -77,12 +78,13 @@ def test_unique_operation_ids_for_multiple_http_methods(route_with_multiple_meth
         plugins=[],
         use_handler_docstrings=False,
         operation_id_creator=default_operation_id_creator,
+        schemas={},
     )
     assert schema.get
-    assert schema.get.operationId
+    assert schema.get.operation_id
     assert schema.head
-    assert schema.head.operationId
-    assert schema.get.operationId != schema.head.operationId
+    assert schema.head.operation_id
+    assert schema.get.operation_id != schema.head.operation_id
 
 
 def test_routes_with_different_paths_should_generate_unique_operation_ids(
@@ -95,6 +97,7 @@ def test_routes_with_different_paths_should_generate_unique_operation_ids(
         plugins=[],
         use_handler_docstrings=False,
         operation_id_creator=default_operation_id_creator,
+        schemas={},
     )
     schema_v2, _ = create_path_item(
         route=route_v2,
@@ -102,10 +105,11 @@ def test_routes_with_different_paths_should_generate_unique_operation_ids(
         plugins=[],
         use_handler_docstrings=False,
         operation_id_creator=default_operation_id_creator,
+        schemas={},
     )
     assert schema_v1.get
     assert schema_v2.get
-    assert schema_v1.get.operationId != schema_v2.get.operationId
+    assert schema_v1.get.operation_id != schema_v2.get.operation_id
 
 
 def test_create_path_item_use_handler_docstring_false(route: "HTTPRoute") -> None:
@@ -115,6 +119,7 @@ def test_create_path_item_use_handler_docstring_false(route: "HTTPRoute") -> Non
         plugins=[],
         use_handler_docstrings=False,
         operation_id_creator=default_operation_id_creator,
+        schemas={},
     )
     assert schema.get
     assert schema.get.description is None
@@ -129,6 +134,7 @@ def test_create_path_item_use_handler_docstring_true(route: "HTTPRoute") -> None
         plugins=[],
         use_handler_docstrings=True,
         operation_id_creator=default_operation_id_creator,
+        schemas={},
     )
     assert schema.get
     assert schema.get.description == "Description in docstring."

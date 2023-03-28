@@ -5,9 +5,9 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr
 
 from starlite import Request, Response, Starlite, get, post
-from starlite.config.openapi import OpenAPIConfig
 from starlite.connection import ASGIConnection
 from starlite.contrib.jwt import OAuth2Login, OAuth2PasswordBearerAuth, Token
+from starlite.openapi.config import OpenAPIConfig
 
 
 # Let's assume we have a User model that is a pydantic model.
@@ -47,7 +47,7 @@ oauth2_auth = OAuth2PasswordBearerAuth[User](
 # Given an instance of 'OAuth2PasswordBearerAuth' we can create a login handler function:
 @post("/login")
 async def login_handler(request: "Request[Any, Any, Any]", data: "User") -> "Response[OAuth2Login]":
-    await request.cache.set(str(data.id), data.dict())
+    MOCK_DB[str(data.id)] = data
     # if we do not define a response body, the login process will return a standard OAuth2 login response.  Note the `Response[OAuth2Login]` return type.
     response = oauth2_auth.login(identifier=str(data.id))
 

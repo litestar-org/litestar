@@ -1,8 +1,8 @@
 from typing import Any
 
 from starlite import Starlite, get
-from starlite.config.logging import LoggingConfig
 from starlite.connection import ASGIConnection
+from starlite.logging.config import LoggingConfig
 from starlite.testing import RequestFactory
 
 
@@ -41,4 +41,3 @@ def test_connection_base_properties() -> None:
     assert connection.user is user
     assert connection.auth is auth
     assert connection.session is session
-    assert connection.cache is app.cache

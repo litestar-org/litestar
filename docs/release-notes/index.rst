@@ -1,3 +1,5 @@
+:orphan:
+
 Release notes
 =============
 
@@ -5,5 +7,5 @@ Release notes
     :titlesonly:
 
     migration_guide_2
-    changelog_2
-    1.x Changelog <https://provinzkraut.github.io/starlite/changelog.html>
+    2.x Changelog <https://starliteproject.dev/2/release-notes/changelog.html>
+    1.x Changelog <https://starliteproject.dev/1/changelog.html>

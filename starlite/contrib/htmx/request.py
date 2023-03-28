@@ -5,18 +5,19 @@ from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 from starlite import Request
-from starlite.contrib.htmx.utils import HTMXHeaders
+from starlite.contrib.htmx._utils import HTMXHeaders
 from starlite.exceptions import SerializationException
 from starlite.serialization import decode_json
+
+__all__ = ("HTMXDetails", "HTMXRequest")
+
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
 
 
 class HTMXDetails:
-    """HTMXDetails holds all the values sent by HTMX client in headers
-    and provide convenient properties.
-    """
+    """HTMXDetails holds all the values sent by HTMX client in headers and provide convenient properties."""
 
     def __init__(self, request: Request) -> None:
         """Initialize :class:`HTMXDetails`"""
