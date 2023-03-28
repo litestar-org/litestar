@@ -27,11 +27,11 @@ from typing import (
     Set,
     Tuple,
     cast,
-    get_args,
 )
 from uuid import UUID
 
 from _decimal import Decimal
+from typing_extensions import get_args, get_type_hints
 
 from starlite._openapi.schema_generation.constrained_fields import (
     create_constrained_field_schema,
@@ -530,16 +530,17 @@ def create_schema_for_pydantic_model(
     Returns:
         A schema instance.
     """
+    field_type_hints = get_type_hints(field_type, include_extras=False)
     return Schema(
         required=[field.alias or field.name for field in field_type.__fields__.values() if field.required],
         properties={
             (f.alias or f.name): create_schema(
-                field=SignatureField.create(field_type=v, name=f.alias or f.name),
+                field=SignatureField.create(field_type=field_type_hints[f.name], name=f.alias or f.name),
                 generate_examples=generate_examples,
                 plugins=plugins,
                 schemas=schemas,
             )
-            for f, v in zip(field_type.__fields__.values(), field_type.__annotations__.values())
+            for f in field_type.__fields__.values()
         },
         type=OpenAPIType.OBJECT,
         title=_get_type_schema_name(field_type),
@@ -575,7 +576,7 @@ def create_schema_for_dataclass(
                 plugins=plugins,
                 schemas=schemas,
             )
-            for k, v in field_type.__annotations__.items()
+            for k, v in get_type_hints(field_type, include_extras=False).items()
         },
         type=OpenAPIType.OBJECT,
         title=_get_type_schema_name(field_type),
@@ -609,7 +610,7 @@ def create_schema_for_typed_dict(
                 plugins=plugins,
                 schemas=schemas,
             )
-            for k, v in field_type.__annotations__.items()
+            for k, v in get_type_hints(field_type, include_extras=False).items()
         },
         type=OpenAPIType.OBJECT,
         title=_get_type_schema_name(field_type),
