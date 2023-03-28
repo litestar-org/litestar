@@ -7,7 +7,7 @@ from starlite.constants import HTTP_DISCONNECT, HTTP_RESPONSE_START, WEBSOCKET_C
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Empty
 from starlite.utils import get_starlite_scope_state, set_starlite_scope_state
-from starlite.utils.dataclass import simple_asdict_filter_empty
+from starlite.utils.dataclass import simple_asdict
 
 from .engine import EngineConfig
 
@@ -124,7 +124,7 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
         Returns:
             A string keyed dict of config kwargs for the SQLAlchemy ``create_engine`` function.
         """
-        return simple_asdict_filter_empty(self.engine_config)
+        return simple_asdict(self.engine_config, exclude_empty=True)
 
     @property
     def session_config_dict(self) -> dict[str, Any]:
@@ -133,7 +133,7 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
         Returns:
             A string keyed dict of config kwargs for the SQLAlchemy ``sessionmaker`` class.
         """
-        return simple_asdict_filter_empty(self.session_config)
+        return simple_asdict(self.session_config, exclude_empty=True)
 
     @property
     def signature_namespace(self) -> dict[str, Any]:
