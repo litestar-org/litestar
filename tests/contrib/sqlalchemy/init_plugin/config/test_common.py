@@ -161,6 +161,9 @@ def test_app_state(config_cls: type[SQLAlchemySyncConfig | SQLAlchemySyncConfig]
     with patch.object(config, "create_session_maker") as create_session_maker_mock, patch.object(
         config, "create_engine"
     ) as create_engine_mock:
-        assert config.app_state().keys() == {config.engine_app_state_key, config.session_maker_app_state_key}
+        assert config.create_app_state_items().keys() == {
+            config.engine_app_state_key,
+            config.session_maker_app_state_key,
+        }
         create_session_maker_mock.assert_called_once()
         create_engine_mock.assert_called_once()

@@ -40,6 +40,6 @@ class SQLAlchemyInitPlugin(InitPluginProtocol):
         )
         app_config.before_send.append(self._config.before_send_handler)
         app_config.on_shutdown.append(self._config.on_shutdown)
-        app_config.state.update(self._config.app_state())
+        app_config.state.update(self._config.create_app_state_items())
         app_config.signature_namespace.update(self._config.signature_namespace)
         return app_config

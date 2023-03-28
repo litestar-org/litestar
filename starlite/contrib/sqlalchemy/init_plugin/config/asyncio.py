@@ -57,16 +57,13 @@ class SQLAlchemyAsyncConfig(GenericSQLAlchemyConfig[AsyncEngine, AsyncSession, a
     subclass.
     """
     session_config: AsyncSessionConfig = field(default_factory=AsyncSessionConfig)
-    """Configuration options for the ``sessionmaker``.
-
-    The configuration options are documented in the SQLAlchemy documentation.
-    """
+    """Configuration options for the :class:`async_sessionmaker<sqlalchemy.ext.asyncio.async_sessionmaker>`."""
     session_maker_class: type[async_sessionmaker] = async_sessionmaker
     """Sessionmaker class to use."""
     before_send_handler: BeforeMessageSendHookHandler = default_before_send_handler
     """Handler to call before the ASGI message is sent.
 
-    The handler should handle closing the session stored in the ASGI scope, if its still open, and committing and
+    The handler should handle closing the session stored in the ASGI scope, if it's still open, and committing and
     uncommitted data.
     """
 

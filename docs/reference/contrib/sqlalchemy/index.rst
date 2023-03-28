@@ -4,5 +4,5 @@ sqlalchemy
 .. toctree::
     :titlesonly:
 
-    config/index
+    config
     plugin

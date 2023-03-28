@@ -65,9 +65,8 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
     subclass.
     """
     session_config: GenericSessionConfig
-    """Configuration options for the ``sessionmaker``.
-
-    The configuration options are documented in the SQLAlchemy documentation.
+    """Configuration options for either the :class:`async_sessionmaker<sqlalchemy.ext.asyncio.async_sessionmaker>`
+    or :class:`sessionmaker<sqlalchemy.orm.sessionmaker>`.
     """
     session_maker_class: type[sessionmaker] | type[async_sessionmaker]
     """Sessionmaker class to use."""
@@ -99,7 +98,7 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
     The configuration options are documented in the SQLAlchemy documentation.
     """
     session_maker_app_state_key: str = "session_maker_class"
-    """Key under which to store the SQLAlchemy ``sessionmaker`` in the application
+    """Key under which to store the SQLAlchemy :class:`sessionmaker<sqlalchemy.orm.sessionmaker>` in the application
     :class:`State <.datastructures.State>` instance.
     """
     session_maker: Callable[[], SessionT] | None = None
@@ -122,7 +121,8 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
         """Return the engine configuration as a dict.
 
         Returns:
-            A string keyed dict of config kwargs for the SQLAlchemy ``create_engine`` function.
+            A string keyed dict of config kwargs for the SQLAlchemy :class:`create_engine<sqlalchemy.create_engine>`
+            function.
         """
         return simple_asdict(self.engine_config, exclude_empty=True)
 
@@ -131,7 +131,8 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
         """Return the session configuration as a dict.
 
         Returns:
-            A string keyed dict of config kwargs for the SQLAlchemy ``sessionmaker`` class.
+            A string keyed dict of config kwargs for the SQLAlchemy :class:`sessionmaker<sqlalchemy.orm.sessionmaker>`
+            class.
         """
         return simple_asdict(self.session_config, exclude_empty=True)
 
@@ -207,7 +208,7 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
             set_starlite_scope_state(scope, SESSION_SCOPE_KEY, session)
         return session
 
-    def app_state(self) -> dict[str, Any]:
+    def create_app_state_items(self) -> dict[str, Any]:
         """Key/value pairs to be stored in application state."""
         return {
             self.engine_app_state_key: self.create_engine(),

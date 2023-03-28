@@ -82,6 +82,8 @@ nitpick_ignore = [
     # intentionally undocumented
     ("py:class", "NoneType"),
     ("py:class", "starlite._signature.models.SignatureField"),
+    ("py:class", "starlite.contrib.sqlalchemy.init_plugin.config.common.GenericSessionConfig"),
+    ("py:class", "starlite.contrib.sqlalchemy.init_plugin.config.common.GenericSQLAlchemyConfig"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.types.*"),

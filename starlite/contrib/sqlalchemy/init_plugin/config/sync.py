@@ -52,10 +52,7 @@ class SQLAlchemySyncConfig(GenericSQLAlchemyConfig[Engine, Session, sessionmaker
     subclass.
     """
     session_config: SyncSessionConfig = field(default_factory=SyncSessionConfig)  # pyright:ignore
-    """Configuration options for the ``sessionmaker``.
-
-    The configuration options are documented in the SQLAlchemy documentation.
-    """
+    """Configuration options for the :class:`sessionmaker<sqlalchemy.orm.sessionmaker>`."""
     session_maker_class: type[sessionmaker] = sessionmaker
     """Sessionmaker class to use."""
     before_send_handler: BeforeMessageSendHookHandler = default_before_send_handler
