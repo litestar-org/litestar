@@ -83,7 +83,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
         openapi_config=OpenAPIConfig(title="my title", version="1.0.0", operation_id_creator=operation_id_creator),
     )
 
-    assert app.openapi_schema.to_schema()["paths"] == {  # type: ignore[union-attr]
+    assert app.openapi_schema.to_schema()["paths"] == {
         "/1": {
             "get": {
                 "deprecated": False,
