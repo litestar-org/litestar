@@ -46,7 +46,7 @@ from starlite.utils import (
     join_paths,
     unique,
 )
-from starlite.utils.dataclass import extract_dataclass_fields
+from starlite.utils.dataclass import extract_dataclass_items
 
 __all__ = ("HandlerIndex", "Starlite")
 
@@ -489,7 +489,7 @@ class Starlite(Router):
         Returns:
             An instance of ``Starlite`` application.
         """
-        return cls(**dict(extract_dataclass_fields(config)))
+        return cls(**dict(extract_dataclass_items(config)))
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         """Register a route handler on the app.

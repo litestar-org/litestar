@@ -1,38 +1,143 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
 
-from starlite.types import Empty
-from starlite.utils.dataclass import asdict_filter_empty, simple_asdict, simple_asdict_filter_empty
+import pytest
 
-if TYPE_CHECKING:
-    from starlite.types import EmptyType
+from starlite.types import Empty, EmptyType
+from starlite.utils.dataclass import extract_dataclass_fields, extract_dataclass_items, simple_asdict
 
 
-@dataclass
-class Foo:
-    bar: str = "baz"
-    baz: int | EmptyType = Empty
-    qux: list[str] = field(default_factory=lambda: ["quux", "quuz"])
+def test_extract_dataclass_fields_exclude_none() -> None:
+    """Test extract_dataclass_fields with exclude_none."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str | None = None
+
+    assert extract_dataclass_fields(Foo(), exclude_none=True) == ()
 
 
-@dataclass
-class Bar:
-    foo: Foo = field(default_factory=Foo)
-    quux: list[Foo] = field(default_factory=lambda: [Foo(), Foo()])
+def test_extract_dataclass_fields_exclude_empty() -> None:
+    """Test extract_dataclass_fields with exclude_empty."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str | EmptyType = Empty
+
+    assert extract_dataclass_fields(Foo(), exclude_empty=True) == ()
 
 
-def test_asdict_filter_empty() -> None:
+def test_extract_dataclass_fields_include() -> None:
+    """Test extract_dataclass_items with include."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str = "bar"
+        baz: str = "baz"
+
+    fields = extract_dataclass_fields(Foo(), include={"bar"})
+    assert len(fields) == 1
+    assert fields[0].name == "bar"
+    assert fields[0].default == "bar"
+
+
+def test_extract_dataclass_fields_exclude() -> None:
+    """Test extract_dataclass_items with exclude."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str = "bar"
+        baz: str = "baz"
+
+    fields = extract_dataclass_fields(Foo(), exclude={"bar"})
+    assert len(fields) == 1
+    assert fields[0].name == "baz"
+    assert fields[0].default == "baz"
+
+
+def test_extract_dataclass_fields_raises_for_common_include_exclude() -> None:
+    """Test extract_dataclass_items raises for common include and exclude."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str = "bar"
+
+    with pytest.raises(ValueError):
+        extract_dataclass_fields(Foo(), include={"bar"}, exclude={"bar"})
+
+
+def test_extract_dataclass_items_returns_name_value_pairs() -> None:
+    """Test extract_dataclass_items returns name, value pairs."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str = "bar"
+        baz: str = "baz"
+
+    assert extract_dataclass_items(Foo()) == (("bar", "bar"), ("baz", "baz"))
+
+
+def test_simple_asdict_returns_dict() -> None:
+    """Test simple_asdict returns a dict."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str = "bar"
+        baz: str = "baz"
+
+    assert simple_asdict(Foo()) == {"bar": "bar", "baz": "baz"}
+
+
+def test_simple_asdict_recursive() -> None:
+    """Test simple_asdict recursive."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str = "bar"
+        baz: str = "baz"
+
+    @dataclass
+    class Bar:
+        """A Bar model."""
+
+        foo: Foo
+
+    assert simple_asdict(Bar(foo=Foo())) == {"foo": {"bar": "bar", "baz": "baz"}}
+
+
+def test_simple_asdict_does_not_recurse_into_collections() -> None:
+    """Test simple_asdict does not recurse into collections."""
+
+    @dataclass
+    class Foo:
+        """A Foo model."""
+
+        bar: str = "bar"
+        baz: str = "baz"
+
+    @dataclass
+    class Bar:
+        """A Bar model."""
+
+        foo: list[Foo]
+
     foo = Foo()
-    assert asdict_filter_empty(foo) == {"bar": "baz", "qux": ["quux", "quuz"]}
 
-
-def test_simple_asdict() -> None:
-    bar = Bar()
-    assert simple_asdict(bar) == {"foo": {"bar": "baz", "baz": Empty, "qux": ["quux", "quuz"]}, "quux": [Foo(), Foo()]}
-
-
-def test_simple_asdict_filter_empty() -> None:
-    bar = Bar()
-    assert simple_asdict_filter_empty(bar) == {"foo": {"bar": "baz", "qux": ["quux", "quuz"]}, "quux": [Foo(), Foo()]}
+    assert simple_asdict(Bar(foo=[foo])) == {"foo": [foo]}

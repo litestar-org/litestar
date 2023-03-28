@@ -1,85 +1,104 @@
 from __future__ import annotations
 
-from dataclasses import asdict, fields
-from typing import TYPE_CHECKING, cast
+from dataclasses import Field, fields
+from typing import TYPE_CHECKING
 
-from starlite.types import DataclassProtocol, Empty
+from starlite.types import Empty
+from starlite.types.protocols import DataclassProtocol
 
 if TYPE_CHECKING:
-    from typing import Any, Iterable
+    from typing import AbstractSet, Any, Iterable
 
 __all__ = (
-    "asdict_filter_empty",
     "extract_dataclass_fields",
-    "simple_asdict",
-    "simple_asdict_filter_empty",
+    "extract_dataclass_items",
 )
 
 
 def extract_dataclass_fields(
-    dt: Any, exclude_none: bool = False, include: Iterable[str] | None = None
-) -> tuple[tuple[str, Any], ...]:
-    """Extract dataclass fields. Unlike the 'asdict' method exports by the stlib, this function does not pickle values.
+    dt: DataclassProtocol,
+    exclude_none: bool = False,
+    exclude_empty: bool = False,
+    include: AbstractSet[str] | None = None,
+    exclude: AbstractSet[str] | None = None,
+) -> tuple[Field, ...]:
+    """Extract dataclass fields.
 
     Args:
         dt: A dataclass instance.
         exclude_none: Whether to exclude None values.
+        exclude_empty: Whether to exclude Empty values.
         include: An iterable of fields to include.
+        exclude: An iterable of fields to exclude.
+
+
+    Returns:
+        A tuple of dataclass fields.
+    """
+    include = include or set()
+    exclude = exclude or set()
+
+    if common := (include & exclude):
+        raise ValueError(f"Fields {common} are both included and excluded.")
+
+    dataclass_fields: Iterable[Field] = fields(dt)
+    if exclude_none:
+        dataclass_fields = (field for field in dataclass_fields if getattr(dt, field.name) is not None)
+    if exclude_empty:
+        dataclass_fields = (field for field in dataclass_fields if getattr(dt, field.name) is not Empty)
+    if include:
+        dataclass_fields = (field for field in dataclass_fields if field.name in include)
+    if exclude:
+        dataclass_fields = (field for field in dataclass_fields if field.name not in exclude)
+
+    return tuple(dataclass_fields)
+
+
+def extract_dataclass_items(
+    dt: DataclassProtocol,
+    exclude_none: bool = False,
+    exclude_empty: bool = False,
+    include: AbstractSet[str] | None = None,
+    exclude: AbstractSet[str] | None = None,
+) -> tuple[tuple[str, Any], ...]:
+    """Extract dataclass name, value pairs.
+
+    Unlike the 'asdict' method exports by the stlib, this function does not pickle values.
+
+    Args:
+        dt: A dataclass instance.
+        exclude_none: Whether to exclude None values.
+        exclude_empty: Whether to exclude Empty values.
+        include: An iterable of fields to include.
+        exclude: An iterable of fields to exclude.
 
     Returns:
         A tuple of key/value pairs.
     """
-    return tuple(
-        (field_name, getattr(dt, field_name))
-        for field_name in cast("DataclassProtocol", dt).__dataclass_fields__
-        if (not exclude_none or getattr(dt, field_name) is not None)
-        and ((include is not None and field_name in include) or include is None)
-    )
+    dataclass_fields = extract_dataclass_fields(dt, exclude_none, exclude_empty, include, exclude)
+    return tuple((field.name, getattr(dt, field.name)) for field in dataclass_fields)
 
 
-def asdict_filter_empty(obj: DataclassProtocol) -> dict[str, Any]:
-    """Same as stdlib's ``dataclasses.asdict`` with additional filtering for :class:`Empty<.types.Empty>`.
+def simple_asdict(obj: DataclassProtocol, exclude_none: bool = False, exclude_empty: bool = False) -> dict[str, Any]:
+    """Convert a dataclass to a dictionary.
 
-    Args:
-        obj: A dataclass instance.
-
-    Returns:
-        ``obj`` converted into a ``dict`` of its fields, with any :class:`Empty<.types.Empty>` values excluded.
-    """
-    return {k: v for k, v in asdict(obj).items() if v is not Empty}
-
-
-def simple_asdict(obj: DataclassProtocol) -> dict[str, Any]:
-    """Recursively convert a dataclass instance into a ``dict`` of its fields, without using ``copy.deepcopy()``.
-
-    The standard library ``dataclasses.asdict()`` function uses ``copy.deepcopy()`` on any value that is not a
-    dataclass, dict, list or tuple, which presents a problem when the dataclass holds items that cannot be pickled.
-
-    This function provides an alternative that does not use ``copy.deepcopy()``, and is a much simpler implementation,
-    only recursing into other dataclasses.
+    This method has important differences to the standard library version:
+    - it does not deepcopy values
+    - it does not recurse into collections
 
     Args:
         obj: A dataclass instance.
+        exclude_none: Whether to exclude None values.
+        exclude_empty: Whether to exclude Empty values.
 
     Returns:
-        ``obj`` converted into a ``dict`` of its fields.
+        A dictionary of key/value pairs.
     """
-    field_values = ((field.name, getattr(obj, field.name)) for field in fields(obj))
-    return {k: simple_asdict(v) if isinstance(v, DataclassProtocol) else v for k, v in field_values}
-
-
-def simple_asdict_filter_empty(obj: DataclassProtocol) -> dict[str, Any]:
-    """Same as asdict_filter_empty but uses ``simple_asdict``.
-
-    Args:
-        obj: A dataclass instance.
-
-    Returns:
-        ``obj`` converted into a ``dict`` of its fields, with any :class:`Empty<.types.Empty>` values excluded.
-    """
-    field_values = ((field.name, getattr(obj, field.name)) for field in fields(obj))
-    return {
-        k: simple_asdict_filter_empty(v) if isinstance(v, DataclassProtocol) else v
-        for k, v in field_values
-        if v is not Empty
-    }
+    ret = {}
+    for field in extract_dataclass_fields(obj, exclude_none, exclude_empty):
+        value = getattr(obj, field.name)
+        if isinstance(value, DataclassProtocol):
+            ret[field.name] = simple_asdict(value, exclude_none, exclude_empty)
+        else:
+            ret[field.name] = getattr(obj, field.name)
+    return ret
