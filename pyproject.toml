@@ -113,7 +113,7 @@ sphinx-design = "^0.3.0"
 sphinx = "^5.3.0"
 sphinx-toolbox = "^3.2.0"
 sphinx-copybutton = "^0.5.1"
-sphinxcontrib-mermaid = "^0.7.1"
+sphinxcontrib-mermaid = "^0.8.1"
 auto-pytabs = {extras = ["sphinx"], version = ">=0.1.1"}
 starlite-sphinx-theme = { git = "https://github.com/starlite-api/starlite-sphinx-theme.git" }
 

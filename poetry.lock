@@ -3206,14 +3206,14 @@ test = ["flake8", "mypy", "pytest"]
 
 [[package]]
 name = "sphinxcontrib-mermaid"
-version = "0.7.1"
+version = "0.8.1"
 description = "Mermaid diagrams in yours Sphinx powered docs"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "sphinxcontrib-mermaid-0.7.1.tar.gz", hash = "sha256:aa8a40b50ec86ad12824b62180240ca52a9bda8424455d7eb252eae9aa5d293c"},
-    {file = "sphinxcontrib_mermaid-0.7.1-py2.py3-none-any.whl", hash = "sha256:3e20de1937c30dfa807e446bf99983d73d0dd3dc5c6524addda59800fe928762"},
+    {file = "sphinxcontrib-mermaid-0.8.1.tar.gz", hash = "sha256:fa3e5325d4ba395336e6137d113f55026b1a03ccd115dc54113d1d871a580466"},
+    {file = "sphinxcontrib_mermaid-0.8.1-py3-none-any.whl", hash = "sha256:15491c24ec78cf1626b1e79e797a9ce87cb7959cf38f955eb72dd5512aeb6ce9"},
 ]
 
 [[package]]
@@ -3715,4 +3715,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "8a4d21788c83174f4ae06ccefc8016feaa41e780f7999f22e4d4263373e935f1"
+content-hash = "f39faddd93e51e7cd218b460dabf00569e8470e4654822ad37954b913bf4cabd"
