@@ -4,6 +4,8 @@ import pickle
 from itertools import chain
 from typing import TYPE_CHECKING, Any, cast
 
+from msgspec.msgpack import decode as decode_msgpack
+
 from starlite.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from starlite.datastructures.headers import Headers
 from starlite.datastructures.upload_file import UploadFile
@@ -13,6 +15,7 @@ from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.response import Response
 from starlite.routes.base import BaseRoute
 from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from starlite.utils import set_starlite_scope_state
 
 if TYPE_CHECKING:
     from starlite._kwargs import KwargsModel
@@ -130,13 +133,6 @@ class HTTPRoute(BaseRoute):
             scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
         )
 
-        if route_handler.cache:
-            await self._set_cached_response(
-                response=response,
-                request=request,
-                route_handler=route_handler,
-            )
-
         return response
 
     async def _call_handler_function(
@@ -226,15 +222,21 @@ class HTTPRoute(BaseRoute):
         """
 
         cache_config = request.app.response_cache_config
-        cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
+        cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request.scope)
         store = cache_config.get_store_from_app(request.app)
 
-        cached_response = await store.get(key=cache_key)
+        cached_response_data = await store.get(key=cache_key)
+        if not cached_response_data:
+            return None
 
-        if cached_response:
-            return cast("ASGIApp", pickle.loads(cached_response))  # nosec
+        http_events = decode_msgpack(cached_response_data)
 
-        return None
+        async def cached_response(scope: Scope, receive: Receive, send: Send) -> None:
+            set_starlite_scope_state(scope, "is_cached", True)
+            for event in http_events:
+                await send(event)
+
+        return cached_response
 
     @staticmethod
     async def _set_cached_response(

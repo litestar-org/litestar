@@ -187,6 +187,7 @@ def build_route_middleware_stack(
     from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
     from starlite.middleware.compression import CompressionMiddleware
     from starlite.middleware.csrf import CSRFMiddleware
+    from starlite.middleware.response_cache import ResponseCacheMiddleware
 
     # we wrap the route.handle method in the ExceptionHandlerMiddleware
     asgi_handler = wrap_in_exception_handler(
@@ -198,6 +199,10 @@ def build_route_middleware_stack(
 
     if app.compression_config:
         asgi_handler = CompressionMiddleware(app=asgi_handler, config=app.compression_config)
+
+    if app.response_cache_config:
+        asgi_handler = ResponseCacheMiddleware(app=asgi_handler, config=app.response_cache_config)
+
     if app.allowed_hosts:
         asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)
 

@@ -173,6 +173,15 @@ class CompressionMiddleware(AbstractMiddleware):
 
         initial_message = Ref[Optional["HTTPResponseStartEvent"]](None)
         started = Ref[bool](False)
+        _own_encoding = compression_encoding.encode("latin-1")
+
+        def should_compress() -> bool:
+            for header in initial_message.value["headers"]:
+                if header[0] != b"content-encoding":
+                    continue
+                if _own_encoding in header[1]:
+                    return False
+            return True
 
         async def send_wrapper(message: "Message") -> None:
             """Handle and compresses the HTTP Message with brotli.
@@ -183,6 +192,11 @@ class CompressionMiddleware(AbstractMiddleware):
 
             if message["type"] == "http.response.start":
                 initial_message.value = message
+                return
+
+            if initial_message.value and not should_compress():
+                await send(initial_message.value)
+                await send(message)
                 return
 
             if initial_message.value and message["type"] == "http.response.body":
