@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Type, cast
+from typing import TYPE_CHECKING, Any, Type
 
 import pytest
 
@@ -43,7 +43,7 @@ def app(handler: HTTPRouteHandler, controller: Type[Controller], router: Router)
 
 @pytest.fixture()
 def openapi_schema(app: Starlite) -> "OpenAPI":
-    return cast("OpenAPI", app.openapi_schema)
+    return app.openapi_schema
 
 
 def test_openapi_schema_handler_tags(openapi_schema: "OpenAPI") -> None:
