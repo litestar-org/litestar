@@ -1,4 +1,5 @@
-from typing import Type
+from __future__ import annotations
+
 from unittest.mock import MagicMock
 
 import pytest
@@ -14,7 +15,7 @@ def mock() -> MagicMock:
 
 
 @pytest.fixture
-def listener_class(mock: MagicMock) -> Type[WebsocketListener]:
+def listener_class(mock: MagicMock) -> type[WebsocketListener]:
     class Listener(WebsocketListener):
         def on_receive(self, data: str) -> str:
             mock(data)
@@ -49,7 +50,7 @@ def async_listener_callable(mock: MagicMock) -> websocket_listener:
         lazy_fixture("listener_class"),
     ],
 )
-def test_basic_listener(mock: MagicMock, listener: websocket_listener | Type[WebsocketListener]) -> None:
+def test_basic_listener(mock: MagicMock, listener: websocket_listener | type[WebsocketListener]) -> None:
     client = create_test_client([listener])
     with client.websocket_connect("/") as ws:
         ws.send_text("foo")
