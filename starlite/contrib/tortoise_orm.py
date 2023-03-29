@@ -13,7 +13,7 @@ __all__ = ("TortoiseORMPlugin",)
 try:
     import tortoise  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("tortoise-orm is not installed") from e
+    raise MissingDependencyException("tortoise", install_package="tortoise-orm") from e
 
 
 from tortoise import Model, ModelMeta  # type: ignore[attr-defined]

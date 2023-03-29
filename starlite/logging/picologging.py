@@ -11,10 +11,12 @@ __all__ = ("QueueListenerHandler",)
 
 
 try:
-    from picologging import StreamHandler
-    from picologging.handlers import QueueHandler, QueueListener
+    import picologging  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("picologging is not installed") from e
+    raise MissingDependencyException("picologging") from e
+
+from picologging import StreamHandler
+from picologging.handlers import QueueHandler, QueueListener
 
 
 class QueueListenerHandler(QueueHandler):

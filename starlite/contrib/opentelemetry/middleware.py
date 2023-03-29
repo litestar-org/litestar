@@ -11,7 +11,7 @@ __all__ = ("OpenTelemetryInstrumentationMiddleware",)
 try:
     import opentelemetry  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("OpenTelemetry dependencies are not installed") from e
+    raise MissingDependencyException("opentelemetry") from e
 
 from opentelemetry.instrumentation.asgi import OpenTelemetryMiddleware
 from opentelemetry.util.http import get_excluded_urls

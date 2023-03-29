@@ -16,7 +16,7 @@ __all__ = ("OpenTelemetryConfig",)
 try:
     import opentelemetry  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("OpenTelemetry dependencies are not installed") from e
+    raise MissingDependencyException("opentelemetry") from e
 
 
 from opentelemetry.trace import Span, TracerProvider  # pyright: ignore

@@ -16,11 +16,13 @@ __all__ = ("MakoTemplate", "MakoTemplateEngine")
 
 
 try:
-    from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
-    from mako.lookup import TemplateLookup
-
+    import mako  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("mako is not installed") from e
+    raise MissingDependencyException("mako") from e
+
+
+from mako.exceptions import TemplateLookupException as MakoTemplateNotFound
+from mako.lookup import TemplateLookup
 
 if TYPE_CHECKING:
     from mako.template import Template as _MakoTemplate
