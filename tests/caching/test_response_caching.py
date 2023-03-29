@@ -2,16 +2,68 @@ from datetime import datetime, timedelta
 from time import sleep
 
 import pytest
+from _pytest.fixtures import FixtureRequest
+from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
+from pytest_mock import MockerFixture
 
 from starlite import CacheConfig, Request, get
+from starlite.cache.base import CacheBackendProtocol
+from starlite.cache.memcached_cache_backend import (
+    MemcachedCacheBackend,
+    MemcachedCacheBackendConfig,
+)
+from starlite.cache.redis_cache_backend import (
+    RedisCacheBackend,
+    RedisCacheBackendConfig,
+)
+from starlite.cache.simple_cache_backend import SimpleCacheBackend
 from starlite.testing import create_test_client
 
+from ..mocks import FakeAsyncMemcached
 from . import after_request_handler, slow_handler
 
 
+@pytest.fixture()
+def fake_redis(mocker: MockerFixture) -> FakeRedis:
+    redis = FakeRedis()
+    mocker.patch("starlite.cache.redis_cache_backend.Redis")
+    mocker.patch("starlite.cache.redis_cache_backend.RedisCacheBackend._redis", redis)
+
+    return redis
+
+
+@pytest.fixture
+def redis_backend(fake_redis: FakeRedis) -> RedisCacheBackend:
+    return RedisCacheBackend(config=RedisCacheBackendConfig(url="redis://something"))
+
+
+@pytest.fixture()
+def fake_memcached(mocker: MockerFixture) -> FakeAsyncMemcached:
+    memcached = FakeAsyncMemcached()
+    mocker.patch("starlite.cache.memcached_cache_backend.Client")
+    mocker.patch("starlite.cache.memcached_cache_backend.MemcachedCacheBackend._memcached_client", memcached)
+
+    return memcached
+
+
+@pytest.fixture()
+def memcached_backend(fake_memcached: FakeAsyncMemcached) -> MemcachedCacheBackend:
+    return MemcachedCacheBackend(config=MemcachedCacheBackendConfig(host="localhost"))
+
+
+@pytest.fixture()
+def simple_cache_backend() -> SimpleCacheBackend:
+    return SimpleCacheBackend()
+
+
+@pytest.fixture(params=["redis_backend", "memcached_backend", "simple_cache_backend"])
+def cache_backend(request: FixtureRequest) -> CacheBackendProtocol:
+    return request.getfixturevalue(request.param)  # type: ignore[no-any-return]
+
+
 @pytest.mark.parametrize("sync_to_thread", (True, False))
-def test_default_cache_response(sync_to_thread: bool) -> None:
+def test_default_cache_response(sync_to_thread: bool, cache_backend: CacheBackendProtocol) -> None:
     with create_test_client(
         route_handlers=[
             get(
@@ -24,6 +76,7 @@ def test_default_cache_response(sync_to_thread: bool) -> None:
             )(slow_handler)
         ],
         after_request=after_request_handler,
+        cache_config=CacheConfig(backend=cache_backend),
     ) as client:
         first_response = client.get("/cached")
         assert first_response.status_code == 200
@@ -38,10 +91,12 @@ def test_default_cache_response(sync_to_thread: bool) -> None:
         assert first_response.json() == second_response.json()
 
 
-def test_handler_expiration() -> None:
+def test_handler_expiration(cache_backend: CacheBackendProtocol) -> None:
     now = datetime.now()
     with freeze_time(now) as frozen_datetime, create_test_client(
-        route_handlers=[get("/cached-local", cache=10)(slow_handler)], after_request=after_request_handler
+        route_handlers=[get("/cached-local", cache=10)(slow_handler)],
+        after_request=after_request_handler,
+        cache_config=CacheConfig(backend=cache_backend),
     ) as client:
         first_response = client.get("/cached-local")
         frozen_datetime.tick(delta=timedelta(seconds=5))
@@ -52,7 +107,7 @@ def test_handler_expiration() -> None:
         assert first_response.headers["unique-identifier"] != third_response.headers["unique-identifier"]
 
 
-def test_default_expiration() -> None:
+def test_default_expiration(cache_backend: CacheBackendProtocol) -> None:
     with create_test_client(
         route_handlers=[get("/cached-default", cache=True)(slow_handler)],
         after_request=after_request_handler,
