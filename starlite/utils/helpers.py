@@ -4,9 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
-from starlite.exceptions import MissingDependencyException
-
-__all__ = ("Ref", "get_enum_string_value", "get_name", "unwrap_partial", "raise_if_not_installed")
+__all__ = ("Ref", "get_enum_string_value", "get_name", "unwrap_partial")
 
 
 T = TypeVar("T")
@@ -66,11 +64,3 @@ def unwrap_partial(value: MaybePartial[T]) -> T:
     while hasattr(output, "func"):
         output = output.func
     return cast("T", output)
-
-
-def raise_if_not_installed(package_name: str, install_package: str | None = None) -> None:
-    """Raise :exc:`MissingDependencyException` if ``package_name`` is not importable"""
-    try:
-        __import__(package_name)
-    except ImportError as e:
-        raise MissingDependencyException(package_name, install_package=install_package) from e

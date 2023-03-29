@@ -4,10 +4,10 @@ from datetime import datetime
 from re import Pattern
 from typing import TYPE_CHECKING, Any
 
+from starlite.exceptions import MissingDependencyException
 from starlite.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.spec.schema import Schema
 from starlite.utils import is_class_and_subclass
-from starlite.utils.helpers import raise_if_not_installed
 
 if TYPE_CHECKING:
     from starlite.plugins import OpenAPISchemaPluginProtocol
@@ -202,8 +202,10 @@ def create_constrained_field_schema(
 
     """
 
-    raise_if_not_installed("pydantic")
-    import pydantic
+    try:
+        import pydantic
+    except ImportError as e:
+        raise MissingDependencyException("pydantic") from e
 
     if issubclass(field_type, (pydantic.ConstrainedFloat, pydantic.ConstrainedInt, pydantic.ConstrainedDecimal)):
         return create_numerical_constrained_field_schema(field_type=field_type)

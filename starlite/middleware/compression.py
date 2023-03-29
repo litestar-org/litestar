@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING, Any, Literal, Optional
 from starlite.constants import SCOPE_STATE_RESPONSE_COMPRESSED
 from starlite.datastructures import Headers, MutableScopeHeaders
 from starlite.enums import CompressionEncoding, ScopeType
+from starlite.exceptions import MissingDependencyException
 from starlite.middleware.base import AbstractMiddleware
 from starlite.utils import Ref, set_starlite_scope_state
-from starlite.utils.helpers import raise_if_not_installed
 
 __all__ = ("CompressionFacade", "CompressionMiddleware")
 
@@ -50,7 +50,10 @@ class CompressionFacade:
         self.compression_encoding = compression_encoding
 
         if compression_encoding == CompressionEncoding.BROTLI:
-            raise_if_not_installed("brotli")
+            try:
+                pass
+            except ImportError as e:
+                raise MissingDependencyException("brotli") from e
 
             from brotli import MODE_FONT, MODE_GENERIC, MODE_TEXT, Compressor
 

@@ -6,12 +6,11 @@ from importlib.util import find_spec
 from logging import INFO
 from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
-from starlite.exceptions import ImproperlyConfiguredException
+from starlite.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from starlite.serialization import encode_json
 
 __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
 
-from starlite.utils.helpers import raise_if_not_installed
 
 if TYPE_CHECKING:
     from typing import NoReturn
@@ -214,7 +213,10 @@ class LoggingConfig(BaseLoggingConfig):
         """
 
         if "picologging" in str(encode_json(self.handlers)):
-            raise_if_not_installed("picologging")
+            try:
+                pass
+            except ImportError as e:
+                raise MissingDependencyException("picologging") from e
 
             from picologging import config, getLogger
 
@@ -314,7 +316,10 @@ class StructLoggingConfig(BaseLoggingConfig):
         Returns:
             A 'logging.getLogger' like function.
         """
-        raise_if_not_installed("structlog")
+        try:
+            pass
+        except ImportError as e:
+            raise MissingDependencyException("structlog") from e
 
         from structlog import configure, get_logger
 
