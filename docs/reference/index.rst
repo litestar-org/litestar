@@ -34,6 +34,7 @@ API reference
     serialization
     static_files
     stores/index
+    status_codes
     template
     testing
     types
