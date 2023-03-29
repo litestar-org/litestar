@@ -958,13 +958,13 @@ store is being requested.</p>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
     <span class="n">stores</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">&quot;sessions&quot;</span><span class="p">:</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">(),</span>
-        <span class="s2">&quot;request_cache&quot;</span><span class="p">:</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;request-cache&quot;</span><span class="p">)),</span>
+        <span class="s2">&quot;response_cache&quot;</span><span class="p">:</span> <span class="n">FileStore</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;response-cache&quot;</span><span class="p">)),</span>
     <span class="p">},</span>
     <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">ServerSideSessionConfig</span><span class="p">()</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>In this example, the registry is being set up with stores using the <code class="docutils literal notranslate"><span class="pre">sessions</span></code> and <code class="docutils literal notranslate"><span class="pre">request_cache</span></code> keys. These are
+<p>In this example, the registry is being set up with stores using the <code class="docutils literal notranslate"><span class="pre">sessions</span></code> and <code class="docutils literal notranslate"><span class="pre">response_cache</span></code> keys. These are
 not magic constants, but instead configuration values that can be changed. Those names just happen to be their default
 values. Adjusting those default values allows to easily re-use stores, without the need for a more complex setup:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -1004,7 +1004,7 @@ with minimal boilerplate:</p>
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="c1"># this will use app.stores.get(&quot;request_cache&quot;)</span>
+    <span class="c1"># this will use app.stores.get(&quot;response_cache&quot;)</span>
     <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
 
 

@@ -762,6 +762,20 @@ document.write(`
 <dd><p>Bases: <a class="reference internal" href="#starlite.exceptions.StarliteException" title="starlite.exceptions.base_exceptions.StarliteException"><code class="xref py py-class docutils literal notranslate"><span class="pre">StarliteException</span></code></a></p>
 <p>Missing optional dependency.</p>
 <p>This exception is raised only when a module depends on a dependency that has not been installed.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.exceptions.MissingDependencyException.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_package</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.exceptions.MissingDependencyException.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">StarliteException</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – args are converted to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> before passing to <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p></li>
+<li><p><strong>detail</strong> – detail of the exception.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py exception">
@@ -1007,7 +1021,10 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.exceptions.MethodNotAllowedException.status_code"><code class="docutils literal notranslate"><span class="pre">MethodNotAllowedException.status_code</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.exceptions.MissingDependencyException"><code class="docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.exceptions.MissingDependencyException"><code class="docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.exceptions.MissingDependencyException.__init__"><code class="docutils literal notranslate"><span class="pre">MissingDependencyException.__init__()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.exceptions.NoRouteMatchFoundException"><code class="docutils literal notranslate"><span class="pre">NoRouteMatchFoundException</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.exceptions.NotAuthorizedException"><code class="docutils literal notranslate"><span class="pre">NotAuthorizedException</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.exceptions.NotAuthorizedException.status_code"><code class="docutils literal notranslate"><span class="pre">NotAuthorizedException.status_code</span></code></a></li>
