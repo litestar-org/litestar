@@ -97,7 +97,7 @@ async def test_configure_integrations(mock_redis: MagicMock) -> None:
 
     assert isinstance(session_store, RedisStore)
     assert isinstance(cache_store, FileStore)
-    assert cache_store.path == Path("request-cache")
+    assert cache_store.path == Path("response-cache")
 
 
 async def test_registry_default_factory() -> None:
