@@ -8,6 +8,7 @@ from starlite.enums import MediaType
 from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
+    MissingDependencyException,
     StarliteException,
     ValidationException,
 )
@@ -87,3 +88,24 @@ def test_create_exception_response_utility_non_http_exception() -> None:
     assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
     assert response.media_type == MediaType.JSON
     assert response.body == b'{"status_code":500,"detail":"RuntimeError(\'yikes\')"}'
+
+
+def test_missing_dependency_exception() -> None:
+    exc = MissingDependencyException("some_package")
+    expected = (
+        "Package 'some_package' is not installed but required. You can install it by running 'pip install "
+        "starlite[some_package]' to install starlite with the required extra or 'pip install some_package' to install "
+        "the package separately"
+    )
+    assert str(exc) == expected
+
+
+def test_missing_dependency_exception_differing_package_name() -> None:
+    exc = MissingDependencyException("some_package", "install_via_this")
+    expected = (
+        "Package 'some_package' is not installed but required. You can install it by running 'pip install "
+        "starlite[install_via_this]' to install starlite with the required extra or 'pip install install_via_this' to "
+        "install the package separately"
+    )
+
+    assert str(exc) == expected
