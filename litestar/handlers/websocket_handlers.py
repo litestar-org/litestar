@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Callable, Literal
 
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
 from litestar.handlers.base import BaseRouteHandler
+from litestar.serialization import decode_json
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
 from litestar.utils import AsyncCallable, Ref, is_async_callable
@@ -112,7 +113,8 @@ websocket = WebsocketRouteHandler
 
 class websocket_listener(WebsocketRouteHandler):
     """A websocket listener that automatically accepts a connection, handles disconnects,
-    and invokes a callback function every time new data is received.
+    invokes a callback function every time new data is received and sends any data
+    returned
     """
 
     def __init__(
@@ -131,7 +133,7 @@ class websocket_listener(WebsocketRouteHandler):
         on_disconnect: Callable[[WebSocket], SyncOrAsyncUnion[None]] | None = None,
         **kwargs: Any,
     ) -> None:
-        self.mode = mode
+        self._mode = mode
         self._pass_socket = False
         self._on_accept = AsyncCallable(on_accept) if on_accept else None
         self._on_disconnect = AsyncCallable(on_disconnect) if on_disconnect else None
@@ -156,6 +158,13 @@ class websocket_listener(WebsocketRouteHandler):
         if not is_async_callable(listener_callback):
             listener_callback = AsyncCallable(listener_callback)
 
+        should_receive_json = listener_callback_signature.parameters["data"].annotation not in {
+            "str",
+            str,
+            "bytes",
+            bytes,
+        }
+
         async def listener_fn(socket: WebSocket, **kwargs: Any) -> None:
             await socket.accept()
             if self._on_accept:
@@ -164,8 +173,16 @@ class websocket_listener(WebsocketRouteHandler):
                 kwargs["socket"] = socket
             while True:
                 try:
-                    data = await socket.receive_data(mode=self.mode)  # pyright: ignore
-                    await listener_callback(data=data, **kwargs)
+                    received_data = await socket.receive_data(mode=self._mode)  # pyright: ignore
+                    if should_receive_json:
+                        received_data = decode_json(received_data)
+                    data_to_send = await listener_callback(data=received_data, **kwargs)
+                    if isinstance(data_to_send, str):
+                        await socket.send_text(data_to_send)
+                    elif isinstance(data_to_send, bytes):
+                        await socket.send_bytes(data_to_send)
+                    else:
+                        await socket.send_json(data_to_send)
                 except WebSocketDisconnect:
                     if self._on_disconnect:
                         await self._on_disconnect(socket)
@@ -191,8 +208,6 @@ class websocket_listener(WebsocketRouteHandler):
         """Validate the route handler function once it's set by inspecting its return annotations."""
         signature = inspect.signature(fn)
 
-        if signature.return_annotation not in {None, "None"}:
-            raise ImproperlyConfiguredException("Websocket listeners should return 'None'")
         if "data" not in signature.parameters:
             raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
         for param in ("request", "body"):
@@ -230,7 +245,7 @@ class WebsocketListener(ABC):
         pass
 
     @abstractmethod
-    def on_receive(self, *args: Any, **kwargs: Any) -> SyncOrAsyncUnion[None]:
+    def on_receive(self, *args: Any, **kwargs: Any) -> Any:
         raise NotImplementedError
 
     def on_disconnect(self, socket: WebSocket) -> SyncOrAsyncUnion[None]:  # noqa: B027
