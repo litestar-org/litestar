@@ -75,4 +75,4 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         **vars(sys.modules[fn_to_inspect.__module__]),
         **(namespace or {}),
     }
-    return get_type_hints(fn_to_inspect, globalns=namespace)
+    return get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
