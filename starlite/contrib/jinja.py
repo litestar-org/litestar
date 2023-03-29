@@ -14,10 +14,12 @@ __all__ = ("JinjaTemplateEngine",)
 
 
 try:
-    from jinja2 import Environment, FileSystemLoader, pass_context
-    from jinja2 import TemplateNotFound as JinjaTemplateNotFound
+    import jinja2  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("jinja2 is not installed") from e
+    raise MissingDependencyException("jinja2") from e
+
+from jinja2 import Environment, FileSystemLoader, pass_context
+from jinja2 import TemplateNotFound as JinjaTemplateNotFound
 
 if TYPE_CHECKING:
     from jinja2 import Template as JinjaTemplate

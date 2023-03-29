@@ -4,10 +4,10 @@ from datetime import datetime
 from re import Pattern
 from typing import TYPE_CHECKING, Any
 
-from starlite.exceptions import MissingDependencyException
 from starlite.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.spec.schema import Schema
 from starlite.utils import is_class_and_subclass
+from starlite.utils.helpers import raise_if_not_installed
 
 if TYPE_CHECKING:
     from starlite.plugins import OpenAPISchemaPluginProtocol
@@ -201,17 +201,16 @@ def create_constrained_field_schema(
         A schema instance.
 
     """
-    try:
-        import pydantic
 
-        if issubclass(field_type, (pydantic.ConstrainedFloat, pydantic.ConstrainedInt, pydantic.ConstrainedDecimal)):
-            return create_numerical_constrained_field_schema(field_type=field_type)
-        if issubclass(field_type, (pydantic.ConstrainedStr, pydantic.ConstrainedBytes)):
-            return create_string_constrained_field_schema(field_type=field_type)
-        if issubclass(field_type, pydantic.ConstrainedDate):
-            return create_date_constrained_field_schema(field_type=field_type)
-        return create_collection_constrained_field_schema(
-            field_type=field_type, children=tuple(children) if children else None, plugins=plugins, schemas=schemas
-        )
-    except ImportError as e:
-        raise MissingDependencyException("pydantic dependencies are not installed") from e
+    raise_if_not_installed("pydantic")
+    import pydantic
+
+    if issubclass(field_type, (pydantic.ConstrainedFloat, pydantic.ConstrainedInt, pydantic.ConstrainedDecimal)):
+        return create_numerical_constrained_field_schema(field_type=field_type)
+    if issubclass(field_type, (pydantic.ConstrainedStr, pydantic.ConstrainedBytes)):
+        return create_string_constrained_field_schema(field_type=field_type)
+    if issubclass(field_type, pydantic.ConstrainedDate):
+        return create_date_constrained_field_schema(field_type=field_type)
+    return create_collection_constrained_field_schema(
+        field_type=field_type, children=tuple(children) if children else None, plugins=plugins, schemas=schemas
+    )
