@@ -49,7 +49,7 @@ pip install starlite
 You can check out the alpha version by instead running
 
 ```shell
-pip install starlite==2.0.0alpha1
+pip install starlite==2.0.0alpha2
 ```
 
 ## Quick Start
