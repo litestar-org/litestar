@@ -6,10 +6,7 @@ from importlib.util import find_spec
 from logging import INFO
 from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
-from starlite.exceptions import (
-    ImproperlyConfiguredException,
-    MissingDependencyException,
-)
+from starlite.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from starlite.serialization import encode_json
 
 __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
@@ -217,9 +214,11 @@ class LoggingConfig(BaseLoggingConfig):
 
         if "picologging" in str(encode_json(self.handlers)):
             try:
-                from picologging import config, getLogger
-            except ImportError as e:  # pragma: no cover
-                raise MissingDependencyException("picologging is not installed") from e
+                pass
+            except ImportError as e:
+                raise MissingDependencyException("picologging") from e
+
+            from picologging import config, getLogger
 
             values = {k: v for k, v in asdict(self).items() if v is not None and k != "incremental"}
         else:
@@ -318,22 +317,24 @@ class StructLoggingConfig(BaseLoggingConfig):
             A 'logging.getLogger' like function.
         """
         try:
-            from structlog import configure, get_logger
+            pass
+        except ImportError as e:
+            raise MissingDependencyException("structlog") from e
 
-            # we now configure structlog
-            configure(
-                **{
-                    k: v
-                    for k, v in asdict(self).items()
-                    if k
-                    not in (
-                        "standard_lib_logging_config",
-                        "log_exceptions",
-                        "traceback_line_limit",
-                        "exception_logging_handler",
-                    )
-                }
-            )
-            return get_logger
-        except ImportError as e:  # pragma: no cover
-            raise MissingDependencyException("structlog is not installed") from e
+        from structlog import configure, get_logger
+
+        # we now configure structlog
+        configure(
+            **{
+                k: v
+                for k, v in asdict(self).items()
+                if k
+                not in (
+                    "standard_lib_logging_config",
+                    "log_exceptions",
+                    "traceback_line_limit",
+                    "exception_logging_handler",
+                )
+            }
+        )
+        return get_logger

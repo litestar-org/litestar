@@ -1,7 +1,6 @@
 from typing import Dict
 
 from starlite import Starlite, get
-from starlite.exceptions import MissingDependencyException
 from tests.openapi.utils import PersonController, PetController
 
 
@@ -16,9 +15,6 @@ app = Starlite(
 
 
 if __name__ == "__main__":
-    try:
-        import uvicorn
+    import uvicorn
 
-        uvicorn.run(app)
-    except ImportError as e:
-        raise MissingDependencyException("uvicorn is not installed") from e
+    uvicorn.run(app)

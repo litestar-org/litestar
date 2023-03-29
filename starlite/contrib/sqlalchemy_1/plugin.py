@@ -29,7 +29,7 @@ from starlite.plugins import InitPluginProtocol, SerializationPluginProtocol
 try:
     import sqlalchemy  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("sqlalchemy is not installed") from e
+    raise MissingDependencyException("sqlalchemy") from e
 
 
 from sqlalchemy import inspect
