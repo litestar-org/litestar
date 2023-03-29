@@ -44,16 +44,41 @@ class GenericSessionConfig(Generic[ConnectionT, EngineT, SessionT]):
     """SQLAlchemy async session config."""
 
     autobegin: bool | EmptyType = Empty
+    """Automatically start transactions when database access is requested by an operation."""
     autoflush: bool | EmptyType = Empty
+    """When ``True``, all query operations will issue a flush call to this :class:`Session <sqlalchemy.orm.Session>`
+    before proceeding"""
     bind: EngineT | ConnectionT | None | EmptyType = Empty
+    """The :class:`Engine <sqlalchemy.engine.Engine>` or :class:`Connection <sqlalchemy.engine.Connection>` that new
+    :class:`Session <sqlalchemy.orm.Session>` objects will be bound to."""
     binds: dict[type[Any] | Mapper[Any] | TableClause | str, EngineT | ConnectionT] | None | EmptyType = Empty
+    """A dictionary which may specify any number of :class:`Engine <sqlalchemy.engine.Engine>` or :class:`Connection
+    <sqlalchemy.engine.Connection>` objects as the source of connectivity for SQL operations on a per-entity basis. The
+    keys of the dictionary consist of any series of mapped classes, arbitrary Python classes that are bases for mapped
+    classes, :class:`Table <sqlalchemy.schema.Table>` objects and :class:`Mapper <sqlalchemy.orm.Mapper>` objects. The
+    values of the dictionary are then instances of :class:`Engine <sqlalchemy.engine.Engine>` or less commonly
+    :class:`Connection<sqlalchemy.engine.Connection>` objects."""
     class_: type[SessionT] | EmptyType = Empty
-    enable_baked_queries: bool | EmptyType = Empty
+    """Class to use in order to create new :class:`Session <sqlalchemy.orm.Session>` objects."""
     expire_on_commit: bool | EmptyType = Empty
+    """If ``True``, all instances will be expired after each commit."""
     info: dict[str, Any] | None | EmptyType = Empty
+    """Optional dictionary of information that will be available via the
+    :attr:`Session.info <sqlalchemy.orm.Session.info>`"""
     join_transaction_mode: JoinTransactionMode | EmptyType = Empty
+    """Describes the transactional behavior to take when a given bind is a Connection that has already begun a
+    transaction outside the scope of this Session; in other words the
+    :attr:`Connection.in_transaction()<sqlalchemy.Connection.in_transaction>` method returns True."""
     query_cls: type[Query] | None | EmptyType = Empty
+    """Class which should be used to create new Query objects, as returned by the
+    :attr:`Session.query()<sqlalchemy.orm.Session.query>` method."""
     twophase: bool | EmptyType = Empty
+    """When ``True``, all transactions will be started as a “two phase” transaction, i.e. using the “two phase”
+    semantics of the database in use along with an XID. During a :attr:`commit()<sqlalchemy.orm.Session.commit>`, after
+    :attr:`flush()<sqlalchemy.orm.Session.flush>` has been issued for all attached databases, the
+    :attr:`TwoPhaseTransaction.prepare()<sqlalchemy.engine.TwoPhaseTransaction.prepare>` method on each database`s
+    :class:`TwoPhaseTransaction<sqlalchemy.engine.TwoPhaseTransaction>` will be called. This allows each database to
+    roll back the entire transaction, before each transaction is committed."""
 
 
 @dataclass

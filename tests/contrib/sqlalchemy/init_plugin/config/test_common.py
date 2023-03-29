@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 
 from starlite.constants import SCOPE_STATE_NAMESPACE
 from starlite.contrib.sqlalchemy.init_plugin.config import SQLAlchemyAsyncConfig, SQLAlchemySyncConfig
-from starlite.contrib.sqlalchemy.init_plugin.config.common import SESSION_SCOPE_KEY
+from starlite.contrib.sqlalchemy.init_plugin.config._common import SESSION_SCOPE_KEY
 from starlite.datastructures import State
 from starlite.exceptions import ImproperlyConfiguredException
 
@@ -131,7 +131,7 @@ def test_create_session_instance_if_session_already_in_scope_state(
 ) -> None:
     """Test provide_session if session already in scope state."""
     with patch(
-        "starlite.contrib.sqlalchemy.init_plugin.config.common.get_starlite_scope_state"
+        "starlite.contrib.sqlalchemy.init_plugin.config._common.get_starlite_scope_state"
     ) as get_starlite_scope_state_mock:
         session_mock = MagicMock()
         get_starlite_scope_state_mock.return_value = session_mock
@@ -144,7 +144,7 @@ def test_create_session_instance_if_session_not_in_scope_state(
 ) -> None:
     """Test provide_session if session not in scope state."""
     with patch(
-        "starlite.contrib.sqlalchemy.init_plugin.config.common.get_starlite_scope_state"
+        "starlite.contrib.sqlalchemy.init_plugin.config._common.get_starlite_scope_state"
     ) as get_starlite_scope_state_mock:
         get_starlite_scope_state_mock.return_value = None
         config = config_cls()
