@@ -2,7 +2,7 @@ import os
 from inspect import iscoroutine
 from os import stat
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import pytest
 from fsspec.implementations.local import LocalFileSystem
@@ -167,7 +167,7 @@ def test_file_system_validation(tmpdir: "Path") -> None:
         (308, 308),
     ],
 )
-def test_redirect_dynamic_status_code(status_code: int | None, expected_status_code: int) -> None:
+def test_redirect_dynamic_status_code(status_code: Optional[int], expected_status_code: int) -> None:
     @get("/")
     def handler() -> Redirect:
         return Redirect(path="/something-else", status_code=status_code)  # type: ignore[arg-type]
@@ -178,7 +178,7 @@ def test_redirect_dynamic_status_code(status_code: int | None, expected_status_c
 
 
 @pytest.mark.parametrize("handler_status_code", [301, 307, None])
-def test_redirect(handler_status_code: int | None) -> None:
+def test_redirect(handler_status_code: Optional[int]) -> None:
     @get("/", status_code=handler_status_code)
     def handler() -> Redirect:
         return Redirect(path="/something-else", status_code=301)
