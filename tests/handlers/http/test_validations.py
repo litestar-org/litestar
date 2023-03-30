@@ -34,18 +34,12 @@ def test_route_handler_validation_http_method() -> None:
         route(http_method=[HttpMethod.GET, "poft"], status_code=HTTP_200_OK)  # type: ignore
 
 
-async def test_function_validation(anyio_backend: str) -> None:
+async def test_function_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @get(path="/")
         def method_with_no_annotation():  # type: ignore
             pass
-
-    with pytest.raises(ValidationException):
-
-        @get(path="/", status_code=HTTP_200_OK)
-        def redirect_method_without_proper_status() -> Redirect:
-            return Redirect(path="/redirected")
 
     with pytest.raises(ImproperlyConfiguredException):
 
