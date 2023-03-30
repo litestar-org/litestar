@@ -94,7 +94,7 @@ def test_standard_queue_listener_logger(caplog: "LogCaptureFixture") -> None:
 @patch("picologging.config.dictConfig")
 def test_picologging_dictconfig_when_disabled(dict_config_mock: Mock) -> None:
     test_logger = LoggingConfig(loggers={"app": {"level": "INFO", "handlers": ["console"]}}, handlers=default_handlers)
-    with create_test_client([], on_startup=[test_logger.configure]):
+    with create_test_client([], on_startup=[test_logger.configure], logging_config=None):
         assert not dict_config_mock.called
 
 
