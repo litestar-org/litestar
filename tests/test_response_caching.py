@@ -75,7 +75,7 @@ def test_default_expiration(mock: MagicMock, frozen_datetime: "FrozenDateTimeFac
         return mock()  # type: ignore[no-any-return]
 
     with create_test_client(
-        [handler], after_request=after_request_handler, cache_config=ResponseCacheConfig(default_expiration=1)
+        [handler], after_request=after_request_handler, response_cache_config=ResponseCacheConfig(default_expiration=1)
     ) as client:
         first_response = client.get("/cached-default")
         second_response = client.get("/cached-default")
