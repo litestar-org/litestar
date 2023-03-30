@@ -862,6 +862,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "bollwyvl",
+      "name": "Nicholas Bollweg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45380?v=4",
+      "profile": "https://github.com/bollwyvl",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
