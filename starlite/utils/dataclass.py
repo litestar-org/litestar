@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 __all__ = (
     "extract_dataclass_fields",
     "extract_dataclass_items",
+    "simple_asdict",
 )
 
 

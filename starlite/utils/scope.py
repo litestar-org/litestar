@@ -4,7 +4,12 @@ from typing import TYPE_CHECKING, Any
 
 from starlite.constants import SCOPE_STATE_NAMESPACE
 
-__all__ = ("get_serializer_from_scope", "get_starlite_scope_state", "set_starlite_scope_state")
+__all__ = (
+    "delete_starlite_scope_state",
+    "get_serializer_from_scope",
+    "get_starlite_scope_state",
+    "set_starlite_scope_state",
+)
 
 
 if TYPE_CHECKING:
@@ -69,3 +74,14 @@ def set_starlite_scope_state(scope: Scope, key: str, value: Any) -> None:
         value: Value for key.
     """
     scope["state"].setdefault(SCOPE_STATE_NAMESPACE, {})[key] = value
+
+
+def delete_starlite_scope_state(scope: Scope, key: str) -> None:
+    """Delete an internal value from connection scope state.
+
+    Args:
+        scope: The connection scope.
+        key: Key to set under internal namespace in scope state.
+        value: Value for key.
+    """
+    del scope["state"][SCOPE_STATE_NAMESPACE][key]
