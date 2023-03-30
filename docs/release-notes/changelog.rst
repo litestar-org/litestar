@@ -1,6 +1,12 @@
 1.x Changelog
 =============
 
+1.51.9
+------
+
+* Remove ``pytest-lazy-fixture`` as s dependency that was erroneously added in the previous release
+
+
 1.51.8
 ------
 
