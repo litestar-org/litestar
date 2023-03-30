@@ -19,6 +19,11 @@ expected. Starlite comes with a simple mechanism for caching:
 By setting ``cache=True`` in the route handler, caching for the route handler will be enabled for the
 :attr:`ResponseCacheConfig.default_expiration <.config.response_cache.ResponseCacheConfig.default_expiration>`.
 
+
+.. note::
+    If the default ``default_expiration`` is set to ``None``, setting up the route handler with ``cache=True`` will keep
+    the response in cache indefinitely.
+
 Alternatively you can specify the number of seconds to cache the responses from the given handler like so:
 
 .. code-block:: python
@@ -27,6 +32,20 @@ Alternatively you can specify the number of seconds to cache the responses from 
 
 
    @get("/cached-path", cache=120)  # seconds
+   def my_cached_handler() -> str:
+       ...
+
+
+If you want the response to be cached indefinitely, you can pass the :class:`.config.response_cache.CACHE_FOREVER`
+sentinel instead:
+
+.. code-block:: python
+
+   from starlite import get
+   from starlite.config.response_cache import CACHE_FOREVER
+
+
+   @get("/cached-path", cache=CACHE_FOREVER)  # seconds
    def my_cached_handler() -> str:
        ...
 
