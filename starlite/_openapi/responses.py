@@ -4,6 +4,7 @@ import re
 from copy import copy
 from dataclasses import asdict
 from http import HTTPStatus
+from inspect import Signature
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterator
 
@@ -11,6 +12,7 @@ from typing_extensions import get_args, get_origin
 
 from starlite._openapi.schema_generation import create_schema
 from starlite._signature.models import SignatureField
+from starlite._signature.utils import get_signature_model
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException
 from starlite.openapi.spec import OpenAPIResponse
@@ -20,6 +22,7 @@ from starlite.openapi.spec.media_type import OpenAPIMediaType
 from starlite.openapi.spec.schema import Schema
 from starlite.response import Response as StarliteResponse
 from starlite.response_containers import File, Redirect, Stream, Template
+from starlite.types.builtin_types import NoneType
 from starlite.utils import get_enum_string_value, get_name, is_class_and_subclass
 
 if TYPE_CHECKING:
@@ -67,7 +70,7 @@ def create_success_response(
     schemas: dict[str, "Schema"],
 ) -> OpenAPIResponse:
     """Create the schema for a success response."""
-    signature = route_handler.signature
+    return_annotation = get_signature_model(route_handler).return_annotation
     default_descriptions: dict[Any, str] = {
         Stream: "Stream Response",
         Redirect: "Redirect Response",
@@ -75,17 +78,16 @@ def create_success_response(
     }
     description = (
         route_handler.response_description
-        or default_descriptions.get(signature.return_annotation)
+        or default_descriptions.get(return_annotation)
         or HTTPStatus(route_handler.status_code).description
     )
 
-    if signature.return_annotation not in {signature.empty, None, Redirect, File, Stream}:
-        return_annotation = signature.return_annotation
-        if signature.return_annotation is Template:
+    if return_annotation not in {Signature.empty, None, NoneType, Redirect, File, Stream}:
+        if return_annotation is Template:
             return_annotation = str
             route_handler.media_type = get_enum_string_value(MediaType.HTML)
-        elif is_class_and_subclass(get_origin(signature.return_annotation), StarliteResponse):
-            return_annotation = get_args(signature.return_annotation)[0] or Any
+        elif is_class_and_subclass(get_origin(return_annotation), StarliteResponse):
+            return_annotation = get_args(return_annotation)[0] or Any
 
         result = create_schema(
             field=SignatureField.create(field_type=return_annotation),
@@ -108,7 +110,7 @@ def create_success_response(
             description=description,
         )
 
-    elif signature.return_annotation is Redirect:
+    elif return_annotation is Redirect:
         response = OpenAPIResponse(
             content=None,
             description=description,
@@ -119,7 +121,7 @@ def create_success_response(
             },
         )
 
-    elif signature.return_annotation in (File, Stream):
+    elif return_annotation in (File, Stream):
         response = OpenAPIResponse(
             content={
                 route_handler.media_type: OpenAPIMediaType(
