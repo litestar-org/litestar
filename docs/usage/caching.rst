@@ -19,6 +19,11 @@ expected. Starlite comes with a simple mechanism for caching:
 By setting ``cache=True`` in the route handler, caching for the route handler will be enabled for the
 :attr:`ResponseCacheConfig.default_expiration <.config.response_cache.ResponseCacheConfig.default_expiration>`.
 
+
+.. note::
+    If the default ``default_expiration`` is set to ``None``, setting up the route handler with ``cache=True`` will keep
+    the response in cache indefinitely.
+
 Alternatively you can specify the number of seconds to cache the responses from the given handler like so:
 
 .. code-block:: python

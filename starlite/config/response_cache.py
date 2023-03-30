@@ -42,8 +42,8 @@ class ResponseCacheConfig:
     ``response_cache_config`` key.
     """
 
-    default_expiration: int = field(default=60)
-    """Default cache expiration in seconds."""
+    default_expiration: int | None = 60
+    """Default cache expiration in seconds used when a route handler is configured with ``cache=True``."""
     key_builder: CacheKeyBuilder = field(default=default_cache_key_builder)
     """:class:`CacheKeyBuilder <.types.CacheKeyBuilder>`. Defaults to :func:`default_cache_key_builder`."""
     store: str = "response_cache"
