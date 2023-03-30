@@ -24,7 +24,7 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
       - name: Install App Dependencies
-        run: poetry install --no-interaction --no-root --only main
+        run: poetry install --no-interaction --only main
       - name: Install Test Dependencies
         run: poetry run python -m pip install pytest pytest-asyncio httpx trio
       - name: Set pythonpath

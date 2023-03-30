@@ -11,7 +11,7 @@ from starlite.utils import AsyncCallable
 try:
     import sqlalchemy  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("sqlalchemy is not installed") from e
+    raise MissingDependencyException("sqlalchemy") from e
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine

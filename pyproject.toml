@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "starlite"
-version = "2.0.0alpha1"
+version = "2.0.0alpha2"
 description = "Performant, light and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
@@ -13,7 +13,7 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://starliteproject.dev/"
 repository = "https://github.com/starlite-api/starlite"
-documentation = "https://starliteproject.dev/lib/"
+documentation = "https://docs.starliteproject.dev/"
 keywords = ["api", "rest", "http", "asgi", "pydantic", "starlite", "framework", "websocket"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

@@ -9,7 +9,7 @@ from starlite.enums import ScopeType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.middleware.session.base import ONE_DAY_IN_SECONDS, BaseBackendConfig, BaseSessionBackend
 from starlite.types import Empty, Message, Scopes, ScopeSession
-from starlite.utils.dataclass import extract_dataclass_fields
+from starlite.utils.dataclass import extract_dataclass_items
 
 __all__ = ("ServerSideSessionBackend", "ServerSideSessionConfig")
 
@@ -110,7 +110,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         if not session_id or session_id == "null":
             session_id = self.generate_session_id()
 
-        cookie_params = dict(extract_dataclass_fields(self.config, exclude_none=True, include=Cookie.__dict__))
+        cookie_params = dict(extract_dataclass_items(self.config, exclude_none=True, include=Cookie.__dict__.keys()))
 
         if scope_session is Empty:
             await self.delete(session_id, store=store)

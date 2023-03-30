@@ -9,7 +9,7 @@ root_store = RedisStore.with_client()
 
 @get(cache=True)
 def cached_handler() -> str:
-    # this will use app.stores.get("request_cache")
+    # this will use app.stores.get("response_cache")
     return "Hello, world!"
 
 

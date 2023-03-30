@@ -1,13 +1,28 @@
 from pathlib import Path
+from typing import TYPE_CHECKING, Generator
 from unittest.mock import MagicMock, patch
 
 import anyio
+from freezegun import freeze_time
 
 from starlite import get
 from starlite.stores.file import FileStore
 from starlite.stores.memory import MemoryStore
 from starlite.stores.redis import RedisStore
 from starlite.testing import TestClient
+
+if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
+from typing import cast
+
+import pytest
+
+
+@pytest.fixture()
+def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
+    with freeze_time() as frozen:
+        yield cast("FrozenDateTimeFactory", frozen)
 
 
 @patch("starlite.stores.redis.Redis")
@@ -82,7 +97,7 @@ async def test_configure_integrations(mock_redis: MagicMock) -> None:
 
     assert isinstance(session_store, RedisStore)
     assert isinstance(cache_store, FileStore)
-    assert cache_store.path == Path("request-cache")
+    assert cache_store.path == Path("response-cache")
 
 
 async def test_registry_default_factory() -> None:

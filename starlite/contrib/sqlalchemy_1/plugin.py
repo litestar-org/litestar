@@ -29,7 +29,7 @@ from starlite.plugins import InitPluginProtocol, SerializationPluginProtocol
 try:
     import sqlalchemy  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("sqlalchemy is not installed") from e
+    raise MissingDependencyException("sqlalchemy") from e
 
 
 from sqlalchemy import inspect
@@ -41,16 +41,15 @@ from sqlalchemy.sql.type_api import TypeEngine
 
 from .types import SQLAlchemyBinaryType
 
-__all__ = ("SQLAlchemyPlugin",)
-
-
 if TYPE_CHECKING:
     from typing_extensions import TypeGuard
 
-    from starlite.app import Starlite
+    from starlite.config.app import AppConfig
     from starlite.openapi.spec import Schema
 
     from .config import SQLAlchemyConfig
+
+__all__ = ("SQLAlchemyPlugin",)
 
 
 class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[DeclarativeMeta, BaseModel]):
@@ -71,23 +70,24 @@ class SQLAlchemyPlugin(InitPluginProtocol, SerializationPluginProtocol[Declarati
         self._model_namespace_map: Dict[str, "Type[BaseModel]"] = {}
         self._config = config
 
-    def on_app_init(self, app: "Starlite") -> None:
+    def on_app_init(self, app_config: "AppConfig") -> "AppConfig":
         """If config has been passed to the plugin, it will initialize SQLAlchemy and add the dependencies as expected.
 
         Executed on the application's init process.
 
         Args:
-            app: The :class:`Starlite <.app.Starlite>` application instance.
+            app_config: The :class:`AppConfig <.config.app.AppConfig>` instance.
 
         Returns:
-            None
+            App config instance, after modifications.
         """
         if self._config is not None:
-            app.dependencies[self._config.dependency_key] = Provide(self._config.create_db_session_dependency)
-            app.before_send.append(self._config.before_send_handler)  # type: ignore[arg-type]
-            app.on_shutdown.append(self._config.on_shutdown)
-            self._config.config_sql_alchemy_logging(app.logging_config)
-            self._config.update_app_state(state=app.state)
+            app_config.dependencies[self._config.dependency_key] = Provide(self._config.create_db_session_dependency)
+            app_config.before_send.append(self._config.before_send_handler)  # type: ignore[arg-type]
+            app_config.on_startup.append(self._config.update_app_state)
+            app_config.on_shutdown.append(self._config.on_shutdown)
+            self._config.config_sql_alchemy_logging(app_config.logging_config)
+        return app_config
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> "TypeGuard[DeclarativeMeta]":

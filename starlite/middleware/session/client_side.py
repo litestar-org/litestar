@@ -18,7 +18,7 @@ from starlite.exceptions import (
 )
 from starlite.serialization import decode_json, encode_json
 from starlite.types import Empty, Scopes
-from starlite.utils.dataclass import extract_dataclass_fields
+from starlite.utils.dataclass import extract_dataclass_items
 
 from .base import ONE_DAY_IN_SECONDS, BaseBackendConfig, BaseSessionBackend
 
@@ -29,7 +29,7 @@ try:
     from cryptography.exceptions import InvalidTag
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 except ImportError as e:
-    raise MissingDependencyException("cryptography is not installed") from e
+    raise MissingDependencyException("cryptography") from e
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
@@ -111,8 +111,10 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
         """Create a list of cookies containing the session data."""
         if cookie_params is None:
             cookie_params = dict(
-                extract_dataclass_fields(
-                    self.config, exclude_none=True, include=(f for f in Cookie.__dict__ if f not in ("key", "secret"))
+                extract_dataclass_items(
+                    self.config,
+                    exclude_none=True,
+                    include={f for f in Cookie.__dict__ if f not in ("key", "secret")},
                 )
             )
         return [
@@ -148,8 +150,10 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
         if scope_session and scope_session is not Empty:
             data = self.dump_data(scope_session, scope=scope)
             cookie_params = dict(
-                extract_dataclass_fields(
-                    self.config, exclude_none=True, include=(f for f in Cookie.__dict__ if f not in ("key", "secret"))
+                extract_dataclass_items(
+                    self.config,
+                    exclude_none=True,
+                    include={f for f in Cookie.__dict__ if f not in ("key", "secret")},
                 )
             )
             for cookie in self._create_session_cookies(data, cookie_params):
@@ -164,10 +168,10 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
 
         for cookie_key in cookies_to_clear:
             cookie_params = dict(
-                extract_dataclass_fields(
+                extract_dataclass_items(
                     self.config,
                     exclude_none=True,
-                    include=(f for f in Cookie.__dict__ if f not in ("key", "secret", "max_age")),
+                    include={f for f in Cookie.__dict__ if f not in ("key", "secret", "max_age")},
                 )
             )
             headers.add(

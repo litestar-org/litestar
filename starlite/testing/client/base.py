@@ -11,7 +11,6 @@ from starlite.connection import ASGIConnection
 from starlite.datastructures import MutableScopeHeaders
 from starlite.exceptions import (
     ImproperlyConfiguredException,
-    MissingDependencyException,
 )
 from starlite.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
 
@@ -20,12 +19,7 @@ if TYPE_CHECKING:
 
     from starlite.middleware.session.base import BaseBackendConfig, BaseSessionBackend
     from starlite.middleware.session.client_side import ClientSideSessionBackend
-try:
-    from httpx import Cookies, Request, Response
-except ImportError as e:
-    raise MissingDependencyException(
-        "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
-    ) from e
+from httpx import Cookies, Request, Response
 
 T = TypeVar("T", bound=ASGIApp)
 

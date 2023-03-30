@@ -4,10 +4,11 @@ from typing import TYPE_CHECKING, Any, Iterable, List, Optional, Sequence
 
 import pytest
 from pydantic import BaseModel
+from typing_extensions import Annotated
 
 from starlite import get
 from starlite._signature import create_signature_model
-from starlite._signature.parsing import ParsedSignatureParameter
+from starlite._signature.parsing import ParsedSignatureParameter, parse_fn_signature
 from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.params import Dependency, Parameter
@@ -228,3 +229,20 @@ def test_parsed_signature_model_from_parameter_resolves_forward_ref() -> None:
     obj = object()
     parsed_param = ParsedSignatureParameter.from_parameter("func", "a", signature.parameters["a"], {"a": obj})
     assert parsed_param.annotation is obj
+
+
+@pytest.mark.parametrize("with_future_annotations", [True, False])
+def test_parsed_parameters_with_annotated_types(
+    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
+) -> None:
+    module = create_module(
+        f"""
+{'from __future__ import annotations' if with_future_annotations else ''}
+from typing_extensions import Annotated
+
+def fn(a: Annotated[int, "a"]) -> None:
+    pass
+"""
+    )
+    (param, *_), _, __, ___ = parse_fn_signature(module.fn, [], set(), {})
+    assert param.annotation == Annotated[int, "a"]

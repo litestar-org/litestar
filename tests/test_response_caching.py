@@ -101,7 +101,7 @@ async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str, mock: 
 
     with TestClient(app) as client:
         client.get("/cached")
-        store = app.stores.get("request_cache")
+        store = app.stores.get("response_cache")
         assert await store.exists("/cached:::cached")
 
 
@@ -131,7 +131,7 @@ async def test_with_stores(store: Store, mock: MagicMock) -> None:
     def handler() -> str:
         return mock()  # type: ignore[no-any-return]
 
-    app = Starlite([handler], stores={"request_cache": store})
+    app = Starlite([handler], stores={"response_cache": store})
 
     with TestClient(app=app) as client:
         response_one = client.get("/")

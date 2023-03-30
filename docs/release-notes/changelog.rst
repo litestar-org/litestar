@@ -3,6 +3,293 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0alpha2
+
+    .. change:: Repository contrib & SQLAlchemy repository
+        :type: feature
+        :pr: 1254
+
+        Add a a ``repository`` module to ``contrib``, providing abstract base classes
+        to implement the repository pattern. Also added was the ``contrib.repository.sqlalchemy``
+        module, implementing a SQLAlchemy repository, offering hand-tuned abstractions
+        over commonly used tasks, such as handling of object sessions, inserting,
+        updating and upserting individual models or collections.
+
+    .. change:: Data stores & registry
+        :type: feature
+        :pr: 1330
+        :breaking:
+
+        The ``starlite.storage`` module added in the previous version has been
+        renamed ``starlite.stores`` to reduce ambiguity, and a new feature, the
+        :class:`StoreRegistry <.stores.registry.StoreRegistry>` has been introduced;
+        It serves as a central place to manage stores and reduces the amount of
+        configuration needed for various integrations.
+
+        - Add ``stores`` kwarg to ``Starlite`` and ``AppConfig`` to allow seeding of the ``StoreRegistry``
+        - Add ``Starlite.stores`` attribute, containing a ``StoreRegistry``
+        - Change ``RateLimitMiddleware`` to use ``app.stores``
+        - Change request caching to use ``app.stores``
+        - Change server side sessions to use ``app.stores``
+        - Move ``starlite.config.cache.CacheConfig`` to  :class:`starlite.config.response_cache.ResponseCacheConfig`
+        - Rename ``Starlite.cache_config`` > ``Starlite.response_cache_config``
+        - Rename ``AppConfig.cache_config`` > ``response_cache_config``
+        - Remove ``starlite/cache`` module
+        - Remove ``ASGIConnection.cache`` property
+        - Remove ``Starlite.cache`` attribute
+
+        .. attention::
+            :class:`RateLimitMiddleware <.middleware.rate_limit.RateLimitMiddleware>`,
+            :class:`ResponseCacheConfig <.config.response_cache.ResponseCacheConfig>`,
+            and :class:`ServerSideSessionConfig <.middleware.session.server_side.ServerSideSessionConfig>`
+            instead of accepting a ``storage`` argument that could be passed a ``Storage`` instance now have to be
+            configured via the ``store`` attribute, accepting a string key for the store to be used from the registry.
+            The ``store`` attribute has a unique default set, guaranteeing a unique
+            :class:`MemoryStore <.stores.memory.MemoryStore>` instance is acquired for every one of them from the
+            registry by default
+
+        .. seealso::
+
+            :doc:`/usage/stores`
+
+
+    .. change:: Add ``starlite.__version__``
+        :type: feature
+        :pr: 1277
+
+        Add a ``__version__`` constant to the ``starlite`` namespace, containing a
+        :class:`NamedTuple <typing.NamedTuple>`, holding information about the currently
+        installed version of Starlite
+
+
+    .. change:: Add ``starlite version`` command to CLI
+        :type: feature
+        :pr: 1322
+
+        Add a new ``version`` command to the CLI which displays the currently installed
+        version of Starlite
+
+        .. seealso::
+            :ref:`The version command <usage/cli:version>`
+
+
+    .. change:: Enhance CLI autodiscovery logic
+        :type: feature
+        :breaking:
+        :pr: 1322
+
+        Update the CLI :ref:`usage/cli:autodiscovery` to only consider canonical modules app and application, but every
+        :class:`Starlite <.app.Starlite>` instance or application factory able to return a ``Starlite`` instance within
+        those or one of their submodules, giving priority to the canonical names app and application for application
+        objects and submodules containing them.
+
+        .. seealso::
+            :ref:`CLI autodiscovery <usage/cli:autodiscovery>`
+
+    .. change:: Configurable exception logging and traceback truncation
+        :type: feature
+        :pr: 1296
+
+        Add three new configuration options to :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`:
+
+        :attr:`log_exceptions <.logging.config.LoggingConfig.log_exceptions>`
+            Configure when exceptions are logged.
+
+            ``always``
+                Always log exceptions
+
+            ``debug``
+                Log exceptions in debug mode only
+
+            ``never``
+                Never log exception
+
+        :attr:`traceback_line_limit <.logging.config.LoggingConfig.traceback_line_limit>`
+            Configure how many lines of tracback are logged
+
+        :attr:`exception_logging_handler <.logging.config.LoggingConfig.exception_logging_handler>`
+            A callable that receives three parameters - the ``app.logger``, the connection scope and the traceback
+            list, and should handle logging
+
+        .. seealso::
+            :class:`LoggingConfig <.logging.config.LoggingConfig>`
+
+
+    .. change:: Allow overwriting default OpenAPI response descriptions
+        :type: bugfix
+        :issue: 1292
+        :pr: 1293
+
+        Fix https://github.com/starlite-api/starlite/issues/1292 by allowing to overwrite
+        the default OpenAPI response description instead of raising :exc:`ImproperlyConfiguredException`.
+
+
+    .. change:: Fix regression in path resolution that prevented 404's being raised for false paths
+        :type: bugfix
+        :pr: 1316
+        :breaking:
+
+        Invalid paths within controllers would under specific circumstances not raise a 404. This was a regression
+        compared to ``v1.51``
+
+        .. note::
+            This has been marked as breaking since one user has reported to rely on this "feature"
+
+
+    .. change:: Fix ``after_request`` hook not being called on responses returned from handlers
+        :type: bugfix
+        :pr: 1344
+        :issue: 1315
+
+        ``after_request`` hooks were not being called automatically when a :class:`Response <.response.Response>`
+        instances was returned from a route handler directly.
+
+        .. seealso::
+            :ref:`after_request`
+
+
+    .. change:: Fix ``SQLAlchemyPlugin`` raises error when using SQLAlchemy UUID
+        :type: bugfix
+        :pr: 1355
+
+        An error would be raised when using the SQLAlchemy plugin with a
+        `sqlalchemy UUID <https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.UUID>`_ type. This
+        was fixed by adding it to the provider map.
+
+
+    .. change:: Fix ``JSON.parse`` error in ReDoc and Swagger OpenAPI handlers
+        :type: bugfix
+        :pr: 1363ad
+
+        The HTML generated by the ReDoc and Swagger OpenAPI handlers would cause
+        `JSON.parse <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse>`_
+        to throw an error. This was fixed by removing the call to ``JSON.parse``.
+
+
+    .. change:: Fix CLI prints application info twice
+        :type: bugfix
+        :pr: 1322
+
+        Fix an error where the CLI would print application info twice on startup
+
+
+    .. change:: Update ``SimpleEventEmitter`` to use worker pattern
+        :type: misc
+        :pr: 1346
+
+        :class:`SimpleEventEmitter <.events.emitter.SimpleEventEmitter>` was updated to using an async worker, pulling
+        emitted events from a queue and subsequently calling listeners. Previously listeners were called immediately,
+        making the operation effectively "blocking".
+
+
+    .. change:: Make ``BaseEventEmitterBackend.emit`` synchronous
+        :type: misc
+        :breaking:
+        :pr: 1376
+
+        :meth:`BaseEventEmitterBackend.emit <.events.emitter.BaseEventEmitterBackend>`, and subsequently
+        :meth:`SimpleEventEmitter.emit <.events.emitter.SimpleEventEmitter>` and
+        :meth:`Starlite.emit <.app.Starlite.emit>` have been changed to synchronous function, allowing them to easily be
+        used within synchronous route handlers.
+
+
+    .. change:: Move 3rd party integration plugins to ``contrib``
+        :type: misc
+        :breaking:
+        :pr: Move 3rd party integration plugins to ``contrib``
+
+        - Move ``plugins.piccolo_orm`` > ``contrib.piccolo_orm``
+        - Move ``plugins.tortoise_orm`` > ``contrib.tortoise_orm``
+
+
+    .. change:: Remove ``picologging`` dependency from the ``standard`` package extra
+        :type: misc
+        :breaking:
+        :pr: 1313
+
+        `picologging <https://github.com/microsoft/picologging>`_ has been removed form the ``standard`` package extra.
+        If you have been previously relying on this, you need to change ``pip install starlite[standard]`` to
+        ``pip install starlite[standard,picologging]``
+
+
+    .. change:: Replace ``Starlite()`` ``initial_state`` keyword argument with ``state``
+        :type: misc
+        :pr: 1350
+        :breaking:
+
+        The ``initial_state`` argument to :class:`Starlite <.app.Starlite>` has been replaced with a ``state`` keyword
+        argument, accepting an optional :class:`State <.datastructures.state.State>` instance.
+
+        Existing code using this keyword argument will need to be changed from
+
+        .. code-block:: python
+
+            from starlite import Starlite
+
+            app = Starlite(..., initial_state={"some": "key"})
+
+        to
+
+        .. code-block:: python
+
+                from starlite import Starlite
+                from starlite.datastructures.state import State
+
+                app = Starlite(..., state=State({"some": "key"}))
+
+
+    .. change:: Remove support for 2 argument form of ``before_send``
+        :type: misc
+        :pr: 1354
+        :breaking:
+
+        ``before_send`` hook handlers initially accepted 2 arguments, but support for a 3 argument form was added
+        later on, accepting an additional ``scope`` parameter. Support for the 2 argument form has been dropped with
+        this release.
+
+        .. seealso::
+            :ref:`before_send`
+
+
+    .. change:: Standardize module exports
+        :type: misc
+        :pr: 1273
+        :breaking:
+
+        A large refactoring standardising the way submodules make their names available.
+
+        The following public modules have changed their location:
+
+        - ``config.openapi`` > ``openapi.config``
+        - ``config.logging`` > ``logging.config``
+        - ``config.template`` > ``template.config``
+        - ``config.static_files`` > ``static_files.config``
+
+        The following modules have been removed from the public namespace:
+
+        - ``asgi``
+        - ``kwargs``
+        - ``middleware.utils``
+        - ``cli.utils``
+        - ``contrib.htmx.utils``
+        - ``handlers.utils``
+        - ``openapi.constants``
+        - ``openapi.enums``
+        - ``openapi.datastructures``
+        - ``openapi.parameters``
+        - ``openapi.path_item``
+        - ``openapi.request_body``
+        - ``openapi.responses``
+        - ``openapi.schema``
+        - ``openapi.typescript_converter``
+        - ``openapi.utils``
+        - ``multipart``
+        - ``parsers``
+        - ``signature``
+
+
+
+
 .. changelog:: 2.0.0alpha1
 
     .. change:: Validation of controller route handler methods

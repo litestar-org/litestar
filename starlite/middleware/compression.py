@@ -51,9 +51,11 @@ class CompressionFacade:
 
         if compression_encoding == CompressionEncoding.BROTLI:
             try:
-                from brotli import MODE_FONT, MODE_GENERIC, MODE_TEXT, Compressor
+                pass
             except ImportError as e:
-                raise MissingDependencyException("brotli is not installed") from e
+                raise MissingDependencyException("brotli") from e
+
+            from brotli import MODE_FONT, MODE_GENERIC, MODE_TEXT, Compressor
 
             modes: dict[Literal["generic", "text", "font"], int] = {
                 "text": int(MODE_TEXT),

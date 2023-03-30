@@ -24,17 +24,17 @@ from starlite.types import Scope
 @pytest.mark.parametrize("connection_string", ["sqlite+aiosqlite://", "sqlite://"])
 def test_sets_engine_and_session_maker(connection_string: str) -> None:
     config = SQLAlchemyConfig(connection_string=connection_string, use_async_engine="+aiosqlite" in connection_string)
-    app = Starlite(plugins=[SQLAlchemyPlugin(config=config)])
-    assert app.state.get(config.engine_app_state_key)
-    assert app.state.get(config.session_maker_app_state_key)
+    with create_test_client([], plugins=[SQLAlchemyPlugin(config=config)]) as client:
+        assert client.app.state.get(config.engine_app_state_key)
+        assert client.app.state.get(config.session_maker_app_state_key)
 
 
 @pytest.mark.parametrize("connection_string", ["sqlite+aiosqlite://", "sqlite://"])
 def test_dependency_creates_session(connection_string: str) -> None:
     config = SQLAlchemyConfig(connection_string=connection_string, use_async_engine="+aiosqlite" in connection_string)
-    app = Starlite(plugins=[SQLAlchemyPlugin(config=config)])
-    request = RequestFactory().get()
-    session = config.create_db_session_dependency(state=app.state, scope=request.scope)
+    with create_test_client([], plugins=[SQLAlchemyPlugin(config=config)]) as client:
+        request = RequestFactory().get()
+        session = config.create_db_session_dependency(state=client.app.state, scope=request.scope)
     assert session
     assert request.scope[SESSION_SCOPE_KEY]  # type: ignore
 

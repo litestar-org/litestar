@@ -198,12 +198,7 @@ def parse_fn_signature(
 
         parsed_params.append(parameter)
 
-    return (
-        parsed_params,
-        fn_type_hints.get("return", signature.empty),
-        field_plugin_mappings,
-        dependency_names,
-    )
+    return parsed_params, fn_type_hints.get("return", Signature.empty), field_plugin_mappings, dependency_names
 
 
 def create_signature_model(

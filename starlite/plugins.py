@@ -1,14 +1,12 @@
+from __future__ import annotations
+
+from collections.abc import Iterable
 from typing import (
     TYPE_CHECKING,
     Any,
     Awaitable,
-    Dict,
-    List,
     NamedTuple,
-    Optional,
     Protocol,
-    Tuple,
-    Type,
     TypedDict,
     TypeVar,
     Union,
@@ -19,6 +17,11 @@ from pydantic import BaseModel
 from typing_extensions import TypeGuard, get_args
 
 from starlite.types.protocols import DataclassProtocol
+from starlite.utils.predicates import is_class_and_subclass
+
+if TYPE_CHECKING:
+    from starlite.config.app import AppConfig
+    from starlite.openapi.spec import Schema
 
 __all__ = (
     "InitPluginProtocol",
@@ -28,11 +31,6 @@ __all__ = (
     "SerializationPluginProtocol",
     "get_plugin_for_value",
 )
-
-
-if TYPE_CHECKING:
-    from starlite.app import Starlite
-    from starlite.openapi.spec import Schema
 
 ModelT = TypeVar("ModelT")
 DataContainerT = TypeVar("DataContainerT", bound=Union[BaseModel, DataclassProtocol, TypedDict])  # type: ignore[valid-type]
@@ -44,51 +42,37 @@ class InitPluginProtocol(Protocol):
 
     __slots__ = ()
 
-    def on_app_init(self, app: "Starlite") -> None:
-        """Receive the Starlite application instance before ``init`` is finalized and allow the plugin to update various
-        attributes.
+    def on_app_init(self, app_config: AppConfig) -> AppConfig:
+        """Receive the :class:`AppConfig<.config.app.AppConfig>` instance after `on_app_init` hooks have been called.
 
         Examples:
             .. code-block: python
                 from starlite import Starlite, get
+                from starlite.di import Provide
                 from starlite.plugins import InitPluginProtocol
 
+                def get_name() -> str:
+                    return "world"
 
                 @get("/my-path")
-                def my_route_handler() -> dict[str, str]:
-                    return {"hello": "world"}
-
+                def my_route_handler(name: str) -> dict[str, str]:
+                    return {"hello": name}
 
                 class MyPlugin(InitPluginProtocol):
-                    def on_app_init(self, app: Starlite) -> None:
-                        # update app attributes
+                    def on_app_init(self, app_config: AppConfig) -> AppConfig:
+                        app_config.dependencies["name"] = Provide(get_name)
+                        app_config.route_handlers.append(my_route_handler)
+                        return app_config
 
-                        app.after_request = ...
-                        app.after_response = ...
-                        app.before_request = ...
-                        app.dependencies.update({...})
-                        app.exception_handlers.update({...})
-                        app.guards.extend(...)
-                        app.middleware.extend(...)
-                        app.on_shutdown.extend(...)
-                        app.on_startup.extend(...)
-                        app.parameters.update({...})
-                        app.response_class = ...
-                        app.response_cookies.extend(...)
-                        app.response_headers.update(...)
-                        app.tags.extend(...)
-
-                        # register a route handler
-                        app.register(my_route_handler)
-
+                app = Starlite(plugins=[MyPlugin()])
 
         Args:
-            app: The :class:`Starlite <starlite.app.Starlite>` instance.
+            app_config: The :class:`AppConfig <starlite.config.app.AppConfig>` instance.
 
         Returns:
-            None
+            The app config object.
         """
-        return None  # noqa: R501
+        return app_config  # pragma: no cover
 
 
 @runtime_checkable
@@ -111,7 +95,7 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
         """
         raise NotImplementedError()
 
-    def to_dict(self, model_instance: ModelT) -> Union[Dict[str, Any], Awaitable[Dict[str, Any]]]:
+    def to_dict(self, model_instance: ModelT) -> dict[str, Any] | Awaitable[dict[str, Any]]:
         """Given an instance of a model supported by the plugin, return a dictionary of serializable values.
 
         Args:
@@ -125,7 +109,7 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
         """
         raise NotImplementedError()
 
-    def from_dict(self, model_class: Type[ModelT], **kwargs: Any) -> ModelT:
+    def from_dict(self, model_class: type[ModelT], **kwargs: Any) -> ModelT:
         """Given a class supported by this plugin and a dict of values, create an instance of the class.
 
         Args:
@@ -137,7 +121,7 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
         """
         raise NotImplementedError()
 
-    def to_data_container_class(self, model_class: Type[ModelT], **kwargs: Any) -> Type[DataContainerT]:
+    def to_data_container_class(self, model_class: type[ModelT], **kwargs: Any) -> type[DataContainerT]:
         """Create a data container class corresponding to the given model class.
 
         Args:
@@ -150,7 +134,7 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
         raise NotImplementedError()
 
     def from_data_container_instance(
-        self, model_class: Type[ModelT], data_container_instance: DataContainerT
+        self, model_class: type[ModelT], data_container_instance: DataContainerT
     ) -> ModelT:
         """Create a model instance from the given data container instance.
 
@@ -182,7 +166,7 @@ class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
         """
         raise NotImplementedError()
 
-    def to_openapi_schema(self, model_class: Type[ModelT]) -> "Schema":
+    def to_openapi_schema(self, model_class: type[ModelT]) -> "Schema":
         """Given a model class, transform it into an OpenAPI schema class.
 
         Args:
@@ -194,9 +178,7 @@ class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
         raise NotImplementedError()
 
 
-def get_plugin_for_value(
-    value: Any, plugins: List[SerializationPluginProtocol]
-) -> Optional[SerializationPluginProtocol]:
+def get_plugin_for_value(value: Any, plugins: list[SerializationPluginProtocol]) -> SerializationPluginProtocol | None:
     """Return a plugin for handling the given value, if any plugin supports it.
 
     Args:
@@ -209,8 +191,8 @@ def get_plugin_for_value(
     if plugins:
         if value and isinstance(value, (list, tuple)):
             value = value[0]
-        if get_args(value):
-            value = get_args(value)[0]
+        if is_class_and_subclass(value, Iterable) and (args := get_args(value)):  # type:ignore[type-abstract]
+            value = args[0]
         for plugin in plugins:
             if plugin.is_plugin_supported_type(value):
                 return plugin
@@ -224,7 +206,7 @@ class PluginMapping(NamedTuple):
     model_class: Any
 
     def get_model_instance_for_value(
-        self, value: Union[DataContainerT, List[DataContainerT], Tuple[DataContainerT, ...]]
+        self, value: DataContainerT | list[DataContainerT] | tuple[DataContainerT, ...]
     ) -> Any:
         """Given a value generated by plugin, return an instance of the original class.
 

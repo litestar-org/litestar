@@ -4,17 +4,12 @@ from typing import TYPE_CHECKING, List
 from home.piccolo_app import APP_CONFIG
 from home.tables import Task
 from piccolo.apps.user.tables import BaseUser
+from piccolo_admin.endpoints import create_admin  # pyright: ignore
 from piccolo_api.session_auth.tables import SessionsBase
 
 from starlite import Starlite, asgi, delete, get, patch, post
 from starlite.contrib.piccolo_orm import PiccoloORMPlugin
-from starlite.exceptions import MissingDependencyException, NotFoundException
-
-try:
-    from piccolo_admin.endpoints import create_admin  # pyright: ignore
-except ImportError as e:
-    raise MissingDependencyException("piccolo_admin is not installed") from e
-
+from starlite.exceptions import NotFoundException
 
 if TYPE_CHECKING:
     from starlite.types import Receive, Scope, Send
@@ -90,9 +85,6 @@ app = Starlite(
 if __name__ == "__main__":
     asyncio.run(main())
 
-    try:
-        import uvicorn
+    import uvicorn
 
-        uvicorn.run(app)
-    except ImportError as e:
-        raise MissingDependencyException("uvicorn is not installed") from e
+    uvicorn.run(app)

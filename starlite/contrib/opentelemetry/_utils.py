@@ -8,9 +8,11 @@ __all__ = ("get_route_details_from_scope",)
 
 
 try:
-    from opentelemetry.semconv.trace import SpanAttributes
+    import opentelemetry  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("OpenTelemetry dependencies are not installed") from e
+    raise MissingDependencyException("opentelemetry") from e
+
+from opentelemetry.semconv.trace import SpanAttributes
 
 if TYPE_CHECKING:
     from starlite.types import Scope
