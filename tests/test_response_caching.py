@@ -1,14 +1,15 @@
 import random
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from unittest.mock import MagicMock
 from uuid import uuid4
 
 import pytest
 
 from starlite import Request, Starlite, get
-from starlite.config.response_cache import ResponseCacheConfig
+from starlite.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
 from starlite.stores.base import Store
+from starlite.stores.memory import MemoryStore
 from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
@@ -75,7 +76,7 @@ def test_default_expiration(mock: MagicMock, frozen_datetime: "FrozenDateTimeFac
         return mock()  # type: ignore[no-any-return]
 
     with create_test_client(
-        [handler], after_request=after_request_handler, cache_config=ResponseCacheConfig(default_expiration=1)
+        [handler], after_request=after_request_handler, response_cache_config=ResponseCacheConfig(default_expiration=1)
     ) as client:
         first_response = client.get("/cached-default")
         second_response = client.get("/cached-default")
@@ -86,6 +87,42 @@ def test_default_expiration(mock: MagicMock, frozen_datetime: "FrozenDateTimeFac
         third_response = client.get("/cached-default")
         assert first_response.headers["unique-identifier"] != third_response.headers["unique-identifier"]
         assert mock.call_count == 2
+
+
+@pytest.mark.parametrize("expiration,expected_expiration", [(True, None), (10, 10)])
+def test_default_expiration_none(
+    memory_store: MemoryStore, expiration: int, expected_expiration: Optional[int]
+) -> None:
+    @get("/cached", cache=expiration)
+    def handler() -> None:
+        return None
+
+    app = Starlite(
+        [handler],
+        stores={"response_cache": memory_store},
+        response_cache_config=ResponseCacheConfig(default_expiration=None),
+    )
+
+    with TestClient(app) as client:
+        client.get("/cached")
+
+    if expected_expiration is None:
+        assert memory_store._store["/cached"].expires_at is None
+    else:
+        assert memory_store._store["/cached"].expires_at
+
+
+def test_cache_forever(memory_store: MemoryStore) -> None:
+    @get("/cached", cache=CACHE_FOREVER)
+    async def handler() -> None:
+        return None
+
+    app = Starlite([handler], stores={"response_cache": memory_store})
+
+    with TestClient(app) as client:
+        client.get("/cached")
+
+    assert memory_store._store["/cached"].expires_at is None
 
 
 @pytest.mark.parametrize("sync_to_thread", (True, False))

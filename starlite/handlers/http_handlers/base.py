@@ -8,14 +8,12 @@ from typing_extensions import TypedDict
 
 from starlite._layers.utils import narrow_response_cookies, narrow_response_headers
 from starlite._signature.utils import get_signature_model
-from starlite.constants import REDIRECT_STATUS_CODES
 from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.response_header import ResponseHeader
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import (
     HTTPException,
     ImproperlyConfiguredException,
-    ValidationException,
 )
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers._utils import (
@@ -54,6 +52,7 @@ if TYPE_CHECKING:
 
     from starlite.app import Starlite
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
+    from starlite.config.response_cache import CACHE_FOREVER
     from starlite.connection import Request
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.datastructures.headers import Header
@@ -63,6 +62,7 @@ if TYPE_CHECKING:
     from starlite.openapi.spec import SecurityRequirement
     from starlite.plugins import SerializationPluginProtocol
     from starlite.types import MaybePartial  # noqa: F401
+
 
 __all__ = ("HTTPRouteHandler", "route")
 
@@ -127,7 +127,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         data_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -548,15 +548,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             raise ImproperlyConfiguredException(
                 "A status code 204, 304 or in the range below 200 does not support a response body."
                 "If the function should return a value, change the route handler status code to an appropriate value.",
-            )
-
-        if (
-            is_class_and_subclass(self.signature.return_annotation, Redirect)
-            and self.status_code not in REDIRECT_STATUS_CODES
-        ):
-            raise ValidationException(
-                f"Redirect responses should have one of "
-                f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
             )
 
         if (

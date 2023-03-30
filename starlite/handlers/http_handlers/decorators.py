@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from typing import Any, Mapping
 
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
+    from starlite.config.response_cache import CACHE_FOREVER
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
     from starlite.dto import AbstractDTO
@@ -35,6 +36,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
 
+
 __all__ = ("get", "head", "post", "put", "patch", "delete")
 
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
@@ -54,7 +56,7 @@ class delete(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         data_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -213,7 +215,7 @@ class get(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         data_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -373,7 +375,7 @@ class head(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         data_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -551,7 +553,7 @@ class patch(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         data_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -710,7 +712,7 @@ class post(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         data_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -869,7 +871,7 @@ class put(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         data_dto: type[AbstractDTO] | None | EmptyType = Empty,
