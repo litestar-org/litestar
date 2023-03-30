@@ -52,6 +52,7 @@ if TYPE_CHECKING:
 
     from starlite.app import Starlite
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
+    from starlite.config.response_cache import CACHE_FOREVER
     from starlite.connection import Request
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.datastructures.headers import Header
@@ -60,6 +61,7 @@ if TYPE_CHECKING:
     from starlite.openapi.spec import SecurityRequirement
     from starlite.plugins import SerializationPluginProtocol
     from starlite.types import MaybePartial  # noqa: F401
+
 
 __all__ = ("HTTPRouteHandler", "route")
 
@@ -120,7 +122,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: Mapping[str, Provide] | None = None,

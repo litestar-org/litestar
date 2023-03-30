@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from typing import Any, Mapping
 
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
+    from starlite.config.response_cache import CACHE_FOREVER
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
     from starlite.openapi.datastructures import ResponseSpec
@@ -31,6 +32,7 @@ if TYPE_CHECKING:
         ResponseType,
         TypeEncodersMap,
     )
+
 
 __all__ = ("get", "head", "post", "put", "patch", "delete")
 
@@ -51,7 +53,7 @@ class delete(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
@@ -204,7 +206,7 @@ class get(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
@@ -358,7 +360,7 @@ class head(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
@@ -530,7 +532,7 @@ class patch(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
@@ -683,7 +685,7 @@ class post(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
@@ -836,7 +838,7 @@ class put(HTTPRouteHandler):
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         before_request: BeforeRequestHookHandler | None = None,
-        cache: bool | int = False,
+        cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,

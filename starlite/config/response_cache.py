@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode
 
-__all__ = ("ResponseCacheConfig", "default_cache_key_builder")
+__all__ = ("ResponseCacheConfig", "default_cache_key_builder", "CACHE_FOREVER")
 
 
 if TYPE_CHECKING:
@@ -12,6 +12,12 @@ if TYPE_CHECKING:
     from starlite.connection import Request
     from starlite.stores.base import Store
     from starlite.types import CacheKeyBuilder
+
+
+class CACHE_FOREVER:  # noqa: N801
+    """Sentinel value indicating that a cached response should be stored without an expiration, explicitly skipping the
+    default expiration
+    """
 
 
 def default_cache_key_builder(request: Request[Any, Any, Any]) -> str:
