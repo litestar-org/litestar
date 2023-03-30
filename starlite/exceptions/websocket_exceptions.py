@@ -10,9 +10,8 @@ class WebSocketException(StarliteException):
     """Exception class for websocket related events."""
 
     code: int
-    """Exception code.
-
-    Should be a number in the 4000+ range.
+    """Exception code. For custom exceptions, this should be a number in the 4000+ range. Other codes can be found in
+    ``starlite.status_code`` with the ``WS_`` prefix.
     """
 
     def __init__(self, *args: Any, detail: str, code: int = 4500) -> None:

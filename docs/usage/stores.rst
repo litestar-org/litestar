@@ -235,7 +235,7 @@ This mechanism also allows to control the stores used by various integrations, s
     :language: python
 
 
-In this example, the registry is being set up with stores using the ``sessions`` and ``request_cache`` keys. These are
+In this example, the registry is being set up with stores using the ``sessions`` and ``response_cache`` keys. These are
 not magic constants, but instead configuration values that can be changed. Those names just happen to be their default
 values. Adjusting those default values allows to easily re-use stores, without the need for a more complex setup:
 

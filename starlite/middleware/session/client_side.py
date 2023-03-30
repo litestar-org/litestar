@@ -29,7 +29,7 @@ try:
     from cryptography.exceptions import InvalidTag
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 except ImportError as e:
-    raise MissingDependencyException("cryptography is not installed") from e
+    raise MissingDependencyException("cryptography") from e
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection

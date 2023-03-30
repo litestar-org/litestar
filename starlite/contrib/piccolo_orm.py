@@ -11,7 +11,7 @@ __all__ = ("PiccoloORMPlugin",)
 try:
     import piccolo  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("piccolo orm is not installed") from e
+    raise MissingDependencyException("piccolo") from e
 
 from piccolo.table import Table, TableMetaclass
 from piccolo.utils.pydantic import create_pydantic_model

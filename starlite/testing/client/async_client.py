@@ -3,20 +3,13 @@ from __future__ import annotations
 from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Any, Generic, Mapping, TypeVar
 
+from httpx import USE_CLIENT_DEFAULT, AsyncClient, Response
+
 from starlite import HttpMethod
-from starlite.exceptions import MissingDependencyException
 from starlite.testing.client.base import BaseTestClient
 from starlite.testing.life_span_handler import LifeSpanHandler
 from starlite.testing.transport import TestClientTransport
 from starlite.types import AnyIOBackend, ASGIApp
-
-try:
-    from httpx import USE_CLIENT_DEFAULT, AsyncClient, Response
-except ImportError as e:
-    raise MissingDependencyException(
-        "To use starlite.testing, install starlite with 'testing' extra, e.g. `pip install starlite[testing]`"
-    ) from e
-
 
 if TYPE_CHECKING:
     from httpx._client import UseClientDefault

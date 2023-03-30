@@ -201,17 +201,18 @@ def create_constrained_field_schema(
         A schema instance.
 
     """
+
     try:
         import pydantic
-
-        if issubclass(field_type, (pydantic.ConstrainedFloat, pydantic.ConstrainedInt, pydantic.ConstrainedDecimal)):
-            return create_numerical_constrained_field_schema(field_type=field_type)
-        if issubclass(field_type, (pydantic.ConstrainedStr, pydantic.ConstrainedBytes)):
-            return create_string_constrained_field_schema(field_type=field_type)
-        if issubclass(field_type, pydantic.ConstrainedDate):
-            return create_date_constrained_field_schema(field_type=field_type)
-        return create_collection_constrained_field_schema(
-            field_type=field_type, children=tuple(children) if children else None, plugins=plugins, schemas=schemas
-        )
     except ImportError as e:
-        raise MissingDependencyException("pydantic dependencies are not installed") from e
+        raise MissingDependencyException("pydantic") from e
+
+    if issubclass(field_type, (pydantic.ConstrainedFloat, pydantic.ConstrainedInt, pydantic.ConstrainedDecimal)):
+        return create_numerical_constrained_field_schema(field_type=field_type)
+    if issubclass(field_type, (pydantic.ConstrainedStr, pydantic.ConstrainedBytes)):
+        return create_string_constrained_field_schema(field_type=field_type)
+    if issubclass(field_type, pydantic.ConstrainedDate):
+        return create_date_constrained_field_schema(field_type=field_type)
+    return create_collection_constrained_field_schema(
+        field_type=field_type, children=tuple(children) if children else None, plugins=plugins, schemas=schemas
+    )

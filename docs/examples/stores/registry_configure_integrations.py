@@ -8,7 +8,7 @@ from starlite.stores.redis import RedisStore
 app = Starlite(
     stores={
         "sessions": RedisStore.with_client(),
-        "request_cache": FileStore(Path("request-cache")),
+        "response_cache": FileStore(Path("response-cache")),
     },
     middleware=[ServerSideSessionConfig().middleware],
 )
