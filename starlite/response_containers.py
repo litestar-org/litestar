@@ -215,6 +215,8 @@ class Redirect(ResponseContainer[RedirectResponse]):
     """If defined, overrides the media type configured in the route decorator."""
     encoding: str = field(default="utf-8")
     """The encoding to be used for the response headers."""
+    status_code: Literal[301, 302, 303, 307, 308] | None = None
+    """Redirect status code"""
 
     def to_response(  # type: ignore[override]
         self,
@@ -242,7 +244,7 @@ class Redirect(ResponseContainer[RedirectResponse]):
             background=self.background,
             encoding=self.encoding,
             headers=headers,
-            status_code=status_code,
+            status_code=self.status_code or status_code,
             url=self.path,
         )
 
