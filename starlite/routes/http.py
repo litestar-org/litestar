@@ -251,7 +251,9 @@ class HTTPRoute(BaseRoute):
         await cache.set(
             key=cache_key,
             value=pickle.dumps(response, pickle.HIGHEST_PROTOCOL),
-            expiration=route_handler.cache if isinstance(route_handler.cache, int) else None,
+            expiration=route_handler.cache
+            if isinstance(route_handler.cache, int) and route_handler.cache is not True
+            else None,
         )
 
     def create_options_handler(self, path: str) -> "HTTPRouteHandler":

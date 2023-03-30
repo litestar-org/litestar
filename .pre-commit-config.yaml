@@ -171,6 +171,7 @@ repos:
             click,
             cryptography,
             fast-query-parsers,
+            fakeredis,
             freezegun,
             fsspec,
             httpx,
