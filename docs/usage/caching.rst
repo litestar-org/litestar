@@ -31,6 +31,20 @@ Alternatively you can specify the number of seconds to cache the responses from 
        ...
 
 
+If you want the response to be cached indefinitely, you can pass the :class:`.config.response_cache.CACHE_FOREVER`
+sentinel instead:
+
+.. code-block:: python
+
+   from starlite import get
+   from starlite.config.response_cache import CACHE_FOREVER
+
+
+   @get("/cached-path", cache=CACHE_FOREVER)  # seconds
+   def my_cached_handler() -> str:
+       ...
+
+
 Configuration
 -------------
 
