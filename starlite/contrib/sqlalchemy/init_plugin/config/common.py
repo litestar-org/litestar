@@ -57,7 +57,7 @@ class GenericSessionConfig(Generic[ConnectionT, EngineT, SessionT]):
     keys of the dictionary consist of any series of mapped classes, arbitrary Python classes that are bases for mapped
     classes, :class:`Table <sqlalchemy.schema.Table>` objects and :class:`Mapper <sqlalchemy.orm.Mapper>` objects. The
     values of the dictionary are then instances of :class:`Engine <sqlalchemy.engine.Engine>` or less commonly
-    :class:`Connection<sqlalchemy.engine.Connection>` objects."""
+    :class:`Connection <sqlalchemy.engine.Connection>` objects."""
     class_: type[SessionT] | EmptyType = Empty
     """Class to use in order to create new :class:`Session <sqlalchemy.orm.Session>` objects."""
     expire_on_commit: bool | EmptyType = Empty
@@ -68,16 +68,16 @@ class GenericSessionConfig(Generic[ConnectionT, EngineT, SessionT]):
     join_transaction_mode: JoinTransactionMode | EmptyType = Empty
     """Describes the transactional behavior to take when a given bind is a Connection that has already begun a
     transaction outside the scope of this Session; in other words the
-    :attr:`Connection.in_transaction()<sqlalchemy.Connection.in_transaction>` method returns True."""
+    :attr:`Connection.in_transaction() <sqlalchemy.Connection.in_transaction>` method returns True."""
     query_cls: type[Query] | None | EmptyType = Empty
     """Class which should be used to create new Query objects, as returned by the
-    :attr:`Session.query()<sqlalchemy.orm.Session.query>` method."""
+    :attr:`Session.query() <sqlalchemy.orm.Session.query>` method."""
     twophase: bool | EmptyType = Empty
     """When ``True``, all transactions will be started as a “two phase” transaction, i.e. using the “two phase”
-    semantics of the database in use along with an XID. During a :attr:`commit()<sqlalchemy.orm.Session.commit>`, after
-    :attr:`flush()<sqlalchemy.orm.Session.flush>` has been issued for all attached databases, the
-    :attr:`TwoPhaseTransaction.prepare()<sqlalchemy.engine.TwoPhaseTransaction.prepare>` method on each database`s
-    :class:`TwoPhaseTransaction<sqlalchemy.engine.TwoPhaseTransaction>` will be called. This allows each database to
+    semantics of the database in use along with an XID. During a :attr:`commit() <sqlalchemy.orm.Session.commit>`, after
+    :attr:`flush() <sqlalchemy.orm.Session.flush>` has been issued for all attached databases, the
+    :attr:`TwoPhaseTransaction.prepare() <sqlalchemy.engine.TwoPhaseTransaction.prepare>` method on each database`s
+    :class:`TwoPhaseTransaction <sqlalchemy.engine.TwoPhaseTransaction>` will be called. This allows each database to
     roll back the entire transaction, before each transaction is committed."""
 
 
@@ -90,8 +90,8 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
     subclass.
     """
     session_config: GenericSessionConfig
-    """Configuration options for either the :class:`async_sessionmaker<sqlalchemy.ext.asyncio.async_sessionmaker>`
-    or :class:`sessionmaker<sqlalchemy.orm.sessionmaker>`.
+    """Configuration options for either the :class:`async_sessionmaker <sqlalchemy.ext.asyncio.async_sessionmaker>`
+    or :class:`sessionmaker <sqlalchemy.orm.sessionmaker>`.
     """
     session_maker_class: type[sessionmaker] | type[async_sessionmaker]
     """Sessionmaker class to use."""
@@ -123,7 +123,7 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
     The configuration options are documented in the SQLAlchemy documentation.
     """
     session_maker_app_state_key: str = "session_maker_class"
-    """Key under which to store the SQLAlchemy :class:`sessionmaker<sqlalchemy.orm.sessionmaker>` in the application
+    """Key under which to store the SQLAlchemy :class:`sessionmaker <sqlalchemy.orm.sessionmaker>` in the application
     :class:`State <.datastructures.State>` instance.
     """
     session_maker: Callable[[], SessionT] | None = None
@@ -146,7 +146,7 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
         """Return the engine configuration as a dict.
 
         Returns:
-            A string keyed dict of config kwargs for the SQLAlchemy :class:`create_engine<sqlalchemy.create_engine>`
+            A string keyed dict of config kwargs for the SQLAlchemy :func:`create_engine <sqlalchemy.create_engine>`
             function.
         """
         return simple_asdict(self.engine_config, exclude_empty=True)
@@ -156,7 +156,7 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
         """Return the session configuration as a dict.
 
         Returns:
-            A string keyed dict of config kwargs for the SQLAlchemy :class:`sessionmaker<sqlalchemy.orm.sessionmaker>`
+            A string keyed dict of config kwargs for the SQLAlchemy :class:`sessionmaker <sqlalchemy.orm.sessionmaker>`
             class.
         """
         return simple_asdict(self.session_config, exclude_empty=True)

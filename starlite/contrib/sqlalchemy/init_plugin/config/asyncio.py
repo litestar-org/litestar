@@ -11,7 +11,7 @@ from starlite.utils import (
     get_starlite_scope_state,
 )
 
-from ._common import SESSION_SCOPE_KEY, SESSION_TERMINUS_ASGI_EVENTS, GenericSessionConfig, GenericSQLAlchemyConfig
+from .common import SESSION_SCOPE_KEY, SESSION_TERMINUS_ASGI_EVENTS, GenericSessionConfig, GenericSQLAlchemyConfig
 
 if TYPE_CHECKING:
     from typing import Any, Callable
@@ -46,6 +46,11 @@ class AsyncSessionConfig(GenericSessionConfig[AsyncConnection, AsyncEngine, Asyn
     """SQLAlchemy async session config."""
 
     sync_session_class: type[Session] | None | EmptyType = Empty
+    """A :class:`Session <sqlalchemy.orm.Session>` subclass or other callable which will be used to construct the
+    :class:`Session <sqlalchemy.orm.Session>` which will be proxied. This parameter may be used to provide custom
+    :class:`Session <sqlalchemy.orm.Session>` subclasses. Defaults to the
+    :attr:`AsyncSession.sync_session_class <sqlalchemy.ext.asyncio.AsyncSession.sync_session_class>` class-level
+    attribute."""
 
 
 @dataclass

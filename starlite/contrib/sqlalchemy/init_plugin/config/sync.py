@@ -11,7 +11,7 @@ from starlite.utils import (
     get_starlite_scope_state,
 )
 
-from ._common import SESSION_SCOPE_KEY, SESSION_TERMINUS_ASGI_EVENTS, GenericSessionConfig, GenericSQLAlchemyConfig
+from .common import SESSION_SCOPE_KEY, SESSION_TERMINUS_ASGI_EVENTS, GenericSessionConfig, GenericSQLAlchemyConfig
 
 if TYPE_CHECKING:
     from typing import Any, Callable

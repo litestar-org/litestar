@@ -82,8 +82,6 @@ nitpick_ignore = [
     # intentionally undocumented
     ("py:class", "NoneType"),
     ("py:class", "starlite._signature.models.SignatureField"),
-    ("py:class", "starlite.contrib.sqlalchemy.init_plugin.config._common.GenericSessionConfig"),
-    ("py:class", "starlite.contrib.sqlalchemy.init_plugin.config._common.GenericSQLAlchemyConfig"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.types.*"),
@@ -115,7 +113,7 @@ ignore_missing_refs = {
     "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
     "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
     re.compile(r"starlite\.plugins.*"): re.compile(".*(ModelT|DataContainerT)"),
-    re.compile(r"starlite\.contrib\.sqlalchemy\.init_plugin\.config\.common.*"): re.compile(
+    re.compile(r"starlite\.contrib\.sqlalchemy\.init_plugin\.config.*"): re.compile(
         ".*(ConnectionT|EngineT|SessionT|SessionMakerT)"
     ),
 }
