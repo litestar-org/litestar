@@ -4,7 +4,7 @@ from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
-from starlite.dto import AbstractDTO
+from starlite.dto import AbstractDTOInterface
 from starlite.enums import HttpMethod
 from starlite.exceptions import ValidationException
 from starlite.plugins import get_plugin_for_value
@@ -90,15 +90,18 @@ def create_data_handler(
         return response
 
     async def handler(
-        data: Any, plugins: list["SerializationPluginProtocol"], return_dto: type[AbstractDTO] | None, **kwargs: Any
+        data: Any,
+        plugins: list["SerializationPluginProtocol"],
+        return_dto: type[AbstractDTOInterface] | None,
+        **kwargs: Any,
     ) -> "ASGIApp":
         if isawaitable(data):
             data = await data
 
-        if isinstance(data, AbstractDTO):
+        if isinstance(data, AbstractDTOInterface):
             data = data.to_encodable_type(media_type=media_type)
         elif return_dto:
-            data = return_dto(data=data).to_encodable_type(media_type=media_type)
+            data = return_dto.from_data(data=data).to_encodable_type(media_type=media_type)
         elif plugins:
             data = await normalize_response_data(data=data, plugins=plugins)
 

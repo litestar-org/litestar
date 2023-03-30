@@ -18,7 +18,7 @@ __all__ = ("Controller",)
 
 if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
-    from starlite.dto import AbstractDTO
+    from starlite.dto import AbstractDTOInterface
     from starlite.openapi.spec import SecurityRequirement
     from starlite.response import Response
     from starlite.router import Router
@@ -91,7 +91,7 @@ class Controller:
 
     Can be overridden by route handlers.
     """
-    data_dto: type[AbstractDTO] | EmptyType | None
+    data_dto: type[AbstractDTOInterface] | EmptyType | None
     """DTO type to use for deserializing and validating inbound request data."""
     dependencies: Dependencies | None
     """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
@@ -130,7 +130,7 @@ class Controller:
     """A list of :class:`Cookie <.datastructures.Cookie>` instances."""
     response_headers: ResponseHeaders | None
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>` instances."""
-    return_dto: type[AbstractDTO] | EmptyType | None
+    return_dto: type[AbstractDTOInterface] | EmptyType | None
     """DTO type to use for serializing outbound request data."""
     tags: OptionalSequence[str]
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""

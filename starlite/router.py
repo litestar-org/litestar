@@ -22,7 +22,7 @@ __all__ = ("Router",)
 if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
-    from starlite.dto import AbstractDTO
+    from starlite.dto import AbstractDTOInterface
     from starlite.openapi.spec import SecurityRequirement
     from starlite.routes import BaseRoute
     from starlite.types import (
@@ -85,7 +85,7 @@ class Router:
         after_response: AfterResponseHookHandler | None = None,
         before_request: BeforeRequestHookHandler | None = None,
         cache_control: CacheControlHeader | None = None,
-        data_dto: type[AbstractDTO] | None | EmptyType = Empty,
+        data_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         dependencies: Mapping[str, Provide] | None = None,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -96,7 +96,7 @@ class Router:
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
-        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
+        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         route_handlers: Sequence[ControllerRouterHandler],
         security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,

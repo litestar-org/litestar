@@ -9,7 +9,7 @@ from typing_extensions import get_args, get_origin
 
 from starlite.connection import ASGIConnection, Request
 from starlite.constants import UNDEFINED_SENTINELS
-from starlite.dto import AbstractDTO
+from starlite.dto import AbstractDTOInterface
 from starlite.enums import ScopeType
 from starlite.exceptions import InternalServerException, ValidationException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
@@ -166,7 +166,9 @@ class SignatureField:
     @property
     def has_dto_annotation(self) -> bool:
         """Field is annotated with a DTO type."""
-        return is_class_and_subclass(self.parsed_parameter.annotation, AbstractDTO)  # type:ignore[type-abstract]
+        return is_class_and_subclass(
+            self.parsed_parameter.annotation, AbstractDTOInterface
+        )  # type:ignore[type-abstract]
 
     @classmethod
     def create(
@@ -213,7 +215,7 @@ class SignatureModel(ABC):
     dependency_name_set: ClassVar[set[str]]
     field_plugin_mappings: ClassVar[dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
-    return_dto: ClassVar[type[AbstractDTO] | None]
+    return_dto: ClassVar[type[AbstractDTOInterface] | None]
     fields: ClassVar[dict[str, SignatureField]]
 
     @classmethod

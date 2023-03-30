@@ -27,11 +27,62 @@ if TYPE_CHECKING:
 
 __all__ = (
     "AbstractDTO",
+    "AbstractDTOInterface",
     "MsgspecBackedDTO",
 )
 
 
-class AbstractDTO(Generic[DataT], metaclass=ABCMeta):
+class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
+    @abstractmethod
+    def get_data(self) -> DataT:
+        """Return the data held by the DTO."""
+
+    @abstractmethod
+    def to_encodable_type(self, media_type: str | MediaType) -> bytes | StarliteEncodableType:
+        """Encode data held by the DTO type to a type supported by starlite serialization.
+
+        Can return either bytes or a type that Starlite can return to bytes.
+
+        If returning bytes, must respect ``media_type``.
+
+        If media type not supported raise `SerializationException`.
+
+        If returning a ``StarliteEncodableType``, ignore ``media_type``.
+
+        Args:
+            media_type: expected encoding type of serialized data
+
+        Returns:
+            Either ``bytes`` or a type that Starlite can convert to bytes.
+        """
+
+    @classmethod
+    @abstractmethod
+    def from_data(cls, data: DataT) -> Self:
+        """Construct an instance from data.
+
+        Args:
+            data: Data to construct the DTO from.
+
+        Returns:
+            AbstractDTOInterface instance.
+        """
+
+    @classmethod
+    @abstractmethod
+    def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
+        """Construct an instance from bytes.
+
+        Args:
+            raw: A byte representation of the DTO model.
+            media_type: serialization format.
+
+        Returns:
+            AbstractDTO instance.
+        """
+
+
+class AbstractDTO(AbstractDTOInterface[DataT], Generic[DataT], metaclass=ABCMeta):
     """Base class for DTO types."""
 
     __slots__ = ("data",)
@@ -83,41 +134,21 @@ class AbstractDTO(Generic[DataT], metaclass=ABCMeta):
 
         return type(f"{cls.__name__}[{item}]", (cls,), cls_dict)
 
-    # Runtime methods
-
-    @abstractmethod
-    def to_encodable_type(self, media_type: str | MediaType) -> bytes | StarliteEncodableType:
-        """Encode data held by the DTO type to a type supported by starlite serialization.
-
-        Can return either bytes or a type that Starlite can return to bytes.
-
-        If returning bytes, must respect ``media_type``.
-
-        If media type not supported raise `SerializationException`.
-
-        If returning a ``StarliteEncodableType``, ignore ``media_type``.
-
-        Args:
-            media_type: expected encoding type of serialized data
-
-        Returns:
-            Either ``bytes`` or a type that Starlite can convert to bytes.
-        """
+    def get_data(self) -> DataT:
+        """Return the data held by the DTO."""
+        return self.data
 
     @classmethod
-    @abstractmethod
-    def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
-        """Construct an instance from bytes.
+    def from_data(cls, data: DataT) -> Self:
+        """Construct an instance from data.
 
         Args:
-            raw: A byte representation of the DTO model.
-            media_type: serialization format.
+            data: Data to construct the DTO from.
 
         Returns:
-            AbstractDTO instance.
+            AbstractDTOInterface instance.
         """
-
-    # Model generation
+        return cls(data=data)
 
     @classmethod
     @abstractmethod

@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from starlite._signature.models import SignatureField
     from starlite.connection import ASGIConnection, Request
 
-    from .abc import AbstractDTO
+    from .abc import AbstractDTOInterface
 
 __all__ = ("create_dto_extractor",)
 
@@ -25,14 +25,14 @@ def create_dto_extractor(
         An extractor function.
     """
     dto_type = signature_field.parsed_parameter.dto or cast(
-        "type[AbstractDTO]", signature_field.parsed_parameter.annotation
+        "type[AbstractDTOInterface]", signature_field.parsed_parameter.annotation
     )
     is_not_dto_annotated = bool(signature_field.parsed_parameter.dto)
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
         dto = dto_type.from_bytes(await connection.body())
         if is_not_dto_annotated:
-            return dto.data
+            return dto.get_data()
         return dto
 
     return dto_extractor  # type:ignore[return-value]

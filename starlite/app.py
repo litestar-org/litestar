@@ -56,7 +56,7 @@ if TYPE_CHECKING:
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
-    from starlite.dto import AbstractDTO
+    from starlite.dto import AbstractDTOInterfaceInterface
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler
     from starlite.logging.config import BaseLoggingConfig
@@ -184,7 +184,7 @@ class Starlite(Router):
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
         csrf_config: CSRFConfig | None = None,
-        data_dto: type[AbstractDTO] | None | EmptyType = Empty,
+        data_dto: type[AbstractDTOInterfaceInterface] | None | EmptyType = Empty,
         debug: bool = False,
         dependencies: Dependencies | None = None,
         etag: ETag | None = None,
@@ -206,7 +206,7 @@ class Starlite(Router):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: OptionalSequence[ResponseHeader] = None,
-        return_dto: type[AbstractDTO] | None | EmptyType = Empty,
+        return_dto: type[AbstractDTOInterfaceInterface] | None | EmptyType = Empty,
         security: OptionalSequence[SecurityRequirement] = None,
         signature_namespace: Mapping[str, Any] | None = None,
         state: State | None = None,

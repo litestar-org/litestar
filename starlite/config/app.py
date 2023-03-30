@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from starlite.connection import Request, WebSocket
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.di import Provide
-    from starlite.dto import AbstractDTO
+    from starlite.dto import AbstractDTOInterface
     from starlite.events.emitter import BaseEventEmitterBackend
     from starlite.events.listener import EventListener
     from starlite.logging.config import BaseLoggingConfig
@@ -119,7 +119,7 @@ class AppConfig:
     """If set this enables the builtin CORS middleware."""
     csrf_config: CSRFConfig | None = field(default=None)
     """If set this enables the builtin CSRF middleware."""
-    data_dto: type[AbstractDTO] | EmptyType | None = field(default=Empty)
+    data_dto: type[AbstractDTOInterface] | EmptyType | None = field(default=Empty)
     """DTO type to use for deserializing and validating inbound request data."""
     debug: bool = field(default=False)
     """If ``True``, app errors rendered as HTML with a stack trace."""
@@ -168,7 +168,7 @@ class AppConfig:
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
     response_cache_config: ResponseCacheConfig = field(default_factory=ResponseCacheConfig)
     """Configures caching behavior of the application."""
-    return_dto: type[AbstractDTO] | None | EmptyType = field(default=Empty)
+    return_dto: type[AbstractDTOInterface] | None | EmptyType = field(default=Empty)
     """DTO type to use for serializing outbound request data."""
     route_handlers: list[ControllerRouterHandler] = field(default_factory=list)
     """A required list of route handlers, which can include instances of :class:`Router <.router.Router>`,

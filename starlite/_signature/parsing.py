@@ -13,7 +13,7 @@ from starlite._signature.models import PydanticSignatureModel, SignatureModel
 from starlite._signature.utils import get_fn_type_hints
 from starlite.constants import SKIP_VALIDATION_NAMES, UNDEFINED_SENTINELS
 from starlite.datastructures import ImmutableState
-from starlite.dto import AbstractDTO
+from starlite.dto import AbstractDTOInterface
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.plugins import (
@@ -46,7 +46,7 @@ class ParsedSignatureParameter:
     default: Any
     name: str
     optional: bool
-    dto: type[AbstractDTO] | None
+    dto: type[AbstractDTOInterface] | None
 
     @classmethod
     def from_parameter(
@@ -102,7 +102,7 @@ class ParsedSignatureParameter:
         """
         return (
             self.name in SKIP_VALIDATION_NAMES
-            or is_class_and_subclass(self.annotation, AbstractDTO)  # type:ignore[type-abstract]
+            or is_class_and_subclass(self.annotation, AbstractDTOInterface)  # type:ignore[type-abstract]
             or (isinstance(self.default, DependencyKwarg) and self.default.skip_validation)
         )
 
@@ -133,7 +133,7 @@ def parse_fn_signature(
     fn: AnyCallable,
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
-    data_dto: type[AbstractDTO] | None,
+    data_dto: type[AbstractDTOInterface] | None,
     signature_namespace: dict[str, Any],
 ) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
@@ -177,7 +177,7 @@ def parse_fn_signature(
                 data_dto.on_startup(parameter.annotation)
                 parameter.dto = data_dto
 
-            if is_class_and_subclass(parameter.annotation, AbstractDTO):  # type:ignore[type-abstract]
+            if is_class_and_subclass(parameter.annotation, AbstractDTOInterface):  # type:ignore[type-abstract]
                 parameter.annotation.on_startup(parameter.annotation)
 
         if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
@@ -206,8 +206,8 @@ def create_signature_model(
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
     signature_namespace: dict[str, Any],
-    data_dto: type[AbstractDTO] | None = None,
-    return_dto: type[AbstractDTO] | None = None,
+    data_dto: type[AbstractDTOInterface] | None = None,
+    return_dto: type[AbstractDTOInterface] | None = None,
 ) -> type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
@@ -235,7 +235,7 @@ def create_signature_model(
         signature_namespace=signature_namespace,
     )
 
-    if is_class_and_subclass(return_annotation, AbstractDTO):  # type:ignore[type-abstract]
+    if is_class_and_subclass(return_annotation, AbstractDTOInterface):  # type:ignore[type-abstract]
         return_annotation.on_startup(return_annotation)
     elif return_dto:
         return_dto.on_startup(return_annotation)
@@ -259,7 +259,7 @@ def create_pydantic_signature_model(
     fn_module: str | None,
     parsed_params: list[ParsedSignatureParameter],
     return_annotation: Any,
-    return_dto: type[AbstractDTO] | None,
+    return_dto: type[AbstractDTOInterface] | None,
     field_plugin_mappings: dict[str, PluginMapping],
     dependency_names: set[str],
 ) -> type[PydanticSignatureModel]:
