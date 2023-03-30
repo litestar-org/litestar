@@ -680,11 +680,27 @@ expected. Starlite comes with a simple mechanism for caching:</p>
 </div>
 <p>By setting <code class="docutils literal notranslate"><span class="pre">cache=True</span></code> in the route handler, caching for the route handler will be enabled for the
 <a class="reference internal" href="../reference/config.html#starlite.config.response_cache.ResponseCacheConfig.default_expiration" title="starlite.config.response_cache.ResponseCacheConfig.default_expiration"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ResponseCacheConfig.default_expiration</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the default <code class="docutils literal notranslate"><span class="pre">default_expiration</span></code> is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, setting up the route handler with <code class="docutils literal notranslate"><span class="pre">cache=True</span></code> will keep
+the response in cache indefinitely.</p>
+</div>
 <p>Alternatively you can specify the number of seconds to cache the responses from the given handler like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>  <span class="c1"># seconds</span>
+<span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>If you want the response to be cached indefinitely, you can pass the <a class="reference internal" href="../reference/config.html#starlite.config.response_cache.CACHE_FOREVER" title="starlite.config.response_cache.CACHE_FOREVER"><code class="xref py py-class docutils literal notranslate"><span class="pre">config.response_cache.CACHE_FOREVER</span></code></a>
+sentinel instead:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">starlite.config.response_cache</span> <span class="kn">import</span> <span class="n">CACHE_FOREVER</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">CACHE_FOREVER</span><span class="p">)</span>  <span class="c1"># seconds</span>
 <span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="o">...</span>
 </pre></div>
