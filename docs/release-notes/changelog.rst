@@ -1,6 +1,12 @@
 1.x Changelog
 =============
 
+1.51.8
+------
+
+* Fix a regression where setting ``cache=True`` in a route handler would cause errors when used with the redis cache backend
+
+
 1.51.7
 ------
 
