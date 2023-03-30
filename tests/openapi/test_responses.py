@@ -1,13 +1,14 @@
 from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
-from typing import Dict
+from types import ModuleType
+from typing import Callable, Dict
 
 import pytest
 from pydantic import BaseModel
 from typing_extensions import TypedDict
 
-from starlite import MediaType, Response, Starlite, get
+from starlite import Controller, MediaType, Response, Starlite, get
 from starlite._openapi.responses import (
     create_additional_responses,
     create_error_responses,
@@ -20,6 +21,7 @@ from starlite.exceptions import (
     PermissionDeniedException,
     ValidationException,
 )
+from starlite.handlers import HTTPRouteHandler
 from starlite.openapi.datastructures import ResponseSpec
 from starlite.openapi.spec import OpenAPIHeader, OpenAPIMediaType, Reference, Schema
 from starlite.openapi.spec.enums import OpenAPIType
@@ -34,6 +36,11 @@ from starlite.status_codes import (
 )
 from tests import Person, PersonFactory
 from tests.openapi.utils import PersonController, PetController, PetException
+
+
+def get_registered_route_handler(handler: "HTTPRouteHandler | type[Controller]", name: str) -> HTTPRouteHandler:
+    app = Starlite(route_handlers=[handler])
+    return app.asgi_router.route_handler_index[name]  # type: ignore[return-value]
 
 
 def test_create_responses() -> None:
@@ -52,8 +59,9 @@ def test_create_responses() -> None:
                 assert str(route_handler.status_code) in responses
                 assert str(HTTP_400_BAD_REQUEST) in responses
 
+    handler = get_registered_route_handler(PetController, "tests.openapi.utils.PetController.get_pets_or_owners")
     responses = create_responses(
-        route_handler=PetController.get_pets_or_owners,
+        route_handler=handler,
         raises_validation_error=False,
         generate_examples=True,
         plugins=[],
@@ -137,10 +145,12 @@ def test_create_success_response_with_headers() -> None:
         response_description="test",
         content_encoding="base64",
         content_media_type="image/png",
+        name="test",
     )
     def handler() -> list:
         return []
 
+    handler = get_registered_route_handler(handler, "test")
     response = create_success_response(handler, True, plugins=[], schemas={})
     assert response.description == "test"
 
@@ -166,10 +176,12 @@ def test_create_success_response_with_cookies() -> None:
             Cookie(key="first-cookie", httponly=True, samesite="strict", description="the first cookie", secure=True),
             Cookie(key="second-cookie", max_age=500, description="the second cookie"),
         ],
+        name="test",
     )
     def handler() -> list:
         return []
 
+    handler = get_registered_route_handler(handler, "test")
     response = create_success_response(handler, True, plugins=[], schemas={})
 
     assert isinstance(response.headers, dict)
@@ -191,10 +203,11 @@ def test_create_success_response_with_cookies() -> None:
 
 
 def test_create_success_response_with_response_class() -> None:
-    @get(path="/test")
+    @get(path="/test", name="test")
     def handler() -> Response[Person]:
         return Response(content=PersonFactory.build())
 
+    handler = get_registered_route_handler(handler, "test")
     schemas: Dict[str, Schema] = {}
     response = create_success_response(handler, True, plugins=[], schemas=schemas)
 
@@ -208,20 +221,23 @@ def test_create_success_response_with_response_class() -> None:
 
 
 def test_create_success_response_with_stream() -> None:
-    @get(path="/test")
+    @get(path="/test", name="test")
     def handler() -> Stream:
         return Stream(iterator=iter([]))
 
+    handler = get_registered_route_handler(handler, "test")
     response = create_success_response(handler, True, plugins=[], schemas={})
     assert response.description == "Stream Response"
 
 
 def test_create_success_response_redirect() -> None:
-    @get(path="/test", status_code=HTTP_307_TEMPORARY_REDIRECT)
+    @get(path="/test", status_code=HTTP_307_TEMPORARY_REDIRECT, name="test")
     def redirect_handler() -> Redirect:
         return Redirect(path="/target")
 
-    response = create_success_response(redirect_handler, True, plugins=[], schemas={})
+    handler = get_registered_route_handler(redirect_handler, "test")
+
+    response = create_success_response(handler, True, plugins=[], schemas={})
     assert response.description == "Redirect Response"
     assert response.headers
     location = response.headers["location"]
@@ -232,11 +248,13 @@ def test_create_success_response_redirect() -> None:
 
 
 def test_create_success_response_file_data() -> None:
-    @get(path="/test")
+    @get(path="/test", name="test")
     def file_handler() -> File:
         return File(path=Path("test_responses.py"))
 
-    response = create_success_response(file_handler, True, plugins=[], schemas={})
+    handler = get_registered_route_handler(file_handler, "test")
+
+    response = create_success_response(handler, True, plugins=[], schemas={})
     assert response.description == "File Download"
     assert response.headers
 
@@ -257,11 +275,13 @@ def test_create_success_response_file_data() -> None:
 
 
 def test_create_success_response_template() -> None:
-    @get(path="/template")
+    @get(path="/template", name="test")
     def template_handler() -> Template:
         return Template(name="none")
 
-    response = create_success_response(template_handler, True, plugins=[], schemas={})
+    handler = get_registered_route_handler(template_handler, "test")
+
+    response = create_success_response(handler, True, plugins=[], schemas={})
     assert response.description == "Request fulfilled, document follows"
     assert response.content
     assert response.content[MediaType.HTML.value]
@@ -329,10 +349,11 @@ def test_additional_responses_overlap_with_other_responses() -> None:
     class OkResponse(BaseModel):
         message: str
 
-    @get(responses={200: ResponseSpec(data_container=OkResponse, description="Overwritten response")})
+    @get(responses={200: ResponseSpec(data_container=OkResponse, description="Overwritten response")}, name="test")
     def handler() -> Person:
         return PersonFactory.build()
 
+    handler = get_registered_route_handler(handler, "test")
     responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[], schemas={})
 
     assert responses is not None
@@ -347,9 +368,12 @@ def test_additional_responses_overlap_with_raises() -> None:
     @get(
         raises=[ValidationException],
         responses={400: ResponseSpec(data_container=ErrorResponse, description="Overwritten response")},
+        name="test",
     )
     def handler() -> Person:
         raise ValidationException()
+
+    handler = get_registered_route_handler(handler, "test")
 
     responses = create_responses(handler, raises_validation_error=True, generate_examples=False, plugins=[], schemas={})
 
@@ -362,9 +386,11 @@ def test_create_response_for_response_subclass() -> None:
     class CustomResponse(Response[T]):
         pass
 
-    @get(path="/test")
+    @get(path="/test", name="test")
     def handler() -> CustomResponse[Person]:
         return CustomResponse(content=PersonFactory.build())
+
+    handler = get_registered_route_handler(handler, "test")
 
     schemas: Dict[str, Schema] = {}
     response = create_success_response(handler, True, plugins=[], schemas=schemas)
@@ -374,3 +400,19 @@ def test_create_response_for_response_subclass() -> None:
     assert isinstance(reference, Reference)
     schema = schemas[reference.value]
     assert schema.title == "Person"
+
+
+def test_success_response_with_future_annotations(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+from starlite import get
+
+@get(path="/test", name="test")
+def handler() -> int:
+    ...
+"""
+    )
+    handler = get_registered_route_handler(module.handler, "test")
+    response = create_success_response(handler, True, plugins=[], schemas={})
+    assert next(iter(response.content.values())).schema.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
