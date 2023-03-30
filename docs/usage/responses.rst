@@ -825,7 +825,7 @@ kwargs>`
     :language: python
 
 
-See :ref:`SQLAlchemy plugin <usage/plugins/sqlalchemy:SQLAlchemy Plugin>` for sqlalchemy integration.
+See :ref:`SQLAlchemy plugin <usage/plugins/sqlalchemy:SQLAlchemy Plugins>` for sqlalchemy integration.
 
 Cursor Pagination
 +++++++++++++++++
