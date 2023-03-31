@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import fields
 
 from examples.data_transfer_objects.dto_mark_fields import Company, CompanyDTO
-from starlite.dto.config import DTO_FIELD_META_KEY
+from starlite.dto.factory.config import DTO_FIELD_META_KEY
 
 
 def test_company_id_field_mark() -> None:

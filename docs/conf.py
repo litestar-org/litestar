@@ -116,6 +116,7 @@ ignore_missing_refs = {
     re.compile(r"starlite\.contrib\.sqlalchemy\.init_plugin\.config.*"): re.compile(
         ".*(ConnectionT|EngineT|SessionT|SessionMakerT)"
     ),
+    re.compile(r"starlite\.dto.*"): re.compile(".*(DataT|StarliteEncodableType)"),
 }
 
 

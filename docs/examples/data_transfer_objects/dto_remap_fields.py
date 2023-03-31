@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 from typing_extensions import Annotated
 
-from starlite.dto.config import DTOConfig
-from starlite.dto.stdlib.dataclass import DataclassDTO
+from starlite.dto.factory import DTOConfig
+from starlite.dto.factory.stdlib import DataclassDTO
 
 
 @dataclass

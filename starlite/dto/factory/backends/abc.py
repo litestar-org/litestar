@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from starlite.dto.types import FieldDefinitionsType
+    from starlite.dto.factory.types import FieldDefinitionsType
     from starlite.enums import MediaType
 
 __all__ = ("AbstractDTOBackend",)

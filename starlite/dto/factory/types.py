@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 from starlite.types import Empty
 
@@ -11,26 +11,32 @@ if TYPE_CHECKING:
 
     from typing_extensions import TypeAlias
 
-    from starlite.dto.config import DTOField
     from starlite.types import EmptyType
 
+    from .config import DTOField
+
 __all__ = (
-    "DataT",
     "FieldDefinition",
     "FieldDefinitionsType",
     "FieldMappingType",
     "NestedFieldDefinition",
-    "StarliteEncodableType",
 )
 
 
 @dataclass
 class FieldDefinition:
+    """A model field representation for purposes of generating a DTO backend model type."""
+
     field_name: str
+    """Name of the field."""
     field_type: type
+    """Type of the field."""
     default: Any = field(default=Empty)
+    """Default value of the field."""
     default_factory: Callable[[], Any] | EmptyType = field(default=Empty)
+    """Default factory of the field."""
     dto_field: DTOField | None = field(default=None)
+    """DTO field configuration."""
 
 
 @dataclass
@@ -62,14 +68,8 @@ class NestedFieldDefinition:
         return inner_type
 
 
-DataT = TypeVar("DataT")
-"""Type var representing data held by a DTO instance."""
-
 FieldDefinitionsType: TypeAlias = "Mapping[str, FieldDefinition | NestedFieldDefinition]"
 """Generic representation of names and types."""
 
 FieldMappingType: TypeAlias = "Mapping[str, str | FieldDefinition]"
 """Type of the field mappings configuration property."""
-
-StarliteEncodableType: TypeAlias = "Any"
-"""Types able to be encoded by Starlite."""

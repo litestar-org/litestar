@@ -7,10 +7,11 @@ from pydantic import BaseModel, parse_obj_as
 from typing_extensions import get_args
 
 from starlite.constants import UNDEFINED_SENTINELS
-from starlite.dto.abc import AbstractDTOFactory
-from starlite.dto.config import DTO_FIELD_META_KEY
-from starlite.dto.types import DataT, FieldDefinition
-from starlite.dto.utils import get_model_type_hints
+from starlite.dto import DataT
+from starlite.dto.factory import AbstractDTOFactory
+from starlite.dto.factory.config import DTO_FIELD_META_KEY
+from starlite.dto.factory.types import FieldDefinition
+from starlite.dto.factory.utils import get_model_type_hints
 
 from .backend import PydanticDTOBackend
 

@@ -6,7 +6,7 @@ import pytest
 
 from starlite._kwargs.kwargs_model import KwargsModel
 from starlite._signature.parsing import create_signature_model
-from starlite.dto.stdlib.dataclass import DataclassDTO
+from starlite.dto.factory.stdlib.dataclass import DataclassDTO
 
 from . import Model
 

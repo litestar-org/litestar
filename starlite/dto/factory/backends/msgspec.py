@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from msgspec import Struct, defstruct, field
 
-from starlite.dto.types import NestedFieldDefinition
+from starlite.dto.factory.types import NestedFieldDefinition
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
 from starlite.serialization import decode_json, decode_msgpack
@@ -16,7 +16,7 @@ from .abc import AbstractDTOBackend
 if TYPE_CHECKING:
     from typing import Any, Iterable
 
-    from starlite.dto.types import FieldDefinition, FieldDefinitionsType
+    from starlite.dto.factory.types import FieldDefinition, FieldDefinitionsType
 
 __all__ = ["MsgspecDTOBackend"]
 

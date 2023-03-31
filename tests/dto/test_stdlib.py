@@ -6,8 +6,8 @@ from typing import ClassVar, List
 
 import pytest
 
-from starlite.dto.stdlib.dataclass import DataclassDTO
-from starlite.dto.types import FieldDefinition
+from starlite.dto.factory.stdlib.dataclass import DataclassDTO
+from starlite.dto.factory.types import FieldDefinition
 
 
 @dataclass

@@ -6,8 +6,8 @@ from uuid import uuid4
 from pydantic import BaseConfig, BaseModel, create_model, parse_raw_as
 from pydantic.fields import FieldInfo
 
-from starlite.dto.backends.abc import AbstractDTOBackend
-from starlite.dto.types import NestedFieldDefinition
+from starlite.dto.factory.backends.abc import AbstractDTOBackend
+from starlite.dto.factory.types import NestedFieldDefinition
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
 from starlite.types import Empty
@@ -18,7 +18,7 @@ __all__ = ("PydanticDTOBackend",)
 if TYPE_CHECKING:
     from typing import Any, Iterable
 
-    from starlite.dto.types import FieldDefinition, FieldDefinitionsType
+    from starlite.dto.factory.types import FieldDefinition, FieldDefinitionsType
 
 
 class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):

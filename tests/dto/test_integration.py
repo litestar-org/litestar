@@ -5,8 +5,8 @@ from typing import Any, List
 import pytest
 
 from starlite import Starlite, get, post
-from starlite.dto.exc import InvalidAnnotation
-from starlite.dto.stdlib.dataclass import DataclassDTO
+from starlite.dto.factory.exc import InvalidAnnotation
+from starlite.dto.factory.stdlib.dataclass import DataclassDTO
 from starlite.status_codes import HTTP_201_CREATED
 from starlite.testing import create_test_client
 

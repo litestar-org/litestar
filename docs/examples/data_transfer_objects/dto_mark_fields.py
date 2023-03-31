@@ -4,9 +4,8 @@ from dataclasses import dataclass, field
 
 from typing_extensions import Annotated
 
-from starlite.dto.config import DTOConfig, dto_field
-from starlite.dto.enums import Purpose
-from starlite.dto.stdlib.dataclass import DataclassDTO
+from starlite.dto.factory import DTOConfig, Purpose, dto_field
+from starlite.dto.factory.stdlib import DataclassDTO
 
 
 @dataclass

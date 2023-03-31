@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from starlite import Controller, Router, Starlite, post
-from starlite.dto.stdlib.dataclass import DataclassDTO
+from starlite.dto.factory.stdlib.dataclass import DataclassDTO
 from starlite.types import Empty, EmptyType
 
 from . import Model

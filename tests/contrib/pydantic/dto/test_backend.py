@@ -7,13 +7,13 @@ import pytest
 from pydantic import BaseModel
 
 from starlite.contrib.pydantic.dto.backend import PydanticDTOBackend
-from starlite.dto.types import FieldDefinition, NestedFieldDefinition
+from starlite.dto.factory.types import FieldDefinition, NestedFieldDefinition
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
 from tests.dto import Model
 
 if TYPE_CHECKING:
-    from starlite.dto.types import FieldDefinitionsType
+    from starlite.dto.factory.types import FieldDefinitionsType
 
 
 class MyModel(BaseModel):

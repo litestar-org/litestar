@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from starlite.dto.stdlib.dataclass import DataclassDTO
+from starlite.dto.factory.stdlib import DataclassDTO
 
 
 @dataclass

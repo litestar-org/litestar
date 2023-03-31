@@ -11,8 +11,8 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, declared_
 from typing_extensions import Annotated
 
 from starlite.contrib.sqlalchemy.dto import DataT, SQLAlchemyDTO
-from starlite.dto import DTOConfig, DTOField, Mark, Purpose
-from starlite.dto.config import DTO_FIELD_META_KEY
+from starlite.dto.factory import DTOConfig, DTOField, Mark, Purpose
+from starlite.dto.factory.config import DTO_FIELD_META_KEY
 from starlite.enums import MediaType
 from starlite.serialization import encode_json
 
@@ -289,7 +289,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from starlite.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from starlite.dto import DTOConfig, Purpose
+from starlite.dto.factory import DTOConfig, Purpose
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -327,7 +327,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from starlite.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from starlite.dto import DTOConfig, Purpose
+from starlite.dto.factory import DTOConfig, Purpose
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -362,7 +362,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from typing_extensions import Annotated
 
 from starlite.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from starlite.dto import DTOConfig, Purpose
+from starlite.dto.factory import DTOConfig, Purpose
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -390,7 +390,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from starlite.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from starlite.dto import DTOConfig, Purpose
+from starlite.dto.factory import DTOConfig, Purpose
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -4,5 +4,5 @@ dto
 .. automodule:: starlite.dto
     :members:
 
-.. automodule:: starlite.dto.types
+.. automodule:: starlite.dto.factory
     :members:

@@ -6,15 +6,15 @@ from typing import TYPE_CHECKING, List
 import pytest
 from msgspec import Struct, to_builtins
 
-from starlite.dto.backends.msgspec import MsgspecDTOBackend
-from starlite.dto.types import FieldDefinition, NestedFieldDefinition
+from starlite.dto.factory.backends.msgspec import MsgspecDTOBackend
+from starlite.dto.factory.types import FieldDefinition, NestedFieldDefinition
 from starlite.enums import MediaType
 from starlite.exceptions import SerializationException
 
 from . import Model
 
 if TYPE_CHECKING:
-    from starlite.dto.types import FieldDefinitionsType
+    from starlite.dto.factory.types import FieldDefinitionsType
 
 
 class MyStruct(Struct):

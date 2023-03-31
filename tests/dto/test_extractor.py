@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock
 import pytest
 
 from starlite._signature.models import SignatureField
+from starlite.dto.factory.stdlib.dataclass import DataclassDTO
 from starlite.dto.kwarg_extractor import create_dto_extractor
-from starlite.dto.stdlib.dataclass import DataclassDTO
 
 from . import Model
 

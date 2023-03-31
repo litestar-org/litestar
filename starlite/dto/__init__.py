@@ -1,14 +1,9 @@
 from __future__ import annotations
 
-from .abc import AbstractDTOFactory, AbstractDTOInterface
-from .config import DTOConfig, DTOField
-from .enums import Mark, Purpose
+from .abc import AbstractDTOInterface, DataT, StarliteEncodableType
 
 __all__ = (
-    "AbstractDTOFactory",
     "AbstractDTOInterface",
-    "DTOConfig",
-    "DTOField",
-    "Mark",
-    "Purpose",
+    "DataT",
+    "StarliteEncodableType",
 )

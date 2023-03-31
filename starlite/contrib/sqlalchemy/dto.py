@@ -6,10 +6,10 @@ from sqlalchemy import inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped
 from typing_extensions import get_args, get_origin
 
-from starlite.dto.abc import MsgspecBackedDTOFactory
-from starlite.dto.config import DTO_FIELD_META_KEY
-from starlite.dto.types import FieldDefinition
-from starlite.dto.utils import get_model_type_hints
+from starlite.dto.factory.abc import MsgspecBackedDTOFactory
+from starlite.dto.factory.config import DTO_FIELD_META_KEY
+from starlite.dto.factory.types import FieldDefinition
+from starlite.dto.factory.utils import get_model_type_hints
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Generator, Iterable

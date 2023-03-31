@@ -6,10 +6,10 @@ from unittest.mock import MagicMock
 import pytest
 from typing_extensions import Annotated, get_args, get_origin
 
-from starlite.dto.config import DTOConfig
-from starlite.dto.exc import InvalidAnnotation
-from starlite.dto.stdlib.dataclass import DataclassDTO, DataT
-from starlite.dto.types import FieldDefinition
+from starlite.dto.factory.config import DTOConfig
+from starlite.dto.factory.exc import InvalidAnnotation
+from starlite.dto.factory.stdlib.dataclass import DataclassDTO, DataT
+from starlite.dto.factory.types import FieldDefinition
 
 from . import Model
 

@@ -6,8 +6,8 @@ from typing import List
 from typing_extensions import Annotated
 
 from starlite import Starlite, get, post
-from starlite.dto.config import DTOConfig, dto_field
-from starlite.dto.stdlib.dataclass import DataclassDTO
+from starlite.dto.factory import DTOConfig, dto_field
+from starlite.dto.factory.stdlib import DataclassDTO
 
 
 @dataclass

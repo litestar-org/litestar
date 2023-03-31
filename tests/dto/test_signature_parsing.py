@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
 from starlite._signature.parsing import create_signature_model
-from starlite.dto.stdlib.dataclass import DataclassDTO
+from starlite.dto.factory.stdlib.dataclass import DataclassDTO
 
 from . import Model
 
