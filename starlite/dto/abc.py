@@ -27,9 +27,9 @@ if TYPE_CHECKING:
     from .types import FieldDefinitionsType, StarliteEncodableType
 
 __all__ = (
-    "AbstractDTO",
+    "AbstractDTOFactory",
     "AbstractDTOInterface",
-    "MsgspecBackedDTO",
+    "MsgspecBackedDTOFactory",
 )
 
 
@@ -78,20 +78,19 @@ class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
             connection: :class:`Request <.connection.Request>` instance.
 
         Returns:
-            AbstractDTO instance.
+            AbstractDTOInterface instance.
         """
 
     @classmethod
     def on_startup(cls, resolved_handler_annotation: Any) -> None:
-        """Do something each time the DTO type is encountered during signature modelling.
+        """Do something each time the AbstractDTOInterface type is encountered during signature modelling.
 
         Args:
             resolved_handler_annotation: Resolved annotation of the handler function.
         """
-        return
 
 
-class AbstractDTO(AbstractDTOInterface[DataT], Generic[DataT], metaclass=ABCMeta):
+class AbstractDTOFactory(AbstractDTOInterface[DataT], Generic[DataT], metaclass=ABCMeta):
     """Base class for DTO types."""
 
     __slots__ = ("data",)
@@ -113,7 +112,7 @@ class AbstractDTO(AbstractDTOInterface[DataT], Generic[DataT], metaclass=ABCMeta
     _reverse_field_mappings: ClassVar[dict[str, FieldDefinition]]
 
     def __init__(self, data: DataT) -> None:
-        """Create an AbstractDTO type.
+        """Create an AbstractDTOFactory type.
 
         Args:
             data: the data represented by the DTO.
@@ -303,7 +302,7 @@ class AbstractDTO(AbstractDTOInterface[DataT], Generic[DataT], metaclass=ABCMeta
         Args:
             resolved_handler_annotation: Resolved annotation of the handler function.
         """
-        if issubclass(get_origin(resolved_handler_annotation) or resolved_handler_annotation, AbstractDTO):
+        if issubclass(get_origin(resolved_handler_annotation) or resolved_handler_annotation, AbstractDTOFactory):
             resolved_dto_annotation = resolved_handler_annotation.annotation
         else:
             resolved_dto_annotation = resolved_handler_annotation
@@ -318,7 +317,7 @@ class AbstractDTO(AbstractDTOInterface[DataT], Generic[DataT], metaclass=ABCMeta
             cls.postponed_cls_init()
 
 
-class MsgspecBackedDTO(AbstractDTO[DataT], Generic[DataT], metaclass=ABCMeta):
+class MsgspecBackedDTOFactory(AbstractDTOFactory[DataT], Generic[DataT], metaclass=ABCMeta):
     dto_backend_type = MsgspecDTOBackend
     dto_backend: ClassVar[MsgspecDTOBackend]
 
@@ -330,7 +329,7 @@ class MsgspecBackedDTO(AbstractDTO[DataT], Generic[DataT], metaclass=ABCMeta):
             connection: A byte representation of the DTO model.
 
         Returns:
-            AbstractDTO instance.
+            AbstractDTOFactory instance.
         """
         parsed = cls.dto_backend.parse_raw(await connection.body(), connection.content_type[0])
         return cls(data=build_data_from_struct(cls.model_type, parsed, cls.field_definitions))  # type:ignore[arg-type]

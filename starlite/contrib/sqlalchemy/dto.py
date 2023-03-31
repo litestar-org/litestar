@@ -6,7 +6,7 @@ from sqlalchemy import inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped
 from typing_extensions import get_args, get_origin
 
-from starlite.dto.abc import MsgspecBackedDTO
+from starlite.dto.abc import MsgspecBackedDTOFactory
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import FieldDefinition
 from starlite.dto.utils import get_model_type_hints
@@ -24,7 +24,7 @@ DataT = TypeVar("DataT", bound="DeclarativeBase | Iterable[DeclarativeBase]")
 AnyDeclarativeT = TypeVar("AnyDeclarativeT", bound="DeclarativeBase")
 
 
-class SQLAlchemyDTO(MsgspecBackedDTO[DataT], Generic[DataT]):
+class SQLAlchemyDTO(MsgspecBackedDTOFactory[DataT], Generic[DataT]):
     """Support for domain modelling with SQLAlchemy."""
 
     __slots__ = ()

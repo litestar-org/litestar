@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from typing_extensions import get_args
 
-from starlite.dto.abc import MsgspecBackedDTO
+from starlite.dto.abc import MsgspecBackedDTOFactory
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import FieldDefinition
 from starlite.dto.utils import get_model_type_hints
@@ -22,7 +22,7 @@ DataT = TypeVar("DataT", bound="DataclassProtocol | Iterable[DataclassProtocol]"
 AnyDataclass = TypeVar("AnyDataclass", bound="DataclassProtocol")
 
 
-class DataclassDTO(MsgspecBackedDTO[DataT], Generic[DataT]):
+class DataclassDTO(MsgspecBackedDTOFactory[DataT], Generic[DataT]):
     """Support for domain modelling with dataclasses."""
 
     __slots__ = ()

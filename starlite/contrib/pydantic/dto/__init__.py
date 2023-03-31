@@ -7,7 +7,7 @@ from pydantic import BaseModel, parse_obj_as
 from typing_extensions import get_args
 
 from starlite.constants import UNDEFINED_SENTINELS
-from starlite.dto.abc import AbstractDTO
+from starlite.dto.abc import AbstractDTOFactory
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import DataT, FieldDefinition
 from starlite.dto.utils import get_model_type_hints
@@ -22,18 +22,18 @@ if TYPE_CHECKING:
     from starlite.connection import Request
     from starlite.enums import MediaType
 
-__all__ = ("PydanticBackedDTO", "PydanticDTO")
+__all__ = ("PydanticBackedDTOFactory", "PydanticDTO")
 
 
 PydanticDataT = TypeVar("PydanticDataT", bound="BaseModel | Iterable[BaseModel]")
 
 
-class PydanticBackedDTO(AbstractDTO[DataT], Generic[DataT], metaclass=ABCMeta):
+class PydanticBackedDTOFactory(AbstractDTOFactory[DataT], Generic[DataT], metaclass=ABCMeta):
     dto_backend_type = PydanticDTOBackend
     dto_backend: ClassVar[PydanticDTOBackend]
 
 
-class PydanticDTO(PydanticBackedDTO[PydanticDataT], Generic[PydanticDataT]):
+class PydanticDTO(PydanticBackedDTOFactory[PydanticDataT], Generic[PydanticDataT]):
     __slots__ = ()
 
     model_type: ClassVar[type[BaseModel]]
@@ -71,7 +71,7 @@ class PydanticDTO(PydanticBackedDTO[PydanticDataT], Generic[PydanticDataT]):
             connection: A byte representation of the DTO model.
 
         Returns:
-            AbstractDTO instance.
+            AbstractDTOFactory instance.
         """
         parsed = cls.dto_backend.parse_raw(await connection.body(), connection.content_type[0])
         return cls(data=parse_obj_as(cls.annotation, parsed))
