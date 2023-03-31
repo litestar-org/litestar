@@ -32,7 +32,7 @@ def create_dto_extractor(
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
         dto = await dto_type.from_connection(connection)
         if is_not_dto_annotated:
-            return dto.get_data()
+            return dto.to_data_type()
         return dto
 
     return dto_extractor  # type:ignore[return-value]

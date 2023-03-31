@@ -77,7 +77,7 @@ class AbstractDTOFactory(AbstractDTOInterface[DataT], Generic[DataT], metaclass=
 
         return type(f"{cls.__name__}[{item}]", (cls,), cls_dict)
 
-    def get_data(self) -> DataT:
+    def to_data_type(self) -> DataT:
         """Return the data held by the DTO."""
         return self.data
 
@@ -269,7 +269,7 @@ class MsgspecBackedDTOFactory(AbstractDTOFactory[DataT], Generic[DataT], metacla
         parsed = cls.dto_backend.parse_raw(await connection.body(), connection.content_type[0])
         return cls(data=build_data_from_struct(cls.model_type, parsed, cls.field_definitions))  # type:ignore[arg-type]
 
-    def to_encodable_type(self, media_type: str | MediaType) -> Any:
+    def to_encodable_type(self, media_type: str | MediaType, request: Request[Any, Any, Any]) -> Any:
         if isinstance(self.data, self.model_type):
             return build_struct_from_model(self.data, self.dto_backend.data_container_type)
         type_ = get_origin(self.annotation) or self.annotation

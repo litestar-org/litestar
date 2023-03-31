@@ -133,20 +133,19 @@ async def test_model_read_dto(
 async def test_model_list_dto(author_model: type[DeclarativeBase], request_factory: RequestFactory) -> None:
     dto_type = SQLAlchemyDTO[List[author_model]]
     dto_type.postponed_cls_init()
-    dto_instance = await dto_type.from_connection(
-        request_factory.post(
-            data=[
-                {
-                    "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
-                    "name": "Agatha Christie",
-                    "dob": "1890-09-15",
-                    "created": "0001-01-01T00:00:00",
-                    "updated": "0001-01-01T00:00:00",
-                }
-            ]
-        )
+    request = request_factory.post(
+        data=[
+            {
+                "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
+                "name": "Agatha Christie",
+                "dob": "1890-09-15",
+                "created": "0001-01-01T00:00:00",
+                "updated": "0001-01-01T00:00:00",
+            }
+        ]
     )
-    encodable = dto_instance.to_encodable_type(MediaType.JSON)
+    dto_instance = await dto_type.from_connection(request)
+    encodable = dto_instance.to_encodable_type(MediaType.JSON, request)
     assert [to_builtins(datum) for datum in encodable] == [
         {
             "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
@@ -220,21 +219,17 @@ async def test_dto_for_private_model_field(
             field=datetime.min,
         )
     )
-    serializable = dto_instance.to_encodable_type(MediaType.JSON)
-    assert b"field" not in encode_json(serializable)
-    assert "field" not in vars(
-        await get_model_from_dto(
-            dto_type,
-            request_factory.post(
-                data={
-                    "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
-                    "created": "0001-01-01T00:00:00",
-                    "updated": "0001-01-01T00:00:00",
-                    "field": "0001-01-01T00:00:00",
-                }
-            ),
-        )
+    request = request_factory.post(
+        data={
+            "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+            "field": "0001-01-01T00:00:00",
+        }
     )
+    serializable = dto_instance.to_encodable_type(MediaType.JSON, request)
+    assert b"field" not in encode_json(serializable)
+    assert "field" not in vars(await get_model_from_dto(dto_type, request))
 
 
 @pytest.mark.parametrize("purpose", [Purpose.WRITE, Purpose.READ, None])
@@ -407,13 +402,12 @@ class B(Base):
 dto_type = SQLAlchemyDTO[A]
 """
     )
-    model = await get_model_from_dto(
-        module.dto_type, request_factory.post(data={"id": 1, "b_id": 1, "b": {"id": 1, "a": {"id": 1, "b_id": 1}}})
-    )
+    request = request_factory.post(data={"id": 1, "b_id": 1, "b": {"id": 1, "a": {"id": 1, "b_id": 1}}})
+    model = await get_model_from_dto(module.dto_type, request)
     assert isinstance(model, module.A)
     assert isinstance(model.b, module.B)
     assert isinstance(model.b.a, module.A)
-    encodable_type = module.dto_type(data=model).to_encodable_type("application/json")
+    encodable_type = module.dto_type(data=model).to_encodable_type("application/json", request)
     assert encodable_type.id == 1
     assert encodable_type.b_id == 1
     assert encodable_type.b.id == 1

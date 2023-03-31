@@ -93,15 +93,16 @@ def create_data_handler(
         data: Any,
         plugins: list["SerializationPluginProtocol"],
         return_dto: type[AbstractDTOInterface] | None,
+        request: Request[Any, Any, Any],
         **kwargs: Any,
     ) -> "ASGIApp":
         if isawaitable(data):
             data = await data
 
         if isinstance(data, AbstractDTOInterface):
-            data = data.to_encodable_type(media_type=media_type)
+            data = data.to_encodable_type(media_type=media_type, request=request)
         elif return_dto:
-            data = return_dto.from_data(data=data).to_encodable_type(media_type=media_type)
+            data = return_dto.from_data(data=data).to_encodable_type(media_type=media_type, request=request)
         elif plugins:
             data = await normalize_response_data(data=data, plugins=plugins)
 

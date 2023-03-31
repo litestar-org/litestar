@@ -26,11 +26,13 @@ StarliteEncodableType: TypeAlias = "Any"
 
 class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
     @abstractmethod
-    def get_data(self) -> DataT:
+    def to_data_type(self) -> DataT:
         """Return the data held by the DTO."""
 
     @abstractmethod
-    def to_encodable_type(self, media_type: str | MediaType) -> bytes | StarliteEncodableType:
+    def to_encodable_type(
+        self, media_type: str | MediaType, request: Request[Any, Any, Any]
+    ) -> bytes | StarliteEncodableType:
         """Encode data held by the DTO type to a type supported by starlite serialization.
 
         Can return either bytes or a type that Starlite can return to bytes.
@@ -43,21 +45,10 @@ class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
 
         Args:
             media_type: expected encoding type of serialized data
+            request: :class:`Request <.connection.Request>` instance.
 
         Returns:
             Either ``bytes`` or a type that Starlite can convert to bytes.
-        """
-
-    @classmethod
-    @abstractmethod
-    def from_data(cls, data: DataT) -> Self:
-        """Construct an instance from data.
-
-        Args:
-            data: Data to construct the DTO from.
-
-        Returns:
-            AbstractDTOInterface instance.
         """
 
     @classmethod
@@ -67,6 +58,18 @@ class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
 
         Args:
             connection: :class:`Request <.connection.Request>` instance.
+
+        Returns:
+            AbstractDTOInterface instance.
+        """
+
+    @classmethod
+    @abstractmethod
+    def from_data(cls, data: DataT) -> Self:
+        """Construct an instance from data.
+
+        Args:
+            data: Data to construct the DTO from.
 
         Returns:
             AbstractDTOInterface instance.

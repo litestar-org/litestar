@@ -77,7 +77,9 @@ class PydanticDTO(PydanticBackedDTOFactory[PydanticDataT], Generic[PydanticDataT
         parsed = cls.dto_backend.parse_raw(await connection.body(), connection.content_type[0])
         return cls(data=parse_obj_as(cls.annotation, parsed))
 
-    def to_encodable_type(self, media_type: str | MediaType) -> BaseModel | Iterable[BaseModel]:
+    def to_encodable_type(
+        self, media_type: str | MediaType, request: Request[Any, Any, Any]
+    ) -> BaseModel | Iterable[BaseModel]:
         if isinstance(self.data, self.model_type):
             return self.dto_backend.data_container_type.parse_obj(self.data.dict())
         data = cast("Iterable[BaseModel]", self.data)
