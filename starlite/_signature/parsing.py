@@ -248,7 +248,6 @@ def create_signature_model(
         fn_module=fn_module,
         parsed_params=parsed_params,
         return_annotation=return_annotation,
-        return_dto=return_dto,
         field_plugin_mappings=field_plugin_mappings,
         dependency_names={*dependency_name_set, *dependency_names},
     )
@@ -259,7 +258,6 @@ def create_pydantic_signature_model(
     fn_module: str | None,
     parsed_params: list[ParsedSignatureParameter],
     return_annotation: Any,
-    return_dto: type[AbstractDTOInterface] | None,
     field_plugin_mappings: dict[str, PluginMapping],
     dependency_names: set[str],
 ) -> type[PydanticSignatureModel]:
@@ -270,7 +268,6 @@ def create_pydantic_signature_model(
         fn_module: Name of the function's module, if any.
         parsed_params: A list of parsed signature parameters.
         return_annotation: Annotation for the callable's return value.
-        return_dto: DTO type for return value
         field_plugin_mappings: A mapping of field names to plugin mappings.
         dependency_names: A set of dependency names.
 
@@ -313,7 +310,6 @@ def create_pydantic_signature_model(
         **field_definitions,
     )
     model.return_annotation = return_annotation
-    model.return_dto = return_dto
     model.field_plugin_mappings = field_plugin_mappings
     model.dependency_name_set = dependency_names
     model.populate_signature_fields()
