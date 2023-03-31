@@ -244,5 +244,5 @@ def fn(a: Annotated[int, "a"]) -> None:
     pass
 """
     )
-    (param, *_), _, __, ___ = parse_fn_signature(module.fn, [], set(), None, {})
+    (param, *_), _, __, ___ = parse_fn_signature(module.fn, [], set(), {})
     assert param.annotation == Annotated[int, "a"]

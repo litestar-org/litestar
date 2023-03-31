@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
+from starlite import post
 from starlite._signature.models import SignatureField
 from starlite.dto.factory.stdlib.dataclass import DataclassDTO
 from starlite.dto.kwarg_extractor import create_dto_extractor
@@ -14,7 +15,7 @@ from . import Model
 
 async def test_extractor_for_scalar_annotation() -> None:
     dto_type = DataclassDTO[Model]
-    dto_type.on_startup(Model)
+    dto_type.on_startup(Model, post())
 
     class FakeParsedParameter:
         annotation = dto_type
@@ -28,7 +29,7 @@ async def test_extractor_for_scalar_annotation() -> None:
         kwarg_model=None,
         name="data",
     )
-    extractor = create_dto_extractor(signature_field)
+    extractor = create_dto_extractor(signature_field, dto_type)
     data = await extractor(
         AsyncMock(body=AsyncMock(return_value=b'{"a": 1, "b": "two"}'), content_type=("application/json",))
     )
@@ -38,7 +39,7 @@ async def test_extractor_for_scalar_annotation() -> None:
 @pytest.mark.parametrize("generic_collection", [List, FrozenSet, Tuple, Set])
 async def test_extractor_for_collection_annotation(generic_collection: Any) -> None:
     dto_type = DataclassDTO[generic_collection[Model]]
-    dto_type.on_startup(generic_collection[Model])
+    dto_type.on_startup(generic_collection[Model], post())
 
     class FakeParsedParameter:
         annotation = dto_type
@@ -52,7 +53,7 @@ async def test_extractor_for_collection_annotation(generic_collection: Any) -> N
         kwarg_model=None,
         name="data",
     )
-    extractor = create_dto_extractor(signature_field)
+    extractor = create_dto_extractor(signature_field, dto_type)
     data = await extractor(
         AsyncMock(body=AsyncMock(return_value=b'[{"a": 1, "b": "two"}]'), content_type=("application/json",))
     )

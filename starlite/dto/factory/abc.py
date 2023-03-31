@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
     from starlite.connection import Request
     from starlite.enums import MediaType
+    from starlite.handlers import HTTPRouteHandler
 
 __all__ = ["AbstractDTOFactory", "MsgspecBackedDTOFactory"]
 
@@ -231,11 +232,12 @@ class AbstractDTOFactory(AbstractDTOInterface[DataT], Generic[DataT], metaclass=
         cls.dto_backend = cls.dto_backend_type.from_field_definitions(cls.annotation, cls.field_definitions)
 
     @classmethod
-    def on_startup(cls, resolved_handler_annotation: Any) -> None:
+    def on_startup(cls, resolved_handler_annotation: Any, route_handler: HTTPRouteHandler) -> None:
         """Do something each time the DTO type is encountered during signature modelling.
 
         Args:
             resolved_handler_annotation: Resolved annotation of the handler function.
+            route_handler: Route handler instance.
         """
         if issubclass(get_origin(resolved_handler_annotation) or resolved_handler_annotation, AbstractDTOFactory):
             resolved_dto_annotation = resolved_handler_annotation.annotation

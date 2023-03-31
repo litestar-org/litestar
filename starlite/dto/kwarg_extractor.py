@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Any, Callable, Coroutine
@@ -14,25 +14,23 @@ __all__ = ("create_dto_extractor",)
 
 
 def create_dto_extractor(
-    signature_field: SignatureField,
+    signature_field: SignatureField, dto_type: type[AbstractDTOInterface]
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a DTO data extractor.
 
     Args:
         signature_field: A SignatureField instance.
+        dto_type: The :class:`AbstractDTOInterface` subclass.
 
     Returns:
         An extractor function.
     """
-    dto_type = signature_field.parsed_parameter.dto or cast(
-        "type[AbstractDTOInterface]", signature_field.parsed_parameter.annotation
-    )
-    is_not_dto_annotated = bool(signature_field.parsed_parameter.dto)
+    is_dto_annotated = signature_field.has_dto_annotation
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
         dto = await dto_type.from_connection(connection)
-        if is_not_dto_annotated:
-            return dto.to_data_type()
-        return dto
+        if is_dto_annotated:
+            return dto
+        return dto.to_data_type()
 
     return dto_extractor  # type:ignore[return-value]

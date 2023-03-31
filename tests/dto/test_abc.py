@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 import pytest
 from typing_extensions import Annotated, get_args, get_origin
 
+from starlite import post
 from starlite.dto.factory.config import DTOConfig
 from starlite.dto.factory.exc import InvalidAnnotation
 from starlite.dto.factory.stdlib.dataclass import DataclassDTO, DataT
@@ -24,8 +25,8 @@ def test_on_startup(monkeypatch: MonkeyPatch) -> None:
     postponed_cls_init_mock = MagicMock()
     monkeypatch.setattr(dto_type, "postponed_cls_init", postponed_cls_init_mock)
     # call startup twice
-    dto_type.on_startup(Model)
-    dto_type.on_startup(Model)
+    dto_type.on_startup(Model, post())
+    dto_type.on_startup(Model, post())
     assert postponed_cls_init_mock.called_once()
 
 

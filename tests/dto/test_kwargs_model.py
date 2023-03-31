@@ -26,6 +26,6 @@ def signature_model(monkeypatch: MonkeyPatch) -> type[SignatureModel]:
 
 def test_kwargs_model(signature_model: type[SignatureModel]) -> None:
     kwargs_model = KwargsModel.create_for_signature_model(
-        signature_model=signature_model, dependencies={}, path_parameters=set(), layered_parameters={}
+        signature_model=signature_model, dependencies={}, path_parameters=set(), layered_parameters={}, data_dto=None
     )
     assert kwargs_model.expected_dto_data

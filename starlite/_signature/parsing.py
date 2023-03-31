@@ -46,7 +46,6 @@ class ParsedSignatureParameter:
     default: Any
     name: str
     optional: bool
-    dto: type[AbstractDTOInterface] | None
 
     @classmethod
     def from_parameter(
@@ -78,7 +77,6 @@ class ParsedSignatureParameter:
             default=parameter.default,
             name=parameter_name,
             optional=is_optional_union(parameter.annotation),
-            dto=None,
         )
 
     @property
@@ -133,7 +131,6 @@ def parse_fn_signature(
     fn: AnyCallable,
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
-    data_dto: type[AbstractDTOInterface] | None,
     signature_namespace: dict[str, Any],
 ) -> tuple[list[ParsedSignatureParameter], Any, dict[str, PluginMapping], set[str]]:
     """Parse a function signature into data used for the generation of a signature model.
@@ -142,7 +139,6 @@ def parse_fn_signature(
         fn: A callable.
         plugins: A list of plugins.
         dependency_name_set: A set of dependency names
-        data_dto: DTO type for "data" kwarg
         signature_namespace: mapping of names to types for forward reference resolution
 
     Returns:
@@ -172,14 +168,6 @@ def parse_fn_signature(
                 "`starlite.datastructures.State`."
             )
 
-        if parameter.name == "data":
-            if data_dto:
-                data_dto.on_startup(parameter.annotation)
-                parameter.dto = data_dto
-
-            if is_class_and_subclass(parameter.annotation, AbstractDTOInterface):  # type:ignore[type-abstract]
-                parameter.annotation.on_startup(parameter.annotation)
-
         if isinstance(parameter.default, DependencyKwarg) and parameter.name not in dependency_name_set:
             if not parameter.optional and (
                 isinstance(parameter.default, DependencyKwarg) and parameter.default.default is Empty
@@ -206,8 +194,6 @@ def create_signature_model(
     plugins: list[SerializationPluginProtocol],
     dependency_name_set: set[str],
     signature_namespace: dict[str, Any],
-    data_dto: type[AbstractDTOInterface] | None = None,
-    return_dto: type[AbstractDTOInterface] | None = None,
 ) -> type[SignatureModel]:
     """Create a model for a callable's signature. The model can than be used to parse and validate before passing it to
     the callable.
@@ -216,8 +202,6 @@ def create_signature_model(
         fn: A callable.
         plugins: A list of plugins.
         dependency_name_set: A set of dependency names
-        data_dto: DTO type for "data" kwarg
-        return_dto: DTO type for return value
         signature_namespace: mapping of names to types for forward reference resolution
 
     Returns:
@@ -231,14 +215,8 @@ def create_signature_model(
         fn=unwrapped_fn,
         plugins=plugins,
         dependency_name_set=dependency_name_set,
-        data_dto=data_dto,
         signature_namespace=signature_namespace,
     )
-
-    if is_class_and_subclass(return_annotation, AbstractDTOInterface):  # type:ignore[type-abstract]
-        return_annotation.on_startup(return_annotation)
-    elif return_dto:
-        return_dto.on_startup(return_annotation)
 
     # TODO: we will implement logic here to determine what kind of SignatureModel we are creating.
     # For now this is only pydantic:

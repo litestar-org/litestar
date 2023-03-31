@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
     from starlite.connection import Request
     from starlite.enums import MediaType
+    from starlite.handlers import HTTPRouteHandler
 
 __all__ = (
     "AbstractDTOInterface",
@@ -76,9 +77,10 @@ class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
         """
 
     @classmethod
-    def on_startup(cls, resolved_handler_annotation: Any) -> None:
+    def on_startup(cls, resolved_handler_annotation: Any, route_handler: HTTPRouteHandler) -> None:
         """Do something each time the AbstractDTOInterface type is encountered during signature modelling.
 
         Args:
             resolved_handler_annotation: Resolved annotation of the handler function.
+            route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
         """

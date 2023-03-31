@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable
 
 from anyio import create_task_group
+from typing_extensions import get_origin
 
 from starlite._kwargs.cleanup import DependencyCleanupGroup
 from starlite._kwargs.dependencies import (
@@ -32,9 +33,11 @@ from starlite._kwargs.parameter_definition import (
 from starlite._signature import SignatureModel, get_signature_model
 from starlite._signature.models import SignatureField
 from starlite.constants import RESERVED_KWARGS
+from starlite.dto import AbstractDTOInterface
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, ParameterKwarg
+from starlite.utils import is_class_and_subclass
 
 __all__ = ("KwargsModel",)
 
@@ -70,7 +73,7 @@ class KwargsModel:
         self,
         *,
         expected_cookie_params: set[ParameterDefinition],
-        expected_dto_data: SignatureField | None,
+        expected_dto_data: tuple[SignatureField, type[AbstractDTOInterface]] | None,
         expected_dependencies: set[Dependency],
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
         expected_msgpack_data: SignatureField | None,
@@ -258,6 +261,7 @@ class KwargsModel:
         dependencies: dict[str, Provide],
         path_parameters: set[str],
         layered_parameters: dict[str, SignatureField],
+        data_dto: type[AbstractDTOInterface] | None,
     ) -> KwargsModel:
         """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
         during the application bootstrap process.
@@ -267,6 +271,8 @@ class KwargsModel:
             dependencies: A string keyed dictionary mapping dependency providers.
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
+            data_dto: A :class:`AbstractDTOInterface <starlite._dto.AbstractDTOInterface>` subclass if one is declared
+                for the route handler, or ``None``.
 
         Returns:
             An instance of KwargsModel
@@ -297,7 +303,7 @@ class KwargsModel:
 
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None = None
         expected_msgpack_data: SignatureField | None = None
-        expected_dto_data: SignatureField | None = None
+        expected_dto_data: tuple[SignatureField, type[AbstractDTOInterface]] | None = None
 
         data_signature_field = signature_fields.get("data")
 
@@ -315,10 +321,14 @@ class KwargsModel:
             elif media_type == RequestEncodingType.MESSAGEPACK:
                 expected_msgpack_data = data_signature_field
 
-        elif data_signature_field and (
-            data_signature_field.has_dto_annotation or data_signature_field.parsed_parameter.dto
-        ):
-            expected_dto_data = data_signature_field
+        elif data_signature_field:
+            annotation = data_signature_field.parsed_parameter.annotation
+            if is_class_and_subclass(
+                get_origin(annotation) or annotation, AbstractDTOInterface  # type:ignore[type-abstract]
+            ):
+                expected_dto_data = (data_signature_field, annotation)
+            elif data_dto:
+                expected_dto_data = (data_signature_field, data_dto)
 
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
@@ -326,6 +336,7 @@ class KwargsModel:
                 dependencies=dependencies,
                 path_parameters=path_parameters,
                 layered_parameters=layered_parameters,
+                data_dto=None,
             )
             expected_path_parameters = merge_parameter_sets(
                 expected_path_parameters, dependency_kwargs_model.expected_path_params

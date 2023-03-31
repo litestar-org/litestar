@@ -6,18 +6,20 @@ from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
-from typing_extensions import Self, TypedDict
+from typing_extensions import Self, TypedDict, get_origin
 
 from starlite._asgi import ASGIRouter
 from starlite._asgi.utils import get_route_handlers, wrap_in_exception_handler
 from starlite._openapi.path_item import create_path_item
 from starlite._signature import create_signature_model
+from starlite._signature.utils import get_signature_model
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
 from starlite.config.response_cache import ResponseCacheConfig
 from starlite.connection import Request, WebSocket
 from starlite.constants import OPENAPI_NOT_INITIALIZED
 from starlite.datastructures.state import State
+from starlite.dto import AbstractDTOInterface
 from starlite.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from starlite.exceptions import (
     ImproperlyConfiguredException,
@@ -43,6 +45,7 @@ from starlite.utils import (
     as_async_callable_list,
     async_partial,
     is_async_callable,
+    is_class_and_subclass,
     join_paths,
     unique,
 )
@@ -56,7 +59,6 @@ if TYPE_CHECKING:
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
-    from starlite.dto import AbstractDTOInterface
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler
     from starlite.logging.config import BaseLoggingConfig
@@ -519,6 +521,8 @@ class Starlite(Router):
 
             for route_handler in route_handlers:
                 self._create_handler_signature_model(route_handler=route_handler)
+                if isinstance(route_handler, HTTPRouteHandler):
+                    self._init_handler_dtos(route_handler=route_handler)
                 self._set_runtime_callables(route_handler=route_handler)
                 route_handler.resolve_guards()
                 route_handler.resolve_middleware()
@@ -744,8 +748,6 @@ class Starlite(Router):
                 fn=cast("AnyCallable", route_handler.fn.value),
                 plugins=self.serialization_plugins,
                 dependency_name_set=route_handler.dependency_name_set,
-                data_dto=route_handler.resolve_data_dto() if isinstance(route_handler, HTTPRouteHandler) else None,
-                return_dto=route_handler.resolve_return_dto() if isinstance(route_handler, HTTPRouteHandler) else None,
                 signature_namespace=route_handler.resolve_signature_namespace(),
             )
 
@@ -757,6 +759,41 @@ class Starlite(Router):
                     dependency_name_set=route_handler.dependency_name_set,
                     signature_namespace=route_handler.resolve_signature_namespace(),
                 )
+
+    def _init_handler_dtos(self, route_handler: HTTPRouteHandler) -> None:
+        """Initialize the data and return DTOs for a route handler.
+
+        Args:
+            route_handler: The route handler to initialize.
+        """
+        signature_model = get_signature_model(route_handler)
+        data_field = signature_model.fields.get("data")
+        if data_field:
+            data_annotation = data_field.parsed_parameter.annotation
+            # if the type is e.g., typing.List[something], get_origin will make the type `list` which is enough
+            # for us to know that it is not an AbstractDTOInterface subtype.
+            data_dto = (
+                data_annotation
+                if is_class_and_subclass(
+                    get_origin(data_annotation) or data_annotation, AbstractDTOInterface  # type:ignore[type-abstract]
+                )
+                else route_handler.resolve_data_dto()
+            )
+            if data_dto:
+                data_dto.on_startup(data_annotation, route_handler)
+
+        return_annotation = signature_model.return_annotation
+        if return_annotation and return_annotation is not Any:
+            return_dto = (
+                return_annotation
+                if is_class_and_subclass(
+                    get_origin(return_annotation) or return_annotation,
+                    AbstractDTOInterface,  # type:ignore[type-abstract]
+                )
+                else route_handler.resolve_return_dto()
+            )
+            if return_dto:
+                return_dto.on_startup(return_annotation, route_handler)
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.

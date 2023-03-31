@@ -383,7 +383,7 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
         )
     elif kwargs_model.expected_dto_data:
-        data_extractor = create_dto_extractor(kwargs_model.expected_dto_data)
+        data_extractor = create_dto_extractor(*kwargs_model.expected_dto_data)
     else:
         data_extractor = cast(
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
