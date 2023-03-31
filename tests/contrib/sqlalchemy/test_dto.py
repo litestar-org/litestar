@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import TYPE_CHECKING, Any, ClassVar, List, TypeVar
+from typing import TYPE_CHECKING, ClassVar, List, TypeVar
 from uuid import UUID, uuid4
 
 import pytest
@@ -19,6 +19,10 @@ from starlite.serialization import encode_json
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import ModuleType
+    from typing import Any
+
+    from starlite.connection import Request
+    from starlite.testing import RequestFactory
 
 
 @pytest.fixture(name="base")
@@ -53,22 +57,22 @@ def fx_author_model(base: DeclarativeBase) -> type[DeclarativeBase]:
 
 
 @pytest.fixture(name="raw_author")
-def fx_raw_author() -> bytes:
-    return b"""{
+def fx_raw_author() -> dict[str, Any]:
+    return {
         "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
         "name": "Agatha Christie",
         "dob": "1890-09-15",
         "created": "0001-01-01T00:00:00",
-        "updated": "0001-01-01T00:00:00"
-    }"""
+        "updated": "0001-01-01T00:00:00",
+    }
 
 
 T = TypeVar("T")
 
 
-def get_model_from_dto(dto_type: SQLAlchemyDTO[DataT], raw_data: bytes) -> DataT:
+async def get_model_from_dto(dto_type: SQLAlchemyDTO[DataT], connection: Request[Any, Any, Any]) -> DataT:
     dto_type.postponed_cls_init()
-    dto_instance = dto_type.from_bytes(raw_data, MediaType.JSON)
+    dto_instance = await dto_type.from_connection(connection)
     return dto_instance.data
 
 
@@ -76,8 +80,10 @@ def assert_model_values(model_instance: DeclarativeBase, expected_values: dict[s
     assert {k: v for k, v in model_instance.__dict__.items() if not k.startswith("_")} == expected_values
 
 
-def test_model_dto(author_model: type[DeclarativeBase], raw_author: bytes) -> None:
-    model = get_model_from_dto(SQLAlchemyDTO[author_model], raw_author)
+async def test_model_dto(
+    author_model: type[DeclarativeBase], raw_author: dict[str, Any], request_factory: RequestFactory
+) -> None:
+    model = await get_model_from_dto(SQLAlchemyDTO[author_model], request_factory.post(data=raw_author))
     assert_model_values(
         model,
         {
@@ -90,9 +96,13 @@ def test_model_dto(author_model: type[DeclarativeBase], raw_author: bytes) -> No
     )
 
 
-def test_model_write_dto(author_model: type[DeclarativeBase], raw_author: bytes) -> None:
+async def test_model_write_dto(
+    author_model: type[DeclarativeBase], raw_author: dict[str, Any], request_factory: RequestFactory
+) -> None:
     config = DTOConfig(purpose=Purpose.WRITE)
-    model = get_model_from_dto(SQLAlchemyDTO[Annotated[author_model, config]], raw_author)
+    model = await get_model_from_dto(
+        SQLAlchemyDTO[Annotated[author_model, config]], request_factory.post(data=raw_author)
+    )
     assert_model_values(
         model,
         {
@@ -102,10 +112,12 @@ def test_model_write_dto(author_model: type[DeclarativeBase], raw_author: bytes)
     )
 
 
-def test_model_read_dto(author_model: type[DeclarativeBase], raw_author: bytes) -> None:
+async def test_model_read_dto(
+    author_model: type[DeclarativeBase], raw_author: dict[str, Any], request_factory: RequestFactory
+) -> None:
     config = DTOConfig(purpose=Purpose.READ)
     dto_type = SQLAlchemyDTO[Annotated[author_model, config]]
-    model = get_model_from_dto(dto_type, raw_author)
+    model = await get_model_from_dto(dto_type, request_factory.post(data=raw_author))
     assert_model_values(
         model,
         {
@@ -118,17 +130,21 @@ def test_model_read_dto(author_model: type[DeclarativeBase], raw_author: bytes) 
     )
 
 
-def test_model_list_dto(author_model: type[DeclarativeBase]) -> None:
+async def test_model_list_dto(author_model: type[DeclarativeBase], request_factory: RequestFactory) -> None:
     dto_type = SQLAlchemyDTO[List[author_model]]
     dto_type.postponed_cls_init()
-    dto_instance = dto_type.from_bytes(
-        b"""[{
-        "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
-        "name": "Agatha Christie",
-        "dob": "1890-09-15",
-        "created": "0001-01-01T00:00:00",
-        "updated": "0001-01-01T00:00:00"
-    }]"""
+    dto_instance = await dto_type.from_connection(
+        request_factory.post(
+            data=[
+                {
+                    "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
+                    "name": "Agatha Christie",
+                    "dob": "1890-09-15",
+                    "created": "0001-01-01T00:00:00",
+                    "updated": "0001-01-01T00:00:00",
+                }
+            ]
+        )
     )
     encodable = dto_instance.to_encodable_type(MediaType.JSON)
     assert [to_builtins(datum) for datum in encodable] == [
@@ -142,29 +158,35 @@ def test_model_list_dto(author_model: type[DeclarativeBase]) -> None:
     ]
 
 
-def test_dto_exclude(author_model: type[DeclarativeBase], raw_author: bytes) -> None:
+async def test_dto_exclude(
+    author_model: type[DeclarativeBase], raw_author: bytes, request_factory: RequestFactory
+) -> None:
     config = DTOConfig(exclude={"id"})
-    model = get_model_from_dto(SQLAlchemyDTO[Annotated[author_model, config]], raw_author)
+    model = await get_model_from_dto(
+        SQLAlchemyDTO[Annotated[author_model, config]], request_factory.post(data=raw_author)
+    )
     assert "id" not in vars(model)
 
 
-def test_write_dto_field_default(base: type[DeclarativeBase]) -> None:
+async def test_write_dto_field_default(base: type[DeclarativeBase], request_factory: RequestFactory) -> None:
     class Model(base):
         field: Mapped[int] = mapped_column(default=3)
 
     dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=Purpose.WRITE, include={"field"})]]
-    model = get_model_from_dto(dto_type, b"{}")
+    model = await get_model_from_dto(dto_type, request_factory.post(data={"a": "b"}))
     assert_model_values(model, {"field": 3})
 
 
-def test_write_dto_for_model_field_factory_default(base: type[DeclarativeBase]) -> None:
+async def test_write_dto_for_model_field_factory_default(
+    base: type[DeclarativeBase], request_factory: RequestFactory
+) -> None:
     val = uuid4()
 
     class Model(base):
         field: Mapped[UUID] = mapped_column(default=lambda: val)
 
     dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=Purpose.WRITE, include={"field"})]]
-    model = get_model_from_dto(dto_type, b"{}")
+    model = await get_model_from_dto(dto_type, request_factory.post(data={"a": "b"}))
     assert_model_values(model, {"field": val})
 
 
@@ -180,7 +202,9 @@ def test_write_dto_for_model_field_unsupported_default(base: type[DeclarativeBas
 
 
 @pytest.mark.parametrize("purpose", [None, Purpose.WRITE, Purpose.READ])
-def test_dto_for_private_model_field(purpose: Purpose | None, base: type[DeclarativeBase]) -> None:
+async def test_dto_for_private_model_field(
+    purpose: Purpose | None, base: type[DeclarativeBase], request_factory: RequestFactory
+) -> None:
     class Model(base):
         field: Mapped[datetime] = mapped_column(
             info={DTO_FIELD_META_KEY: DTOField(mark=Mark.PRIVATE)},
@@ -199,35 +223,45 @@ def test_dto_for_private_model_field(purpose: Purpose | None, base: type[Declara
     serializable = dto_instance.to_encodable_type(MediaType.JSON)
     assert b"field" not in encode_json(serializable)
     assert "field" not in vars(
-        get_model_from_dto(
+        await get_model_from_dto(
             dto_type,
-            b"""{"id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
-            "created": "0001-01-01T00:00:00",
-            "updated": "0001-01-01T00:00:00",
-            "field": "0001-01-01T00:00:00"}""",
+            request_factory.post(
+                data={
+                    "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
+                    "created": "0001-01-01T00:00:00",
+                    "updated": "0001-01-01T00:00:00",
+                    "field": "0001-01-01T00:00:00",
+                }
+            ),
         )
     )
 
 
 @pytest.mark.parametrize("purpose", [Purpose.WRITE, Purpose.READ, None])
-def test_dto_for_non_mapped_model_field(purpose: Purpose | None, base: type[DeclarativeBase]) -> None:
+async def test_dto_for_non_mapped_model_field(
+    purpose: Purpose | None, base: type[DeclarativeBase], request_factory: RequestFactory
+) -> None:
     class Model(base):
         field: ClassVar[datetime]
 
     dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=purpose)]]
     dto_type.postponed_cls_init()
     assert "field" not in vars(
-        get_model_from_dto(
+        await get_model_from_dto(
             dto_type,
-            b"""{"id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
-            "created": "0001-01-01T00:00:00",
-            "updated": "0001-01-01T00:00:00",
-            "field": "0001-01-01T00:00:00"}""",
+            request_factory.post(
+                data={
+                    "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
+                    "created": "0001-01-01T00:00:00",
+                    "updated": "0001-01-01T00:00:00",
+                    "field": "0001-01-01T00:00:00",
+                }
+            ),
         )
     )
 
 
-def test_dto_mapped_as_dataclass_model_type(base: type[DeclarativeBase]) -> None:
+async def test_dto_mapped_as_dataclass_model_type(base: type[DeclarativeBase], request_factory: RequestFactory) -> None:
     """Test declare pydantic type on `dto.DTOField`."""
 
     class Model(base, MappedAsDataclass):
@@ -235,12 +269,12 @@ def test_dto_mapped_as_dataclass_model_type(base: type[DeclarativeBase]) -> None
         field: Mapped[str]
 
     dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=Purpose.WRITE)]]
-    model = get_model_from_dto(dto_type, b'{"clz_var": "nope", "field": "yep"}')
+    model = await get_model_from_dto(dto_type, request_factory.post(data={"clz_var": "nope", "field": "yep"}))
     assert_model_values(model, {"field": "yep"})
 
 
-def test_to_mapped_model_with_collection_relationship(
-    base: type[DeclarativeBase], create_module: Callable[[str], ModuleType]
+async def test_to_mapped_model_with_collection_relationship(
+    base: type[DeclarativeBase], create_module: Callable[[str], ModuleType], request_factory: RequestFactory
 ) -> None:
     """Test building a DTO with collection relationship, and parsing data."""
 
@@ -272,12 +306,16 @@ dto_type = SQLAlchemyDTO[Annotated[B, DTOConfig(purpose=Purpose.WRITE)]]
 """
     )
 
-    model = get_model_from_dto(module.dto_type, b'{"id": 1, "a": [{"id": 2, "b_id": 1}, {"id": 3, "b_id": 1}]}')
+    model = await get_model_from_dto(
+        module.dto_type, request_factory.post(data={"id": 1, "a": [{"id": 2, "b_id": 1}, {"id": 3, "b_id": 1}]})
+    )
     assert len(model.a) == 2
     assert all(isinstance(val, module.A) for val in model.a)
 
 
-def test_to_mapped_model_with_scalar_relationship(create_module: Callable[[str], ModuleType]) -> None:
+async def test_to_mapped_model_with_scalar_relationship(
+    create_module: Callable[[str], ModuleType], request_factory: RequestFactory
+) -> None:
     """Test building DTO with Scalar relationship, and parsing data."""
 
     module = create_module(
@@ -305,12 +343,12 @@ class B(Base):
 dto_type = SQLAlchemyDTO[Annotated[B, DTOConfig(purpose=Purpose.WRITE)]]
 """
     )
-    model = get_model_from_dto(module.dto_type, b'{"id":2,"a_id":1,"a":{"id":1}}')
+    model = await get_model_from_dto(module.dto_type, request_factory.post(data={"id": 2, "a_id": 1, "a": {"id": 1}}))
     assert isinstance(model, module.B)
     assert isinstance(model.a, module.A)
 
 
-def test_dto_mapped_union(create_module: Callable[[str], ModuleType]) -> None:
+async def test_dto_mapped_union(create_module: Callable[[str], ModuleType], request_factory: RequestFactory) -> None:
     """Test where a column type declared as e.g., `Mapped[str | None]`."""
 
     module = create_module(
@@ -336,12 +374,12 @@ class A(Base):
 dto_type = SQLAlchemyDTO[A]
     """
     )
-    model = get_model_from_dto(module.dto_type, b'{"id":1}')
+    model = await get_model_from_dto(module.dto_type, request_factory.post(data={"id": 1}))
     assert vars(model)["a"] is None
 
 
-def test_dto_self_referencing_relationships(
-    create_module: "Callable[[str], ModuleType]",
+async def test_dto_self_referencing_relationships(
+    create_module: "Callable[[str], ModuleType]", request_factory: RequestFactory
 ) -> None:
     module = create_module(
         """
@@ -369,7 +407,9 @@ class B(Base):
 dto_type = SQLAlchemyDTO[A]
 """
     )
-    model = get_model_from_dto(module.dto_type, b'{"id":1,"b_id":1,"b":{"id":1,"a":{"id":1,"b_id":1}}}')
+    model = await get_model_from_dto(
+        module.dto_type, request_factory.post(data={"id": 1, "b_id": 1, "b": {"id": 1, "a": {"id": 1, "b_id": 1}}})
+    )
     assert isinstance(model, module.A)
     assert isinstance(model.b, module.B)
     assert isinstance(model.b.a, module.A)

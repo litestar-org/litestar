@@ -31,6 +31,7 @@ from starlite.middleware.session.server_side import (
     ServerSideSessionConfig,
 )
 from starlite.stores.base import Store
+from starlite.testing import RequestFactory
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -288,3 +289,8 @@ def mock_db() -> MemoryStore:
 def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
     with freeze_time() as frozen:
         yield cast("FrozenDateTimeFactory", frozen)
+
+
+@pytest.fixture()
+def request_factory() -> RequestFactory:
+    return RequestFactory()

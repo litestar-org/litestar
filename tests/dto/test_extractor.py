@@ -29,7 +29,9 @@ async def test_extractor_for_scalar_annotation() -> None:
         name="data",
     )
     extractor = create_dto_extractor(signature_field)
-    data = await extractor(AsyncMock(body=AsyncMock(return_value=b'{"a": 1, "b": "two"}')))
+    data = await extractor(
+        AsyncMock(body=AsyncMock(return_value=b'{"a": 1, "b": "two"}'), content_type=("application/json",))
+    )
     assert isinstance(data, DataclassDTO)
 
 
@@ -51,7 +53,9 @@ async def test_extractor_for_collection_annotation(generic_collection: Any) -> N
         name="data",
     )
     extractor = create_dto_extractor(signature_field)
-    data = await extractor(AsyncMock(body=AsyncMock(return_value=b'[{"a": 1, "b": "two"}]')))
+    data = await extractor(
+        AsyncMock(body=AsyncMock(return_value=b'[{"a": 1, "b": "two"}]'), content_type=("application/json",))
+    )
     assert isinstance(data, DataclassDTO)
     for item in data.data:
         assert isinstance(item, Model)

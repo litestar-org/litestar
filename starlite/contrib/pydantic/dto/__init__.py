@@ -11,14 +11,16 @@ from starlite.dto.abc import AbstractDTO
 from starlite.dto.config import DTO_FIELD_META_KEY
 from starlite.dto.types import DataT, FieldDefinition
 from starlite.dto.utils import get_model_type_hints
-from starlite.enums import MediaType
 
 from .backend import PydanticDTOBackend
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Generator, Iterable
+    from typing import Any, ClassVar, Generator, Iterable
 
     from typing_extensions import Self
+
+    from starlite.connection import Request
+    from starlite.enums import MediaType
 
 __all__ = ("PydanticBackedDTO", "PydanticDTO")
 
@@ -62,17 +64,16 @@ class PydanticDTO(PydanticBackedDTO[PydanticDataT], Generic[PydanticDataT]):
         return issubclass(field_definition.field_type, BaseModel)
 
     @classmethod
-    def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
+    async def from_connection(cls, connection: Request[Any, Any, Any]) -> Self:
         """Construct an instance from bytes.
 
         Args:
-            raw: A byte representation of the DTO model.
-            media_type: serialization format.
+            connection: A byte representation of the DTO model.
 
         Returns:
             AbstractDTO instance.
         """
-        parsed = cls.dto_backend.parse_raw(raw, media_type)
+        parsed = cls.dto_backend.parse_raw(await connection.body(), connection.content_type[0])
         return cls(data=parse_obj_as(cls.annotation, parsed))
 
     def to_encodable_type(self, media_type: str | MediaType) -> BaseModel | Iterable[BaseModel]:

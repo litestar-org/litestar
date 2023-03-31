@@ -30,7 +30,7 @@ def create_dto_extractor(
     is_not_dto_annotated = bool(signature_field.parsed_parameter.dto)
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        dto = dto_type.from_bytes(await connection.body())
+        dto = await dto_type.from_connection(connection)
         if is_not_dto_annotated:
             return dto.get_data()
         return dto

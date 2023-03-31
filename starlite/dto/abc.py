@@ -8,8 +8,6 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from typing_extensions import Annotated, get_args, get_origin
 
-from starlite.enums import MediaType
-
 from .backends.msgspec import MsgspecDTOBackend
 from .config import DTOConfig
 from .enums import Mark, Purpose
@@ -21,6 +19,9 @@ if TYPE_CHECKING:
     from typing import ClassVar, Generator
 
     from typing_extensions import Self
+
+    from starlite.connection import Request
+    from starlite.enums import MediaType
 
     from .backends.abc import AbstractDTOBackend
     from .types import FieldDefinitionsType, StarliteEncodableType
@@ -70,16 +71,24 @@ class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
-        """Construct an instance from bytes.
+    async def from_connection(cls, connection: Request[Any, Any, Any]) -> Self:
+        """Construct an instance from a :class:`Request <.connection.Request>`.
 
         Args:
-            raw: A byte representation of the DTO model.
-            media_type: serialization format.
+            connection: :class:`Request <.connection.Request>` instance.
 
         Returns:
             AbstractDTO instance.
         """
+
+    @classmethod
+    def on_startup(cls, resolved_handler_annotation: Any) -> None:
+        """Do something each time the DTO type is encountered during signature modelling.
+
+        Args:
+            resolved_handler_annotation: Resolved annotation of the handler function.
+        """
+        return
 
 
 class AbstractDTO(AbstractDTOInterface[DataT], Generic[DataT], metaclass=ABCMeta):
@@ -314,17 +323,16 @@ class MsgspecBackedDTO(AbstractDTO[DataT], Generic[DataT], metaclass=ABCMeta):
     dto_backend: ClassVar[MsgspecDTOBackend]
 
     @classmethod
-    def from_bytes(cls, raw: bytes, media_type: MediaType | str = MediaType.JSON) -> Self:
+    async def from_connection(cls, connection: Request[Any, Any, Any]) -> Self:
         """Construct an instance from bytes.
 
         Args:
-            raw: A byte representation of the DTO model.
-            media_type: serialization format.
+            connection: A byte representation of the DTO model.
 
         Returns:
             AbstractDTO instance.
         """
-        parsed = cls.dto_backend.parse_raw(raw, media_type)
+        parsed = cls.dto_backend.parse_raw(await connection.body(), connection.content_type[0])
         return cls(data=build_data_from_struct(cls.model_type, parsed, cls.field_definitions))  # type:ignore[arg-type]
 
     def to_encodable_type(self, media_type: str | MediaType) -> Any:

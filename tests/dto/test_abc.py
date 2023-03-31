@@ -10,12 +10,13 @@ from starlite.dto.config import DTOConfig
 from starlite.dto.exc import InvalidAnnotation
 from starlite.dto.stdlib.dataclass import DataclassDTO, DataT
 from starlite.dto.types import FieldDefinition
-from starlite.enums import MediaType
 
 from . import Model
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch
+
+    from starlite.testing import RequestFactory
 
 
 def test_on_startup(monkeypatch: MonkeyPatch) -> None:
@@ -115,10 +116,10 @@ def test_overwrite_config() -> None:
     assert dto.config is config
 
 
-def test_from_bytes() -> None:
+async def test_from_connection(request_factory: RequestFactory) -> None:
     dto_type = DataclassDTO[Model]
     dto_type.postponed_cls_init()
-    dto_instance = dto_type.from_bytes(b'{"a":1,"b":"two"}', media_type=MediaType.JSON)
+    dto_instance = await dto_type.from_connection(request_factory.post(data={"a": 1, "b": "two"}))
     assert dto_instance.data == Model(a=1, b="two")
 
 

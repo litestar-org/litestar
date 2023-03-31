@@ -167,8 +167,8 @@ class SignatureField:
     def has_dto_annotation(self) -> bool:
         """Field is annotated with a DTO type."""
         return is_class_and_subclass(
-            self.parsed_parameter.annotation, AbstractDTOInterface
-        )  # type:ignore[type-abstract]
+            self.parsed_parameter.annotation, AbstractDTOInterface  # type:ignore[type-abstract]
+        )
 
     @classmethod
     def create(
