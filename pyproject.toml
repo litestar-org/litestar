@@ -2,7 +2,12 @@
 name = "starlite"
 version = "2.0.0alpha2"
 description = "Performant, light and flexible ASGI API Framework"
-authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
+authors = [
+    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
+    "Peter Schutt <peter.github@proton.me>",
+    "Cody Fincher <cody.fincher@gmail.com>",
+    "Janek Nouvertné <provinzkraut@posteo.de>",
+]
 maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
     "Peter Schutt <peter.github@proton.me>",
@@ -14,7 +19,17 @@ readme = "README.md"
 homepage = "https://starliteproject.dev/"
 repository = "https://github.com/starlite-api/starlite"
 documentation = "https://docs.starliteproject.dev/"
-keywords = ["api", "rest", "http", "asgi", "pydantic", "starlite", "framework", "websocket"]
+keywords = [
+    "api",
+    "rest",
+    "http",
+    "asgi",
+    "pydantic",
+    "starlite",
+    "framework",
+    "websocket",
+    "litestar",
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
@@ -59,7 +74,9 @@ python-dateutil = { version = "*", optional = true }
 python-jose = { version = "*", optional = true }
 pytimeparse = { version = "*", optional = true }
 pyyaml = "*"
-redis = { version = ">=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3", optional = true, extras = ["hiredis"] }
+redis = { version = ">=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3", optional = true, extras = [
+    "hiredis",
+] }
 rich = { version = ">=13.0.0", optional = true }
 sqlalchemy = { version = ">=2.0.4", optional = true }
 structlog = { version = "*", optional = true }
@@ -202,58 +219,58 @@ strict-imports = false
 
 [tool.ruff]
 select = [
-    "A", # flake8-builtins
-    "B", # flake8-bugbear
+    "A",   # flake8-builtins
+    "B",   # flake8-bugbear
     "BLE", # flake8-blind-except
-    "C4", # flake8-comprehensions
+    "C4",  # flake8-comprehensions
     "C90", # mccabe
-    "D", # pydocstyle
-    "DJ", # flake8-django
+    "D",   # pydocstyle
+    "DJ",  # flake8-django
     "DTZ", # flake8-datetimez
-    "E", # pycodestyle errors
+    "E",   # pycodestyle errors
     "ERA", # eradicate
     "EXE", # flake8-executable
-    "F", # pyflakes
-    "G", # flake8-logging-format
-    "I", # isort
+    "F",   # pyflakes
+    "G",   # flake8-logging-format
+    "I",   # isort
     "ICN", # flake8-import-conventions
     "ISC", # flake8-implicit-str-concat
-    "N", # pep8-naming
+    "N",   # pep8-naming
     "PIE", # flake8-pie
     "PLC", # pylint - convention
     "PLE", # pylint - error
     "PLW", # pylint - warning
     "PTH", # flake8-use-pathlib
-    "Q", # flake8-quotes
+    "Q",   # flake8-quotes
     "RET", # flake8-return
     "RUF", # Ruff-specific rules
-    "S", # flake8-bandit
+    "S",   # flake8-bandit
     "SIM", # flake8-simplify
     "T10", # flake8-debugger
     "T20", # flake8-print
     "TCH", # flake8-type-checking
     "TID", # flake8-tidy-imports
-    "UP", # pyupgrade
-    "W", # pycodestyle - warning
+    "UP",  # pyupgrade
+    "W",   # pycodestyle - warning
     "YTT", # flake8-2020
 ]
 
 ignore = [
-    "E501", # pycodestyle line too long, handled by black
-    "D100", # pydocstyle - missing docstring in public module
-    "D101", # pydocstyle - missing docstring in public class
-    "D102", # pydocstyle - missing docstring in public method
-    "D103", # pydocstyle - missing docstring in public function
-    "D104", # pydocstyle - missing docstring in public package
-    "D105", # pydocstyle - missing docstring in magic method
-    "D106", # pydocstyle - missing docstring in public nested class
-    "D107", # pydocstyle - missing docstring in __init__
-    "D202", # pydocstyle - no blank lines allowed after function docstring
-    "D205", # pydocstyle - 1 blank line required between summary line and description
-    "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
+    "E501",  # pycodestyle line too long, handled by black
+    "D100",  # pydocstyle - missing docstring in public module
+    "D101",  # pydocstyle - missing docstring in public class
+    "D102",  # pydocstyle - missing docstring in public method
+    "D103",  # pydocstyle - missing docstring in public function
+    "D104",  # pydocstyle - missing docstring in public package
+    "D105",  # pydocstyle - missing docstring in magic method
+    "D106",  # pydocstyle - missing docstring in public nested class
+    "D107",  # pydocstyle - missing docstring in __init__
+    "D202",  # pydocstyle - no blank lines allowed after function docstring
+    "D205",  # pydocstyle - 1 blank line required between summary line and description
+    "D415",  # pydocstyle - first line should end with a period, question mark, or exclamation point
     "UP037", # pyupgrade - removes quotes from type annotation
-    "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
-    "B010", # flake8-bugbear - do not call setattr with a constant attribute value
+    "A003",  # flake8-builtins - class attribute {name} is shadowing a python builtin
+    "B010",  # flake8-bugbear - do not call setattr with a constant attribute value
 ]
 line-length = 120
 src = ["starlite", "tests", "docs/examples"]
