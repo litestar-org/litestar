@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseConfig, BaseModel, ValidationError, create_model
 from pydantic.fields import FieldInfo, ModelField, Undefined
-from pydantic_factories import ModelFactory
 
 from starlite._signature.field import SignatureField
 from starlite._signature.models.base import SignatureModel
 from starlite.constants import UNDEFINED_SENTINELS
 from starlite.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from starlite.types import Empty
+from starlite.utils.predicates import is_pydantic_constrained_field
 
 if TYPE_CHECKING:
     from starlite._signature.parsing import ParsedSignatureParameter
@@ -161,7 +161,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
             elif isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
                 field_type = parameter.annotation
                 field_info.default = parameter.default.default if parameter.default.default is not Empty else Undefined
-            elif ModelFactory.is_constrained_field(parameter.default):
+            elif is_pydantic_constrained_field(parameter.default):
                 field_type = parameter.default
             elif parameter.default_defined:
                 field_type = parameter.annotation

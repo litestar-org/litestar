@@ -1,8 +1,8 @@
 from typing import Any, List, Optional, Type, cast
 
 import pytest
+from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, Field
-from pydantic_factories import ModelFactory
 
 from starlite import (
     Controller,

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List
 
 import pytest
-from pydantic_factories import ModelFactory
+from polyfactory.factories.pydantic_factory import ModelFactory
 
 from starlite.contrib.tortoise_orm import TortoiseORMPlugin
 from starlite.dto import DTOFactory

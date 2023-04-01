@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any
 from starlite.exceptions import MissingDependencyException
 from starlite.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from starlite.openapi.spec.schema import Schema
-from starlite.utils import is_class_and_subclass
 
 if TYPE_CHECKING:
     from starlite.plugins import OpenAPISchemaPluginProtocol
@@ -45,38 +44,7 @@ __all__ = (
     "create_date_constrained_field_schema",
     "create_numerical_constrained_field_schema",
     "create_string_constrained_field_schema",
-    "is_pydantic_constrained_field",
 )
-
-
-def is_pydantic_constrained_field(annotation: Any) -> bool:
-    """Check if the given annotation is a constrained pydantic type.
-
-    Args:
-        annotation: A type annotation
-
-    Returns:
-        True if pydantic is installed and the type is a constrained type, otherwise False.
-    """
-    try:
-        import pydantic
-
-        return any(
-            is_class_and_subclass(annotation, constrained_type)
-            for constrained_type in (
-                pydantic.ConstrainedBytes,
-                pydantic.ConstrainedDate,
-                pydantic.ConstrainedDecimal,
-                pydantic.ConstrainedFloat,
-                pydantic.ConstrainedFrozenSet,
-                pydantic.ConstrainedInt,
-                pydantic.ConstrainedList,
-                pydantic.ConstrainedSet,
-                pydantic.ConstrainedStr,
-            )
-        )
-    except ImportError:
-        return False
 
 
 def create_numerical_constrained_field_schema(
