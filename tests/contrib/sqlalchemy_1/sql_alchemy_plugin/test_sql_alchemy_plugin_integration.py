@@ -5,10 +5,10 @@ from pydantic_factories.value_generators.primitives import (
     create_random_string,
 )
 
-from starlite import get, post
-from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
-from starlite.testing import create_test_client
+from litestar import get, post
+from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
+from litestar.testing import create_test_client
 from tests.contrib.sqlalchemy_1.sql_alchemy_plugin.models import Company
 
 companies = [

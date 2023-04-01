@@ -1,5 +1,6 @@
 # folders
 *.egg-info/
+.auto_pytabs_cache/
 .hypothesis/
 .idea/
 .mypy_cache/

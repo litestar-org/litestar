@@ -3,15 +3,15 @@ from typing import TYPE_CHECKING
 import pytest
 from fsspec.implementations.local import LocalFileSystem
 
-from starlite.file_system import BaseLocalFileSystem
-from starlite.static_files.config import StaticFilesConfig
-from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
-from starlite.testing import create_test_client
+from litestar.file_system import BaseLocalFileSystem
+from litestar.static_files.config import StaticFilesConfig
+from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from starlite.types import FileSystemProtocol
+    from litestar.types import FileSystemProtocol
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))

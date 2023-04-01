@@ -1,6 +1,6 @@
-from starlite import MediaType, Request, Response, Starlite, get
-from starlite.exceptions import HTTPException
-from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from litestar import Litestar, MediaType, Request, Response, get
+from litestar.exceptions import HTTPException
+from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 
 def plain_text_exception_handler(_: Request, exc: Exception) -> Response:
@@ -20,7 +20,7 @@ async def index() -> None:
     raise HTTPException(detail="an error occurred", status_code=400)
 
 
-app = Starlite(
+app = Litestar(
     route_handlers=[index],
     exception_handlers={HTTPException: plain_text_exception_handler},
 )

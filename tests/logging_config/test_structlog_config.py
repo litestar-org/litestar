@@ -2,9 +2,9 @@ from pytest import CaptureFixture
 from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger
 
-from starlite.logging.config import StructLoggingConfig
-from starlite.serialization import decode_json, encode_json
-from starlite.testing import create_test_client
+from litestar.logging.config import StructLoggingConfig
+from litestar.serialization import decode_json, encode_json
+from litestar.testing import create_test_client
 
 # structlog.testing.capture_logs changes the processors
 # Because we want to test processors, use capsys instead

@@ -1,14 +1,14 @@
 from time import time
 from typing import TYPE_CHECKING, Dict
 
-from starlite import Starlite, get, websocket
-from starlite.datastructures import MutableScopeHeaders
-from starlite.enums import ScopeType
-from starlite.middleware import AbstractMiddleware
+from litestar import Litestar, get, websocket
+from litestar.datastructures import MutableScopeHeaders
+from litestar.enums import ScopeType
+from litestar.middleware import AbstractMiddleware
 
 if TYPE_CHECKING:
-    from starlite import WebSocket
-    from starlite.types import Message, Receive, Scope, Send
+    from litestar import WebSocket
+    from litestar.types import Message, Receive, Scope, Send
 
 
 class MyMiddleware(AbstractMiddleware):
@@ -68,7 +68,7 @@ def not_excluded_handler() -> Dict[str, str]:
     return {"hello": "world"}
 
 
-app = Starlite(
+app = Litestar(
     route_handlers=[
         websocket_handler,
         first_handler,

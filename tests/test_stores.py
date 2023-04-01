@@ -11,21 +11,21 @@ import anyio
 import pytest
 from _pytest.fixtures import FixtureRequest
 
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.stores.file import FileStore
-from starlite.stores.memory import MemoryStore
-from starlite.stores.redis import RedisStore
-from starlite.stores.registry import StoreRegistry
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.stores.file import FileStore
+from litestar.stores.memory import MemoryStore
+from litestar.stores.redis import RedisStore
+from litestar.stores.registry import StoreRegistry
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
 
-    from starlite.stores.base import NamespacedStore, Store
+    from litestar.stores.base import NamespacedStore, Store
 
 
 @pytest.fixture()
 def mock_redis() -> None:
-    patch("starlite.Store.redis_backend.Redis")
+    patch("litestar.Store.redis_backend.Redis")
 
 
 async def test_get(store: Store) -> None:
@@ -135,8 +135,8 @@ async def test_expires_in(store: Store) -> None:
     assert math.ceil(await store.expires_in("foo") / 10) * 10 == 10  # type: ignore[operator]
 
 
-@patch("starlite.stores.redis.Redis")
-@patch("starlite.stores.redis.ConnectionPool.from_url")
+@patch("litestar.stores.redis.Redis")
+@patch("litestar.stores.redis.ConnectionPool.from_url")
 def test_redis_with_client_default(connection_pool_from_url_mock: Mock, mock_redis: Mock) -> None:
     backend = RedisStore.with_client()
     connection_pool_from_url_mock.assert_called_once_with(
@@ -146,8 +146,8 @@ def test_redis_with_client_default(connection_pool_from_url_mock: Mock, mock_red
     assert backend._redis is mock_redis.return_value
 
 
-@patch("starlite.stores.redis.Redis")
-@patch("starlite.stores.redis.ConnectionPool.from_url")
+@patch("litestar.stores.redis.Redis")
+@patch("litestar.stores.redis.ConnectionPool.from_url")
 def test_redis_with_non_default(connection_pool_from_url_mock: Mock, mock_redis: Mock) -> None:
     url = "redis://localhost"
     db = 2
@@ -185,15 +185,15 @@ async def test_redis_delete_all_no_namespace_raises(fake_redis: Redis) -> None:
 
 
 def test_redis_namespaced_key(redis_store: RedisStore) -> None:
-    assert redis_store.namespace == "STARLITE"
-    assert redis_store._make_key("foo") == "STARLITE:foo"
+    assert redis_store.namespace == "LITESTAR"
+    assert redis_store._make_key("foo") == "LITESTAR:foo"
 
 
 def test_redis_with_namespace(redis_store: RedisStore) -> None:
     namespaced_test = redis_store.with_namespace("TEST")
     namespaced_test_foo = namespaced_test.with_namespace("FOO")
-    assert namespaced_test.namespace == "STARLITE_TEST"
-    assert namespaced_test_foo.namespace == "STARLITE_TEST_FOO"
+    assert namespaced_test.namespace == "LITESTAR_TEST"
+    assert namespaced_test_foo.namespace == "LITESTAR_TEST_FOO"
     assert namespaced_test._redis is redis_store._redis
 
 
@@ -231,10 +231,10 @@ def namespaced_store(request: FixtureRequest) -> NamespacedStore:
 
 async def test_namespaced_store_get_set(namespaced_store: NamespacedStore) -> None:
     foo_namespaced = namespaced_store.with_namespace("foo")
-    await namespaced_store.set("bar", b"starlite namespace")
+    await namespaced_store.set("bar", b"litestar namespace")
     await foo_namespaced.set("bar", b"foo namespace")
 
-    assert await namespaced_store.get("bar") == b"starlite namespace"
+    assert await namespaced_store.get("bar") == b"litestar namespace"
     assert await foo_namespaced.get("bar") == b"foo namespace"
 
 

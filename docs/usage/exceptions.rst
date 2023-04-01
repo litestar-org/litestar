@@ -1,10 +1,10 @@
 Exceptions and exception handling
 =================================
 
-Starlite define a base exception called :class:`StarliteException <starlite.exceptions.StarliteException>` which serves
+Litestar define a base exception called :class:`litestarException <litestar.exceptions.litestarException>` which serves
 as a basis to all other exceptions.
 
-In general, Starlite will raise two types of exceptions:
+In general, Litestar will raise two types of exceptions:
 
 - Exceptions that arise during application init, which fall
 - Exceptions that are raised as part of the normal application flow, i.e.
@@ -13,20 +13,20 @@ In general, Starlite will raise two types of exceptions:
 Configuration Exceptions
 ------------------------
 
-For missing extra dependencies, Starlite will raise either
-:class:`MissingDependencyException <starlite.exceptions.MissingDependencyException>`. For example, if you try to use the
+For missing extra dependencies, Litestar will raise either
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`. For example, if you try to use the
 :doc:`SQLAlchemyPlugin </usage/plugins/sqlalchemy>` without having SQLAlchemy installed, this will be raised when you
 start the application.
 
-For other configuration issues, Starlite will raise
-:class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>` with a message explaining the
+For other configuration issues, Litestar will raise
+:class:`ImproperlyConfiguredException <litestar.exceptions.ImproperlyConfiguredException>` with a message explaining the
 issue.
 
 Application Exceptions
 ----------------------
 
-For application exceptions, Starlite uses the class :class:`HTTPException <.exceptions.http_exceptions.HTTPException>`,
-which inherits from :class:`StarliteException <.exceptions.StarliteException>`. This exception will be serialized
+For application exceptions, Litestar uses the class :class:`HTTPException <.exceptions.http_exceptions.HTTPException>`,
+which inherits from :class:`litestarException <.exceptions.litestarException>`. This exception will be serialized
 into a JSON response of the following schema:
 
 .. code-block:: json
@@ -37,10 +37,10 @@ into a JSON response of the following schema:
      "extra": {}
    }
 
-Starlite also offers several pre-configured exception subclasses with pre-set error codes that you can use, such as:
+Litestar also offers several pre-configured exception subclasses with pre-set error codes that you can use, such as:
 
 
-.. py:currentmodule:: starlite.exceptions.http_exceptions
+.. py:currentmodule:: litestar.exceptions.http_exceptions
 
 +----------------------------------------+-------------+------------------------------------------+
 | Exception                              | Status code | Description                              |
@@ -67,7 +67,7 @@ pydantic validation errors. Thus, this data will be made available for the API c
 Exception handling
 ------------------
 
-Starlite handles all errors by default by transforming them into **JSON responses**. If the errors are **instances of**
+Litestar handles all errors by default by transforming them into **JSON responses**. If the errors are **instances of**
 :class:`HTTPException`, the responses will include the appropriate ``status_code``.
 Otherwise, the responses will default to ``500 - "Internal Server Error"``.
 
@@ -90,7 +90,7 @@ The choice whether to use a single function that has switching logic inside it, 
 specific needs.
 
 While it does not make much sense to have different functions with a top-level exception handling,
-Starlite supports defining exception handlers on all layers of the app, with the lower layers overriding layer above
+Litestar supports defining exception handlers on all layers of the app, with the lower layers overriding layer above
 them. In the following example, the exception handler for the route handler function will only handle
 the ``ValidationException`` occurring within that route handler:
 
@@ -101,7 +101,7 @@ the ``ValidationException`` occurring within that route handler:
 Exception handling layers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Since Starlite allows users to define both exception handlers and middlewares in a layered fashion, i.e. on individual
+Since Litestar allows users to define both exception handlers and middlewares in a layered fashion, i.e. on individual
 route handlers, controllers, routers or the app layer, multiple layers of exception handlers are required to ensure that
 exceptions are handled correctly:
 
@@ -114,5 +114,5 @@ exceptions are handled correctly:
 
 As a result of the above structure, the exceptions raised by the ASGI Router itself, namely ``404 Not Found``
 and ``405 Method Not Allowed`` are handled only by exception handlers defined on the app layer. Thus, if you want to affect
-these exceptions, you will need to pass the exception handlers for them to the Starlite constructor and cannot use other
+these exceptions, you will need to pass the exception handlers for them to the Litestar constructor and cannot use other
 layers for this purpose.

@@ -1,5 +1,5 @@
-from starlite import Starlite, get, post
-from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from litestar import Litestar, get, post
+from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
 from tests.contrib.sqlalchemy_1.sql_alchemy_plugin.models import User
 
 
@@ -14,7 +14,7 @@ def create_user(data: User) -> User:
 
 
 def test_sql_alchemy_models_openapi_generation() -> None:
-    app = Starlite(route_handlers=[get_user, create_user], plugins=[SQLAlchemyPlugin()])
+    app = Litestar(route_handlers=[get_user, create_user], plugins=[SQLAlchemyPlugin()])
     assert len(app.openapi_schema.paths) == 1  # type: ignore
     assert (
         app.openapi_schema.paths["/user"].get.responses["200"].content["application/json"].schema.ref  # type: ignore

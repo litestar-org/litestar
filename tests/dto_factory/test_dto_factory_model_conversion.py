@@ -6,9 +6,9 @@ from typing import Any, Callable, Dict, List
 import pytest
 from pydantic_factories import ModelFactory
 
-from starlite.contrib.tortoise_orm import TortoiseORMPlugin
-from starlite.dto import DTOFactory
-from starlite.exceptions import ImproperlyConfiguredException
+from litestar.contrib.tortoise_orm import TortoiseORMPlugin
+from litestar.dto import DTOFactory
+from litestar.exceptions import ImproperlyConfiguredException
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
 from tests.contrib.tortoise_orm import Tournament
 

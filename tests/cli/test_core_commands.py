@@ -7,9 +7,9 @@ from _pytest.monkeypatch import MonkeyPatch
 from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
-from starlite import __version__ as starlite_version
-from starlite.cli._utils import LoadedApp
-from starlite.cli.main import starlite_group as cli_command
+from litestar import __version__ as litestar_version
+from litestar.cli._utils import LoadedApp
+from litestar.cli.main import litestar_group as cli_command
 from tests.cli import (
     CREATE_APP_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT,
@@ -20,7 +20,7 @@ from tests.cli.conftest import CreateAppFileFixture
 
 @pytest.fixture()
 def mock_subprocess_run(mocker: MockerFixture) -> MagicMock:
-    return mocker.patch("starlite.cli.commands.core.subprocess.run")
+    return mocker.patch("litestar.cli.commands.core.subprocess.run")
 
 
 @pytest.mark.parametrize("set_in_env", [True, False])
@@ -42,7 +42,7 @@ def test_run_command(
     set_in_env: bool,
     mock_subprocess_run: MagicMock,
 ) -> None:
-    mock_show_app_info = mocker.patch("starlite.cli.commands.core.show_app_info")
+    mock_show_app_info = mocker.patch("litestar.cli.commands.core.show_app_info")
 
     args = ["run"]
 
@@ -51,7 +51,7 @@ def test_run_command(
 
     if reload:
         if set_in_env:
-            monkeypatch.setenv("STARLITE_RELOAD", "true")
+            monkeypatch.setenv("LITESTAR_RELOAD", "true")
         else:
             args.append("--reload")
     else:
@@ -59,7 +59,7 @@ def test_run_command(
 
     if port:
         if set_in_env:
-            monkeypatch.setenv("STARLITE_PORT", str(port))
+            monkeypatch.setenv("LITESTAR_PORT", str(port))
         else:
             args.extend(["--port", str(port)])
     else:
@@ -67,7 +67,7 @@ def test_run_command(
 
     if host:
         if set_in_env:
-            monkeypatch.setenv("STARLITE_HOST", host)
+            monkeypatch.setenv("LITESTAR_HOST", host)
         else:
             args.extend(["--host", host])
     else:
@@ -168,7 +168,7 @@ def test_run_command_force_debug(
 ) -> None:
     mock_app = MagicMock()
     mocker.patch(
-        "starlite.cli._utils._autodiscover_app",
+        "litestar.cli._utils._autodiscover_app",
         return_value=LoadedApp(app=mock_app, app_path=str(app_file), is_factory=False),
     )
 
@@ -181,4 +181,4 @@ def test_run_command_force_debug(
 def test_version_command(short: bool, runner: CliRunner) -> None:
     result = runner.invoke(cli_command, "version --short" if short else "version")
 
-    assert result.output.strip() == starlite_version.formatted(short=short)
+    assert result.output.strip() == litestar_version.formatted(short=short)

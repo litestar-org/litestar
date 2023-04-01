@@ -3,8 +3,8 @@ from typing import List
 from pydantic import BaseModel
 from pydantic_factories import ModelFactory
 
-from starlite import Starlite, get
-from starlite.pagination import AbstractSyncClassicPaginator, ClassicPagination
+from litestar import Litestar, get
+from litestar.pagination import AbstractSyncClassicPaginator, ClassicPagination
 
 
 class Person(BaseModel):
@@ -41,4 +41,4 @@ def people_handler(page_size: int, current_page: int) -> ClassicPagination[Perso
     return paginator(page_size=page_size, current_page=current_page)
 
 
-app = Starlite(route_handlers=[people_handler])
+app = Litestar(route_handlers=[people_handler])

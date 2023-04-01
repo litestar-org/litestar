@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 import pytest
 
-from starlite.types import Empty, EmptyType
-from starlite.utils.dataclass import extract_dataclass_fields, extract_dataclass_items, simple_asdict
+from litestar.types import Empty, EmptyType
+from litestar.utils.dataclass import extract_dataclass_fields, extract_dataclass_items, simple_asdict
 
 
 def test_extract_dataclass_fields_exclude_none() -> None:

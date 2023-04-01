@@ -1,8 +1,13 @@
 [tool.poetry]
-name = "starlite"
-version = "2.0.0alpha2"
+name = "litestar"
+version = "1.0.0alpha0"
 description = "Performant, light and flexible ASGI API Framework"
-authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
+authors = [
+    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
+    "Peter Schutt <peter.github@proton.me>",
+    "Cody Fincher <cody.fincher@gmail.com>",
+    "Janek Nouvertné <provinzkraut@posteo.de>",
+]
 maintainers = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
     "Peter Schutt <peter.github@proton.me>",
@@ -14,7 +19,7 @@ readme = "README.md"
 homepage = "https://starliteproject.dev/"
 repository = "https://github.com/starlite-api/starlite"
 documentation = "https://docs.starliteproject.dev/"
-keywords = ["api", "rest", "http", "asgi", "pydantic", "starlite", "framework", "websocket"]
+keywords = ["api", "rest", "http", "asgi", "pydantic", "litestar", "framework", "websocket", "starlite"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
@@ -32,7 +37,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 include = ["CHANGELOG.rst"]
-packages = [{ include = "starlite" }]
+packages = [{ include = "litestar" }]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
@@ -119,7 +124,7 @@ sphinx-autobuild = "*"
 sphinx-copybutton = ">=0.5.1"
 sphinx-design = ">=0.3.0,<1"
 sphinxcontrib-mermaid = ">=0.8.1,<1"
-starlite-sphinx-theme = { git = "https://github.com/starlite-api/starlite-sphinx-theme.git" }
+litestar-sphinx-theme = { git = "https://github.com/starlite-api/litestar-sphinx-theme.git" }
 uvicorn = "*"
 
 [tool.poetry.extras]
@@ -153,7 +158,7 @@ full = [
 ]
 
 [tool.poetry.scripts]
-starlite = { callable = "starlite:__main__", extras = ["cli"] }
+litestar = { callable = "litestar:__main__", extras = ["cli"] }
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -165,7 +170,7 @@ include = '\.pyi?$'
 
 
 [tool.coverage.run]
-omit = ["*/tests/*", "starlite/contrib/sqlalchemy_1/*"]
+omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -186,12 +191,12 @@ filterwarnings = [
 ]
 
 [tool.pyright]
-include = ["starlite", "tests", "examples"]
+include = ["litestar", "tests", "examples"]
 exclude = [
     "examples/plugins/sqlalchemy_plugin",
-    "starlite/contrib/sqlalchemy_1",
-    "starlite/openapi",
-    "starlite/plugins",
+    "litestar/contrib/sqlalchemy_1",
+    "litestar/openapi",
+    "litestar/plugins",
     "tests/contrib/sqlalchemy_1",
     "tests/openapi",
     "tests/plugins",
@@ -256,7 +261,7 @@ ignore = [
     "B010", # flake8-bugbear - do not call setattr with a constant attribute value
 ]
 line-length = 120
-src = ["starlite", "tests", "docs/examples"]
+src = ["litestar", "tests", "docs/examples"]
 target-version = "py38"
 
 [tool.ruff.pydocstyle]
@@ -275,7 +280,7 @@ classmethod-decorators = [
 ]
 
 [tool.ruff.isort]
-known-first-party = ["starlite", "tests", "examples"]
+known-first-party = ["litestar", "tests", "examples"]
 
 [tool.ruff.per-file-ignores]
 "tests/**/*.*" = [
@@ -330,7 +335,7 @@ known-first-party = ["starlite", "tests", "examples"]
 "docs/**/*.*" = ["S", "B", "DTZ", "A", "TCH", "ERA", "D", "RET"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
-"starlite/handlers/**/*.*" = ["N801"]
-"starlite/params.py" = ["N802"]
-"starlite/exceptions/*.*" = ["N818"]
+"litestar/handlers/**/*.*" = ["N801"]
+"litestar/params.py" = ["N802"]
+"litestar/exceptions/*.*" = ["N818"]
 "docs/examples/**" = ["T201"]

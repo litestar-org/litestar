@@ -2,5 +2,5 @@ data_extractors
 ===============
 
 
-.. automodule:: starlite.data_extractors
+.. automodule:: litestar.data_extractors
     :members:

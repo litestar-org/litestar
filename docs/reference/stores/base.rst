@@ -2,6 +2,6 @@ base
 ====
 
 
-.. automodule:: starlite.stores.base
+.. automodule:: litestar.stores.base
 
     :members: Store, NamespacedStore

@@ -1,5 +1,5 @@
 authentication
 ==============
 
-.. automodule:: starlite.middleware.authentication
+.. automodule:: litestar.middleware.authentication
     :members:

@@ -1,14 +1,14 @@
 APP_FILE_CONTENT = """
-from starlite import Starlite
-app = Starlite([])
+from litestar import Litestar
+app = Litestar([])
 """
 
 
 CREATE_APP_FILE_CONTENT = """
-from starlite import Starlite
+from litestar import Litestar
 
 def create_app():
-    return Starlite([])
+    return Litestar([])
 
 
 def func():
@@ -17,10 +17,10 @@ def func():
 
 
 GENERIC_APP_FACTORY_FILE_CONTENT = """
-from starlite import Starlite
+from litestar import Litestar
 
-def any_name() -> Starlite:
-    return Starlite([])
+def any_name() -> Litestar:
+    return Litestar([])
 
 
 def func():
@@ -28,10 +28,10 @@ def func():
 """
 
 GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION = """
-from starlite import Starlite
+from litestar import Litestar
 
-def any_name() -> "Starlite":
-    return Starlite([])
+def any_name() -> "Litestar":
+    return Litestar([])
 
 
 def func():
@@ -42,10 +42,10 @@ def func():
 GENERIC_APP_FACTORY_FILE_CONTENT_FUTURE_ANNOTATIONS = """
 from __future__ import annotations
 
-from starlite import Starlite
+from litestar import Litestar
 
-def any_name() -> Starlite:
-    return Starlite([])
+def any_name() -> Litestar:
+    return Litestar([])
 
 
 def func():

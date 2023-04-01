@@ -1,13 +1,13 @@
 from typing import TYPE_CHECKING, Dict, Optional
 
-from starlite import HttpMethod, Request, get, post, route
-from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from starlite.testing import create_test_client
-from starlite.types import Empty
+from litestar import HttpMethod, Request, get, post, route
+from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.testing import create_test_client
+from litestar.types import Empty
 
 if TYPE_CHECKING:
-    from starlite.middleware.session.base import BaseBackendConfig
-    from starlite.middleware.session.server_side import ServerSideSessionConfig
+    from litestar.middleware.session.base import BaseBackendConfig
+    from litestar.middleware.session.server_side import ServerSideSessionConfig
 
 
 def test_session_middleware_not_installed_raises() -> None:

@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING
 import pytest
 from fsspec.implementations.local import LocalFileSystem
 
-from starlite import MediaType, get
-from starlite.file_system import BaseLocalFileSystem
-from starlite.static_files.config import StaticFilesConfig
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
+from litestar import MediaType, get
+from litestar.file_system import BaseLocalFileSystem
+from litestar.static_files.config import StaticFilesConfig
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
-    from starlite.types import FileSystemProtocol
+    from litestar.types import FileSystemProtocol
 
 
 def test_default_static_files_config(tmpdir: "Path") -> None:

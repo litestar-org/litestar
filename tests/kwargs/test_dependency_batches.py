@@ -2,8 +2,8 @@ from typing import List, Set
 
 import pytest
 
-from starlite._kwargs.dependencies import Dependency, create_dependency_batches
-from starlite.di import Provide
+from litestar._kwargs.dependencies import Dependency, create_dependency_batches
+from litestar.di import Provide
 
 
 def dummy() -> None:

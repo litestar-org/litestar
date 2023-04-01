@@ -3,10 +3,10 @@ from typing import Optional, Type
 import pytest
 from pydantic.fields import FieldInfo
 
-from starlite import get
-from starlite.params import Parameter
-from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from starlite.testing import create_test_client
+from litestar import get
+from litestar.params import Parameter
+from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(

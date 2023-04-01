@@ -3,8 +3,8 @@ from typing import List, Optional, Tuple
 from pydantic import BaseModel
 from pydantic_factories import ModelFactory
 
-from starlite import Starlite, get
-from starlite.pagination import AbstractSyncCursorPaginator, CursorPagination
+from litestar import Litestar, get
+from litestar.pagination import AbstractSyncCursorPaginator, CursorPagination
 
 
 class Person(BaseModel):
@@ -38,4 +38,4 @@ def people_handler(cursor: Optional[str], results_per_page: int) -> CursorPagina
     return paginator(cursor=cursor, results_per_page=results_per_page)
 
 
-app = Starlite(route_handlers=[people_handler])
+app = Litestar(route_handlers=[people_handler])

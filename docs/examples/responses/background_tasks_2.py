@@ -1,8 +1,8 @@
 import logging
 from typing import Dict
 
-from starlite import Starlite, get
-from starlite.background_tasks import BackgroundTask
+from litestar import Litestar, get
+from litestar.background_tasks import BackgroundTask
 
 logger = logging.getLogger(__name__)
 
@@ -16,4 +16,4 @@ def greeter() -> Dict[str, str]:
     return {"hello": "world"}
 
 
-app = Starlite(route_handlers=[greeter])
+app = Litestar(route_handlers=[greeter])

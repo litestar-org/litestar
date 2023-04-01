@@ -9,8 +9,8 @@ import pytest
 from hypothesis import given
 from hypothesis.strategies import datetimes, none, one_of, sampled_from, text
 
-from starlite.contrib.jwt import Token
-from starlite.exceptions import ImproperlyConfiguredException, NotAuthorizedException
+from litestar.contrib.jwt import Token
+from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
 
 @given(

@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 from typing_extensions import TypedDict
 
-from starlite.utils.pydantic import (
+from litestar.utils.pydantic import (
     convert_dataclass_to_model,
     convert_typeddict_to_model,
 )
@@ -23,7 +23,7 @@ def test_convert_dataclass_to_model_cache(mocker: MockerFixture) -> None:
 
     response_mock = MagicMock()
     create_model_from_dataclass_mock = mocker.patch(
-        "starlite.utils.pydantic.create_model_from_dataclass", return_value=response_mock
+        "litestar.utils.pydantic.create_model_from_dataclass", return_value=response_mock
     )
     # test calling the function twice returns the expected response each time
     for _ in range(2):
@@ -40,7 +40,7 @@ def test_convert_typeddict_to_model_cache(mocker: MockerFixture) -> None:
 
     response_mock = MagicMock()
     create_model_from_typeddict_mock = mocker.patch(
-        "starlite.utils.pydantic.create_model_from_typeddict", return_value=response_mock
+        "litestar.utils.pydantic.create_model_from_typeddict", return_value=response_mock
     )
     # test calling the function twice returns the expected response each time
     for _ in range(2):
