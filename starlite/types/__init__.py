@@ -83,6 +83,7 @@ from .internal_types import (
     RouteHandlerType,
 )
 from .protocols import DataclassProtocol, Logger
+from .serialization import StarliteEncodableType
 
 __all__ = (
     "ASGIApp",
@@ -153,6 +154,7 @@ __all__ = (
     "Scopes",
     "Send",
     "Serializer",
+    "StarliteEncodableType",
     "SyncOrAsyncUnion",
     "TypeEncodersMap",
     "TypedDictClass",
