@@ -747,6 +747,20 @@ wherever you have access to <a class="reference internal" href="connection.html#
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="starlite.handlers.BaseRouteHandler.fn">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Ref</span><span class="p"><span class="pre">[</span></span><span class="pre">MaybePartial</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="types.html#starlite.types.AsyncAnyCallable" title="starlite.types.AsyncAnyCallable"><span class="pre">AsyncAnyCallable</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#starlite.handlers.BaseRouteHandler.fn" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the handler function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="exceptions.html#starlite.exceptions.ImproperlyConfiguredException" title="starlite.exceptions.ImproperlyConfiguredException"><strong>ImproperlyConfiguredException</strong></a> – if handler fn is not set.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Handler function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="starlite.handlers.BaseRouteHandler.handler_name">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.handlers.BaseRouteHandler.handler_name" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the name of the handler function.</p>
@@ -1620,6 +1634,7 @@ wherever you have access to <a class="reference internal" href="connection.html#
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.__init__"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.__call__"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.__call__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.fn"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.fn</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.handler_name"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.handler_name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.dependency_name_set"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.dependency_name_set</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.ownership_layers"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.ownership_layers</span></code></a></li>
