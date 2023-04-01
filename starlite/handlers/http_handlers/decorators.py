@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from functools import wraps
 from typing import TYPE_CHECKING
 
+from starlite.di import Provide
 from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import HTTPException, ImproperlyConfiguredException
 from starlite.response import FileResponse
@@ -15,7 +17,6 @@ if TYPE_CHECKING:
 
     from starlite.background_tasks import BackgroundTask, BackgroundTasks
     from starlite.datastructures import CacheControlHeader, ETag
-    from starlite.di import Provide
     from starlite.openapi.datastructures import ResponseSpec
     from starlite.openapi.spec import SecurityRequirement
     from starlite.types import (
@@ -31,6 +32,7 @@ if TYPE_CHECKING:
         ResponseType,
         TypeEncodersMap,
     )
+    from starlite.types.callable_types import AnyCallable
 
 __all__ = ("get", "head", "post", "put", "patch", "delete")
 
@@ -973,3 +975,15 @@ class put(HTTPRouteHandler):
             type_encoders=type_encoders,
             **kwargs,
         )
+
+
+def provide(*, key: str, dependency: AnyCallable) -> AnyCallable:
+    def outer_function(fn: AnyCallable) -> AnyCallable:
+        @wraps(fn)
+        def inner_function(*args: Any, **kwargs: Any) -> Any:
+            kwargs = kwargs | {"dependencies": {key: Provide(dependency)}}
+            return fn(*args, **kwargs)
+
+        return inner_function
+
+    return outer_function
