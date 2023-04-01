@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from inspect import Signature
 from typing import TYPE_CHECKING
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.utils import Ref, is_async_callable
+from starlite.utils import is_async_callable
 
 __all__ = ("WebsocketRouteHandler", "websocket")
 
@@ -14,7 +13,6 @@ if TYPE_CHECKING:
     from typing import Any, Mapping
 
     from starlite.types import (
-        AsyncAnyCallable,
         Dependencies,
         ExceptionHandler,
         Guard,
@@ -70,13 +68,6 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             signature_namespace=signature_namespace,
             **kwargs,
         )
-
-    def __call__(self, fn: AsyncAnyCallable) -> WebsocketRouteHandler:
-        """Replace a function with itself."""
-        self.fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
-        self.signature = Signature.from_callable(fn)
-        self._validate_handler_function()
-        return self
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""

@@ -8,7 +8,6 @@ from starlite._layers.utils import narrow_response_cookies, narrow_response_head
 from starlite.controller import Controller
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.asgi_handlers import ASGIRouteHandler
-from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
 from starlite.routes import ASGIRoute, HTTPRoute, WebSocketRoute
@@ -286,7 +285,7 @@ class Router:
             value.owner = self
             return value
 
-        if isinstance(value, BaseRouteHandler):
+        if isinstance(value, (ASGIRouteHandler, HTTPRouteHandler, WebsocketRouteHandler)):
             value.owner = self
             return value
 
