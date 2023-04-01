@@ -264,3 +264,45 @@ def is_attrs_class(annotation: Any) -> TypeGuard["attrs.AttrsInstance"]:  # pyri
     if attrs is not Empty:  # type: ignore[comparison-overlap]
         return attrs.has(annotation)  # pyright: ignore
     return False  # pragma: no cover
+
+
+def is_pydantic_constrained_field(
+    annotation: Any,
+) -> TypeGuard[
+    type[pydantic.ConstrainedBytes]  # pyright: ignore
+    | type[pydantic.ConstrainedDate]  # pyright: ignore
+    | type[pydantic.ConstrainedDecimal]  # pyright: ignore
+    | type[pydantic.ConstrainedFloat]  # pyright: ignore
+    | type[pydantic.ConstrainedFrozenSet]  # pyright: ignore
+    | type[pydantic.ConstrainedInt]  # pyright: ignore
+    | type[pydantic.ConstrainedList]  # pyright: ignore
+    | type[pydantic.ConstrainedSet]  # pyright: ignore
+    | type[pydantic.ConstrainedStr]  # pyright: ignore
+]:
+    """Check if the given annotation is a constrained pydantic type.
+
+    Args:
+        annotation: A type annotation
+
+    Returns:
+        True if pydantic is installed and the type is a constrained type, otherwise False.
+    """
+    try:
+        import pydantic
+
+        return any(
+            is_class_and_subclass(annotation, constrained_type)
+            for constrained_type in (
+                pydantic.ConstrainedBytes,
+                pydantic.ConstrainedDate,
+                pydantic.ConstrainedDecimal,
+                pydantic.ConstrainedFloat,
+                pydantic.ConstrainedFrozenSet,
+                pydantic.ConstrainedInt,
+                pydantic.ConstrainedList,
+                pydantic.ConstrainedSet,
+                pydantic.ConstrainedStr,
+            )
+        )
+    except ImportError:
+        return False

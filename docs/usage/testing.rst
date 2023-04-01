@@ -384,7 +384,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
 
     import pytest
     from pydantic import BaseModel
-    from pydantic_factories import ModelFactory
+    from polyfactory.factories.pydantic_factory import ModelFactory
     from starlite.status_codes import HTTP_200_OK
     from starlite import get
     from starlite.di import Provide

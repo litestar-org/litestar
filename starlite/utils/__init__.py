@@ -4,19 +4,16 @@ from .helpers import Ref, get_enum_string_value, get_name
 from .path import join_paths, normalize_path
 from .predicates import (
     is_any,
+    is_attrs_class,
     is_class_and_subclass,
     is_dataclass_class,
     is_mapping,
     is_optional_union,
+    is_pydantic_constrained_field,
     is_pydantic_model_class,
     is_pydantic_model_instance,
     is_typed_dict,
     is_union,
-)
-from .pydantic import (
-    convert_dataclass_to_model,
-    convert_typeddict_to_model,
-    create_parsed_model_field,
 )
 from .scope import (
     delete_starlite_scope_state,
@@ -42,9 +39,6 @@ __all__ = (
     "as_async_callable_list",
     "async_partial",
     "compact",
-    "convert_dataclass_to_model",
-    "convert_typeddict_to_model",
-    "create_parsed_model_field",
     "delete_starlite_scope_state",
     "deprecated",
     "find_index",
@@ -55,10 +49,12 @@ __all__ = (
     "get_starlite_scope_state",
     "is_any",
     "is_async_callable",
+    "is_attrs_class",
     "is_class_and_subclass",
     "is_dataclass_class",
     "is_mapping",
     "is_optional_union",
+    "is_pydantic_constrained_field",
     "is_pydantic_model_class",
     "is_pydantic_model_instance",
     "is_typed_dict",

@@ -1,6 +1,6 @@
 from typing import List
 
-from pydantic_factories.value_generators.primitives import (
+from polyfactory.value_generators.primitives import (
     create_random_float,
     create_random_string,
 )

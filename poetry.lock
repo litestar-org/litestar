@@ -2074,6 +2074,27 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "polyfactory"
+version = "1.0.0a0"
+description = "Mock data generation for pydantic based models and python dataclasses"
+category = "main"
+optional = false
+python-versions = ">=3.8,<4.0"
+files = [
+    {file = "polyfactory-1.0.0a0-py3-none-any.whl", hash = "sha256:6faa6922bb96bea479c29a3cd55e73b07d15719a713ff46c36a12ed4cd9cbbdb"},
+    {file = "polyfactory-1.0.0a0.tar.gz", hash = "sha256:2e4e698307b2f568c0e14ec6bb64affdfae8387897ace55a8b75ef8c4a8053fd"},
+]
+
+[package.dependencies]
+faker = "*"
+typing-extensions = "*"
+
+[package.extras]
+beanie = ["beanie[beanie]", "pydantic[beanie,odmantic,pydantic]"]
+odmantic = ["odmantic[odmantic]", "pydantic[beanie,odmantic,pydantic]"]
+pydantic = ["pydantic[beanie,odmantic,pydantic]"]
+
+[[package]]
 name = "pre-commit"
 version = "3.2.1"
 description = "A framework for managing and maintaining multi-language pre-commit hooks."
@@ -2169,23 +2190,6 @@ typing-extensions = ">=4.2.0"
 [package.extras]
 dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
-
-[[package]]
-name = "pydantic-factories"
-version = "1.17.2"
-description = "Mock data generation for pydantic based models and python dataclasses"
-category = "main"
-optional = false
-python-versions = ">=3.8,<4.0"
-files = [
-    {file = "pydantic_factories-1.17.2-py3-none-any.whl", hash = "sha256:e1378700a9e963b368b602e46e8ccc3331027f10233e617eb47b3a3dd052ee25"},
-    {file = "pydantic_factories-1.17.2.tar.gz", hash = "sha256:a1ea1d3a595235a65f954d6e182ec4bfe94645f2c4d986fd43ae19a62ffb90b0"},
-]
-
-[package.dependencies]
-faker = "*"
-pydantic = ">=1.10.0"
-typing-extensions = "*"
 
 [[package]]
 name = "pydata-sphinx-theme"
@@ -3330,4 +3334,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "63b0fe64652f5f995628bd3f3cd0e229e440e468c7f99b01e4209cd87614814f"
+content-hash = "81efacb5224ef6efb7ffbf6a031f5c7e7309512225b819857b2b491f8c0bbedf"
