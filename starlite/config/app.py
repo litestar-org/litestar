@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any, Literal, Sequence
 
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.response_cache import ResponseCacheConfig
@@ -153,6 +153,8 @@ class AppConfig:
     """A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application paths."""
     plugins: list[PluginProtocol] = field(default_factory=list)
     """List of :class:`SerializationPluginProtocol <.plugins.SerializationPluginProtocol>`."""
+    preferred_validation_backend: Literal["pydantic", "attrs"] = field(default="attrs")
+    """Validation backend to use, if multiple are installed."""
     request_class: type[Request] | None = field(default=None)
     """An optional subclass of :class:`Request <.connection.Request>` to use for http connections."""
     response_class: ResponseType | None = field(default=None)

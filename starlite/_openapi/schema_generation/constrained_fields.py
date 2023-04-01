@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from starlite.plugins import OpenAPISchemaPluginProtocol
 
 if TYPE_CHECKING:
-    from starlite._signature.models import SignatureField
+    from starlite._signature.field import SignatureField
 
     try:
         from pydantic import (
@@ -163,7 +163,7 @@ def create_collection_constrained_field_schema(
         else:
             schema.items = items[0]
     else:
-        from starlite._signature.models import SignatureField
+        from starlite._signature.field import SignatureField
 
         schema.items = create_schema(
             field=SignatureField.create(field_type=field_type.item_type, name=f"{field_type.__name__}Field"),

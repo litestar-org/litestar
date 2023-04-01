@@ -4,7 +4,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, Literal, Mapping, Sequence, cast
 
 from typing_extensions import Self, TypedDict
 
@@ -154,6 +154,7 @@ class Starlite(Router):
         "on_startup",
         "openapi_config",
         "openapi_schema_plugins",
+        "preferred_validation_backend",
         "request_class",
         "response_cache_config",
         "route_map",
@@ -168,6 +169,7 @@ class Starlite(Router):
     def __init__(
         self,
         route_handlers: OptionalSequence[ControllerRouterHandler] = None,
+        *,
         after_exception: OptionalSequence[AfterExceptionHookHandler] = None,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
@@ -178,7 +180,6 @@ class Starlite(Router):
         before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
         before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
         before_startup: OptionalSequence[LifeSpanHookHandler] = None,
-        response_cache_config: ResponseCacheConfig | None = None,
         cache_control: CacheControlHeader | None = None,
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
@@ -200,7 +201,9 @@ class Starlite(Router):
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
         plugins: OptionalSequence[PluginProtocol] = None,
+        preferred_validation_backend: Literal["pydantic", "attrs"] | None = None,
         request_class: type[Request] | None = None,
+        response_cache_config: ResponseCacheConfig | None = None,
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: OptionalSequence[ResponseHeader] = None,
@@ -275,6 +278,7 @@ class Starlite(Router):
             parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
                 paths.
             plugins: Sequence of plugins.
+            preferred_validation_backend: Validation backend to use, if multiple are installed.
             request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
                 response.
@@ -315,7 +319,6 @@ class Starlite(Router):
             before_send=list(before_send or []),
             before_shutdown=list(before_shutdown or []),
             before_startup=list(before_startup or []),
-            response_cache_config=response_cache_config or ResponseCacheConfig(),
             cache_control=cache_control,
             compression_config=compression_config,
             cors_config=cors_config,
@@ -336,7 +339,9 @@ class Starlite(Router):
             opt=dict(opt or {}),
             parameters=parameters or {},
             plugins=list(plugins or []),
+            preferred_validation_backend=preferred_validation_backend or "attrs",
             request_class=request_class,
+            response_cache_config=response_cache_config or ResponseCacheConfig(),
             response_class=response_class,
             response_cookies=response_cookies or [],
             response_headers=response_headers or [],
@@ -367,27 +372,29 @@ class Starlite(Router):
         self.after_exception = as_async_callable_list(config.after_exception)
         self.after_shutdown = as_async_callable_list(config.after_shutdown)
         self.after_startup = as_async_callable_list(config.after_startup)
+        self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.before_send = as_async_callable_list(config.before_send)
         self.before_shutdown = as_async_callable_list(config.before_shutdown)
         self.before_startup = as_async_callable_list(config.before_startup)
-        self.response_cache_config = config.response_cache_config
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
         self.debug = config.debug
+        self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
         self.logging_config = config.logging_config
+        self.multipart_form_part_limit = config.multipart_form_part_limit
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
-        self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
         self.openapi_schema_plugins = [p for p in config.plugins if isinstance(p, OpenAPISchemaPluginProtocol)]
+        self.preferred_validation_backend: Literal["pydantic", "attrs"] = config.preferred_validation_backend
         self.request_class = config.request_class or Request
+        self.response_cache_config = config.response_cache_config
+        self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
         self.state = config.state
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket
-        self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
-        self.multipart_form_part_limit = config.multipart_form_part_limit
 
         super().__init__(
             after_request=config.after_request,
@@ -732,18 +739,20 @@ class Starlite(Router):
         """Create function signature models for all route handler functions and provider dependencies."""
         if not route_handler.signature_model:
             route_handler.signature_model = create_signature_model(
+                dependency_name_set=route_handler.dependency_name_set,
                 fn=cast("AnyCallable", route_handler.fn.value),
                 plugins=self.serialization_plugins,
-                dependency_name_set=route_handler.dependency_name_set,
+                preferred_validation_backend=self.preferred_validation_backend,
                 signature_namespace=route_handler.resolve_signature_namespace(),
             )
 
         for provider in route_handler.resolve_dependencies().values():
             if not getattr(provider, "signature_model", None):
                 provider.signature_model = create_signature_model(
+                    dependency_name_set=route_handler.dependency_name_set,
                     fn=provider.dependency.value,
                     plugins=self.serialization_plugins,
-                    dependency_name_set=route_handler.dependency_name_set,
+                    preferred_validation_backend=self.preferred_validation_backend,
                     signature_namespace=route_handler.resolve_signature_namespace(),
                 )
 

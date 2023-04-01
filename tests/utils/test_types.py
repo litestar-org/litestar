@@ -4,7 +4,7 @@ from typing import Any, Deque, Iterable, List, Optional, Sequence, Tuple, Union
 
 import pytest
 
-from starlite.utils.types import annotation_is_iterable_of_type, make_non_optional_union
+from starlite.utils.typing import annotation_is_iterable_of_type, make_non_optional_union
 from tests import Person, Pet
 
 if version_info >= (3, 10):

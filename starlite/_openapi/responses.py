@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, Iterator
 from typing_extensions import get_args, get_origin
 
 from starlite._openapi.schema_generation import create_schema
-from starlite._signature.models import SignatureField
+from starlite._signature.field import SignatureField
 from starlite._signature.utils import get_signature_model
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException

@@ -36,9 +36,9 @@ def test_header_params(
     with create_test_client(test_method) as client:
         response = client.get(test_path, headers=param_dict)
         if should_raise:
-            assert response.status_code == HTTP_400_BAD_REQUEST
+            assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
         else:
-            assert response.status_code == HTTP_200_OK
+            assert response.status_code == HTTP_200_OK, response.json()
 
 
 def test_header_param_example() -> None:

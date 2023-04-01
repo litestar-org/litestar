@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from starlite._openapi.schema_generation import create_schema
-from starlite._signature.models import SignatureField
+from starlite._signature.field import SignatureField
 from starlite.constants import RESERVED_KWARGS
 from starlite.enums import ParamType
 from starlite.exceptions import ImproperlyConfiguredException
