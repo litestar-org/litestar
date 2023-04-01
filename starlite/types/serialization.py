@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeAlias
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections import deque
@@ -32,6 +32,7 @@ if TYPE_CHECKING:
         StrictBool,
     )
     from pydantic.color import Color
+    from typing_extensions import TypeAlias
 
     from starlite.types import DataclassProtocol
 
