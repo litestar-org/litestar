@@ -16,7 +16,7 @@ __all__ = ("SignatureField",)
 
 @dataclass(unsafe_hash=True, frozen=True)
 class SignatureField:
-    """Abstraction representing a model field. This class is meant to replace equivalent datastructures from, other
+    """Abstraction representing a model field. This class is meant to replace equivalent datastructures from other
     libraries, for example, pydantic or msgspec.
     """
 
