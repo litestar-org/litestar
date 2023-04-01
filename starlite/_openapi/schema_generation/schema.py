@@ -35,7 +35,6 @@ from typing_extensions import get_args, get_type_hints
 
 from starlite._openapi.schema_generation.constrained_fields import (
     create_constrained_field_schema,
-    is_pydantic_constrained_field,
 )
 from starlite._openapi.schema_generation.examples import create_examples_for_field
 from starlite._signature.field import SignatureField
@@ -50,6 +49,7 @@ from starlite.serialization import encode_json
 from starlite.types import DataclassProtocol, Empty, TypedDictClass
 from starlite.utils.predicates import (
     is_dataclass_class,
+    is_pydantic_constrained_field,
     is_pydantic_model_class,
     is_typed_dict,
 )

@@ -68,15 +68,13 @@ msgspec = "*"
 multidict = ">=6.0.2"
 opentelemetry-instrumentation-asgi = { version = "*", optional = true }
 picologging = { version = "*", optional = true }
-pydantic = "*"
-pydantic-factories = "*"
+polyfactory = "*"
+pydantic = { version = "*", optional = true }
 python-dateutil = { version = "*", optional = true }
 python-jose = { version = "*", optional = true }
 pytimeparse = { version = "*", optional = true }
 pyyaml = "*"
-redis = { version = ">=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3", optional = true, extras = [
-    "hiredis",
-] }
+redis = { version = ">=4.4.4,!=4.5.0,!=4.5.1,!=4.5.2,!=4.5.3", optional = true, extras = ["hiredis"] }
 rich = { version = ">=13.0.0", optional = true }
 sqlalchemy = { version = ">=2.0.4", optional = true }
 structlog = { version = "*", optional = true }
@@ -219,7 +217,7 @@ strict-imports = false
 
 [tool.ruff]
 select = [
-    "A",   # flake8-builtins
+    "A", # flake8-builtins
     "B",   # flake8-bugbear
     "BLE", # flake8-blind-except
     "C4",  # flake8-comprehensions
