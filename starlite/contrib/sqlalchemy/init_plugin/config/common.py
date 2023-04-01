@@ -239,3 +239,11 @@ class GenericSQLAlchemyConfig(Generic[EngineT, SessionT, SessionMakerT]):
             self.engine_app_state_key: self.create_engine(),
             self.session_maker_app_state_key: self.create_session_maker(),
         }
+
+    def update_app_state(self, state: State) -> None:
+        """Set the app state with engine and session.
+
+        Args:
+            state: The ``Starlite.state`` instance.
+        """
+        state.update(self.create_app_state_items())
