@@ -4,25 +4,17 @@ from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 if TYPE_CHECKING:
-    from typing import TypeAlias
-
     from typing_extensions import Self
 
     from starlite.connection import Request
     from starlite.enums import MediaType
     from starlite.handlers import BaseRouteHandler
+    from starlite.types import StarliteEncodableType
 
-__all__ = (
-    "AbstractDTOInterface",
-    "DataT",
-    "StarliteEncodableType",
-)
+__all__ = ("AbstractDTOInterface", "DataT")
 
 DataT = TypeVar("DataT")
 """Type var representing data held by a DTO instance."""
-
-StarliteEncodableType: TypeAlias = "Any"
-"""Types able to be encoded by Starlite."""
 
 
 class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):

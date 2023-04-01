@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABCMeta
-from typing import TYPE_CHECKING, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Collection, Generic, TypeVar, cast
 
 from pydantic import BaseModel, parse_obj_as
 from typing_extensions import get_args
@@ -79,10 +79,10 @@ class PydanticDTO(PydanticBackedDTOFactory[PydanticDataT], Generic[PydanticDataT
 
     def to_encodable_type(
         self, media_type: str | MediaType, request: Request[Any, Any, Any]
-    ) -> BaseModel | Iterable[BaseModel]:
+    ) -> BaseModel | Collection[BaseModel]:
         if isinstance(self.data, self.model_type):
             return self.dto_backend.data_container_type.parse_obj(self.data.dict())
-        data = cast("Iterable[BaseModel]", self.data)
+        data = cast("Collection[BaseModel]", self.data)
         return parse_obj_as(  # type:ignore[return-value]
             self.dto_backend.annotation, [datum.dict() for datum in data]
         )
