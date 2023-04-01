@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 @pytest.mark.parametrize(
     "http_methods",
-    (list(perm) for perm in iter(permutations(["GET", "POST", "PATCH", "DELETE", "HEAD"], r=random.randrange(1, 5)))),
+    (list(perm) for perm in iter(permutations(["GET", "POST", "PATCH", "DELETE", "HEAD"], r=random.randrange(1, 6)))),
 )
 def test_regular_options_request(http_methods: List["Method"]) -> None:
     @route("/", http_method=http_methods)
