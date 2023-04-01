@@ -53,18 +53,15 @@ if TYPE_CHECKING:
 def create_test_client(
     route_handlers: ControllerRouterHandler | Sequence[ControllerRouterHandler] | None = None,
     *,
-    backend: Literal["asyncio", "trio"] = "asyncio",
-    backend_options: Mapping[str, Any] | None = None,
-    base_url: str = "http://testserver.local",
-    raise_server_exceptions: bool = True,
-    root_path: str = "",
-    session_config: BaseBackendConfig | None = None,
     after_exception: OptionalSequence[AfterExceptionHookHandler] = None,
     after_request: AfterRequestHookHandler | None = None,
     after_response: AfterResponseHookHandler | None = None,
     after_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
     after_startup: OptionalSequence[LifeSpanHookHandler] = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
+    backend: Literal["asyncio", "trio"] = "asyncio",
+    backend_options: Mapping[str, Any] | None = None,
+    base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
     before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
     before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
@@ -90,12 +87,16 @@ def create_test_client(
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
     plugins: OptionalSequence[PluginProtocol] = None,
+    preferred_validation_backend: Literal["pydantic", "attrs"] = "attrs",
+    raise_server_exceptions: bool = True,
     request_class: type[Request] | None = None,
     response_cache_config: ResponseCacheConfig | None = None,
     response_class: ResponseType | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: OptionalSequence[ResponseHeader] = None,
+    root_path: str = "",
     security: OptionalSequence[SecurityRequirement] = None,
+    session_config: BaseBackendConfig | None = None,
     signature_namespace: Mapping[str, Any] | None = None,
     state: State | None = None,
     static_files_config: OptionalSequence[StaticFilesConfig] = None,
@@ -129,6 +130,7 @@ def create_test_client(
                     assert response.json() == {"hello": "world"}
 
     Args:
+        preferred_validation_backend:
         route_handlers: A single handler or a sequence of route handlers, which can include instances of
             :class:`Router <starlite.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or
             any function decorated by the route handler decorators.
@@ -198,6 +200,7 @@ def create_test_client(
         parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
             paths.
         plugins: Sequence of plugins.
+        preferred_validation_backend: Validation backend to use, if multiple are installed.
         request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
         response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
             response.
@@ -263,6 +266,7 @@ def create_test_client(
         opt=opt,
         parameters=parameters,
         plugins=plugins,
+        preferred_validation_backend=preferred_validation_backend,
         request_class=request_class,
         response_cache_config=response_cache_config,
         response_class=response_class,
@@ -294,18 +298,15 @@ def create_test_client(
 def create_async_test_client(
     route_handlers: ControllerRouterHandler | Sequence[ControllerRouterHandler] | None = None,
     *,
-    backend: Literal["asyncio", "trio"] = "asyncio",
-    backend_options: Mapping[str, Any] | None = None,
-    base_url: str = "http://testserver.local",
-    raise_server_exceptions: bool = True,
-    root_path: str = "",
-    session_config: BaseBackendConfig | None = None,
     after_exception: OptionalSequence[AfterExceptionHookHandler] = None,
     after_request: AfterRequestHookHandler | None = None,
     after_response: AfterResponseHookHandler | None = None,
     after_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
     after_startup: OptionalSequence[LifeSpanHookHandler] = None,
     allowed_hosts: Sequence[str] | AllowedHostsConfig | None = None,
+    backend: Literal["asyncio", "trio"] = "asyncio",
+    backend_options: Mapping[str, Any] | None = None,
+    base_url: str = "http://testserver.local",
     before_request: BeforeRequestHookHandler | None = None,
     before_send: OptionalSequence[BeforeMessageSendHookHandler] = None,
     before_shutdown: OptionalSequence[LifeSpanHookHandler] = None,
@@ -331,12 +332,16 @@ def create_async_test_client(
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
     plugins: OptionalSequence[PluginProtocol] = None,
+    preferred_validation_backend: Literal["pydantic", "attrs"] = "attrs",
+    raise_server_exceptions: bool = True,
     request_class: type[Request] | None = None,
     response_cache_config: ResponseCacheConfig | None = None,
     response_class: ResponseType | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: OptionalSequence[ResponseHeader] = None,
+    root_path: str = "",
     security: OptionalSequence[SecurityRequirement] = None,
+    session_config: BaseBackendConfig | None = None,
     signature_namespace: Mapping[str, Any] | None = None,
     state: State | None = None,
     static_files_config: OptionalSequence[StaticFilesConfig] = None,
@@ -439,6 +444,7 @@ def create_async_test_client(
         parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
             paths.
         plugins: Sequence of plugins.
+        preferred_validation_backend: Validation backend to use, if multiple are installed.
         request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
         response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
             response.
@@ -504,6 +510,7 @@ def create_async_test_client(
         opt=opt,
         parameters=parameters,
         plugins=plugins,
+        preferred_validation_backend=preferred_validation_backend,
         request_class=request_class,
         response_cache_config=response_cache_config,
         response_class=response_class,

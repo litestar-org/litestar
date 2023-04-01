@@ -44,4 +44,4 @@ def test_cookie_params(t_type: Type, param_dict: dict, param: FieldInfo, expecte
         # Set cookies on the client to avoid warnings about per-request cookies.
         client.cookies = param_dict  # type: ignore
         response = client.get(test_path)
-        assert response.status_code == expected_code
+        assert response.status_code == expected_code, response.json()

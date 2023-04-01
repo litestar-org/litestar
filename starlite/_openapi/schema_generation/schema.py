@@ -38,7 +38,7 @@ from starlite._openapi.schema_generation.constrained_fields import (
     is_pydantic_constrained_field,
 )
 from starlite._openapi.schema_generation.examples import create_examples_for_field
-from starlite._signature.models import SignatureField
+from starlite._signature.field import SignatureField
 from starlite.constants import UNDEFINED_SENTINELS
 from starlite.datastructures import UploadFile
 from starlite.exceptions import ImproperlyConfiguredException
@@ -49,12 +49,11 @@ from starlite.pagination import ClassicPagination, CursorPagination, OffsetPagin
 from starlite.serialization import encode_json
 from starlite.types import DataclassProtocol, Empty, TypedDictClass
 from starlite.utils.predicates import (
-    get_origin_or_inner_type,
     is_dataclass_class,
     is_pydantic_model_class,
     is_typed_dict,
 )
-from starlite.utils.types import make_non_optional_union
+from starlite.utils.typing import get_origin_or_inner_type, make_non_optional_union
 
 if TYPE_CHECKING:
     from starlite.plugins import OpenAPISchemaPluginProtocol

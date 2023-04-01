@@ -232,7 +232,7 @@ class HTTPRoute(BaseRoute):
         cached_response = await store.get(key=cache_key)
 
         if cached_response:
-            return cast("ASGIApp", pickle.loads(cached_response))  # nosec
+            return cast("ASGIApp", pickle.loads(cached_response))  # noqa: S301
 
         return None
 

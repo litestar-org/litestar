@@ -12,7 +12,7 @@ __all__ = ("create_request_body",)
 
 
 if TYPE_CHECKING:
-    from starlite._signature.models import SignatureField
+    from starlite._signature.field import SignatureField
     from starlite.openapi.spec import Schema
     from starlite.plugins import OpenAPISchemaPluginProtocol
 

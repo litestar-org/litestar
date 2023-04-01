@@ -6,14 +6,13 @@ repos:
     hooks:
       - id: check-ast
       - id: check-case-conflict
-      - id: check-merge-conflict
       - id: check-toml
       - id: debug-statements
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.257"
+    rev: "v0.0.260"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -23,7 +22,7 @@ repos:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter"
   - repo: https://github.com/psf/black
-    rev: 23.1.0
+    rev: 23.3.0
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
@@ -54,18 +53,21 @@ repos:
         additional_dependencies:
           [
             aiosqlite,
+            async_timeout,
             asyncpg,
+            attrs,
             beanie,
             beautifulsoup4,
             brotli,
+            cattrs,
             click,
             fakeredis>=2.10.2,
             fast-query-parsers,
             freezegun,
             fsspec,
             httpx,
-            jsbeautifier,
             hypothesis,
+            jsbeautifier,
             mako,
             mongomock_motor,
             msgspec,
@@ -80,9 +82,10 @@ repos:
             pytest,
             pytest-lazy-fixture,
             pytest-mock,
+            pytest_docker,
             python-dotenv,
             python-jose,
-            pytest_docker,
+            pytimeparse,
             pyyaml,
             rich,
             sqlalchemy>2.0,
@@ -91,6 +94,7 @@ repos:
             tortoise-orm,
             types-beautifulsoup4,
             types-freezegun,
+            types-python-dateutil,
             types-pyyaml,
             types-redis,
             uvicorn,
@@ -103,10 +107,13 @@ repos:
         additional_dependencies:
           [
             aiosqlite,
+            async_timeout,
             asyncpg,
+            attrs,
             beanie,
             beautifulsoup4,
             brotli,
+            cattrs,
             click,
             fakeredis>=2.10.2,
             fast-query-parsers,
@@ -132,6 +139,7 @@ repos:
             pytest_docker,
             python-dotenv,
             python-jose,
+            pytimeparse,
             pyyaml,
             rich,
             sqlalchemy>2.0,

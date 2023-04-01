@@ -15,7 +15,8 @@ from starlite._openapi.schema_generation.schema import (
     create_schema_for_pydantic_model,
     create_schema_for_typed_dict,
 )
-from starlite._signature.models import PydanticSignatureModel, SignatureField
+from starlite._signature.field import SignatureField
+from starlite._signature.models.pydantic_signature_model import PydanticSignatureModel
 from starlite.app import DEFAULT_OPENAPI_CONFIG
 from starlite.di import Provide
 from starlite.enums import ParamType
