@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -36,8 +36,8 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/starlite-sphinx-theme.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -922,16 +922,16 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'postgresql+as
 </div>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">create_engine_callable:</span> <span class="pre">Callable[[str],</span> <span class="pre">EngineT],</span> <span class="pre">session_config:</span> <span class="pre">GenericSessionConfig,</span> <span class="pre">session_maker_class:</span> <span class="pre">type[sessionmaker]</span> <span class="pre">|</span> <span class="pre">type[async_sessionmaker],</span> <span class="pre">before_send_handler:</span> <span class="pre">BeforeMessageSendHookHandler,</span> <span class="pre">connection_string:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">engine_dependency_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'db_engine',</span> <span class="pre">session_dependency_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'db_session',</span> <span class="pre">engine_app_state_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'db_engine',</span> <span class="pre">engine_config:</span> <span class="pre">EngineConfig</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">session_maker_app_state_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'session_maker_class',</span> <span class="pre">session_maker:</span> <span class="pre">Callable[[],</span> <span class="pre">SessionT]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">engine_instance:</span> <span class="pre">EngineT</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.engine_dependency_key">
 <span class="sig-name descname"><span class="pre">engine_dependency_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'db_engine'</span></em><a class="headerlink" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.engine_dependency_key" title="Permalink to this definition">#</a></dt>
 <dd><p>Key to use for the dependency injection of database engines.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">create_engine_callable:</span> <span class="pre">Callable[[str],</span> <span class="pre">EngineT],</span> <span class="pre">session_config:</span> <span class="pre">GenericSessionConfig,</span> <span class="pre">session_maker_class:</span> <span class="pre">type[sessionmaker]</span> <span class="pre">|</span> <span class="pre">type[async_sessionmaker],</span> <span class="pre">before_send_handler:</span> <span class="pre">BeforeMessageSendHookHandler,</span> <span class="pre">connection_string:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">engine_dependency_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'db_engine',</span> <span class="pre">session_dependency_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'db_session',</span> <span class="pre">engine_app_state_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'db_engine',</span> <span class="pre">engine_config:</span> <span class="pre">EngineConfig</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">session_maker_app_state_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'session_maker_class',</span> <span class="pre">session_maker:</span> <span class="pre">Callable[[],</span> <span class="pre">SessionT]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">engine_instance:</span> <span class="pre">EngineT</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.session_dependency_key">
@@ -1066,6 +1066,17 @@ class.</p>
 <dt class="sig sig-object py" id="starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.create_app_state_items">
 <span class="sig-name descname"><span class="pre">create_app_state_items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.create_app_state_items" title="Permalink to this definition">#</a></dt>
 <dd><p>Key/value pairs to be stored in application state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.update_app_state">
+<span class="sig-name descname"><span class="pre">update_app_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../datastructures.html#starlite.datastructures.State" title="starlite.datastructures.State"><span class="pre">State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.update_app_state" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the app state with engine and session.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> – The <code class="docutils literal notranslate"><span class="pre">Starlite.state</span></code> instance.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1284,7 +1295,10 @@ uncommitted data.</p>
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="index.html"
@@ -1304,7 +1318,10 @@ uncommitted data.</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1362,8 +1379,8 @@ uncommitted data.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.session_maker_class"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.session_maker_class</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.before_send_handler"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.before_send_handler</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.connection_string"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.connection_string</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.__init__"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.engine_dependency_key"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.engine_dependency_key</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.__init__"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.session_dependency_key"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.session_dependency_key</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.engine_app_state_key"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.engine_app_state_key</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.engine_config"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.engine_config</span></code></a></li>
@@ -1378,6 +1395,7 @@ uncommitted data.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.provide_engine"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.provide_engine()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.provide_session"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.provide_session()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.create_app_state_items"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.create_app_state_items()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSQLAlchemyConfig.update_app_state"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.update_app_state()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.contrib.sqlalchemy.init_plugin.config.GenericSessionConfig"><code class="docutils literal notranslate"><span class="pre">GenericSessionConfig</span></code></a><ul class="visible nav section-nav flex-column">
@@ -1423,7 +1441,7 @@ uncommitted data.</p>
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -1431,8 +1449,8 @@ uncommitted data.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1450,7 +1468,7 @@ uncommitted data.</p>
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     <br/>
   </p>
 </div>
@@ -1461,7 +1479,7 @@ uncommitted data.</p>
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.2.
 </p></div>
       
     </div>
