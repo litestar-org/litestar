@@ -30,5 +30,5 @@ def test_dto_layer_resolution(layer: str) -> None:
 
     router = Router(path="/", route_handlers=[MyController], data_dto=get_data("router"), return_dto=get_ret("router"))
     app = Starlite(route_handlers=[router], data_dto=get_data("app"), return_dto=get_ret("app"))
-    assert app.route_handler_method_map["/"]["POST"].resolve_data_dto() is data_dto  # type:ignore[union-attr]
-    assert app.route_handler_method_map["/"]["POST"].resolve_return_dto() is ret_dto  # type:ignore[union-attr]
+    assert app.route_handler_method_map["/"]["POST"].resolve_data_dto() is data_dto
+    assert app.route_handler_method_map["/"]["POST"].resolve_return_dto() is ret_dto

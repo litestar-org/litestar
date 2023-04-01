@@ -81,8 +81,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     __slots__ = (
         "_resolved_after_response",
         "_resolved_before_request",
-        "_resolved_data_dto",
-        "_resolved_return_dto",
         "_response_handler_mapping",
         "after_request",
         "after_response",
@@ -93,7 +91,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "cache_key_builder",
         "content_encoding",
         "content_media_type",
-        "data_dto",
         "deprecated",
         "description",
         "etag",
@@ -108,7 +105,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         "response_description",
         "response_headers",
         "responses",
-        "return_dto",
         "security",
         "status_code",
         "summary",
@@ -236,13 +232,15 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.status_code = status_code or get_default_status_code(http_methods=self.http_methods)
 
         super().__init__(
-            path,
+            path=path,
+            data_dto=data_dto,
             dependencies=dependencies,
             exception_handlers=exception_handlers,
             guards=guards,
             middleware=middleware,
             name=name,
             opt=opt,
+            return_dto=return_dto,
             signature_namespace=signature_namespace,
             type_encoders=type_encoders,
             **kwargs,
@@ -255,12 +253,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.cache = cache
         self.cache_control = cache_control
         self.cache_key_builder = cache_key_builder
-        self.data_dto = data_dto
         self.etag = etag
         self.media_type: MediaType | str = media_type or ""
         self.response_class = response_class
-        self.return_dto = return_dto
-
         self.response_cookies: Sequence[Cookie] | None = narrow_response_cookies(response_cookies)
         self.response_headers: Sequence[ResponseHeader] | None = narrow_response_headers(response_headers)
 
@@ -281,8 +276,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: AfterResponseHookHandler | None | EmptyType = Empty
         self._resolved_before_request: BeforeRequestHookHandler | None | EmptyType = Empty
-        self._resolved_data_dto: type[AbstractDTOInterface] | None | EmptyType = Empty
-        self._resolved_return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty
         self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
@@ -475,44 +468,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             if is_response_type_data
             else self._response_handler_mapping["default_handler"],
         )
-
-    def resolve_data_dto(self) -> type[AbstractDTOInterface] | None:
-        """Resolve the data_dto by starting from the route handler and moving up.
-
-        If a handler is found it is returned, otherwise None is set.
-        This method is memoized so the computation occurs only once.
-
-        Returns:
-            An optional :class:`DTO type <starlite.types.AfterResponseHookHandler>`
-        """
-        if self._resolved_data_dto is Empty:
-            data_dtos: list[type[AbstractDTOInterface] | None] = [
-                layer_dto_type  # type:ignore[misc]
-                for layer in self.ownership_layers
-                if (layer_dto_type := layer.data_dto) is not Empty
-            ]
-            self._resolved_data_dto = data_dtos[-1] if data_dtos else None
-
-        return cast("type[AbstractDTOInterface] | None", self._resolved_data_dto)
-
-    def resolve_return_dto(self) -> type[AbstractDTOInterface] | None:
-        """Resolve the return_dto by starting from the route handler and moving up.
-
-        If a handler is found it is returned, otherwise None is set.
-        This method is memoized so the computation occurs only once.
-
-        Returns:
-            An optional :class:`after response lifecycle hook handler <starlite.types.AfterResponseHookHandler>`
-        """
-        if self._resolved_return_dto is Empty:
-            return_dtos: list[type[AbstractDTOInterface] | None] = [
-                layer_dto_type  # type:ignore[misc]
-                for layer in self.ownership_layers
-                if (layer_dto_type := layer.return_dto) is not Empty
-            ]
-            self._resolved_return_dto = return_dtos[-1] if return_dtos else None
-
-        return cast("type[AbstractDTOInterface] | None", self._resolved_return_dto)
 
     async def to_response(
         self, app: "Starlite", data: Any, plugins: list["SerializationPluginProtocol"], request: "Request"

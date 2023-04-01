@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
     from starlite.connection import Request
     from starlite.enums import MediaType
-    from starlite.handlers import HTTPRouteHandler
+    from starlite.handlers import BaseRouteHandler
 
 __all__ = (
     "AbstractDTOInterface",
@@ -77,7 +77,7 @@ class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
         """
 
     @classmethod
-    def on_startup(cls, resolved_handler_annotation: Any, route_handler: HTTPRouteHandler) -> None:
+    def on_startup(cls, resolved_handler_annotation: Any, route_handler: BaseRouteHandler) -> None:
         """Do something each time the AbstractDTOInterface type is encountered during signature modelling.
 
         Args:

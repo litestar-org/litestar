@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
     from starlite.controller import Controller
     from starlite.di import Provide
+    from starlite.dto import AbstractDTOInterface
     from starlite.params import ParameterKwarg
     from starlite.router import Router
     from starlite.types import AnyCallable, ExceptionHandler
@@ -37,11 +38,14 @@ class BaseRouteHandler(Generic[T]):
     signature: Signature
 
     __slots__ = (
+        "_resolved_data_dto",
         "_resolved_dependencies",
         "_resolved_guards",
         "_resolved_layered_parameters",
+        "_resolved_return_dto",
         "_resolved_signature_namespace",
         "_resolved_type_encoders",
+        "data_dto",
         "dependencies",
         "exception_handlers",
         "fn",
@@ -51,6 +55,7 @@ class BaseRouteHandler(Generic[T]):
         "opt",
         "owner",
         "paths",
+        "return_dto",
         "signature",
         "signature_model",
         "signature_namespace",
@@ -61,12 +66,14 @@ class BaseRouteHandler(Generic[T]):
         self,
         path: str | Sequence[str] | None = None,
         *,
+        data_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         dependencies: Dependencies | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
+        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
@@ -76,6 +83,7 @@ class BaseRouteHandler(Generic[T]):
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
+            data_dto: DTO type to use for deserializing and validating inbound request data.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
@@ -84,16 +92,20 @@ class BaseRouteHandler(Generic[T]):
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
+            return_dto: DTO type to use for deserializing and validating inbound request data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        self._resolved_data_dto: type[AbstractDTOInterface] | None | EmptyType = Empty
         self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
         self._resolved_guards: list[Guard] | EmptyType = Empty
         self._resolved_layered_parameters: dict[str, SignatureField] | EmptyType = Empty
+        self._resolved_return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty
         self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
 
+        self.data_dto = data_dto
         self.dependencies = dependencies
         self.exception_handlers = exception_handlers
         self.guards = guards
@@ -101,6 +113,7 @@ class BaseRouteHandler(Generic[T]):
         self.name = name
         self.opt = dict(opt or {})
         self.owner: Controller | Router | None = None
+        self.return_dto = return_dto
         self.signature_model: type[SignatureModel] | None = None
         self.signature_namespace = signature_namespace or {}
         self.paths = (
@@ -253,6 +266,44 @@ class BaseRouteHandler(Generic[T]):
 
             self._resolved_signature_namespace = ns
         return cast("dict[str, Any]", self._resolved_signature_namespace)
+
+    def resolve_data_dto(self) -> type[AbstractDTOInterface] | None:
+        """Resolve the data_dto by starting from the route handler and moving up.
+
+        If a handler is found it is returned, otherwise None is set.
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            An optional :class:`DTO type <starlite.types.AfterResponseHookHandler>`
+        """
+        if self._resolved_data_dto is Empty:
+            data_dtos: list[type[AbstractDTOInterface] | None] = [
+                layer_dto_type  # type:ignore[misc]
+                for layer in self.ownership_layers
+                if (layer_dto_type := layer.data_dto) is not Empty
+            ]
+            self._resolved_data_dto = data_dtos[-1] if data_dtos else None
+
+        return cast("type[AbstractDTOInterface] | None", self._resolved_data_dto)
+
+    def resolve_return_dto(self) -> type[AbstractDTOInterface] | None:
+        """Resolve the return_dto by starting from the route handler and moving up.
+
+        If a handler is found it is returned, otherwise None is set.
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            An optional :class:`after response lifecycle hook handler <starlite.types.AfterResponseHookHandler>`
+        """
+        if self._resolved_return_dto is Empty:
+            return_dtos: list[type[AbstractDTOInterface] | None] = [
+                layer_dto_type  # type:ignore[misc]
+                for layer in self.ownership_layers
+                if (layer_dto_type := layer.return_dto) is not Empty
+            ]
+            self._resolved_return_dto = return_dtos[-1] if return_dtos else None
+
+        return cast("type[AbstractDTOInterface] | None", self._resolved_return_dto)
 
     async def authorize_connection(self, connection: "ASGIConnection") -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""

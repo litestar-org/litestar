@@ -521,8 +521,7 @@ class Starlite(Router):
 
             for route_handler in route_handlers:
                 self._create_handler_signature_model(route_handler=route_handler)
-                if isinstance(route_handler, HTTPRouteHandler):
-                    self._init_handler_dtos(route_handler=route_handler)
+                self._init_handler_dtos(route_handler=route_handler)
                 self._set_runtime_callables(route_handler=route_handler)
                 route_handler.resolve_guards()
                 route_handler.resolve_middleware()
@@ -760,7 +759,7 @@ class Starlite(Router):
                     signature_namespace=route_handler.resolve_signature_namespace(),
                 )
 
-    def _init_handler_dtos(self, route_handler: HTTPRouteHandler) -> None:
+    def _init_handler_dtos(self, route_handler: BaseRouteHandler) -> None:
         """Initialize the data and return DTOs for a route handler.
 
         Args:
@@ -770,8 +769,6 @@ class Starlite(Router):
         data_field = signature_model.fields.get("data")
         if data_field:
             data_annotation = data_field.parsed_parameter.annotation
-            # if the type is e.g., typing.List[something], get_origin will make the type `list` which is enough
-            # for us to know that it is not an AbstractDTOInterface subtype.
             data_dto = (
                 data_annotation
                 if is_class_and_subclass(
