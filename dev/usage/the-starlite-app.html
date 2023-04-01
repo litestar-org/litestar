@@ -730,6 +730,19 @@ and Route Handlers should be registered on it.</p>
 <a class="reference internal" href="routing.html#registering-routes"><span class="std std-ref">Registering Routes</span></a></p>
 </div>
 </section>
+<section id="validation-backends">
+<h2>Validation Backends<a class="headerlink" href="#validation-backends" title="Permalink to this heading">#</a></h2>
+<p>Starlite supports both <a class="reference external" href="https://www.attrs.org/en/stable/">attrs</a> and <a class="reference external" href="https://docs.pydantic.dev/">pydantic</a> as
+validation backends. If you have one of these libraries installed alongside Starlite, it will be used automatically.
+If you have both of these installed though, Starlite will default to using attrs unless a handler uses a pydantic-specific
+type or a custom class that has the pydantic <code class="docutils literal notranslate"><span class="pre">__get_validators__</span></code> dunder defined. You can change this behaviour by
+setting the <code class="docutils literal notranslate"><span class="pre">preferred_validation_backend</span></code> kwarg to <code class="docutils literal notranslate"><span class="pre">pydantic</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=...</span><span class="p">,</span> <span class="n">preferred_validation_backend</span><span class="o">=</span><span class="s2">&quot;pydantic&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="startup-and-shutdown">
 <h2>Startup and Shutdown<a class="headerlink" href="#startup-and-shutdown" title="Permalink to this heading">#</a></h2>
 <p>You can pass a list of callables - either sync or async functions, methods or class instances - to the <code class="docutils literal notranslate"><span class="pre">on_startup</span></code>
@@ -1436,6 +1449,7 @@ overriding of parameters.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#application-object">Application object</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validation-backends">Validation Backends</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#startup-and-shutdown">Startup and Shutdown</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-application-state">Using Application State</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initializing-application-state">Initializing Application State</a></li>
@@ -1508,7 +1522,7 @@ overriding of parameters.</p>
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.2.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
 </p></div>
       
     </div>
