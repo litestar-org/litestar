@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, TypeAlias
 
 if TYPE_CHECKING:
     from collections import deque
+    from collections.abc import Collection
     from datetime import date, datetime, time
     from decimal import Decimal
     from enum import Enum, IntEnum
@@ -35,7 +36,7 @@ if TYPE_CHECKING:
     from starlite.types import DataclassProtocol
 
 EncodableBuiltinType: TypeAlias = "None | bool | int | float | str | bytes | bytearray"
-EncodableBuiltinCollectionType: TypeAlias = "list | tuple | set | frozenset | dict"
+EncodableBuiltinCollectionType: TypeAlias = "list | tuple | set | frozenset | dict | Collection"
 EncodableStdLibType: TypeAlias = (
     "date | datetime | deque | time | UUID | Decimal | Enum | IntEnum | DataclassProtocol | Path | PurePath | Pattern"
 )
