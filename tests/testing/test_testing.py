@@ -22,6 +22,11 @@ _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
 pet = PetFactory.build()
 
 
+async def test_request_factory_empty_body() -> None:
+    request = RequestFactory().post(data={})
+    await request.body()
+
+
 def test_request_factory_no_cookie_header() -> None:
     headers: Dict[str, str] = {}
     RequestFactory._create_cookie_header(headers)
