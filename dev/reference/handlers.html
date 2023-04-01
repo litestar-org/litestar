@@ -707,12 +707,6 @@ are used to deliver static files.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.handlers.ASGIRouteHandler.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#starlite.types.AsyncAnyCallable" title="starlite.types.AsyncAnyCallable"><span class="pre">AsyncAnyCallable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.handlers.ASGIRouteHandler" title="starlite.handlers.ASGIRouteHandler"><span class="pre">ASGIRouteHandler</span></a></span></span><a class="headerlink" href="#starlite.handlers.ASGIRouteHandler.__call__" title="Permalink to this definition">#</a></dt>
-<dd><p>Replace a function with itself.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -744,6 +738,12 @@ wherever you have access to <a class="reference internal" href="connection.html#
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.handlers.BaseRouteHandler.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#starlite.types.AsyncAnyCallable" title="starlite.types.AsyncAnyCallable"><span class="pre">AsyncAnyCallable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#starlite.handlers.BaseRouteHandler.__call__" title="Permalink to this definition">#</a></dt>
+<dd><p>Replace a function with itself.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1561,12 +1561,6 @@ wherever you have access to <a class="reference internal" href="connection.html#
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="starlite.handlers.WebsocketRouteHandler.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#starlite.types.AsyncAnyCallable" title="starlite.types.AsyncAnyCallable"><span class="pre">AsyncAnyCallable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#starlite.handlers.WebsocketRouteHandler" title="starlite.handlers.WebsocketRouteHandler"><span class="pre">WebsocketRouteHandler</span></a></span></span><a class="headerlink" href="#starlite.handlers.WebsocketRouteHandler.__call__" title="Permalink to this definition">#</a></dt>
-<dd><p>Replace a function with itself.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -1621,11 +1615,11 @@ wherever you have access to <a class="reference internal" href="connection.html#
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.asgi"><code class="docutils literal notranslate"><span class="pre">asgi</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.ASGIRouteHandler"><code class="docutils literal notranslate"><span class="pre">ASGIRouteHandler</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.ASGIRouteHandler.__init__"><code class="docutils literal notranslate"><span class="pre">ASGIRouteHandler.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.ASGIRouteHandler.__call__"><code class="docutils literal notranslate"><span class="pre">ASGIRouteHandler.__call__()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.__init__"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.__call__"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.__call__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.handler_name"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.handler_name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.dependency_name_set"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.dependency_name_set</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.ownership_layers"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.ownership_layers</span></code></a></li>
@@ -1681,7 +1675,6 @@ wherever you have access to <a class="reference internal" href="connection.html#
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.websocket"><code class="docutils literal notranslate"><span class="pre">websocket</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.WebsocketRouteHandler"><code class="docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.WebsocketRouteHandler.__init__"><code class="docutils literal notranslate"><span class="pre">WebsocketRouteHandler.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.WebsocketRouteHandler.__call__"><code class="docutils literal notranslate"><span class="pre">WebsocketRouteHandler.__call__()</span></code></a></li>
 </ul>
 </li>
 </ul>
