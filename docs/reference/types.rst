@@ -189,3 +189,15 @@ File types
 
 .. autoclass:: starlite.types.FileSystemProtocol
     :members:
+
+Parsed signature types
+----------------------
+
+.. autoclass:: starlite.types.parsed_signature.ParsedSignature
+    :members:
+
+.. autoclass:: starlite.types.parsed_signature.ParsedParameter
+    :members:
+
+.. autoclass:: starlite.types.parsed_signature.ParsedAnnotation
+    :members:

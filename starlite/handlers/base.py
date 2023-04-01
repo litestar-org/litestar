@@ -7,11 +7,9 @@ from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 from starlite._signature.field import SignatureField
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Dependencies, Empty, EmptyType, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
+from starlite.types.parsed_signature import ParsedSignature
 from starlite.utils import AsyncCallable, Ref, get_name, normalize_path
 from starlite.utils.helpers import unwrap_partial
-
-__all__ = ("BaseRouteHandler",)
-
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -24,6 +22,8 @@ if TYPE_CHECKING:
     from starlite.router import Router
     from starlite.types import AsyncAnyCallable, ExceptionHandler
     from starlite.types.composite_types import MaybePartial
+
+__all__ = ("BaseRouteHandler",)
 
 T = TypeVar("T", bound="BaseRouteHandler")
 
@@ -38,6 +38,7 @@ class BaseRouteHandler(Generic[T]):
 
     __slots__ = (
         "_fn",
+        "_parsed_fn_signature",
         "_resolved_dependencies",
         "_resolved_guards",
         "_resolved_layered_parameters",
@@ -88,6 +89,7 @@ class BaseRouteHandler(Generic[T]):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
         self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
         self._resolved_guards: list[Guard] | EmptyType = Empty
         self._resolved_layered_parameters: dict[str, SignatureField] | EmptyType = Empty
@@ -131,6 +133,22 @@ class BaseRouteHandler(Generic[T]):
         if not hasattr(self, "_fn"):
             raise ImproperlyConfiguredException("Handler has not decorated a function")
         return self._fn
+
+    @property
+    def parsed_fn_signature(self) -> ParsedSignature:
+        """Return the parsed signature of the handler function.
+
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            A :class:`ParsedSignature <.types.parsed_signature.ParsedSignature>` instance
+        """
+        if self._parsed_fn_signature is Empty:
+            self._parsed_fn_signature = ParsedSignature.from_fn(
+                unwrap_partial(self.fn.value), self.resolve_signature_namespace()
+            )
+
+        return cast("ParsedSignature", self._parsed_fn_signature)
 
     @property
     def handler_name(self) -> str:

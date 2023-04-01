@@ -28,7 +28,11 @@ from typing_extensions import Annotated, NotRequired, Required, TypeGuard, get_a
 
 from starlite.types.builtin_types import NoneType
 
-__all__ = ("annotation_is_iterable_of_type", "make_non_optional_union")
+__all__ = (
+    "annotation_is_iterable_of_type",
+    "make_non_optional_union",
+    "unwrap_annotation",
+)
 
 
 T = TypeVar("T")
@@ -134,3 +138,23 @@ def get_origin_or_inner_type(annotation: Any) -> Any:
             return types_mapping[origin]
         return origin
     return None
+
+
+def unwrap_annotation(annotation: Any) -> tuple[Any, tuple[Any, ...]]:
+    """Remove "wrapper" annotation types, such as ``Annotated``, ``Required``, and ``NotRequired``.
+
+    Note:
+        ``annotation`` should have been retrieved from :func:`get_type_hints()` with ``include_extras=True``. This
+        ensures that any nested ``Annotated`` types are flattened according to the PEP 593 specification.
+
+    Args:
+        annotation: A type annotation.
+
+    Returns:
+        A tuple of the unwrapped annotation and any ``Annotated`` metadata.
+    """
+    origin = get_origin(annotation)
+    if origin not in {Annotated, Required, NotRequired}:
+        return annotation, ()
+    annotation, *meta = get_args(annotation)
+    return annotation, tuple(meta)
