@@ -35,6 +35,8 @@ if TYPE_CHECKING:
 
     from starlite.types import DataclassProtocol
 
+__all__ = ("StarliteEncodableType",)
+
 EncodableBuiltinType: TypeAlias = "None | bool | int | float | str | bytes | bytearray"
 EncodableBuiltinCollectionType: TypeAlias = "list | tuple | set | frozenset | dict | Collection"
 EncodableStdLibType: TypeAlias = (
