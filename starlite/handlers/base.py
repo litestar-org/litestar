@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import copy
+from inspect import Signature
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
 from starlite._signature.field import SignatureField
@@ -13,7 +14,7 @@ __all__ = ("BaseRouteHandler",)
 
 
 if TYPE_CHECKING:
-    from inspect import Signature
+    from typing_extensions import Self
 
     from starlite._signature.models import SignatureModel
     from starlite.connection import ASGIConnection
@@ -21,7 +22,7 @@ if TYPE_CHECKING:
     from starlite.di import Provide
     from starlite.params import ParameterKwarg
     from starlite.router import Router
-    from starlite.types import AnyCallable, ExceptionHandler
+    from starlite.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
     from starlite.types.composite_types import MaybePartial
 
 T = TypeVar("T", bound="BaseRouteHandler")
@@ -110,6 +111,13 @@ class BaseRouteHandler(Generic[T]):
         )
         self.opt.update(**kwargs)
         self.type_encoders = type_encoders
+
+    def __call__(self, fn: AsyncAnyCallable) -> Self:
+        """Replace a function with itself."""
+        self.fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
+        self.signature = Signature.from_callable(fn)
+        self._validate_handler_function()
+        return self
 
     @property
     def handler_name(self) -> str:

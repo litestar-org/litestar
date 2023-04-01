@@ -45,7 +45,7 @@ from starlite.types import (
     ResponseType,
     TypeEncodersMap,
 )
-from starlite.utils import AsyncCallable, Ref, is_async_callable, is_class_and_subclass
+from starlite.utils import AsyncCallable, is_async_callable, is_class_and_subclass
 
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
@@ -274,10 +274,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
-        self.fn = Ref["MaybePartial[AnyCallable]"](fn)
-        self.signature = Signature.from_callable(fn)
-        self._validate_handler_function()
-
+        super().__call__(fn)
         if not self.media_type:
             if self.signature.return_annotation in {str, bytes, AnyStr, Redirect, File} or any(
                 is_class_and_subclass(self.signature.return_annotation, t_type) for t_type in (str, bytes)  # type: ignore
