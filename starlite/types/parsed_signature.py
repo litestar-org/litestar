@@ -16,14 +16,16 @@ if TYPE_CHECKING:
     from starlite.types import AnyCallable
 
 __all__ = (
-    "ParsedAnnotation",
+    "ParsedType",
     "ParsedParameter",
     "ParsedSignature",
 )
 
 
 @dataclass
-class ParsedAnnotation:
+class ParsedType:
+    """Represents a type annotation."""
+
     raw: Any
     """The annotation exactly as parsed from the callable."""
     annotation: Any
@@ -36,7 +38,7 @@ class ParsedAnnotation:
     """Any metadata associated with the annotation via ``Annotated``."""
 
     @classmethod
-    def from_parameter(cls, parameter: Parameter, fn_type_hints: dict[str, Any]) -> ParsedAnnotation:
+    def from_parameter(cls, parameter: Parameter, fn_type_hints: dict[str, Any]) -> ParsedType:
         """Initialize ParsedSignatureAnnotation.
 
         Args:
@@ -50,7 +52,7 @@ class ParsedAnnotation:
         raw = fn_type_hints.get(parameter.name, Empty)
         unwrapped, metadata = unwrap_annotation(raw)
 
-        return ParsedAnnotation(
+        return ParsedType(
             raw=parameter.annotation,
             annotation=unwrapped,
             origin=get_origin(unwrapped),
@@ -61,13 +63,13 @@ class ParsedAnnotation:
 
 @dataclass
 class ParsedParameter:
-    """Represents the parameters of a callable for purpose of signature model generation."""
+    """Represents the parameters of a callable."""
 
     name: str
     """The name of the parameter."""
     default: Any | Empty
     """The default value of the parameter."""
-    annotation: ParsedAnnotation
+    annotation: ParsedType
     """The annotation of the parameter."""
 
     @classmethod
@@ -84,7 +86,7 @@ class ParsedParameter:
         return ParsedParameter(
             name=parameter.name,
             default=Empty if parameter.default is Signature.empty else parameter.default,
-            annotation=ParsedAnnotation.from_parameter(parameter, fn_type_hints),
+            annotation=ParsedType.from_parameter(parameter, fn_type_hints),
         )
 
 
@@ -99,7 +101,7 @@ class ParsedSignature:
 
     parameters: dict[str, ParsedParameter]
     """A mapping of parameter names to ParsedSignatureParameter instances."""
-    return_annotation: ParsedAnnotation
+    return_annotation: ParsedType
     """The return annotation of the callable."""
 
     @classmethod
@@ -125,7 +127,7 @@ class ParsedSignature:
         return_annotation, return_annotation_meta = unwrap_annotation(raw_return_annotation)
         return ParsedSignature(
             parameters={p.name: p for p in parameters},
-            return_annotation=ParsedAnnotation(
+            return_annotation=ParsedType(
                 raw=raw_return_annotation,
                 annotation=return_annotation,
                 origin=get_origin(return_annotation),

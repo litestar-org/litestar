@@ -199,5 +199,5 @@ Parsed signature types
 .. autoclass:: starlite.types.parsed_signature.ParsedParameter
     :members:
 
-.. autoclass:: starlite.types.parsed_signature.ParsedAnnotation
+.. autoclass:: starlite.types.parsed_signature.ParsedType
     :members:
