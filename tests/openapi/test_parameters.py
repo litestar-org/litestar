@@ -1,7 +1,7 @@
-import random
 from typing import TYPE_CHECKING, List, Optional, cast
 
 import pytest
+from polyfactory import BaseFactory
 
 from starlite import Controller, Router, Starlite, get
 from starlite._openapi.parameters import create_parameter_for_handler
@@ -45,7 +45,7 @@ def _create_parameters(app: Starlite, path: str) -> List["OpenAPIParameter"]:
 
 
 def test_create_parameters() -> None:
-    random.seed(1)
+    BaseFactory.seed_random(1)
     parameters = _create_parameters(app=Starlite(route_handlers=[PersonController]), path="/{service_id}/person")
     assert len(parameters) == 9
     page, name, page_size, service_id, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)

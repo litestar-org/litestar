@@ -15,20 +15,19 @@ from typing import (
     cast,
 )
 
-from pydantic import BaseConfig, BaseModel, create_model
+from pydantic import BaseConfig, BaseModel, create_model, create_model_from_typeddict
+from pydantic.dataclasses import dataclass as pydantic_dataclass
 from pydantic.fields import SHAPE_SINGLETON, ModelField, Undefined
 from pydantic.generics import GenericModel
-from pydantic_factories import ModelFactory
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.plugins import SerializationPluginProtocol, get_plugin_for_value
 from starlite.utils import (
-    convert_dataclass_to_model,
-    convert_typeddict_to_model,
     is_async_callable,
     is_dataclass_class,
     is_typed_dict,
 )
+from starlite.utils.predicates import is_pydantic_constrained_field
 
 __all__ = ("DTO", "DTOFactory")
 
@@ -267,9 +266,9 @@ class DTOFactory:
             source.update_forward_refs()
             fields = source.__fields__
         elif is_dataclass_class(source):
-            fields = convert_dataclass_to_model(source).__fields__
+            fields = pydantic_dataclass(source).__pydantic_model__.__fields__
         elif is_typed_dict(source):
-            fields = convert_typeddict_to_model(source).__fields__
+            fields = create_model_from_typeddict(source).__fields__
 
         if fields:
             return fields, plugin
@@ -304,7 +303,7 @@ class DTOFactory:
     ) -> None:
         if field_name in field_mapping:
             field_name, field_type = cls._remap_field(field_mapping, field_name, field_type)
-            if ModelFactory.is_constrained_field(field_type):
+            if is_pydantic_constrained_field(field_type):
                 field_definitions[field_name] = (field_type, ...)
             elif model_field.field_info.default not in (Undefined, None, ...):
                 field_definitions[field_name] = (field_type, model_field.default)
@@ -315,7 +314,7 @@ class DTOFactory:
         else:
             # prevents losing Optional
             field_type = Optional[field_type] if model_field.allow_none else field_type
-            if ModelFactory.is_constrained_field(field_type):
+            if is_pydantic_constrained_field(field_type):
                 field_definitions[field_name] = (field_type, ...)
             else:
                 field_definitions[field_name] = (field_type, model_field.field_info)

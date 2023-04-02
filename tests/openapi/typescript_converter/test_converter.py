@@ -1,6 +1,7 @@
 from sys import version_info
 
 import pytest
+from polyfactory import BaseFactory
 
 from starlite import Starlite
 from starlite._openapi.typescript_converter.converter import (
@@ -11,6 +12,7 @@ from tests.openapi.utils import PersonController, PetController
 
 @pytest.mark.skipif(version_info < (3, 10), reason="flaky in python 3.9 and lower")
 def test_openapi_to_typescript_converter() -> None:
+    BaseFactory.seed_random(1)
     app = Starlite(route_handlers=[PersonController, PetController])
     assert app.openapi_schema
 
@@ -256,7 +258,7 @@ def test_openapi_to_typescript_converter() -> None:
         "\tid: string;\n"
         "\tlast_name: string;\n"
         "\toptional: null | string;\n"
-        "\tpets: null | {\n"
+        "\tpets?: null | {\n"
         "\tage: number;\n"
         "\tname: string;\n"
         '\tspecies?: "Cat" | "Dog" | "Monkey" | "Pig";\n'

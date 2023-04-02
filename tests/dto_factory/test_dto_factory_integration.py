@@ -2,8 +2,8 @@ import json
 from typing import Any
 
 import pytest
+from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel
-from pydantic_factories import ModelFactory
 
 from starlite import post
 from starlite.dto import DTOFactory
