@@ -13,6 +13,7 @@ from starlite.template.config import TemplateConfig
 from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
+    from starlite import Request
     from starlite.template import TemplateEngineProtocol
 
 
@@ -105,3 +106,21 @@ def test_media_type_inferred(extension: str, expected_type: MediaType, template_
         res = client.get("/")
         assert res.status_code == 200
         assert res.headers["content-type"].startswith(expected_type.value)
+
+
+def test_before_request_handler_content_type(template_dir: Path) -> None:
+    (template_dir / "about.html").write_text("about starlite...")
+
+    def before_request_handler(request: "Request") -> None:
+        return None
+
+    @get("/", before_request=before_request_handler)
+    def index() -> Template:
+        return Template(name="about.html")
+
+    with create_test_client(
+        [index], template_config=TemplateConfig(directory=template_dir, engine=JinjaTemplateEngine)
+    ) as client:
+        res = client.get("/")
+        assert res.status_code == 200
+        assert res.headers["content-type"].startswith(MediaType.HTML.value)
