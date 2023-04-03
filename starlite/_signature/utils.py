@@ -29,6 +29,8 @@ except ImportError:
     AttrsSignatureModel = Empty  # type: ignore
 
 if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
     from starlite._signature.models.base import SignatureModel
     from starlite.plugins import SerializationPluginProtocol
     from starlite.types.parsed_signature import ParsedParameter, ParsedSignature
@@ -37,6 +39,9 @@ __all__ = (
     "create_signature_model",
     "get_signature_model",
 )
+
+
+SignatureModelType: TypeAlias = "type[SignatureModel]"
 
 
 def create_signature_model(
@@ -94,7 +99,7 @@ def create_signature_model(
 def get_signature_model(value: Any) -> type[SignatureModel]:
     """Retrieve and validate the signature model from a provider or handler."""
     try:
-        return cast("type[SignatureModel]", value.signature_model)
+        return cast(SignatureModelType, value.signature_model)
     except AttributeError as e:  # pragma: no cover
         raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
 
@@ -170,8 +175,8 @@ def _get_signature_model_type(
             or _any_pydantic_annotation(parsed_signature, field_plugin_mappings)
         )
     ):
-        return cast("type[SignatureModel]", PydanticSignatureModel)
-    return cast("type[SignatureModel]", AttrsSignatureModel)
+        return cast(SignatureModelType, PydanticSignatureModel)
+    return cast(SignatureModelType, AttrsSignatureModel)
 
 
 def _get_type_annotation_from_plugin_mapping(parameter: ParsedParameter, plugin_mapping: PluginMapping) -> Any:
