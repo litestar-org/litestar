@@ -23,6 +23,7 @@ from starlite.response import (
 from starlite.response_containers import File, Redirect, Stream, Template
 from starlite.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from starlite.testing import RequestFactory, create_test_client
+from starlite.types.parsed_signature import ParsedSignature
 from tests import Person, PersonFactory
 
 if TYPE_CHECKING:
@@ -94,8 +95,8 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         fn=test_function.fn.value,
         plugins=[],
         preferred_validation_backend="pydantic",
-        signature_namespace={},
         dependency_name_set=set(),
+        parsed_signature=ParsedSignature.from_fn(test_function.fn.value, {}),
     )
 
     response = await test_function.to_response(

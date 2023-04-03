@@ -7,6 +7,7 @@ from typing import Any, List, Optional, Union
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
 
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.builtin_types import NoneType
 from starlite.types.empty import Empty
 from starlite.types.parsed_signature import ParsedParameter, ParsedSignature, ParsedType
@@ -147,7 +148,14 @@ def test_parsed_parameter() -> None:
     parsed_param = ParsedParameter.from_parameter(param, {"foo": int})
     assert parsed_param.name == "foo"
     assert parsed_param.default is Empty
-    assert parsed_param.annotation.annotation is int
+    assert parsed_param.parsed_type.annotation is int
+
+
+def test_parsed_parameter_raises_improperly_configured_if_no_annotation() -> None:
+    """Test ParsedParameter raises ImproperlyConfigured if no annotation."""
+    param = Parameter("foo", Parameter.POSITIONAL_OR_KEYWORD)
+    with pytest.raises(ImproperlyConfiguredException):
+        ParsedParameter.from_parameter(param, {})
 
 
 def test_parsed_parameter_has_default_predicate() -> None:
@@ -169,7 +177,7 @@ def test_parsed_signature() -> None:
 
     parsed_sig = ParsedSignature.from_fn(fn, get_fn_type_hints(fn))
     assert parsed_sig.return_annotation.annotation is NoneType
-    assert parsed_sig.parameters["foo"].annotation.annotation is int
-    assert parsed_sig.parameters["bar"].annotation.args == (List[int], NoneType)
-    assert parsed_sig.parameters["bar"].annotation.annotation == Union[List[int], NoneType]
+    assert parsed_sig.parameters["foo"].parsed_type.annotation is int
+    assert parsed_sig.parameters["bar"].parsed_type.args == (List[int], NoneType)
+    assert parsed_sig.parameters["bar"].parsed_type.annotation == Union[List[int], NoneType]
     assert parsed_sig.parameters["bar"].default is None

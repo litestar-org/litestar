@@ -14,9 +14,9 @@ from starlite.types import Empty
 from starlite.utils.predicates import is_pydantic_constrained_field
 
 if TYPE_CHECKING:
-    from starlite._signature.parsing import ParsedSignatureParameter
     from starlite.connection import ASGIConnection
     from starlite.plugins import PluginMapping
+    from starlite.types.parsed_signature import ParsedSignature
 
 __all__ = ("PydanticSignatureModel",)
 
@@ -127,49 +127,46 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         cls,
         fn_name: str,
         fn_module: str | None,
-        parsed_params: list[ParsedSignatureParameter],
-        return_annotation: Any,
+        parsed_signature: ParsedSignature,
         field_plugin_mappings: dict[str, PluginMapping],
         dependency_names: set[str],
+        type_overrides: dict[str, Any],
     ) -> type[PydanticSignatureModel]:
         """Create a pydantic based SignatureModel.
 
         Args:
             fn_name: Name of the callable.
             fn_module: Name of the function's module, if any.
-            parsed_params: A list of parsed signature parameters.
-            return_annotation: Annotation for the callable's return value.
+            parsed_signature: A ParsedSignature instance.
             field_plugin_mappings: A mapping of field names to plugin mappings.
             dependency_names: A set of dependency names.
+            type_overrides: A dictionary of type overrides, either will override a parameter type with a type derived
+                from a plugin, or set the type to ``Any`` if validation should be skipped for the parameter.
 
         Returns:
             The created PydanticSignatureModel.
         """
         field_definitions: dict[str, tuple[Any, Any]] = {}
 
-        for parameter in parsed_params:
+        for parameter in parsed_signature.parameters.values():
+            field_type = type_overrides.get(parameter.name, parameter.parsed_type.annotation)
+
             if isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
                 field_info = FieldInfo(
                     **asdict(parameter.default), kwargs_model=parameter.default, parsed_parameter=parameter
                 )
             else:
                 field_info = FieldInfo(default=..., parsed_parameter=parameter)
-            if parameter.should_skip_validation:
-                field_type = Any
-                if isinstance(parameter.default, DependencyKwarg):
-                    field_info.default = parameter.default.default if parameter.default.default is not Empty else None
+
+            if isinstance(parameter.default, DependencyKwarg):
+                field_info.default = parameter.default.default if parameter.default.default is not Empty else None
             elif isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
-                field_type = parameter.annotation
                 field_info.default = parameter.default.default if parameter.default.default is not Empty else Undefined
             elif is_pydantic_constrained_field(parameter.default):
                 field_type = parameter.default
-            elif parameter.default_defined:
-                field_type = parameter.annotation
+            elif parameter.has_default:
                 field_info.default = parameter.default
-            elif not parameter.optional:
-                field_type = parameter.annotation
-            else:
-                field_type = parameter.annotation
+            elif parameter.parsed_type.is_optional:
                 field_info.default = None
 
             field_definitions[parameter.name] = (field_type, field_info)
@@ -180,7 +177,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
             __module__=fn_module or "pydantic.main",
             **field_definitions,
         )
-        model.return_annotation = return_annotation
+        model.return_annotation = parsed_signature.return_annotation.annotation
         model.field_plugin_mappings = field_plugin_mappings
         model.dependency_name_set = dependency_names
         model.populate_signature_fields()

@@ -7,8 +7,10 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
-from starlite.types.empty import Empty
+from starlite.datastructures.state import ImmutableState
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types.builtin_types import UNION_TYPES, NoneType
+from starlite.types.empty import Empty
 from starlite.utils.signature_parsing import get_fn_type_hints
 from starlite.utils.typing import get_safe_generic_origin, unwrap_annotation
 
@@ -24,7 +26,7 @@ __all__ = (
 )
 
 
-@dataclass
+@dataclass(frozen=True)
 class ParsedType:
     """Represents a type annotation."""
 
@@ -63,7 +65,7 @@ class ParsedType:
         return self.origin and issubclass(self.origin, Collection)
 
     @classmethod
-    def from_annotation(cls, annotation: Parameter) -> ParsedType:
+    def from_annotation(cls, annotation: Any) -> ParsedType:
         """Initialize ParsedSignatureAnnotation.
 
         Args:
@@ -92,7 +94,7 @@ class ParsedType:
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class ParsedParameter:
     """Represents the parameters of a callable."""
 
@@ -100,8 +102,13 @@ class ParsedParameter:
     """The name of the parameter."""
     default: Any | Empty
     """The default value of the parameter."""
-    annotation: ParsedType
+    parsed_type: ParsedType
     """The annotation of the parameter."""
+
+    @property
+    def annotation(self) -> Any:
+        """The annotation of the parameter."""
+        return self.parsed_type.annotation
 
     @property
     def has_default(self) -> bool:
@@ -120,14 +127,28 @@ class ParsedParameter:
         Returns:
             ParsedSignatureParameter.
         """
+        try:
+            annotation = fn_type_hints[parameter.name]
+        except KeyError as err:
+            raise ImproperlyConfiguredException(
+                f"'{parameter.name}' does not have a type annotation. If it should receive any value, use 'Any'."
+            ) from err
+
+        if parameter.name == "state" and not issubclass(annotation, ImmutableState):
+            raise ImproperlyConfiguredException(
+                f"The type annotation `{annotation}` is an invalid type for the 'state' reserved kwarg. "
+                "It must be typed to a subclass of `starlite.datastructures.ImmutableState` or "
+                "`starlite.datastructures.State`."
+            )
+
         return ParsedParameter(
             name=parameter.name,
             default=Empty if parameter.default is Signature.empty else parameter.default,
-            annotation=ParsedType.from_annotation(fn_type_hints[parameter.name]),
+            parsed_type=ParsedType.from_annotation(annotation),
         )
 
 
-@dataclass
+@dataclass(frozen=True)
 class ParsedSignature:
     """Parsed signature.
 

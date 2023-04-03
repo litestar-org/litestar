@@ -39,6 +39,7 @@ from starlite.static_files.base import StaticFiles
 from starlite.stores.registry import StoreRegistry
 from starlite.types import Empty
 from starlite.types.internal_types import PathParameterDefinition
+from starlite.types.parsed_signature import ParsedSignature
 from starlite.utils import (
     as_async_callable_list,
     async_partial,
@@ -47,6 +48,7 @@ from starlite.utils import (
     unique,
 )
 from starlite.utils.dataclass import extract_dataclass_items
+from starlite.utils.helpers import unwrap_partial
 
 __all__ = ("HandlerIndex", "Starlite")
 
@@ -743,7 +745,7 @@ class Starlite(Router):
                 fn=cast("AnyCallable", route_handler.fn.value),
                 plugins=self.serialization_plugins,
                 preferred_validation_backend=self.preferred_validation_backend,
-                signature_namespace=route_handler.resolve_signature_namespace(),
+                parsed_signature=route_handler.parsed_fn_signature,
             )
 
         for provider in route_handler.resolve_dependencies().values():
@@ -753,7 +755,9 @@ class Starlite(Router):
                     fn=provider.dependency.value,
                     plugins=self.serialization_plugins,
                     preferred_validation_backend=self.preferred_validation_backend,
-                    signature_namespace=route_handler.resolve_signature_namespace(),
+                    parsed_signature=ParsedSignature.from_fn(
+                        unwrap_partial(provider.dependency.value), route_handler.resolve_signature_namespace()
+                    ),
                 )
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
