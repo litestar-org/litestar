@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Collection
 from dataclasses import dataclass
 from inspect import Parameter, Signature
 from typing import TYPE_CHECKING
@@ -7,6 +8,7 @@ from typing import TYPE_CHECKING
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
 from starlite.types.empty import Empty
+from starlite.types.builtin_types import UNION_TYPES, NoneType
 from starlite.utils.signature_parsing import get_fn_type_hints
 from starlite.utils.typing import get_safe_generic_origin, unwrap_annotation
 
@@ -47,6 +49,18 @@ class ParsedType:
 
     This is to serve safely rebuilding a generic outer type with different args at runtime.
     """
+    inner_annotations: tuple[ParsedType, ...]
+    """The type's generic args parsed as ``ParsedType``, if applicable."""
+
+    @property
+    def is_optional(self) -> bool:
+        """Whether the annotation is Optional or not."""
+        return bool(self.origin in UNION_TYPES and NoneType in self.args)
+
+    @property
+    def is_collection(self) -> bool:
+        """Whether the annotation is a collection type or not."""
+        return self.origin and issubclass(self.origin, Collection)
 
     @classmethod
     def from_annotation(cls, annotation: Parameter) -> ParsedType:
@@ -63,16 +77,18 @@ class ParsedType:
         unwrapped, metadata, wrappers = unwrap_annotation(annotation)
 
         origin = get_origin(unwrapped)
+        args = get_args(unwrapped)
         return ParsedType(
             raw=annotation,
             annotation=unwrapped,
             origin=origin,
-            args=get_args(unwrapped),
+            args=args,
             metadata=metadata,
             is_annotated=Annotated in wrappers,
             is_required=Required in wrappers,
             is_not_required=NotRequired in wrappers,
             safe_generic_origin=get_safe_generic_origin(origin),
+            inner_annotations=tuple(cls.from_annotation(arg) for arg in args),
         )
 
 
@@ -86,6 +102,11 @@ class ParsedParameter:
     """The default value of the parameter."""
     annotation: ParsedType
     """The annotation of the parameter."""
+
+    @property
+    def has_default(self) -> bool:
+        """Whether the parameter has a default value or not."""
+        return self.default is not Empty
 
     @classmethod
     def from_parameter(cls, parameter: Parameter, fn_type_hints: dict[str, Any]) -> ParsedParameter:

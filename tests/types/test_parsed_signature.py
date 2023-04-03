@@ -23,47 +23,122 @@ class _TD(TypedDict):
 
 
 test_type_hints = get_type_hints(_TD, include_extras=True)
+parsed_type_int = ParsedType.from_annotation(int)
 
 
 @pytest.mark.parametrize(
     ("annotation", "expected"),
     [
-        (int, ParsedType(int, int, None, (), (), False, False, False, None)),
-        (List[int], ParsedType(List[int], List[int], list, (int,), (), False, False, False, List)),
-        (Annotated[int, "foo"], ParsedType(Annotated[int, "foo"], int, None, (), ("foo",), True, False, False, None)),
+        (int, ParsedType(int, int, None, (), (), False, False, False, None, ())),
+        (List[int], ParsedType(List[int], List[int], list, (int,), (), False, False, False, List, (parsed_type_int,))),
+        (
+            Annotated[int, "foo"],
+            ParsedType(Annotated[int, "foo"], int, None, (), ("foo",), True, False, False, None, ()),
+        ),
         (
             Annotated[List[int], "foo"],
-            ParsedType(Annotated[List[int], "foo"], List[int], list, (int,), ("foo",), True, False, False, List),
+            ParsedType(
+                Annotated[List[int], "foo"],
+                List[int],
+                list,
+                (int,),
+                ("foo",),
+                True,
+                False,
+                False,
+                List,
+                (parsed_type_int,),
+            ),
         ),
         (
             test_type_hints["req_int"],
-            ParsedType(test_type_hints["req_int"], int, None, (), (), False, True, False, None),
+            ParsedType(test_type_hints["req_int"], int, None, (), (), False, True, False, None, ()),
         ),
         (
             test_type_hints["req_list_int"],
-            ParsedType(test_type_hints["req_list_int"], List[int], list, (int,), (), False, True, False, List),
+            ParsedType(
+                test_type_hints["req_list_int"],
+                List[int],
+                list,
+                (int,),
+                (),
+                False,
+                True,
+                False,
+                List,
+                (parsed_type_int,),
+            ),
         ),
         (
             test_type_hints["not_req_int"],
-            ParsedType(test_type_hints["not_req_int"], int, None, (), (), False, False, True, None),
+            ParsedType(test_type_hints["not_req_int"], int, None, (), (), False, False, True, None, ()),
         ),
         (
             test_type_hints["not_req_list_int"],
-            ParsedType(test_type_hints["not_req_list_int"], List[int], list, (int,), (), False, False, True, List),
+            ParsedType(
+                test_type_hints["not_req_list_int"],
+                List[int],
+                list,
+                (int,),
+                (),
+                False,
+                False,
+                True,
+                List,
+                (parsed_type_int,),
+            ),
         ),
         (
             test_type_hints["ann_req_int"],
-            ParsedType(test_type_hints["ann_req_int"], int, None, (), ("foo",), True, True, False, None),
+            ParsedType(test_type_hints["ann_req_int"], int, None, (), ("foo",), True, True, False, None, ()),
         ),
         (
             test_type_hints["ann_req_list_int"],
-            ParsedType(test_type_hints["ann_req_list_int"], List[int], list, (int,), ("foo",), True, True, False, List),
+            ParsedType(
+                test_type_hints["ann_req_list_int"],
+                List[int],
+                list,
+                (int,),
+                ("foo",),
+                True,
+                True,
+                False,
+                List,
+                (parsed_type_int,),
+            ),
         ),
     ],
 )
 def test_parsed_type_from_annotation(annotation: Any, expected: ParsedType) -> None:
     """Test ParsedType.from_annotation."""
     assert ParsedType.from_annotation(annotation) == expected
+
+
+def test_parsed_type_from_union_annotation() -> None:
+    """Test ParsedType.from_annotation for Union."""
+    annotation = Union[int, List[int]]
+    expected = ParsedType(
+        annotation,
+        annotation,
+        Union,
+        (int, List[int]),
+        (),
+        False,
+        False,
+        False,
+        Union,
+        (ParsedType.from_annotation(int), ParsedType.from_annotation(List[int])),
+    )
+    assert ParsedType.from_annotation(annotation) == expected
+
+
+def test_parsed_type_is_optional_predicate() -> None:
+    """Test ParsedType.is_optional."""
+    assert ParsedType.from_annotation(int).is_optional is False
+    assert ParsedType.from_annotation(Optional[int]).is_optional is True
+    assert ParsedType.from_annotation(Union[int, None]).is_optional is True
+    assert ParsedType.from_annotation(Union[int, None, str]).is_optional is True
+    assert ParsedType.from_annotation(Union[int, str]).is_optional is False
 
 
 def test_parsed_parameter() -> None:
@@ -73,6 +148,17 @@ def test_parsed_parameter() -> None:
     assert parsed_param.name == "foo"
     assert parsed_param.default is Empty
     assert parsed_param.annotation.annotation is int
+
+
+def test_parsed_parameter_has_default_predicate() -> None:
+    """Test ParsedParameter.has_default."""
+    param = Parameter("foo", Parameter.POSITIONAL_OR_KEYWORD, annotation=int)
+    parsed_param = ParsedParameter.from_parameter(param, {"foo": int})
+    assert parsed_param.has_default is False
+
+    param = Parameter("foo", Parameter.POSITIONAL_OR_KEYWORD, annotation=int, default=42)
+    parsed_param = ParsedParameter.from_parameter(param, {"foo": int})
+    assert parsed_param.has_default is True
 
 
 def test_parsed_signature() -> None:

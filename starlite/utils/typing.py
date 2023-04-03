@@ -27,10 +27,11 @@ from typing import (
 
 from typing_extensions import Annotated, NotRequired, Required, TypeGuard, get_args, get_origin
 
-from starlite.types.builtin_types import NoneType
+from starlite.types.builtin_types import UNION_TYPES, NoneType
 
 __all__ = (
     "annotation_is_iterable_of_type",
+    "get_safe_generic_origin",
     "make_non_optional_union",
     "unwrap_annotation",
 )
@@ -91,6 +92,7 @@ _safe_generic_origin_map = {
     abc.AsyncIterable: t.AsyncIterable,
     abc.AsyncIterator: t.AsyncIterator,
     abc.Awaitable: t.Awaitable,
+    **{union_t: t.Union for union_t in UNION_TYPES},
 }
 """A mapping of types to equivalent types that are safe to be used as generics across all Python versions.
 
@@ -99,6 +101,7 @@ This is necessary because occasionally we want to rebuild a generic outer type w
 """
 
 wrapper_type_set = {Annotated, Required, NotRequired}
+"""Types that always contain a wrapped type annotation as their first arg."""
 
 
 def annotation_is_iterable_of_type(
