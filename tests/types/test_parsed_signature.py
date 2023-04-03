@@ -169,6 +169,14 @@ def test_parsed_parameter_has_default_predicate() -> None:
     assert parsed_param.has_default is True
 
 
+def test_parsed_parameter_annotation_property() -> None:
+    """Test ParsedParameter.annotation."""
+    param = Parameter("foo", Parameter.POSITIONAL_OR_KEYWORD, annotation=int)
+    parsed_param = ParsedParameter.from_parameter(param, {"foo": int})
+    assert parsed_param.parsed_type.annotation is int
+    assert parsed_param.annotation is int
+
+
 def test_parsed_signature() -> None:
     """Test ParsedSignature."""
 
