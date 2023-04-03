@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from copy import copy
-from inspect import Signature
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
 from starlite._signature.field import SignatureField
@@ -34,8 +33,6 @@ class BaseRouteHandler(Generic[T]):
     Serves as a subclass for all route handlers
     """
 
-    signature: Signature
-
     __slots__ = (
         "_fn",
         "_parsed_fn_signature",
@@ -52,7 +49,6 @@ class BaseRouteHandler(Generic[T]):
         "opt",
         "owner",
         "paths",
-        "signature",
         "signature_model",
         "signature_namespace",
         "type_encoders",
@@ -116,8 +112,6 @@ class BaseRouteHandler(Generic[T]):
     def __call__(self, fn: AsyncAnyCallable) -> Self:
         """Replace a function with itself."""
         self._fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
-        self.signature = Signature.from_callable(fn)
-        self._validate_handler_function()
         return self
 
     @property
@@ -304,6 +298,13 @@ class BaseRouteHandler(Generic[T]):
                     f"Provider for key {key} is already defined under the different key {dependency_key}. "
                     f"If you wish to override a provider, it must have the same key."
                 )
+
+    def on_startup(self) -> None:
+        """Called once per handler when the app object is instantiated."""
+        self._validate_handler_function()
+        self.resolve_guards()
+        self.resolve_middleware()
+        self.resolve_opts()
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""

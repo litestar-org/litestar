@@ -134,7 +134,8 @@ class BaseRoute(ABC):
         """
         if len(param.split(":")) != 2:
             raise ImproperlyConfiguredException(
-                "Path parameters should be declared with a type using the following pattern: '{parameter_name:type}', e.g. '/my-path/{my_param:int}'"
+                "Path parameters should be declared with a type using the following pattern: '{parameter_name:type}', "
+                "e.g. '/my-path/{my_param:int}'"
             )
         param_name, param_type = (p.strip() for p in param.split(":"))
         if not param_name:

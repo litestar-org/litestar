@@ -12,7 +12,6 @@ from typing_extensions import get_args, get_origin
 
 from starlite._openapi.schema_generation import create_schema
 from starlite._signature.field import SignatureField
-from starlite._signature.utils import get_signature_model
 from starlite.enums import MediaType
 from starlite.exceptions import HTTPException, ValidationException
 from starlite.openapi.spec import OpenAPIResponse
@@ -70,7 +69,7 @@ def create_success_response(
     schemas: dict[str, "Schema"],
 ) -> OpenAPIResponse:
     """Create the schema for a success response."""
-    return_annotation = get_signature_model(route_handler).return_annotation
+    return_annotation = route_handler.parsed_fn_signature.return_type.annotation
     default_descriptions: dict[Any, str] = {
         Stream: "Stream Response",
         Redirect: "Redirect Response",

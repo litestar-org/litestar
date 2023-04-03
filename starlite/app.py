@@ -518,15 +518,9 @@ class Starlite(Router):
             route_handlers = get_route_handlers(route)
 
             for route_handler in route_handlers:
-                self._create_handler_signature_model(route_handler=route_handler)
+                route_handler.on_startup()
                 self._set_runtime_callables(route_handler=route_handler)
-                route_handler.resolve_guards()
-                route_handler.resolve_middleware()
-                route_handler.resolve_opts()
-
-                if isinstance(route_handler, HTTPRouteHandler):
-                    route_handler.resolve_before_request()
-                    route_handler.resolve_after_response()
+                self._create_handler_signature_model(route_handler=route_handler)
 
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()

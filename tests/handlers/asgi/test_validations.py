@@ -15,25 +15,25 @@ def test_asgi_handler_validation() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(fn_without_scope_arg)
+        asgi(path="/")(fn_without_scope_arg).on_startup()
 
     async def fn_without_receive_arg(scope: "Scope", send: "Send") -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(fn_without_receive_arg)
+        asgi(path="/")(fn_without_receive_arg).on_startup()
 
     async def fn_without_send_arg(scope: "Scope", receive: "Receive") -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(fn_without_send_arg)
+        asgi(path="/")(fn_without_send_arg).on_startup()
 
     async def fn_with_return_annotation(scope: "Scope", receive: "Receive", send: "Send") -> dict:
         return {}
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(fn_with_return_annotation)
+        asgi(path="/")(fn_with_return_annotation).on_startup()
 
     asgi_handler_with_no_fn = asgi(path="/")
 
@@ -44,4 +44,4 @@ def test_asgi_handler_validation() -> None:
         return None
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(sync_fn)  # type: ignore
+        asgi(path="/")(sync_fn).on_startup()  # type: ignore

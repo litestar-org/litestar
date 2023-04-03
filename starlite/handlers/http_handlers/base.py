@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, AnyStr, Mapping, cast
 from typing_extensions import TypedDict
 
 from starlite._layers.utils import narrow_response_cookies, narrow_response_headers
-from starlite._signature.utils import get_signature_model
 from starlite.datastructures.cookie import Cookie
 from starlite.datastructures.response_header import ResponseHeader
 from starlite.enums import HttpMethod, MediaType
@@ -45,6 +44,7 @@ from starlite.types import (
     ResponseType,
     TypeEncodersMap,
 )
+from starlite.types.builtin_types import NoneType
 from starlite.utils import AsyncCallable, is_async_callable, is_class_and_subclass
 
 if TYPE_CHECKING:
@@ -275,14 +275,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
         super().__call__(fn)
-        if not self.media_type:
-            if self.signature.return_annotation in {str, bytes, AnyStr, Redirect, File} or any(
-                is_class_and_subclass(self.signature.return_annotation, t_type) for t_type in (str, bytes)  # type: ignore
-            ):
-                self.media_type = MediaType.TEXT
-            else:
-                self.media_type = MediaType.JSON
-
         return self
 
     def resolve_response_class(self) -> type[Response]:
@@ -411,7 +403,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             cookies = self.resolve_response_cookies()
             type_encoders = self.resolve_type_encoders()
 
-            return_annotation = get_signature_model(self).return_annotation
+            return_annotation = self.parsed_fn_signature.return_type.annotation
 
             if before_request_handler := self.resolve_before_request():
                 before_request_handler_signature = Signature.from_callable(before_request_handler)
@@ -479,11 +471,26 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
         return await response_handler(app=app, data=data, plugins=plugins, request=request)  # type: ignore
 
+    def on_startup(self) -> None:
+        super().on_startup()
+        self.resolve_before_request()
+        self.resolve_after_response()
+
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
 
-        if self.signature.return_annotation is Signature.empty:
+        return_annotation = self.parsed_fn_signature.return_type.annotation
+
+        if not self.media_type:
+            if return_annotation in {str, bytes, AnyStr, Redirect, File} or any(
+                is_class_and_subclass(return_annotation, t_type) for t_type in (str, bytes)  # type: ignore
+            ):
+                self.media_type = MediaType.TEXT
+            else:
+                self.media_type = MediaType.JSON
+
+        if return_annotation is Empty:
             raise ImproperlyConfiguredException(
                 "A return value of a route handler function should be type annotated."
                 "If your function doesn't return a value, annotate it as returning 'None'."
@@ -491,25 +498,24 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         if (
             self.status_code < 200 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
-        ) and self.signature.return_annotation not in {None, "None"}:
+        ) and return_annotation not in {None, NoneType}:
             raise ImproperlyConfiguredException(
                 "A status code 204, 304 or in the range below 200 does not support a response body."
                 "If the function should return a value, change the route handler status code to an appropriate value.",
             )
 
         if (
-            is_class_and_subclass(self.signature.return_annotation, File)
-            or is_class_and_subclass(self.signature.return_annotation, FileResponse)
+            is_class_and_subclass(return_annotation, File) or is_class_and_subclass(return_annotation, FileResponse)
         ) and self.media_type in (
             MediaType.JSON,
             MediaType.HTML,
         ):
             self.media_type = MediaType.TEXT
 
-        if "socket" in self.signature.parameters:
+        if "socket" in self.parsed_fn_signature.parameters:
             raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")
 
-        if "data" in self.signature.parameters and "GET" in self.http_methods:
+        if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
 
