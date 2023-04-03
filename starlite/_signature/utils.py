@@ -19,8 +19,7 @@ try:
     pydantic_types: tuple[Any, ...] = tuple(
         cls for _, cls in getmembers(pydantic.types, isclass) if "pydantic.types" in repr(cls)
     )
-except ImportError as err:
-    the_err = err
+except ImportError:  # pragma: no cover
     PydanticSignatureModel = Empty  # type: ignore
     pydantic_types = ()
 
@@ -100,6 +99,34 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
         raise ImproperlyConfiguredException(f"The 'signature_model' attribute for {value} is not set") from e
 
 
+def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
+    any_attrs_annotation = False
+    for parameter in parsed_signature.parameters.values():
+        parsed_type = parameter.parsed_type
+        if any(is_attrs_class(t.annotation) for t in parsed_type.inner_annotations) or is_attrs_class(
+            parsed_type.annotation
+        ):
+            any_attrs_annotation = True
+            break
+    return any_attrs_annotation
+
+
+def _any_pydantic_annotation(
+    parsed_signature: ParsedSignature, field_plugin_mappings: dict[str, PluginMapping]
+) -> bool:
+    any_pydantic_annotation = False
+    for parameter in parsed_signature.parameters.values():
+        parsed_type = parameter.parsed_type
+        if (
+            any(_is_pydantic_annotation(t.annotation) for t in parsed_type.inner_annotations)
+            or _is_pydantic_annotation(parsed_type.annotation)
+            or field_plugin_mappings.get(parameter.name)
+        ):
+            any_pydantic_annotation = True
+            break
+    return any_pydantic_annotation
+
+
 def _create_field_plugin_mappings(
     parsed_signature: ParsedSignature, plugins: list[SerializationPluginProtocol]
 ) -> dict[str, PluginMapping]:
@@ -135,29 +162,13 @@ def _get_signature_model_type(
 ) -> type[SignatureModel]:
     pydantic_installed = PydanticSignatureModel is not Empty  # type: ignore[comparison-overlap]
     attrs_installed = AttrsSignatureModel is not Empty  # type: ignore[comparison-overlap]
-
-    any_attrs_annotation = False
-    for parameter in parsed_signature.parameters.values():
-        parsed_type = parameter.parsed_type
-        if any(is_attrs_class(t) for t in parsed_type.inner_annotations) or is_attrs_class(parsed_type.annotation):
-            any_attrs_annotation = True
-            break
-
-    any_pydantic_annotation = False
-    for parameter in parsed_signature.parameters.values():
-        parsed_type = parameter.parsed_type
-        if (
-            any(_is_pydantic_annotation(t) for t in parsed_type.inner_annotations)
-            or _is_pydantic_annotation(parsed_type.annotation)
-            or field_plugin_mappings.get(parameter.name)
-        ):
-            any_pydantic_annotation = True
-            break
-
     if (
         pydantic_installed
-        and (not attrs_installed or not any_attrs_annotation)
-        and (preferred_validation_backend == "pydantic" or any_pydantic_annotation)
+        and (not attrs_installed or not _any_attrs_annotation(parsed_signature))
+        and (
+            preferred_validation_backend == "pydantic"
+            or _any_pydantic_annotation(parsed_signature, field_plugin_mappings)
+        )
     ):
         return cast("type[SignatureModel]", PydanticSignatureModel)
     return cast("type[SignatureModel]", AttrsSignatureModel)
