@@ -4,11 +4,11 @@ from dataclasses import dataclass
 from inspect import Parameter, Signature
 from typing import TYPE_CHECKING
 
-from typing_extensions import get_args, get_origin
+from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
 from starlite.types.empty import Empty
 from starlite.utils.signature_parsing import get_fn_type_hints
-from starlite.utils.typing import unwrap_annotation
+from starlite.utils.typing import get_safe_generic_origin, unwrap_annotation
 
 if TYPE_CHECKING:
     from typing import Any
@@ -27,37 +27,52 @@ class ParsedType:
     """Represents a type annotation."""
 
     raw: Any
-    """The annotation exactly as parsed from the callable."""
+    """The annotation exactly as received."""
     annotation: Any
     """The annotation with any "wrapper" types removed, e.g. Annotated."""
-    origin: type[Any] | None
+    origin: Any
     """The result of calling ``get_origin(annotation)`` after unwrapping Annotated, e.g. list."""
     args: tuple[Any, ...]
     """The result of calling ``get_args(annotation)`` after unwrapping Annotated, e.g. (int,)."""
     metadata: tuple[Any, ...]
     """Any metadata associated with the annotation via ``Annotated``."""
+    is_annotated: bool
+    """Whether the annotation included ``Annotated`` or not."""
+    is_required: bool
+    """Whether the annotation included ``Required`` or not."""
+    is_not_required: bool
+    """Whether the annotation included ``NotRequired`` or not."""
+    safe_generic_origin: Any
+    """An equivalent type to ``origin`` that can be safely used as a generic type across all supported Python versions.
+
+    This is to serve safely rebuilding a generic outer type with different args at runtime.
+    """
 
     @classmethod
-    def from_parameter(cls, parameter: Parameter, fn_type_hints: dict[str, Any]) -> ParsedType:
+    def from_annotation(cls, annotation: Parameter) -> ParsedType:
         """Initialize ParsedSignatureAnnotation.
 
         Args:
-            parameter: inspect.Parameter
-            fn_type_hints: mapping of names to types for resolution of forward references.
+            annotation: The type annotation. This should be extracted from the return of
+                ``get_type_hints(..., include_extras=True)`` so that forward references are resolved and recursive
+                ``Annotated`` types are flattened.
 
         Returns:
             ParsedSignatureAnnotation.
         """
+        unwrapped, metadata, wrappers = unwrap_annotation(annotation)
 
-        raw = fn_type_hints.get(parameter.name, Empty)
-        unwrapped, metadata = unwrap_annotation(raw)
-
+        origin = get_origin(unwrapped)
         return ParsedType(
-            raw=parameter.annotation,
+            raw=annotation,
             annotation=unwrapped,
-            origin=get_origin(unwrapped),
+            origin=origin,
             args=get_args(unwrapped),
             metadata=metadata,
+            is_annotated=Annotated in wrappers,
+            is_required=Required in wrappers,
+            is_not_required=NotRequired in wrappers,
+            safe_generic_origin=get_safe_generic_origin(origin),
         )
 
 
@@ -78,7 +93,8 @@ class ParsedParameter:
 
         Args:
             parameter: inspect.Parameter
-            fn_type_hints: mapping of names to types for resolution of forward references.
+            fn_type_hints: mapping of names to types. Should be result of ``get_type_hints()``, preferably via the
+            :attr:``get_fn_type_hints() <.utils.signature_parsing.get_fn_type_hints>` helper.
 
         Returns:
             ParsedSignatureParameter.
@@ -86,7 +102,7 @@ class ParsedParameter:
         return ParsedParameter(
             name=parameter.name,
             default=Empty if parameter.default is Signature.empty else parameter.default,
-            annotation=ParsedType.from_parameter(parameter, fn_type_hints),
+            annotation=ParsedType.from_annotation(fn_type_hints[parameter.name]),
         )
 
 
@@ -123,15 +139,7 @@ class ParsedSignature:
             for name, parameter in signature.parameters.items()
             if name not in ("self", "cls")
         )
-        raw_return_annotation = fn_type_hints.get("return", Empty)
-        return_annotation, return_annotation_meta = unwrap_annotation(raw_return_annotation)
         return ParsedSignature(
             parameters={p.name: p for p in parameters},
-            return_annotation=ParsedType(
-                raw=raw_return_annotation,
-                annotation=return_annotation,
-                origin=get_origin(return_annotation),
-                args=get_args(return_annotation),
-                metadata=return_annotation_meta,
-            ),
+            return_annotation=ParsedType.from_annotation(fn_type_hints.get("return", Empty)),
         )

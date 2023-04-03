@@ -1,15 +1,20 @@
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING, TypeVar
 
 from starlite.types import Empty, EmptyType
 
-__all__ = ("async_next",)
+__all__ = (
+    "PY_VER",
+    "async_next",
+)
 
 
 if TYPE_CHECKING:
     from typing import Any, AsyncGenerator
 
+PY_VER = sys.version_info[:2]
 T = TypeVar("T")
 D = TypeVar("D")
 
