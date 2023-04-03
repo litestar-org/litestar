@@ -31,7 +31,9 @@
 
 </div>
 
-# Starlite
+# Starlite → Litestar
+
+## [We are renaming to Litestar](https://twitter.com/StarliteAPI/status/1642958305231265792?s=20)
 
 Starlite is a powerful, performant, flexible and opinionated ASGI framework,
 offering first class typing support and a full [Pydantic](https://github.com/samuelcolvin/pydantic)
