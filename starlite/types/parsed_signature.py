@@ -66,7 +66,7 @@ class ParsedType:
 
     @classmethod
     def from_annotation(cls, annotation: Any) -> ParsedType:
-        """Initialize ParsedSignatureAnnotation.
+        """Initialize ParsedType.
 
         Args:
             annotation: The type annotation. This should be extracted from the return of
@@ -74,7 +74,7 @@ class ParsedType:
                 ``Annotated`` types are flattened.
 
         Returns:
-            ParsedSignatureAnnotation.
+            ParsedType
         """
         unwrapped, metadata, wrappers = unwrap_annotation(annotation)
 
@@ -159,7 +159,7 @@ class ParsedSignature:
 
     parameters: dict[str, ParsedParameter]
     """A mapping of parameter names to ParsedSignatureParameter instances."""
-    return_annotation: ParsedType
+    return_type: ParsedType
     """The return annotation of the callable."""
 
     @classmethod
@@ -183,5 +183,5 @@ class ParsedSignature:
         )
         return ParsedSignature(
             parameters={p.name: p for p in parameters},
-            return_annotation=ParsedType.from_annotation(fn_type_hints.get("return", Empty)),
+            return_type=ParsedType.from_annotation(fn_type_hints.get("return", Empty)),
         )

@@ -176,7 +176,7 @@ def test_parsed_signature() -> None:
         ...
 
     parsed_sig = ParsedSignature.from_fn(fn, get_fn_type_hints(fn))
-    assert parsed_sig.return_annotation.annotation is NoneType
+    assert parsed_sig.return_type.annotation is NoneType
     assert parsed_sig.parameters["foo"].parsed_type.annotation is int
     assert parsed_sig.parameters["bar"].parsed_type.args == (List[int], NoneType)
     assert parsed_sig.parameters["bar"].parsed_type.annotation == Union[List[int], NoneType]

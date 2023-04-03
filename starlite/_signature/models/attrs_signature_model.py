@@ -338,7 +338,7 @@ class AttrsSignatureModel(SignatureModel):
             slots=True,
             kw_only=True,
         )
-        model.return_annotation = parsed_signature.return_annotation.annotation  # pyright: ignore
+        model.return_annotation = parsed_signature.return_type.annotation  # pyright: ignore
         model.field_plugin_mappings = field_plugin_mappings  # pyright: ignore
         model.dependency_name_set = dependency_names  # pyright: ignore
         model.populate_signature_fields()  # pyright: ignore

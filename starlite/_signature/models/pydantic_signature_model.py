@@ -177,7 +177,7 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
             __module__=fn_module or "pydantic.main",
             **field_definitions,
         )
-        model.return_annotation = parsed_signature.return_annotation.annotation
+        model.return_annotation = parsed_signature.return_type.annotation
         model.field_plugin_mappings = field_plugin_mappings
         model.dependency_name_set = dependency_names
         model.populate_signature_fields()
