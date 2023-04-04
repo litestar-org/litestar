@@ -3,17 +3,15 @@ from __future__ import annotations
 from copy import copy
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
-from starlite._signature.models import SignatureField
+from starlite._signature.field import SignatureField
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Dependencies, Empty, EmptyType, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
+from starlite.types.parsed_signature import ParsedSignature
 from starlite.utils import AsyncCallable, Ref, get_name, normalize_path
 from starlite.utils.helpers import unwrap_partial
 
-__all__ = ("BaseRouteHandler",)
-
-
 if TYPE_CHECKING:
-    from inspect import Signature
+    from typing_extensions import Self
 
     from starlite._signature.models import SignatureModel
     from starlite.connection import ASGIConnection
@@ -22,8 +20,10 @@ if TYPE_CHECKING:
     from starlite.dto import AbstractDTOInterface
     from starlite.params import ParameterKwarg
     from starlite.router import Router
-    from starlite.types import AnyCallable, ExceptionHandler
+    from starlite.types import AsyncAnyCallable, ExceptionHandler
     from starlite.types.composite_types import MaybePartial
+
+__all__ = ("BaseRouteHandler",)
 
 T = TypeVar("T", bound="BaseRouteHandler")
 
@@ -34,10 +34,9 @@ class BaseRouteHandler(Generic[T]):
     Serves as a subclass for all route handlers
     """
 
-    fn: Ref[MaybePartial[AnyCallable]]
-    signature: Signature
-
     __slots__ = (
+        "_fn",
+        "_parsed_fn_signature",
         "_resolved_data_dto",
         "_resolved_dependencies",
         "_resolved_guards",
@@ -48,7 +47,6 @@ class BaseRouteHandler(Generic[T]):
         "data_dto",
         "dependencies",
         "exception_handlers",
-        "fn",
         "guards",
         "middleware",
         "name",
@@ -97,6 +95,7 @@ class BaseRouteHandler(Generic[T]):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
         self._resolved_data_dto: type[AbstractDTOInterface] | None | EmptyType = Empty
         self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
         self._resolved_guards: list[Guard] | EmptyType = Empty
@@ -124,6 +123,41 @@ class BaseRouteHandler(Generic[T]):
         self.opt.update(**kwargs)
         self.type_encoders = type_encoders
 
+    def __call__(self, fn: AsyncAnyCallable) -> Self:
+        """Replace a function with itself."""
+        self._fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
+        return self
+
+    @property
+    def fn(self) -> Ref[MaybePartial[AsyncAnyCallable]]:
+        """Get the handler function.
+
+        Raises:
+            ImproperlyConfiguredException: if handler fn is not set.
+
+        Returns:
+            Handler function
+        """
+        if not hasattr(self, "_fn"):
+            raise ImproperlyConfiguredException("Handler has not decorated a function")
+        return self._fn
+
+    @property
+    def parsed_fn_signature(self) -> ParsedSignature:
+        """Return the parsed signature of the handler function.
+
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            A :class:`ParsedSignature <.types.parsed_signature.ParsedSignature>` instance
+        """
+        if self._parsed_fn_signature is Empty:
+            self._parsed_fn_signature = ParsedSignature.from_fn(
+                unwrap_partial(self.fn.value), self.resolve_signature_namespace()
+            )
+
+        return cast("ParsedSignature", self._parsed_fn_signature)
+
     @property
     def handler_name(self) -> str:
         """Get the name of the handler function.
@@ -134,9 +168,6 @@ class BaseRouteHandler(Generic[T]):
         Returns:
             Name of the handler function
         """
-        fn = getattr(self, "fn", None)
-        if not fn:
-            raise ImproperlyConfiguredException("cannot access handler name before setting the handler function")
         return get_name(unwrap_partial(self.fn.value))
 
     @property
@@ -320,10 +351,15 @@ class BaseRouteHandler(Generic[T]):
                     f"If you wish to override a provider, it must have the same key."
                 )
 
+    def on_registration(self) -> None:
+        """Called once per handler when the app object is instantiated."""
+        self._validate_handler_function()
+        self.resolve_guards()
+        self.resolve_middleware()
+        self.resolve_opts()
+
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
-        if not getattr(self, "fn", None):
-            raise ImproperlyConfiguredException("Cannot call _validate_handler_function without first setting self.fn")
 
     def __str__(self) -> str:
         """Return a unique identifier for the route handler.
@@ -331,6 +367,7 @@ class BaseRouteHandler(Generic[T]):
         Returns:
             A string
         """
+        target: type[AsyncAnyCallable] | AsyncAnyCallable
         target = unwrap_partial(self.fn.value)
         if not hasattr(target, "__qualname__"):
             target = type(target)

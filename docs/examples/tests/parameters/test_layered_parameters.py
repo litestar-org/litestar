@@ -50,7 +50,6 @@ def test_layered_parameters(params: Dict[str, Any], status_code: int, expected: 
     with TestClient(app=app) as client:
         client.cookies = params.pop("cookies")
         res = client.get("/router/controller/11", **params)
-
-        assert res.status_code == status_code
+        assert res.status_code == status_code, res.json()
         if expected:
             assert res.json() == expected

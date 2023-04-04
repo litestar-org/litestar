@@ -1,7 +1,7 @@
-import random
 from typing import TYPE_CHECKING, List, Optional, cast
 
 import pytest
+from polyfactory import BaseFactory
 
 from starlite import Controller, Router, Starlite, get
 from starlite._openapi.parameters import create_parameter_for_handler
@@ -29,7 +29,11 @@ def _create_parameters(app: Starlite, path: str) -> List["OpenAPIParameter"]:
     assert callable(handler)
 
     handler_fields = create_signature_model(
-        fn=handler, plugins=[], dependency_name_set=set(), signature_namespace={}
+        fn=handler,
+        plugins=[],
+        dependency_name_set=set(),
+        preferred_validation_backend=app.preferred_validation_backend,
+        parsed_signature=route_handler.parsed_fn_signature,
     ).fields
     return create_parameter_for_handler(
         route_handler=route_handler,
@@ -41,7 +45,7 @@ def _create_parameters(app: Starlite, path: str) -> List["OpenAPIParameter"]:
 
 
 def test_create_parameters() -> None:
-    random.seed(1)
+    BaseFactory.seed_random(1)
     parameters = _create_parameters(app=Starlite(route_handlers=[PersonController]), path="/{service_id}/person")
     assert len(parameters) == 9
     page, name, page_size, service_id, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)

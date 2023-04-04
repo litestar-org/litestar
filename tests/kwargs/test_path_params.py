@@ -84,9 +84,9 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
             f"{params_dict['version']}/{params_dict['service_id']}/{params_dict['user_id']}/{params_dict['order_id']}"
         )
         if should_raise:
-            assert response.status_code == HTTP_400_BAD_REQUEST
+            assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
         else:
-            assert response.status_code == HTTP_200_OK
+            assert response.status_code == HTTP_200_OK, response.json()
 
 
 @pytest.mark.parametrize(
@@ -152,7 +152,7 @@ def test_path_param_type_resolution(param_type_name: str, param_type_class: Any,
 
     with create_test_client(handler) as client:
         response = client.get("/some/test/path/" + str(value))
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == HTTP_200_OK, response.json()
 
 
 def test_differently_named_path_params_on_same_level() -> None:

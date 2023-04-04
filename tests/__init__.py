@@ -4,9 +4,9 @@ from typing import Dict, List, Optional
 from uuid import UUID
 
 import msgspec
+from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
-from pydantic_factories import ModelFactory
 from typing_extensions import TypedDict
 
 

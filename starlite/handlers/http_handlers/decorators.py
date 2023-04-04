@@ -6,7 +6,8 @@ from starlite.enums import HttpMethod, MediaType
 from starlite.exceptions import HTTPException, ImproperlyConfiguredException
 from starlite.response import FileResponse
 from starlite.response_containers import File
-from starlite.types import Empty
+from starlite.types.builtin_types import NoneType
+from starlite.types.empty import Empty
 from starlite.utils import is_class_and_subclass
 
 from .base import HTTPRouteHandler
@@ -529,14 +530,13 @@ class head(HTTPRouteHandler):
         super()._validate_handler_function()
 
         # we allow here File and FileResponse because these have special setting for head responses
+        return_annotation = self.parsed_fn_signature.return_type.annotation
         if not (
-            self.signature.return_annotation in {None, "None", "FileResponse", "File"}
-            or is_class_and_subclass(self.signature.return_annotation, File)
-            or is_class_and_subclass(self.signature.return_annotation, FileResponse)
+            return_annotation in {NoneType, None}
+            or is_class_and_subclass(return_annotation, File)
+            or is_class_and_subclass(return_annotation, FileResponse)
         ):
-            raise ImproperlyConfiguredException(
-                "A response to a head request should not have a body",
-            )
+            raise ImproperlyConfiguredException("A response to a head request should not have a body")
 
 
 class patch(HTTPRouteHandler):

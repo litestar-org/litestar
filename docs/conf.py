@@ -81,7 +81,8 @@ nitpick_ignore = [
     ("py:class", "C"),
     # intentionally undocumented
     ("py:class", "NoneType"),
-    ("py:class", "starlite._signature.models.SignatureField"),
+    ("py:class", "starlite._signature.field.SignatureField"),
+    ("py:class", "types.parsed_signature.ParsedSignature"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.types.*"),

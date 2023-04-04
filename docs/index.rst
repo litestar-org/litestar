@@ -1,6 +1,8 @@
 Starlite library documentation
 ==============================
 
+.. attention:: Starlite is renaming to ``Litestar``! Some links may be broken while we migrate.
+
 
 Starlite is a powerful, flexible, highly performant and opinionated ASGI framework,
 offering first class typing support and a full `Pydantic <https://github.com/samuelcolvin/pydantic>`_

@@ -1,7 +1,7 @@
 from typing import List
 
+from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel
-from pydantic_factories import ModelFactory
 
 from starlite import Starlite, get
 from starlite.pagination import AbstractSyncClassicPaginator, ClassicPagination

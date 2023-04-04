@@ -20,7 +20,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-91-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-92-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -31,7 +31,9 @@
 
 </div>
 
-# Starlite
+# Starlite → Litestar
+
+## [We are renaming to Litestar](https://www.reddit.com/r/Python/comments/129n4dc/renaming_starlite_to_litestar/)
 
 Starlite is a powerful, performant, flexible and opinionated ASGI framework,
 offering first class typing support and a full [Pydantic](https://github.com/samuelcolvin/pydantic)
@@ -405,6 +407,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://nick.groenen.me"><img src="https://avatars.githubusercontent.com/u/145285?v=4?s=100" width="100px;" alt="Nick Groenen"/><br /><sub><b>Nick Groenen</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=zoni" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/giorgiovilardo"><img src="https://avatars.githubusercontent.com/u/56472600?v=4?s=100" width="100px;" alt="Giorgio Vilardo"/><br /><sub><b>Giorgio Vilardo</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=giorgiovilardo" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/bollwyvl"><img src="https://avatars.githubusercontent.com/u/45380?v=4?s=100" width="100px;" alt="Nicholas Bollweg"/><br /><sub><b>Nicholas Bollweg</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=bollwyvl" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tompin82"><img src="https://avatars.githubusercontent.com/u/47041409?v=4?s=100" width="100px;" alt="Tomas Jonsson"/><br /><sub><b>Tomas Jonsson</b></sub></a><br /><a href="https://github.com/starlite-api/starlite/commits?author=tompin82" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>

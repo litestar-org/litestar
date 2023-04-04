@@ -31,7 +31,7 @@ from starlite._kwargs.parameter_definition import (
     merge_parameter_sets,
 )
 from starlite._signature import SignatureModel, get_signature_model
-from starlite._signature.models import SignatureField
+from starlite._signature.field import SignatureField
 from starlite.constants import RESERVED_KWARGS
 from starlite.dto import AbstractDTOInterface
 from starlite.enums import ParamType, RequestEncodingType

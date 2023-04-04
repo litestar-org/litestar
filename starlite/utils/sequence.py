@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Iterable, TypeVar
+from typing import Any, Callable, Sequence, TypeVar
 
 __all__ = ("find_index", "unique")
 
@@ -19,7 +19,7 @@ def find_index(target_list: list[T], predicate: Callable[[T], bool]) -> int:
     return -1
 
 
-def unique(value: Iterable[T]) -> list[T]:
+def unique(value: Sequence[T]) -> list[T]:
     """Return all unique values in a given sequence or iterator."""
     try:
         return list(set(value))
@@ -29,3 +29,16 @@ def unique(value: Iterable[T]) -> list[T]:
             if element not in output:
                 output.append(element)
         return output
+
+
+def compact(value: Sequence[Any]) -> Sequence[Any]:
+    """Remove all 'falsy' values from a sequence.
+
+    Args:
+        value: A sequence.
+
+
+    Returns:
+        A tuple.
+    """
+    return tuple(v for v in value if v)

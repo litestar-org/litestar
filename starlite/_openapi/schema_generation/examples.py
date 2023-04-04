@@ -1,53 +1,64 @@
 from __future__ import annotations
 
-from dataclasses import is_dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 from _decimal import Decimal
-from pydantic_factories import ModelFactory
-from pydantic_factories.exceptions import ParameterError
+from polyfactory.exceptions import ParameterException
+from polyfactory.field_meta import FieldMeta, Null
 
 from starlite.openapi.spec import Example
-from starlite.utils import (
-    convert_dataclass_to_model,
-    create_parsed_model_field,
-    is_pydantic_model_instance,
-)
+from starlite.types import Empty
+from starlite.utils import is_pydantic_model_instance
+
+try:
+    from polyfactory.factories.pydantic_factory import ModelFactory as Factory
+except ImportError:
+    from polyfactory.factories import DataclassFactory as Factory  # type: ignore[assignment]
+
 
 if TYPE_CHECKING:
-    from starlite._signature.models import SignatureField
+    from starlite._signature.field import SignatureField
 
 
-def normalize_example_value(value: Any) -> Any:
+def _normalize_example_value(value: Any) -> Any:
     """Normalize the example value to make it look a bit prettier."""
     if isinstance(value, (Decimal, float)):
         value = round(float(value), 2)
     if isinstance(value, Enum):
         value = value.value
-    if is_dataclass(value):
-        value = convert_dataclass_to_model(value)
     if is_pydantic_model_instance(value):
         value = value.dict()
     if isinstance(value, (list, set)):
-        value = [normalize_example_value(v) for v in value]
+        value = [_normalize_example_value(v) for v in value]
     if isinstance(value, dict):
         for k, v in value.items():
-            value[k] = normalize_example_value(v)
+            value[k] = _normalize_example_value(v)
     return value
 
 
-class ExampleFactory(ModelFactory):
-    """A factory that always returns values."""
-
-    __allow_none_optionals__ = False
+def _create_field_meta(field: "SignatureField") -> FieldMeta:
+    return FieldMeta(
+        name=field.name,
+        annotation=field.field_type,
+        constant=field.is_const,
+        default=field.default_value if field.default_value is not Empty else Null,
+        children=[_create_field_meta(child) for child in field.children] if field.children else None,
+    )
 
 
 def create_examples_for_field(field: "SignatureField") -> list["Example"]:
-    """Use the pydantic-factories package to create an example value for the given schema."""
+    """Create an OpenAPI Example instance.
+
+    Args:
+        field: A signature field.
+
+    Returns:
+        A list including a single example.
+    """
     try:
-        model_field = create_parsed_model_field(field.field_type)
-        value = normalize_example_value(ExampleFactory.get_field_value(model_field))
+        field_meta = _create_field_meta(field)
+        value = _normalize_example_value(Factory.get_field_value(field_meta))
         return [Example(description=f"Example {field.name} value", value=value)]
-    except ParameterError:  # pragma: no cover
+    except ParameterException:  # pragma: no cover
         return []

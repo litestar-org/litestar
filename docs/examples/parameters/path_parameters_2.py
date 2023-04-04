@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import List
 
 from pydantic import BaseModel
@@ -12,7 +12,7 @@ class Order(BaseModel):
 
 
 ORDERS_BY_DATETIME = {
-    datetime.fromtimestamp(1667924386, tz=timezone.utc): [
+    datetime.fromtimestamp(1667924386): [
         Order(id=1, customer_id=2),
         Order(id=2, customer_id=2),
     ]

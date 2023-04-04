@@ -1,18 +1,17 @@
 from __future__ import annotations
 
-from inspect import Signature
 from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.utils import Ref, is_async_callable
+from starlite.types.builtin_types import NoneType
+from starlite.utils import is_async_callable
 
 __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
     from starlite.types import (
-        AsyncAnyCallable,
         ExceptionHandlersMap,
         Guard,
         MaybePartial,  # noqa: F401
@@ -73,21 +72,14 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
             **kwargs,
         )
 
-    def __call__(self, fn: AsyncAnyCallable) -> ASGIRouteHandler:
-        """Replace a function with itself."""
-        self.fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
-        self.signature = Signature.from_callable(fn)
-        self._validate_handler_function()
-        return self
-
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
         super()._validate_handler_function()
 
-        if self.signature.return_annotation not in {None, "None"}:
+        if self.parsed_fn_signature.return_type.annotation not in {None, NoneType}:
             raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
 
-        if any(key not in self.signature.parameters for key in ("scope", "send", "receive")):
+        if any(key not in self.parsed_fn_signature.parameters for key in ("scope", "send", "receive")):
             raise ImproperlyConfiguredException(
                 "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
             )

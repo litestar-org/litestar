@@ -15,8 +15,8 @@ from typing import (
 )
 from uuid import UUID
 
+from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, conint, constr, create_model
-from pydantic_factories import ModelFactory
 
 from starlite.di import Provide
 from starlite.exceptions import (

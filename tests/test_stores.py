@@ -72,9 +72,9 @@ async def test_expires(store: Store) -> None:
 
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
 async def test_get_and_renew(store: Store, renew_for: int | timedelta) -> None:
-    expiry = 0.01 if not isinstance(store, RedisStore) else 1  # redis doesn't allow fractional values
+    expiry = 1  # redis doesn't allow fractional values
 
-    await store.set("foo", b"bar", expires_in=expiry)  # type: ignore[arg-type]
+    await store.set("foo", b"bar", expires_in=expiry)
     await store.get("foo", renew_for=renew_for)
     await anyio.sleep(expiry + 0.01)
 

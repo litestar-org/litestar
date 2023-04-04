@@ -3,8 +3,9 @@ from sys import version_info
 from typing import Any, Deque, Iterable, List, Optional, Sequence, Tuple, Union
 
 import pytest
+from typing_extensions import Annotated
 
-from starlite.utils.types import annotation_is_iterable_of_type, make_non_optional_union
+from starlite.utils.typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
 from tests import Person, Pet
 
 if version_info >= (3, 10):
@@ -48,3 +49,8 @@ def test_annotation_is_iterable_of_type(annotation: Any, expected: bool) -> None
 )
 def test_make_non_optional_union(annotation: Any, expected: Any) -> None:
     assert make_non_optional_union(annotation) == expected
+
+
+def test_get_origin_or_inner_type() -> None:
+    assert get_origin_or_inner_type(List[Person]) == list
+    assert get_origin_or_inner_type(Annotated[List[Person], "foo"]) == List[Person]

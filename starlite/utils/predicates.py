@@ -19,23 +19,19 @@ from typing import (
     Sequence,
     Set,
     Tuple,
-    Type,
     TypeVar,
 )
 
 from typing_extensions import (
-    Annotated,
-    NotRequired,
     ParamSpec,
-    Required,
     TypeGuard,
     get_args,
-    get_origin,
     is_typeddict,
 )
 
 from starlite.types import DataclassProtocol, Empty
 from starlite.types.builtin_types import UNION_TYPES, NoneType
+from starlite.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
     from starlite.types.builtin_types import (
@@ -43,28 +39,18 @@ if TYPE_CHECKING:
     )
 
 try:
-    from pydantic import BaseModel
+    import pydantic
 except ImportError:  # pragma: no cover
-    BaseModel = Empty  # type: ignore
+    pydantic = Empty  # type: ignore
+
+try:
+    import attrs
+except ImportError:  # pragma: no cover
+    attrs = Empty  # type: ignore
 
 
 P = ParamSpec("P")
 T = TypeVar("T")
-
-
-def get_origin_or_inner_type(annotation: Any) -> Any:
-    """Get origin or unwrap it. Returns None for non-generic types.
-
-    Args:
-        annotation: A type annotation.
-
-    Returns:
-        Any type.
-    """
-
-    if origin := get_origin(annotation):
-        return origin if origin not in (Annotated, Required, NotRequired) else get_args(annotation)[0]
-    return None
 
 
 def is_class_and_subclass(annotation: Any, t_type: type[T]) -> TypeGuard[type[T]]:
@@ -238,7 +224,7 @@ def is_typed_dict(annotation: Any) -> TypeGuard[TypedDictClass]:
     return is_typeddict(annotation)
 
 
-def is_pydantic_model_class(annotation: Any) -> "TypeGuard[Type[BaseModel]]":  # pyright: ignore
+def is_pydantic_model_class(annotation: Any) -> "TypeGuard[type[pydantic.BaseModel]]":  # pyright: ignore
     """Given a type annotation determine if the annotation is a subclass of pydantic's BaseModel.
 
     Args:
@@ -247,12 +233,12 @@ def is_pydantic_model_class(annotation: Any) -> "TypeGuard[Type[BaseModel]]":  #
     Returns:
         A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
     """
-    if BaseModel is not Empty:  # type: ignore[comparison-overlap]
-        return is_class_and_subclass(annotation, BaseModel)
+    if pydantic is not Empty:  # type: ignore[comparison-overlap]
+        return is_class_and_subclass(annotation, pydantic.BaseModel)  # pyright: ignore
     return False  # pragma: no cover
 
 
-def is_pydantic_model_instance(annotation: Any) -> "TypeGuard[BaseModel]":  # pyright: ignore
+def is_pydantic_model_instance(annotation: Any) -> "TypeGuard[pydantic.BaseModel]":  # pyright: ignore
     """Given a type annotation determine if the annotation is an instance of pydantic's BaseModel.
 
     Args:
@@ -261,6 +247,62 @@ def is_pydantic_model_instance(annotation: Any) -> "TypeGuard[BaseModel]":  # py
     Returns:
         A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
     """
-    if BaseModel is not Empty:  # type: ignore[comparison-overlap]
-        return isinstance(annotation, BaseModel)
+    if pydantic is not Empty:  # type: ignore[comparison-overlap]
+        return isinstance(annotation, pydantic.BaseModel)  # pyright: ignore
     return False  # pragma: no cover
+
+
+def is_attrs_class(annotation: Any) -> TypeGuard["attrs.AttrsInstance"]:  # pyright: ignore
+    """Given a type annotation determine if the annotation is a class that includes an attrs attribute.
+
+    Args:
+        annotation: A type.
+
+    Returns:
+        A typeguard determining whether the type is an attrs class.
+    """
+    if attrs is not Empty:  # type: ignore[comparison-overlap]
+        return attrs.has(annotation)  # pyright: ignore
+    return False  # pragma: no cover
+
+
+def is_pydantic_constrained_field(
+    annotation: Any,
+) -> TypeGuard[
+    type[pydantic.ConstrainedBytes]  # pyright: ignore
+    | type[pydantic.ConstrainedDate]  # pyright: ignore
+    | type[pydantic.ConstrainedDecimal]  # pyright: ignore
+    | type[pydantic.ConstrainedFloat]  # pyright: ignore
+    | type[pydantic.ConstrainedFrozenSet]  # pyright: ignore
+    | type[pydantic.ConstrainedInt]  # pyright: ignore
+    | type[pydantic.ConstrainedList]  # pyright: ignore
+    | type[pydantic.ConstrainedSet]  # pyright: ignore
+    | type[pydantic.ConstrainedStr]  # pyright: ignore
+]:
+    """Check if the given annotation is a constrained pydantic type.
+
+    Args:
+        annotation: A type annotation
+
+    Returns:
+        True if pydantic is installed and the type is a constrained type, otherwise False.
+    """
+    try:
+        import pydantic
+
+        return any(
+            is_class_and_subclass(annotation, constrained_type)
+            for constrained_type in (
+                pydantic.ConstrainedBytes,
+                pydantic.ConstrainedDate,
+                pydantic.ConstrainedDecimal,
+                pydantic.ConstrainedFloat,
+                pydantic.ConstrainedFrozenSet,
+                pydantic.ConstrainedInt,
+                pydantic.ConstrainedList,
+                pydantic.ConstrainedSet,
+                pydantic.ConstrainedStr,
+            )
+        )
+    except ImportError:
+        return False

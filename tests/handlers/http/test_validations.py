@@ -41,11 +41,15 @@ async def test_function_validation() -> None:
         def method_with_no_annotation():  # type: ignore
             pass
 
+        method_with_no_annotation.on_registration()
+
     with pytest.raises(ImproperlyConfiguredException):
 
         @delete(path="/")
         def method_with_no_content() -> Dict[str, str]:
             return {}
+
+        method_with_no_content.on_registration()
 
     with pytest.raises(ImproperlyConfiguredException):
 
@@ -53,19 +57,27 @@ async def test_function_validation() -> None:
         def method_with_not_modified() -> Dict[str, str]:
             return {}
 
+        method_with_not_modified.on_registration()
+
     with pytest.raises(ImproperlyConfiguredException):
 
         @get(path="/", status_code=HTTP_100_CONTINUE)
         def method_with_status_lower_than_200() -> Dict[str, str]:
             return {}
 
+        method_with_status_lower_than_200.on_registration()
+
     @get(path="/", status_code=HTTP_307_TEMPORARY_REDIRECT)
     def redirect_method() -> Redirect:
         return Redirect("/test")
 
+    redirect_method.on_registration()
+
     @get(path="/")
     def file_method() -> File:
         return File(path=Path("."), filename="test_validations.py")
+
+    file_method.on_registration()
 
     assert file_method.media_type == MediaType.TEXT
 
@@ -75,8 +87,12 @@ async def test_function_validation() -> None:
         def test_function_1(socket: WebSocket) -> None:
             return None
 
+        test_function_1.on_registration()
+
     with pytest.raises(ImproperlyConfiguredException):
 
         @get("/person")
         def test_function_2(self, data: Person) -> None:  # type: ignore
             return None
+
+        test_function_2.on_registration()
