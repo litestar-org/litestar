@@ -95,6 +95,7 @@ def create_signature_model(
         type_overrides=type_overrides,
     )
 
+
 if sys.version_info < (3, 9):  # pragma: no cover
     from typing import Dict, FrozenSet, List, Set, Tuple
 
@@ -112,9 +113,7 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
 def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
     for parameter in parsed_signature.parameters.values():
         parsed_type = parameter.parsed_type
-        if any(is_attrs_class(t.annotation) for t in parsed_type.inner_annotations) or is_attrs_class(
-            parsed_type.annotation
-        ):
+        if any(is_attrs_class(t.annotation) for t in parsed_type.inner_types) or is_attrs_class(parsed_type.annotation):
             return True
     return False
 
@@ -125,7 +124,7 @@ def _any_pydantic_annotation(
     for parameter in parsed_signature.parameters.values():
         parsed_type = parameter.parsed_type
         if (
-            any(_is_pydantic_annotation(t.annotation) for t in parsed_type.inner_annotations)
+            any(_is_pydantic_annotation(t.annotation) for t in parsed_type.inner_types)
             or _is_pydantic_annotation(parsed_type.annotation)
             or field_plugin_mappings.get(parameter.name)
         ):
@@ -140,9 +139,7 @@ def _create_field_plugin_mappings(
     for parameter in parsed_signature.parameters.values():
         parsed_type = parameter.parsed_type
         if plugin := get_plugin_for_value(parameter.parsed_type.annotation, plugins):
-            type_value = (
-                parsed_type.inner_annotations[0].annotation if parsed_type.is_collection else parsed_type.annotation
-            )
+            type_value = parsed_type.inner_types[0].annotation if parsed_type.is_collection else parsed_type.annotation
             field_plugin_mappings[parameter.name] = PluginMapping(plugin=plugin, model_class=type_value)
     return field_plugin_mappings
 
