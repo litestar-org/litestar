@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 from copy import copy
-from inspect import Signature
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
 from starlite._signature.field import SignatureField
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.types import Dependencies, Empty, EmptyType, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
+from starlite.types.parsed_signature import ParsedSignature
 from starlite.utils import AsyncCallable, Ref, get_name, normalize_path
 from starlite.utils.helpers import unwrap_partial
-
-__all__ = ("BaseRouteHandler",)
-
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -25,6 +22,8 @@ if TYPE_CHECKING:
     from starlite.types import AsyncAnyCallable, ExceptionHandler
     from starlite.types.composite_types import MaybePartial
 
+__all__ = ("BaseRouteHandler",)
+
 T = TypeVar("T", bound="BaseRouteHandler")
 
 
@@ -34,10 +33,9 @@ class BaseRouteHandler(Generic[T]):
     Serves as a subclass for all route handlers
     """
 
-    signature: Signature
-
     __slots__ = (
         "_fn",
+        "_parsed_fn_signature",
         "_resolved_dependencies",
         "_resolved_guards",
         "_resolved_layered_parameters",
@@ -51,7 +49,6 @@ class BaseRouteHandler(Generic[T]):
         "opt",
         "owner",
         "paths",
-        "signature",
         "signature_model",
         "signature_namespace",
         "type_encoders",
@@ -88,6 +85,7 @@ class BaseRouteHandler(Generic[T]):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
+        self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
         self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
         self._resolved_guards: list[Guard] | EmptyType = Empty
         self._resolved_layered_parameters: dict[str, SignatureField] | EmptyType = Empty
@@ -114,8 +112,6 @@ class BaseRouteHandler(Generic[T]):
     def __call__(self, fn: AsyncAnyCallable) -> Self:
         """Replace a function with itself."""
         self._fn = Ref["MaybePartial[AsyncAnyCallable]"](fn)
-        self.signature = Signature.from_callable(fn)
-        self._validate_handler_function()
         return self
 
     @property
@@ -131,6 +127,22 @@ class BaseRouteHandler(Generic[T]):
         if not hasattr(self, "_fn"):
             raise ImproperlyConfiguredException("Handler has not decorated a function")
         return self._fn
+
+    @property
+    def parsed_fn_signature(self) -> ParsedSignature:
+        """Return the parsed signature of the handler function.
+
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            A :class:`ParsedSignature <.types.parsed_signature.ParsedSignature>` instance
+        """
+        if self._parsed_fn_signature is Empty:
+            self._parsed_fn_signature = ParsedSignature.from_fn(
+                unwrap_partial(self.fn.value), self.resolve_signature_namespace()
+            )
+
+        return cast("ParsedSignature", self._parsed_fn_signature)
 
     @property
     def handler_name(self) -> str:
@@ -286,6 +298,13 @@ class BaseRouteHandler(Generic[T]):
                     f"Provider for key {key} is already defined under the different key {dependency_key}. "
                     f"If you wish to override a provider, it must have the same key."
                 )
+
+    def on_registration(self) -> None:
+        """Called once per handler when the app object is instantiated."""
+        self._validate_handler_function()
+        self.resolve_guards()
+        self.resolve_middleware()
+        self.resolve_opts()
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import re
-from collections import defaultdict, deque
+import typing as t
+from collections import abc, defaultdict, deque
 from typing import (
     AbstractSet,
     Any,
@@ -26,9 +27,14 @@ from typing import (
 
 from typing_extensions import Annotated, NotRequired, Required, TypeGuard, get_args, get_origin
 
-from starlite.types.builtin_types import NoneType
+from starlite.types.builtin_types import UNION_TYPES, NoneType
 
-__all__ = ("annotation_is_iterable_of_type", "make_non_optional_union")
+__all__ = (
+    "annotation_is_iterable_of_type",
+    "get_safe_generic_origin",
+    "make_non_optional_union",
+    "unwrap_annotation",
+)
 
 
 T = TypeVar("T")
@@ -56,6 +62,46 @@ types_mapping = {
     Set: set,
     Tuple: tuple,
 }
+
+_safe_generic_origin_map = {
+    set: t.AbstractSet,
+    defaultdict: t.DefaultDict,
+    deque: t.Deque,
+    dict: t.Dict,
+    frozenset: t.FrozenSet,
+    list: t.List,
+    tuple: t.Tuple,
+    abc.Mapping: t.Mapping,
+    abc.MutableMapping: t.MutableMapping,
+    abc.MutableSequence: t.MutableSequence,
+    abc.MutableSet: t.MutableSet,
+    abc.Sequence: t.Sequence,
+    abc.Set: t.AbstractSet,
+    abc.Collection: t.Collection,
+    abc.Container: t.Container,
+    abc.ItemsView: t.ItemsView,
+    abc.KeysView: t.KeysView,
+    abc.MappingView: t.MappingView,
+    abc.ValuesView: t.ValuesView,
+    abc.Iterable: t.Iterable,
+    abc.Iterator: t.Iterator,
+    abc.Generator: t.Generator,
+    abc.Reversible: t.Reversible,
+    abc.Coroutine: t.Coroutine,
+    abc.AsyncGenerator: t.AsyncGenerator,
+    abc.AsyncIterable: t.AsyncIterable,
+    abc.AsyncIterator: t.AsyncIterator,
+    abc.Awaitable: t.Awaitable,
+    **{union_t: t.Union for union_t in UNION_TYPES},  # type:ignore[misc]
+}
+"""A mapping of types to equivalent types that are safe to be used as generics across all Python versions.
+
+This is necessary because occasionally we want to rebuild a generic outer type with different args, and types such as
+``collections.abc.Mapping``, are not valid generic types in Python 3.8.
+"""
+
+wrapper_type_set = {Annotated, Required, NotRequired}
+"""Types that always contain a wrapped type annotation as their first arg."""
 
 
 def annotation_is_iterable_of_type(
@@ -117,6 +163,30 @@ def unwrap_union(annotation: Any) -> tuple[Any, ...]:
     return tuple(args)
 
 
+def unwrap_annotation(annotation: Any) -> tuple[Any, tuple[Any, ...], set[Any]]:
+    """Remove "wrapper" annotation types, such as ``Annotated``, ``Required``, and ``NotRequired``.
+
+    Note:
+        ``annotation`` should have been retrieved from :func:`get_type_hints()` with ``include_extras=True``. This
+        ensures that any nested ``Annotated`` types are flattened according to the PEP 593 specification.
+
+    Args:
+        annotation: A type annotation.
+
+    Returns:
+        A tuple of the unwrapped annotation and any ``Annotated`` metadata, and a set of any wrapper types encountered.
+    """
+    origin = get_origin(annotation)
+    wrappers = set()
+    metadata = []
+    while origin in wrapper_type_set:
+        wrappers.add(origin)
+        annotation, *meta = get_args(annotation)
+        metadata.extend(meta)
+        origin = get_origin(annotation)
+    return annotation, tuple(metadata), wrappers
+
+
 def get_origin_or_inner_type(annotation: Any) -> Any:
     """Get origin or unwrap it. Returns None for non-generic types.
 
@@ -127,10 +197,19 @@ def get_origin_or_inner_type(annotation: Any) -> Any:
         Any type.
     """
 
-    if origin := get_origin(annotation):
-        origin = origin if origin not in (Annotated, Required, NotRequired) else get_args(annotation)[0]
-        if origin in types_mapping:  # pragma: no cover
-            # py 3.9 and lower compatibility
-            return types_mapping[origin]
-        return origin
-    return None
+    origin = get_origin(annotation)
+    if origin in wrapper_type_set:
+        origin, _, _ = unwrap_annotation(annotation)
+    return types_mapping.get(origin, origin)
+
+
+def get_safe_generic_origin(origin_type: Any) -> Any:
+    """Get a type that is safe to use as a generic type across all supported Python versions.
+
+    Args:
+        origin_type: A type - would be the return value of :func:`get_origin()`.
+
+    Returns:
+        The ``typing`` module equivalent of the given type, if it exists. Otherwise, the original type is returned.
+    """
+    return _safe_generic_origin_map.get(origin_type, origin_type)

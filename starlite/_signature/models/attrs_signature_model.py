@@ -38,8 +38,8 @@ except ImportError as e:
     raise MissingDependencyException("attrs is not installed") from e
 
 if TYPE_CHECKING:
-    from starlite._signature.parsing import ParsedSignatureParameter
     from starlite.plugins import PluginMapping
+    from starlite.types.parsed_signature import ParsedSignature
 
 key_re = re.compile("@ attribute (.*)|'(.*)'")
 
@@ -293,39 +293,41 @@ class AttrsSignatureModel(SignatureModel):
         cls,
         fn_name: str,
         fn_module: str | None,
-        parsed_params: list[ParsedSignatureParameter],
-        return_annotation: Any,
+        parsed_signature: ParsedSignature,
         field_plugin_mappings: dict[str, PluginMapping],
         dependency_names: set[str],
+        type_overrides: dict[str, Any],
     ) -> type[SignatureModel]:
         attributes: dict[str, Any] = {}
 
-        for parameter in parsed_params:
+        for parameter in parsed_signature.parameters.values():
+            annotation = type_overrides.get(parameter.name, parameter.parsed_type.annotation)
+
             if isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
                 attribute = attr.attrib(
-                    type=parameter.annotation,
+                    type=annotation,
                     metadata={
                         **asdict(parameter.default),
                         "kwargs_model": parameter.default,
                         "parsed_parameter": parameter,
                     },
                     default=parameter.default.default if parameter.default.default is not Empty else attr.NOTHING,
-                    validator=_create_validators(annotation=parameter.annotation, kwargs_model=parameter.default),
+                    validator=_create_validators(annotation=annotation, kwargs_model=parameter.default),
                 )
             elif isinstance(parameter.default, DependencyKwarg):
                 attribute = attr.attrib(
-                    type=Any if parameter.should_skip_validation else parameter.annotation,
+                    type=annotation,
                     default=parameter.default.default if parameter.default.default is not Empty else None,
                     metadata={
                         "kwargs_model": parameter.default,
                     },
                 )
-            elif parameter.should_skip_validation:
-                attribute = attr.attrib(type=Any)
-            elif parameter.default_defined:
-                attribute = attr.attrib(type=parameter.annotation, default=parameter.default)
+            elif parameter.has_default:
+                attribute = attr.attrib(type=annotation, default=parameter.default)
             else:
-                attribute = attr.attrib(type=parameter.annotation, default=None if parameter.optional else attr.NOTHING)
+                attribute = attr.attrib(
+                    type=annotation, default=None if parameter.parsed_type.is_optional else attr.NOTHING
+                )
 
             attributes[parameter.name] = attribute
 
@@ -336,7 +338,7 @@ class AttrsSignatureModel(SignatureModel):
             slots=True,
             kw_only=True,
         )
-        model.return_annotation = return_annotation  # pyright: ignore
+        model.return_annotation = parsed_signature.return_type.annotation  # pyright: ignore
         model.field_plugin_mappings = field_plugin_mappings  # pyright: ignore
         model.dependency_name_set = dependency_names  # pyright: ignore
         model.populate_signature_fields()  # pyright: ignore

@@ -8,9 +8,9 @@ from starlite.exceptions import InternalServerException, ValidationException
 
 if TYPE_CHECKING:
     from starlite._signature.field import SignatureField
-    from starlite._signature.parsing import ParsedSignatureParameter
     from starlite.connection import ASGIConnection
     from starlite.plugins import PluginMapping
+    from starlite.types.parsed_signature import ParsedSignature
 
 __all__ = ("SignatureModel",)
 
@@ -92,20 +92,21 @@ class SignatureModel(ABC):
         cls,
         fn_name: str,
         fn_module: str | None,
-        parsed_params: list[ParsedSignatureParameter],
-        return_annotation: Any,
+        parsed_signature: ParsedSignature,
         field_plugin_mappings: dict[str, PluginMapping],
         dependency_names: set[str],
+        type_overrides: dict[str, Any],
     ) -> type[SignatureModel]:
         """Create a SignatureModel.
 
         Args:
             fn_name: Name of the callable.
             fn_module: Name of the function's module, if any.
-            parsed_params: A list of parsed signature parameters.
-            return_annotation: Annotation for the callable's return value.
+            parsed_signature: A parsed signature.
             field_plugin_mappings: A mapping of field names to plugin mappings.
             dependency_names: A set of dependency names.
+            type_overrides: A dictionary of type overrides, either will override a parameter type with a type derived
+                from a plugin, or set the type to ``Any`` if validation should be skipped for the parameter.
 
         Returns:
             The created SignatureModel.

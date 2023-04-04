@@ -33,7 +33,7 @@ def _create_parameters(app: Starlite, path: str) -> List["OpenAPIParameter"]:
         plugins=[],
         dependency_name_set=set(),
         preferred_validation_backend=app.preferred_validation_backend,
-        signature_namespace={},
+        parsed_signature=route_handler.parsed_fn_signature,
     ).fields
     return create_parameter_for_handler(
         route_handler=route_handler,

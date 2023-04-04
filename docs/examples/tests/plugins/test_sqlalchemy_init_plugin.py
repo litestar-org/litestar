@@ -17,4 +17,4 @@ def test_app(app: Starlite) -> None:
     with TestClient(app=app) as client:
         res = client.get("/sqlalchemy-app")
         assert res.status_code == 200
-        assert res.json() == "1 2"
+        assert res.text == "1 2"

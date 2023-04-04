@@ -1,21 +1,17 @@
-import inspect
-from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Iterable, List, Literal, Optional, Sequence, cast
 
 import pytest
 from pydantic import BaseModel
-from typing_extensions import Annotated
 
 from starlite import get
 from starlite._signature import create_signature_model
-from starlite._signature.parsing.signature_parameter import ParsedSignatureParameter
-from starlite._signature.parsing.utils import parse_fn_signature
 from starlite.di import Provide
 from starlite.exceptions import ImproperlyConfiguredException, ValidationException
 from starlite.params import Dependency, Parameter
 from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_500_INTERNAL_SERVER_ERROR
 from starlite.testing import RequestFactory, TestClient, create_test_client
 from starlite.types.helper_types import OptionalSequence
+from starlite.types.parsed_signature import ParsedSignature
 from tests.test_plugins import AModel, APlugin
 
 if TYPE_CHECKING:
@@ -37,7 +33,7 @@ def test_parses_values_from_connection_kwargs_with_plugin(
         plugins=[APlugin()],
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
-        signature_namespace={},
+        parsed_signature=ParsedSignature.from_fn(fn, {}),
     )
     arbitrary_a = {"name": 1}
     result = model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a=arbitrary_a, b=1)
@@ -59,7 +55,7 @@ def test_parses_values_from_connection_kwargs_without_plugin(
         plugins=[],
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
-        signature_namespace={},
+        parsed_signature=ParsedSignature.from_fn(fn, {}),
     )
     result = model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a={"name": "my name"})
     assert result == {"a": MyModel(name="my name")}
@@ -77,7 +73,7 @@ def test_parses_values_from_connection_kwargs_raises(
         plugins=[],
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
-        signature_namespace={},
+        parsed_signature=ParsedSignature.from_fn(fn, {}),
     )
     with pytest.raises(ValidationException):
         model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a="not an int")
@@ -93,7 +89,7 @@ def test_resolve_field_value(preferred_validation_backend: Literal["attrs", "pyd
         plugins=[APlugin()],
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
-        signature_namespace={},
+        parsed_signature=ParsedSignature.from_fn(fn, {}),
     )
     instance = cast("PydanticSignatureModel", model(a={"name": "my name"}, b=2))
     assert instance._resolve_field_value("a") == AModel(name="my name")
@@ -113,7 +109,7 @@ def test_create_function_signature_model_parameter_parsing(
         plugins=[],
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
-        signature_namespace={},
+        parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
     )
     fields = model.fields
     assert fields["a"].field_type is int
@@ -125,7 +121,7 @@ def test_create_function_signature_model_parameter_parsing(
     assert fields["c"].default_value is None
     assert fields["d"].field_type is bytes
     assert fields["d"].default_value == b"123"
-    assert fields["e"].field_type is Optional[dict]
+    assert fields["e"].field_type == Optional[dict]
     assert fields["e"].is_optional
     assert fields["e"].default_value is None
 
@@ -142,7 +138,7 @@ def test_create_signature_validation(preferred_validation_backend: Literal["attr
             plugins=[],
             dependency_name_set=set(),
             preferred_validation_backend=preferred_validation_backend,
-            signature_namespace={},
+            parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
         )
 
 
@@ -159,15 +155,9 @@ def test_create_function_signature_model_ignore_return_annotation(
         plugins=[],
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
-        signature_namespace={},
+        parsed_signature=ParsedSignature.from_fn(health_check.fn.value, {}),
     )
     assert signature_model_type().to_dict() == {}
-
-
-@pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
-def test_create_function_signature_model_validation(preferred_validation_backend: Literal["attrs", "pydantic"]) -> None:
-    with pytest.raises(ImproperlyConfiguredException):
-        create_signature_model(fn=lru_cache(maxsize=0)(lambda x: x), plugins=[], dependency_name_set=set(), preferred_validation_backend=preferred_validation_backend, signature_namespace={}).dict()  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -299,7 +289,7 @@ def test_signature_field_is_non_string_iterable(preferred_validation_backend: Li
         plugins=[],
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
-        signature_namespace={},
+        parsed_signature=ParsedSignature.from_fn(fn, {}),
     )
 
     assert model.fields["a"].is_non_string_iterable
@@ -316,37 +306,8 @@ def test_signature_field_is_non_string_sequence(preferred_validation_backend: Li
         plugins=[],
         dependency_name_set=set(),
         preferred_validation_backend=preferred_validation_backend,
-        signature_namespace={},
+        parsed_signature=ParsedSignature.from_fn(fn, signature_namespace={}),
     )
 
     assert model.fields["a"].is_non_string_sequence
     assert model.fields["b"].is_non_string_sequence
-
-
-def test_parsed_signature_model_from_parameter_resolves_forward_ref() -> None:
-    def func(a: "int") -> None:
-        ...
-
-    signature = inspect.Signature.from_callable(func)
-    obj = object()
-    parsed_param = ParsedSignatureParameter.from_parameter("func", "a", signature.parameters["a"], {"a": obj})
-    assert parsed_param.annotation is obj
-
-
-@pytest.mark.parametrize("with_future_annotations", [True, False])
-def test_parsed_parameters_with_annotated_types(
-    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
-) -> None:
-    module = create_module(
-        f"""
-{'from __future__ import annotations' if with_future_annotations else ''}
-from typing_extensions import Annotated
-
-def fn(a: Annotated[int, "a"]) -> None:
-    pass
-"""
-    )
-    (param, *_), _, __, ___ = parse_fn_signature(
-        fn=module.fn, plugins=[], dependency_name_set=set(), signature_namespace={}
-    )
-    assert param.annotation == Annotated[int, "a"]

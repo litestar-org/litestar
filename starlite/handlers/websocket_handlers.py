@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
+from starlite.types.builtin_types import NoneType
 from starlite.utils import is_async_callable
 
 __all__ = ("WebsocketRouteHandler", "websocket")
@@ -73,12 +74,12 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         """Validate the route handler function once it's set by inspecting its return annotations."""
         super()._validate_handler_function()
 
-        if self.signature.return_annotation not in {None, "None"}:
+        if self.parsed_fn_signature.return_type.annotation not in {None, NoneType}:
             raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")
-        if "socket" not in self.signature.parameters:
+        if "socket" not in self.parsed_fn_signature.parameters:
             raise ImproperlyConfiguredException("Websocket handlers must set a 'socket' kwarg")
         for param in ("request", "body", "data"):
-            if param in self.signature.parameters:
+            if param in self.parsed_fn_signature.parameters:
                 raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket handlers")
         if not is_async_callable(self.fn.value):
             raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
