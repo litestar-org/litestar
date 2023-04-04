@@ -761,6 +761,18 @@ wherever you have access to <a class="reference internal" href="connection.html#
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="starlite.handlers.BaseRouteHandler.parsed_fn_signature">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parsed_fn_signature</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ParsedSignature</span></em><a class="headerlink" href="#starlite.handlers.BaseRouteHandler.parsed_fn_signature" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the parsed signature of the handler function.</p>
+<p>This method is memoized so the computation occurs only once.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">ParsedSignature</span></code> instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="starlite.handlers.BaseRouteHandler.handler_name">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handler_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><a class="headerlink" href="#starlite.handlers.BaseRouteHandler.handler_name" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the name of the handler function.</p>
@@ -852,6 +864,12 @@ layer closest to the response handler will take precedence.</p>
 <dt class="sig sig-object py" id="starlite.handlers.BaseRouteHandler.authorize_connection">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">authorize_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection.html#starlite.connection.ASGIConnection" title="starlite.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.handlers.BaseRouteHandler.authorize_connection" title="Permalink to this definition">#</a></dt>
 <dd><p>Ensure the connection is authorized by running all the route guards in scope.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.handlers.BaseRouteHandler.on_registration">
+<span class="sig-name descname"><span class="pre">on_registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.handlers.BaseRouteHandler.on_registration" title="Permalink to this definition">#</a></dt>
+<dd><p>Called once per handler when the app object is instantiated.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1293,6 +1311,12 @@ a Response instance or an arbitrary value.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.handlers.HTTPRouteHandler.on_registration">
+<span class="sig-name descname"><span class="pre">on_registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.handlers.HTTPRouteHandler.on_registration" title="Permalink to this definition">#</a></dt>
+<dd><p>Called once per handler when the app object is instantiated.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1635,6 +1659,7 @@ wherever you have access to <a class="reference internal" href="connection.html#
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.__init__"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.__call__"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.__call__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.fn"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.fn</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.parsed_fn_signature"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.parsed_fn_signature</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.handler_name"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.handler_name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.dependency_name_set"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.dependency_name_set</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.ownership_layers"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.ownership_layers</span></code></a></li>
@@ -1647,6 +1672,7 @@ wherever you have access to <a class="reference internal" href="connection.html#
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.resolve_opts"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.resolve_opts()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.resolve_signature_namespace"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.resolve_signature_namespace()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.authorize_connection"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.authorize_connection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.on_registration"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.on_registration()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.BaseRouteHandler.__str__"><code class="docutils literal notranslate"><span class="pre">BaseRouteHandler.__str__()</span></code></a></li>
 </ul>
 </li>
@@ -1672,6 +1698,7 @@ wherever you have access to <a class="reference internal" href="connection.html#
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.HTTPRouteHandler.resolve_after_response"><code class="docutils literal notranslate"><span class="pre">HTTPRouteHandler.resolve_after_response()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.HTTPRouteHandler.get_response_handler"><code class="docutils literal notranslate"><span class="pre">HTTPRouteHandler.get_response_handler()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.HTTPRouteHandler.to_response"><code class="docutils literal notranslate"><span class="pre">HTTPRouteHandler.to_response()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.HTTPRouteHandler.on_registration"><code class="docutils literal notranslate"><span class="pre">HTTPRouteHandler.on_registration()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.handlers.patch"><code class="docutils literal notranslate"><span class="pre">patch</span></code></a><ul class="visible nav section-nav flex-column">
