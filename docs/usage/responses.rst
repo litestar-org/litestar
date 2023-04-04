@@ -144,20 +144,11 @@ Content Negotiation
 If your handler can return data with different media types and you want to use
 `Content Negotiation <https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation>`_
 to allow the client to choose which type to return, you can use the
-:class:`Request.accept <starlite.connection.request.Request>` property to
+:attr:`Request.accept <starlite.connection.Request.accept>` property to
 calculate the best matching return media type.
 
 .. literalinclude:: /examples/responses/response_content.py
     :language: python
-
-.. code-block:: console
-
-    $ curl -H "Accept: text/plain" http://127.0.0.1:8000/resource
-    Hello World!
-    $ curl -H "Accept: text/html" http://127.0.0.1:8000/resource
-    <h1>Hello World!</h1>
-    $ curl -H "Accept: application/xml" http://127.0.0.1:8000/resource
-    <xml><msg>Hello World!</msg></xml>
 
 
 Status Codes
