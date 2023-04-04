@@ -27,7 +27,7 @@ def test_head_decorator_raises_validation_error_if_body_is_declared() -> None:
         def handler() -> dict:
             return {}
 
-        handler.on_startup()
+        handler.on_registration()
 
 
 def test_head_decorator_raises_validation_error_if_method_is_passed() -> None:
@@ -37,7 +37,7 @@ def test_head_decorator_raises_validation_error_if_method_is_passed() -> None:
         def handler() -> None:
             return
 
-        handler.on_startup()
+        handler.on_registration()
 
 
 def test_head_decorator_does_not_raise_for_file() -> None:
@@ -45,7 +45,7 @@ def test_head_decorator_does_not_raise_for_file() -> None:
     def handler() -> File:
         return File(path=Path("test_head.py"))
 
-    handler.on_startup()
+    handler.on_registration()
 
 
 def test_head_decorator_does_not_raise_for_file_response() -> None:
@@ -53,4 +53,4 @@ def test_head_decorator_does_not_raise_for_file_response() -> None:
     def handler() -> "FileResponse":
         return FileResponse("test_to_response.py")
 
-    handler.on_startup()
+    handler.on_registration()

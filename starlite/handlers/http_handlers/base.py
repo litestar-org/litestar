@@ -471,8 +471,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
         return await response_handler(app=app, data=data, plugins=plugins, request=request)  # type: ignore
 
-    def on_startup(self) -> None:
-        super().on_startup()
+    def on_registration(self) -> None:
+        super().on_registration()
         self.resolve_before_request()
         self.resolve_after_response()
 

@@ -518,7 +518,7 @@ class Starlite(Router):
             route_handlers = get_route_handlers(route)
 
             for route_handler in route_handlers:
-                route_handler.on_startup()
+                route_handler.on_registration()
                 self._set_runtime_callables(route_handler=route_handler)
                 self._create_handler_signature_model(route_handler=route_handler)
 

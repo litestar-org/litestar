@@ -105,21 +105,18 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
 
 
 def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
-    any_attrs_annotation = False
     for parameter in parsed_signature.parameters.values():
         parsed_type = parameter.parsed_type
         if any(is_attrs_class(t.annotation) for t in parsed_type.inner_annotations) or is_attrs_class(
             parsed_type.annotation
         ):
-            any_attrs_annotation = True
-            break
-    return any_attrs_annotation
+            return True
+    return False
 
 
 def _any_pydantic_annotation(
     parsed_signature: ParsedSignature, field_plugin_mappings: dict[str, PluginMapping]
 ) -> bool:
-    any_pydantic_annotation = False
     for parameter in parsed_signature.parameters.values():
         parsed_type = parameter.parsed_type
         if (
@@ -127,9 +124,8 @@ def _any_pydantic_annotation(
             or _is_pydantic_annotation(parsed_type.annotation)
             or field_plugin_mappings.get(parameter.name)
         ):
-            any_pydantic_annotation = True
-            break
-    return any_pydantic_annotation
+            return True
+    return False
 
 
 def _create_field_plugin_mappings(
@@ -138,13 +134,11 @@ def _create_field_plugin_mappings(
     field_plugin_mappings = {}
     for parameter in parsed_signature.parameters.values():
         parsed_type = parameter.parsed_type
-        plugin = get_plugin_for_value(parameter.parsed_type.annotation, plugins)
-        if not plugin:
-            continue
-        type_value = (
-            parsed_type.inner_annotations[0].annotation if parsed_type.is_collection else parsed_type.annotation
-        )
-        field_plugin_mappings[parameter.name] = PluginMapping(plugin=plugin, model_class=type_value)
+        if plugin := get_plugin_for_value(parameter.parsed_type.annotation, plugins):
+            type_value = (
+                parsed_type.inner_annotations[0].annotation if parsed_type.is_collection else parsed_type.annotation
+            )
+            field_plugin_mappings[parameter.name] = PluginMapping(plugin=plugin, model_class=type_value)
     return field_plugin_mappings
 
 
@@ -214,7 +208,7 @@ def _should_skip_validation(parameter: ParsedParameter) -> bool:
 def _validate_dependencies(
     dependency_name_set: set[str], fn: AnyCallable, parsed_signature: ParsedSignature
 ) -> set[str]:
-    """Parse a function signature into data used for the generation of a signature model.
+    """Validate dependencies of ``parsed_signature``.
 
     Args:
         dependency_name_set: A set of dependency names
@@ -222,8 +216,7 @@ def _validate_dependencies(
         parsed_signature: A parsed signature.
 
     Returns:
-        A tuple containing the following values for generating a signature model: a mapping of field definitions, the
-        callable's return annotation, a mapping of field names to plugins - if any, and an updated dependency name set.
+        A set of validated dependency names.
     """
     fn_name = getattr(fn, "__name__", "anonymous")
 

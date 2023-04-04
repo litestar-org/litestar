@@ -30,6 +30,19 @@ __all__ = (
 class ParsedType:
     """Represents a type annotation."""
 
+    __slots__ = (
+        "raw",
+        "annotation",
+        "origin",
+        "args",
+        "metadata",
+        "is_annotated",
+        "is_required",
+        "is_not_required",
+        "safe_generic_origin",
+        "inner_annotations",
+    )
+
     raw: Any
     """The annotation exactly as received."""
     annotation: Any
@@ -98,6 +111,12 @@ class ParsedType:
 class ParsedParameter:
     """Represents the parameters of a callable."""
 
+    __slots__ = (
+        "name",
+        "default",
+        "parsed_type",
+    )
+
     name: str
     """The name of the parameter."""
     default: Any | Empty
@@ -156,6 +175,11 @@ class ParsedSignature:
 
     The only post-processing that occurs is the conversion of any forward referenced type annotations.
     """
+
+    __slots__ = (
+        "parameters",
+        "return_type",
+    )
 
     parameters: dict[str, ParsedParameter]
     """A mapping of parameter names to ParsedSignatureParameter instances."""

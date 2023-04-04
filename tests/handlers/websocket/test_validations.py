@@ -12,7 +12,7 @@ def test_raises_when_socket_arg_is_missing() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        websocket(path="/")(fn_without_socket_arg).on_startup()  # type: ignore
+        websocket(path="/")(fn_without_socket_arg).on_registration()  # type: ignore
 
 
 def test_raises_for_return_annotation() -> None:
@@ -20,7 +20,7 @@ def test_raises_for_return_annotation() -> None:
         return {}
 
     with pytest.raises(ImproperlyConfiguredException):
-        websocket(path="/")(fn_with_return_annotation).on_startup()
+        websocket(path="/")(fn_with_return_annotation).on_registration()
 
 
 def test_raises_when_no_function() -> None:
@@ -37,7 +37,7 @@ def test_raises_when_sync_handler_user() -> None:
         def sync_websocket_handler(socket: WebSocket) -> None:
             ...
 
-        sync_websocket_handler.on_startup()
+        sync_websocket_handler.on_registration()
 
 
 def test_raises_when_data_kwarg_is_used() -> None:
@@ -47,7 +47,7 @@ def test_raises_when_data_kwarg_is_used() -> None:
         async def websocket_handler_with_data_kwarg(socket: WebSocket, data: Any) -> None:
             ...
 
-        websocket_handler_with_data_kwarg.on_startup()
+        websocket_handler_with_data_kwarg.on_registration()
 
 
 def test_raises_when_request_kwarg_is_used() -> None:
@@ -57,7 +57,7 @@ def test_raises_when_request_kwarg_is_used() -> None:
         async def websocket_handler_with_request_kwarg(socket: WebSocket, request: Any) -> None:
             ...
 
-        websocket_handler_with_request_kwarg.on_startup()
+        websocket_handler_with_request_kwarg.on_registration()
 
 
 def test_raises_when_body_kwarg_is_used() -> None:
@@ -67,4 +67,4 @@ def test_raises_when_body_kwarg_is_used() -> None:
         async def websocket_handler_with_request_kwarg(socket: WebSocket, body: bytes) -> None:
             ...
 
-        websocket_handler_with_request_kwarg.on_startup()
+        websocket_handler_with_request_kwarg.on_registration()

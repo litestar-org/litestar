@@ -34,5 +34,5 @@ def test_media_type_inference(annotation: Any, expected_media_type: MediaType) -
     def handler() -> annotation:
         return None
 
-    handler.on_startup()
+    handler.on_registration()
     assert handler.media_type == expected_media_type

@@ -299,7 +299,7 @@ class BaseRouteHandler(Generic[T]):
                     f"If you wish to override a provider, it must have the same key."
                 )
 
-    def on_startup(self) -> None:
+    def on_registration(self) -> None:
         """Called once per handler when the app object is instantiated."""
         self._validate_handler_function()
         self.resolve_guards()
