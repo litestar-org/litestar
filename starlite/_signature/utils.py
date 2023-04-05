@@ -107,7 +107,9 @@ def get_signature_model(value: Any) -> type[SignatureModel]:
 def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
     for parameter in parsed_signature.parameters.values():
         parsed_type = parameter.parsed_type
-        if any(is_attrs_class(t.annotation) for t in parsed_type.inner_types) or is_attrs_class(parsed_type.annotation):
+        if parsed_type.is_predicate_of(is_attrs_class) or (
+            parsed_type.is_collection and parsed_type.has_predicate_of(is_attrs_class)
+        ):
             return True
     return False
 
@@ -118,8 +120,8 @@ def _any_pydantic_annotation(
     for parameter in parsed_signature.parameters.values():
         parsed_type = parameter.parsed_type
         if (
-            any(_is_pydantic_annotation(t.annotation) for t in parsed_type.inner_types)
-            or _is_pydantic_annotation(parsed_type.annotation)
+            parsed_type.is_predicate_of(_is_pydantic_annotation)
+            or (parsed_type.is_collection and parsed_type.has_predicate_of(_is_pydantic_annotation))
             or field_plugin_mappings.get(parameter.name)
         ):
             return True

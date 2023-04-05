@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Collection
 from dataclasses import dataclass
 from inspect import Parameter, Signature
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Union
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
@@ -15,7 +15,7 @@ from starlite.utils.signature_parsing import get_fn_type_hints
 from starlite.utils.typing import get_safe_generic_origin, unwrap_annotation
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Callable
 
     from starlite.types import AnyCallable
 
@@ -75,7 +75,60 @@ class ParsedType:
     @property
     def is_collection(self) -> bool:
         """Whether the annotation is a collection type or not."""
-        return self.origin and issubclass(self.origin, Collection)
+        return bool(self.origin and self.origin is not Union and issubclass(self.origin, Collection))
+
+    def is_type_of(self, cl: type[Any]) -> bool:
+        """Whether the annotation is a subclass of the given type.
+
+        Args:
+            cl: The type to check.
+
+        Returns:
+            Whether the annotation is a subclass of the given type.
+        """
+        if self.origin:
+            if self.origin is Union:
+                return any(t.is_type_of(cl) for t in self.inner_types)
+            return issubclass(self.origin, cl)
+        return self.annotation is not Any and issubclass(self.annotation, cl)
+
+    def has_type_of(self, cl: type[Any]) -> bool:
+        """Whether any generic args are a subclass of the given type.
+
+        Args:
+            cl: The type to check.
+
+
+        Returns:
+            Whether any of the type's generic args are a subclass of the given type.
+        """
+        return any(t.is_type_of(cl) for t in self.inner_types)
+
+    def is_predicate_of(self, predicate: Callable[[type[Any]], bool]) -> bool:
+        """Whether type matches the given predicate.
+
+        Args:
+            predicate: The predicate to check.
+
+        Returns:
+            Whether the type matches the given predicate.
+        """
+        if self.origin:
+            if self.origin is Union:
+                return any(t.is_predicate_of(predicate) for t in self.inner_types)
+            return predicate(self.origin)
+        return self.annotation is not Any and predicate(self.annotation)
+
+    def has_predicate_of(self, predicate: Callable[[type[Any]], bool]) -> bool:
+        """Whether any generic args match the given predicate.
+
+        Args:
+            predicate: The predicate to check.
+
+        Returns:
+            Whether any of the type's generic args match the given predicate.
+        """
+        return any(t.is_predicate_of(predicate) for t in self.inner_types)
 
     @classmethod
     def from_annotation(cls, annotation: Any) -> ParsedType:
