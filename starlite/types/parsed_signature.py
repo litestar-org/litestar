@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Collection
 from dataclasses import dataclass
 from inspect import Parameter, Signature
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, AnyStr, Union
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
@@ -89,6 +89,8 @@ class ParsedType:
         """
         if self.origin:
             return self.origin not in UNION_TYPES and issubclass(self.origin, cl)
+        if self.annotation is AnyStr:
+            return issubclass(str, cl) or issubclass(bytes, cl)
         return self.annotation is not Any and issubclass(self.annotation, cl)
 
     def has_inner_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:

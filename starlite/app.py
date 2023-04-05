@@ -58,6 +58,7 @@ if TYPE_CHECKING:
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
+    from starlite.dto.interface import AbstractDTOInterface
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler
     from starlite.logging.config import BaseLoggingConfig
@@ -186,6 +187,7 @@ class Starlite(Router):
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
         csrf_config: CSRFConfig | None = None,
+        dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         debug: bool = False,
         dependencies: Dependencies | None = None,
         etag: ETag | None = None,
@@ -209,6 +211,7 @@ class Starlite(Router):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: OptionalSequence[ResponseHeader] = None,
+        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         security: OptionalSequence[SecurityRequirement] = None,
         signature_namespace: Mapping[str, Any] | None = None,
         state: State | None = None,
@@ -254,6 +257,8 @@ class Starlite(Router):
             csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
+            dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and
+                validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
                 Can be overridden by route handlers.
             event_emitter_backend: A subclass of
@@ -287,6 +292,8 @@ class Starlite(Router):
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
             response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
             response_cache_config: Configures caching behavior of the application.
+            return_dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing
+                outbound response data.
             route_handlers: A sequence of route handlers, which can include instances of
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
                 callable decorated by the route handler decorators.
@@ -327,6 +334,7 @@ class Starlite(Router):
             csrf_config=csrf_config,
             debug=debug,
             dependencies=dict(dependencies or {}),
+            dto=dto,
             etag=etag,
             event_emitter_backend=event_emitter_backend,
             exception_handlers=exception_handlers or {},
@@ -347,6 +355,7 @@ class Starlite(Router):
             response_class=response_class,
             response_cookies=response_cookies or [],
             response_headers=response_headers or [],
+            return_dto=return_dto,
             route_handlers=list(route_handlers) if route_handlers is not None else [],
             security=list(security or []),
             signature_namespace=dict(signature_namespace or {}),
@@ -404,6 +413,7 @@ class Starlite(Router):
             before_request=config.before_request,
             cache_control=config.cache_control,
             dependencies=config.dependencies,
+            dto=config.dto,
             etag=config.etag,
             exception_handlers=config.exception_handlers,
             guards=config.guards,
@@ -414,6 +424,7 @@ class Starlite(Router):
             response_class=config.response_class,
             response_cookies=config.response_cookies,
             response_headers=config.response_headers,
+            return_dto=config.return_dto,
             # route handlers are registered below
             route_handlers=[],
             security=config.security,

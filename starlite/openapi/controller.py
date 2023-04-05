@@ -87,6 +87,10 @@ class OpenAPIController(Controller):
     # until swagger-ui supports v3.1.* of OpenAPI officially, we need to modify the schema for it and keep it
     # separate from the redoc version of the schema, which is unmodified.
     _dumped_modified_schema: str = ""
+    # set the dto types to `None` to ensure that if a dto is supplied at the application layer, they don't apply to
+    # this controller.
+    dto = None
+    return_dto = None
 
     @staticmethod
     def get_schema_from_request(request: Request) -> "OpenAPI":

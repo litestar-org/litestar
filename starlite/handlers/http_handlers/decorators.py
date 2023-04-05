@@ -7,6 +7,7 @@ from starlite.exceptions import HTTPException, ImproperlyConfiguredException
 from starlite.response import FileResponse
 from starlite.response_containers import File
 from starlite.types.builtin_types import NoneType
+from starlite.types.empty import Empty
 from starlite.utils import is_class_and_subclass
 
 from .base import HTTPRouteHandler
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
     from starlite.config.response_cache import CACHE_FOREVER
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
+    from starlite.dto.interface import AbstractDTOInterface
     from starlite.openapi.datastructures import ResponseSpec
     from starlite.openapi.spec import SecurityRequirement
     from starlite.types import (
@@ -25,6 +27,7 @@ if TYPE_CHECKING:
         AfterResponseHookHandler,
         BeforeRequestHookHandler,
         CacheKeyBuilder,
+        EmptyType,
         ExceptionHandlersMap,
         Guard,
         Middleware,
@@ -58,6 +61,7 @@ class delete(HTTPRouteHandler):
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
+        dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: list[Guard] | None = None,
@@ -68,6 +72,7 @@ class delete(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
@@ -109,6 +114,8 @@ class delete(HTTPRouteHandler):
                 :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
+            dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and
+                validation of request data.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -129,6 +136,8 @@ class delete(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing
+                outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT``
                 and ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
@@ -165,6 +174,7 @@ class delete(HTTPRouteHandler):
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
+            dto=dto,
             etag=etag,
             exception_handlers=exception_handlers,
             guards=guards,
@@ -182,6 +192,7 @@ class delete(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             signature_namespace=signature_namespace,
             status_code=status_code,
@@ -211,6 +222,7 @@ class get(HTTPRouteHandler):
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
+        dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: list[Guard] | None = None,
@@ -221,6 +233,7 @@ class get(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
@@ -263,6 +276,8 @@ class get(HTTPRouteHandler):
             cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and
+                validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
@@ -282,6 +297,8 @@ class get(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing
+                outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
@@ -319,6 +336,7 @@ class get(HTTPRouteHandler):
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
+            dto=dto,
             etag=etag,
             exception_handlers=exception_handlers,
             guards=guards,
@@ -336,6 +354,7 @@ class get(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             signature_namespace=signature_namespace,
             status_code=status_code,
@@ -365,6 +384,7 @@ class head(HTTPRouteHandler):
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
+        dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: list[Guard] | None = None,
@@ -388,6 +408,7 @@ class head(HTTPRouteHandler):
         raises: list[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: dict[int, ResponseSpec] | None = None,
+        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         security: list[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: list[str] | None = None,
@@ -421,6 +442,8 @@ class head(HTTPRouteHandler):
             cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and
+                validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
@@ -440,6 +463,8 @@ class head(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing
+                outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
@@ -477,6 +502,7 @@ class head(HTTPRouteHandler):
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
+            dto=dto,
             etag=etag,
             exception_handlers=exception_handlers,
             guards=guards,
@@ -494,6 +520,7 @@ class head(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             signature_namespace=signature_namespace,
             status_code=status_code,
@@ -536,6 +563,7 @@ class patch(HTTPRouteHandler):
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
+        dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: list[Guard] | None = None,
@@ -546,6 +574,7 @@ class patch(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
@@ -588,6 +617,8 @@ class patch(HTTPRouteHandler):
             cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and
+                validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
@@ -607,6 +638,8 @@ class patch(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing
+                outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
@@ -643,6 +676,7 @@ class patch(HTTPRouteHandler):
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
+            dto=dto,
             etag=etag,
             exception_handlers=exception_handlers,
             guards=guards,
@@ -660,6 +694,7 @@ class patch(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             signature_namespace=signature_namespace,
             status_code=status_code,
@@ -689,6 +724,7 @@ class post(HTTPRouteHandler):
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
+        dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: list[Guard] | None = None,
@@ -699,6 +735,7 @@ class post(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
@@ -741,6 +778,8 @@ class post(HTTPRouteHandler):
             cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and
+                validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
@@ -760,6 +799,8 @@ class post(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing
+                outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
@@ -796,6 +837,7 @@ class post(HTTPRouteHandler):
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
+            dto=dto,
             exception_handlers=exception_handlers,
             etag=etag,
             guards=guards,
@@ -813,6 +855,7 @@ class post(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             signature_namespace=signature_namespace,
             security=security,
             status_code=status_code,
@@ -842,6 +885,7 @@ class put(HTTPRouteHandler):
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: dict[str, Provide] | None = None,
+        dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: list[Guard] | None = None,
@@ -852,6 +896,7 @@ class put(HTTPRouteHandler):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
+        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         status_code: int | None = None,
         sync_to_thread: bool = False,
@@ -894,6 +939,8 @@ class put(HTTPRouteHandler):
             cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and
+                validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
@@ -913,6 +960,8 @@ class put(HTTPRouteHandler):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
+            return_dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing
+                outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and
                 ``PATCH``, ``201`` for ``POST`` and ``204`` for ``DELETE``.
@@ -949,6 +998,7 @@ class put(HTTPRouteHandler):
             dependencies=dependencies,
             deprecated=deprecated,
             description=description,
+            dto=dto,
             exception_handlers=exception_handlers,
             etag=etag,
             guards=guards,
@@ -966,6 +1016,7 @@ class put(HTTPRouteHandler):
             response_description=response_description,
             response_headers=response_headers,
             responses=responses,
+            return_dto=return_dto,
             security=security,
             signature_namespace=signature_namespace,
             status_code=status_code,
