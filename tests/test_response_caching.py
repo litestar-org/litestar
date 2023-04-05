@@ -34,7 +34,7 @@ def test_default_cache_response(sync_to_thread: bool, mock: MagicMock) -> None:
         "/cached",
         sync_to_thread=sync_to_thread,
         cache=True,
-        type_encoders={int: str},  # test pickling issues. see https://github.com/litestar-api/litestar/issues/1096
+        type_encoders={int: str},  # test pickling issues. see https://github.com/starlite-api/litestar/issues/1096
     )
     async def handler() -> str:
         return mock()  # type: ignore[no-any-return]

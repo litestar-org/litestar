@@ -104,7 +104,7 @@ def test_response_cookie_documentation_only_not_rendering() -> None:
 
 
 def test_response_cookie_documentation_only_not_producing_second_header() -> None:
-    # https://github.com/litestar-api/litestar/issues/870
+    # https://github.com/starlite-api/litestar/issues/870
     def after_request(response: Response) -> Response:
         response.set_cookie("my-cookie", "123")
         return response
@@ -129,7 +129,7 @@ def test_response_cookie_documentation_only_not_producing_second_header() -> Non
 
 
 def test_response_cookie_is_always_set() -> None:
-    # https://github.com/litestar-api/litestar/issues/888
+    # https://github.com/starlite-api/litestar/issues/888
     @get(path="/set-cookie")
     def set_cookie_handler() -> Response[None]:
         return Response(

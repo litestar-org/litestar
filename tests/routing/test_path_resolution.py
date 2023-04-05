@@ -206,7 +206,7 @@ def test_special_chars(
 
 
 def test_no_404_where_list_route_has_handlers_and_child_route_has_path_param() -> None:
-    # https://github.com/litestar-api/litestar/issues/816
+    # https://github.com/starlite-api/litestar/issues/816
 
     # the error condition requires the path to not be a plain route, hence the prefixed path parameters
     @get("/{a:str}/b")

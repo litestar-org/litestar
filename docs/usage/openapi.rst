@@ -19,7 +19,7 @@ configuration globally, to settings specific kwargs on route handler decorators.
 
 .. seealso::
 
-   The `pydantic-openapi-schema docs <https://litestar-api.github.io/pydantic-openapi-schema>`_ for a
+   The `pydantic-openapi-schema docs <https://starlite-api.github.io/pydantic-openapi-schema>`_ for a
    full reference regarding the library's API.
 
 

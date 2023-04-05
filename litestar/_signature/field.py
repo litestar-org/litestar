@@ -71,7 +71,7 @@ class SignatureField:
 
         If ``self.field_type`` is an optional union, only the non-optional members of the union are evaluated.
 
-        See: https://github.com/litestar-api/litestar/issues/1106
+        See: https://github.com/starlite-api/litestar/issues/1106
         """
         field_type = self.field_type
         if self.is_optional:
@@ -84,7 +84,7 @@ class SignatureField:
 
         If ``self.field_type`` is an optional union, only the non-optional members of the union are evaluated.
 
-        See: https://github.com/litestar-api/litestar/issues/1106
+        See: https://github.com/starlite-api/litestar/issues/1106
         """
         field_type = self.field_type
         if self.is_optional:

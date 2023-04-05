@@ -386,7 +386,7 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
 
 
 def test_type_encoders() -> None:
-    # see: https://github.com/litestar-api/litestar/issues/1136
+    # see: https://github.com/starlite-api/litestar/issues/1136
 
     class User(BaseModel):
         id: str = Field(..., alias="_id")

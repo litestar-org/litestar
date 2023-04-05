@@ -188,7 +188,7 @@ def test_query_kwarg() -> None:
     ),
 )
 def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[str, str]]) -> None:
-    # https://github.com/litestar-api/litestar/issues/915
+    # https://github.com/starlite-api/litestar/issues/915
 
     request_values: Dict[str, Any] = {}
 

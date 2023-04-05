@@ -3014,7 +3014,7 @@ pydata-sphinx-theme = "^0.13.1"
 
 [package.source]
 type = "git"
-url = "https://github.com/litestar-api/litestar-sphinx-theme.git"
+url = "https://github.com/starlite-api/litestar-sphinx-theme.git"
 reference = "HEAD"
 resolved_reference = "72e2dca91723e440777025b6b18ffbcf813a5d5d"
 

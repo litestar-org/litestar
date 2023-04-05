@@ -11,8 +11,8 @@ __all__ = ["setup", "update_html_context"]
 
 
 project = "Litestar"
-copyright = "2023, Litestar-API"
-author = "Litestar-API"
+copyright = "2023, Starlite-API"
+author = "Starlite-API"
 release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
 
 extensions = [
@@ -149,7 +149,7 @@ html_theme_options = {
         "Documentation": "index",
         "Community": {
             "Contribution Guide": "contribution-guide",
-            "Code of Conduct": "https://github.com/litestar-api/.github/blob/main/CODE_OF_CONDUCT.md",
+            "Code of Conduct": "https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md",
         },
         "About": {
             "Organization": "https://starliteproject.dev/about/organization",

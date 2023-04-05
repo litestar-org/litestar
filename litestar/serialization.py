@@ -84,7 +84,7 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     # support subclasses of stdlib types, If no previous type matched, these will be
     # the last type in the mro, so we use this to (attempt to) convert a subclass into
     # its base class. # see https://github.com/jcrist/msgspec/issues/248
-    # and https://github.com/litestar-api/litestar/issues/1003
+    # and https://github.com/starlite-api/litestar/issues/1003
     str: str,
     int: int,
     float: float,

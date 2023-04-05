@@ -204,10 +204,10 @@ Example Applications
 --------------------
 
 
-* `litestar-pg-redis-docker <https://github.com/litestar-api/litestar-pg-redis-docker>`_ : In addition to Litestar, this
+* `litestar-pg-redis-docker <https://github.com/starlite-api/starlite-pg-redis-docker>`_ : In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
-* `litestar-hello-world <https://github.com/litestar-api/litestar-hello-world>`_: A bare-minimum application setup. Great
+* `litestar-hello-world <https://github.com/starlite-api/starlite-hello-world>`_: A bare-minimum application setup. Great
   for testing and POC work.
 
 

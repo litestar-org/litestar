@@ -35,7 +35,7 @@ def test_response_headers() -> None:
 
 
 def test_response_headers_do_not_lowercase_values() -> None:
-    # reproduces: https://github.com/litestar-api/litestar/issues/693
+    # reproduces: https://github.com/starlite-api/litestar/issues/693
 
     @get("/")
     def handler() -> Response:

@@ -312,7 +312,7 @@ We could thus test the guard function like so:
 Using pydantic-factories
 ------------------------
 
-`Pydantic-factories <https://github.com/litestar-api/pydantic-factories>`__ offers an easy
+`Pydantic-factories <https://github.com/starlite-api/pydantic-factories>`__ offers an easy
 and powerful way to generate mock data from pydantic models and dataclasses.
 
 Let's say we have an API that talks to an external service and retrieves some data:

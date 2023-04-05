@@ -120,7 +120,7 @@
         :issue: 1292
         :pr: 1293
 
-        Fix https://github.com/litestar-api/litestar/issues/1292 by allowing to overwrite
+        Fix https://github.com/starlite-api/litestar/issues/1292 by allowing to overwrite
         the default OpenAPI response description instead of raising :exc:`ImproperlyConfiguredException`.
 
 
@@ -526,13 +526,13 @@
         cookie.
 
 
-    .. change:: Fix https://github.com/litestar-api/litestar/issues/1201: Can not serve static file in ``/`` path
+    .. change:: Fix https://github.com/starlite-api/litestar/issues/1201: Can not serve static file in ``/`` path
         :type: bugfix
         :issue: 1201
 
         A validation error made it impossible to serve static files from the root path ``/`` .
 
-    .. change:: Fix https://github.com/litestar-api/litestar/issues/1149: Middleware not excluding static path
+    .. change:: Fix https://github.com/starlite-api/litestar/issues/1149: Middleware not excluding static path
         :type: bugfix
         :issue: 1149
 
