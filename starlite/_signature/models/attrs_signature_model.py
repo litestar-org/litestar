@@ -265,6 +265,7 @@ class AttrsSignatureModel(SignatureModel):
 
     @classmethod
     def parse_values_from_connection_kwargs(cls, connection: ASGIConnection, **kwargs: Any) -> dict[str, Any]:
+        print(f"{kwargs = }")
         try:
             signature = _converter.structure(obj=kwargs, cl=cls)
         except (cattrs.ClassValidationError, ValueError, TypeError, AttributeError) as e:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List
+from typing import Any, Dict, List
 
 import pytest
 
@@ -23,7 +23,7 @@ def test_dto_data() -> None:
         assert data.data == Model(a=1, b="two")
         return data
 
-    with create_test_client(route_handlers=[post_handler]) as client:
+    with create_test_client(route_handlers=[post_handler], debug=True) as client:
         post_response = client.post("/", content=b'{"a":1,"b":"two"}', headers={"content-type": "application/json"})
         assert post_response.status_code == HTTP_201_CREATED
         assert post_response.json() == {"a": 1, "b": "two"}
@@ -51,7 +51,9 @@ def test_dto_supported_data() -> None:
     def post_handler(data: Model) -> Model:
         return data
 
-    with create_test_client(route_handlers=[post_handler]) as client:
+    with create_test_client(
+        route_handlers=[post_handler], debug=True, preferred_validation_backend="pydantic"
+    ) as client:
         post_response = client.post("/", content=b'{"a":1,"b":"two"}', headers={"content-type": "application/json"})
         assert post_response.status_code == HTTP_201_CREATED
         assert post_response.json() == {"a": 1, "b": "two"}
@@ -59,7 +61,7 @@ def test_dto_supported_data() -> None:
 
 def test_dto_supported_iterable_data() -> None:
     @post(path="/", data_dto=DataclassDTO[List[Model]], return_dto=DataclassDTO[List[Model]])
-    def post_handler(data: list[Model]) -> list[Model]:
+    def post_handler(data: List[Model]) -> List[Model]:
         assert isinstance(data, list)
         for item in data:
             assert isinstance(item, Model)
@@ -75,7 +77,7 @@ def test_dto_supported_iterable_data() -> None:
 
 def test_exception_if_incompatible_data_dto_type() -> None:
     @post(path="/", data_dto=DataclassDTO[Model])
-    def post_handler(data: dict[str, Any]) -> None:
+    def post_handler(data: Dict[str, Any]) -> None:
         ...
 
     with pytest.raises(InvalidAnnotation):
@@ -84,7 +86,7 @@ def test_exception_if_incompatible_data_dto_type() -> None:
 
 def test_exception_if_incompatible_return_dto_type() -> None:
     @get(return_dto=DataclassDTO[List[Model]])
-    def get_handler() -> list[int]:
+    def get_handler() -> List[int]:
         return []
 
     with pytest.raises(InvalidAnnotation):

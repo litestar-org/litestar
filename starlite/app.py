@@ -532,6 +532,7 @@ class Starlite(Router):
                 route_handler.on_registration()
                 self._set_runtime_callables(route_handler=route_handler)
                 self._create_handler_signature_model(route_handler=route_handler)
+                self._init_handler_dtos(route_handler=route_handler)
 
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
@@ -771,32 +772,26 @@ class Starlite(Router):
         Args:
             route_handler: The route handler to initialize.
         """
-        signature_model = get_signature_model(route_handler)
-        data_field = signature_model.fields.get("data")
-        if data_field:
-            data_annotation = data_field.parsed_parameter.annotation
+        data_parameter = route_handler.parsed_fn_signature.parameters.get("data")
+        if data_parameter:
+            parameter_type = data_parameter.parsed_type
             data_dto = (
-                data_annotation
-                if is_class_and_subclass(
-                    get_origin(data_annotation) or data_annotation, AbstractDTOInterface  # type:ignore[type-abstract]
-                )
+                parameter_type.annotation
+                if parameter_type.is_type_of(AbstractDTOInterface)
                 else route_handler.resolve_data_dto()
             )
             if data_dto:
-                data_dto.on_startup(data_annotation, route_handler)
+                data_dto.on_startup(parameter_type.annotation, route_handler)
 
-        return_annotation = signature_model.return_annotation
-        if return_annotation and return_annotation is not Any:
+        return_type = route_handler.parsed_fn_signature.return_type
+        if return_type.annotation is not Empty:
             return_dto = (
-                return_annotation
-                if is_class_and_subclass(
-                    get_origin(return_annotation) or return_annotation,
-                    AbstractDTOInterface,  # type:ignore[type-abstract]
-                )
+                return_type.annotation
+                if return_type.is_type_of(AbstractDTOInterface)
                 else route_handler.resolve_return_dto()
             )
             if return_dto:
-                return_dto.on_startup(return_annotation, route_handler)
+                return_dto.on_startup(return_type.annotation, route_handler)
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.

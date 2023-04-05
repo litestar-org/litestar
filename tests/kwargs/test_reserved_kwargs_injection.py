@@ -133,8 +133,9 @@ def test_request_with_invalid_data(media_type: MediaType) -> None:
     def test_handler(data: Any) -> Any:
         return data
 
-    with create_test_client(test_handler) as client:
+    with create_test_client(test_handler, debug=True) as client:
         response = client.post("/", content=b"abc", headers={"Content-Type": media_type})
+        print(response.text)
         assert response.status_code == HTTP_400_BAD_REQUEST
 
 

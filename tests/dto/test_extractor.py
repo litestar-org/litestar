@@ -6,9 +6,10 @@ from unittest.mock import AsyncMock
 import pytest
 
 from starlite import post
-from starlite._signature.models import SignatureField
 from starlite.dto.factory.stdlib.dataclass import DataclassDTO
 from starlite.dto.kwarg_extractor import create_dto_extractor
+from starlite.types.empty import Empty
+from starlite.types.parsed_signature import ParsedParameter, ParsedType
 
 from . import Model
 
@@ -17,19 +18,12 @@ async def test_extractor_for_scalar_annotation() -> None:
     dto_type = DataclassDTO[Model]
     dto_type.on_startup(Model, post())
 
-    class FakeParsedParameter:
-        annotation = dto_type
-        dto = None
-
-    signature_field = SignatureField(
-        children=None,
-        default_value=None,
-        extra={"parsed_parameter": FakeParsedParameter},
-        field_type=Any,
-        kwarg_model=None,
+    parsed_param = ParsedParameter(
         name="data",
+        default=Empty,
+        parsed_type=ParsedType.from_annotation(dto_type),
     )
-    extractor = create_dto_extractor(signature_field, dto_type)
+    extractor = create_dto_extractor(parsed_param, dto_type)
     data = await extractor(
         AsyncMock(body=AsyncMock(return_value=b'{"a": 1, "b": "two"}'), content_type=("application/json",))
     )
@@ -41,19 +35,13 @@ async def test_extractor_for_collection_annotation(generic_collection: Any) -> N
     dto_type = DataclassDTO[generic_collection[Model]]
     dto_type.on_startup(generic_collection[Model], post())
 
-    class FakeParsedParameter:
-        annotation = dto_type
-        dto = None
-
-    signature_field = SignatureField(
-        children=None,
-        default_value=None,
-        extra={"parsed_parameter": FakeParsedParameter},
-        field_type=Any,
-        kwarg_model=None,
+    parsed_param = ParsedParameter(
         name="data",
+        default=Empty,
+        parsed_type=ParsedType.from_annotation(dto_type),
     )
-    extractor = create_dto_extractor(signature_field, dto_type)
+
+    extractor = create_dto_extractor(parsed_param, dto_type)
     data = await extractor(
         AsyncMock(body=AsyncMock(return_value=b'[{"a": 1, "b": "two"}]'), content_type=("application/json",))
     )

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Collection
 from dataclasses import dataclass
 from inspect import Parameter, Signature
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Union
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
@@ -15,8 +15,6 @@ from starlite.utils.signature_parsing import get_fn_type_hints
 from starlite.utils.typing import get_safe_generic_origin, unwrap_annotation
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from starlite.types import AnyCallable
 
 __all__ = (
@@ -76,6 +74,21 @@ class ParsedType:
     def is_collection(self) -> bool:
         """Whether the annotation is a collection type or not."""
         return self.origin and issubclass(self.origin, Collection)
+
+    def is_type_of(self, cls: type[Any]) -> bool:
+        """Whether the annotation is a subclass of the given type.
+
+        Args:
+            cls: The type to check.
+
+        Returns:
+            Whether the annotation is a subclass of the given type.
+        """
+        if self.origin:
+            if self.origin is Union:
+                return False
+            return issubclass(self.origin, cls)
+        return self.annotation is not Any and issubclass(self.annotation, cls)
 
     @classmethod
     def from_annotation(cls, annotation: Any) -> ParsedType:

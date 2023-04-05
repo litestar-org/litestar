@@ -96,12 +96,6 @@ def create_signature_model(
     )
 
 
-if sys.version_info < (3, 9):  # pragma: no cover
-    from typing import Dict, FrozenSet, List, Set, Tuple
-
-    _GLOBAL_NAMES.update({"dict": Dict, "frozenset": FrozenSet, "list": List, "set": Set, "tuple": Tuple})
-
-
 def get_signature_model(value: Any) -> type[SignatureModel]:
     """Retrieve and validate the signature model from a provider or handler."""
     try:

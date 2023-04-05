@@ -30,8 +30,8 @@ def create_company(data: Company) -> Company:
 
 
 @get(return_dto=CompanyListDTO)
-def list_companies() -> list[Company]:
+def list_companies() -> List[Company]:
     return [Company(id=1, name="mega-corp", worth=123.45, super_secret="shh")]
 
 
-app = Starlite(route_handlers=[create_company, list_companies])
+app = Starlite(route_handlers=[create_company, list_companies], preferred_validation_backend="pydantic")

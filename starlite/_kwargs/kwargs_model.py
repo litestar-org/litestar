@@ -37,6 +37,7 @@ from starlite.dto import AbstractDTOInterface
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, ParameterKwarg
+from starlite.types.parsed_signature import ParsedSignature, ParsedParameter
 from starlite.utils import is_class_and_subclass
 
 __all__ = ("KwargsModel",)
@@ -73,7 +74,7 @@ class KwargsModel:
         self,
         *,
         expected_cookie_params: set[ParameterDefinition],
-        expected_dto_data: tuple[SignatureField, type[AbstractDTOInterface]] | None,
+        expected_dto_data: tuple[ParsedParameter, type[AbstractDTOInterface]] | None,
         expected_dependencies: set[Dependency],
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
         expected_msgpack_data: SignatureField | None,
@@ -258,6 +259,7 @@ class KwargsModel:
     def create_for_signature_model(
         cls,
         signature_model: type[SignatureModel],
+        parsed_signature: ParsedSignature,
         dependencies: dict[str, Provide],
         path_parameters: set[str],
         layered_parameters: dict[str, SignatureField],
@@ -268,6 +270,7 @@ class KwargsModel:
 
         Args:
             signature_model: A :class:`SignatureModel <starlite._signature.SignatureModel>` subclass.
+            parsed_signature: A :class:`ParsedSignature <starlite._signature.ParsedSignature>` instance.
             dependencies: A string keyed dictionary mapping dependency providers.
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
@@ -303,7 +306,7 @@ class KwargsModel:
 
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None = None
         expected_msgpack_data: SignatureField | None = None
-        expected_dto_data: tuple[SignatureField, type[AbstractDTOInterface]] | None = None
+        expected_dto_data: tuple[ParsedParameter, type[AbstractDTOInterface]] | None = None
 
         data_signature_field = signature_fields.get("data")
 
@@ -322,17 +325,17 @@ class KwargsModel:
                 expected_msgpack_data = data_signature_field
 
         elif data_signature_field:
-            annotation = data_signature_field.parsed_parameter.annotation
-            if is_class_and_subclass(
-                get_origin(annotation) or annotation, AbstractDTOInterface  # type:ignore[type-abstract]
-            ):
-                expected_dto_data = (data_signature_field, annotation)
+            parsed_parameter = parsed_signature.parameters["data"]
+            parsed_type = parsed_parameter.parsed_type
+            if parsed_type.is_type_of(AbstractDTOInterface):
+                expected_dto_data = (parsed_parameter, parsed_type.annotation)
             elif data_dto:
-                expected_dto_data = (data_signature_field, data_dto)
+                expected_dto_data = (parsed_parameter, data_dto)
 
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
                 signature_model=get_signature_model(dependency.provide),
+                parsed_signature=parsed_signature,
                 dependencies=dependencies,
                 path_parameters=path_parameters,
                 layered_parameters=layered_parameters,

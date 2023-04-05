@@ -11,5 +11,6 @@ def test_app() -> None:
         assert get_res.json() == [{"id": 1, "name": "mega-corp", "worth": 123.45}]
 
         post_res = client.post("/", json={"name": "mega-corp", "worth": 123.45})
+        print(post_res.text)
         assert post_res.status_code == 201
         assert post_res.json() == {"name": "mega-corp", "worth": 123.45, "id": 1234567}
