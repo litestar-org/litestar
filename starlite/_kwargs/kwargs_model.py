@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable
 
 from anyio import create_task_group
-from typing_extensions import get_origin
 
 from starlite._kwargs.cleanup import DependencyCleanupGroup
 from starlite._kwargs.dependencies import (
@@ -37,8 +36,6 @@ from starlite.dto import AbstractDTOInterface
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, ParameterKwarg
-from starlite.types.parsed_signature import ParsedSignature, ParsedParameter
-from starlite.utils import is_class_and_subclass
 
 __all__ = ("KwargsModel",)
 
@@ -46,6 +43,7 @@ __all__ = ("KwargsModel",)
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
     from starlite.di import Provide
+    from starlite.types.parsed_signature import ParsedParameter, ParsedSignature
 
 
 class KwargsModel:

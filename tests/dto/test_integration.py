@@ -61,13 +61,13 @@ def test_dto_supported_data() -> None:
 
 def test_dto_supported_iterable_data() -> None:
     @post(path="/", data_dto=DataclassDTO[List[Model]], return_dto=DataclassDTO[List[Model]])
-    def post_handler(data: List[Model]) -> List[Model]:
+    def post_handler(data: list[Model]) -> list[Model]:
         assert isinstance(data, list)
         for item in data:
             assert isinstance(item, Model)
         return data
 
-    with create_test_client(route_handlers=[post_handler]) as client:
+    with create_test_client(route_handlers=[post_handler], signature_namespace={"list": List}) as client:
         post_response = client.post(
             "/", content=b'[{"a":1,"b":"two"},{"a":3,"b":"four"}]', headers={"content-type": "application/json"}
         )
@@ -76,8 +76,8 @@ def test_dto_supported_iterable_data() -> None:
 
 
 def test_exception_if_incompatible_data_dto_type() -> None:
-    @post(path="/", data_dto=DataclassDTO[Model])
-    def post_handler(data: Dict[str, Any]) -> None:
+    @post(path="/", data_dto=DataclassDTO[Model], signature_namespace={"dict": Dict})
+    def post_handler(data: dict[str, Any]) -> None:
         ...
 
     with pytest.raises(InvalidAnnotation):
@@ -85,8 +85,8 @@ def test_exception_if_incompatible_data_dto_type() -> None:
 
 
 def test_exception_if_incompatible_return_dto_type() -> None:
-    @get(return_dto=DataclassDTO[List[Model]])
-    def get_handler() -> List[int]:
+    @get(return_dto=DataclassDTO[List[Model]], signature_namespace={"list": List})
+    def get_handler() -> list[int]:
         return []
 
     with pytest.raises(InvalidAnnotation):

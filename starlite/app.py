@@ -6,13 +6,12 @@ from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, Mapping, Sequence, cast
 
-from typing_extensions import Self, TypedDict, get_origin
+from typing_extensions import Self, TypedDict
 
 from starlite._asgi import ASGIRouter
 from starlite._asgi.utils import get_route_handlers, wrap_in_exception_handler
 from starlite._openapi.path_item import create_path_item
 from starlite._signature import create_signature_model
-from starlite._signature.utils import get_signature_model
 from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.app import AppConfig
 from starlite.config.response_cache import ResponseCacheConfig
@@ -46,7 +45,6 @@ from starlite.utils import (
     as_async_callable_list,
     async_partial,
     is_async_callable,
-    is_class_and_subclass,
     join_paths,
     unique,
 )
