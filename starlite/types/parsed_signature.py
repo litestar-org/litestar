@@ -40,7 +40,7 @@ class ParsedType:
         "is_required",
         "is_not_required",
         "safe_generic_origin",
-        "inner_annotations",
+        "inner_types",
     )
 
     raw: Any
@@ -64,7 +64,7 @@ class ParsedType:
 
     This is to serve safely rebuilding a generic outer type with different args at runtime.
     """
-    inner_annotations: tuple[ParsedType, ...]
+    inner_types: tuple[ParsedType, ...]
     """The type's generic args parsed as ``ParsedType``, if applicable."""
 
     @property
@@ -103,7 +103,7 @@ class ParsedType:
             is_required=Required in wrappers,
             is_not_required=NotRequired in wrappers,
             safe_generic_origin=get_safe_generic_origin(origin),
-            inner_annotations=tuple(cls.from_annotation(arg) for arg in args),
+            inner_types=tuple(cls.from_annotation(arg) for arg in args),
         )
 
 
