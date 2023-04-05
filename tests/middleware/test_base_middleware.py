@@ -1,14 +1,14 @@
 from typing import TYPE_CHECKING
 
-from starlite import MediaType, Response, asgi, get
-from starlite.datastructures.headers import MutableScopeHeaders
-from starlite.exceptions import ValidationException
-from starlite.middleware import AbstractMiddleware, DefineMiddleware
-from starlite.status_codes import HTTP_400_BAD_REQUEST
-from starlite.testing import create_test_client
+from litestar import MediaType, Response, asgi, get
+from litestar.datastructures.headers import MutableScopeHeaders
+from litestar.exceptions import ValidationException
+from litestar.middleware import AbstractMiddleware, DefineMiddleware
+from litestar.status_codes import HTTP_400_BAD_REQUEST
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
-    from starlite.types import Message, Receive, Scope, Send
+    from litestar.types import Message, Receive, Scope, Send
 
 
 def test_custom_middleware() -> None:

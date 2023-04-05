@@ -1,7 +1,7 @@
 SQLAlchemy Plugins
 ==================
 
-Starlite comes with built-in support for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ via
+Litestar comes with built-in support for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ via
 the :class:`SQLAlchemyInitPlugin <.contrib.sqlalchemy.init_plugin.plugin.SQLAlchemyInitPlugin>`.
 
 Features
@@ -15,7 +15,7 @@ Basic Use
 ---------
 
 You can simply pass an instance of :class:`SQLAlchemyInitPlugin <.contrib.sqlalchemy.init_plugin.plugin.SQLAlchemyInitPlugin>`
-to the Starlite constructor. This will automatically create a SQLAlchemy engine and session for you, and make them
+to the Litestar constructor. This will automatically create a SQLAlchemy engine and session for you, and make them
 available to your handlers and dependencies via dependency injection.
 
 .. tab-set::

@@ -3,11 +3,11 @@ from typing import Optional
 from sqlalchemy import Column, Float, ForeignKey, Integer, String, create_engine, select
 from sqlalchemy.orm import Mapped, Session, declarative_base, relationship
 
-from starlite import Starlite, get
-from starlite.contrib.sqlalchemy_1.config import SQLAlchemyConfig
-from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from starlite.exceptions import HTTPException
-from starlite.status_codes import HTTP_404_NOT_FOUND
+from litestar import Litestar, get
+from litestar.contrib.sqlalchemy_1.config import SQLAlchemyConfig
+from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from litestar.exceptions import HTTPException
+from litestar.status_codes import HTTP_404_NOT_FOUND
 
 engine = create_engine("sqlite+pysqlite://")
 sqlalchemy_config = SQLAlchemyConfig(engine_instance=engine, use_async_engine=False)
@@ -52,7 +52,7 @@ def get_user(user_id: int, db_session: Session) -> User:
     return user
 
 
-app = Starlite(
+app = Litestar(
     route_handlers=[get_user],
     on_startup=[on_startup],
     plugins=[sqlalchemy_plugin],

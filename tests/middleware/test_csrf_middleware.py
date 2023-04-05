@@ -6,16 +6,16 @@ from typing import Any, Optional
 import pytest
 from bs4 import BeautifulSoup
 
-from starlite import MediaType, WebSocket, delete, get, patch, post, put, websocket
-from starlite.config.csrf import CSRFConfig
-from starlite.contrib.jinja import JinjaTemplateEngine
-from starlite.contrib.mako import MakoTemplateEngine
-from starlite.enums import RequestEncodingType
-from starlite.params import Body
-from starlite.response_containers import Template
-from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
-from starlite.template.config import TemplateConfig
-from starlite.testing import create_test_client
+from litestar import MediaType, WebSocket, delete, get, patch, post, put, websocket
+from litestar.config.csrf import CSRFConfig
+from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.contrib.mako import MakoTemplateEngine
+from litestar.enums import RequestEncodingType
+from litestar.params import Body
+from litestar.response_containers import Template
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_403_FORBIDDEN
+from litestar.template.config import TemplateConfig
+from litestar.testing import create_test_client
 
 
 @get(path="/")

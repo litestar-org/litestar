@@ -2,12 +2,12 @@ from typing import List
 
 import pytest
 
-from starlite.app import DEFAULT_OPENAPI_CONFIG
-from starlite.enums import MediaType
-from starlite.openapi.config import OpenAPIConfig
-from starlite.openapi.controller import OpenAPIController
-from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
-from starlite.testing import create_test_client
+from litestar.app import DEFAULT_OPENAPI_CONFIG
+from litestar.enums import MediaType
+from litestar.openapi.config import OpenAPIConfig
+from litestar.openapi.controller import OpenAPIController
+from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
+from litestar.testing import create_test_client
 from tests.openapi.utils import PersonController, PetController
 
 root_paths: List[str] = ["", "/part1", "/part1/part2"]
@@ -75,7 +75,7 @@ def test_redoc_without_google_fonts() -> None:
 
         redoc_google_fonts = False
 
-    offline_config = OpenAPIConfig(title="Starlite API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
+    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
     with create_test_client([PersonController, PetController], openapi_config=offline_config) as client:
         response = client.get("/schema/redoc")
         assert "fonts.googleapis.com" not in response.text
@@ -87,7 +87,7 @@ def test_openapi_redoc_offline() -> None:
 
         redoc_js_url = "https://offline_location/redoc.standalone.js"
 
-    offline_config = OpenAPIConfig(title="Starlite API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
+    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
     with create_test_client([PersonController, PetController], openapi_config=offline_config) as client:
         response = client.get("/schema/redoc")
         assert OfflineOpenAPIController.redoc_js_url in response.text
@@ -101,7 +101,7 @@ def test_openapi_swagger_offline() -> None:
         swagger_ui_bundle_js_url = "https://offline_location/swagger-ui-bundle.js"
         swagger_ui_standalone_preset_js_url = "https://offline_location/swagger-ui-standalone-preset.js"
 
-    offline_config = OpenAPIConfig(title="Starlite API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
+    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
     with create_test_client([PersonController, PetController], openapi_config=offline_config) as client:
         response = client.get("/schema/swagger")
         assert OfflineOpenAPIController.swagger_css_url in response.text
@@ -116,7 +116,7 @@ def test_openapi_stoplight_elements_offline() -> None:
         stoplight_elements_css_url = "https://offline_location/spotlight-styles.mins.css"
         stoplight_elements_js_url = "https://offline_location/spotlight-web-components.min.js"
 
-    offline_config = OpenAPIConfig(title="Starlite API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
+    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
     with create_test_client([PersonController, PetController], openapi_config=offline_config) as client:
         response = client.get("/schema/elements")
         assert OfflineOpenAPIController.stoplight_elements_css_url in response.text
@@ -182,7 +182,7 @@ def test_openapi_root_not_allowed() -> None:
     with create_test_client(
         [PersonController, PetController],
         openapi_config=OpenAPIConfig(
-            title="Starlite API",
+            title="Litestar API",
             version="1.0.0",
             enabled_endpoints={"swagger", "elements", "openapi.json", "openapi.yaml"},
         ),
@@ -196,7 +196,7 @@ def test_openapi_redoc_not_allowed() -> None:
     with create_test_client(
         [PersonController, PetController],
         openapi_config=OpenAPIConfig(
-            title="Starlite API",
+            title="Litestar API",
             version="1.0.0",
             enabled_endpoints={"swagger", "elements", "openapi.json", "openapi.yaml"},
         ),
@@ -210,7 +210,7 @@ def test_openapi_swagger_not_allowed() -> None:
     with create_test_client(
         [PersonController, PetController],
         openapi_config=OpenAPIConfig(
-            title="Starlite API",
+            title="Litestar API",
             version="1.0.0",
             enabled_endpoints={"redoc", "elements", "openapi.json", "openapi.yaml"},
         ),
@@ -224,7 +224,7 @@ def test_openapi_stoplight_elements_not_allowed() -> None:
     with create_test_client(
         [PersonController, PetController],
         openapi_config=OpenAPIConfig(
-            title="Starlite API",
+            title="Litestar API",
             version="1.0.0",
             enabled_endpoints={"redoc", "swagger", "openapi.json", "openapi.yaml"},
         ),

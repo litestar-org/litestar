@@ -1,5 +1,5 @@
-from starlite import Response, Starlite, get
-from starlite.datastructures import MultiDict
+from litestar import Litestar, Response, get
+from litestar.datastructures import MultiDict
 
 
 class MultiDictResponse(Response):
@@ -11,7 +11,7 @@ async def index() -> MultiDict:
     return MultiDict([("foo", "bar"), ("foo", "baz")])
 
 
-app = Starlite([index], response_class=MultiDictResponse)
+app = Litestar([index], response_class=MultiDictResponse)
 
 
 # run: /

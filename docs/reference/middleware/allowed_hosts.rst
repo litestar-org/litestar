@@ -1,5 +1,5 @@
 allowed_hosts
 =============
 
-.. automodule:: starlite.middleware.allowed_hosts
+.. automodule:: litestar.middleware.allowed_hosts
     :members:

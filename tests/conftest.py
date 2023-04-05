@@ -20,17 +20,17 @@ from piccolo.conf.apps import Finder
 from piccolo.table import create_db_tables, drop_db_tables
 from pytest_lazyfixture import lazy_fixture
 
-from starlite.middleware.session import SessionMiddleware
-from starlite.middleware.session.base import BaseSessionBackend
-from starlite.middleware.session.client_side import (
+from litestar.middleware.session import SessionMiddleware
+from litestar.middleware.session.base import BaseSessionBackend
+from litestar.middleware.session.client_side import (
     ClientSideSessionBackend,
     CookieBackendConfig,
 )
-from starlite.middleware.session.server_side import (
+from litestar.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
-from starlite.stores.base import Store
+from litestar.stores.base import Store
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -38,8 +38,8 @@ if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
     from pytest import MonkeyPatch
 
-    from starlite import Starlite
-    from starlite.types import (
+    from litestar import Litestar
+    from litestar.types import (
         AnyIOBackend,
         ASGIVersion,
         Receive,
@@ -56,9 +56,9 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from fakeredis.aioredis import FakeRedis
 
-from starlite.stores.file import FileStore
-from starlite.stores.memory import MemoryStore
-from starlite.stores.redis import RedisStore
+from litestar.stores.file import FileStore
+from litestar.stores.memory import MemoryStore
+from litestar.stores.redis import RedisStore
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
@@ -197,7 +197,7 @@ def create_scope() -> Callable[..., "Scope"]:
     def inner(
         *,
         type: str = "http",
-        app: Optional["Starlite"] = None,
+        app: Optional["Litestar"] = None,
         asgi: Optional["ASGIVersion"] = None,
         auth: Any = None,
         client: Optional[Tuple[str, int]] = ("testclient", 50000),

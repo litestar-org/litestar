@@ -4,7 +4,7 @@ from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
-from starlite import Starlite, asgi
+from litestar import Litestar, asgi
 
 if TYPE_CHECKING:
     from starlette.requests import Request
@@ -27,4 +27,4 @@ starlette_app = asgi(path="/some/sub-path", is_mount=True)(
 )
 
 
-app = Starlite(route_handlers=[starlette_app])
+app = Litestar(route_handlers=[starlette_app])

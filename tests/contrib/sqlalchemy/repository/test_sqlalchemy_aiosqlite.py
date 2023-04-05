@@ -16,8 +16,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from starlite.contrib.repository.exceptions import RepositoryError
-from starlite.contrib.sqlalchemy import base
+from litestar.contrib.repository.exceptions import RepositoryError
+from litestar.contrib.sqlalchemy import base
 from tests.contrib.sqlalchemy.models import Author, AuthorRepository, BookRepository
 
 

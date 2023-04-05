@@ -4,14 +4,14 @@ from typing import Optional
 
 import pytest
 
-from starlite import get
-from starlite.contrib.jinja import JinjaTemplateEngine
-from starlite.contrib.mako import MakoTemplateEngine
-from starlite.response_containers import Template
-from starlite.static_files.config import StaticFilesConfig
-from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
-from starlite.template.config import TemplateConfig
-from starlite.testing import create_test_client
+from litestar import get
+from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.contrib.mako import MakoTemplateEngine
+from litestar.response_containers import Template
+from litestar.static_files.config import StaticFilesConfig
+from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.template.config import TemplateConfig
+from litestar.testing import create_test_client
 
 
 @pytest.mark.xfail(sys.platform == "win32", reason="For some reason this is flaky on windows")

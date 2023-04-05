@@ -8,15 +8,15 @@ from hypothesis import given, settings
 from hypothesis.strategies import integers, none, one_of, sampled_from, text, timedeltas
 from pydantic import BaseModel, Field
 
-from starlite import Request, Response, Starlite, get
-from starlite.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
-from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
-from starlite.testing import create_test_client
+from litestar import Litestar, Request, Response, get
+from litestar.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
+from litestar.testing import create_test_client
 from tests import User, UserFactory
 
 if TYPE_CHECKING:
-    from starlite.connection import ASGIConnection
-    from starlite.stores.memory import MemoryStore
+    from litestar.connection import ASGIConnection
+    from litestar.stores.memory import MemoryStore
 
 
 @given(
@@ -294,12 +294,12 @@ def test_jwt_auth_openapi() -> None:
         }
     }
     assert jwt_auth.security_requirement == {"BearerToken": []}
-    app = Starlite(on_app_init=[jwt_auth.on_app_init])
+    app = Litestar(on_app_init=[jwt_auth.on_app_init])
 
     assert app.openapi_schema
     assert app.openapi_schema.to_schema() == {
         "openapi": "3.1.0",
-        "info": {"title": "Starlite API", "version": "1.0.0"},
+        "info": {"title": "Litestar API", "version": "1.0.0"},
         "servers": [{"url": "/"}],
         "paths": {},
         "components": {
@@ -361,10 +361,10 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
 
     assert jwt_auth.security_requirement == {"BearerToken": []}
 
-    app = Starlite(on_app_init=[jwt_auth.on_app_init])
+    app = Litestar(on_app_init=[jwt_auth.on_app_init])
     assert app.openapi_schema.to_schema() == {
         "openapi": "3.1.0",
-        "info": {"title": "Starlite API", "version": "1.0.0"},
+        "info": {"title": "Litestar API", "version": "1.0.0"},
         "servers": [{"url": "/"}],
         "paths": {},
         "components": {
@@ -386,7 +386,7 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
 
 
 def test_type_encoders() -> None:
-    # see: https://github.com/starlite-api/starlite/issues/1136
+    # see: https://github.com/starlite-api/litestar/issues/1136
 
     class User(BaseModel):
         id: str = Field(..., alias="_id")

@@ -1,5 +1,5 @@
 interface
 =========
 
-.. automodule:: starlite.dto.interface
+.. automodule:: litestar.dto.interface
     :members:

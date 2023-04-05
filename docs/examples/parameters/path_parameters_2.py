@@ -3,7 +3,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from starlite import Starlite, get
+from litestar import Litestar, get
 
 
 class Order(BaseModel):
@@ -24,4 +24,4 @@ def get_orders(from_date: datetime) -> List[Order]:
     return ORDERS_BY_DATETIME[from_date]
 
 
-app = Starlite(route_handlers=[get_orders])
+app = Litestar(route_handlers=[get_orders])

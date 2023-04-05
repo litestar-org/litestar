@@ -1,8 +1,8 @@
 from typing import Callable
 
-from starlite import Starlite
-from starlite.contrib.tortoise_orm import TortoiseORMPlugin
-from starlite.openapi.spec import OpenAPIResponse, Reference, RequestBody, Schema
+from litestar import Litestar
+from litestar.contrib.tortoise_orm import TortoiseORMPlugin
+from litestar.openapi.spec import OpenAPIResponse, Reference, RequestBody, Schema
 from tests.contrib.tortoise_orm import (
     create_tournament,
     get_tournament,
@@ -11,7 +11,7 @@ from tests.contrib.tortoise_orm import (
 
 
 def test_tortoise_orm_plugin_openapi_spec_generation(scaffold_tortoise: Callable) -> None:
-    app = Starlite(
+    app = Litestar(
         route_handlers=[create_tournament, get_tournament, get_tournaments],
         plugins=[TortoiseORMPlugin()],
     )

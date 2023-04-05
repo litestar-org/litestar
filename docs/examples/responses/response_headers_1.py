@@ -1,5 +1,5 @@
-from starlite import Controller, MediaType, Router, Starlite, get
-from starlite.datastructures import ResponseHeader
+from litestar import Controller, Litestar, MediaType, Router, get
+from litestar.datastructures import ResponseHeader
 
 
 class MyController(Controller):
@@ -27,7 +27,7 @@ router = Router(
     ],
 )
 
-app = Starlite(
+app = Litestar(
     route_handlers=[router],
     response_headers=[ResponseHeader(name="app-level-header", value="app header", description="app level header")],
 )

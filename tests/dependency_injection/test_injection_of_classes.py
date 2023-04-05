@@ -1,6 +1,6 @@
-from starlite import Controller, get
-from starlite.di import Provide
-from starlite.testing import create_test_client
+from litestar import Controller, get
+from litestar.di import Provide
+from litestar.testing import create_test_client
 
 
 def test_injection_of_classes() -> None:

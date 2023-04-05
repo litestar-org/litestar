@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from starlite import Starlite, get
+from litestar import Litestar, get
 
 
 @get("/")
@@ -12,4 +12,4 @@ def hello_world(optional_dependency: int = 3) -> Dict[str, Any]:
     return {"hello": optional_dependency}
 
 
-app = Starlite(route_handlers=[hello_world])
+app = Litestar(route_handlers=[hello_world])

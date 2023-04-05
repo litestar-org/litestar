@@ -11,8 +11,8 @@ from examples.plugins.sqlalchemy_1_plugin.sqlalchemy_relationships_to_many impor
     app as relationship_app_to_many,
 )
 from examples.plugins.sqlalchemy_1_plugin.sqlalchemy_sync import app as sync_sqla_app
-from starlite import Starlite
-from starlite.testing import TestClient
+from litestar import Litestar
+from litestar.testing import TestClient
 
 
 @pytest.fixture(autouse=True)
@@ -23,7 +23,7 @@ def clear_sqlite_dbs() -> Generator[None, None, None]:
 
 
 @pytest.mark.parametrize("app", [async_sqla_app, sync_sqla_app])
-def test_app(app: Starlite) -> None:
+def test_app(app: Litestar) -> None:
     with TestClient(app=app) as client:
         assert client.get("/companies/1").status_code == 404
 

@@ -2,12 +2,12 @@ from typing import Any, Dict, List, Optional
 
 import pytest
 
-from starlite import Controller, Starlite, get
-from starlite.di import Provide
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.params import Dependency
-from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
-from starlite.testing import create_test_client
+from litestar import Controller, Litestar, get
+from litestar.di import Provide
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import Dependency
+from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(
@@ -54,7 +54,7 @@ def test_dependency_not_provided_and_no_default() -> None:
         return {"value": value}
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[test])
+        Litestar(route_handlers=[test])
 
 
 def test_dependency_provided_on_controller() -> None:

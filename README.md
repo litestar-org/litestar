@@ -57,7 +57,7 @@ pip install starlite==2.0.0alpha2
 ## Quick Start
 
 ```python
-from starlite import Starlite, get
+from litestar import Starlite, get
 
 
 @get("/")
@@ -133,8 +133,8 @@ controllers:
 from typing import List, Optional
 
 from pydantic import UUID4
-from starlite import Controller, get, post, put, patch, delete
-from starlite.partial import Partial
+from litestar import Controller, get, post, put, patch, delete
+from litestar.partial import Partial
 from datetime import datetime
 
 from my_app.models import User
@@ -215,8 +215,8 @@ Starlite has a simple but powerful DI system inspired by pytest. You can define 
 different levels of the application, and then selective use or overwrite them.
 
 ```python
-from starlite import Starlite, get
-from starlite.di import Provide
+from litestar import Starlite, get
+from litestar.di import Provide
 
 
 async def my_dependency() -> str:
@@ -248,13 +248,13 @@ level of the application (app, router, controller etc.) and validate the request
 function.
 
 ```python
-from starlite import (
+from litestar import (
     Starlite,
     get,
 )
-from starlite.connection import ASGIConnection
-from starlite.handlers.base import BaseRouteHandler
-from starlite.exceptions import NotAuthorizedException
+from litestar.connection import ASGIConnection
+from litestar.handlers.base import BaseRouteHandler
+from litestar.exceptions import NotAuthorizedException
 
 
 async def is_authorized(connection: ASGIConnection, handler: BaseRouteHandler) -> None:

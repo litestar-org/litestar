@@ -1,5 +1,5 @@
 config
 ======
 
-.. automodule:: starlite.logging.config
+.. automodule:: litestar.logging.config
     :members:

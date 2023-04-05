@@ -5,13 +5,13 @@ from uuid import UUID
 
 import msgspec
 
-from starlite import Starlite, put
-from starlite.contrib.sqlalchemy.base import Base
-from starlite.dto.interface import DTOInterface
+from litestar import Litestar, put
+from litestar.contrib.sqlalchemy.base import Base
+from litestar.dto.interface import DTOInterface
 
 if TYPE_CHECKING:
-    from starlite.connection import Request
-    from starlite.types.serialization import StarliteEncodableType
+    from litestar.connection import Request
+    from litestar.types.serialization import LitestarEncodableType
 
 
 class Company(Base):
@@ -32,7 +32,7 @@ class CompanyDTO(DTOInterface[Company]):
     def to_data_type(self) -> Company:
         return self._data
 
-    def to_encodable_type(self, **kwargs: Any) -> bytes | StarliteEncodableType:
+    def to_encodable_type(self, **kwargs: Any) -> bytes | LitestarEncodableType:
         return CompanySchema(id=self._data.id, name=self._data.name, worth=self._data.worth)
 
     @classmethod
@@ -50,4 +50,4 @@ async def update_company(company_id: UUID, data: Company) -> Company:
     return data
 
 
-app = Starlite(route_handlers=[update_company])
+app = Litestar(route_handlers=[update_company])

@@ -5,20 +5,20 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session, sessionmaker
 
-from starlite import Starlite, get
-from starlite.contrib.sqlalchemy_1.config import (
+from litestar import Litestar, get
+from litestar.contrib.sqlalchemy_1.config import (
     SESSION_SCOPE_KEY,
     SESSION_TERMINUS_ASGI_EVENTS,
     SQLAlchemyConfig,
     SQLAlchemyEngineConfig,
     serializer,
 )
-from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.logging.config import LoggingConfig
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import RequestFactory, create_test_client
-from starlite.types import Scope
+from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.logging.config import LoggingConfig
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import RequestFactory, create_test_client
+from litestar.types import Scope
 
 
 @pytest.mark.parametrize("connection_string", ["sqlite+aiosqlite://", "sqlite://"])
@@ -89,7 +89,7 @@ def test_logging_config(engine_logger: Optional[str], pool_logger: Optional[str]
         ),
     )
     logging_config = LoggingConfig()
-    app = Starlite(plugins=[SQLAlchemyPlugin(config=config)], logging_config=logging_config)
+    app = Litestar(plugins=[SQLAlchemyPlugin(config=config)], logging_config=logging_config)
     assert app.logging_config.loggers[engine_logger or "sqlalchemy.engine"] == {  # type: ignore
         "level": logging_level or "WARNING",
         "handlers": ["queue_listener"],

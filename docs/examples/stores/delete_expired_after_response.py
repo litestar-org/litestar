@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from starlite import Request, Starlite
-from starlite.stores.memory import MemoryStore
+from litestar import Litestar, Request
+from litestar.stores.memory import MemoryStore
 
 memory_store = MemoryStore()
 
@@ -14,4 +14,4 @@ async def after_response(request: Request) -> None:
     app.state["store_last_cleared"] = now
 
 
-app = Starlite(after_response=after_response)
+app = Litestar(after_response=after_response)

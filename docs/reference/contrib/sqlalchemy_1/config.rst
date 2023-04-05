@@ -1,5 +1,5 @@
 config
 ======
 
-.. automodule:: starlite.contrib.sqlalchemy_1.config
+.. automodule:: litestar.contrib.sqlalchemy_1.config
     :members:
