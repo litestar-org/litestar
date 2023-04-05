@@ -142,6 +142,48 @@ def test_parsed_type_is_optional_predicate() -> None:
     assert ParsedType.from_annotation(Union[int, str]).is_optional is False
 
 
+def test_parsed_type_is_type_of() -> None:
+    """Test ParsedType.is_type_of."""
+    assert ParsedType.from_annotation(bool).is_type_of(int) is True
+    assert ParsedType.from_annotation(bool).is_type_of(str) is False
+    assert ParsedType.from_annotation(Union[int, str]).is_type_of(int) is True
+    assert ParsedType.from_annotation(Union[int, str]).is_type_of(str) is True
+    assert ParsedType.from_annotation(Union[int, str]).is_type_of(bool) is False
+    assert ParsedType.from_annotation(List[int]).is_type_of(list) is True
+    assert ParsedType.from_annotation(List[int]).is_type_of(int) is False
+    assert ParsedType.from_annotation(Optional[int]).is_type_of(int) is True
+    assert ParsedType.from_annotation(Optional[int]).is_type_of(str) is False
+
+
+def test_parsed_type_has_type_of() -> None:
+    """Test ParsedType.has_type_of."""
+    assert ParsedType.from_annotation(List[int]).has_type_of(int) is True
+    assert ParsedType.from_annotation(List[int]).has_type_of(str) is False
+    assert ParsedType.from_annotation(List[Union[int, str]]).has_type_of(int) is True
+    assert ParsedType.from_annotation(List[Union[int, str]]).has_type_of(str) is True
+    assert ParsedType.from_annotation(List[Union[int, str]]).has_type_of(bool) is False
+
+
+def test_parsed_type_is_predicate_of() -> None:
+    """Test ParsedType.has_predicate_of."""
+    assert ParsedType.from_annotation(bool).is_predicate_of(lambda x: issubclass(x, int)) is True
+    assert ParsedType.from_annotation(bool).is_predicate_of(lambda x: issubclass(x, str)) is False
+    assert ParsedType.from_annotation(Union[int, str]).is_predicate_of(lambda x: issubclass(x, int)) is True
+    assert ParsedType.from_annotation(Union[int, str]).is_predicate_of(lambda x: issubclass(x, str)) is True
+    assert ParsedType.from_annotation(Union[int, str]).is_predicate_of(lambda x: issubclass(x, bool)) is False
+    assert ParsedType.from_annotation(List[int]).is_predicate_of(lambda x: issubclass(x, list)) is True
+    assert ParsedType.from_annotation(List[int]).is_predicate_of(lambda x: issubclass(x, int)) is False
+
+
+def test_parsed_type_has_predicate_of() -> None:
+    """Test ParsedType.has_predicate_of."""
+    assert ParsedType.from_annotation(List[int]).has_predicate_of(lambda x: issubclass(x, int)) is True
+    assert ParsedType.from_annotation(List[int]).has_predicate_of(lambda x: issubclass(x, str)) is False
+    assert ParsedType.from_annotation(List[Union[int, str]]).has_predicate_of(lambda x: issubclass(x, int)) is True
+    assert ParsedType.from_annotation(List[Union[int, str]]).has_predicate_of(lambda x: issubclass(x, str)) is True
+    assert ParsedType.from_annotation(List[Union[int, str]]).has_predicate_of(lambda x: issubclass(x, bool)) is False
+
+
 def test_parsed_parameter() -> None:
     """Test ParsedParameter."""
     param = Parameter("foo", Parameter.POSITIONAL_OR_KEYWORD, annotation=int)
