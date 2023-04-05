@@ -1011,6 +1011,17 @@ the session data to be cleared.</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="starlite.connection.Request.accept">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">accept</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="datastructures.html#starlite.datastructures.Accept" title="starlite.datastructures.headers.Accept"><span class="pre">Accept</span></a></em><a class="headerlink" href="#starlite.connection.Request.accept" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the request’s ‘Accept’ header, returning an <a class="reference internal" href="datastructures.html#starlite.datastructures.Accept" title="starlite.datastructures.headers.Accept"><code class="xref py py-class docutils literal notranslate"><span class="pre">Accept</span></code></a> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An <a class="reference internal" href="datastructures.html#starlite.datastructures.Accept" title="starlite.datastructures.headers.Accept"><code class="xref py py-class docutils literal notranslate"><span class="pre">Accept</span></code></a> instance, representing the list of acceptable media types.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="starlite.connection.Request.json">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.connection.Request.json" title="Permalink to this definition">#</a></dt>
@@ -1377,6 +1388,7 @@ request, otherwise, an empty instance.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.connection.Request.__init__"><code class="docutils literal notranslate"><span class="pre">Request.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.connection.Request.method"><code class="docutils literal notranslate"><span class="pre">Request.method</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.connection.Request.content_type"><code class="docutils literal notranslate"><span class="pre">Request.content_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.connection.Request.accept"><code class="docutils literal notranslate"><span class="pre">Request.accept</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.connection.Request.json"><code class="docutils literal notranslate"><span class="pre">Request.json()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.connection.Request.msgpack"><code class="docutils literal notranslate"><span class="pre">Request.msgpack()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.connection.Request.stream"><code class="docutils literal notranslate"><span class="pre">Request.stream()</span></code></a></li>
