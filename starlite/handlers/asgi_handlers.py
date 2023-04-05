@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types.builtin_types import NoneType
 from starlite.utils import is_async_callable
 
 __all__ = ("ASGIRouteHandler", "asgi")
@@ -76,7 +75,7 @@ class ASGIRouteHandler(BaseRouteHandler["ASGIRouteHandler"]):
         """Validate the route handler function once it's set by inspecting its return annotations."""
         super()._validate_handler_function()
 
-        if self.parsed_fn_signature.return_type.annotation not in {None, NoneType}:
+        if not self.parsed_fn_signature.return_type.is_subclass_of(type(None)):
             raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
 
         if any(key not in self.parsed_fn_signature.parameters for key in ("scope", "send", "receive")):

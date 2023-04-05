@@ -403,7 +403,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             cookies = self.resolve_response_cookies()
             type_encoders = self.resolve_type_encoders()
 
-            return_annotation = self.parsed_fn_signature.return_type.annotation
+            return_type = self.parsed_fn_signature.return_type
+            return_annotation = return_type.annotation
 
             if before_request_handler := self.resolve_before_request():
                 before_request_handler_signature = Signature.from_callable(before_request_handler)
@@ -417,11 +418,11 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 cookies=cookies, after_request=after_request
             )
 
-            if is_class_and_subclass(return_annotation, Response):
+            if return_type.is_subclass_of(Response):
                 self._response_handler_mapping["default_handler"] = self._response_handler_mapping[
                     "response_type_handler"
                 ]
-            elif is_class_and_subclass(return_annotation, ResponseContainer):  # type: ignore
+            elif return_type.is_subclass_of(ResponseContainer):
                 self._response_handler_mapping["default_handler"] = create_response_container_handler(
                     after_request=after_request,
                     cookies=cookies,

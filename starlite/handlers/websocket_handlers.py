@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
-from starlite.types.builtin_types import NoneType
 from starlite.utils import is_async_callable
 
 __all__ = ("WebsocketRouteHandler", "websocket")
@@ -74,7 +73,7 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         """Validate the route handler function once it's set by inspecting its return annotations."""
         super()._validate_handler_function()
 
-        if self.parsed_fn_signature.return_type.annotation not in {None, NoneType}:
+        if not self.parsed_fn_signature.return_type.is_subclass_of(type(None)):
             raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")
         if "socket" not in self.parsed_fn_signature.parameters:
             raise ImproperlyConfiguredException("Websocket handlers must set a 'socket' kwarg")
