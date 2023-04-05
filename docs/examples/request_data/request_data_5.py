@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from litestar import Litestar, post
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from starlite import Starlite, post
+from starlite.enums import RequestEncodingType
+from starlite.params import Body
 
 
 @dataclass
@@ -18,4 +18,4 @@ async def create_user(
     return data
 
 
-app = Litestar(route_handlers=[create_user])
+app = Starlite(route_handlers=[create_user])

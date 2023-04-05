@@ -1,6 +1,6 @@
 import pytest
 
-from litestar.testing import create_test_client
+from starlite.testing import create_test_client
 
 
 class _LifeSpanCallable:

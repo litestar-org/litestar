@@ -1,5 +1,5 @@
 dto
 ===
 
-.. automodule:: litestar.dto
+.. automodule:: starlite.dto
     :members:

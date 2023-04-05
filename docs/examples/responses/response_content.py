@@ -1,4 +1,4 @@
-from litestar import Litestar, MediaType, Request, Response, get
+from starlite import MediaType, Request, Response, Starlite, get
 
 
 @get("/resource")
@@ -15,7 +15,7 @@ def retrieve_resource(request: Request) -> Response[bytes]:
     return Response(content=content, media_type=preferred_type)
 
 
-app = Litestar(route_handlers=[retrieve_resource])
+app = Starlite(route_handlers=[retrieve_resource])
 
 # run: /resource
 # run: /resource -H "Accept: text/html"

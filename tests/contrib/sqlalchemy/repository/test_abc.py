@@ -6,8 +6,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from litestar.contrib.repository.exceptions import NotFoundError
-from litestar.contrib.repository.testing.generic_mock_repository import (
+from starlite.contrib.repository.exceptions import NotFoundError
+from starlite.contrib.repository.testing.generic_mock_repository import (
     GenericMockRepository,
 )
 

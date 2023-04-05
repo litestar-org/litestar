@@ -12,7 +12,7 @@ from _pytest.monkeypatch import MonkeyPatch
 from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
-from litestar.cli._utils import _path_to_dotted_path
+from starlite.cli._utils import _path_to_dotted_path
 from tests.cli import (
     APP_FILE_CONTENT,
     CREATE_APP_FILE_CONTENT,
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 @pytest.fixture
 def patch_autodiscovery_paths(request: FixtureRequest) -> Callable[[list[str]], None]:
     def patcher(paths: list[str]) -> None:
-        from litestar.cli._utils import AUTODISCOVERY_FILE_NAMES
+        from starlite.cli._utils import AUTODISCOVERY_FILE_NAMES
 
         old_paths = AUTODISCOVERY_FILE_NAMES[::]
         AUTODISCOVERY_FILE_NAMES[:] = paths

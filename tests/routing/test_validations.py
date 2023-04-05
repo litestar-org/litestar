@@ -2,10 +2,10 @@ from typing import Any
 
 import pytest
 
-from litestar import Controller, Litestar, WebSocket, get, websocket
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
+from starlite import Controller, Starlite, WebSocket, get, websocket
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 
 def test_register_validation_duplicate_handlers_for_same_route_and_method() -> None:
@@ -18,7 +18,7 @@ def test_register_validation_duplicate_handlers_for_same_route_and_method() -> N
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[first_route_handler, second_route_handler])
+        Starlite(route_handlers=[first_route_handler, second_route_handler])
 
 
 def test_supports_websocket_and_http_handlers() -> None:

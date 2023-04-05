@@ -1,5 +1,5 @@
 standard
 ========
 
-.. automodule:: litestar.logging.standard
+.. automodule:: starlite.logging.standard
     :members:

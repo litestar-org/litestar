@@ -3,9 +3,9 @@ from typing import Type
 
 import pytest
 
-from litestar import Litestar, Router, delete, get, patch, post, put
-from litestar.exceptions import NoRouteMatchFoundException
-from litestar.handlers.http_handlers import HTTPRouteHandler
+from starlite import Router, Starlite, delete, get, patch, post, put
+from starlite.exceptions import NoRouteMatchFoundException
+from starlite.handlers.http_handlers import HTTPRouteHandler
 
 
 @pytest.mark.parametrize("decorator", [get, post, patch, put, delete])
@@ -35,7 +35,7 @@ def test_route_reverse(decorator: Type[HTTPRouteHandler]) -> None:
 
     router = Router("router-path/", route_handlers=[handler, handler_no_params, handler3, handler4])
     router_with_param = Router("router-with-param/{router_param:str}", route_handlers=[handler2])
-    app = Litestar(route_handlers=[router, router_with_param])
+    app = Starlite(route_handlers=[router, router_with_param])
 
     reversed_url_path = app.route_reverse("handler-name", param="param-value")
     assert reversed_url_path == "/router-path/path-one/param-value"
@@ -69,7 +69,7 @@ def test_route_reverse_validation_complex_params(complex_path_param) -> None:  #
     def handler() -> None:
         pass
 
-    app = Litestar(route_handlers=[handler])
+    app = Starlite(route_handlers=[handler])
 
     # test that complex types of path params accept either itself
     # or string but nothing else
@@ -92,7 +92,7 @@ def test_route_reverse_validation() -> None:
     def handler_two() -> None:
         pass
 
-    app = Litestar(route_handlers=[handler_one, handler_two])
+    app = Starlite(route_handlers=[handler_one, handler_two])
 
     with pytest.raises(NoRouteMatchFoundException):
         app.route_reverse("handler-name")

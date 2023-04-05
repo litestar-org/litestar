@@ -1,31 +1,31 @@
 Templates
 =========
 
-Litestar has built-in support for both the `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
+Starlite has built-in support for both the `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
 and `Mako <https://www.makotemplates.org/>`_ template engines, as well as abstractions to
 make use of any template engine you wish.
 
 Template engines
 ----------------
 
-To stay lightweight, a Litestar installation does not include the *Jinja* or *Mako*
+To stay lightweight, a Starlite installation does not include the *Jinja* or *Mako*
 libraries themselves. Before you can start using them, you have to install it via the
 respective extra:
 
 
-* ``pip install litestar[jinja]`` for Jinja2
-* ``pip install litestar[mako]`` for Mako
+* ``pip install starlite[jinja]`` for Jinja2
+* ``pip install starlite[mako]`` for Mako
 
 .. tip::
 
-    *Jinja* is included in the ``standard`` extra. If you installed Litestar using
-    ``litestar[standard]``, you do not need to explicitly add the ``jinja`` extra.
+    *Jinja* is included in the ``standard`` extra. If you installed Starlite using
+    ``starlite[standard]``, you do not need to explicitly add the ``jinja`` extra.
 
 
 Registering a template engine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To register one of the built-in template engines you simply need to pass it to the Litestar constructor:
+To register one of the built-in template engines you simply need to pass it to the Starlite constructor:
 
 .. tab-set::
 
@@ -43,7 +43,7 @@ To register one of the built-in template engines you simply need to pass it to t
 
 .. note::
 
-    The ``directory`` parameter passed to :class:`TemplateConfig <litestar.template.TemplateConfig>`
+    The ``directory`` parameter passed to :class:`TemplateConfig <starlite.template.TemplateConfig>`
     can be either a directory or list of directories to use for loading templates.
 
 
@@ -51,7 +51,7 @@ Defining a custom template engine
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you wish to use another templating engine, you can easily do so by implementing
-:class:`TemplateEngineProtocol <litestar.template.TemplateEngineProtocol>`. This class accepts a generic
+:class:`TemplateEngineProtocol <starlite.template.TemplateEngineProtocol>`. This class accepts a generic
 argument which should be the template class, and it specifies two methods:
 
 .. code-block:: python
@@ -78,7 +78,7 @@ Accessing the template engine instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you need to access the template engine instance, you can do so via the
-:class:`TemplateConfig.engine <litestar.template.TemplateConfig>` attribute:
+:class:`TemplateConfig.engine <starlite.template.TemplateConfig>` attribute:
 
 .. tab-set::
 
@@ -130,8 +130,8 @@ object to the template as well as defining callables that will be available insi
 Accessing the request instance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The current :class:`Request <litestar.connection.request.Request>` is available within the
-template context under ``request``, which also provides access to the :doc:`app instance </usage/the-litestar-app>`.
+The current :class:`Request <starlite.connection.request.Request>` is available within the
+template context under ``request``, which also provides access to the :doc:`app instance </usage/the-starlite-app>`.
 
 Accessing ``app.state.key`` for example would look like this:
 <strong>check_context_key: </strong>{{ check_context_key() }}
@@ -224,13 +224,13 @@ back to the server when the form is submitted, and is checked by the CSRF middle
 Passing template context
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Passing context to the template is very simple - its one of the kwargs expected by the :class:`Template <litestar.response.TemplateResponse>`
+Passing context to the template is very simple - its one of the kwargs expected by the :class:`Template <starlite.response.TemplateResponse>`
 container, so simply pass a string keyed dictionary of values:
 
 .. code-block:: python
 
-   from litestar import get
-   from litestar.response_containers import Template
+   from starlite import get
+   from starlite.response_containers import Template
 
 
    @get(path="/info")
@@ -242,14 +242,14 @@ Template callables
 ------------------
 
 Both `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_ and `Mako <https://www.makotemplates.org/>`_ allow users to define custom
-callables that are ran inside the template. Litestar builds on this and offers some functions out of the box.
+callables that are ran inside the template. Starlite builds on this and offers some functions out of the box.
 
 Built-in callables
 ^^^^^^^^^^^^^^^^^^
 
 ``url_for``
     To access urls for route handlers you can use the ``url_for`` function. Its signature and behaviour
-    matches :meth:`route_reverse <litestar.app.Litestar.route_reverse>` behaviour. More details about route handler indexing
+    matches :meth:`route_reverse <starlite.app.Starlite.route_reverse>` behaviour. More details about route handler indexing
     can be found :ref:`here <usage/route-handlers:route handler indexing>`.
 
 ``csrf_token``
@@ -259,13 +259,13 @@ Built-in callables
 
 ``url_for_static_asset``
     URLs for static files can be created using the ``url_for_static_asset`` function. It's signature and behaviour are identical to
-    :meth:`app.url_for_static_asset <litestar.app.Litestar.url_for_static_asset>`.
+    :meth:`app.url_for_static_asset <starlite.app.Starlite.url_for_static_asset>`.
 
 
 Registering template callables
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The  :class:`TemplateEngineProtocol <litestar.template.base.TemplateEngineProtocol>` specifies the method
+The  :class:`TemplateEngineProtocol <starlite.template.base.TemplateEngineProtocol>` specifies the method
 ``register_template_callable`` that allows defining a custom callable on a template engine. This method is implemented
 for the two built in engines, and it can be used to register callables that will be injected into the template. The callable
 should expect one argument - the context dictionary. It can be any callable - a function, method or class that defines

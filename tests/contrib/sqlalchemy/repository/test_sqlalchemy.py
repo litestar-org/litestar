@@ -12,14 +12,14 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
 )
 
-from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
-from litestar.contrib.repository.filters import (
+from starlite.contrib.repository.exceptions import ConflictError, RepositoryError
+from starlite.contrib.repository.filters import (
     BeforeAfter,
     CollectionFilter,
     LimitOffset,
 )
-from litestar.contrib.sqlalchemy import base
-from litestar.contrib.sqlalchemy.repository import (
+from starlite.contrib.sqlalchemy import base
+from starlite.contrib.sqlalchemy.repository import (
     SQLAlchemyRepository,
     wrap_sqlalchemy_exception,
 )

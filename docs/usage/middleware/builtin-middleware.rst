@@ -5,17 +5,17 @@ CORS
 ----
 
 `CORS (Cross-Origin Resource Sharing) <https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS>`_ is a common security
-mechanism that is often implemented using middleware. To enable CORS in a litestar application simply pass an instance
-of :class:`CORSConfig <.config.cors.CORSConfig>` to :class:`Litestar <.app.Litestar>`:
+mechanism that is often implemented using middleware. To enable CORS in a starlite application simply pass an instance
+of :class:`CORSConfig <.config.cors.CORSConfig>` to :class:`Starlite <.app.Starlite>`:
 
 .. code-block:: python
 
-   from litestar import Litestar
-   from litestar.config.cors import CORSConfig
+   from starlite import Starlite
+   from starlite.config.cors import CORSConfig
 
    cors_config = CORSConfig(allow_origins=["https://www.example.com"])
 
-   app = Litestar(route_handlers=[...], cors_config=cors_config)
+   app = Starlite(route_handlers=[...], cors_config=cors_config)
 
 
 CSRF
@@ -45,17 +45,17 @@ This middleware prevents CSRF attacks by doing the following:
     form field or an additional header that has this token
 
 
-To enable CSRF protection in a Litestar application simply pass an instance of
-:class:`CSRFConfig <.config.csrf.CSRFConfig>` to the Litestar constructor:
+To enable CSRF protection in a Starlite application simply pass an instance of
+:class:`CSRFConfig <.config.csrf.CSRFConfig>` to the Starlite constructor:
 
 .. code-block:: python
 
-    from litestar import Litestar
-    from litestar.config.csrf import CSRFConfig
+    from starlite import Starlite
+    from starlite.config.csrf import CSRFConfig
 
     csrf_config = CSRFConfig(secret="my-secret")
 
-    app = Litestar(route_handlers=[...], csrf_config=csrf_config)
+    app = Starlite(route_handlers=[...], csrf_config=csrf_config)
 
 
 Routes can be marked as being exempt from the protection offered by this middleware via
@@ -63,7 +63,7 @@ Routes can be marked as being exempt from the protection offered by this middlew
 
 .. code-block:: python
 
-    from litestar import post
+    from starlite import post
 
 
     @post("/post", exclude_from_csrf=True)
@@ -82,16 +82,16 @@ Allowed Hosts
 Another common security mechanism is to require that each incoming request has a "Host" or "X-Forwarded-Host" header,
 and then to restrict hosts to a specific set of domains - what's called "allowed hosts".
 
-Litestar includes an :class:`AllowedHostsMiddleware <.middleware.allowed_hosts.AllowedHostsMiddleware>` class that can be
+Starlite includes an :class:`AllowedHostsMiddleware <.middleware.allowed_hosts.AllowedHostsMiddleware>` class that can be
 easily enabled by either passing an instance of :class:`AllowedHostsConfig <.config.allowed_hosts.AllowedHostsConfig>` or a
-list of domains to :class:`Litestar <litestar.app.Litestar>`:
+list of domains to :class:`Starlite <starlite.app.Starlite>`:
 
 .. code-block:: python
 
-   from litestar import Litestar
-   from litestar.config.allowed_hosts import AllowedHostsConfig
+   from starlite import Starlite
+   from starlite.config.allowed_hosts import AllowedHostsConfig
 
-   app = Litestar(
+   app = Starlite(
        route_handlers=[...],
        allowed_hosts=AllowedHostsConfig(
            allowed_hosts=["*.example.com", "www.wikipedia.org"]
@@ -110,12 +110,12 @@ list of domains to :class:`Litestar <litestar.app.Litestar>`:
 Compression
 -----------
 
-HTML responses can optionally be compressed. Litestar has built in support for gzip and brotli. Gzip support is provided
+HTML responses can optionally be compressed. Starlite has built in support for gzip and brotli. Gzip support is provided
 through the built-in Starlette classes, and brotli support can be added by installing the ``brotli`` extras.
 
 You can enable either backend by passing an instance of
 :class:`CompressionConfig <.config.compression.CompressionConfig>` to ``compression_config`` of
-:class:`Litestar <litestar.app.Litestar>`.
+:class:`Starlite <starlite.app.Starlite>`.
 
 GZIP
 ^^^^
@@ -133,10 +133,10 @@ You can configure the following additional gzip-specific values:
 
 .. code-block:: python
 
-   from litestar import Litestar
-   from litestar.config.compression import CompressionConfig
+   from starlite import Starlite
+   from starlite.config.compression import CompressionConfig
 
-   app = Litestar(
+   app = Starlite(
        route_handlers=[...],
        compression_config=CompressionConfig(backend="gzip", gzip_compress_level=9),
    )
@@ -144,8 +144,8 @@ You can configure the following additional gzip-specific values:
 Brotli
 ^^^^^^
 
-The Brotli package is required to run this middleware. It is available as an extras to litestar with the ``brotli``
-extra (``pip install litestar[brotli]``).
+The Brotli package is required to run this middleware. It is available as an extras to starlite with the ``brotli``
+extra (``pip install starlite[brotli]``).
 
 You can enable brotli compression of responses by passing an instance of
 :class:`CompressionConfig <.config.compression.CompressionConfig>` with the ``backend`` parameter set to ``"brotli"``.
@@ -166,10 +166,10 @@ You can configure the following additional brotli-specific values:
 
 .. code-block:: python
 
-   from litestar import Litestar
-   from litestar.config.compression import CompressionConfig
+   from starlite import Starlite
+   from starlite.config.compression import CompressionConfig
 
-   app = Litestar(
+   app = Starlite(
        route_handlers=[...],
        compression_config=CompressionConfig(backend="brotli", brotli_gzip_fallback=True),
    )
@@ -177,10 +177,10 @@ You can configure the following additional brotli-specific values:
 Rate-Limit Middleware
 ---------------------
 
-Litestar includes an optional :class:`RateLimitMiddleware <litestar.middleware.rate_limit.RateLimitMiddleware>` that follows
+Starlite includes an optional :class:`RateLimitMiddleware <starlite.middleware.rate_limit.RateLimitMiddleware>` that follows
 the `IETF RateLimit draft specification <https://datatracker.ietf.org/doc/draft-ietf-httpapi-ratelimit-headers/>`_.
 
-To use the rate limit middleware, use the :class:`RateLimitConfig <litestar.middleware.rate_limit.RateLimitConfig>`:
+To use the rate limit middleware, use the :class:`RateLimitConfig <starlite.middleware.rate_limit.RateLimitConfig>`:
 
 .. literalinclude:: /examples/middleware/rate_limit.py
     :language: python
@@ -192,8 +192,8 @@ The only required configuration kwarg is ``rate_limit``, which expects a tuple c
 Logging Middleware
 ------------------
 
-Litestar ships with a robust logging middleware that allows logging HTTP request and responses while building on
-the :ref:`app level logging configuration <usage/the-litestar-app:logging>`:
+Starlite ships with a robust logging middleware that allows logging HTTP request and responses while building on
+the :ref:`app level logging configuration <usage/the-starlite-app:logging>`:
 
 .. literalinclude:: /examples/middleware/logging_middleware.py
     :language: python
@@ -201,7 +201,7 @@ the :ref:`app level logging configuration <usage/the-litestar-app:logging>`:
 
 The logging middleware uses the logger configuration defined on the application level, which allows for using both stdlib
 logging or `structlog <https://www.structlog.org/en/stable/index.html>`_ , depending on the configuration used
-(see :ref:`app level logging configuration <usage/the-litestar-app:logging>` for more details).
+(see :ref:`app level logging configuration <usage/the-starlite-app:logging>` for more details).
 
 Obfuscating Logging Output
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -211,7 +211,7 @@ configuration:
 
 .. code-block:: python
 
-   from litestar.middleware.logging import LoggingMiddlewareConfig
+   from starlite.middleware.logging import LoggingMiddlewareConfig
 
    logging_middleware_config = LoggingMiddlewareConfig(
        request_cookies_to_obfuscate={"my-custom-session-key"},
@@ -226,19 +226,19 @@ The middleware will obfuscate the headers ``Authorization`` and ``X-API-KEY`` , 
 Compression and Logging of Response Body
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If both :class:`CompressionConfig <litestar.config.compression.CompressionConfig>` and
-:class:`LoggingMiddleware <litestar.middleware.logging.LoggingMiddleware>` have been defined for the application, the response
+If both :class:`CompressionConfig <starlite.config.compression.CompressionConfig>` and
+:class:`LoggingMiddleware <starlite.middleware.logging.LoggingMiddleware>` have been defined for the application, the response
 body will be omitted from response logging if it has been compressed, even if ``"body"`` has been included in
-:class:`response_log_fields <litestar.middleware.logging.LoggingMiddlewareConfig.response_log_fields>`. To force the body of
+:class:`response_log_fields <starlite.middleware.logging.LoggingMiddlewareConfig.response_log_fields>`. To force the body of
 compressed responses to be logged, set
-:attr:`include_compressed_body <litestar.middleware.logging.LoggingMiddlewareConfig.include_compressed_body>` to ``True`` , in
+:attr:`include_compressed_body <starlite.middleware.logging.LoggingMiddlewareConfig.include_compressed_body>` to ``True`` , in
 addition to including ``"body"`` in ``response_log_fields``.
 
 Session Middleware
 ------------------
 
-Litestar includes a :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>`,
-offering client- and server-side sessions. Server-side sessions are backed by Litestar's
+Starlite includes a :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>`,
+offering client- and server-side sessions. Server-side sessions are backed by Starlite's
 :doc:`stores </usage/stores>`, which offer support for:
 
 - In memory sessions
@@ -249,7 +249,7 @@ Setting up the middleware
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To start using sessions in your application all you have to do is create an instance
-of a :class:`configuration <litestar.middleware.session.base.BaseBackendConfig>` object and
+of a :class:`configuration <starlite.middleware.session.base.BaseBackendConfig>` object and
 add its middleware to your application's middleware stack:
 
 .. literalinclude:: /examples/middleware/session/cookies_full_example.py
@@ -261,18 +261,18 @@ add its middleware to your application's middleware stack:
 
     Since both client- and server-side sessions rely on cookies (one for storing the actual session
     data, the other for storing the session ID), they share most of the cookie configuration.
-    A complete reference of the cookie configuration can be found at :class:`BaseBackendConfig <litestar.middleware.session.base.BaseBackendConfig>`.
+    A complete reference of the cookie configuration can be found at :class:`BaseBackendConfig <starlite.middleware.session.base.BaseBackendConfig>`.
 
 Client-side sessions
 ^^^^^^^^^^^^^^^^^^^^
 
-Client side sessions are available through the :class:`ClientSideSessionBackend <litestar.middleware.session.client_side.ClientSideSessionBackend>`,
+Client side sessions are available through the :class:`ClientSideSessionBackend <starlite.middleware.session.client_side.ClientSideSessionBackend>`,
 which offers strong AES-CGM encryption security best practices while support cookie splitting.
 
 .. important::
 
     ``ClientSideSessionBackend`` requires the `cryptography <https://cryptography.io/en/latest/>`_ library,
-    which can be installed together with litestar as an extra using ``pip install litestar[cryptography]``
+    which can be installed together with starlite as an extra using ``pip install starlite[cryptography]``
 
 .. literalinclude:: /examples/middleware/session/cookie_backend.py
     :caption: cookie_backend.py
@@ -281,7 +281,7 @@ which offers strong AES-CGM encryption security best practices while support coo
 
 .. seealso::
 
-    :class:`CookieBackendConfig <litestar.middleware.session.client_side.CookieBackendConfig>`
+    :class:`CookieBackendConfig <starlite.middleware.session.client_side.CookieBackendConfig>`
 
 
 Server-side sessions
@@ -297,4 +297,4 @@ and load the appropriate data from the store
 .. seealso::
 
     - :doc:`/usage/stores`
-    - :class:`ServerSideSessionConfig <litestar.middleware.session.server_side.ServerSideSessionConfig>`
+    - :class:`ServerSideSessionConfig <starlite.middleware.session.server_side.ServerSideSessionConfig>`

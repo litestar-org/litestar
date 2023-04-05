@@ -1,5 +1,5 @@
 compression
 ============
 
-.. automodule:: litestar.middleware.compression
+.. automodule:: starlite.middleware.compression
     :members:

@@ -4,20 +4,20 @@ import pytest
 from pydantic import ValidationError
 from pytest import FixtureRequest
 
-from litestar import MediaType
-from litestar.datastructures import (
+from starlite import MediaType
+from starlite.datastructures import (
     Accept,
     CacheControlHeader,
     ETag,
     Headers,
     MutableScopeHeaders,
 )
-from litestar.datastructures.headers import Header
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
+from starlite.datastructures.headers import Header
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
 if TYPE_CHECKING:
-    from litestar.types.asgi_types import RawHeaders, RawHeadersList
+    from starlite.types.asgi_types import RawHeaders, RawHeadersList
 
 
 @pytest.fixture

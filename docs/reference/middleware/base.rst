@@ -1,5 +1,5 @@
 base
 ====
 
-.. automodule:: litestar.middleware.base
+.. automodule:: starlite.middleware.base
     :members:

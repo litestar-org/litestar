@@ -2,10 +2,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar.logging.config import LoggingConfig, default_handlers
+from starlite.logging.config import LoggingConfig, default_handlers
 
 if TYPE_CHECKING:
-    from litestar.types.callable_types import GetLogger
+    from starlite.types.callable_types import GetLogger
 
 
 @pytest.fixture
@@ -15,6 +15,6 @@ def get_logger() -> "GetLogger":
     return LoggingConfig(
         handlers=default_handlers,
         loggers={
-            "litestar": {"level": "DEBUG", "handlers": ["queue_listener"], "propagate": True},
+            "starlite": {"level": "DEBUG", "handlers": ["queue_listener"], "propagate": True},
         },
     ).configure()

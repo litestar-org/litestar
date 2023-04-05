@@ -4,18 +4,18 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Union
 import pytest
 from pydantic import BaseModel
 
-from litestar import HttpMethod, Litestar, Request, get, post
-from litestar.datastructures import Cookie, MultiDict
-from litestar.enums import ParamType, RequestEncodingType
-from litestar.middleware.session.server_side import ServerSideSessionConfig
-from litestar.stores.base import Store
-from litestar.stores.redis import RedisStore
-from litestar.testing import RequestFactory, TestClient, create_test_client
+from starlite import HttpMethod, Request, Starlite, get, post
+from starlite.datastructures import Cookie, MultiDict
+from starlite.enums import ParamType, RequestEncodingType
+from starlite.middleware.session.server_side import ServerSideSessionConfig
+from starlite.stores.base import Store
+from starlite.stores.redis import RedisStore
+from starlite.testing import RequestFactory, TestClient, create_test_client
 from tests import Pet, PetFactory
 
 if TYPE_CHECKING:
-    from litestar.middleware.session.base import BaseBackendConfig
-    from litestar.types import AnyIOBackend
+    from starlite.middleware.session.base import BaseBackendConfig
+    from starlite.types import AnyIOBackend
 
 _DEFAULT_REQUEST_FACTORY_URL = "http://test.org:3000/"
 
@@ -35,16 +35,16 @@ def test_request_factory_no_cookie_header() -> None:
 
 def test_request_factory_str_cookie_header() -> None:
     headers: Dict[str, str] = {}
-    cookie_as_str = "test=cookie; litestar=cookie"
+    cookie_as_str = "test=cookie; starlite=cookie"
     RequestFactory._create_cookie_header(headers, cookie_as_str)
     assert headers[ParamType.COOKIE] == cookie_as_str
 
 
 def test_request_factory_cookie_list_header() -> None:
     headers: Dict[str, str] = {}
-    cookie_list = [Cookie(key="test", value="cookie"), Cookie(key="litestar", value="cookie", path="/test")]
+    cookie_list = [Cookie(key="test", value="cookie"), Cookie(key="starlite", value="cookie", path="/test")]
     RequestFactory._create_cookie_header(headers, cookie_list)
-    assert headers[ParamType.COOKIE] == "test=cookie; Path=/; SameSite=lax; litestar=cookie; Path=/test; SameSite=lax"
+    assert headers[ParamType.COOKIE] == "test=cookie; Path=/; SameSite=lax; starlite=cookie; Path=/test; SameSite=lax"
 
 
 def test_request_factory_build_headers() -> None:
@@ -101,7 +101,7 @@ async def test_request_factory_create_with_content_type(
 
 def test_request_factory_create_with_default_params() -> None:
     request = RequestFactory().get()
-    assert isinstance(request.app, Litestar)
+    assert isinstance(request.app, Starlite)
     assert request.url == request.base_url == _DEFAULT_REQUEST_FACTORY_URL
     assert request.method == HttpMethod.GET
     assert not request.query_params
@@ -123,8 +123,8 @@ def test_request_factory_create_with_params() -> None:
     def handler() -> None:
         ...
 
-    app = Litestar(route_handlers=[])
-    server = "litestar.org"
+    app = Starlite(route_handlers=[])
+    server = "starlite.org"
     port = 5000
     root_path = "/root"
     path = "/path"
@@ -226,7 +226,7 @@ def test_test_client_set_session_data(
     def get_session_data(request: Request) -> Dict[str, Any]:
         return request.session
 
-    app = Litestar(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])
+    app = Starlite(route_handlers=[get_session_data], middleware=[session_backend_config.middleware])
 
     with TestClient(app=app, session_config=session_backend_config, backend=test_client_backend) as client:
         client.set_session_data(session_data)
@@ -247,7 +247,7 @@ def test_test_client_get_session_data(
     def set_session_data(request: Request) -> None:
         request.session.update(session_data)
 
-    app = Litestar(
+    app = Starlite(
         route_handlers=[set_session_data], middleware=[session_backend_config.middleware], stores={"session": store}
     )
 

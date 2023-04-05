@@ -7,8 +7,8 @@ import msgspec
 import pytest
 from pydantic import SecretStr
 
-from litestar import MediaType, Response
-from litestar.status_codes import HTTP_200_OK
+from starlite import MediaType, Response
+from starlite.status_codes import HTTP_200_OK
 from tests import (
     MsgSpecStructPerson,
     Person,

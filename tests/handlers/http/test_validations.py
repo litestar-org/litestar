@@ -3,11 +3,11 @@ from typing import Dict
 
 import pytest
 
-from litestar import HttpMethod, MediaType, WebSocket, delete, get, route
-from litestar.exceptions import ImproperlyConfiguredException, ValidationException
-from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.response_containers import File, Redirect
-from litestar.status_codes import (
+from starlite import HttpMethod, MediaType, WebSocket, delete, get, route
+from starlite.exceptions import ImproperlyConfiguredException, ValidationException
+from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.response_containers import File, Redirect
+from starlite.status_codes import (
     HTTP_100_CONTINUE,
     HTTP_200_OK,
     HTTP_304_NOT_MODIFIED,

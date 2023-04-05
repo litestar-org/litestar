@@ -2,25 +2,25 @@ from typing import AsyncIterator, Literal
 
 import pytest
 
-from litestar import MediaType, WebSocket, get, websocket
-from litestar.config.compression import CompressionConfig
-from litestar.enums import CompressionEncoding
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response_containers import Stream
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
+from starlite import MediaType, WebSocket, get, websocket
+from starlite.config.compression import CompressionConfig
+from starlite.enums import CompressionEncoding
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.response_containers import Stream
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 BrotliMode = Literal["text", "generic", "font"]
 
 
 @get(path="/", media_type=MediaType.TEXT)
 def handler() -> str:
-    return "_litestar_" * 4000
+    return "_starlite_" * 4000
 
 
 @get(path="/no-compression", media_type=MediaType.TEXT)
 def no_compress_handler() -> str:
-    return "_litestar_"
+    return "_starlite_"
 
 
 async def streaming_iter(content: bytes, count: int) -> AsyncIterator[bytes]:
@@ -32,7 +32,7 @@ def test_compression_disabled_for_unsupported_client() -> None:
     with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli")) as client:
         response = client.get("/", headers={"accept-encoding": "deflate"})
         assert response.status_code == HTTP_200_OK
-        assert response.text == "_litestar_" * 4000
+        assert response.text == "_starlite_" * 4000
         assert "Content-Encoding" not in response.headers
         assert int(response.headers["Content-Length"]) == 40000
 
@@ -46,7 +46,7 @@ def test_regular_compressed_response(
     with create_test_client(route_handlers=[handler], compression_config=CompressionConfig(backend="brotli")) as client:
         response = client.get("/", headers={"Accept-Encoding": str(compression_encoding.value)})
         assert response.status_code == HTTP_200_OK
-        assert response.text == "_litestar_" * 4000
+        assert response.text == "_starlite_" * 4000
         assert response.headers["Content-Encoding"] == compression_encoding
         assert int(response.headers["Content-Length"]) < 40000
 
@@ -59,14 +59,14 @@ def test_compression_works_for_streaming_response(
 ) -> None:
     @get("/streaming-response")
     def streaming_handler() -> Stream:
-        return Stream(iterator=streaming_iter(content=b"_litestar_" * 400, count=10))
+        return Stream(iterator=streaming_iter(content=b"_starlite_" * 400, count=10))
 
     with create_test_client(
         route_handlers=[streaming_handler], compression_config=CompressionConfig(backend=backend)
     ) as client:
         response = client.get("/streaming-response", headers={"Accept-Encoding": str(compression_encoding.value)})
         assert response.status_code == HTTP_200_OK
-        assert response.text == "_litestar_" * 4000
+        assert response.text == "_starlite_" * 4000
         assert response.headers["Content-Encoding"] == compression_encoding
         assert "Content-Length" not in response.headers
 
@@ -82,7 +82,7 @@ def test_compression_skips_small_responses(
     ) as client:
         response = client.get("/no-compression", headers={"Accept-Encoding": str(compression_encoding.value)})
         assert response.status_code == HTTP_200_OK
-        assert response.text == "_litestar_"
+        assert response.text == "_starlite_"
         assert "Content-Encoding" not in response.headers
         assert int(response.headers["Content-Length"]) == 10
 
@@ -93,7 +93,7 @@ def test_brotli_with_gzip_fallback_enabled() -> None:
     ) as client:
         response = client.get("/", headers={"accept-encoding": CompressionEncoding.GZIP.value})
         assert response.status_code == HTTP_200_OK
-        assert response.text == "_litestar_" * 4000
+        assert response.text == "_starlite_" * 4000
         assert response.headers["Content-Encoding"] == CompressionEncoding.GZIP
         assert int(response.headers["Content-Length"]) < 40000
 
@@ -105,7 +105,7 @@ def test_brotli_gzip_fallback_disabled() -> None:
     ) as client:
         response = client.get("/", headers={"accept-encoding": "gzip"})
         assert response.status_code == HTTP_200_OK
-        assert response.text == "_litestar_" * 4000
+        assert response.text == "_starlite_" * 4000
         assert "Content-Encoding" not in response.headers
         assert int(response.headers["Content-Length"]) == 40000
 

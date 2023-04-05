@@ -2,20 +2,20 @@ config
 ======
 
 
-.. automodule:: litestar.config.allowed_hosts
+.. automodule:: starlite.config.allowed_hosts
     :members:
 
-.. automodule:: litestar.config.app
+.. automodule:: starlite.config.app
     :members:
 
-.. automodule:: litestar.config.compression
+.. automodule:: starlite.config.compression
     :members:
 
-.. automodule:: litestar.config.cors
+.. automodule:: starlite.config.cors
     :members:
 
-.. automodule:: litestar.config.csrf
+.. automodule:: starlite.config.csrf
     :members:
 
-.. automodule:: litestar.config.response_cache
+.. automodule:: starlite.config.response_cache
     :members:

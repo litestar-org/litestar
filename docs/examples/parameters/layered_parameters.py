@@ -1,7 +1,7 @@
 from typing import Dict, Union
 
-from litestar import Controller, Litestar, Router, get
-from litestar.params import Parameter
+from starlite import Controller, Router, Starlite, get
+from starlite.params import Parameter
 
 
 class MyController(Controller):
@@ -34,7 +34,7 @@ router = Router(
     },
 )
 
-app = Litestar(
+app = Starlite(
     route_handlers=[router],
     parameters={
         "app_param": Parameter(str, cookie="special-cookie"),

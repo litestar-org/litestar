@@ -2,13 +2,13 @@ from typing import Any, List
 
 import pytest
 
-from litestar import Request, Response
-from litestar.connection.base import empty_receive
-from litestar.data_extractors import ConnectionDataExtractor, ResponseDataExtractor
-from litestar.datastructures import Cookie
-from litestar.enums import RequestEncodingType
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import RequestFactory
+from starlite import Request, Response
+from starlite.connection.base import empty_receive
+from starlite.data_extractors import ConnectionDataExtractor, ResponseDataExtractor
+from starlite.datastructures import Cookie
+from starlite.enums import RequestEncodingType
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import RequestFactory
 
 factory = RequestFactory()
 

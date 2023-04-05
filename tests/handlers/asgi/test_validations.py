@@ -2,12 +2,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import asgi
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.testing import create_test_client
+from starlite import asgi
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar.types import Receive, Scope, Send
+    from starlite.types import Receive, Scope, Send
 
 
 def test_asgi_handler_validation() -> None:

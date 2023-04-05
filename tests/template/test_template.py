@@ -4,16 +4,16 @@ from typing import TYPE_CHECKING, Optional, Type, Union
 
 import pytest
 
-from litestar import Litestar, MediaType, get
-from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.contrib.mako import MakoTemplateEngine
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response_containers import Template
-from litestar.template.config import TemplateConfig
-from litestar.testing import create_test_client
+from starlite import MediaType, Starlite, get
+from starlite.contrib.jinja import JinjaTemplateEngine
+from starlite.contrib.mako import MakoTemplateEngine
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.response_containers import Template
+from starlite.template.config import TemplateConfig
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar.template import TemplateEngineProtocol
+    from starlite.template import TemplateEngineProtocol
 
 
 def test_handler_raise_for_no_template_engine() -> None:
@@ -34,7 +34,7 @@ def test_engine_passed_to_callback(template_dir: "Path") -> None:
         nonlocal received_engine
         received_engine = engine
 
-    app = Litestar(
+    app = Starlite(
         route_handlers=[],
         template_config=TemplateConfig(
             directory=template_dir,

@@ -2,9 +2,9 @@ from typing import Any
 
 import pytest
 
-from litestar import HttpMethod
-from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from starlite import HttpMethod
+from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 
 
 @pytest.mark.parametrize(

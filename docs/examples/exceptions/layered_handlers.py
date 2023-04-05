@@ -1,5 +1,5 @@
-from litestar import Litestar, Request, Response, get
-from litestar.exceptions import HTTPException, ValidationException
+from starlite import Request, Response, Starlite, get
+from starlite.exceptions import HTTPException, ValidationException
 
 
 def app_exception_handler(request: Request, exc: HTTPException) -> Response:
@@ -34,7 +34,7 @@ async def greet(name: str) -> str:
     return f"hello {name}"
 
 
-app = Litestar(
+app = Starlite(
     route_handlers=[index, greet],
     exception_handlers={HTTPException: app_exception_handler},
 )

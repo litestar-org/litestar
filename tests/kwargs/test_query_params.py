@@ -11,12 +11,12 @@ from urllib.parse import urlencode
 
 import pytest
 
-from litestar import MediaType, Request, get
-from litestar.datastructures import MultiDict
-from litestar.di import Provide
-from litestar.params import Parameter
-from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from litestar.testing import create_test_client
+from starlite import MediaType, Request, get
+from starlite.datastructures import MultiDict
+from starlite.di import Provide
+from starlite.params import Parameter
+from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite.testing import create_test_client
 
 
 @pytest.mark.parametrize(
@@ -188,7 +188,7 @@ def test_query_kwarg() -> None:
     ),
 )
 def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[str, str]]) -> None:
-    # https://github.com/starlite-api/litestar/issues/915
+    # https://github.com/starlite-api/starlite/issues/915
 
     request_values: Dict[str, Any] = {}
 

@@ -4,21 +4,21 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from litestar import Request, get
-from litestar.logging.config import (
+from starlite import Request, get
+from starlite.logging.config import (
     LoggingConfig,
     _get_default_handlers,
     default_handlers,
     default_picologging_handlers,
 )
-from litestar.logging.picologging import (
+from starlite.logging.picologging import (
     QueueListenerHandler as PicologgingQueueListenerHandler,
 )
-from litestar.logging.standard import (
+from starlite.logging.standard import (
     QueueListenerHandler as StandardQueueListenerHandler,
 )
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
@@ -47,7 +47,7 @@ def test_correct_dict_config_called(
 
 @pytest.mark.parametrize("picologging_exists", [True, False])
 def test_correct_default_handlers_set(picologging_exists: bool) -> None:
-    with patch("litestar.logging.config.find_spec") as find_spec_mock:
+    with patch("starlite.logging.config.find_spec") as find_spec_mock:
         find_spec_mock.return_value = picologging_exists
         log_config = LoggingConfig()
 
@@ -133,7 +133,7 @@ def test_connection_logger(handlers: Any, listener: Any) -> None:
 def test_validation() -> None:
     logging_config = LoggingConfig(handlers={}, loggers={})
     assert logging_config.handlers["queue_listener"] == _get_default_handlers()["queue_listener"]
-    assert logging_config.loggers["litestar"]
+    assert logging_config.loggers["starlite"]
 
 
 @pytest.mark.parametrize(

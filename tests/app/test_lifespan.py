@@ -1,29 +1,29 @@
 from typing import TYPE_CHECKING, List
 
-from litestar.datastructures import State
-from litestar.testing import create_test_client
+from starlite.datastructures import State
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar import Litestar
+    from starlite import Starlite
 
 
 def test_lifespan() -> None:
     events: List[str] = []
     counter = {"value": 0}
 
-    async def before_startup(app: "Litestar") -> None:
+    async def before_startup(app: "Starlite") -> None:
         events.append("before_startup")
         assert app
 
-    async def after_startup(app: "Litestar") -> None:
+    async def after_startup(app: "Starlite") -> None:
         events.append("after_startup")
         assert app
 
-    async def before_shutdown(app: "Litestar") -> None:
+    async def before_shutdown(app: "Starlite") -> None:
         events.append("before_shutdown")
         assert app
 
-    async def after_shutdown(app: "Litestar") -> None:
+    async def after_shutdown(app: "Starlite") -> None:
         events.append("after_shutdown")
         assert app
 

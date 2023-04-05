@@ -1,6 +1,6 @@
-from litestar import Litestar
-from litestar.stores.memory import MemoryStore
-from litestar.stores.registry import StoreRegistry
+from starlite import Starlite
+from starlite.stores.memory import MemoryStore
+from starlite.stores.registry import StoreRegistry
 
 memory_store = MemoryStore()
 
@@ -9,4 +9,4 @@ def default_factory(name: str) -> MemoryStore:
     return memory_store
 
 
-app = Litestar([], stores=StoreRegistry(default_factory=default_factory))
+app = Starlite([], stores=StoreRegistry(default_factory=default_factory))

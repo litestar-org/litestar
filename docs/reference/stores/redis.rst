@@ -1,5 +1,5 @@
 redis
 =====
 
-.. automodule:: litestar.stores.redis
+.. automodule:: starlite.stores.redis
     :members:

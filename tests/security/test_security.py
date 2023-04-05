@@ -2,21 +2,21 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import pytest
 
-from litestar import get
-from litestar.di import Provide
-from litestar.middleware.session.server_side import (
+from starlite import get
+from starlite.di import Provide
+from starlite.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
-from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.spec import Components, SecurityScheme
-from litestar.security.session_auth import SessionAuth
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
+from starlite.openapi.config import OpenAPIConfig
+from starlite.openapi.spec import Components, SecurityScheme
+from starlite.security.session_auth import SessionAuth
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar.connection import ASGIConnection
-    from litestar.handlers.base import BaseRouteHandler
+    from starlite.connection import ASGIConnection
+    from starlite.handlers.base import BaseRouteHandler
 
 
 def retrieve_user_handler(_: Dict[str, Any], __: "ASGIConnection") -> Any:
@@ -73,7 +73,7 @@ def test_abstract_security_config_registers_route_handlers(
     (
         (None, None),
         (
-            OpenAPIConfig(title="Litestar API", version="1.0.0", components=None),
+            OpenAPIConfig(title="Starlite API", version="1.0.0", components=None),
             {
                 "schemas": {},
                 "securitySchemes": {
@@ -88,7 +88,7 @@ def test_abstract_security_config_registers_route_handlers(
         ),
         (
             OpenAPIConfig(
-                title="Litestar API",
+                title="Starlite API",
                 version="1.0.0",
                 components=[
                     Components(
@@ -118,7 +118,7 @@ def test_abstract_security_config_registers_route_handlers(
         ),
         (
             OpenAPIConfig(
-                title="Litestar API",
+                title="Starlite API",
                 version="1.0.0",
                 components=Components(
                     security_schemes={
@@ -166,9 +166,9 @@ def test_abstract_security_config_setting_openapi_components(
     "openapi_config, expected",
     (
         (None, None),
-        (OpenAPIConfig(title="Litestar API", version="1.0.0", security=None), [{"sessionCookie": []}]),
+        (OpenAPIConfig(title="Starlite API", version="1.0.0", security=None), [{"sessionCookie": []}]),
         (
-            OpenAPIConfig(title="Litestar API", version="1.0.0", security=[{"app": ["a", "b", "c"]}]),
+            OpenAPIConfig(title="Starlite API", version="1.0.0", security=[{"app": ["a", "b", "c"]}]),
             [{"app": ["a", "b", "c"]}, {"sessionCookie": []}],
         ),
     ),

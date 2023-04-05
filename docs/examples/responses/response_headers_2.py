@@ -2,8 +2,8 @@ from random import randint
 
 from pydantic import BaseModel
 
-from litestar import Litestar, Response, get
-from litestar.datastructures import ResponseHeader
+from starlite import Response, Starlite, get
+from starlite.datastructures import ResponseHeader
 
 
 class Resource(BaseModel):
@@ -29,4 +29,4 @@ def retrieve_resource() -> Response[Resource]:
     )
 
 
-app = Litestar(route_handlers=[retrieve_resource])
+app = Starlite(route_handlers=[retrieve_resource])

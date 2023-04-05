@@ -1,8 +1,8 @@
 from typing import Dict
 
-from litestar import Litestar, post
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from starlite import Starlite, post
+from starlite.enums import RequestEncodingType
+from starlite.params import Body
 
 
 @post(path="/")
@@ -12,4 +12,4 @@ def msgpack_handler(data: Dict = Body(media_type=RequestEncodingType.MESSAGEPACK
     return data
 
 
-app = Litestar(route_handlers=[msgpack_handler])
+app = Starlite(route_handlers=[msgpack_handler])

@@ -1,8 +1,8 @@
 from os import urandom
 
-from litestar import Litestar
-from litestar.middleware.session.client_side import CookieBackendConfig
+from starlite import Starlite
+from starlite.middleware.session.client_side import CookieBackendConfig
 
 session_config = CookieBackendConfig(secret=urandom(16))  # type: ignore[arg-type]
 
-app = Litestar(middleware=[session_config.middleware])
+app = Starlite(middleware=[session_config.middleware])

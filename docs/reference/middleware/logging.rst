@@ -1,5 +1,5 @@
 logging
 =======
 
-.. automodule:: litestar.middleware.logging
+.. automodule:: starlite.middleware.logging
     :members:

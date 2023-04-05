@@ -4,8 +4,8 @@ import pytest
 from sqlalchemy import Column, Integer
 from sqlalchemy.orm import Mapper, as_declarative, declarative_base
 
-from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from litestar.exceptions import ImproperlyConfiguredException
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from starlite.exceptions import ImproperlyConfiguredException
 
 DeclBase = declarative_base()
 

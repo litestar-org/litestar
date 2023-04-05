@@ -1,10 +1,10 @@
 from examples.parameters.header_and_cookie_parameters import app
-from litestar.status_codes import (
+from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
 )
-from litestar.testing import TestClient
+from starlite.testing import TestClient
 
 
 def test_header_and_cookie_parameters() -> None:

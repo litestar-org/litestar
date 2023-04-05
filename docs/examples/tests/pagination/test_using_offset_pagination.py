@@ -1,6 +1,6 @@
 from examples.pagination.using_offset_pagination import app
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import TestClient
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import TestClient
 
 
 def test_using_offset_pagination() -> None:

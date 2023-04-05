@@ -2,8 +2,8 @@ from typing import Any, Type
 
 import pytest
 
-from litestar.datastructures import State
-from litestar.datastructures.state import ImmutableState
+from starlite.datastructures import State
+from starlite.datastructures.state import ImmutableState
 
 
 @pytest.mark.parametrize("state_class", (ImmutableState, State))

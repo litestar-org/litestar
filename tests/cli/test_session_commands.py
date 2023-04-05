@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from litestar import Litestar
-from litestar.cli.commands.sessions import get_session_backend
-from litestar.cli.main import litestar_group as cli_command
-from litestar.middleware.rate_limit import RateLimitConfig
-from litestar.middleware.session.server_side import ServerSideSessionConfig
+from starlite import Starlite
+from starlite.cli.commands.sessions import get_session_backend
+from starlite.cli.main import starlite_group as cli_command
+from starlite.middleware.rate_limit import RateLimitConfig
+from starlite.middleware.session.server_side import ServerSideSessionConfig
 
 if TYPE_CHECKING:
     from unittest.mock import MagicMock
@@ -18,13 +18,13 @@ if TYPE_CHECKING:
 
 def test_get_session_backend() -> None:
     session_middleware = ServerSideSessionConfig().middleware
-    app = Litestar([], middleware=[RateLimitConfig(rate_limit=("second", 1)).middleware, session_middleware])
+    app = Starlite([], middleware=[RateLimitConfig(rate_limit=("second", 1)).middleware, session_middleware])
 
     assert get_session_backend(app) is session_middleware.kwargs["backend"]
 
 
 def test_delete_session_no_backend(runner: "CliRunner", monkeypatch: "MonkeyPatch") -> None:
-    monkeypatch.setenv("LITESTAR_APP", "docs.examples.hello_world:app")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.hello_world:app")
     result = runner.invoke(cli_command, "sessions delete foo")
 
     assert result.exit_code == 1
@@ -32,7 +32,7 @@ def test_delete_session_no_backend(runner: "CliRunner", monkeypatch: "MonkeyPatc
 
 
 def test_delete_session_cookie_backend(runner: "CliRunner", monkeypatch: "MonkeyPatch") -> None:
-    monkeypatch.setenv("LITESTAR_APP", "docs.examples.middleware.session.cookie_backend:app")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.cookie_backend:app")
 
     result = runner.invoke(cli_command, "sessions delete foo")
 
@@ -43,8 +43,8 @@ def test_delete_session_cookie_backend(runner: "CliRunner", monkeypatch: "Monkey
 def test_delete_session(
     runner: "CliRunner", monkeypatch: "MonkeyPatch", mocker: "MockerFixture", mock_confirm_ask: "MagicMock"
 ) -> None:
-    monkeypatch.setenv("LITESTAR_APP", "docs.examples.middleware.session.file_store:app")
-    mock_delete = mocker.patch("litestar.stores.file.FileStore.delete")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.file_store:app")
+    mock_delete = mocker.patch("starlite.stores.file.FileStore.delete")
 
     result = runner.invoke(cli_command, ["sessions", "delete", "foo"])
 
@@ -54,7 +54,7 @@ def test_delete_session(
 
 
 def test_clear_sessions_no_backend(runner: "CliRunner", monkeypatch: "MonkeyPatch") -> None:
-    monkeypatch.setenv("LITESTAR_APP", "docs.examples.hello_world:app")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.hello_world:app")
     result = runner.invoke(cli_command, "sessions clear")
 
     assert result.exit_code == 1
@@ -62,7 +62,7 @@ def test_clear_sessions_no_backend(runner: "CliRunner", monkeypatch: "MonkeyPatc
 
 
 def test_clear_sessions_cookie_backend(runner: "CliRunner", monkeypatch: "MonkeyPatch") -> None:
-    monkeypatch.setenv("LITESTAR_APP", "docs.examples.middleware.session.cookie_backend:app")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.cookie_backend:app")
 
     result = runner.invoke(cli_command, "sessions clear")
 
@@ -73,8 +73,8 @@ def test_clear_sessions_cookie_backend(runner: "CliRunner", monkeypatch: "Monkey
 def test_clear_sessions(
     runner: "CliRunner", monkeypatch: "MonkeyPatch", mocker: "MockerFixture", mock_confirm_ask: "MagicMock"
 ) -> None:
-    monkeypatch.setenv("LITESTAR_APP", "docs.examples.middleware.session.file_store:app")
-    mock_delete = mocker.patch("litestar.stores.file.FileStore.delete_all")
+    monkeypatch.setenv("STARLITE_APP", "docs.examples.middleware.session.file_store:app")
+    mock_delete = mocker.patch("starlite.stores.file.FileStore.delete_all")
 
     result = runner.invoke(cli_command, ["sessions", "clear"])
 

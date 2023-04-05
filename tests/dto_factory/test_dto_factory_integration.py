@@ -5,10 +5,10 @@ import pytest
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel
 
-from litestar import post
-from litestar.dto import DTOFactory
-from litestar.status_codes import HTTP_201_CREATED
-from litestar.testing import create_test_client
+from starlite import post
+from starlite.dto import DTOFactory
+from starlite.status_codes import HTTP_201_CREATED
+from starlite.testing import create_test_client
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
 
 

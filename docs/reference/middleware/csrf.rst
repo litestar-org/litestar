@@ -1,5 +1,5 @@
 csrf
 ====
 
-.. automodule:: litestar.middleware.csrf
+.. automodule:: starlite.middleware.csrf
     :members:

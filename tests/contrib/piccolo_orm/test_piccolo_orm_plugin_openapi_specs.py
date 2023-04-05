@@ -1,8 +1,8 @@
 from typing import Any
 
-from litestar import Litestar
-from litestar.contrib.piccolo_orm import PiccoloORMPlugin
-from litestar.openapi.spec import OpenAPIResponse, Reference, RequestBody, Schema
+from starlite import Starlite
+from starlite.contrib.piccolo_orm import PiccoloORMPlugin
+from starlite.openapi.spec import OpenAPIResponse, Reference, RequestBody, Schema
 from tests.contrib.piccolo_orm.endpoints import (
     create_concert,
     retrieve_studio,
@@ -11,7 +11,7 @@ from tests.contrib.piccolo_orm.endpoints import (
 
 
 def test_piccolo_orm_plugin_openapi_spec_generation() -> None:
-    app = Litestar(route_handlers=[retrieve_studio, retrieve_venues, create_concert], plugins=[PiccoloORMPlugin()])
+    app = Starlite(route_handlers=[retrieve_studio, retrieve_venues, create_concert], plugins=[PiccoloORMPlugin()])
     schema: Any = app.openapi_schema
     assert schema
     assert schema.paths

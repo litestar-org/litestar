@@ -1,6 +1,6 @@
 from examples.application_hooks import before_send_hook
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import TestClient
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import TestClient
 
 
 def test_application_before_send_hooks() -> None:

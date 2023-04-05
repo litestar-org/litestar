@@ -1,6 +1,6 @@
-from litestar.contrib.tortoise_orm import TortoiseORMPlugin
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
-from litestar.testing import create_test_client
+from starlite.contrib.tortoise_orm import TortoiseORMPlugin
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
+from starlite.testing import create_test_client
 from tests.contrib.tortoise_orm import (
     Tournament,
     cleanup,

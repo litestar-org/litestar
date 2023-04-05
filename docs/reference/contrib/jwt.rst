@@ -1,5 +1,5 @@
 jwt
 ===
 
-.. automodule:: litestar.contrib.jwt
+.. automodule:: starlite.contrib.jwt
     :members:

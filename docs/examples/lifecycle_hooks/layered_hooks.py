@@ -1,4 +1,4 @@
-from litestar import Litestar, Response, get
+from starlite import Response, Starlite, get
 
 
 def after_request_app(response: Response) -> Response:
@@ -19,7 +19,7 @@ async def handler_with_override() -> str:
     return "hello, world"
 
 
-app = Litestar(
+app = Starlite(
     route_handlers=[handler, handler_with_override],
     after_request=after_request_app,
 )

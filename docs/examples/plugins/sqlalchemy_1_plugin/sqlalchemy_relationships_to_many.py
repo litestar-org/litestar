@@ -4,11 +4,11 @@ from pydantic import BaseModel
 from sqlalchemy import Column, ForeignKey, Integer, String, create_engine, select
 from sqlalchemy.orm import Mapped, Session, declarative_base, relationship
 
-from litestar import Litestar, get
-from litestar.contrib.sqlalchemy_1.config import SQLAlchemyConfig
-from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from litestar.exceptions import HTTPException
-from litestar.status_codes import HTTP_404_NOT_FOUND
+from starlite import Starlite, get
+from starlite.contrib.sqlalchemy_1.config import SQLAlchemyConfig
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from starlite.exceptions import HTTPException
+from starlite.status_codes import HTTP_404_NOT_FOUND
 
 engine = create_engine("sqlite+pysqlite:///test.sqlite")
 sqlalchemy_config = SQLAlchemyConfig(engine_instance=engine, use_async_engine=False)
@@ -70,7 +70,7 @@ def get_user(user_id: int, db_session: Session) -> UserModel:
     return UserModel.from_orm(user)
 
 
-app = Litestar(
+app = Starlite(
     route_handlers=[get_user],
     on_startup=[on_startup],
     plugins=[sqlalchemy_plugin],

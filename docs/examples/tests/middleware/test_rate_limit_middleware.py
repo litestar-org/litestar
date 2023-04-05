@@ -1,6 +1,6 @@
 from examples.middleware.rate_limit import app
-from litestar.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
-from litestar.testing import TestClient
+from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
+from starlite.testing import TestClient
 
 
 def test_rate_limit_middleware_example() -> None:

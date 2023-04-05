@@ -1,10 +1,10 @@
 from pathlib import Path
 from typing import Dict
 
-from litestar import Litestar, get
-from litestar.contrib.mako import MakoTemplateEngine
-from litestar.response_containers import Template
-from litestar.template.config import TemplateConfig
+from starlite import Starlite, get
+from starlite.contrib.mako import MakoTemplateEngine
+from starlite.response_containers import Template
+from starlite.template.config import TemplateConfig
 
 
 def my_template_function(ctx: Dict) -> str:
@@ -30,7 +30,7 @@ def index() -> Template:
     return Template(name="index.html.mako")
 
 
-app = Litestar(
+app = Starlite(
     route_handlers=[index],
     template_config=template_config,
 )

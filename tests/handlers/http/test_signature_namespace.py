@@ -4,8 +4,8 @@ from typing import Any, Dict, List
 
 import pytest
 
-from litestar import Controller, Router, delete, get, patch, post, put
-from litestar.testing import create_test_client
+from starlite import Controller, Router, delete, get, patch, post, put
+from starlite.testing import create_test_client
 
 
 @pytest.mark.parametrize(

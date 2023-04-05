@@ -1,5 +1,5 @@
-from litestar import Litestar, get
-from litestar.datastructures import State
+from starlite import Starlite, get
+from starlite.datastructures import State
 
 
 class MyState(State):
@@ -15,4 +15,4 @@ def handler(state: MyState) -> dict:
     return state.dict()
 
 
-app = Litestar(route_handlers=[handler])
+app = Starlite(route_handlers=[handler])

@@ -60,7 +60,7 @@ jobs:
           pytest
       - name: Test with coverage
         if: inputs.coverage
-        run: poetry run pytest docs/examples tests --cov=litestar --cov-report=xml
+        run: poetry run pytest docs/examples tests --cov=starlite --cov-report=xml
       - uses: actions/upload-artifact@v3
         if: inputs.coverage
         with:

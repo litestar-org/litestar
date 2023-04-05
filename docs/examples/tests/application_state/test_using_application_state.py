@@ -2,8 +2,8 @@ from logging import INFO
 from typing import Any
 
 from examples.application_state.using_application_state import app
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import TestClient
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import TestClient
 
 
 def test_using_application_state(caplog: Any) -> None:

@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING, cast
 from pydantic import BaseSettings
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
-from litestar import Litestar
+from starlite import Starlite
 
 if TYPE_CHECKING:
-    from litestar.datastructures import State
+    from starlite.datastructures import State
 
 
 class AppSettings(BaseSettings):
@@ -32,4 +32,4 @@ async def close_db_connection(state: "State") -> None:
         await cast("AsyncEngine", state.engine).dispose()
 
 
-app = Litestar(on_startup=[get_db_connection], on_shutdown=[close_db_connection])
+app = Starlite(on_startup=[get_db_connection], on_shutdown=[close_db_connection])

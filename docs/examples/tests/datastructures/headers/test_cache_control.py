@@ -1,5 +1,5 @@
 from examples.datastructures.headers import cache_control
-from litestar.testing import TestClient
+from starlite.testing import TestClient
 
 
 def test_cache_control_header() -> None:

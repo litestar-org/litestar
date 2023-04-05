@@ -1,6 +1,6 @@
 import pytest
 
-from litestar.utils.version import Version, parse_version
+from starlite.utils.version import Version, parse_version
 
 
 @pytest.mark.parametrize(

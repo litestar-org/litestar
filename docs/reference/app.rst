@@ -1,7 +1,7 @@
 app
 ===
 
-.. automodule:: litestar.app
+.. automodule:: starlite.app
     :members:
 
-.. autodata:: litestar.app.DEFAULT_OPENAPI_CONFIG
+.. autodata:: starlite.app.DEFAULT_OPENAPI_CONFIG

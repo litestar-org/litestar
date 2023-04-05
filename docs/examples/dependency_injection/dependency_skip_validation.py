@@ -1,8 +1,8 @@
 from typing import Any, Dict
 
-from litestar import Litestar, get
-from litestar.di import Provide
-from litestar.params import Dependency
+from starlite import Starlite, get
+from starlite.di import Provide
+from starlite.params import Dependency
 
 
 def provide_str() -> str:
@@ -16,4 +16,4 @@ def hello_world(injected: int = Dependency(skip_validation=True)) -> Dict[str, A
     return {"hello": injected}
 
 
-app = Litestar(route_handlers=[hello_world])
+app = Starlite(route_handlers=[hello_world])

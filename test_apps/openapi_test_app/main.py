@@ -1,6 +1,6 @@
 from typing import Dict
 
-from litestar import Litestar, get
+from starlite import Starlite, get
 from tests.openapi.utils import PersonController, PetController
 
 
@@ -9,7 +9,7 @@ async def greet() -> Dict[str, str]:
     return {"hello": "world"}
 
 
-app = Litestar(
+app = Starlite(
     route_handlers=[greet, PersonController, PetController],
 )
 

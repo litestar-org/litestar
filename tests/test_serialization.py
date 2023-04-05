@@ -24,8 +24,8 @@ from pydantic import (
 )
 from pydantic.color import Color
 
-from litestar.exceptions import SerializationException
-from litestar.serialization import (
+from starlite.exceptions import SerializationException
+from starlite.serialization import (
     decode_json,
     decode_msgpack,
     default_serializer,

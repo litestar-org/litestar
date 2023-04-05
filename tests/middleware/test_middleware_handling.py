@@ -6,17 +6,17 @@ from pydantic import BaseModel
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-from litestar import Controller, Request, Response, Router, get, post
-from litestar.enums import ScopeType
-from litestar.middleware import DefineMiddleware, MiddlewareProtocol
-from litestar.testing import create_test_client
+from starlite import Controller, Request, Response, Router, get, post
+from starlite.enums import ScopeType
+from starlite.middleware import DefineMiddleware, MiddlewareProtocol
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from typing import Type
 
     from _pytest.logging import LogCaptureFixture
 
-    from litestar.types import ASGIApp, Receive, Scope, Send
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 logger = logging.getLogger(__name__)
 

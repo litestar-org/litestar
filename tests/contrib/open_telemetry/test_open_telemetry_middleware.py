@@ -12,10 +12,10 @@ from opentelemetry.sdk.trace import Span, TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
-from litestar import WebSocket, get, websocket
-from litestar.contrib.opentelemetry import OpenTelemetryConfig
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
+from starlite import WebSocket, get, websocket
+from starlite.contrib.opentelemetry import OpenTelemetryConfig
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 
 def create_config(**kwargs: Any) -> Tuple[OpenTelemetryConfig, InMemoryMetricReader, InMemorySpanExporter]:
@@ -27,7 +27,7 @@ def create_config(**kwargs: Any) -> Tuple[OpenTelemetryConfig, InMemoryMetricRea
     Returns:
         A tuple containing an OpenTelemetryConfig, an InMemoryMetricReader and InMemorySpanExporter.
     """
-    resource = Resource(attributes={SERVICE_NAME: "litestar-test"})
+    resource = Resource(attributes={SERVICE_NAME: "starlite-test"})
     tracer_provider = TracerProvider(resource=resource)
     exporter = InMemorySpanExporter()  # type: ignore
     tracer_provider.add_span_processor(SimpleSpanProcessor(exporter))
@@ -38,7 +38,7 @@ def create_config(**kwargs: Any) -> Tuple[OpenTelemetryConfig, InMemoryMetricRea
 
     set_meter_provider(meter_provider)
 
-    meter = get_meter_provider().get_meter("litestar-test")
+    meter = get_meter_provider().get_meter("starlite-test")
 
     return (
         OpenTelemetryConfig(tracer_provider=tracer_provider, meter=meter, **kwargs),

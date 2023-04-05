@@ -1,7 +1,7 @@
-Litestar 2.0 migration guide
+Starlite 2.0 migration guide
 ============================
 
-.. py:currentmodule:: litestar
+.. py:currentmodule:: starlite
 
 
 Changed module paths
@@ -12,133 +12,133 @@ Changed module paths
 +====================================================+========================================================================+
 | **Datastructures**                                                                                                          |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.datastructures.UploadFile``             | ``litestar.upload_file.UploadFile``                                    |
+| ``starlite.datastructures.UploadFile``             | ``starlite.upload_file.UploadFile``                                    |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.BackgroundTask``                        | ``litestar.background_tasks.BackgroundTask``                           |
+| ``starlite.BackgroundTask``                        | ``starlite.background_tasks.BackgroundTask``                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.BackgroundTasks``                       | ``litestar.background_tasks.BackgroundTasks``                          |
+| ``starlite.BackgroundTasks``                       | ``starlite.background_tasks.BackgroundTasks``                          |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Configuration**                                                                                                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AllowedHostsConfig``                    | ``litestar.config.allowed_hosts.AllowedHostsConfig``                   |
+| ``starlite.AllowedHostsConfig``                    | ``starlite.config.allowed_hosts.AllowedHostsConfig``                   |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.BaseLoggingConfig``                     | ``litestar.config.logging.BaseLoggingConfig``                          |
+| ``starlite.BaseLoggingConfig``                     | ``starlite.config.logging.BaseLoggingConfig``                          |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.CacheConfig``                           | ``litestar.config.cache.CacheConfig``                                  |
+| ``starlite.CacheConfig``                           | ``starlite.config.cache.CacheConfig``                                  |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.CompressionConfig``                     | ``litestar.config.compression.CompressionConfig``                      |
+| ``starlite.CompressionConfig``                     | ``starlite.config.compression.CompressionConfig``                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.CORSConfig``                            | ``litestar.config.cors.CORSConfig``                                    |
+| ``starlite.CORSConfig``                            | ``starlite.config.cors.CORSConfig``                                    |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.CSRFConfig``                            | ``litestar.config.csrf.CSRFConfig``                                    |
+| ``starlite.CSRFConfig``                            | ``starlite.config.csrf.CSRFConfig``                                    |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.LoggingConfig``                         | ``litestar.config.logging.LoggingConfig``                              |
+| ``starlite.LoggingConfig``                         | ``starlite.config.logging.LoggingConfig``                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.StructLoggingConfig``                   | ``litestar.config.logging.StructLoggingConfig``                        |
+| ``starlite.StructLoggingConfig``                   | ``starlite.config.logging.StructLoggingConfig``                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.OpenAPIConfig``                         | ``litestar.config.openapi.OpenAPIConfig``                              |
+| ``starlite.OpenAPIConfig``                         | ``starlite.config.openapi.OpenAPIConfig``                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.StaticFilesConfig``                     | ``litestar.config.static_files.StaticFilesConfig``                     |
+| ``starlite.StaticFilesConfig``                     | ``starlite.config.static_files.StaticFilesConfig``                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.TemplateConfig``                        | ``litestar.config.templates.TemplateConfig``                           |
+| ``starlite.TemplateConfig``                        | ``starlite.config.templates.TemplateConfig``                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Provide**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.datastructures.Provide``                | ``litestar.provide.Provide``                                           |
+| ``starlite.datastructures.Provide``                | ``starlite.provide.Provide``                                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Pagination**                                                                                                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AbstractAsyncClassicPaginator``         | ``litestar.utils.pagination.AbstractAsyncClassicPaginator``            |
+| ``starlite.AbstractAsyncClassicPaginator``         | ``starlite.utils.pagination.AbstractAsyncClassicPaginator``            |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AbstractAsyncCursorPaginator``          | ``litestar.utils.pagination.AbstractAsyncCursorPaginator``             |
+| ``starlite.AbstractAsyncCursorPaginator``          | ``starlite.utils.pagination.AbstractAsyncCursorPaginator``             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AbstractAsyncOffsetPaginator``          | ``litestar.utils.pagination.AbstractAsyncOffsetPaginator``             |
+| ``starlite.AbstractAsyncOffsetPaginator``          | ``starlite.utils.pagination.AbstractAsyncOffsetPaginator``             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AbstractSyncClassicPaginator``          | ``litestar.utils.pagination.AbstractSyncClassicPaginator``             |
+| ``starlite.AbstractSyncClassicPaginator``          | ``starlite.utils.pagination.AbstractSyncClassicPaginator``             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AbstractSyncCursorPaginator``           | ``litestar.utils.pagination.AbstractSyncCursorPaginator``              |
+| ``starlite.AbstractSyncCursorPaginator``           | ``starlite.utils.pagination.AbstractSyncCursorPaginator``              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AbstractSyncOffsetPaginator``           | ``litestar.utils.pagination.AbstractSyncOffsetPaginator``              |
+| ``starlite.AbstractSyncOffsetPaginator``           | ``starlite.utils.pagination.AbstractSyncOffsetPaginator``              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.ClassicPagination``                     | ``litestar.utils.pagination.ClassicPagination``                        |
+| ``starlite.ClassicPagination``                     | ``starlite.utils.pagination.ClassicPagination``                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.CursorPagination``                      | ``litestar.utils.pagination.CursorPagination``                         |
+| ``starlite.CursorPagination``                      | ``starlite.utils.pagination.CursorPagination``                         |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.OffsetPagination``                      | ``litestar.utils.pagination.OffsetPagination``                         |
+| ``starlite.OffsetPagination``                      | ``starlite.utils.pagination.OffsetPagination``                         |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Response containers**                                                                                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.File``                                  | ``litestar.response_containers.File``                                  |
+| ``starlite.File``                                  | ``starlite.response_containers.File``                                  |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.Redirect``                              | ``litestar.response_containers.Redirect``                              |
+| ``starlite.Redirect``                              | ``starlite.response_containers.Redirect``                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.ResponseContainer``                     | ``litestar.response_containers.ResponseContainer``                     |
+| ``starlite.ResponseContainer``                     | ``starlite.response_containers.ResponseContainer``                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.Stream``                                | ``litestar.response_containers.Stream``                                |
+| ``starlite.Stream``                                | ``starlite.response_containers.Stream``                                |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.Template``                              | ``litestar.response_containers.Template``                              |
+| ``starlite.Template``                              | ``starlite.response_containers.Template``                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Exceptions**                                                                                                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.HTTPException``                         | ``litestar.exceptions.HTTPException``                                  |
+| ``starlite.HTTPException``                         | ``starlite.exceptions.HTTPException``                                  |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.ImproperlyConfiguredException``         | ``litestar.exceptions.ImproperlyConfiguredException``                  |
+| ``starlite.ImproperlyConfiguredException``         | ``starlite.exceptions.ImproperlyConfiguredException``                  |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.InternalServerException``               | ``litestar.exceptions.InternalServerException``                        |
+| ``starlite.InternalServerException``               | ``starlite.exceptions.InternalServerException``                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.MissingDependencyException``            | ``litestar.exceptions.MissingDependencyException``                     |
+| ``starlite.MissingDependencyException``            | ``starlite.exceptions.MissingDependencyException``                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.NoRouteMatchFoundException``            | ``litestar.exceptions.NoRouteMatchFoundException``                     |
+| ``starlite.NoRouteMatchFoundException``            | ``starlite.exceptions.NoRouteMatchFoundException``                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.NotAuthorizedException``                | ``litestar.exceptions.NotAuthorizedException``                         |
+| ``starlite.NotAuthorizedException``                | ``starlite.exceptions.NotAuthorizedException``                         |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.NotFoundException``                     | ``litestar.exceptions.NotFoundException``                              |
+| ``starlite.NotFoundException``                     | ``starlite.exceptions.NotFoundException``                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.PermissionDeniedException``             | ``litestar.exceptions.PermissionDeniedException``                      |
+| ``starlite.PermissionDeniedException``             | ``starlite.exceptions.PermissionDeniedException``                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.ServiceUnavailableException``           | ``litestar.exceptions.ServiceUnavailableException``                    |
+| ``starlite.ServiceUnavailableException``           | ``starlite.exceptions.ServiceUnavailableException``                    |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.LitestarException``                     | ``litestar.exceptions.LitestarException``                              |
+| ``starlite.StarliteException``                     | ``starlite.exceptions.StarliteException``                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.TooManyRequestsException``              | ``litestar.exceptions.TooManyRequestsException``                       |
+| ``starlite.TooManyRequestsException``              | ``starlite.exceptions.TooManyRequestsException``                       |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.ValidationException``                   | ``litestar.exceptions.ValidationException``                            |
+| ``starlite.ValidationException``                   | ``starlite.exceptions.ValidationException``                            |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.WebSocketException``                    | ``litestar.exceptions.WebSocketException``                             |
+| ``starlite.WebSocketException``                    | ``starlite.exceptions.WebSocketException``                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Testing**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.TestClient``                            | ``litestar.testing.TestClient``                                        |
+| ``starlite.TestClient``                            | ``starlite.testing.TestClient``                                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AsyncTestClient``                       | ``litestar.testing.AsyncTestClient``                                   |
+| ``starlite.AsyncTestClient``                       | ``starlite.testing.AsyncTestClient``                                   |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.create_test_client``                    | ``litestar.testing.create_test_client``                                |
+| ``starlite.create_test_client``                    | ``starlite.testing.create_test_client``                                |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **DTO**                                                                                                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.DTOFactory``                            | ``litestar.dto.DTOFactory``                                            |
+| ``starlite.DTOFactory``                            | ``starlite.dto.DTOFactory``                                            |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **OpenAPI**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.OpenAPIController``                     | ``litestar.openapi.controller.OpenAPIController``                      |
+| ``starlite.OpenAPIController``                     | ``starlite.openapi.controller.OpenAPIController``                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.ResponseSpec``                          | ``litestar.openapi.datastructures.ResponseSpec``                       |
+| ``starlite.ResponseSpec``                          | ``starlite.openapi.datastructures.ResponseSpec``                       |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Middleware**                                                                                                              |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AbstractAuthenticationMiddleware``      | ``litestar.middleware.authentication.AbstractAuthenticationMiddleware``|
+| ``starlite.AbstractAuthenticationMiddleware``      | ``starlite.middleware.authentication.AbstractAuthenticationMiddleware``|
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AuthenticationResult``                  | ``litestar.middleware.authentication.AuthenticationResult``            |
+| ``starlite.AuthenticationResult``                  | ``starlite.middleware.authentication.AuthenticationResult``            |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AbstractMiddleware``                    | ``litestar.middleware.AbstractMiddleware``                             |
+| ``starlite.AbstractMiddleware``                    | ``starlite.middleware.AbstractMiddleware``                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.DefineMiddleware``                      | ``litestar.middleware.DefineMiddleware``                               |
+| ``starlite.DefineMiddleware``                      | ``starlite.middleware.DefineMiddleware``                               |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.MiddlewareProtocol``                    | ``litestar.middleware.MiddlewareProtocol``                             |
+| ``starlite.MiddlewareProtocol``                    | ``starlite.middleware.MiddlewareProtocol``                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Security**                                                                                                                |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``litestar.AbstractSecurityConfig``                | ``litestar.security.AbstractSecurityConfig``                           |
+| ``starlite.AbstractSecurityConfig``                | ``starlite.security.AbstractSecurityConfig``                           |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
@@ -158,7 +158,7 @@ strict and now only allows string values.
 
         .. code-block:: python
 
-            from litestar import ResponseHeader, get
+            from starlite import ResponseHeader, get
 
 
             @get(response_headers={"my-header": ResponseHeader(value="header-value")})
@@ -169,7 +169,7 @@ strict and now only allows string values.
 
         .. code-block:: python
 
-            from litestar import ResponseHeader, get
+            from starlite import ResponseHeader, get
 
 
             @get(response_headers=[ResponseHeader(name="my-header", value="header-value")])

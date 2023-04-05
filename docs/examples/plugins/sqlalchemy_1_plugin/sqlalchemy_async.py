@@ -4,12 +4,12 @@ from sqlalchemy import Column, Float, Integer, String, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, declarative_base
 
-from litestar import Litestar, get, post
-from litestar.contrib.sqlalchemy_1.config import SQLAlchemyConfig
-from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from litestar.dto import DTOFactory
-from litestar.exceptions import HTTPException
-from litestar.status_codes import HTTP_404_NOT_FOUND
+from starlite import Starlite, get, post
+from starlite.contrib.sqlalchemy_1.config import SQLAlchemyConfig
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from starlite.dto import DTOFactory
+from starlite.exceptions import HTTPException
+from starlite.status_codes import HTTP_404_NOT_FOUND
 
 Base = declarative_base()
 
@@ -61,7 +61,7 @@ async def get_company(company_id: int, async_session: AsyncSession) -> Company:
     return company
 
 
-app = Litestar(
+app = Starlite(
     route_handlers=[create_company, get_company],
     on_startup=[on_startup],
     plugins=[sqlalchemy_plugin],

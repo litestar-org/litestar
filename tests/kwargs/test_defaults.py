@@ -1,7 +1,7 @@
-from litestar import get
-from litestar.params import Parameter
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
+from starlite import get
+from starlite.params import Parameter
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 
 def test_params_default() -> None:

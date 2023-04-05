@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 
-from litestar import Litestar, get
-from litestar.exceptions import NotAuthorizedException
-from litestar.params import Parameter
+from starlite import Starlite, get
+from starlite.exceptions import NotAuthorizedException
+from starlite.params import Parameter
 
 USER_DB = {
     1: {
@@ -31,4 +31,4 @@ async def get_user(
     return User.parse_obj(USER_DB[user_id])
 
 
-app = Litestar(route_handlers=[get_user])
+app = Starlite(route_handlers=[get_user])

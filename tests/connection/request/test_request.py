@@ -9,20 +9,20 @@ from unittest.mock import patch
 
 import pytest
 
-from litestar import MediaType, get
-from litestar.connection.base import empty_send
-from litestar.connection.request import Request
-from litestar.datastructures import Address
-from litestar.exceptions import InternalServerException, SerializationException
-from litestar.response import Response
-from litestar.serialization import encode_msgpack
-from litestar.static_files.config import StaticFilesConfig
-from litestar.testing import TestClient, create_test_client
+from starlite import MediaType, get
+from starlite.connection.base import empty_send
+from starlite.connection.request import Request
+from starlite.datastructures import Address
+from starlite.exceptions import InternalServerException, SerializationException
+from starlite.response import Response
+from starlite.serialization import encode_msgpack
+from starlite.static_files.config import StaticFilesConfig
+from starlite.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from litestar.types import Receive, Scope, Send
+    from starlite.types import Receive, Scope, Send
 
 
 async def test_request_empty_body_to_json(anyio_backend: str) -> None:

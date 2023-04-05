@@ -1,4 +1,4 @@
 status_code
 ===========
 
-.. automodule:: litestar.status_codes
+.. automodule:: starlite.status_codes

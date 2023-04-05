@@ -1,6 +1,6 @@
 from examples.dependency_injection import dependency_validation_error
-from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from litestar.testing import TestClient
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from starlite.testing import TestClient
 
 
 def test_route_returns_internal_server_error() -> None:

@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 import pytest
 
-from litestar.dto import DTOFactory
+from starlite.dto import DTOFactory
 from tests import Person, TypedDictPerson, VanillaDataClassPerson
 
 

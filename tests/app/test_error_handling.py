@@ -1,7 +1,7 @@
-from litestar import Litestar, MediaType, Request, Response, get, post
-from litestar.exceptions import InternalServerException, NotFoundException
-from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
-from litestar.testing import TestClient, create_test_client
+from starlite import MediaType, Request, Response, Starlite, get, post
+from starlite.exceptions import InternalServerException, NotFoundException
+from starlite.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from starlite.testing import TestClient, create_test_client
 from tests import Person
 
 
@@ -45,7 +45,7 @@ def test_debug_response_created() -> None:
         except Exception as e:
             raise InternalServerException() from e
 
-    app = Litestar(route_handlers=[my_route_handler], debug=True)
+    app = Starlite(route_handlers=[my_route_handler], debug=True)
     client = TestClient(app=app)
 
     response = client.get("/")

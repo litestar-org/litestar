@@ -1,9 +1,9 @@
 from random import randint
 
-from litestar import Controller, MediaType, get
-from litestar.di import Provide
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
+from starlite import Controller, MediaType, get
+from starlite.di import Provide
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 
 def test_inter_dependencies() -> None:

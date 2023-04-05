@@ -2,7 +2,7 @@ import logging
 from asyncio import sleep
 from datetime import datetime
 
-from litestar import Litestar
+from starlite import Starlite
 
 logger = logging.getLogger()
 
@@ -12,14 +12,14 @@ async def shutdown_callable() -> None:
     await sleep(0.5)
 
 
-def before_shutdown_handler(app_instance: Litestar) -> None:
+def before_shutdown_handler(app_instance: Starlite) -> None:
     """Function called before 'on_shutdown'."""
     start_time = datetime.now()
     app_instance.state.start_time = start_time.timestamp()
     logger.info("shutdown sequence begin at %s", start_time.isoformat())
 
 
-def after_shutdown_handler(app_instance: Litestar) -> None:
+def after_shutdown_handler(app_instance: Starlite) -> None:
     """Function called after 'on_shutdown'."""
     logger.info(
         "shutdown sequence ended at: %s, time elapsed: %d",
@@ -28,7 +28,7 @@ def after_shutdown_handler(app_instance: Litestar) -> None:
     )
 
 
-app = Litestar(
+app = Starlite(
     on_shutdown=[shutdown_callable],
     before_shutdown=[before_shutdown_handler],
     after_shutdown=[after_shutdown_handler],

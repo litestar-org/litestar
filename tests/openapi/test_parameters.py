@@ -3,24 +3,24 @@ from typing import TYPE_CHECKING, List, Optional, cast
 import pytest
 from polyfactory import BaseFactory
 
-from litestar import Controller, Litestar, Router, get
-from litestar._openapi.parameters import create_parameter_for_handler
-from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
-from litestar._signature import create_signature_model
-from litestar.di import Provide
-from litestar.enums import ParamType
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.spec import OpenAPI
-from litestar.openapi.spec.enums import OpenAPIType
-from litestar.params import Dependency, Parameter
-from litestar.utils import find_index
+from starlite import Controller, Router, Starlite, get
+from starlite._openapi.parameters import create_parameter_for_handler
+from starlite._openapi.typescript_converter.schema_parsing import is_schema_value
+from starlite._signature import create_signature_model
+from starlite.di import Provide
+from starlite.enums import ParamType
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.openapi.spec import OpenAPI
+from starlite.openapi.spec.enums import OpenAPIType
+from starlite.params import Dependency, Parameter
+from starlite.utils import find_index
 from tests.openapi.utils import PersonController
 
 if TYPE_CHECKING:
-    from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
+    from starlite.openapi.spec.parameter import Parameter as OpenAPIParameter
 
 
-def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
+def _create_parameters(app: Starlite, path: str) -> List["OpenAPIParameter"]:
     index = find_index(app.routes, lambda x: x.path_format == path)
     route = app.routes[index]
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
@@ -46,7 +46,7 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
 
 def test_create_parameters() -> None:
     BaseFactory.seed_random(1)
-    parameters = _create_parameters(app=Litestar(route_handlers=[PersonController]), path="/{service_id}/person")
+    parameters = _create_parameters(app=Starlite(route_handlers=[PersonController]), path="/{service_id}/person")
     assert len(parameters) == 9
     page, name, page_size, service_id, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
 
@@ -156,7 +156,7 @@ def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
     def handler(a: ADep, b: BDep, c: float, d: float) -> str:
         return "OK"
 
-    app = Litestar(route_handlers=[handler])
+    app = Starlite(route_handlers=[handler])
     assert isinstance(app.openapi_schema, OpenAPI)
     open_api_path_item = app.openapi_schema.paths["/test"]  # type: ignore
     open_api_parameters = open_api_path_item.get.parameters  # type: ignore
@@ -175,7 +175,7 @@ def test_raise_for_multiple_parameters_of_same_name_and_differing_types() -> Non
     def handler(a: int, b: int) -> str:
         return "OK"
 
-    app = Litestar(route_handlers=[handler])
+    app = Starlite(route_handlers=[handler])
 
     with pytest.raises(ImproperlyConfiguredException):
         app.openapi_schema
@@ -189,7 +189,7 @@ def test_dependency_params_in_docs_if_dependency_provided() -> None:
     def handler(dep: Optional[int] = Dependency()) -> None:
         return None
 
-    app = Litestar(route_handlers=[handler])
+    app = Starlite(route_handlers=[handler])
     param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore
     assert "dep" not in param_name_set
     assert "param" in param_name_set
@@ -200,7 +200,7 @@ def test_dependency_not_in_doc_params_if_not_provided() -> None:
     def handler(dep: Optional[int] = Dependency()) -> None:
         return None
 
-    app = Litestar(route_handlers=[handler])
+    app = Starlite(route_handlers=[handler])
     assert cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters is None  # type: ignore
 
 
@@ -209,7 +209,7 @@ def test_non_dependency_in_doc_params_if_not_provided() -> None:
     def handler(param: Optional[int]) -> None:
         return None
 
-    app = Litestar(route_handlers=[handler])
+    app = Starlite(route_handlers=[handler])
     param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore
     assert "param" in param_name_set
 
@@ -245,7 +245,7 @@ def test_layered_parameters() -> None:
     )
 
     parameters = _create_parameters(
-        app=Litestar(
+        app=Starlite(
             route_handlers=[router],
             parameters={
                 "app1": Parameter(str, cookie="app4"),

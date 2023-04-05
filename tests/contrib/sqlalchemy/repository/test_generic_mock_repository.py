@@ -6,11 +6,11 @@ from uuid import uuid4
 import pytest
 from sqlalchemy.orm import Mapped
 
-from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
-from litestar.contrib.repository.testing.generic_mock_repository import (
+from starlite.contrib.repository.exceptions import ConflictError, RepositoryError
+from starlite.contrib.repository.testing.generic_mock_repository import (
     GenericMockRepository,
 )
-from litestar.contrib.sqlalchemy import base
+from starlite.contrib.sqlalchemy import base
 from tests.contrib.sqlalchemy.models import Author, Book
 
 

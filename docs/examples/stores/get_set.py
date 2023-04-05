@@ -1,4 +1,4 @@
-from litestar.stores.memory import MemoryStore
+from starlite.stores.memory import MemoryStore
 
 store = MemoryStore()
 

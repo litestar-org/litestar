@@ -4,21 +4,21 @@ from typing import TYPE_CHECKING, Dict
 import pytest
 from structlog.testing import capture_logs
 
-from litestar import Response, get, post
-from litestar.config.compression import CompressionConfig
-from litestar.connection import Request
-from litestar.datastructures import Cookie
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.logging.config import LoggingConfig, StructLoggingConfig
-from litestar.middleware.logging import LoggingMiddlewareConfig
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
-from litestar.testing import create_test_client
+from starlite import Response, get, post
+from starlite.config.compression import CompressionConfig
+from starlite.connection import Request
+from starlite.datastructures import Cookie
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.logging.config import LoggingConfig, StructLoggingConfig
+from starlite.middleware.logging import LoggingMiddlewareConfig
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
 
-    from litestar.middleware.session.server_side import ServerSideSessionConfig
-    from litestar.types.callable_types import GetLogger
+    from starlite.middleware.session.server_side import ServerSideSessionConfig
+    from starlite.types.callable_types import GetLogger
 
 
 @get("/")
@@ -177,11 +177,11 @@ def test_logging_middleware_post_body() -> None:
         assert res.json() == {"foo": "bar"}
 
 
-@pytest.mark.parametrize("logger_name", ("litestar", "other"))
+@pytest.mark.parametrize("logger_name", ("starlite", "other"))
 def test_logging_messages_are_not_doubled(
     get_logger: "GetLogger", logger_name: str, caplog: "LogCaptureFixture"
 ) -> None:
-    # https://github.com/starlite-api/litestar/issues/896
+    # https://github.com/starlite-api/starlite/issues/896
 
     @get("/")
     async def hello_world_handler() -> Dict[str, str]:
@@ -219,7 +219,7 @@ def test_logging_middleware_log_fields(get_logger: "GetLogger", caplog: "LogCapt
 
 
 def test_logging_middleware_with_session_middleware(session_backend_config_memory: "ServerSideSessionConfig") -> None:
-    # https://github.com/starlite-api/litestar/issues/1228
+    # https://github.com/starlite-api/starlite/issues/1228
 
     @post("/")
     async def set_session(request: Request) -> None:

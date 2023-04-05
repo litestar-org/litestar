@@ -8,17 +8,17 @@ from starlette.status import (
     HTTP_401_UNAUTHORIZED,
 )
 
-from litestar import Litestar, Request, delete, get, post
-from litestar.middleware.session.server_side import (
+from starlite import Request, Starlite, delete, get, post
+from starlite.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
-from litestar.security.session_auth import SessionAuth
-from litestar.testing import create_test_client
+from starlite.security.session_auth import SessionAuth
+from starlite.testing import create_test_client
 from tests import User, UserFactory
 
 if TYPE_CHECKING:
-    from litestar.connection import ASGIConnection
+    from starlite.connection import ASGIConnection
 
 user_instance = UserFactory.build()
 
@@ -79,10 +79,10 @@ def test_session_auth_openapi(session_backend_config_memory: "ServerSideSessionC
         retrieve_user_handler=retrieve_user_handler,
         session_backend_config=session_backend_config_memory,
     )
-    app = Litestar(on_app_init=[session_auth.on_app_init])
+    app = Starlite(on_app_init=[session_auth.on_app_init])
     assert app.openapi_schema.to_schema() == {
         "openapi": "3.1.0",
-        "info": {"title": "Litestar API", "version": "1.0.0"},
+        "info": {"title": "Starlite API", "version": "1.0.0"},
         "servers": [{"url": "/"}],
         "paths": {},
         "components": {

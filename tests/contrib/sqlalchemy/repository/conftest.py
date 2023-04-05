@@ -17,7 +17,7 @@ def _patch_bases(monkeypatch: MonkeyPatch) -> None:
     """
     from sqlalchemy.orm import DeclarativeBase
 
-    from litestar.contrib.sqlalchemy import base
+    from starlite.contrib.sqlalchemy import base
 
     class NewBase(base.UUIDPrimaryKey, base.CommonTableAttributes, DeclarativeBase):
         ...

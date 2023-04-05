@@ -3,7 +3,7 @@ from examples.exceptions import (
     override_default_handler,
     per_exception_handlers,
 )
-from litestar.testing import TestClient
+from starlite.testing import TestClient
 
 
 def test_override_default_handler() -> None:

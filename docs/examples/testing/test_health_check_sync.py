@@ -1,8 +1,8 @@
 import pytest
 
-from litestar import Litestar, MediaType, get
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import TestClient
+from starlite import MediaType, Starlite, get
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import TestClient
 
 
 @get(path="/health-check", media_type=MediaType.TEXT)
@@ -10,7 +10,7 @@ def health_check() -> str:
     return "healthy"
 
 
-app = Litestar(route_handlers=[health_check])
+app = Starlite(route_handlers=[health_check])
 
 
 def test_health_check() -> None:

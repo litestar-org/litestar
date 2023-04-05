@@ -2,9 +2,9 @@ Tortoise ORM Plugin
 ===================
 
 To use the :class:`TortoiseORMPlugin <.contrib.tortoise_orm.TortoiseORMPlugin>`
-import it and pass it to the :class:`Litestar <litestar.app.Litestar>` class:
+import it and pass it to the :class:`Starlite <starlite.app.Starlite>` class:
 
-An example of a Litestar app using the Tortoise ORM plugin with computed fields and relations:
+An example of a Starlite app using the Tortoise ORM plugin with computed fields and relations:
 
 .. code-block:: python
 
@@ -13,8 +13,8 @@ An example of a Litestar app using the Tortoise ORM plugin with computed fields 
    from tortoise import Model, Tortoise, fields
    from tortoise.connection import connections
 
-   from litestar import Litestar, get, post
-   from litestar.plugins.tortoise_orm import TortoiseORMPlugin
+   from starlite import Starlite, get, post
+   from starlite.plugins.tortoise_orm import TortoiseORMPlugin
 
 
    class Tournament(Model):
@@ -135,7 +135,7 @@ An example of a Litestar app using the Tortoise ORM plugin with computed fields 
        return data
 
 
-   app = Litestar(
+   app = Starlite(
        route_handlers=[
            get_tournament,
            get_tournaments,

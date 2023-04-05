@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, Dict
 
-from litestar import Request, get
-from litestar.middleware import MiddlewareProtocol
-from litestar.testing import create_test_client
+from starlite import Request, get
+from starlite.middleware import MiddlewareProtocol
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar.types import ASGIApp, Receive, Scope, Send
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 
 class BeforeRequestMiddleWare(MiddlewareProtocol):

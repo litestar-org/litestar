@@ -28,7 +28,7 @@ The type of ``data`` an be any supported type, including
 Validation and customizing OpenAPI documentation
 ------------------------------------------------
 
-With the help of :class:`Body <litestar.params.Body>`, you have fine-grained control over the validation
+With the help of :class:`Body <starlite.params.Body>`, you have fine-grained control over the validation
 of the request body, and can also customize the OpenAPI documentation:
 
 .. literalinclude:: /examples/request_data/request_data_3.py
@@ -39,17 +39,17 @@ of the request body, and can also customize the OpenAPI documentation:
 Specifying a content-type
 -------------------------
 
-By default, Litestar will try to parse the request body as JSON. While this may be desired
+By default, Starlite will try to parse the request body as JSON. While this may be desired
 in most cases, you might want to specify a different type. You can do so by passing a
-:class:`RequestEncodingType <litestar.enums.RequestEncodingType>` to ``Body``. This will also
+:class:`RequestEncodingType <starlite.enums.RequestEncodingType>` to ``Body``. This will also
 help to generate the correct media-type in the OpenAPI schema.
 
 URL Encoded Form Data
 ^^^^^^^^^^^^^^^^^^^^^
 
 To access data sent as `url-encoded form data <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST>`_,
-i.e. ``application/x-www-form-urlencoded`` Content-Type header, use :class:`Body <litestar.params.Body>` and specify
-:class:`RequestEncodingType.URL_ENCODED <litestar.enums.RequestEncodingType>` as the ``media_type``:
+i.e. ``application/x-www-form-urlencoded`` Content-Type header, use :class:`Body <starlite.params.Body>` and specify
+:class:`RequestEncodingType.URL_ENCODED <starlite.enums.RequestEncodingType>` as the ``media_type``:
 
 .. literalinclude:: /examples/request_data/request_data_4.py
     :language: python
@@ -65,7 +65,7 @@ MultiPart Form Data
 
 You can access data uploaded using a request with a
 `multipart/form-data <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST>`_
-Content-Type header by specifying it in the :class:`Body <litestar.params.Body>` function:
+Content-Type header by specifying it in the :class:`Body <starlite.params.Body>` function:
 
 .. literalinclude:: /examples/request_data/request_data_5.py
     :language: python
@@ -75,7 +75,7 @@ Content-Type header by specifying it in the :class:`Body <litestar.params.Body>`
 File uploads
 ------------
 
-In case of files uploaded, Litestar transforms the results into an instance
+In case of files uploaded, Starlite transforms the results into an instance
 of :class:`UploadFile <.datastructures.upload_file.UploadFile>` class, which offer a convenient
 interface for working with files. Therefore, you need to type your file uploads accordingly.
 

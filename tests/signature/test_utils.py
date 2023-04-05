@@ -6,8 +6,8 @@ import attrs
 import pytest
 from pydantic import BaseModel
 
-from litestar._signature.utils import _any_attrs_annotation, _any_pydantic_annotation
-from litestar.types.parsed_signature import ParsedSignature
+from starlite._signature.utils import _any_attrs_annotation, _any_pydantic_annotation
+from starlite.types.parsed_signature import ParsedSignature
 
 
 @attrs.define

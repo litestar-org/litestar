@@ -6,7 +6,7 @@ from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
 from sphinx.util.docutils import SphinxDirective
 
-_GH_BASE_URL = "https://github.com/starlite-api/litestar"
+_GH_BASE_URL = "https://github.com/starlite-api/starlite"
 
 
 def _parse_gh_reference(raw: str, type_: Literal["issues", "pull"]) -> list[str]:

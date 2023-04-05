@@ -1,7 +1,7 @@
 from examples.parameters.path_parameters_1 import app
 from examples.parameters.path_parameters_2 import app as app_2
 from examples.parameters.path_parameters_3 import app as app_3
-from litestar.testing import TestClient
+from starlite.testing import TestClient
 
 
 def test_path_parameters_1() -> None:

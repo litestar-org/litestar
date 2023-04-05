@@ -1,5 +1,5 @@
-from litestar import Controller, Litestar, MediaType, Router, get
-from litestar.datastructures import Cookie
+from starlite import Controller, MediaType, Router, Starlite, get
+from starlite.datastructures import Cookie
 
 
 class MyController(Controller):
@@ -33,7 +33,7 @@ router = Router(
     response_cookies=[Cookie(key="router-cookie", value="router value", description="router level cookie")],
 )
 
-app = Litestar(
+app = Starlite(
     route_handlers=[router],
     response_cookies=[Cookie(key="app-cookie", value="app value", description="app level cookie")],
 )

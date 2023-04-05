@@ -3,23 +3,23 @@ from typing import TYPE_CHECKING, Any, Dict
 import pytest
 from pydantic import BaseModel
 
-from litestar import Litestar, get, websocket
-from litestar.connection import Request, WebSocket
-from litestar.exceptions import PermissionDeniedException, WebSocketDisconnect
-from litestar.middleware.authentication import (
+from starlite import Starlite, get, websocket
+from starlite.connection import Request, WebSocket
+from starlite.exceptions import PermissionDeniedException, WebSocketDisconnect
+from starlite.middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
 )
-from litestar.middleware.base import DefineMiddleware
-from litestar.status_codes import (
+from starlite.middleware.base import DefineMiddleware
+from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_403_FORBIDDEN,
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
-from litestar.testing import create_test_client
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar.connection import ASGIConnection
+    from starlite.connection import ASGIConnection
 
 
 async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
@@ -92,7 +92,7 @@ async def websocket_route_handler(socket: WebSocket[User, Auth, Any]) -> None:
     await socket.accept()
     assert isinstance(socket.user, User)
     assert isinstance(socket.auth, Auth)
-    assert isinstance(socket.app, Litestar)
+    assert isinstance(socket.app, Starlite)
     await socket.send_json({"data": "123"})
     await socket.close()
 

@@ -2,10 +2,10 @@ from typing import Optional
 
 import pytest
 
-from litestar import Controller, Request, Response, Router, get
-from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.testing import create_test_client
-from litestar.types import BeforeRequestHookHandler
+from starlite import Controller, Request, Response, Router, get
+from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.testing import create_test_client
+from starlite.types import BeforeRequestHookHandler
 
 
 def greet() -> dict:

@@ -1,9 +1,9 @@
 from typing import List
 
-from litestar import get
-from litestar.background_tasks import BackgroundTask, BackgroundTasks
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
+from starlite import get
+from starlite.background_tasks import BackgroundTask, BackgroundTasks
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 
 
 async def test_background_tasks_regular_execution() -> None:

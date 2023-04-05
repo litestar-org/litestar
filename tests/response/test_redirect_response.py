@@ -7,14 +7,14 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import Response
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response import RedirectResponse
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import TestClient
+from starlite import Response
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.response import RedirectResponse
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import TestClient
 
 if TYPE_CHECKING:
-    from litestar.types import Receive, Scope, Send
+    from starlite.types import Receive, Scope, Send
 
 
 def test_redirect_response() -> None:

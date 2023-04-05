@@ -1,13 +1,13 @@
 Dependency Injection
 ====================
 
-Litestar has a simple but powerful dependency injection system that allows for declaring dependencies on all layers of
+Starlite has a simple but powerful dependency injection system that allows for declaring dependencies on all layers of
 the application:
 
 .. code-block:: python
 
-   from litestar import Controller, Router, Litestar, get
-   from litestar.di import Provide
+   from starlite import Controller, Router, Starlite, get
+   from starlite.di import Provide
 
 
    def bool_fn() -> bool:
@@ -52,7 +52,7 @@ the application:
    )
 
    # on the app
-   app = Litestar(
+   app = Starlite(
        route_handlers=[my_router], dependencies={"app_dependency": Provide(bool_fn)}
    )
 
@@ -107,7 +107,7 @@ returned:
 
 .. code-block:: python
 
-   from litestar.testing import TestClient
+   from starlite.testing import TestClient
    from dependencies import app, CONNECTION
 
    with TestClient(app=app) as client:
@@ -129,7 +129,7 @@ and committing otherwise.
 
 .. code-block:: python
 
-   from litestar.testing import TestClient
+   from starlite.testing import TestClient
    from dependencies import STATE, app
 
    with TestClient(app=app) as client:
@@ -177,9 +177,9 @@ can :ref:`inject into route handlers <usage/route-handlers:handler function kwar
 
 .. code-block:: python
 
-   from litestar import Controller, patch
-   from litestar.di import Provide
-   from litestar.partial import Partial
+   from starlite import Controller, patch
+   from starlite.di import Provide
+   from starlite.partial import Partial
    from pydantic import BaseModel, UUID4
 
 
@@ -216,8 +216,8 @@ very simple:
 
 .. code-block:: python
 
-   from litestar import Controller, get
-   from litestar.di import Provide
+   from starlite import Controller, get
+   from starlite.di import Provide
 
 
    def bool_fn() -> bool:
@@ -254,8 +254,8 @@ it in ``Provide``:
 .. code-block:: python
 
    from random import randint
-   from litestar import get
-   from litestar.di import Provide
+   from starlite import get
+   from starlite.di import Provide
 
 
    def my_dependency() -> int:
@@ -290,8 +290,8 @@ You can inject dependencies into other dependencies - exactly like you would int
 
 .. code-block:: python
 
-   from litestar import Litestar, get
-   from litestar.di import Provide
+   from starlite import Starlite, get
+   from starlite.di import Provide
    from random import randint
 
 
@@ -308,7 +308,7 @@ You can inject dependencies into other dependencies - exactly like you would int
        return "its true!" if injected_bool else "nope, its false..."
 
 
-   app = Litestar(
+   app = Starlite(
        route_handlers=[true_or_false_handler],
        dependencies={
            "injected_integer": Provide(first_dependency),
@@ -327,7 +327,7 @@ The Dependency Function
 Dependency validation
 ~~~~~~~~~~~~~~~~~~~~~
 
-By default, injected dependency values are validated by Litestar, for example, this application will raise an
+By default, injected dependency values are validated by Starlite, for example, this application will raise an
 internal server error:
 
 .. literalinclude:: /examples/dependency_injection/dependency_validation_error.py
@@ -335,7 +335,7 @@ internal server error:
     :language: python
 
 
-Dependency validation can be toggled using the :class:`Dependency <litestar.params.Dependency>` function.
+Dependency validation can be toggled using the :class:`Dependency <starlite.params.Dependency>` function.
 
 .. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
     :caption: Dependency validation error
@@ -347,7 +347,7 @@ This may be useful for reasons of efficiency, or if pydantic cannot validate a c
 Dependency function as a marker
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :class:`Dependency <litestar.params.Dependency>` function can also be used as a marker that gives us a bit more detail
+The :class:`Dependency <starlite.params.Dependency>` function can also be used as a marker that gives us a bit more detail
 about your application.
 
 Exclude dependencies with default values from OpenAPI docs
@@ -366,7 +366,7 @@ This doesn't fail, but due to the way the application determines parameter types
 parameter.
 
 
-By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:
+By declaring the parameter to be a dependency, Starlite knows to exclude it from the docs:
 
 .. literalinclude:: /examples/dependency_injection/dependency_default_value_with_dependency_fn.py
     :caption: Dependency with default value

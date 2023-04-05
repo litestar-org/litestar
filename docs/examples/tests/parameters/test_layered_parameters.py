@@ -3,7 +3,7 @@ from typing import Any, Dict
 import pytest
 
 from examples.parameters.layered_parameters import app
-from litestar.testing import TestClient
+from starlite.testing import TestClient
 
 
 @pytest.mark.parametrize(

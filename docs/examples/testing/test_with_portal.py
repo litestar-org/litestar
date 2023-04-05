@@ -2,7 +2,7 @@ from concurrent.futures import Future, wait
 
 import anyio
 
-from litestar.testing import create_test_client
+from starlite.testing import create_test_client
 
 
 def test_with_portal() -> None:

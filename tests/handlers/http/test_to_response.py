@@ -9,27 +9,27 @@ import pytest
 from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.responses import Response as StarletteResponse
 
-from litestar import HttpMethod, Litestar, MediaType, Request, Response, get, route
-from litestar._signature import create_signature_model
-from litestar.background_tasks import BackgroundTask
-from litestar.datastructures import Cookie, ResponseHeader
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.response import (
+from starlite import HttpMethod, MediaType, Request, Response, Starlite, get, route
+from starlite._signature import create_signature_model
+from starlite.background_tasks import BackgroundTask
+from starlite.datastructures import Cookie, ResponseHeader
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.response import (
     FileResponse,
     RedirectResponse,
     StreamingResponse,
     TemplateResponse,
 )
-from litestar.response_containers import File, Redirect, Stream, Template
-from litestar.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
-from litestar.testing import RequestFactory, create_test_client
-from litestar.types.parsed_signature import ParsedSignature
+from starlite.response_containers import File, Redirect, Stream, Template
+from starlite.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
+from starlite.testing import RequestFactory, create_test_client
+from starlite.types.parsed_signature import ParsedSignature
 from tests import Person, PersonFactory
 
 if TYPE_CHECKING:
     from typing import AsyncGenerator
 
-    from litestar.routes import HTTPRoute
+    from starlite.routes import HTTPRoute
 
 
 def my_generator() -> Generator[str, None, None]:
@@ -102,13 +102,13 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
     response = await test_function.to_response(
         data=test_function.fn.value(data=person_instance),
         plugins=[],
-        app=Litestar(route_handlers=[]),
+        app=Starlite(route_handlers=[]),
         request=RequestFactory().get(),
     )
     assert loads(response.body) == person_instance.dict()  # type: ignore
 
 
-async def test_to_response_returning_litestar_response() -> None:
+async def test_to_response_returning_starlite_response() -> None:
     @get(path="/test")
     def test_function() -> Response:
         return Response(media_type=MediaType.TEXT, content="ok")

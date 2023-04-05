@@ -1,7 +1,7 @@
 from typing import List
 
-from litestar import Controller, Router, WebSocket, websocket
-from litestar.testing import create_test_client
+from starlite import Controller, Router, WebSocket, websocket
+from starlite.testing import create_test_client
 
 
 def test_handle_websocket() -> None:

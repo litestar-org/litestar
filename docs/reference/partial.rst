@@ -2,5 +2,5 @@ partial
 =======
 
 
-.. automodule:: litestar.partial
+.. automodule:: starlite.partial
     :members:

@@ -1,6 +1,6 @@
 from typing import Dict
 
-from litestar import Litestar, get
+from starlite import Starlite, get
 
 
 @get("/")
@@ -9,6 +9,6 @@ def hello_world() -> Dict[str, str]:
     return {"hello": "world"}
 
 
-app = Litestar(route_handlers=[hello_world])
+app = Starlite(route_handlers=[hello_world])
 
 # run: /

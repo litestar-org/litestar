@@ -20,7 +20,7 @@ from auto_pytabs.sphinx_ext import CodeBlockOverride, LiteralIncludeOverride
 from docutils.nodes import Node, admonition, literal_block, title
 from sphinx.addnodes import highlightlang
 
-from litestar import Litestar
+from starlite import Starlite
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -34,19 +34,19 @@ AVAILABLE_PORTS = list(range(9000, 9999))
 logger = logging.getLogger("sphinx")
 
 
-def _load_app_from_path(path: Path) -> Litestar:
+def _load_app_from_path(path: Path) -> Starlite:
     module = importlib.import_module(str(path.with_suffix("")).replace("/", "."))
     for obj in module.__dict__.values():
-        if isinstance(obj, Litestar):
+        if isinstance(obj, Starlite):
             return obj
-    raise RuntimeError(f"No Litestar app found in {path}")
+    raise RuntimeError(f"No Starlite app found in {path}")
 
 
 @contextmanager
 def run_app(path: Path) -> Generator[int, None, None]:
     """Run an example app from a python file.
 
-    The first ``Litestar`` instance found in the file will be used as target to run.
+    The first ``Starlite`` instance found in the file will be used as target to run.
     """
     while AVAILABLE_PORTS:
         port = AVAILABLE_PORTS.pop()

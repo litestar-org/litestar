@@ -4,13 +4,13 @@ from typing import TYPE_CHECKING, List, Mapping, Optional
 
 import pytest
 
-from litestar import get, route
-from litestar.config.cors import CORSConfig
-from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
-from litestar.testing import create_test_client
+from starlite import get, route
+from starlite.config.cors import CORSConfig
+from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar.types import Method
+    from starlite.types import Method
 
 
 @pytest.mark.parametrize(

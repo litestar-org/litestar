@@ -1,11 +1,11 @@
-from litestar import Litestar, get
+from starlite import Starlite, get
 
 
 def test_registering_route_handler_generates_openapi_docs() -> None:
     def fn() -> None:
         return
 
-    app = Litestar(route_handlers=[])
+    app = Starlite(route_handlers=[])
     assert app.openapi_schema
 
     app.register(get("/path1")(fn))

@@ -8,7 +8,7 @@ the connection is allowed to reach the endpoint handler in question. If verifica
 HTTPException, usually a :class:`NotAuthorizedException <.exceptions.NotAuthorizedException>` with a ``status_code``
 of 401.
 
-To illustrate this we will implement a rudimentary role based authorization system in our Litestar app. As we have done
+To illustrate this we will implement a rudimentary role based authorization system in our Starlite app. As we have done
 for ``authentication``, we will assume that we added some sort of persistence layer without actually
 specifying it in the example.
 
@@ -53,10 +53,10 @@ allows admin users to access certain route handlers and then add it to a route h
    from enum import Enum
 
    from pydantic import BaseModel, UUID4
-   from litestar import post
-   from litestar.connection import ASGIConnection
-   from litestar.exceptions import NotAuthorizedException
-   from litestar.handlers.base import BaseRouteHandler
+   from starlite import post
+   from starlite.connection import ASGIConnection
+   from starlite.exceptions import NotAuthorizedException
+   from starlite.handlers.base import BaseRouteHandler
 
 
    class UserRole(str, Enum):
@@ -88,14 +88,14 @@ Thus, only an admin user would be able to send a post request to the ``create_us
 Guard scopes
 ------------
 
-Guards can be declared on all levels of the app - the Litestar instance, routers, controllers and individual route
+Guards can be declared on all levels of the app - the Starlite instance, routers, controllers and individual route
 handlers:
 
 .. code-block:: python
 
-   from litestar import Controller, Router, Litestar
-   from litestar.connection import ASGIConnection
-   from litestar.handlers.base import BaseRouteHandler
+   from starlite import Controller, Router, Starlite
+   from starlite.connection import ASGIConnection
+   from starlite.handlers.base import BaseRouteHandler
 
 
    def my_guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None:
@@ -114,7 +114,7 @@ handlers:
    admin_router = Router(path="admin", route_handlers=[UserController], guards=[my_guard])
 
    # app
-   app = Litestar(route_handlers=[admin_router], guards=[my_guard])
+   app = Starlite(route_handlers=[admin_router], guards=[my_guard])
 
 The deciding factor on where to place a guard is on the kind of access restriction that are required: do only specific
 route handlers need to be restricted? An entire controller? All the paths under a specific router? Or the entire app?
@@ -134,10 +134,10 @@ the following guard:
 
 .. code-block:: python
 
-   from litestar import get
-   from litestar.exceptions import NotAuthorizedException
-   from litestar.connection import ASGIConnection
-   from litestar.handlers.base import BaseRouteHandler
+   from starlite import get
+   from starlite.exceptions import NotAuthorizedException
+   from starlite.connection import ASGIConnection
+   from starlite.handlers.base import BaseRouteHandler
    from os import environ
 
 

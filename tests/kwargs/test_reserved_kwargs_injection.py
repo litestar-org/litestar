@@ -4,28 +4,28 @@ import pytest
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, Field
 
-from litestar import (
+from starlite import (
     Controller,
     HttpMethod,
-    Litestar,
     MediaType,
     Request,
+    Starlite,
     delete,
     get,
     patch,
     post,
     put,
 )
-from litestar.datastructures.state import ImmutableState, State
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.status_codes import (
+from starlite.datastructures.state import ImmutableState, State
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
 )
-from litestar.testing import create_test_client
-from litestar.types import Scope
+from starlite.testing import create_test_client
+from starlite.types import Scope
 from tests import Person, PersonFactory
 
 
@@ -312,4 +312,4 @@ def test_improper_use_of_state_kwarg() -> None:
             return None
 
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[MyController], openapi_config=None)
+        Starlite(route_handlers=[MyController], openapi_config=None)

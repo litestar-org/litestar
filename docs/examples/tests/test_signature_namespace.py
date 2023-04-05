@@ -1,5 +1,5 @@
 from examples.signature_namespace.app import app
-from litestar.testing import TestClient
+from starlite.testing import TestClient
 
 
 def test_msgpack_app() -> None:

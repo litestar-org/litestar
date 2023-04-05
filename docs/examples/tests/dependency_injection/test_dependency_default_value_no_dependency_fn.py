@@ -1,6 +1,6 @@
 from examples.dependency_injection import dependency_default_value_no_dependency_fn
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import TestClient
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import TestClient
 
 
 def test_optional_dependency_in_openapi_schema() -> None:

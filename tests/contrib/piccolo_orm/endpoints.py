@@ -2,7 +2,7 @@ from typing import List, cast
 
 from piccolo.testing import ModelBuilder
 
-from litestar import get, post
+from starlite import get, post
 from tests.contrib.piccolo_orm.tables import Concert, RecordingStudio, Venue
 
 studio = cast("RecordingStudio", ModelBuilder.build_sync(RecordingStudio, persist=False))

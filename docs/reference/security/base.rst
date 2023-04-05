@@ -1,5 +1,5 @@
 base
 ====
 
-.. autoclass:: litestar.security.base.AbstractSecurityConfig
+.. autoclass:: starlite.security.base.AbstractSecurityConfig
     :members:

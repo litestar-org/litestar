@@ -8,12 +8,12 @@ from typing import TYPE_CHECKING, AsyncIterator, Iterator
 
 import anyio
 
-from litestar.background_tasks import BackgroundTask
-from litestar.response import StreamingResponse
-from litestar.testing import TestClient
+from starlite.background_tasks import BackgroundTask
+from starlite.response import StreamingResponse
+from starlite.testing import TestClient
 
 if TYPE_CHECKING:
-    from litestar.types import Message, Receive, Scope, Send
+    from starlite.types import Message, Receive, Scope, Send
 
 
 def test_streaming_response_unknown_size() -> None:

@@ -1,10 +1,10 @@
 import random
 import time
 
-from litestar import Controller, Litestar, get
-from litestar.datastructures import ETag
-from litestar.enums import MediaType
-from litestar.response import Response
+from starlite import Controller, Starlite, get
+from starlite.datastructures import ETag
+from starlite.enums import MediaType
+from starlite.response import Response
 
 
 class MyController(Controller):
@@ -51,4 +51,4 @@ def get_population_count_dynamic() -> Response[str]:
     )
 
 
-app = Litestar(route_handlers=[MyController, get_population_count], etag=ETag(value="bar"))
+app = Starlite(route_handlers=[MyController, get_population_count], etag=ETag(value="bar"))

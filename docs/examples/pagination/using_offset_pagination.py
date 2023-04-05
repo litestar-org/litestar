@@ -4,8 +4,8 @@ from typing import List
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel
 
-from litestar import Litestar, get
-from litestar.pagination import AbstractSyncOffsetPaginator, OffsetPagination
+from starlite import Starlite, get
+from starlite.pagination import AbstractSyncOffsetPaginator, OffsetPagination
 
 
 class Person(BaseModel):
@@ -42,4 +42,4 @@ def people_handler(limit: int, offset: int) -> OffsetPagination[Person]:
     return paginator(limit=limit, offset=offset)
 
 
-app = Litestar(route_handlers=[people_handler])
+app = Starlite(route_handlers=[people_handler])

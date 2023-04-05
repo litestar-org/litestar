@@ -2,11 +2,11 @@ from typing import Optional
 
 import pytest
 
-from litestar import Controller, Response, Router, get
-from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
-from litestar.types import AfterRequestHookHandler
+from starlite import Controller, Response, Router, get
+from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
+from starlite.types import AfterRequestHookHandler
 
 
 def greet() -> dict:

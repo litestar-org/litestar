@@ -1,5 +1,5 @@
 router
 ======
 
-.. automodule:: litestar.router
+.. automodule:: starlite.router
    :members: Router

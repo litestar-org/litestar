@@ -2,7 +2,7 @@ from typing import List, cast
 
 from tortoise import Model, Tortoise, fields  # type: ignore
 
-from litestar.handlers.http_handlers import get, post
+from starlite.handlers.http_handlers import get, post
 
 
 class Tournament(Model):

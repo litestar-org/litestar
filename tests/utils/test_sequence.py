@@ -1,4 +1,4 @@
-from litestar.utils.sequence import find_index, unique
+from starlite.utils.sequence import find_index, unique
 
 
 def test_find_index() -> None:

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 if TYPE_CHECKING:
-    from litestar.middleware.session.client_side import ClientSideSessionBackend
+    from starlite.middleware.session.client_side import ClientSideSessionBackend
 
 
 @pytest.fixture()

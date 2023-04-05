@@ -3,10 +3,10 @@ from typing import Any, Iterable, List, Tuple
 
 import pytest
 
-from litestar import get
-from litestar.dto import DTOFactory
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import create_test_client
+from starlite import get
+from starlite.dto import DTOFactory
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
 factory = DTOFactory()

@@ -7,12 +7,12 @@ from piccolo.apps.user.tables import BaseUser
 from piccolo_admin.endpoints import create_admin  # pyright: ignore
 from piccolo_api.session_auth.tables import SessionsBase
 
-from litestar import Litestar, asgi, delete, get, patch, post
-from litestar.contrib.piccolo_orm import PiccoloORMPlugin
-from litestar.exceptions import NotFoundException
+from starlite import Starlite, asgi, delete, get, patch, post
+from starlite.contrib.piccolo_orm import PiccoloORMPlugin
+from starlite.exceptions import NotFoundException
 
 if TYPE_CHECKING:
-    from litestar.types import Receive, Scope, Send
+    from starlite.types import Receive, Scope, Send
 
 
 @asgi("/admin/", is_mount=True)
@@ -71,7 +71,7 @@ async def main():
         await user.save()
 
 
-app = Litestar(
+app = Starlite(
     route_handlers=[
         admin,
         tasks,

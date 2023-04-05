@@ -1,8 +1,8 @@
 import pytest
 
-from litestar import MediaType, get
-from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.testing import create_test_client
+from starlite import MediaType, get
+from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.testing import create_test_client
 
 
 def sync_handler() -> str:

@@ -1,5 +1,5 @@
 registry
 ========
 
-.. automodule:: litestar.stores.registry
+.. automodule:: starlite.stores.registry
     :members: StoreRegistry

@@ -2,12 +2,12 @@ Piccolo ORM Plugin
 ==================
 
 To use the :class:`PiccoloORMPlugin <.contrib.piccolo_orm.PiccoloORMPlugin>` import it and pass it to the
-:class:`Litestar <litestar.app.Litestar>` class:
+:class:`Starlite <starlite.app.Starlite>` class:
 
 .. code-block:: python
 
-   from litestar import Litestar, post, get
-   from litestar.plugins.piccolo_orm import PiccoloORMPlugin
+   from starlite import Starlite, post, get
+   from starlite.plugins.piccolo_orm import PiccoloORMPlugin
 
    from piccolo.columns.column_types import (
        JSON,
@@ -62,7 +62,7 @@ To use the :class:`PiccoloORMPlugin <.contrib.piccolo_orm.PiccoloORMPlugin>` imp
        return await Venue.select()
 
 
-   app = Litestar(
+   app = Starlite(
        route_handlers=[create_concert, retrieve_studio, retrieve_venues],
        plugins=[PiccoloORMPlugin()],
    )

@@ -2,16 +2,16 @@ from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
-from litestar import get
-from litestar.config.allowed_hosts import AllowedHostsConfig
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.middleware import MiddlewareProtocol
-from litestar.middleware.allowed_hosts import AllowedHostsMiddleware
-from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from litestar.testing import create_test_client
+from starlite import get
+from starlite.config.allowed_hosts import AllowedHostsConfig
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.middleware import MiddlewareProtocol
+from starlite.middleware.allowed_hosts import AllowedHostsMiddleware
+from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar.types import Receive, Scope, Send
+    from starlite.types import Receive, Scope, Send
 
 
 class DummyApp(MiddlewareProtocol):  # pyright: ignore

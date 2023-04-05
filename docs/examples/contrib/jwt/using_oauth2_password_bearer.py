@@ -4,10 +4,10 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
 
-from litestar import Litestar, Request, Response, get, post
-from litestar.connection import ASGIConnection
-from litestar.contrib.jwt import OAuth2Login, OAuth2PasswordBearerAuth, Token
-from litestar.openapi.config import OpenAPIConfig
+from starlite import Request, Response, Starlite, get, post
+from starlite.connection import ASGIConnection
+from starlite.contrib.jwt import OAuth2Login, OAuth2PasswordBearerAuth, Token
+from starlite.openapi.config import OpenAPIConfig
 
 
 # Let's assume we have a User model that is a pydantic model.
@@ -75,7 +75,7 @@ async def login_custom_response_handler(data: "User") -> "Response[User]":
 def some_route_handler(request: "Request[User, Token, Any]") -> Any:
     # request.user is set to the instance of user returned by the middleware
     assert isinstance(request.user, User)
-    # request.auth is the instance of 'litestar_jwt.Token' created from the data encoded in the auth header
+    # request.auth is the instance of 'starlite_jwt.Token' created from the data encoded in the auth header
     assert isinstance(request.auth, Token)
     # do stuff ...
 
@@ -88,7 +88,7 @@ openapi_config = OpenAPIConfig(
 
 # We initialize the app instance and pass the oauth2_auth 'on_app_init' handler to the constructor.
 # The hook handler will inject the JWT middleware and openapi configuration into the app.
-app = Litestar(
+app = Starlite(
     route_handlers=[login_handler, some_route_handler],
     on_app_init=[oauth2_auth.on_app_init],
     openapi_config=openapi_config,

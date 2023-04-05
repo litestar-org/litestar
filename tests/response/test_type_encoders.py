@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING, Any, Tuple
 
-from litestar import Controller, HttpMethod, Litestar, Response, Router, get
-from litestar.testing import create_test_client
+from starlite import Controller, HttpMethod, Response, Router, Starlite, get
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar.types import Serializer
+    from starlite.types import Serializer
 
 
 def create_mock_encoder(name: str) -> Tuple[type, "Serializer"]:
@@ -31,7 +31,7 @@ class MyController(Controller):
 
 
 router = Router("/router", type_encoders={router_type: router_encoder}, route_handlers=[MyController])
-app = Litestar([router], type_encoders={app_type: app_encoder})
+app = Starlite([router], type_encoders={app_type: app_encoder})
 
 
 def test_resolve_type_encoders() -> None:

@@ -6,18 +6,18 @@ from unittest.mock import MagicMock, patch
 import pytest
 from sqlalchemy import create_engine
 
-from litestar.constants import SCOPE_STATE_NAMESPACE
-from litestar.contrib.sqlalchemy.init_plugin.config import SQLAlchemyAsyncConfig, SQLAlchemySyncConfig
-from litestar.contrib.sqlalchemy.init_plugin.config.common import SESSION_SCOPE_KEY
-from litestar.datastructures import State
-from litestar.exceptions import ImproperlyConfiguredException
+from starlite.constants import SCOPE_STATE_NAMESPACE
+from starlite.contrib.sqlalchemy.init_plugin.config import SQLAlchemyAsyncConfig, SQLAlchemySyncConfig
+from starlite.contrib.sqlalchemy.init_plugin.config.common import SESSION_SCOPE_KEY
+from starlite.datastructures import State
+from starlite.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
     from typing import Any
 
     from pytest import MonkeyPatch
 
-    from litestar.types import Scope
+    from starlite.types import Scope
 
 
 @pytest.fixture(name="config_cls", params=[SQLAlchemySyncConfig, SQLAlchemyAsyncConfig])
@@ -131,10 +131,10 @@ def test_create_session_instance_if_session_already_in_scope_state(
 ) -> None:
     """Test provide_session if session already in scope state."""
     with patch(
-        "litestar.contrib.sqlalchemy.init_plugin.config.common.get_litestar_scope_state"
-    ) as get_litestar_scope_state_mock:
+        "starlite.contrib.sqlalchemy.init_plugin.config.common.get_starlite_scope_state"
+    ) as get_starlite_scope_state_mock:
         session_mock = MagicMock()
-        get_litestar_scope_state_mock.return_value = session_mock
+        get_starlite_scope_state_mock.return_value = session_mock
         config = config_cls()
         assert config.provide_session(State(), {}) is session_mock  # type:ignore[arg-type]
 
@@ -144,9 +144,9 @@ def test_create_session_instance_if_session_not_in_scope_state(
 ) -> None:
     """Test provide_session if session not in scope state."""
     with patch(
-        "litestar.contrib.sqlalchemy.init_plugin.config.common.get_litestar_scope_state"
-    ) as get_litestar_scope_state_mock:
-        get_litestar_scope_state_mock.return_value = None
+        "starlite.contrib.sqlalchemy.init_plugin.config.common.get_starlite_scope_state"
+    ) as get_starlite_scope_state_mock:
+        get_starlite_scope_state_mock.return_value = None
         config = config_cls()
         state = State()
         state[config.session_maker_app_state_key] = MagicMock()

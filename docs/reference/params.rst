@@ -1,5 +1,5 @@
 params
 ======
 
-.. automodule:: litestar.params
+.. automodule:: starlite.params
     :members:

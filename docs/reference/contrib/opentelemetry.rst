@@ -1,7 +1,7 @@
 opentelemetry
 =============
 
-.. automodule:: litestar.contrib.opentelemetry
+.. automodule:: starlite.contrib.opentelemetry
     :members:
 
-.. autoclass:: litestar.contrib.opentelemetry.config.OpenTelemetryHookHandler
+.. autoclass:: starlite.contrib.opentelemetry.config.OpenTelemetryHookHandler

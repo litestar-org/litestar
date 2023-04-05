@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from litestar import Litestar
-from litestar.middleware.session.server_side import ServerSideSessionConfig
-from litestar.stores.file import FileStore
+from starlite import Starlite
+from starlite.middleware.session.server_side import ServerSideSessionConfig
+from starlite.stores.file import FileStore
 
-app = Litestar(
+app = Starlite(
     middleware=[ServerSideSessionConfig().middleware],
     stores={"sessions": FileStore(path=Path("session_data"))},
 )

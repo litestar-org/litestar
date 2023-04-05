@@ -2,10 +2,10 @@ from typing import List
 
 import pytest
 
-from litestar import Controller, Router, get
-from litestar.params import Parameter
-from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from litestar.testing import create_test_client
+from starlite import Controller, Router, get
+from starlite.params import Parameter
+from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite.testing import create_test_client
 
 
 def test_layered_parameters_injected_correctly() -> None:

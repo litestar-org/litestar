@@ -51,9 +51,9 @@ def load_version_spec() -> VersionSpec:
 
 def build(output_dir: str, version: str | None) -> None:
     if version is None:
-        version = importlib.metadata.version("litestar").rsplit(".")[0]
+        version = importlib.metadata.version("starlite").rsplit(".")[0]
     else:
-        os.environ["_LITESTAR_DOCS_BUILD_VERSION"] = version
+        os.environ["_STARLITE_DOCS_BUILD_VERSION"] = version
 
     subprocess.run(["make", "docs"], check=True)
 

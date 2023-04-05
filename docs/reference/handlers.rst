@@ -1,5 +1,5 @@
 handlers
 ========
 
-.. automodule:: litestar.handlers
+.. automodule:: starlite.handlers
     :members:

@@ -4,13 +4,13 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from pydantic import BaseModel, Field
 
-from litestar import Litestar, get
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.spec import Components, Example, OpenAPIHeader, OpenAPIType, Schema
+from starlite import Starlite, get
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.openapi.config import OpenAPIConfig
+from starlite.openapi.spec import Components, Example, OpenAPIHeader, OpenAPIType, Schema
 
 if TYPE_CHECKING:
-    from litestar.handlers.http_handlers import HTTPRouteHandler
+    from starlite.handlers.http_handlers import HTTPRouteHandler
 
 
 @pytest.mark.skipif(version_info < (3, 10), reason="pydantic serialization differences in lower python versions")
@@ -55,7 +55,7 @@ def test_by_alias() -> None:
     def handler() -> ModelWithAlias:
         return ModelWithAlias(second="abc")
 
-    app = Litestar(route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0"))
+    app = Starlite(route_handlers=[handler], openapi_config=OpenAPIConfig(title="my title", version="1.0.0"))
 
     assert app.openapi_schema
     assert app.openapi_schema.to_schema()["components"]["schemas"]["ModelWithAlias"] == {
@@ -78,7 +78,7 @@ def test_allows_customization_of_operation_id_creator() -> None:
     def handler_2() -> None:
         return
 
-    app = Litestar(
+    app = Starlite(
         route_handlers=[handler_1, handler_2],
         openapi_config=OpenAPIConfig(title="my title", version="1.0.0", operation_id_creator=operation_id_creator),
     )
@@ -105,4 +105,4 @@ def test_allows_customization_of_operation_id_creator() -> None:
 
 def test_raises_exception_when_no_config_in_place() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[], openapi_config=None).update_openapi_schema()
+        Starlite(route_handlers=[], openapi_config=None).update_openapi_schema()

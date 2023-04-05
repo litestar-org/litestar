@@ -1,6 +1,6 @@
-from litestar import Litestar, MediaType, Request, Response, get
-from litestar.exceptions import HTTPException, ValidationException
-from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
+from starlite import MediaType, Request, Response, Starlite, get
+from starlite.exceptions import HTTPException, ValidationException
+from starlite.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 
 def validation_exception_handler(request: Request, exc: ValidationException) -> Response:
@@ -42,7 +42,7 @@ async def value_error() -> None:
     raise ValueError("this is wrong")
 
 
-app = Litestar(
+app = Starlite(
     route_handlers=[validation_error, server_error, value_error],
     exception_handlers={
         ValidationException: validation_exception_handler,

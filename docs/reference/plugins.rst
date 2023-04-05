@@ -2,5 +2,5 @@ plugins
 =======
 
 
-.. automodule:: litestar.plugins
+.. automodule:: starlite.plugins
     :members:

@@ -4,7 +4,7 @@ Usage
 .. toctree::
     :titlesonly:
 
-    the-litestar-app
+    the-starlite-app
     routing
     route-handlers
     parameters

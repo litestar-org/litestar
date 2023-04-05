@@ -7,11 +7,11 @@ from uuid import UUID, uuid1, uuid4
 import pytest
 from pydantic import UUID4
 
-from litestar import Litestar, MediaType, get, post
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import Parameter
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
-from litestar.testing import create_test_client
+from starlite import MediaType, Starlite, get, post
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.params import Parameter
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from starlite.testing import create_test_client
 
 
 @pytest.mark.parametrize(
@@ -109,7 +109,7 @@ def test_path_param_validation(path: str) -> None:
         raise AssertionError("should not be called")
 
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[test_method])
+        Starlite(route_handlers=[test_method])
 
 
 def test_duplicate_path_param_validation() -> None:
@@ -118,7 +118,7 @@ def test_duplicate_path_param_validation() -> None:
         raise AssertionError("should not be called")
 
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[test_method])
+        Starlite(route_handlers=[test_method])
 
 
 @pytest.mark.parametrize(

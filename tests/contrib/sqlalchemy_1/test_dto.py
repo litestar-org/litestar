@@ -4,13 +4,13 @@ from sqlalchemy import Column, Integer, String, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, declarative_base
 
-from litestar import get, post
-from litestar.contrib.sqlalchemy_1.config import SQLAlchemyConfig
-from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from litestar.dto import DTOFactory
-from litestar.exceptions import HTTPException
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
-from litestar.testing import create_test_client
+from starlite import get, post
+from starlite.contrib.sqlalchemy_1.config import SQLAlchemyConfig
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from starlite.dto import DTOFactory
+from starlite.exceptions import HTTPException
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND
+from starlite.testing import create_test_client
 
 
 def test_dto_response_with_the_sqla_plugin() -> None:

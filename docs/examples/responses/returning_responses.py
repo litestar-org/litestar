@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from litestar import Litestar, Response, get
-from litestar.datastructures import Cookie
+from starlite import Response, Starlite, get
+from starlite.datastructures import Cookie
 
 
 class Resource(BaseModel):
@@ -21,4 +21,4 @@ def retrieve_resource() -> Response[Resource]:
     )
 
 
-app = Litestar(route_handlers=[retrieve_resource])
+app = Starlite(route_handlers=[retrieve_resource])

@@ -2,7 +2,7 @@ from typing import Type, Union
 
 import pytest
 
-from litestar.datastructures.multi_dicts import ImmutableMultiDict, MultiDict
+from starlite.datastructures.multi_dicts import ImmutableMultiDict, MultiDict
 
 
 @pytest.mark.parametrize("multi_class", [MultiDict, ImmutableMultiDict])

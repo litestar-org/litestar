@@ -1,5 +1,5 @@
 jinja
 =====
 
-.. automodule:: litestar.contrib.jinja
+.. automodule:: starlite.contrib.jinja
     :members:

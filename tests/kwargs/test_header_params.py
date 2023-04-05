@@ -4,10 +4,10 @@ from uuid import uuid4
 import pytest
 from pydantic import UUID4
 
-from litestar import get
-from litestar.params import Parameter, ParameterKwarg
-from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from litestar.testing import create_test_client
+from starlite import get
+from starlite.params import Parameter, ParameterKwarg
+from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from starlite.testing import create_test_client
 
 
 @pytest.mark.parametrize(

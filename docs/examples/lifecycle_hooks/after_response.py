@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Dict
 
-from litestar import Litestar, Request, get
+from starlite import Request, Starlite, get
 
 COUNTER: Dict[str, int] = defaultdict(int)
 
@@ -15,7 +15,7 @@ async def hello() -> Dict[str, int]:
     return COUNTER
 
 
-app = Litestar(route_handlers=[hello], after_response=after_response)
+app = Starlite(route_handlers=[hello], after_response=after_response)
 
 
 # run: /hello

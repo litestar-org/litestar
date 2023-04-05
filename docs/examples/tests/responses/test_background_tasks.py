@@ -5,7 +5,7 @@ from examples.responses.background_tasks_1 import app as app_1
 from examples.responses.background_tasks_2 import app as app_2
 from examples.responses.background_tasks_3 import app as app_3
 from examples.responses.background_tasks_3 import greeted as greeted_3
-from litestar.testing import TestClient
+from starlite.testing import TestClient
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture

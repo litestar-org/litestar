@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 
-from litestar._signature.models.attrs_signature_model import _converter
+from starlite._signature.models.attrs_signature_model import _converter
 from tests import Person, PersonFactory
 
 now = datetime.now()

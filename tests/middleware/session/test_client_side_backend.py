@@ -8,17 +8,17 @@ from unittest import mock
 import pytest
 from cryptography.exceptions import InvalidTag
 
-from litestar import Request, get, post
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.middleware.session import SessionMiddleware
-from litestar.middleware.session.client_side import (
+from starlite import Request, get, post
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.middleware.session import SessionMiddleware
+from starlite.middleware.session.client_side import (
     AAD,
     CHUNK_SIZE,
     ClientSideSessionBackend,
     CookieBackendConfig,
 )
-from litestar.serialization import encode_json
-from litestar.testing import create_test_client
+from starlite.serialization import encode_json
+from starlite.testing import create_test_client
 
 
 @pytest.mark.parametrize(

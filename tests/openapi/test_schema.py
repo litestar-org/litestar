@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Dict, Literal
 import pytest
 from pydantic import BaseModel
 
-from litestar import Controller, MediaType, get
-from litestar._openapi.schema_generation.schema import (
+from starlite import Controller, MediaType, get
+from starlite._openapi.schema_generation.schema import (
     KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     _process_schema_result,
     create_schema,
@@ -15,17 +15,17 @@ from litestar._openapi.schema_generation.schema import (
     create_schema_for_pydantic_model,
     create_schema_for_typed_dict,
 )
-from litestar._signature.field import SignatureField
-from litestar._signature.models.pydantic_signature_model import PydanticSignatureModel
-from litestar.app import DEFAULT_OPENAPI_CONFIG
-from litestar.di import Provide
-from litestar.enums import ParamType
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
-from litestar.openapi.spec.example import Example
-from litestar.openapi.spec.schema import Schema
-from litestar.params import BodyKwarg, Parameter, ParameterKwarg
-from litestar.testing import create_test_client
+from starlite._signature.field import SignatureField
+from starlite._signature.models.pydantic_signature_model import PydanticSignatureModel
+from starlite.app import DEFAULT_OPENAPI_CONFIG
+from starlite.di import Provide
+from starlite.enums import ParamType
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
+from starlite.openapi.spec.example import Example
+from starlite.openapi.spec.schema import Schema
+from starlite.params import BodyKwarg, Parameter, ParameterKwarg
+from starlite.testing import create_test_client
 from tests import Person, Pet
 
 if TYPE_CHECKING:

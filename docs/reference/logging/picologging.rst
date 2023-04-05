@@ -1,5 +1,5 @@
 picologging
 ============
 
-.. automodule:: litestar.logging.picologging
+.. automodule:: starlite.logging.picologging
     :members:

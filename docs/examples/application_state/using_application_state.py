@@ -1,12 +1,12 @@
 import logging
 from typing import TYPE_CHECKING, Any
 
-from litestar import Litestar, Request, get
-from litestar.datastructures import State
-from litestar.di import Provide
+from starlite import Request, Starlite, get
+from starlite.datastructures import State
+from starlite.di import Provide
 
 if TYPE_CHECKING:
-    from litestar.types import ASGIApp, Receive, Scope, Send
+    from starlite.types import ASGIApp, Receive, Scope, Send
 
 logger = logging.getLogger(__name__)
 
@@ -39,4 +39,4 @@ def get_handler(state: State, request: Request, dep: Any) -> None:
     logger.info("state value in handler from `Request`: %s", request.app.state.value)
 
 
-app = Litestar(route_handlers=[get_handler], on_startup=[set_state_on_startup], debug=True)
+app = Starlite(route_handlers=[get_handler], on_startup=[set_state_on_startup], debug=True)

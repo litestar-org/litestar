@@ -1,5 +1,5 @@
 memory
 ======
 
-.. automodule:: litestar.stores.memory
+.. automodule:: starlite.stores.memory
     :members:

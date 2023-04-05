@@ -2,8 +2,8 @@ from typing import Optional
 
 import pytest
 
-from litestar import Controller, HttpMethod, Litestar, Response, Router, get
-from litestar.types import Empty
+from starlite import Controller, HttpMethod, Response, Router, Starlite, get
+from starlite.types import Empty
 
 router_response = type("router_response", (Response,), {})
 controller_response = type("controller_response", (Response,), {})
@@ -31,7 +31,7 @@ def test_response_class_resolution_of_layers(layer: Optional[int], expected: Res
     MyController.test_method._resolved_response_class = Empty if layer != 0 else expected  # type: ignore
     MyController.response_class = None if layer != 1 else expected  # type: ignore
     router = Router(path="/users", route_handlers=[MyController], response_class=None if layer != 2 else expected)  # type: ignore
-    app = Litestar(route_handlers=[router], response_class=None if layer != 3 else expected)  # type: ignore
+    app = Starlite(route_handlers=[router], response_class=None if layer != 3 else expected)  # type: ignore
     route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore
     layer_map = {
         0: route_handler,

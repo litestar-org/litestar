@@ -1,5 +1,5 @@
 openapi
 =======
 
-.. automodule:: litestar.openapi
+.. automodule:: starlite.openapi
     :members:

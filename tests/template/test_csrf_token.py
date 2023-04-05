@@ -4,15 +4,15 @@ from typing import Any
 
 import pytest
 
-from litestar import MediaType, get
-from litestar.config.csrf import CSRFConfig
-from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.contrib.mako import MakoTemplateEngine
-from litestar.middleware.csrf import generate_csrf_token
-from litestar.response_containers import Template
-from litestar.template.config import TemplateConfig
-from litestar.testing import create_test_client
-from litestar.types import Scope
+from starlite import MediaType, get
+from starlite.config.csrf import CSRFConfig
+from starlite.contrib.jinja import JinjaTemplateEngine
+from starlite.contrib.mako import MakoTemplateEngine
+from starlite.middleware.csrf import generate_csrf_token
+from starlite.response_containers import Template
+from starlite.template.config import TemplateConfig
+from starlite.testing import create_test_client
+from starlite.types import Scope
 
 
 @pytest.mark.parametrize(

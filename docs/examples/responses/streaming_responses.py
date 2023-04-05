@@ -2,9 +2,9 @@ from asyncio import sleep
 from datetime import datetime
 from typing import AsyncGenerator
 
-from litestar import Litestar, get
-from litestar.response_containers import Stream
-from litestar.serialization import encode_json
+from starlite import Starlite, get
+from starlite.response_containers import Stream
+from starlite.serialization import encode_json
 
 
 async def my_generator() -> AsyncGenerator[bytes, None]:
@@ -18,4 +18,4 @@ def stream_time() -> Stream:
     return Stream(iterator=my_generator())
 
 
-app = Litestar(route_handlers=[stream_time])
+app = Starlite(route_handlers=[stream_time])

@@ -2,16 +2,16 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import Litestar, get
-from litestar.exceptions import NoRouteMatchFoundException
-from litestar.static_files.config import StaticFilesConfig
+from starlite import Starlite, get
+from starlite.exceptions import NoRouteMatchFoundException
+from starlite.static_files.config import StaticFilesConfig
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
 def test_url_for_static_asset(tmp_path: "Path") -> None:
-    app = Litestar(
+    app = Starlite(
         route_handlers=[],
         static_files_config=[StaticFilesConfig(path="/static/path", directories=[tmp_path], name="asset")],
     )
@@ -24,7 +24,7 @@ def test_url_for_static_asset_doesnt_work_with_http_handler_name(tmp_path: "Path
     def handler() -> None:
         pass
 
-    app = Litestar(
+    app = Starlite(
         route_handlers=[handler],
         static_files_config=[StaticFilesConfig(path="/static/path", directories=[tmp_path], name="asset")],
     )
@@ -34,7 +34,7 @@ def test_url_for_static_asset_doesnt_work_with_http_handler_name(tmp_path: "Path
 
 
 def test_url_for_static_asset_validates_name(tmp_path: "Path") -> None:
-    app = Litestar(
+    app = Starlite(
         route_handlers=[],
         static_files_config=[StaticFilesConfig(path="/static/path", directories=[tmp_path], name="asset")],
     )

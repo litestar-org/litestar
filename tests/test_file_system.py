@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 import pytest
 from fsspec.implementations.local import LocalFileSystem
 
-from litestar.exceptions import InternalServerException, NotAuthorizedException
-from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
+from starlite.exceptions import InternalServerException, NotAuthorizedException
+from starlite.file_system import BaseLocalFileSystem, FileSystemAdapter
 
 if TYPE_CHECKING:
-    from litestar.types import FileSystemProtocol
+    from starlite.types import FileSystemProtocol
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))

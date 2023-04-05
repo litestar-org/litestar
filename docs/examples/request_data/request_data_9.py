@@ -1,9 +1,9 @@
 from typing import Dict
 
-from litestar import Litestar, post
-from litestar.datastructures import UploadFile
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from starlite import Starlite, post
+from starlite.datastructures import UploadFile
+from starlite.enums import RequestEncodingType
+from starlite.params import Body
 
 
 @post(path="/")
@@ -18,4 +18,4 @@ async def handle_file_upload(
     return file_contents
 
 
-app = Litestar(route_handlers=[handle_file_upload])
+app = Starlite(route_handlers=[handle_file_upload])

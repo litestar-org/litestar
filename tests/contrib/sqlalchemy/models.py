@@ -7,8 +7,8 @@ from uuid import UUID
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from litestar.contrib.sqlalchemy.base import AuditBase, Base
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyRepository
+from starlite.contrib.sqlalchemy.base import AuditBase, Base
+from starlite.contrib.sqlalchemy.repository import SQLAlchemyRepository
 
 
 class Author(AuditBase):

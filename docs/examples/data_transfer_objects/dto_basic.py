@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import Mapped, declarative_base
 
-from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from litestar.dto import DTOFactory
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from starlite.dto import DTOFactory
 
 dto_factory = DTOFactory(plugins=[SQLAlchemyPlugin()])
 

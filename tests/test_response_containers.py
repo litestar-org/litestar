@@ -7,16 +7,16 @@ from typing import TYPE_CHECKING, Optional
 import pytest
 from fsspec.implementations.local import LocalFileSystem
 
-from litestar import get
-from litestar.datastructures import ETag
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.file_system import BaseLocalFileSystem
-from litestar.response_containers import File, Redirect
-from litestar.status_codes import HTTP_200_OK
-from litestar.testing import RequestFactory, create_test_client
+from starlite import get
+from starlite.datastructures import ETag
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.file_system import BaseLocalFileSystem
+from starlite.response_containers import File, Redirect
+from starlite.status_codes import HTTP_200_OK
+from starlite.testing import RequestFactory, create_test_client
 
 if TYPE_CHECKING:
-    from litestar.types import FileSystemProtocol
+    from starlite.types import FileSystemProtocol
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))

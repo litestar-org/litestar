@@ -3,11 +3,11 @@ from typing import Any, Type, Union
 import pytest
 from pydantic import BaseModel
 
-from litestar import (
+from starlite import (
     Controller,
     HttpMethod,
-    Litestar,
     Response,
+    Starlite,
     delete,
     get,
     patch,
@@ -15,10 +15,10 @@ from litestar import (
     put,
     websocket,
 )
-from litestar.connection import WebSocket
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from litestar.testing import create_test_client
+from starlite.connection import WebSocket
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
 
@@ -99,4 +99,4 @@ def test_controller_validation() -> None:
             return "Hello World"
 
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[BuggyController])
+        Starlite(route_handlers=[BuggyController])

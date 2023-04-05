@@ -3,16 +3,16 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, EmailStr, SecretStr
 
-from litestar import Litestar, Request, get, post
-from litestar.connection import ASGIConnection
-from litestar.exceptions import NotAuthorizedException
-from litestar.middleware.session.server_side import (
+from starlite import Request, Starlite, get, post
+from starlite.connection import ASGIConnection
+from starlite.exceptions import NotAuthorizedException
+from starlite.middleware.session.server_side import (
     ServerSideSessionBackend,
     ServerSideSessionConfig,
 )
-from litestar.openapi.config import OpenAPIConfig
-from litestar.security.session_auth import SessionAuth
-from litestar.stores.memory import MemoryStore
+from starlite.openapi.config import OpenAPIConfig
+from starlite.security.session_auth import SessionAuth
+from starlite.stores.memory import MemoryStore
 
 
 # Let's assume we have a User model that is a pydantic model.
@@ -80,7 +80,7 @@ async def login(data: UserLoginPayload, request: "Request[Any, Any, Any]") -> Us
     user_id = user_id.decode("utf-8")
 
     # once verified we can create a session.
-    # to do this we simply need to call the Litestar
+    # to do this we simply need to call the Starlite
     # 'Request.set_session' method, which accepts either dictionaries
     # or pydantic models. In our case, we can simply record a
     # simple dictionary with the user ID value:
@@ -137,7 +137,7 @@ session_auth = SessionAuth[User, ServerSideSessionBackend](
 
 
 # We initialize the app instance, passing to it the 'session_auth.on_app_init' and the 'openapi_config'.
-app = Litestar(
+app = Starlite(
     route_handlers=[login, signup, get_user],
     on_app_init=[session_auth.on_app_init],
     openapi_config=openapi_config,

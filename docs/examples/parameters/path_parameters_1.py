@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from litestar import Litestar, get
+from starlite import Starlite, get
 
 USER_DB = {1: {"id": 1, "name": "John Doe"}}
 
@@ -15,4 +15,4 @@ def get_user(user_id: int) -> User:
     return User.parse_obj(USER_DB[user_id])
 
 
-app = Litestar(route_handlers=[get_user])
+app = Starlite(route_handlers=[get_user])

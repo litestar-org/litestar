@@ -8,27 +8,27 @@ import pytest
 from pydantic import BaseModel
 from typing_extensions import TypedDict
 
-from litestar import Controller, Litestar, MediaType, Response, get
-from litestar._openapi.responses import (
+from starlite import Controller, MediaType, Response, Starlite, get
+from starlite._openapi.responses import (
     create_additional_responses,
     create_error_responses,
     create_responses,
     create_success_response,
 )
-from litestar.datastructures import Cookie, ResponseHeader
-from litestar.exceptions import (
+from starlite.datastructures import Cookie, ResponseHeader
+from starlite.exceptions import (
     HTTPException,
     PermissionDeniedException,
     ValidationException,
 )
-from litestar.handlers import HTTPRouteHandler
-from litestar.openapi.datastructures import ResponseSpec
-from litestar.openapi.spec import OpenAPIHeader, OpenAPIMediaType, Reference, Schema
-from litestar.openapi.spec.enums import OpenAPIType
-from litestar.response.base import T
-from litestar.response_containers import File, Redirect, Stream, Template
-from litestar.routes import HTTPRoute
-from litestar.status_codes import (
+from starlite.handlers import HTTPRouteHandler
+from starlite.openapi.datastructures import ResponseSpec
+from starlite.openapi.spec import OpenAPIHeader, OpenAPIMediaType, Reference, Schema
+from starlite.openapi.spec.enums import OpenAPIType
+from starlite.response.base import T
+from starlite.response_containers import File, Redirect, Stream, Template
+from starlite.routes import HTTPRoute
+from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_307_TEMPORARY_REDIRECT,
     HTTP_400_BAD_REQUEST,
@@ -39,12 +39,12 @@ from tests.openapi.utils import PersonController, PetController, PetException
 
 
 def get_registered_route_handler(handler: "HTTPRouteHandler | type[Controller]", name: str) -> HTTPRouteHandler:
-    app = Litestar(route_handlers=[handler])
+    app = Starlite(route_handlers=[handler])
     return app.asgi_router.route_handler_index[name]  # type: ignore[return-value]
 
 
 def test_create_responses() -> None:
-    for route in Litestar(route_handlers=[PersonController]).routes:
+    for route in Starlite(route_handlers=[PersonController]).routes:
         assert isinstance(route, HTTPRoute)
         for route_handler, _ in route.route_handler_map.values():
             if route_handler.include_in_schema:
@@ -406,7 +406,7 @@ def test_success_response_with_future_annotations(create_module: Callable[[str],
     module = create_module(
         """
 from __future__ import annotations
-from litestar import get
+from starlite import get
 
 @get(path="/test", name="test")
 def handler() -> int:

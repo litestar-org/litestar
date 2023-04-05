@@ -3,14 +3,14 @@ from typing import Any, Callable, List, Optional, Type
 
 import pytest
 
-from litestar import Controller, MediaType, delete, get, post
-from litestar.status_codes import (
+from starlite import Controller, MediaType, delete, get, post
+from starlite.status_codes import (
     HTTP_200_OK,
     HTTP_204_NO_CONTENT,
     HTTP_404_NOT_FOUND,
     HTTP_405_METHOD_NOT_ALLOWED,
 )
-from litestar.testing import create_test_client
+from starlite.testing import create_test_client
 from tests import Person, PersonFactory
 
 
@@ -206,7 +206,7 @@ def test_special_chars(
 
 
 def test_no_404_where_list_route_has_handlers_and_child_route_has_path_param() -> None:
-    # https://github.com/starlite-api/litestar/issues/816
+    # https://github.com/starlite-api/starlite/issues/816
 
     # the error condition requires the path to not be a plain route, hence the prefixed path parameters
     @get("/{a:str}/b")

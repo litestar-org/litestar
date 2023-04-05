@@ -1,5 +1,5 @@
 controller
 ==========
 
-.. automodule:: litestar.controller
+.. automodule:: starlite.controller
     :members:

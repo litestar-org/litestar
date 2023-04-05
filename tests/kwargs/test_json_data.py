@@ -1,7 +1,7 @@
-from litestar import post
-from litestar.params import Body
-from litestar.status_codes import HTTP_201_CREATED
-from litestar.testing import create_test_client
+from starlite import post
+from starlite.params import Body
+from starlite.status_codes import HTTP_201_CREATED
+from starlite.testing import create_test_client
 from tests.kwargs import Form
 
 

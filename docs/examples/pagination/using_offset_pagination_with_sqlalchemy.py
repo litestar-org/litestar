@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING, List
 from sqlalchemy import Column, Integer, String, func, select
 from sqlalchemy.orm import Mapped, declarative_base
 
-from litestar import Litestar, get
-from litestar.di import Provide
-from litestar.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
-from litestar.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
+from starlite import Starlite, get
+from starlite.di import Provide
+from starlite.pagination import AbstractAsyncOffsetPaginator, OffsetPagination
+from starlite.plugins.sql_alchemy import SQLAlchemyConfig, SQLAlchemyPlugin
 
 Base = declarative_base()
 
@@ -51,4 +51,4 @@ async def on_startup() -> None:
         await conn.run_sync(Base.metadata.create_all)
 
 
-app = Litestar(route_handlers=[people_handler], on_startup=[on_startup], plugins=[sqlalchemy_plugin])
+app = Starlite(route_handlers=[people_handler], on_startup=[on_startup], plugins=[sqlalchemy_plugin])

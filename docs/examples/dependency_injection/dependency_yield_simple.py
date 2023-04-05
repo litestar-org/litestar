@@ -1,7 +1,7 @@
 from typing import Dict, Generator
 
-from litestar import Litestar, get
-from litestar.di import Provide
+from starlite import Starlite, get
+from starlite.di import Provide
 
 CONNECTION = {"open": False}
 
@@ -19,4 +19,4 @@ def index(conn: Dict[str, bool]) -> Dict[str, bool]:
     return conn
 
 
-app = Litestar(route_handlers=[index])
+app = Starlite(route_handlers=[index])

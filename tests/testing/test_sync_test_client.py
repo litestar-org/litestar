@@ -2,12 +2,12 @@ from typing import TYPE_CHECKING, Any, NoReturn
 
 import pytest
 
-from litestar import Controller, Litestar, delete, get, head, patch, post, put
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from litestar.testing import TestClient
+from starlite import Controller, Starlite, delete, get, head, patch, post, put
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from starlite.testing import TestClient
 
 if TYPE_CHECKING:
-    from litestar.types import (
+    from starlite.types import (
         AnyIOBackend,
         HTTPResponseBodyEvent,
         HTTPResponseStartEvent,
@@ -24,7 +24,7 @@ def test_use_testclient_in_endpoint(test_client_backend: "AnyIOBackend") -> None
     def mock_service_endpoint() -> dict:
         return {"mock": "example"}
 
-    mock_service = Litestar(route_handlers=[mock_service_endpoint])
+    mock_service = Starlite(route_handlers=[mock_service_endpoint])
 
     @get("/")
     def homepage() -> Any:
@@ -32,7 +32,7 @@ def test_use_testclient_in_endpoint(test_client_backend: "AnyIOBackend") -> None
         response = client.get("/")
         return response.json()
 
-    app = Litestar(route_handlers=[homepage])
+    app = Starlite(route_handlers=[homepage])
 
     client = TestClient(app)
     response = client.get("/")
@@ -44,12 +44,12 @@ def raise_error() -> NoReturn:
 
 
 def test_error_handling_on_startup(test_client_backend: "AnyIOBackend") -> None:
-    with pytest.raises(RuntimeError), TestClient(Litestar(on_startup=[raise_error]), backend=test_client_backend):
+    with pytest.raises(RuntimeError), TestClient(Starlite(on_startup=[raise_error]), backend=test_client_backend):
         pass
 
 
 def test_error_handling_on_shutdown(test_client_backend: "AnyIOBackend") -> None:
-    with pytest.raises(RuntimeError), TestClient(Litestar(on_shutdown=[raise_error]), backend=test_client_backend):
+    with pytest.raises(RuntimeError), TestClient(Starlite(on_shutdown=[raise_error]), backend=test_client_backend):
         pass
 
 
@@ -119,7 +119,7 @@ def test_client_interface_context_manager(method: str, test_client_backend: "Any
         def mock_service_endpoint_head(self) -> None:
             ...
 
-    mock_service = Litestar(route_handlers=[MockController])
+    mock_service = Starlite(route_handlers=[MockController])
     with TestClient(mock_service, backend=test_client_backend) as client:
         if method == "get":
             response = client.get("/")

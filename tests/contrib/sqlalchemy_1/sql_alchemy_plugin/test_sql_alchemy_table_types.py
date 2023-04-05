@@ -54,8 +54,8 @@ from sqlalchemy.sql.functions import now
 # TupleType not a sqlalchemy2-stubs top-level import
 from sqlalchemy.sql.sqltypes import TupleType
 
-from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from litestar.exceptions import ImproperlyConfiguredException
+from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from starlite.exceptions import ImproperlyConfiguredException
 from tests import Species
 from tests.contrib.sqlalchemy_1.sql_alchemy_plugin.models import SQLAlchemyBase
 

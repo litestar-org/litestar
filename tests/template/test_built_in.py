@@ -4,15 +4,15 @@ from typing import TYPE_CHECKING, Any, Type, Union
 
 import pytest
 
-from litestar import get
-from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.contrib.mako import MakoTemplateEngine
-from litestar.response_containers import Template
-from litestar.template.config import TemplateConfig
-from litestar.testing import create_test_client
+from starlite import get
+from starlite.contrib.jinja import JinjaTemplateEngine
+from starlite.contrib.mako import MakoTemplateEngine
+from starlite.response_containers import Template
+from starlite.template.config import TemplateConfig
+from starlite.testing import create_test_client
 
 if TYPE_CHECKING:
-    from litestar.handlers.http_handlers import HTTPRouteHandler
+    from starlite.handlers.http_handlers import HTTPRouteHandler
 
 
 @dataclass

@@ -3,8 +3,8 @@ from sys import version_info
 import pytest
 from polyfactory import BaseFactory
 
-from litestar import Litestar
-from litestar._openapi.typescript_converter.converter import (
+from starlite import Starlite
+from starlite._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
 from tests.openapi.utils import PersonController, PetController
@@ -13,7 +13,7 @@ from tests.openapi.utils import PersonController, PetController
 @pytest.mark.skipif(version_info < (3, 10), reason="flaky in python 3.9 and lower")
 def test_openapi_to_typescript_converter() -> None:
     BaseFactory.seed_random(1)
-    app = Litestar(route_handlers=[PersonController, PetController])
+    app = Starlite(route_handlers=[PersonController, PetController])
     assert app.openapi_schema
 
     result = convert_openapi_to_typescript(openapi_schema=app.openapi_schema)

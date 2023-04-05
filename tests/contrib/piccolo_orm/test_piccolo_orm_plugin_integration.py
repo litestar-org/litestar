@@ -2,10 +2,10 @@ from typing import Callable
 
 from piccolo.testing.model_builder import ModelBuilder
 
-from litestar.contrib.piccolo_orm import PiccoloORMPlugin
-from litestar.serialization import encode_json
-from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
-from litestar.testing import create_test_client
+from starlite.contrib.piccolo_orm import PiccoloORMPlugin
+from starlite.serialization import encode_json
+from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED
+from starlite.testing import create_test_client
 
 from .endpoints import create_concert, retrieve_studio, retrieve_venues, studio, venues
 from .tables import Band, Concert, Manager, RecordingStudio, Venue

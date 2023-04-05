@@ -2,10 +2,10 @@ from typing import TYPE_CHECKING, Any, Type
 
 import pytest
 
-from litestar import (
+from starlite import (
     Controller,
-    Litestar,
     Router,
+    Starlite,
     asgi,
     delete,
     get,
@@ -14,9 +14,9 @@ from litestar import (
     put,
     websocket,
 )
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.static_files.config import StaticFilesConfig
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.handlers.http_handlers import HTTPRouteHandler
+from starlite.static_files.config import StaticFilesConfig
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -37,7 +37,7 @@ def test_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
         pass
 
     router = Router("router-path/", route_handlers=[handler])
-    app = Litestar(route_handlers=[router, websocket_handler, asgi_handler])
+    app = Starlite(route_handlers=[router, websocket_handler, asgi_handler])
 
     handler_index = app.get_handler_index_by_name("handler-name")
     assert handler_index
@@ -75,7 +75,7 @@ def test_default_indexes_handlers(decorator: Type[HTTPRouteHandler]) -> None:
             pass
 
     router = Router("router/", route_handlers=[handler, named_handler, MyController])
-    app = Litestar(route_handlers=[router])
+    app = Starlite(route_handlers=[router])
 
     handler_index = app.get_handler_index_by_name(str(handler))
     assert handler_index
@@ -106,7 +106,7 @@ def test_indexes_handlers_with_multiple_paths(decorator: Type[HTTPRouteHandler])
     router = Router("router-one/", route_handlers=[handler_two])
     router_two = Router("router-two/", route_handlers=[handler_two])
 
-    app = Litestar(route_handlers=[router, router_two, handler])
+    app = Starlite(route_handlers=[router, router_two, handler])
 
     handler_index = app.get_handler_index_by_name("handler")
     assert handler_index
@@ -129,10 +129,10 @@ def test_indexing_validation(tmp_path: "Path") -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[handler_one, handler_two])
+        Starlite(route_handlers=[handler_one, handler_two])
 
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(
+        Starlite(
             route_handlers=[handler_one],
             static_files_config=[StaticFilesConfig(path="/static", directories=[tmp_path], name="same-name")],
         )

@@ -1,7 +1,7 @@
 OpenAPI integration
 ===================
 
-Litestar has first class OpenAPI support offering the following features:
+Starlite has first class OpenAPI support offering the following features:
 
 - Automatic `OpenAPI 3.1.0 Schema <https://spec.openapis.org/oas/v3.1.0>`_ generation, which is available as both YAML
   and JSON.
@@ -9,7 +9,7 @@ Litestar has first class OpenAPI support offering the following features:
 - Simple configuration using pydantic based classes.
 
 
-Litestar includes a complete implementation of the `latest version of the OpenAPI specification <https://spec.openapis.org/oas/latest.html>`_
+Starlite includes a complete implementation of the `latest version of the OpenAPI specification <https://spec.openapis.org/oas/latest.html>`_
 using Python dataclasses. This implementation is used as a basis for generating OpenAPI specs, supporting builtins including
 `dataclasses` and `TypedDict`, as well as Pydantic models and any 3rd party entities for which a plugin is implemented.
 
@@ -28,15 +28,15 @@ OpenAPI schema generation config
 --------------------------------
 
 OpenAPI schema generation is enabled by default. To configure it you can pass an instance of
-:class:`OpenAPIConfig <.openapi.OpenAPIConfig>` to the :class:`Litestar <litestar.app.Litestar>` class using the
+:class:`OpenAPIConfig <.openapi.OpenAPIConfig>` to the :class:`Starlite <starlite.app.Starlite>` class using the
 ``openapi_config`` kwarg:
 
 .. code-block:: python
 
-   from litestar import Litestar
-   from litestar.config.openapi import OpenAPIConfig
+   from starlite import Starlite
+   from starlite.config.openapi import OpenAPIConfig
 
-   app = Litestar(
+   app = Starlite(
        route_handlers=[...], openapi_config=OpenAPIConfig(title="My API", version="1.0.0")
    )
 
@@ -50,9 +50,9 @@ value for ``openapi_config``:
 
 .. code-block:: python
 
-   from litestar import Litestar
+   from starlite import Starlite
 
-   app = Litestar(route_handlers=[...], openapi_config=None)
+   app = Starlite(route_handlers=[...], openapi_config=None)
 
 
 
@@ -64,7 +64,7 @@ handlers. You can omit a route handler from the schema by setting ``include_in_s
 
 .. code-block:: python
 
-   from litestar import get
+   from starlite import get
 
 
    @get(path="/some-path", include_in_schema=False)
@@ -100,8 +100,8 @@ You can also modify the generated schema for the route handler using the followi
     to ``False``.
 
 ``raises``
-    A list of exception classes extending from ``litestar.HttpException``. This list should describe all
-    exceptions raised within the route handler's function/method. The Litestar ``ValidationException`` will be added
+    A list of exception classes extending from ``starlite.HttpException``. This list should describe all
+    exceptions raised within the route handler's function/method. The Starlite ``ValidationException`` will be added
     automatically for the schema if any validation is involved (e.g. there are parameters specified in the
     method/function).
 
@@ -122,8 +122,8 @@ You can also modify the generated schema for the route handler using the followi
 
    from pydantic import BaseModel
 
-   from litestar import get
-   from litestar.openapi.datastructures import ResponseSpec
+   from starlite import get
+   from starlite.openapi.datastructures import ResponseSpec
 
 
    class Item(BaseModel):
@@ -151,9 +151,9 @@ app instance itself. For example:
 
 .. code-block:: python
 
-   from litestar import Litestar, get
-   from litestar.config.openapi import OpenAPIConfig
-   from litestar.openapi.spec import Components, SecurityScheme, Tag
+   from starlite import Starlite, get
+   from starlite.config.openapi import OpenAPIConfig
+   from starlite.openapi.spec import Components, SecurityScheme, Tag
 
 
    @get(
@@ -170,7 +170,7 @@ app instance itself. For example:
        ...
 
 
-   app = Litestar(
+   app = Starlite(
        route_handlers=[public_path_handler, internal_path_handler],
        openapi_config=OpenAPIConfig(
            title="my api",
@@ -196,7 +196,7 @@ app instance itself. For example:
 The OpenAPIController
 ---------------------
 
-Litestar includes an :class:`OpenAPIController <litestar.openapi.controller.OpenAPIController>` class that is used as the
+Starlite includes an :class:`OpenAPIController <starlite.openapi.controller.OpenAPIController>` class that is used as the
 default controller in the :class:`OpenAPIConfig <.config.OpenAPIConfig>`.
 
 This controller exposes the following endpoints:
@@ -230,16 +230,16 @@ For example, lets say we wanted to change the base path of the OpenAPI related e
 
 .. code-block:: python
 
-   from litestar import Litestar
-   from litestar.config.openapi import OpenAPIConfig
-   from litestar.openapi import OpenAPIController
+   from starlite import Starlite
+   from starlite.config.openapi import OpenAPIConfig
+   from starlite.openapi import OpenAPIController
 
 
    class MyOpenAPIController(OpenAPIController):
        path = "/api-docs"
 
 
-   app = Litestar(
+   app = Starlite(
        route_handlers=[...],
        openapi_config=OpenAPIConfig(
            title="My API", version="1.0.0", openapi_controller=MyOpenAPIController
@@ -252,13 +252,13 @@ CDN and offline file support
 ----------------------------
 
 You can change the default download paths for JS and CSS bundles as well as google fonts by subclassing
-:class:`OpenAPIController <litestar.openapi.controller.OpenAPIController>`  and setting any of the following class variables:
+:class:`OpenAPIController <starlite.openapi.controller.OpenAPIController>`  and setting any of the following class variables:
 
 .. code-block:: python
 
-   from litestar import Litestar
-   from litestar.config.openapi import OpenAPIConfig
-   from litestar.openapi import OpenAPIController
+   from starlite import Starlite
+   from starlite.config.openapi import OpenAPIConfig
+   from starlite.openapi import OpenAPIController
 
 
    class MyOpenAPIController(OpenAPIController):
@@ -276,7 +276,7 @@ You can change the default download paths for JS and CSS bundles as well as goog
        )
 
 
-   app = Litestar(
+   app = Starlite(
        route_handlers=[...],
        openapi_config=OpenAPIConfig(
            title="My API", version="1.0.0", openapi_controller=MyOpenAPIController
@@ -288,13 +288,13 @@ You can change the default download paths for JS and CSS bundles as well as goog
 Accessing the OpenAPI schema in code
 ------------------------------------
 
-The OpenAPI schema is generated during the :class:`Litestar <litestar.app.Litestar>` app's init method. Once init is finished,
+The OpenAPI schema is generated during the :class:`Starlite <starlite.app.Starlite>` app's init method. Once init is finished,
 its accessible as ``app.openapi_schema``. As such you can always access it inside route handlers, dependencies etc. by
 access the request instance:
 
 .. code-block:: python
 
-   from litestar import Request, get
+   from starlite import Request, get
 
 
    @get(path="/")
@@ -324,7 +324,7 @@ The above will result in an OpenAPI schema object that looks like this:
 
    {
        "openapi": "3.1.0",
-       "info": {"title": "Litestar API", "version": "1.0.0"},
+       "info": {"title": "Starlite API", "version": "1.0.0"},
        "servers": [{"url": "/"}],
        "paths": {
            "/id": {
