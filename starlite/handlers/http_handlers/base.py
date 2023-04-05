@@ -431,7 +431,6 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     headers=headers,
                     media_type=media_type,
                     response_class=response_class,
-                    return_annotation=return_annotation,
                     status_code=self.status_code,
                     type_encoders=type_encoders,
                 )
