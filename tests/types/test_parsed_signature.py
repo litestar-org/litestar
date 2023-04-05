@@ -142,6 +142,23 @@ def test_parsed_type_is_optional_predicate() -> None:
     assert ParsedType.from_annotation(Union[int, str]).is_optional is False
 
 
+def test_parsed_type_is_subclass_of() -> None:
+    """Test ParsedType.is_type_of."""
+    assert ParsedType.from_annotation(bool).is_subclass_of(int) is True
+    assert ParsedType.from_annotation(bool).is_subclass_of(str) is False
+    assert ParsedType.from_annotation(Union[int, str]).is_subclass_of(int) is False
+    assert ParsedType.from_annotation(List[int]).is_subclass_of(list) is True
+    assert ParsedType.from_annotation(List[int]).is_subclass_of(int) is False
+    assert ParsedType.from_annotation(Optional[int]).is_subclass_of(int) is False
+
+
+def test_parsed_type_has_inner_subclass_of() -> None:
+    """Test ParsedType.has_type_of."""
+    assert ParsedType.from_annotation(List[int]).has_inner_subclass_of(int) is True
+    assert ParsedType.from_annotation(List[int]).has_inner_subclass_of(str) is False
+    assert ParsedType.from_annotation(List[Union[int, str]]).has_inner_subclass_of(int) is False
+
+
 def test_parsed_parameter() -> None:
     """Test ParsedParameter."""
     param = Parameter("foo", Parameter.POSITIONAL_OR_KEYWORD, annotation=int)

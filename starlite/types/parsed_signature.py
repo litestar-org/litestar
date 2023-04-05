@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Collection
 from dataclasses import dataclass
 from inspect import Parameter, Signature
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Union
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
 
@@ -15,8 +15,6 @@ from starlite.utils.signature_parsing import get_fn_type_hints
 from starlite.utils.typing import get_safe_generic_origin, unwrap_annotation
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from starlite.types import AnyCallable
 
 __all__ = (
@@ -40,7 +38,7 @@ class ParsedType:
         "is_required",
         "is_not_required",
         "safe_generic_origin",
-        "inner_annotations",
+        "inner_types",
     )
 
     raw: Any
@@ -64,7 +62,7 @@ class ParsedType:
 
     This is to serve safely rebuilding a generic outer type with different args at runtime.
     """
-    inner_annotations: tuple[ParsedType, ...]
+    inner_types: tuple[ParsedType, ...]
     """The type's generic args parsed as ``ParsedType``, if applicable."""
 
     @property
@@ -75,7 +73,34 @@ class ParsedType:
     @property
     def is_collection(self) -> bool:
         """Whether the annotation is a collection type or not."""
-        return self.origin and issubclass(self.origin, Collection)
+        return bool(self.origin and self.origin is not Union and issubclass(self.origin, Collection))
+
+    def is_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
+        """Whether the annotation is a subclass of the given type.
+
+        Where ``self.annotation`` is a union type, this method will always return ``False``. While this is not
+        strictly correct, we intend on revisiting this once a concrete use-case is to hand.
+
+        Args:
+            cl: The type to check, or tuple of types. Passed as 2nd argument to ``issubclass()``.
+
+        Returns:
+            Whether the annotation is a subtype of the given type(s).
+        """
+        if self.origin:
+            return self.origin not in UNION_TYPES and issubclass(self.origin, cl)
+        return self.annotation is not Any and issubclass(self.annotation, cl)
+
+    def has_inner_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
+        """Whether any generic args are a subclass of the given type.
+
+        Args:
+            cl: The type to check, or tuple of types. Passed as 2nd argument to ``issubclass()``.
+
+        Returns:
+            Whether any of the type's generic args are a subclass of the given type.
+        """
+        return any(t.is_subclass_of(cl) for t in self.inner_types)
 
     @classmethod
     def from_annotation(cls, annotation: Any) -> ParsedType:
@@ -103,7 +128,7 @@ class ParsedType:
             is_required=Required in wrappers,
             is_not_required=NotRequired in wrappers,
             safe_generic_origin=get_safe_generic_origin(origin),
-            inner_annotations=tuple(cls.from_annotation(arg) for arg in args),
+            inner_types=tuple(cls.from_annotation(arg) for arg in args),
         )
 
 
