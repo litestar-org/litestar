@@ -182,6 +182,17 @@ def test_request_headers() -> None:
     }
 
 
+def test_request_accept_header() -> None:
+    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        request = Request[Any, Any, Any](scope, receive)
+        response = Response(content={"accepted_types": list(request.accept)})
+        await response(scope, receive, send)
+
+    client = TestClient(app)
+    response = client.get("/", headers={"Accept": "text/plain, application/xml;q=0.7, text/html;p=test"})
+    assert response.json() == {"accepted_types": ["text/html;p=test", "text/plain", "application/xml;q=0.7"]}
+
+
 @pytest.mark.parametrize(
     "scope,expected_client",
     (

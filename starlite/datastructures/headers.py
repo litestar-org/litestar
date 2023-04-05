@@ -1,5 +1,7 @@
 import re
 from abc import ABC, abstractmethod
+from contextlib import suppress
+from copy import copy
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -20,11 +22,12 @@ from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
 from pydantic import BaseModel, Extra, Field, ValidationError, validator
 from typing_extensions import Annotated
 
+from starlite._multipart import parse_content_header
 from starlite._parsers import parse_headers
 from starlite.datastructures.multi_dicts import MultiMixin
 from starlite.exceptions import ImproperlyConfiguredException
 
-__all__ = ("CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
+__all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
 
 
 if TYPE_CHECKING:
@@ -386,3 +389,118 @@ class ETag(Header):
         if values.get("documentation_only") or value is not None:
             return value
         raise ValueError("value must be set if documentation_only is false")
+
+
+class _MediaType:
+    """A helper class for ``Accept`` header parsing."""
+
+    __slots__ = ("maintype", "subtype", "params", "_params_str")
+
+    def __init__(self, type_str: str):
+        # preserve the original parameters, because the order might be
+        # changed in the dict
+        self._params_str = "".join(type_str.partition(";")[1:])
+
+        full_type, self.params = parse_content_header(type_str)
+        self.maintype, _, self.subtype = full_type.partition("/")
+
+    def __str__(self) -> str:
+        return f"{self.maintype}/{self.subtype}{self._params_str}"
+
+    @property
+    def priority(self) -> Tuple[int, int]:
+        # Use fixed point values with two decimals to avoid problems
+        # when comparing float values
+        quality = 100
+        if "q" in self.params:
+            with suppress(ValueError):
+                quality = int(100 * float(self.params["q"]))
+
+        if self.maintype == "*":
+            specificity = 0
+        elif self.subtype == "*":
+            specificity = 1
+        elif not self.params or ("q" in self.params and len(self.params) == 1):
+            # no params or 'q' is the only one which we ignore
+            specificity = 2
+        else:
+            specificity = 3
+
+        return quality, specificity
+
+    def match(self, other: "_MediaType") -> bool:
+        # Check parameters first, ignore the weight parameter 'q'.
+        # Additional parameters on other are also ignored.
+        for key, value in self.params.items():
+            if key != "q" and value != other.params.get(key):
+                return False
+
+        # Then check if the subtypes match, ignoring the wildcard '*'
+        if self.subtype != "*" and other.subtype != "*" and self.subtype != other.subtype:
+            return False
+
+        # Lastly check the main type, also ignoring the wildcard '*'
+        if self.maintype != "*" and other.maintype != "*" and self.maintype != other.maintype:
+            return False
+
+        return True
+
+
+class Accept:
+    """An ``Accept`` header."""
+
+    __slots__ = ("_accepted_types",)
+
+    def __init__(self, accept_value: str):
+        self._accepted_types = [_MediaType(t) for t in accept_value.split(",")]
+        self._accepted_types.sort(key=lambda t: t.priority, reverse=True)
+
+    def __len__(self) -> int:
+        return len(self._accepted_types)
+
+    def __getitem__(self, key: int) -> str:
+        return str(self._accepted_types[key])
+
+    def __iter__(self) -> Iterator[str]:
+        return map(str, self._accepted_types)
+
+    def best_match(self, provided_types: List[str], default: Optional[str] = None) -> Optional[str]:
+        """Find the best matching media type for the request.
+
+        Args:
+            provided_types: A list of media types that can be provided as a response. These types
+                            can contain a wildcard ``*`` character in the main- or subtype part.
+            default: The media type that is returned if none of the provided types match.
+
+        Returns:
+            The best matching media type. If the matching provided type contains wildcard characters,
+            they are replaced with the corresponding part of the accepted type. Otherwise the
+            provided type is returned as-is.
+        """
+        types = [_MediaType(t) for t in provided_types]
+
+        for accepted in self._accepted_types:
+            for provided in types:
+                if provided.match(accepted):
+                    # Return the accepted type with wildcards replaced
+                    # by concrete parts from the provided type
+                    result = copy(provided)
+                    if result.subtype == "*":
+                        result.subtype = accepted.subtype
+                    if result.maintype == "*":
+                        result.maintype = accepted.maintype
+                    return str(result)
+        return default
+
+    def accepts(self, media_type: str) -> bool:
+        """Check if the request accepts the specified media type.
+
+        If multiple media types can be provided, it is better to use :func:`best_match`.
+
+        Args:
+            media_type: The media type to check for.
+
+        Returns:
+            True if the request accepts ``media_type``.
+        """
+        return self.best_match([media_type]) == media_type

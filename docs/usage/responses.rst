@@ -138,6 +138,19 @@ For ``MediaType.HTML``, route handlers should return a :class:`str` or :class:`b
    and to write the template itself in a separate file rather than a string.
 
 
+Content Negotiation
+-------------------
+
+If your handler can return data with different media types and you want to use
+`Content Negotiation <https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation>`_
+to allow the client to choose which type to return, you can use the
+:attr:`Request.accept <starlite.connection.Request.accept>` property to
+calculate the best matching return media type.
+
+.. literalinclude:: /examples/responses/response_content.py
+    :language: python
+
+
 Status Codes
 ------------
 
