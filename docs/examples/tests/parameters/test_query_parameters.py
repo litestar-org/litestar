@@ -6,7 +6,7 @@ from examples.parameters.query_params_default import app as query_params_default
 from examples.parameters.query_params_optional import app as query_params_optional_app
 from examples.parameters.query_params_remap import app as query_params_remap_app
 from examples.parameters.query_params_types import app as query_params_types_app
-from starlite.testing import TestClient
+from litestar.testing import TestClient
 
 
 def test_query_params() -> None:

@@ -3,11 +3,11 @@ from typing import Any, Dict
 
 import pytest
 
-from starlite import Controller, websocket
-from starlite.connection import WebSocket
-from starlite.di import Provide
-from starlite.exceptions import WebSocketDisconnect
-from starlite.testing import create_test_client
+from litestar import Controller, websocket
+from litestar.connection import WebSocket
+from litestar.di import Provide
+from litestar.exceptions import WebSocketDisconnect
+from litestar.testing import create_test_client
 
 
 def router_first_dependency() -> bool:

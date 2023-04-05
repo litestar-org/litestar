@@ -2,7 +2,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 
-from starlite import Starlite, get
+from litestar import Litestar, get
 
 
 class IdModel(BaseModel):
@@ -21,4 +21,4 @@ def retrieve_id_handler() -> IdModel:
     return IdModel(id=uuid4())
 
 
-app = Starlite(route_handlers=[retrieve_id_handler])
+app = Litestar(route_handlers=[retrieve_id_handler])

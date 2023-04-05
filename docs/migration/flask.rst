@@ -4,7 +4,7 @@ From Flask
 ASGI vs WSGI
 ~~~~~~~~~~~~
 
-`Flask <https://flask.palletsprojects.com>`_ is a WSGI framework, whereas Starlite
+`Flask <https://flask.palletsprojects.com>`_ is a WSGI framework, whereas Litestar
 is built using the modern `ASGI <https://asgi.readthedocs.io>`_ standard. A key difference
 is that *ASGI* is built with async in mind.
 
@@ -16,7 +16,7 @@ Flask handles asynchronous endpoints by creating an event loop for each request,
 endpoint function in it and then return its result.
 
 ASGI on the other hand does the exact opposite; It runs everything in a central event loop.
-Starlite then adds support for synchronous functions by running them in a non-blocking way
+Litestar then adds support for synchronous functions by running them in a non-blocking way
 *on the event loop*. What this means is that synchronous and asynchronous code both run
 concurrently.
 
@@ -46,12 +46,12 @@ Routing
                 return "Hello, World"
 
 
-    .. tab-item:: Starlite
-        :sync: starlite
+    .. tab-item:: Litestar
+        :sync: litestar
 
         .. code-block:: python
 
-            from starlite import Starlite, get
+            from litestar import Litestar, get
 
 
             @get("/")
@@ -64,7 +64,7 @@ Routing
                 return "Hello, World"
 
 
-            app = Starlite([index, hello])
+            app = Litestar([index, hello])
 
 
 Path parameters
@@ -98,12 +98,12 @@ Path parameters
 
 
 
-    .. tab-item:: Starlite
-        :sync: starlite
+    .. tab-item:: Litestar
+        :sync: litestar
 
         .. code-block:: python
 
-            from starlite import Starlite, get
+            from litestar import Litestar, get
             from pathlib import Path
 
 
@@ -122,7 +122,7 @@ Path parameters
                 return f"Subpath {subpath}"
 
 
-            app = Starlite([show_user_profile, show_post, show_subpath])
+            app = Litestar([show_user_profile, show_post, show_subpath])
 
 
 ..  seealso::
@@ -133,7 +133,7 @@ Path parameters
 Request object
 ~~~~~~~~~~~~~~
 
-In Flask, the current request can be accessed through a global ``request`` variable. In Starlite,
+In Flask, the current request can be accessed through a global ``request`` variable. In Litestar,
 the request can be accessed through an optional parameter in the handler function.
 
 .. tab-set::
@@ -155,12 +155,12 @@ the request can be accessed through an optional parameter in the handler functio
 
 
 
-    .. tab-item:: Starlite
-        :sync: starlite
+    .. tab-item:: Litestar
+        :sync: litestar
 
         .. code-block:: python
 
-            from starlite import Starlite, get, Request
+            from litestar import Litestar, get, Request
 
 
             @get("/")
@@ -172,7 +172,7 @@ Request methods
 ^^^^^^^^^^^^^^^
 
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
-| Flask                           | Starlite                                                                                              |
+| Flask                           | Litestar                                                                                              |
 +=================================+=======================================================================================================+
 | ``request.args``                | ``request.query_params``                                                                              |
 +---------------------------------+-------------------------------------------------------------------------------------------------------+
@@ -267,30 +267,30 @@ Request methods
 Static files
 ~~~~~~~~~~~~
 
-Like Flask, Starlite also has capabilities for serving static files, but while Flask
+Like Flask, Litestar also has capabilities for serving static files, but while Flask
 will automatically serve files from a ``static`` folder, this has to be configured explicitly
-in Starlite.
+in Litestar.
 
 .. code-block:: python
 
-   from starlite import Starlite, StaticFilesConfig
+   from litestar import Litestar, StaticFilesConfig
 
-   app = Starlite(
+   app = Litestar(
        [], static_files_config=[StaticFilesConfig(path="/static", directories=["static"])]
    )
 
 ..  seealso::
 
     To learn more about static files, check out this chapter in the documentation:
-    `Static files <usage/0-the-starlite-app/3-static-files/>`_
+    `Static files <usage/0-the-litestar-app/3-static-files/>`_
 
 Templates
 ~~~~~~~~~
 
 Flask comes with the `Jinja <https://jinja.palletsprojects.com/en/3.1.x/>`_ templating
-engine built-in. You can use Jinja with Starlite as well, but you’ll need to install it
-explicitly. You can do by installing Starlite with ``pip install starlite[jinja]``.
-In addition to Jinja, Starlite supports `Mako <https://www.makotemplates.org/>`_ templates as well.
+engine built-in. You can use Jinja with Litestar as well, but you’ll need to install it
+explicitly. You can do by installing Litestar with ``pip install litestar[jinja]``.
+In addition to Jinja, Litestar supports `Mako <https://www.makotemplates.org/>`_ templates as well.
 
 .. tab-set::
     .. tab-item:: Flask
@@ -310,13 +310,13 @@ In addition to Jinja, Starlite supports `Mako <https://www.makotemplates.org/>`_
 
 
 
-    .. tab-item:: Starlite
-        :sync: starlite
+    .. tab-item:: Litestar
+        :sync: litestar
 
         .. code-block:: python
 
-            from starlite import Starlite, get, TemplateConfig, Template
-            from starlite.contrib.jinja import JinjaTemplateEngine
+            from litestar import Litestar, get, TemplateConfig, Template
+            from litestar.contrib.jinja import JinjaTemplateEngine
 
 
             @get("/hello/{name:str}")
@@ -324,7 +324,7 @@ In addition to Jinja, Starlite supports `Mako <https://www.makotemplates.org/>`_
                 return Template(name="hello.html", context={"name": name})
 
 
-            app = Starlite(
+            app = Litestar(
                 [hello],
                 template_config=TemplateConfig(directory="templates", engine=JinjaTemplateEngine),
             )
@@ -358,12 +358,12 @@ Setting cookies and headers
 
 
 
-    .. tab-item:: Starlite
-        :sync: starlite
+    .. tab-item:: Litestar
+        :sync: litestar
 
         .. code-block:: python
 
-            from starlite import Starlite, get, ResponseHeader, Cookie, Response
+            from litestar import Litestar, get, ResponseHeader, Cookie, Response
 
 
             @get(
@@ -421,12 +421,12 @@ For redirects, instead of ``redirect`` use ``Redirect``:
 
 
 
-    .. tab-item:: Starlite
-        :sync: starlite
+    .. tab-item:: Litestar
+        :sync: litestar
 
         .. code-block:: python
 
-            from starlite import Starlite, get, Redirect
+            from litestar import Litestar, get, Redirect
 
 
             @get("/")
@@ -439,7 +439,7 @@ For redirects, instead of ``redirect`` use ``Redirect``:
                 return Redirect(path="index")
 
 
-            app = Starlite([index, hello])
+            app = Litestar([index, hello])
 
 
 Raising HTTP errors
@@ -465,12 +465,12 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
 
 
 
-    .. tab-item:: Starlite
-        :sync: starlite
+    .. tab-item:: Litestar
+        :sync: litestar
 
         .. code-block:: python
 
-            from starlite import Starlite, get, HTTPException
+            from litestar import Litestar, get, HTTPException
 
 
             @get("/")
@@ -478,7 +478,7 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
                 raise HTTPException(status_code=400, detail="this did not work")
 
 
-            app = Starlite([index])
+            app = Litestar([index])
 
 
 ..  seealso::
@@ -506,12 +506,12 @@ Setting status codes
 
 
 
-    .. tab-item:: Starlite
-        :sync: starlite
+    .. tab-item:: Litestar
+        :sync: litestar
 
         .. code-block:: python
 
-            from starlite import Starlite, get, Response
+            from litestar import Litestar, get, Response
 
 
             @get("/static", status_code=404)
@@ -524,14 +524,14 @@ Setting status codes
                 return Response("not found", status_code=404)
 
 
-            app = Starlite([static_status, dynamic_status])
+            app = Litestar([static_status, dynamic_status])
 
 
 Serialization
 ~~~~~~~~~~~~~
 
 Flask uses a mix of explicit conversion (such as ``jsonify``) and inference (i.e. the type
-of the returned data) to determine how data should be serialized. Starlite instead assumes
+of the returned data) to determine how data should be serialized. Litestar instead assumes
 the data returned is intended to be serialized into JSON and will do so unless told otherwise.
 
 .. tab-set::
@@ -562,12 +562,12 @@ the data returned is intended to be serialized into JSON and will do so unless t
 
 
 
-    .. tab-item:: Starlite
-        :sync: starlite
+    .. tab-item:: Litestar
+        :sync: litestar
 
         .. code-block:: python
 
-            from starlite import Starlite, get, MediaType
+            from litestar import Litestar, get, MediaType
 
 
             @get("/json")
@@ -585,7 +585,7 @@ the data returned is intended to be serialized into JSON and will do so unless t
                 return "<strong>hello, world</strong>"
 
 
-            app = Starlite([get_json, get_text, get_html])
+            app = Litestar([get_json, get_text, get_html])
 
 
 Error handling
@@ -611,19 +611,19 @@ Error handling
 
 
 
-    .. tab-item:: Starlite
-        :sync: starlite
+    .. tab-item:: Litestar
+        :sync: litestar
 
         .. code-block:: python
 
-            from starlite import Starlite, HTTPException, Request, Response
+            from litestar import Litestar, HTTPException, Request, Response
 
 
             def handle_exception(request: Request, exception: Exception) -> Response:
                 ...
 
 
-            app = Starlite([], exception_handlers={HTTPException: handle_exception})
+            app = Litestar([], exception_handlers={HTTPException: handle_exception})
 
 
 ..  seealso::

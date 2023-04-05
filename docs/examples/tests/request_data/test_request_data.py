@@ -8,7 +8,7 @@ from examples.request_data.request_data_7 import app as app_7
 from examples.request_data.request_data_8 import app as app_8
 from examples.request_data.request_data_9 import app as app_9
 from examples.request_data.request_data_10 import app as app_10
-from starlite.testing import TestClient
+from litestar.testing import TestClient
 
 
 def test_request_data_1() -> None:

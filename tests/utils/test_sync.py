@@ -1,4 +1,4 @@
-from starlite.utils.sync import AsyncCallable
+from litestar.utils.sync import AsyncCallable
 
 
 async def test_function_wrapper_wraps_method_correctly() -> None:

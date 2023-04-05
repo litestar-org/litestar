@@ -3,12 +3,12 @@ from typing import Any, Optional
 
 import pytest
 
-from starlite import MediaType, get
-from starlite.datastructures import Cookie
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response import Response
-from starlite.serialization import default_serializer
-from starlite.status_codes import (
+from litestar import MediaType, get
+from litestar.datastructures import Cookie
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.response import Response
+from litestar.serialization import default_serializer
+from litestar.status_codes import (
     HTTP_100_CONTINUE,
     HTTP_101_SWITCHING_PROTOCOLS,
     HTTP_102_PROCESSING,
@@ -17,8 +17,8 @@ from starlite.status_codes import (
     HTTP_204_NO_CONTENT,
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
-from starlite.testing import create_test_client
-from starlite.types import Empty
+from litestar.testing import create_test_client
+from litestar.types import Empty
 
 
 def test_response_headers() -> None:
@@ -35,7 +35,7 @@ def test_response_headers() -> None:
 
 
 def test_response_headers_do_not_lowercase_values() -> None:
-    # reproduces: https://github.com/starlite-api/starlite/issues/693
+    # reproduces: https://github.com/litestar-api/litestar/issues/693
 
     @get("/")
     def handler() -> Response:

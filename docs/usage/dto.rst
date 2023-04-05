@@ -1,14 +1,14 @@
 Data Transfer Objects (DTOs)
 ============================
 
-Starlite includes a :class:`DTOFactory <starlite.dto.DTOFactory>` class that allows you to create DTOs from pydantic models,
+Litestar includes a :class:`DTOFactory <litestar.dto.DTOFactory>` class that allows you to create DTOs from pydantic models,
 dataclasses, :class:`typing.TypedDict`, and any other class supported via plugins.
 
 An instance of the factory must first be created, optionally passing plugins to it as a kwarg. It can then be used to
-create a :class:`DTO <starlite.dto.DTO>` by calling the instance like a function. Additionally, it can exclude (drop)
+create a :class:`DTO <litestar.dto.DTO>` by calling the instance like a function. Additionally, it can exclude (drop)
 attributes, remap field names and field types, and add new fields.
 
-The created :class:`DTO <starlite.dto.DTO>` can be used for data parsing, validation and OpenAPI schema generation like a
+The created :class:`DTO <litestar.dto.DTO>` can be used for data parsing, validation and OpenAPI schema generation like a
 regularly declared pydantic model.
 
 .. attention::
@@ -22,7 +22,7 @@ regularly declared pydantic model.
     MyPy doesn't support using types defined using `Type[]` as a type, and MyPy will regard these as invalid types.
     There is currently no way to circumvent this (not even with a plugin) except using a # type: ignore comment.
 
-The :class:`DTOFactory <starlite.dto.DTOFactory>` class supports :doc:`plugins </usage/plugins/index>`, for example, this
+The :class:`DTOFactory <litestar.dto.DTOFactory>` class supports :doc:`plugins </usage/plugins/index>`, for example, this
 is how it could be used with an SQLAlchemy declarative class using the
 :doc:`SQLAlchemyPlugin </usage/plugins/sqlalchemy>`:
 
@@ -49,7 +49,7 @@ editor completion and mypy support - this requires the implementation of a mypy 
 Excluding Fields
 ----------------
 
-You can exclude any field in the original model class from the :class:`DTO <starlite.dto.DTO>`:
+You can exclude any field in the original model class from the :class:`DTO <litestar.dto.DTO>`:
 
 .. literalinclude:: /examples/data_transfer_objects/dto_exclude_fields.py
     :caption: Excluding fields
@@ -146,7 +146,7 @@ DTO Methods
 DTO.from_model_instance
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Once you create a DTO class you can use its class method :meth:`from_model_instance <starlite.dto.DTO.from_model_instance>`
+Once you create a DTO class you can use its class method :meth:`from_model_instance <litestar.dto.DTO.from_model_instance>`
 to create an instance from an existing instance of the model from which the DTO was generated:
 
 .. literalinclude:: /examples/data_transfer_objects/dto_from_model_instance.py
@@ -159,8 +159,8 @@ In the above, ``dto_instance`` is a validated pydantic model instance.
 DTO.to_model_instance
 ^^^^^^^^^^^^^^^^^^^^^
 
-When you have an instance of a :class:`DTO <starlite.dto.DTO>` model, you can convert it into a model instance using the
-:meth:`to_model_instance <starlite.dto.DTO.to_model_instance>` method:
+When you have an instance of a :class:`DTO <litestar.dto.DTO>` model, you can convert it into a model instance using the
+:meth:`to_model_instance <litestar.dto.DTO.to_model_instance>` method:
 
 .. literalinclude:: /examples/data_transfer_objects/dto_to_model_instance.py
     :caption: DTO.to_model_instance()
@@ -168,7 +168,7 @@ When you have an instance of a :class:`DTO <starlite.dto.DTO>` model, you can co
 
 
 In the above ``company_instance`` is an instance of the SQLAlchemy declarative class ``Company``. It is correctly typed as
-``Company`` because the :class:`DTO <starlite.dto.DTO>` class uses generic to store this data.
+``Company`` because the :class:`DTO <litestar.dto.DTO>` class uses generic to store this data.
 
 .. attention::
 
@@ -201,7 +201,7 @@ Sometimes you may only need to partially modify a resource. In these cases, DTOs
 .. code-block:: python
 
    from pydantic import BaseModel
-   from starlite.types.partial import Partial
+   from litestar.types.partial import Partial
 
 
    class CompanyDTO(BaseModel):
@@ -230,9 +230,9 @@ The created ``PartialCompanyDTO`` is equivalent to the following declaration:
 .. code-block:: python
 
    from pydantic import UUID4, BaseModel
-   from starlite.controller import Controller
-   from starlite.handlers import patch
-   from starlite.types.partial import Partial
+   from litestar.controller import Controller
+   from litestar.handlers import patch
+   from litestar.types.partial import Partial
 
 
    class UserOrder(BaseModel):

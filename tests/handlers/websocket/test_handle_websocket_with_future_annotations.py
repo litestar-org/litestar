@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from starlite import WebSocket, websocket
-from starlite.testing import create_test_client
+from litestar import WebSocket, websocket
+from litestar.testing import create_test_client
 
 
 def test_handle_websocket() -> None:

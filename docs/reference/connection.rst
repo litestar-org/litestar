@@ -1,5 +1,5 @@
 connection
 ==========
 
-.. automodule:: starlite.connection
+.. automodule:: litestar.connection
     :members:

@@ -3,7 +3,7 @@ from typing import Callable
 
 import pytest
 
-from starlite.utils import is_async_callable
+from litestar.utils import is_async_callable
 
 
 class AsyncTestCallable:

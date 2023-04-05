@@ -5,14 +5,14 @@ from typing import Any
 
 import pytest
 
-from starlite import get
-from starlite.connection.base import empty_send
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.file_system import BaseLocalFileSystem, FileSystemAdapter
-from starlite.response import FileResponse
-from starlite.response.file import async_file_iterator
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
+from litestar import get
+from litestar.connection.base import empty_send
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
+from litestar.response import FileResponse
+from litestar.response.file import async_file_iterator
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize("content_disposition_type", ("inline", "attachment"))

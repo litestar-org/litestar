@@ -1,5 +1,5 @@
 cors
 ====
 
-.. automodule:: starlite.middleware.cors
+.. automodule:: litestar.middleware.cors
     :members:

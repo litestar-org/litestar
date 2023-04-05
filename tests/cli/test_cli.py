@@ -5,11 +5,11 @@ from unittest.mock import MagicMock
 
 from click import group
 
-import starlite.cli._utils
-import starlite.cli.main
-from starlite import Starlite
-from starlite.cli._utils import _format_is_enabled
-from starlite.cli.main import starlite_group as cli_command
+import litestar.cli._utils
+import litestar.cli.main
+from litestar import Litestar
+from litestar.cli._utils import _format_is_enabled
+from litestar.cli.main import litestar_group as cli_command
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -28,7 +28,7 @@ def test_format_is_enabled() -> None:
 
 
 def test_info_command(mocker: "MockerFixture", runner: "CliRunner", app_file: "Path") -> None:
-    mock = mocker.patch("starlite.cli.commands.core.show_app_info")
+    mock = mocker.patch("litestar.cli.commands.core.show_app_info")
     result = runner.invoke(cli_command, ["info"])
 
     assert result.exception is None
@@ -43,7 +43,7 @@ def test_register_commands_from_entrypoint(mocker: "MockerFixture", runner: "Cli
         pass
 
     @custom_group.command()
-    def custom_command(app: Starlite) -> None:
+    def custom_command(app: Litestar) -> None:
         mock_command_callback()
 
     mock_entry_point = MagicMock()
@@ -53,8 +53,8 @@ def test_register_commands_from_entrypoint(mocker: "MockerFixture", runner: "Cli
     else:
         mocker.patch("importlib.metadata.entry_points", return_value=[mock_entry_point])
 
-    importlib.reload(starlite.cli._utils)
-    cli_command = importlib.reload(starlite.cli.main).starlite_group
+    importlib.reload(litestar.cli._utils)
+    cli_command = importlib.reload(litestar.cli.main).litestar_group
 
     result = runner.invoke(cli_command, f"--app={app_file.stem}:app custom-group custom-command")
 

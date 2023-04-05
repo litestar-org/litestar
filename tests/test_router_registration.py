@@ -1,10 +1,10 @@
 import pytest
 
-from starlite import (
+from litestar import (
     Controller,
     HttpMethod,
+    Litestar,
     Router,
-    Starlite,
     WebSocket,
     get,
     patch,
@@ -12,8 +12,8 @@ from starlite import (
     put,
     websocket,
 )
-from starlite import route as route_decorator
-from starlite.exceptions import ImproperlyConfiguredException
+from litestar import route as route_decorator
+from litestar.exceptions import ImproperlyConfiguredException
 
 
 class MyController(Controller):
@@ -140,7 +140,7 @@ def test_route_handler_method_view() -> None:
     first_router = Router(path="/first", route_handlers=[MyController, post_handler, put_handler])
     second_router = Router(path="/second", route_handlers=[MyController, post_handler, put_handler])
 
-    app = Starlite(route_handlers=[first_router, second_router, handler])
+    app = Litestar(route_handlers=[first_router, second_router, handler])
 
     assert app.route_handler_method_view[str(handler)] == ["/root"]
     assert app.route_handler_method_view[str(MyController.get_method)] == [

@@ -1,5 +1,5 @@
 types
 =====
 
-.. automodule:: starlite.contrib.sqlalchemy_1.types
+.. automodule:: litestar.contrib.sqlalchemy_1.types
     :members:

@@ -2,13 +2,13 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from starlite import Controller, Starlite, delete, get, head, patch, post, put
-from starlite.enums import HttpMethod
-from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from starlite.testing import AsyncTestClient
+from litestar import Controller, Litestar, delete, get, head, patch, post, put
+from litestar.enums import HttpMethod
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from litestar.testing import AsyncTestClient
 
 if TYPE_CHECKING:
-    from starlite.types import (
+    from litestar.types import (
         AnyIOBackend,
         HTTPResponseBodyEvent,
         HTTPResponseStartEvent,
@@ -28,7 +28,7 @@ async def test_use_testclient_in_endpoint(test_client_backend: "AnyIOBackend") -
     async def mock_service_endpoint() -> dict:
         return {"mock": "example"}
 
-    mock_service = Starlite(route_handlers=[mock_service_endpoint])
+    mock_service = Litestar(route_handlers=[mock_service_endpoint])
 
     @get("/")
     async def homepage() -> Any:
@@ -36,7 +36,7 @@ async def test_use_testclient_in_endpoint(test_client_backend: "AnyIOBackend") -
         response = await client.request("GET", "/")
         return response.json()
 
-    app = Starlite(route_handlers=[homepage])
+    app = Litestar(route_handlers=[homepage])
 
     client = AsyncTestClient(app)
     response = await client.request(HttpMethod.GET, "/")
@@ -109,7 +109,7 @@ async def test_client_interface_context_manager(method: str, test_client_backend
         def mock_service_endpoint_head(self) -> None:
             ...
 
-    mock_service = Starlite(route_handlers=[MockController])
+    mock_service = Litestar(route_handlers=[MockController])
     async with AsyncTestClient(mock_service, backend=test_client_backend) as client:
         if method == "get":
             response = await client.get("/")

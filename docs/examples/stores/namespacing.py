@@ -1,5 +1,5 @@
-from starlite import Starlite
-from starlite.stores.redis import RedisStore
+from litestar import Litestar
+from litestar.stores.redis import RedisStore
 
 root_store = RedisStore.with_client()
 cache_store = root_store.with_namespace("cache")
@@ -10,4 +10,4 @@ async def before_shutdown() -> None:
     await cache_store.delete_all()
 
 
-app = Starlite(before_shutdown=[before_shutdown])
+app = Litestar(before_shutdown=[before_shutdown])

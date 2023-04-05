@@ -3,22 +3,22 @@ from typing import TYPE_CHECKING, Any, Iterable, List, Literal, Optional, Sequen
 import pytest
 from pydantic import BaseModel
 
-from starlite import get
-from starlite._signature import create_signature_model
-from starlite.di import Provide
-from starlite.exceptions import ImproperlyConfiguredException, ValidationException
-from starlite.params import Dependency, Parameter
-from starlite.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_500_INTERNAL_SERVER_ERROR
-from starlite.testing import RequestFactory, TestClient, create_test_client
-from starlite.types.helper_types import OptionalSequence
-from starlite.types.parsed_signature import ParsedSignature
+from litestar import get
+from litestar._signature import create_signature_model
+from litestar.di import Provide
+from litestar.exceptions import ImproperlyConfiguredException, ValidationException
+from litestar.params import Dependency, Parameter
+from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.testing import RequestFactory, TestClient, create_test_client
+from litestar.types.helper_types import OptionalSequence
+from litestar.types.parsed_signature import ParsedSignature
 from tests.test_plugins import AModel, APlugin
 
 if TYPE_CHECKING:
     from types import ModuleType
     from typing import Callable
 
-    from starlite._signature.models.pydantic_signature_model import PydanticSignatureModel
+    from litestar._signature.models.pydantic_signature_model import PydanticSignatureModel
 
 
 @pytest.mark.parametrize("preferred_validation_backend", ("attrs", "pydantic"))
@@ -245,8 +245,8 @@ def test_signature_model_resolves_forward_ref_annotations(create_module: "Callab
 from __future__ import annotations
 
 from pydantic import BaseModel
-from starlite import Starlite, get
-from starlite.di import Provide
+from litestar import Litestar, get
+from litestar.di import Provide
 
 class Test(BaseModel):
     hello: str
@@ -258,7 +258,7 @@ async def get_dep() -> Test:
 def hello_world(test: Test) -> Test:
     return test
 
-app = Starlite(route_handlers=[hello_world], openapi_config=None)
+app = Litestar(route_handlers=[hello_world], openapi_config=None)
 """
     )
     with TestClient(app=module.app) as client:

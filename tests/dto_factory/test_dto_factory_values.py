@@ -1,8 +1,8 @@
 import pytest
 from pydantic import BaseModel, create_model
 
-from starlite.dto import DTOFactory
-from starlite.exceptions import ImproperlyConfiguredException
+from litestar.dto import DTOFactory
+from litestar.exceptions import ImproperlyConfiguredException
 from tests import Person, Species
 from tests import Pet as PydanticPet
 

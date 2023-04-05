@@ -1,7 +1,7 @@
-from starlite import Starlite
-from starlite.stores.memory import MemoryStore
+from litestar import Litestar
+from litestar.stores.memory import MemoryStore
 
-app = Starlite([], stores={"memory": MemoryStore()})
+app = Litestar([], stores={"memory": MemoryStore()})
 
 memory_store = app.stores.get("memory")
 # this is the previously defined store

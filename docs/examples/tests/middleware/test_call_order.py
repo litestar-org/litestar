@@ -1,5 +1,5 @@
 from examples.middleware.call_order import app
-from starlite.testing import TestClient
+from litestar.testing import TestClient
 
 
 def test_call_order() -> None:

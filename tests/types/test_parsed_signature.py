@@ -7,11 +7,11 @@ from typing import Any, List, Optional, Union
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
 
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.types.builtin_types import NoneType
-from starlite.types.empty import Empty
-from starlite.types.parsed_signature import ParsedParameter, ParsedSignature, ParsedType
-from starlite.utils.signature_parsing import get_fn_type_hints
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.types.builtin_types import NoneType
+from litestar.types.empty import Empty
+from litestar.types.parsed_signature import ParsedParameter, ParsedSignature, ParsedType
+from litestar.utils.signature_parsing import get_fn_type_hints
 
 
 class _TD(TypedDict):

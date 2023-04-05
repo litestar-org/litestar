@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from starlite import get
-from starlite.contrib.sqlalchemy.init_plugin import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-from starlite.testing import create_test_client
+from litestar import get
+from litestar.contrib.sqlalchemy.init_plugin import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from typing import Any
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
-    from starlite.types import Scope
+    from litestar.types import Scope
 
 
 def test_default_before_send_handler() -> None:

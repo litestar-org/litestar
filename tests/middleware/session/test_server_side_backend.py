@@ -4,15 +4,15 @@ from typing import TYPE_CHECKING
 import anyio
 import pytest
 
-from starlite import Request, Starlite, get
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.middleware.session.server_side import ServerSideSessionConfig
-from starlite.serialization import encode_json
-from starlite.stores.memory import MemoryStore
-from starlite.testing import TestClient
+from litestar import Litestar, Request, get
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.serialization import encode_json
+from litestar.stores.memory import MemoryStore
+from litestar.testing import TestClient
 
 if TYPE_CHECKING:
-    from starlite.middleware.session.server_side import ServerSideSessionBackend
+    from litestar.middleware.session.server_side import ServerSideSessionBackend
 
 
 def generate_session_data() -> bytes:
@@ -30,7 +30,7 @@ async def test_non_default_store(memory_store: MemoryStore) -> None:
         request.set_session({"foo": "bar"})
         return
 
-    app = Starlite([handler], middleware=[ServerSideSessionConfig().middleware], stores={"sessions": memory_store})
+    app = Litestar([handler], middleware=[ServerSideSessionConfig().middleware], stores={"sessions": memory_store})
 
     with TestClient(app) as client:
         res = client.get("/")
@@ -44,7 +44,7 @@ async def test_set_store_name(memory_store: MemoryStore) -> None:
         request.set_session({"foo": "bar"})
         return
 
-    app = Starlite(
+    app = Litestar(
         [handler],
         middleware=[ServerSideSessionConfig(store="some_store").middleware],
         stores={"some_store": memory_store},

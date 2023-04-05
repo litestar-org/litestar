@@ -5,12 +5,12 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_lazyfixture import lazy_fixture
 
-from starlite import Request, Starlite, get
-from starlite.events.emitter import SimpleEventEmitter
-from starlite.events.listener import EventListener, listener
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
+from litestar import Litestar, Request, get
+from litestar.events.emitter import SimpleEventEmitter
+from litestar.events.listener import EventListener, listener
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
 
 
 @pytest.fixture()
@@ -99,7 +99,7 @@ async def test_raises_when_decorator_called_without_callable() -> None:
 
 
 async def test_raises_when_not_initialized() -> None:
-    app = Starlite([])
+    app = Litestar([])
 
     with pytest.raises(ImproperlyConfiguredException):
         app.emit("x")

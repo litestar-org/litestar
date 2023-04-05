@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 
-from starlite import Starlite
+from litestar import Litestar
 
 if TYPE_CHECKING:
-    from starlite.config.app import AppConfig
+    from litestar.config.app import AppConfig
 
 
 async def close_db_connection() -> None:
@@ -20,4 +20,4 @@ def receive_app_config(app_config: "AppConfig") -> "AppConfig":
     return app_config
 
 
-app = Starlite([], on_app_init=[receive_app_config])
+app = Litestar([], on_app_init=[receive_app_config])

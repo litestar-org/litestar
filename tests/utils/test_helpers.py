@@ -1,6 +1,6 @@
 from functools import partial
 
-from starlite.utils.helpers import unwrap_partial
+from litestar.utils.helpers import unwrap_partial
 
 
 def test_unwrap_partial() -> None:

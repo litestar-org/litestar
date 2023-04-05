@@ -1,6 +1,6 @@
 from examples.application_state.using_custom_state import app
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import TestClient
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import TestClient
 
 
 def test_using_custom_state_example() -> None:

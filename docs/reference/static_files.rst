@@ -1,5 +1,5 @@
 static_files
 ============
 
-.. automodule:: starlite.static_files
+.. automodule:: litestar.static_files
     :members:
