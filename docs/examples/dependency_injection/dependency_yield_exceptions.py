@@ -1,7 +1,7 @@
 from typing import Dict, Generator
 
-from starlite import Starlite, get
-from starlite.di import Provide
+from litestar import Litestar, get
+from litestar.di import Provide
 
 STATE = {"result": None, "connection": "closed"}
 
@@ -29,4 +29,4 @@ def index(name: str, message: str) -> Dict[str, str]:
     raise ValueError()
 
 
-app = Starlite(route_handlers=[index])
+app = Litestar(route_handlers=[index])

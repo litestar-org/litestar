@@ -1,5 +1,5 @@
 from examples.data_transfer_objects.dto_auto_conversion import app
-from starlite.testing import TestClient
+from litestar.testing import TestClient
 
 
 def test_app() -> None:

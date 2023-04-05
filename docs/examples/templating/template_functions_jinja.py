@@ -1,10 +1,10 @@
 from pathlib import Path
 from typing import Dict
 
-from starlite import Starlite, get
-from starlite.contrib.jinja import JinjaTemplateEngine
-from starlite.response_containers import Template
-from starlite.template.config import TemplateConfig
+from litestar import Litestar, get
+from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.response_containers import Template
+from litestar.template.config import TemplateConfig
 
 
 def my_template_function(ctx: Dict) -> str:
@@ -30,7 +30,7 @@ def index() -> Template:
     return Template(name="index.html.jinja2")
 
 
-app = Starlite(
+app = Litestar(
     route_handlers=[index],
     template_config=template_config,
 )

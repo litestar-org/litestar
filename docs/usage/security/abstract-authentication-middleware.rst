@@ -1,18 +1,18 @@
 AbstractAuthenticationMiddleware
 ================================
 
-Starlite exports :class:`AbstractAuthenticationMiddleware <.middleware.authentication.AbstractAuthenticationMiddleware>`,
+Litestar exports :class:`AbstractAuthenticationMiddleware <.middleware.authentication.AbstractAuthenticationMiddleware>`,
 which is an Abstract Base Class (ABC) that implements the :class:`MiddlewareProtocol <.middleware.base.MiddlewareProtocol>`.
 To add authentication to your app using this class as a basis, subclass it and implement the abstract method
 :meth:`authenticate_request <.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request>`:
 
 .. code-block:: python
 
-   from starlite.authentication import (
+   from litestar.authentication import (
        AbstractAuthenticationMiddleware,
        AuthenticationResult,
    )
-   from starlite.connection import ASGIConnection
+   from litestar.connection import ASGIConnection
 
 
    class MyAuthenticationMiddleware(AbstractAuthenticationMiddleware):
@@ -75,7 +75,7 @@ JWT Token:
 
         from jose import JWTError, jwt
         from pydantic import BaseModel, UUID4
-        from starlite.exceptions import NotAuthorizedException
+        from litestar.exceptions import NotAuthorizedException
 
         from app.config import settings
 
@@ -122,12 +122,12 @@ We can now create our authentication middleware:
 
     from sqlalchemy import select
     from sqlalchemy.ext.asyncio import AsyncSession
-    from starlite.authentication import (
+    from litestar.authentication import (
         AbstractAuthenticationMiddleware,
         AuthenticationResult,
     )
-    from starlite.exceptions import NotAuthorizedException
-    from starlite.connection import ASGIConnection
+    from litestar.exceptions import NotAuthorizedException
+    from litestar.connection import ASGIConnection
 
     from app.db.models import User
     from app.security.jwt import decode_jwt_token
@@ -164,13 +164,13 @@ We can now create our authentication middleware:
         return AuthenticationResult(user=user, auth=token)
 
 
-Finally, we need to pass our middleware to the Starlite constructor:
+Finally, we need to pass our middleware to the Litestar constructor:
 
 .. code-block:: python
     :caption: my_app/main.py
 
-    from starlite import Starlite
-    from starlite.middleware.base import DefineMiddleware
+    from litestar import Litestar
+    from litestar.middleware.base import DefineMiddleware
 
     from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
 
@@ -178,14 +178,14 @@ Finally, we need to pass our middleware to the Starlite constructor:
     # the following excludes all routes mounted at or under `/schema*`
     auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, exclude="schema")
 
-    app = Starlite(request_handlers=[...], middleware=[auth_mw])
+    app = Litestar(request_handlers=[...], middleware=[auth_mw])
 
 That's it. The ``JWTAuthenticationMiddleware`` will now run for every request, and we would be able to access these in a
 http route handler in the following way:
 
 .. code-block:: python
 
-   from starlite import Request, get
+   from litestar import Request, get
 
    from my_app.db.models import User
    from my_app.security.jwt import Token
@@ -202,7 +202,7 @@ Or for a websocket route:
 
 .. code-block:: python
 
-   from starlite import WebSocket, websocket
+   from litestar import WebSocket, websocket
 
    from my_app.db.models import User
    from my_app.security.jwt import Token
@@ -220,9 +220,9 @@ And if you'd like to exclude individual routes outside those configured:
 .. code-block:: python
 
    import anyio
-   from starlite import Starlite, MediaType, Response, get
-   from starlite.exceptions import NotFoundException
-   from starlite.middleware.base import DefineMiddleware
+   from litestar import Litestar, MediaType, Response, get
+   from litestar.exceptions import NotFoundException
+   from litestar.middleware.base import DefineMiddleware
 
    from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
 
@@ -244,7 +244,7 @@ And if you'd like to exclude individual routes outside those configured:
        raise NotFoundException("Site index was not found")
 
 
-   app = Starlite(route_handlers=[site_index], middleware=[auth_mw])
+   app = Litestar(route_handlers=[site_index], middleware=[auth_mw])
 
 And of course use the same kind of mechanism for dependencies:
 
@@ -252,7 +252,7 @@ And of course use the same kind of mechanism for dependencies:
 
    from typing import Any
 
-   from starlite import Request, Provide, Router
+   from litestar import Request, Provide, Router
 
    from my_app.db.models import User
    from my_app.security.jwt import Token

@@ -2,8 +2,8 @@ from random import randint
 
 from pydantic import BaseModel
 
-from starlite import Response, Router, Starlite, get
-from starlite.datastructures import Cookie
+from litestar import Litestar, Response, Router, get
+from litestar.datastructures import Cookie
 
 
 class Resource(BaseModel):
@@ -49,4 +49,4 @@ router = Router(
     ],
 )
 
-app = Starlite(route_handlers=[router])
+app = Litestar(route_handlers=[router])

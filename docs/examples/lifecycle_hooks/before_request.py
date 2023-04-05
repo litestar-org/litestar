@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-from starlite import Request, Starlite, get
+from litestar import Litestar, Request, get
 
 
 async def before_request_handler(request: Request) -> Optional[Dict[str, str]]:
@@ -17,7 +17,7 @@ async def handler(request: Request, name: str) -> Dict[str, str]:
     return {"message": message}
 
 
-app = Starlite(route_handlers=[handler], before_request=before_request_handler)
+app = Litestar(route_handlers=[handler], before_request=before_request_handler)
 
 # run: /?name=Luke
 # run: /?name=Ben

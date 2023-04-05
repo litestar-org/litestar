@@ -5,11 +5,11 @@ from unittest.mock import MagicMock, patch
 import anyio
 from freezegun import freeze_time
 
-from starlite import get
-from starlite.stores.file import FileStore
-from starlite.stores.memory import MemoryStore
-from starlite.stores.redis import RedisStore
-from starlite.testing import TestClient
+from litestar import get
+from litestar.stores.file import FileStore
+from litestar.stores.memory import MemoryStore
+from litestar.stores.redis import RedisStore
+from litestar.testing import TestClient
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
@@ -25,7 +25,7 @@ def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
         yield cast("FrozenDateTimeFactory", frozen)
 
 
-@patch("starlite.stores.redis.Redis")
+@patch("litestar.stores.redis.Redis")
 async def test_configure_integrations_set_names(mock_redis: MagicMock) -> None:
     from examples.stores.configure_integrations_set_names import app
 
@@ -88,7 +88,7 @@ async def test_registry_access_integration() -> None:
     assert app.middleware[0].kwargs["config"].get_store_from_app(app) is rate_limit_store
 
 
-@patch("starlite.stores.redis.Redis")
+@patch("litestar.stores.redis.Redis")
 async def test_configure_integrations(mock_redis: MagicMock) -> None:
     from examples.stores.registry_configure_integrations import app
 
@@ -107,11 +107,11 @@ async def test_registry_default_factory() -> None:
     assert app.stores.get("bar") is memory_store
 
 
-@patch("starlite.stores.redis.Redis")
+@patch("litestar.stores.redis.Redis")
 async def test_default_factory_namespacing(mock_redis: MagicMock) -> None:
     from examples.stores.registry_default_factory_namespacing import app, root_store
 
     foo_store = app.stores.get("foo")
     assert isinstance(foo_store, RedisStore)
     assert foo_store._redis is root_store._redis
-    assert foo_store.namespace == "STARLITE_foo"
+    assert foo_store.namespace == "LITESTAR_foo"

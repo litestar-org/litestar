@@ -1,6 +1,6 @@
 from typing import Dict
 
-from starlite import MediaType, Response, Starlite, get
+from litestar import Litestar, MediaType, Response, get
 
 
 async def after_request(response: Response) -> Response:
@@ -19,7 +19,7 @@ async def goodbye() -> Dict[str, str]:
     return {"message": "Goodbye"}
 
 
-app = Starlite(route_handlers=[hello, goodbye], after_request=after_request)
+app = Litestar(route_handlers=[hello, goodbye], after_request=after_request)
 
 
 # run: /hello

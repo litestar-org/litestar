@@ -1,5 +1,5 @@
 base
 ====
 
-.. automodule:: starlite.middleware.session.base
+.. automodule:: litestar.middleware.session.base
     :members:

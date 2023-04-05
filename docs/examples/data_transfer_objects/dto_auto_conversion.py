@@ -3,11 +3,11 @@ from typing import List
 from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import Mapped, declarative_base
 
-from starlite import Starlite, get
-from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from starlite.dto import DTOFactory
-from starlite.exceptions import HTTPException
-from starlite.status_codes import HTTP_404_NOT_FOUND
+from litestar import Litestar, get
+from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from litestar.dto import DTOFactory
+from litestar.exceptions import HTTPException
+from litestar.status_codes import HTTP_404_NOT_FOUND
 
 sqlalchemy_plugin = SQLAlchemyPlugin()
 dto_factory = DTOFactory(plugins=[sqlalchemy_plugin])
@@ -48,7 +48,7 @@ def get_companies() -> List[ReadCompanyDTO]:  # type: ignore
     return companies
 
 
-app = Starlite(
+app = Litestar(
     route_handlers=[get_company, get_companies],
     plugins=[sqlalchemy_plugin],
 )

@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from starlite import Starlite, get
-from starlite.datastructures import MutableScopeHeaders
+from litestar import Litestar, get
+from litestar.datastructures import MutableScopeHeaders
 
 if TYPE_CHECKING:
     from typing import Dict
 
-    from starlite.datastructures import State
-    from starlite.types import Message, Scope
+    from litestar.datastructures import State
+    from litestar.types import Message, Scope
 
 
 @get("/test")
@@ -33,4 +33,4 @@ def on_startup(state: State) -> None:
     state.message = "value injected during send"
 
 
-app = Starlite(route_handlers=[handler], on_startup=[on_startup], before_send=[before_send_hook_handler])
+app = Litestar(route_handlers=[handler], on_startup=[on_startup], before_send=[before_send_hook_handler])

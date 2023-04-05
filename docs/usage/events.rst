@@ -1,14 +1,14 @@
 Event Emitters and Listeners
 ============================
 
-Starlite supports a simple implementation of the event emitter / listener pattern:
+Litestar supports a simple implementation of the event emitter / listener pattern:
 
 .. code-block:: python
 
     from dataclasses import dataclass
 
-    from starlite import Request, post
-    from starlite.events import listener
+    from litestar import Request, post
+    from litestar.events import listener
 
     from db import user_repository
     from utils.email import send_welcome_mail
@@ -51,7 +51,7 @@ Event listeners can listen to multiple events:
 
 .. code-block:: python
 
-    from starlite.events import listener
+    from litestar.events import listener
 
 
     @listener("user_created", "password_changed")
@@ -73,8 +73,8 @@ You can also listen to the same events using multiple listeners:
     from uuid import UUID
     from dataclasses import dataclass
 
-    from starlite import Request, post
-    from starlite.events import listener
+    from litestar import Request, post
+    from litestar.events import listener
 
     from db import user_repository
     from utils.client import client
@@ -112,7 +112,7 @@ sending an HTTP request to a service management system to create an issue.
 Passing Arguments to Listeners
 ++++++++++++++++++++++++++++++
 
-The method :meth:`emit <starlite.events.BaseEventEmitterBackend.emit>` has the following signature:
+The method :meth:`emit <litestar.events.BaseEventEmitterBackend.emit>` has the following signature:
 
 .. code-block:: python
 
@@ -172,17 +172,17 @@ had ``**kwargs`` in both:
 Creating Event Emitters
 -----------------------
 
-An "event emitter" is a class that inherits from :class:`BaseEventEmitterBackend <starlite.events.BaseEventEmitterBackend>`
+An "event emitter" is a class that inherits from :class:`BaseEventEmitterBackend <litestar.events.BaseEventEmitterBackend>`
 and implements its abstract methods:
 
-- :meth:`on_startup <starlite.events.BaseEventEmitterBackend.on_startup>`: Called on application startup. This method
+- :meth:`on_startup <litestar.events.BaseEventEmitterBackend.on_startup>`: Called on application startup. This method
   allows for performing any required async setup.
-- :meth:`on_shutdown <starlite.events.BaseEventEmitterBackend.on_shutdown>`: Called on application shutdown. This method
+- :meth:`on_shutdown <litestar.events.BaseEventEmitterBackend.on_shutdown>`: Called on application shutdown. This method
   allows for performing any required async teardown and cleanup.
-- :meth:`emit <starlite.events.BaseEventEmitterBackend.emit>`: This is the method that performs the actual emitting
+- :meth:`emit <litestar.events.BaseEventEmitterBackend.emit>`: This is the method that performs the actual emitting
   logic.
 
-By default Starlite uses the :class:`SimpleEventEmitter <starlite.events.SimpleEventEmitter>`, which offers an in-memory
+By default Litestar uses the :class:`SimpleEventEmitter <litestar.events.SimpleEventEmitter>`, which offers an in-memory
 based async queue.
 
 This solution works well if the system does not need to rely on complex behaviour, such as a retry
@@ -191,6 +191,6 @@ using either a DB/Key store that supports events (Redis, Postgres etc.), or a me
 technology.
 
 ..  attention::
-    The :class:`SimpleEventEmitter <starlite.events.SimpleEventEmitter>` works only with ``asyncio`` due to the
+    The :class:`SimpleEventEmitter <litestar.events.SimpleEventEmitter>` works only with ``asyncio`` due to the
     limitation of ``trio`` (intentionally) not supporting "worker tasks" - i.e. tasks that run in a detached state. If
     you want to use this functionality with ``trio``, you will need to create a custom implementation for your use case.

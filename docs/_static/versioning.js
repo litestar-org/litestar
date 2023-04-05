@@ -27,7 +27,7 @@ const addVersionWarning = (currentVersion, latestVersion) => {
     parseInt(currentVersion) > parseInt(latestVersion)
       ? "a preview"
       : "an outdated"
-  } version of Starlite.`;
+  } version of Litestar.`;
   container.appendChild(warningText);
 
   const latestLink = document.createElement("a");

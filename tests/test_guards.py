@@ -2,16 +2,16 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import Response, Router, Starlite, asgi, get, websocket
-from starlite.connection import WebSocket
-from starlite.exceptions import PermissionDeniedException, WebSocketDisconnect
-from starlite.status_codes import HTTP_200_OK, HTTP_403_FORBIDDEN
-from starlite.testing import create_test_client
-from starlite.types import Receive, Scope, Send
+from litestar import Litestar, Response, Router, asgi, get, websocket
+from litestar.connection import WebSocket
+from litestar.exceptions import PermissionDeniedException, WebSocketDisconnect
+from litestar.status_codes import HTTP_200_OK, HTTP_403_FORBIDDEN
+from litestar.testing import create_test_client
+from litestar.types import Receive, Scope, Send
 
 if TYPE_CHECKING:
-    from starlite.connection import ASGIConnection
-    from starlite.handlers.base import BaseRouteHandler
+    from litestar.connection import ASGIConnection
+    from litestar.handlers.base import BaseRouteHandler
 
 
 async def local_guard(_: "ASGIConnection", route_handler: "BaseRouteHandler") -> None:
@@ -90,7 +90,7 @@ def test_guards_layering_for_same_route_handler() -> None:
         ...
 
     router = Router(path="/router", route_handlers=[http_route_handler], guards=[router_guard])
-    app = Starlite(route_handlers=[http_route_handler, router], guards=[app_guard])
+    app = Litestar(route_handlers=[http_route_handler, router], guards=[app_guard])
 
     assert (
         len(

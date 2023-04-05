@@ -10,10 +10,10 @@ from sphinx.application import Sphinx
 __all__ = ["setup", "update_html_context"]
 
 
-project = "Starlite"
+project = "Litestar"
 copyright = "2023, Starlite-API"
 author = "Starlite-API"
-release = os.getenv("_STARLITE_DOCS_BUILD_VERSION", importlib.metadata.version("starlite").rsplit(".")[0])
+release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
 
 extensions = [
     "sphinx.ext.intersphinx",
@@ -72,7 +72,7 @@ nitpick_ignore = [
     ("py:class", "sqlalchemy.dialects.postgresql.named_types.ENUM"),
     # type vars and aliases / intentionally undocumented
     ("py:class", "RouteHandlerType"),
-    ("py:obj", "starlite.security.base.AuthType"),
+    ("py:obj", "litestar.security.base.AuthType"),
     ("py:class", "ControllerRouterHandler"),
     ("py:class", "PathParameterDefinition"),
     ("py:class", "BaseSessionBackendT"),
@@ -81,40 +81,40 @@ nitpick_ignore = [
     ("py:class", "C"),
     # intentionally undocumented
     ("py:class", "NoneType"),
-    ("py:class", "starlite._signature.field.SignatureField"),
+    ("py:class", "litestar._signature.field.SignatureField"),
     ("py:class", "types.parsed_signature.ParsedSignature"),
 ]
 nitpick_ignore_regex = [
-    (r"py:.*", r"starlite\.types.*"),
-    (r"py:.*", r"starlite.*\.T"),
+    (r"py:.*", r"litestar\.types.*"),
+    (r"py:.*", r"litestar.*\.T"),
     (r"py:.*", r".*R_co"),
     (r"py:.*", r".*UserType"),
-    (r"py:.*", r"starlite\.middleware\.session\.base\.BaseSessionBackendT"),
+    (r"py:.*", r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (r"py:obj", r"typing\..*"),
     (r"py:.*", r"httpx.*"),
     # type vars
-    ("py:.*", r"starlite\.pagination\.C"),
-    ("py:.*", r"starlite.middleware.session.base.ConfigT"),
+    ("py:.*", r"litestar\.pagination\.C"),
+    ("py:.*", r"litestar.middleware.session.base.ConfigT"),
     ("py:.*", r"multidict\..*"),
-    (r"py:.*", r"starlite\.connection\.base\.UserT"),
-    (r"py:.*", r"starlite\.connection\.base\.AuthT"),
-    (r"py:.*", r"starlite\.connection\.base\.StateT"),
-    (r"py:.*", r"starlite\.connection\.base\.HandlerT"),
+    (r"py:.*", r"litestar\.connection\.base\.UserT"),
+    (r"py:.*", r"litestar\.connection\.base\.AuthT"),
+    (r"py:.*", r"litestar\.connection\.base\.StateT"),
+    (r"py:.*", r"litestar\.connection\.base\.HandlerT"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
 # The source of the references is taken 1:1 from the warnings as reported by Sphinx, e.g
-# **/starlite/testing/client/async_client.py:docstring of starlite.testing.AsyncTestClient.exit_stack:1: WARNING: py:class reference target not found: AsyncExitStack
-# would be added as: "starlite.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
+# **/litestar/testing/client/async_client.py:docstring of litestar.testing.AsyncTestClient.exit_stack:1: WARNING: py:class reference target not found: AsyncExitStack
+# would be added as: "litestar.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
 ignore_missing_refs = {
     # No idea what autodoc is doing here. Possibly unfixable on our end
-    "starlite.template.base.TemplateEngineProtocol.get_template": {"starlite.template.base.T_co"},
-    "starlite.template": {"starlite.template.base.T_co"},
-    "starlite.openapi.OpenAPIController.security": {"SecurityRequirement"},
-    "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
-    "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
-    re.compile(r"starlite\.plugins.*"): re.compile(".*(ModelT|DataContainerT)"),
-    re.compile(r"starlite\.contrib\.sqlalchemy\.init_plugin\.config.*"): re.compile(
+    "litestar.template.base.TemplateEngineProtocol.get_template": {"litestar.template.base.T_co"},
+    "litestar.template": {"litestar.template.base.T_co"},
+    "litestar.openapi.OpenAPIController.security": {"SecurityRequirement"},
+    "litestar.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
+    "litestar.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
+    re.compile(r"litestar\.plugins.*"): re.compile(".*(ModelT|DataContainerT)"),
+    re.compile(r"litestar\.contrib\.sqlalchemy\.init_plugin\.config.*"): re.compile(
         ".*(ConnectionT|EngineT|SessionT|SessionMakerT)"
     ),
 }
@@ -136,12 +136,12 @@ html_static_path = ["_static"]
 html_js_files = ["versioning.js"]
 html_css_files = ["style.css"]
 html_show_sourcelink = False
-html_title = "Starlite Framework"
+html_title = "Litestar Framework"
 
 
 html_theme_options = {
     "use_page_nav": False,
-    "github_repo_name": "starlite",
+    "github_repo_name": "litestar",
     "logo": {
         "link": "https://starliteproject.dev",
     },
@@ -153,12 +153,12 @@ html_theme_options = {
         },
         "About": {
             "Organization": "https://starliteproject.dev/about/organization",
-            "Releases": "https://starliteproject.dev/about/starlite-releases",
+            "Releases": "https://starliteproject.dev/about/litestar-releases",
         },
         "Release notes": {
             "2.0 migration guide": "release-notes/migration_guide_2",
-            "2.x Changelog": "https://docs.starliteproject.dev/2/release-notes/changelog.html",
-            "1.x Changelog": "https://docs.starliteproject.dev/1/release-notes/changelog.html",
+            "2.x Changelog": "https://docs.litestarproject.dev/2/release-notes/changelog.html",
+            "1.x Changelog": "https://docs.litestarproject.dev/1/release-notes/changelog.html",
         },
     },
 }

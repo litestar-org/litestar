@@ -3,12 +3,12 @@ from typing import Optional
 from sqlalchemy import Column, Float, Integer, String, select
 from sqlalchemy.orm import Mapped, Session, declarative_base
 
-from starlite import Starlite, get, post
-from starlite.contrib.sqlalchemy_1.config import SQLAlchemyConfig
-from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from starlite.dto import DTOFactory
-from starlite.exceptions import HTTPException
-from starlite.status_codes import HTTP_404_NOT_FOUND
+from litestar import Litestar, get, post
+from litestar.contrib.sqlalchemy_1.config import SQLAlchemyConfig
+from litestar.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
+from litestar.dto import DTOFactory
+from litestar.exceptions import HTTPException
+from litestar.status_codes import HTTP_404_NOT_FOUND
 
 Base = declarative_base()
 
@@ -56,7 +56,7 @@ def get_company(company_id: str, db_session: Session) -> Company:
     return company
 
 
-app = Starlite(
+app = Litestar(
     route_handlers=[create_company, get_company],
     on_startup=[on_startup],
     plugins=[sqlalchemy_plugin],

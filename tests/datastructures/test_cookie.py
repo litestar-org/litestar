@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from freezegun import freeze_time
 
-from starlite.datastructures import Cookie
+from litestar.datastructures import Cookie
 
 
 def test_basic_cookie_as_header() -> None:

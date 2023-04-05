@@ -1,7 +1,7 @@
-from starlite import get
-from starlite.di import Provide
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
+from litestar import get
+from litestar.di import Provide
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
 
 
 def test_caching_per_request() -> None:

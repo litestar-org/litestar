@@ -1,5 +1,5 @@
 datastructures
 ==============
 
-.. automodule:: starlite.datastructures
+.. automodule:: litestar.datastructures
     :members:

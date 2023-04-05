@@ -3,14 +3,14 @@ from typing import TYPE_CHECKING, Dict
 
 import pytest
 
-from starlite import Controller, Request, Router, get
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
+from litestar import Controller, Request, Router, get
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
 
 state: Dict[str, str] = {}
 
 if TYPE_CHECKING:
-    from starlite.types import AfterResponseHookHandler
+    from litestar.types import AfterResponseHookHandler
 
 
 def create_sync_test_handler(msg: str) -> "AfterResponseHookHandler":

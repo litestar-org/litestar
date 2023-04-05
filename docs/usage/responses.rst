@@ -1,14 +1,14 @@
 Responses
 =========
 
-Starlite allows for several ways in which HTTP responses can be specified and handled, each fitting a different use
+Litestar allows for several ways in which HTTP responses can be specified and handled, each fitting a different use
 case. The base pattern though is straightforward - simply return a value from a route handler function and let
-Starlite take care of the rest:
+Litestar take care of the rest:
 
 .. code-block:: python
 
    from pydantic import BaseModel
-   from starlite import get
+   from litestar import get
 
 
    class Resource(BaseModel):
@@ -21,7 +21,7 @@ Starlite take care of the rest:
        return Resource(id=1, name="my resource")
 
 In the example above, the route handler function returns an instance of the ``Resource`` pydantic class. This value will
-then be used by Starlite to construct an instance of the :class:`Response <starlite.response.Response>`
+then be used by Litestar to construct an instance of the :class:`Response <litestar.response.Response>`
 class using defaults values: the response status code will be set to ``200`` and it's ``Content-Type`` header will be set
 to ``application/json``. The ``Resource`` instance will be serialized into JSON and set as the response body.
 
@@ -32,11 +32,11 @@ Media Type
 
 You do not have to specify the ``media_type`` kwarg in the route handler function if the response should be JSON. But
 if you wish to return a response other than JSON, you should specify this value. You can use
-the :class:`MediaType <starlite.enums.MediaType>` enum for this purpose:
+the :class:`MediaType <litestar.enums.MediaType>` enum for this purpose:
 
 .. code-block:: python
 
-   from starlite import MediaType, get
+   from litestar import MediaType, get
 
 
    @get("/resources", media_type=MediaType.TEXT)
@@ -44,7 +44,7 @@ the :class:`MediaType <starlite.enums.MediaType>` enum for this purpose:
        return "The rumbling rabbit ran around the rock"
 
 The value of the ``media_type`` kwarg affects both the serialization of response data and the generation of OpenAPI docs.
-The above example will cause Starlite to serialize the response as a simple bytes string with a ``Content-Type`` header
+The above example will cause Litestar to serialize the response as a simple bytes string with a ``Content-Type`` header
 value of ``text/plain``. It will also set the corresponding values in the OpenAPI documentation.
 
 MediaType has the following members:
@@ -80,7 +80,7 @@ this :ref:`custom responses <usage/responses:Custom Responses>`.
 MessagePack responses
 +++++++++++++++++++++
 
-In addition to JSON, Starlite offers support for the `MessagePack <https://msgpack.org/>`_
+In addition to JSON, Litestar offers support for the `MessagePack <https://msgpack.org/>`_
 format which can be a time and space efficient alternative to JSON.
 
 It supports all the same types as JSON serialization. To send a ``MessagePack`` response,
@@ -89,7 +89,7 @@ simply specify the media type as ``MediaType.MESSAGEPACK``\ :
 .. code-block:: python
 
    from typing import Dict
-   from starlite import get, MediaType
+   from litestar import get, MediaType
 
 
    @get(path="/health-check", media_type=MediaType.MESSAGEPACK)
@@ -103,7 +103,7 @@ For ``MediaType.TEXT``, route handlers should return a :class:`str` or :class:`b
 
 .. code-block:: python
 
-   from starlite import get, MediaType
+   from litestar import get, MediaType
 
 
    @get(path="/health-check", media_type=MediaType.TEXT)
@@ -117,7 +117,7 @@ For ``MediaType.HTML``, route handlers should return a :class:`str` or :class:`b
 
 .. code-block:: python
 
-   from starlite import get, MediaType
+   from litestar import get, MediaType
 
 
    @get(path="/page", media_type=MediaType.HTML)
@@ -144,7 +144,7 @@ Content Negotiation
 If your handler can return data with different media types and you want to use
 `Content Negotiation <https://developer.mozilla.org/en-US/docs/Web/HTTP/Content_negotiation>`_
 to allow the client to choose which type to return, you can use the
-:attr:`Request.accept <starlite.connection.Request.accept>` property to
+:attr:`Request.accept <litestar.connection.Request.accept>` property to
 calculate the best matching return media type.
 
 .. literalinclude:: /examples/responses/response_content.py
@@ -159,8 +159,8 @@ You can control the response ``status_code`` by setting the corresponding kwarg 
 .. code-block:: python
 
    from pydantic import BaseModel
-   from starlite import get
-   from starlite.status_codes import HTTP_202_ACCEPTED
+   from litestar import get
+   from litestar.status_codes import HTTP_202_ACCEPTED
 
 
    class Resource(BaseModel):
@@ -182,7 +182,7 @@ If ``status_code`` is not set by the user, the following defaults are used:
 .. attention::
 
     For status codes < 100 or 204, 304 statuses, no response body is allowed. If you specify a return annotation other
-    than ``None``, an :class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>` will be raised.
+    than ``None``, an :class:`ImproperlyConfiguredException <litestar.exceptions.ImproperlyConfiguredException>` will be raised.
 
 .. note::
 
@@ -193,7 +193,7 @@ If ``status_code`` is not set by the user, the following defaults are used:
 .. tip::
 
    While you can write integers as the value for ``status_code``, e.g. ``200``, it's best practice to use constants (also in
-   tests). Starlite includes easy to use statuses that are exported from ``starlite.status_codes``, e.g. ``HTTP_200_OK``
+   tests). Litestar includes easy to use statuses that are exported from ``litestar.status_codes``, e.g. ``HTTP_200_OK``
    and ``HTTP_201_CREATED``. Another option is the :class:`http.HTTPStatus` enum from the standard library, which also offers
    extra functionality.
 
@@ -204,7 +204,7 @@ Returning responses
 While the default response handling fits most use cases, in some cases you need to be able to return a response instance
 directly.
 
-Starlite allows you to return any class inheriting from the :class:`Response <starlite.response.Response>` class. Thus, the below
+Litestar allows you to return any class inheriting from the :class:`Response <litestar.response.Response>` class. Thus, the below
 example will work perfectly fine:
 
 .. literalinclude:: /examples/responses/returning_responses.py
@@ -213,9 +213,9 @@ example will work perfectly fine:
 
 .. attention::
 
-    In the case of the builtin :class:`TemplateResponse <starlite.response.TemplateResponse>`,
-    :class:`FileResponse <starlite.response.FileResponse>`, :class:`StreamingResponse <starlite.response.StreamingResponse>` and
-    :class:`RedirectResponse <starlite.response.RedirectResponse>` you should use the response "response containers", otherwise
+    In the case of the builtin :class:`TemplateResponse <litestar.response.TemplateResponse>`,
+    :class:`FileResponse <litestar.response.FileResponse>`, :class:`StreamingResponse <litestar.response.StreamingResponse>` and
+    :class:`RedirectResponse <litestar.response.RedirectResponse>` you should use the response "response containers", otherwise
     OpenAPI documentation will not be generated correctly. For more details see the respective documentation sections:
 
     - `Template responses`_
@@ -227,7 +227,7 @@ example will work perfectly fine:
 Annotating responses
 ++++++++++++++++++++
 
-As you can see above, the :class:`Response <starlite.response.Response>` class accepts a generic argument. This allows Starlite
+As you can see above, the :class:`Response <litestar.response.Response>` class accepts a generic argument. This allows Litestar
 to infer the response body when generating the OpenAPI docs.
 
 .. note::
@@ -238,12 +238,12 @@ to infer the response body when generating the OpenAPI docs.
 Returning ASGI Applications
 +++++++++++++++++++++++++++
 
-Starlite also supports returning ASGI applications directly, as you would responses. For example:
+Litestar also supports returning ASGI applications directly, as you would responses. For example:
 
 .. code-block:: python
 
-   from starlite import get
-   from starlite.types import ASGIApp, Receive, Scope, Send
+   from litestar import get
+   from litestar.types import ASGIApp, Receive, Scope, Send
 
 
    @get("/")
@@ -267,7 +267,7 @@ Function ASGI Application
 
 .. code-block:: python
 
-   from starlite.types import Receive, Scope, Send
+   from litestar.types import Receive, Scope, Send
 
 
    async def my_asgi_app_function(scope: Scope, receive: Receive, send: Send) -> None:
@@ -279,7 +279,7 @@ Method ASGI Application
 
 .. code-block:: python
 
-   from starlite.types import Receive, Scope, Send
+   from litestar.types import Receive, Scope, Send
 
 
    class MyClass:
@@ -294,7 +294,7 @@ Class ASGI Application
 
 .. code-block:: python
 
-   from starlite.types import Receive, Scope, Send
+   from litestar.types import Receive, Scope, Send
 
 
    class ASGIApp:
@@ -312,8 +312,8 @@ libraries. For example, you can return the response classes from Starlette or Fa
 
    from starlette.responses import JSONResponse
 
-   from starlite import get
-   from starlite.types import ASGIApp
+   from litestar import get
+   from litestar.types import ASGIApp
 
 
    @get("/")
@@ -322,8 +322,8 @@ libraries. For example, you can return the response classes from Starlette or Fa
 
 .. attention::
 
-   Starlite offers strong typing for the ASGI arguments. Other libraries often offer less strict typing, which might
-   cause type checkers to complain when using ASGI apps from them inside Starlite.
+   Litestar offers strong typing for the ASGI arguments. Other libraries often offer less strict typing, which might
+   cause type checkers to complain when using ASGI apps from them inside Litestar.
    For the time being, the only solution is to add ``# type: ignore`` comments in the pertinent places.
    Nonetheless, the above example will work perfectly fine.
 
@@ -331,7 +331,7 @@ libraries. For example, you can return the response classes from Starlette or Fa
 Response Headers
 ----------------
 
-Starlite allows you to define response headers by using the ``response_headers`` kwarg. This kwarg is
+Litestar allows you to define response headers by using the ``response_headers`` kwarg. This kwarg is
 available on all layers of the app - individual route handlers, controllers, routers and the app
 itself:
 
@@ -356,7 +356,7 @@ The respective descriptions will be used for the OpenAPI documentation.
 
 .. tip::
 
-    :class:`ResponseHeader <starlite.datastructures.response_header.ResponseHeader>` is
+    :class:`ResponseHeader <litestar.datastructures.response_header.ResponseHeader>` is
     a special class that allows to add OpenAPI attributes such as `description` or `documentation_only`.
     If you don't need those, you can optionally define `response_headers` using a mapping - such as a dictionary -
     as well:
@@ -373,7 +373,7 @@ Dynamic Headers
 +++++++++++++++
 
 The above detailed scheme works great for statically configured headers, but how would you go about handling dynamically
-setting headers? Starlite allows you to set headers dynamically in several ways and below we will detail the two
+setting headers? Litestar allows you to set headers dynamically in several ways and below we will detail the two
 primary patterns.
 
 Setting Response Headers Using Annotated Responses
@@ -416,7 +416,7 @@ different value range:
 Specific Headers Implementation
 +++++++++++++++++++++++++++++++
 
-Starlite has a dedicated implementation for a few headers that are commonly used. These headers can be set separately
+Litestar has a dedicated implementation for a few headers that are commonly used. These headers can be set separately
 with dedicated keyword arguments or as class attributes on all layers of the app (individual route handlers, controllers,
 routers and the app itself). Each layer overrides the layer above it - thus, the headers defined for a specific route
 handler will override those defined on its router, which will in turn override those defined on the app level.
@@ -468,7 +468,7 @@ Here are some usage examples:
 Response Cookies
 ----------------
 
-Starlite allows you to define response cookies by using the ``response_cookies`` kwarg. This kwarg is
+Litestar allows you to define response cookies by using the ``response_cookies`` kwarg. This kwarg is
 available on all layers of the app - individual route handlers, controllers, routers and the app
 itself:
 
@@ -571,13 +571,13 @@ Redirect Responses
 Redirect responses are `special HTTP responses <https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections>`_ with a
 status code in the 30x range.
 
-In Starlite, a redirect response looks like this:
+In Litestar, a redirect response looks like this:
 
 .. code-block:: python
 
-   from starlite.status_codes import HTTP_307_TEMPORARY_REDIRECT
-   from starlite import get
-   from starlite.response_containers import Redirect
+   from litestar.status_codes import HTTP_307_TEMPORARY_REDIRECT
+   from litestar import get
+   from litestar.response_containers import Redirect
 
 
    @get(path="/some-path", status_code=HTTP_307_TEMPORARY_REDIRECT)
@@ -608,8 +608,8 @@ File responses send a file:
 .. code-block:: python
 
    from pathlib import Path
-   from starlite import get
-   from starlite.response_containers import File
+   from litestar import get
+   from litestar.response_containers import File
 
 
    @get(path="/file-download")
@@ -640,8 +640,8 @@ For example:
 .. code-block:: python
 
    from pathlib import Path
-   from starlite import get
-   from starlite.response_containers import File
+   from litestar import get
+   from litestar.response_containers import File
 
 
    @get(path="/file-download", media_type="application/pdf")
@@ -678,8 +678,8 @@ engine is in place, you can use a template response like so:
 
 .. code-block:: python
 
-   from starlite import Request, get
-   from starlite.response_containers import Template
+   from litestar import Request, get
+   from litestar.response_containers import Template
 
 
    @get(path="/info")
@@ -694,7 +694,7 @@ like value, and a context dictionary that maps string keys into values that will
 Custom Responses
 ----------------
 
-While Starlite supports the serialization of many types by default, sometimes you
+While Litestar supports the serialization of many types by default, sometimes you
 want to return something that's not supported. In those cases it's convenient to make
 use of a custom response class.
 
@@ -709,18 +709,18 @@ instances.
     :class: seealso
 
 
-   Response classes are part of Starlite's layered architecture, which means you can
+   Response classes are part of Litestar's layered architecture, which means you can
    set a response class on every layer of the application. If you have set a response
    class on multiple layers, the layer closes to the route handler will take precedence.
 
-   You can read more about this here: :ref:`usage/the-starlite-app:layered architecture`
+   You can read more about this here: :ref:`usage/the-litestar-app:layered architecture`
 
 
 
 Background Tasks
 ----------------
 
-All Starlite responses and response containers (e.g. ``File``, ``Template``, etc.) allow passing in a ``background``
+All Litestar responses and response containers (e.g. ``File``, ``Template``, etc.) allow passing in a ``background``
 kwarg. This kwarg accepts either an instance of :class:`BackgroundTask <.background_tasks.BackgroundTask>`
 or an instance of :class:`BackgroundTasks <.background_tasks.BackgroundTasks>`, which wraps an iterable of
 :class:`BackgroundTask <.background_tasks.BackgroundTask>` instances.
@@ -782,7 +782,7 @@ Pagination
 -----------
 
 When you need to return a large number of items from an endpoint it is common practice to use pagination to ensure
-clients can request a specific subset or "page" from the total dataset. Starlite supports three types of pagination out
+clients can request a specific subset or "page" from the total dataset. Litestar supports three types of pagination out
 of the box:
 
 * classic pagination

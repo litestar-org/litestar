@@ -1,8 +1,8 @@
 import pytest
 
-from starlite import Starlite, get
-from starlite.di import Provide
-from starlite.exceptions import ImproperlyConfiguredException
+from litestar import Litestar, get
+from litestar.di import Provide
+from litestar.exceptions import ImproperlyConfiguredException
 
 
 def first_method(query_param: int) -> int:
@@ -27,7 +27,7 @@ def test_dependency_validation() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(
+        Litestar(
             route_handlers=[test_function],
             dependencies={
                 "third": Provide(first_method),

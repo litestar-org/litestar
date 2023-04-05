@@ -1,5 +1,5 @@
-from starlite.dto import DTOFactory
-from starlite.partial import Partial
+from litestar.dto import DTOFactory
+from litestar.partial import Partial
 from tests import Person
 
 dto_factory = DTOFactory()

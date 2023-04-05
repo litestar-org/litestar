@@ -2,9 +2,9 @@ from typing import Any
 
 import pytest
 
-from starlite import WebSocket, websocket
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.testing import create_test_client
+from litestar import WebSocket, websocket
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.testing import create_test_client
 
 
 def test_raises_when_socket_arg_is_missing() -> None:

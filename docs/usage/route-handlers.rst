@@ -1,14 +1,14 @@
 Route handlers
 ==============
 
-Route handlers are the core of Starlite. They are constructed by decorating a function or class method with one of the
-handler decorators exported from Starlite.
+Route handlers are the core of Litestar. They are constructed by decorating a function or class method with one of the
+handler decorators exported from Litestar.
 
 For example:
 
 .. code-block:: python
 
-   from starlite import MediaType, get
+   from litestar import MediaType, get
 
 
    @get("/", media_type=MediaType.TEXT)
@@ -33,7 +33,7 @@ key word:
 
 .. code-block:: python
 
-   from starlite import get
+   from litestar import get
 
 
    @get(path="/some-path")
@@ -44,7 +44,7 @@ It can also be passed as an argument without the key-word:
 
 .. code-block:: python
 
-   from starlite import get
+   from litestar import get
 
 
    @get("/some-path")
@@ -55,7 +55,7 @@ And the value for this argument can be either a string path, as in the above exa
 
 .. code-block:: python
 
-   from starlite import get
+   from litestar import get
 
 
    @get(["/some-path", "/some-other-path"])
@@ -66,7 +66,7 @@ This is particularly useful when you want to have optional :ref:`path parameters
 
 .. code-block:: python
 
-   from starlite import get
+   from litestar import get
 
 
    @get(
@@ -81,7 +81,7 @@ Handler function kwargs
 -----------------------
 
 Route handler functions or methods access various data by declaring these as annotated function kwargs. The annotated
-kwargs are inspected by Starlite and then injected into the request handler.
+kwargs are inspected by Litestar and then injected into the request handler.
 
 The following sources can be accessed using annotated function kwargs:
 
@@ -107,8 +107,8 @@ For example:
 .. code-block:: python
 
    from typing import Any, Dict
-   from starlite import Request, get
-   from starlite.datastructures import Headers, State
+   from litestar import Request, get
+   from litestar.datastructures import Headers, State
 
 
    @get(path="/")
@@ -124,14 +124,14 @@ For example:
 .. tip::
 
     You can define a custom typing for your application state and then use it as a type instead of just using the
-    State class from Starlite
+    State class from Litestar
 
 Handler function type annotations
 ---------------------------------
 
-Starlite enforces strict type annotations. Functions decorated by a route handler **must** have all their kwargs and
+Litestar enforces strict type annotations. Functions decorated by a route handler **must** have all their kwargs and
 return value type annotated. If a type annotation is missing, an
-:class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>` will be raised during the
+:class:`ImproperlyConfiguredException <litestar.exceptions.ImproperlyConfiguredException>` will be raised during the
 application boot-up process.
 
 There are several reasons for why this limitation is enforced:
@@ -139,19 +139,19 @@ There are several reasons for why this limitation is enforced:
 
 #. to ensure best practices
 #. to ensure consistent OpenAPI schema generation
-#. to allow Starlite to compute during the application bootstrap all the kwargs required by a function
+#. to allow Litestar to compute during the application bootstrap all the kwargs required by a function
 
 
 HTTP route handlers
 -------------------
 
 The most commonly used route handlers are those that handle http requests and responses. These route handlers all
-inherit from the class :class:`HTTPRouteHandler <starlite.handlers.HTTPRouteHandler>`, which
-is aliased as the decorator called :func:`route <starlite.handlers.route>`:
+inherit from the class :class:`HTTPRouteHandler <litestar.handlers.HTTPRouteHandler>`, which
+is aliased as the decorator called :func:`route <litestar.handlers.route>`:
 
 .. code-block:: python
 
-   from starlite import HttpMethod, route
+   from litestar import HttpMethod, route
 
 
    @route(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
@@ -163,8 +163,8 @@ above:
 
 .. code-block:: python
 
-   from starlite import HttpMethod
-   from starlite.handlers.http_handlers import HTTPRouteHandler
+   from litestar import HttpMethod
+   from litestar.handlers.http_handlers import HTTPRouteHandler
 
 
    @HTTPRouteHandler(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
@@ -182,23 +182,23 @@ The ``route`` decorator **requires** an ``http_method`` kwarg, which is a member
 Semantic handler decorators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Starlite also includes "semantic" decorators, that is, decorators the pre-set the ``http_method`` kwarg to a specific HTTP
+Litestar also includes "semantic" decorators, that is, decorators the pre-set the ``http_method`` kwarg to a specific HTTP
 verb, which correlates with their name:
 
 
-* :func:`delete <starlite.handlers.delete>`
-* :func:`get <starlite.handlers.get>`
-* :func:`head <starlite.handlers.head>`
-* :func:`patch <starlite.handlers.patch>`
-* :func:`post <starlite.handlers.post>`
-* :func:`put <starlite.handlers.put>`
+* :func:`delete <litestar.handlers.delete>`
+* :func:`get <litestar.handlers.get>`
+* :func:`head <litestar.handlers.head>`
+* :func:`patch <litestar.handlers.patch>`
+* :func:`post <litestar.handlers.post>`
+* :func:`put <litestar.handlers.put>`
 
 These are used exactly like ``route`` with the sole exception that you cannot configure the ``http_method`` kwarg:
 
 .. code-block:: python
 
-   from starlite import delete, get, patch, post, put, head
-   from starlite.partial import Partia
+   from litestar import delete, get, patch, post, put, head
+   from litestar.partial import Partia
    from pydantic import BaseModel
 
 
@@ -240,7 +240,7 @@ These are used exactly like ``route`` with the sole exception that you cannot co
    def delete_resource(pk: int) -> None:
        ...
 
-Although these decorators are merely subclasses of :class:`HTTPRouteHandler <starlite.handlers.HTTPRouteHandler>`
+Although these decorators are merely subclasses of :class:`HTTPRouteHandler <litestar.handlers.HTTPRouteHandler>`
 that pre-set the ``http_method``, using *get*, *patch*, *put*, *delete* or *post* instead of *route* makes the
 code clearer and simpler.
 
@@ -257,7 +257,7 @@ Using sync handler functions
 You can use both sync and async functions as the base for route handler functions, but which should you use? and when?
 
 If your route handler needs to perform an I/O operation (read or write data from or to a service / db etc.), the most
-performant solution within the scope of an ASGI application, including Starlite, is going to be by using an async
+performant solution within the scope of an ASGI application, including Litestar, is going to be by using an async
 solution for this purpose.
 
 The reason for this is that async code, if written correctly, is **non-blocking**. That is, async code can be paused and
@@ -265,7 +265,7 @@ resumed, and it therefore does not interrupt the main event loop from executing 
 hand, sync I/O handling is often **blocking**\ , and if you use such code in your function it can create performance
 issues.
 
-In this case you should use the ``sync_to_thread`` option. What this does, is tell Starlite to run the sync function in a
+In this case you should use the ``sync_to_thread`` option. What this does, is tell Litestar to run the sync function in a
 separate async thread, where it can block but will not interrupt the main event loop's execution.
 
 The problem with this though is that this will slow down the execution of your sync code quite dramatically - by between
@@ -278,11 +278,11 @@ should not use the ``sync_to_thread`` option.
 Websocket route handlers
 ------------------------
 
-Starlite supports Websockets via the :func:`websocket <starlite.handlers.WebsocketRouteHandler>` decorator:
+Litestar supports Websockets via the :func:`websocket <litestar.handlers.WebsocketRouteHandler>` decorator:
 
 .. code-block:: python
 
-   from starlite import WebSocket, websocket
+   from litestar import WebSocket, websocket
 
 
    @websocket(path="/socket")
@@ -297,8 +297,8 @@ code is equivalent to the one above:
 
 .. code-block:: python
 
-   from starlite import WebSocket
-   from starlite.handlers.websocket_handlers import WebsocketRouteHandler
+   from litestar import WebSocket
+   from litestar.handlers.websocket_handlers import WebsocketRouteHandler
 
 
    @WebsocketRouteHandler(path="/socket")
@@ -323,19 +323,19 @@ These requirements are enforced using inspection, and if any of them is unfulfil
 
 .. seealso::
 
-    :class:`WebsocketRouteHandler <starlite.handlers.WebsocketRouteHandler>`
+    :class:`WebsocketRouteHandler <litestar.handlers.WebsocketRouteHandler>`
 
 
 ASGI route handlers
 -------------------
 
-If you need to write your own ASGI application, you can do so using the :func:`asgi <starlite.handlers.asgi>` decorator:
+If you need to write your own ASGI application, you can do so using the :func:`asgi <litestar.handlers.asgi>` decorator:
 
 .. code-block:: python
 
-   from starlite.types import Scope, Receive, Send
-   from starlite.status_codes import HTTP_400_BAD_REQUEST
-   from starlite import Response, asgi
+   from litestar.types import Scope, Receive, Send
+   from litestar.status_codes import HTTP_400_BAD_REQUEST
+   from litestar import Response, asgi
 
 
    @asgi(path="/my-asgi-app")
@@ -356,10 +356,10 @@ the code below is equivalent to the one above:
 
 .. code-block:: python
 
-   from starlite import Response
-   from starlite.handlers.asgi_handlers import ASGIRouteHandler
-   from starlite.status_codes import HTTP_400_BAD_REQUEST
-   from starlite.types import Scope, Receive, Send
+   from litestar import Response
+   from litestar.handlers.asgi_handlers import ASGIRouteHandler
+   from litestar.status_codes import HTTP_400_BAD_REQUEST
+   from litestar.types import Scope, Receive, Send
 
 
    @ASGIRouteHandler(path="/my-asgi-app")
@@ -400,7 +400,7 @@ Route handler indexing
 ----------------------
 
 You can provide in all route handler decorators a ``name`` kwarg. The value for this kwarg **must be unique**\ , otherwise
-:class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>` exception will be raised. Default
+:class:`ImproperlyConfiguredException <litestar.exceptions.ImproperlyConfiguredException>` exception will be raised. Default
 value for ``name`` is value returned by ``handler.__str__`` which should be the full dotted path to the handler
 (e.g. ``app.controllers.projects.list`` for ``list`` function residing in ``app/controllers/projects.py`` file). ``name`` can
 be used to dynamically retrieve (i.e. during runtime) a mapping containing the route handler instance and paths, also
@@ -408,9 +408,9 @@ it can be used to build a URL path for that handler:
 
 .. code-block:: python
 
-   from starlite import Starlite, Request, get
-   from starlite.exceptions import NotFoundException
-   from starlite.response_containers import Redirect
+   from litestar import Litestar, Request, get
+   from litestar.exceptions import NotFoundException
+   from litestar.response_containers import Redirect
 
 
    @get("/abc", name="one")
@@ -447,9 +447,9 @@ it can be used to build a URL path for that handler:
        return Redirect(path=path)
 
 
-   app = Starlite(route_handlers=[handler_one, handler_two, handler_three])
+   app = Litestar(route_handlers=[handler_one, handler_two, handler_three])
 
-:meth:`route_reverse <.app.Starlite.route_reverse>` will raise
+:meth:`route_reverse <.app.Litestar.route_reverse>` will raise
 :class:`NoMatchRouteFoundException <.exceptions.NoRouteMatchFoundException>` if route with given name was not found
 or if any of path parameters is missing or if any of passed path parameters types do not match types in the respective
 route declaration. However, :class:`str` is accepted in place of :class:`datetime.datetime`, :class:`datetime.date`,
@@ -461,7 +461,7 @@ keywords arguments passed to the function.
 
 .. code-block:: python
 
-   from starlite import get, Request
+   from litestar import get, Request
 
 
    @get(
@@ -504,7 +504,7 @@ All route handler decorators accept a key called ``opt`` which accepts a diction
 
 .. code-block:: python
 
-   from starlite import get
+   from litestar import get
 
 
    @get("/", opt={"my_key": "some-value"})
@@ -512,8 +512,8 @@ All route handler decorators accept a key called ``opt`` which accepts a diction
        ...
 
 This dictionary can be accessed by a :doc:`route guard </usage/security/guards>`, or by accessing the ``route_handler``
-property on a :class:`request <starlite.connection.request.Request>`, or using the
-:class:`ASGI scope <starlite.types.Scope>` object directly.
+property on a :class:`request <litestar.connection.request.Request>`, or using the
+:class:`ASGI scope <litestar.types.Scope>` object directly.
 
 Passing keyword arguments to handlers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -523,7 +523,7 @@ as a key in the opt dictionary:
 
 .. code-block:: python
 
-   from starlite import get
+   from litestar import get
 
 
    @get("/", my_key="some-value")
@@ -545,7 +545,7 @@ key, the value from the closest layer to the response handler will take preceden
 Signature namespace
 -------------------
 
-Starlite produces a model of the arguments to any handler or dependency function, called a "signature model" which is
+Litestar produces a model of the arguments to any handler or dependency function, called a "signature model" which is
 used for parsing and validation of raw data to be injected into the function.
 
 Building the model requires inspection of the names and types of the signature parameters at runtime, and so it is
@@ -560,7 +560,7 @@ For example, the name ``Model`` is *not* available at runtime in the following s
 
     from typing import TYPE_CHECKING
 
-    from starlite import Controller, post
+    from litestar import Controller, post
 
     if TYPE_CHECKING:
         from domain import Model
@@ -572,7 +572,7 @@ For example, the name ``Model`` is *not* available at runtime in the following s
             return data
 
 
-In this example, Starlite will be unable to generate the signature model because the type ``Model`` does not exist in
+In this example, Litestar will be unable to generate the signature model because the type ``Model`` does not exist in
 the module scope at runtime. We can address this on a case-by-case basis by silencing our linters, for example:
 
 .. code-block:: python
@@ -581,11 +581,11 @@ the module scope at runtime. We can address this on a case-by-case basis by sile
 
     from typing import TYPE_CHECKING
 
-    from starlite import Controller, post
+    from litestar import Controller, post
 
     from domain import Model  # noqa: TC002
 
-However, this approach can get tedious, so as an alternative, Starlite accepts a ``signature_namespace`` mapping at
+However, this approach can get tedious, so as an alternative, Litestar accepts a ``signature_namespace`` mapping at
 every :ref:`layer <layered-architecture>` of the application. The following is a demonstration of how to use this
 pattern.
 
@@ -609,7 +609,7 @@ should reference our domain ``Model`` type.
 Default signature namespace
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Starlite automatically adds some names to the signature namespace when parsing signature models in order to support
+Litestar automatically adds some names to the signature namespace when parsing signature models in order to support
 injection of the :ref:`handler-function-kwargs`.
 
 These names are:

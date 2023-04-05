@@ -1,5 +1,5 @@
 from examples.responses.returning_responses import app
-from starlite.testing import TestClient
+from litestar.testing import TestClient
 
 
 def test_returning_responses() -> None:
