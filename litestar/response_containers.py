@@ -221,8 +221,6 @@ class Redirect(ResponseContainer[RedirectResponse]):
     def to_response(  # type: ignore[override]
         self,
         headers: dict[str, Any],
-        # TODO: update the redirect response to support HTML as well.
-        #   This argument is currently ignored.
         media_type: MediaType | str,
         status_code: Literal[301, 302, 303, 307, 308],
         app: Litestar,

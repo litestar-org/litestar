@@ -51,7 +51,7 @@ class CompressionFacade:
 
         if compression_encoding == CompressionEncoding.BROTLI:
             try:
-                pass
+                import brotli  # noqa: F401
             except ImportError as e:
                 raise MissingDependencyException("brotli") from e
 
