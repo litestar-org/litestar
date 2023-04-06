@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Protocol, TypeVar, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -11,18 +11,15 @@ if TYPE_CHECKING:
     from starlite.types import StarliteEncodableType
     from starlite.types.parsed_signature import ParsedType
 
-__all__ = ("DTOInterface", "DataT")
-
-DataT = TypeVar("DataT")
-"""Type var representing data held by a DTO instance."""
+__all__ = ("DTOInterface",)
 
 
 @runtime_checkable
-class DTOInterface(Protocol[DataT]):
+class DTOInterface(Protocol):
     __slots__ = ()
 
     @abstractmethod
-    def to_data_type(self) -> DataT:
+    def to_data_type(self) -> Any:
         """Return the data held by the DTO."""
 
     @abstractmethod
@@ -52,7 +49,7 @@ class DTOInterface(Protocol[DataT]):
 
     @classmethod
     @abstractmethod
-    def from_data(cls, data: DataT) -> Self:
+    def from_data(cls, data: Any) -> Self:
         """Construct an instance from data.
 
         Args:
