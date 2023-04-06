@@ -11,6 +11,7 @@ Usage
     request-data
     responses
     dependency-injection
+    websockets
     middleware/index
     security/index
     stores

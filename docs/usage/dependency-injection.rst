@@ -80,6 +80,8 @@ The ``controller_dependency`` is available only for route handlers on that speci
 dependencies are available only to the route handlers registered on that particular router. Only the ``app_dependencies``
 are available to all route handlers.
 
+.. _yield_dependencies:
+
 Dependencies with yield (cleanup step)
 --------------------------------------
 
