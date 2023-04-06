@@ -9,6 +9,7 @@ from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.base import BaseRouteHandler
 from starlite.handlers.http_handlers import HTTPRouteHandler
 from starlite.handlers.websocket_handlers import WebsocketRouteHandler
+from starlite.types.empty import Empty
 from starlite.utils import AsyncCallable, normalize_path
 from starlite.utils.helpers import unwrap_partial
 
@@ -17,6 +18,7 @@ __all__ = ("Controller",)
 
 if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
+    from starlite.dto.interface import DTOInterface
     from starlite.openapi.spec import SecurityRequirement
     from starlite.response import Response
     from starlite.router import Router
@@ -34,6 +36,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from starlite.types.composite_types import ResponseHeaders
+    from starlite.types.empty import EmptyType
 
 
 class Controller:
@@ -47,6 +50,7 @@ class Controller:
         "after_response",
         "before_request",
         "dependencies",
+        "dto",
         "etag",
         "exception_handlers",
         "guards",
@@ -58,6 +62,7 @@ class Controller:
         "response_class",
         "response_cookies",
         "response_headers",
+        "return_dto",
         "security",
         "signature_namespace",
         "tags",
@@ -88,6 +93,8 @@ class Controller:
     """
     dependencies: Dependencies | None
     """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
+    dto: type[DTOInterface] | None | EmptyType
+    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and validation of request data."""
     etag: ETag | None
     """An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this controller.
 
@@ -123,6 +130,10 @@ class Controller:
     """A list of :class:`Cookie <.datastructures.Cookie>` instances."""
     response_headers: ResponseHeaders | None
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>` instances."""
+    return_dto: type[DTOInterface] | None | EmptyType
+    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing outbound response
+    data.
+    """
     tags: OptionalSequence[str]
     """A sequence of string tags that will be appended to the schema of all route handlers under the controller."""
     security: OptionalSequence[SecurityRequirement]
@@ -146,6 +157,12 @@ class Controller:
             cls_value = getattr(type(self), key, None)
             if callable(cls_value):
                 setattr(self, key, AsyncCallable(cls_value))
+
+        if not hasattr(self, "dto"):
+            self.dto = Empty
+
+        if not hasattr(self, "return_dto"):
+            self.return_dto = Empty
 
         for key in self.__slots__:
             if not hasattr(self, key):

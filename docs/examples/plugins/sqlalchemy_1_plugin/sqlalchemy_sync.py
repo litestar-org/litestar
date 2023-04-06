@@ -6,7 +6,6 @@ from sqlalchemy.orm import Mapped, Session, declarative_base
 from starlite import Starlite, get, post
 from starlite.contrib.sqlalchemy_1.config import SQLAlchemyConfig
 from starlite.contrib.sqlalchemy_1.plugin import SQLAlchemyPlugin
-from starlite.dto import DTOFactory
 from starlite.exceptions import HTTPException
 from starlite.status_codes import HTTP_404_NOT_FOUND
 
@@ -14,7 +13,6 @@ Base = declarative_base()
 
 sqlalchemy_config = SQLAlchemyConfig(connection_string="sqlite+pysqlite:///test.sqlite", use_async_engine=False)
 sqlalchemy_plugin = SQLAlchemyPlugin(config=sqlalchemy_config)
-dto_factory = DTOFactory(plugins=[sqlalchemy_plugin])
 
 
 class Company(Base):  # pyright: ignore
@@ -24,24 +22,17 @@ class Company(Base):  # pyright: ignore
     worth: Mapped[float] = Column(Float)
 
 
-CreateCompanyDTO = dto_factory("CreateCompanyDTO", Company, exclude=["id"])
-
-
 def on_startup() -> None:
     """Initialize the database."""
     Base.metadata.create_all(sqlalchemy_config.engine)  # type: ignore
 
 
 @post(path="/companies")
-def create_company(
-    data: CreateCompanyDTO,  # type: ignore[valid-type]
-    db_session: Session,
-) -> Company:
+def create_company(data: Company, db_session: Session) -> Company:
     """Create a new company and return it."""
-    company: Company = data.to_model_instance()  # type: ignore[attr-defined]
-    db_session.add(company)
+    db_session.add(data)
     db_session.commit()
-    return company
+    return data
 
 
 @get(path="/companies/{company_id:int}")

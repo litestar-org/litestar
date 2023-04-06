@@ -79,11 +79,14 @@ nitpick_ignore = [
     ("py:class", "AnyIOBackend"),
     ("py:class", "T"),
     ("py:class", "C"),
+    ("py:class", "EmptyType"),
     # intentionally undocumented
     ("py:class", "NoneType"),
     ("py:class", "starlite._signature.field.SignatureField"),
     ("py:class", "types.parsed_signature.ParsedSignature"),
     ("py:class", "starlite.utils.sync.AsyncCallable"),
+    ("py:class", "starlite.utils.sync.AsyncCallable"),
+    ("py:class", "types.parsed_signature.ParsedType"),
 ]
 nitpick_ignore_regex = [
     (r"py:.*", r"starlite\.types.*"),

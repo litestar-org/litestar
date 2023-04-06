@@ -7,6 +7,7 @@ from starlite.config.allowed_hosts import AllowedHostsConfig
 from starlite.config.response_cache import ResponseCacheConfig
 from starlite.datastructures import State
 from starlite.events.emitter import SimpleEventEmitter
+from starlite.types.empty import Empty
 
 if TYPE_CHECKING:
     from starlite.config.compression import CompressionConfig
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
     from starlite.connection import Request, WebSocket
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
     from starlite.di import Provide
+    from starlite.dto.interface import DTOInterface
     from starlite.events.emitter import BaseEventEmitterBackend
     from starlite.events.listener import EventListener
     from starlite.logging.config import BaseLoggingConfig
@@ -42,6 +44,7 @@ if TYPE_CHECKING:
         ResponseType,
         TypeEncodersMap,
     )
+    from starlite.types.empty import EmptyType
 
 __all__ = ("AppConfig",)
 
@@ -120,6 +123,8 @@ class AppConfig:
     """If ``True``, app errors rendered as HTML with a stack trace."""
     dependencies: dict[str, Provide] = field(default_factory=dict)
     """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
+    dto: type[DTOInterface] | None | EmptyType = field(default=Empty)
+    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and validation of request data."""
     etag: ETag | None = field(default=None)
     """An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
 
@@ -165,6 +170,10 @@ class AppConfig:
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
     response_cache_config: ResponseCacheConfig = field(default_factory=ResponseCacheConfig)
     """Configures caching behavior of the application."""
+    return_dto: type[DTOInterface] | None | EmptyType = field(default=Empty)
+    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing outbound response
+    data.
+    """
     route_handlers: list[ControllerRouterHandler] = field(default_factory=list)
     """A required list of route handlers, which can include instances of :class:`Router <.router.Router>`,
     subclasses of :class:`Controller <.controller.Controller>` or any function decorated by the route handler

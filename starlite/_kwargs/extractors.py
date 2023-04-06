@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, DefaultDict, Dict, cast
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, DefaultDict, cast
 
 from starlite._multipart import parse_multipart_form
 from starlite._parsers import (
@@ -11,10 +11,18 @@ from starlite._parsers import (
     parse_url_encoded_form_data,
 )
 from starlite.datastructures.upload_file import UploadFile
+from starlite.dto.interface import DTOInterface
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
 from starlite.params import BodyKwarg
 from starlite.types import Empty
+
+if TYPE_CHECKING:
+    from starlite._kwargs import KwargsModel
+    from starlite._kwargs.parameter_definition import ParameterDefinition
+    from starlite._signature.field import SignatureField
+    from starlite.connection import ASGIConnection, Request
+    from starlite.types.parsed_signature import ParsedParameter
 
 __all__ = (
     "body_extractor",
@@ -35,13 +43,6 @@ __all__ = (
     "socket_extractor",
     "state_extractor",
 )
-
-
-if TYPE_CHECKING:
-    from starlite._kwargs import KwargsModel
-    from starlite._kwargs.parameter_definition import ParameterDefinition
-    from starlite._signature.field import SignatureField
-    from starlite.connection import ASGIConnection, Request
 
 
 def create_connection_value_extractor(
@@ -143,7 +144,7 @@ def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> dict
     parsed_headers = connection.scope["_headers"] = (  # type: ignore
         connection._headers if connection._headers is not Empty else parse_headers(tuple(connection.scope["headers"]))
     )
-    return cast("Dict[str, Any]", parsed_headers)
+    return cast("dict[str, Any]", parsed_headers)
 
 
 def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
@@ -256,9 +257,7 @@ def body_extractor(
     values["body"] = connection.body()
 
 
-async def json_extractor(
-    connection: "Request[Any, Any, Any]",
-) -> Any:
+async def json_extractor(connection: Request[Any, Any, Any]) -> Any:
     """Extract the data from request and insert it into the kwargs injected to the handler.
 
     Notes:
@@ -273,7 +272,7 @@ async def json_extractor(
     return await connection.json()
 
 
-async def msgpack_extractor(connection: "Request[Any, Any, Any]") -> Any:
+async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
     """Extract the data from request and insert it into the kwargs injected to the handler.
 
     Notes:
@@ -383,6 +382,8 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
         data_extractor = cast(
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
         )
+    elif kwargs_model.expected_dto_data:
+        data_extractor = create_dto_extractor(*kwargs_model.expected_dto_data)
     else:
         data_extractor = cast(
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
@@ -395,3 +396,26 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
         values["data"] = data_extractor(connection)
 
     return extractor
+
+
+def create_dto_extractor(
+    parsed_parameter: ParsedParameter, dto_type: type[DTOInterface]
+) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
+    """Create a DTO data extractor.
+
+    Args:
+        parsed_parameter: :class:`ParsedParameter` instance representing the ``"data"`` kwarg.
+        dto_type: The :class:`DTOInterface` subclass.
+
+    Returns:
+        An extractor function.
+    """
+    is_dto_annotated = parsed_parameter.parsed_type.is_subclass_of(DTOInterface)
+
+    async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
+        dto = await dto_type.from_connection(connection)
+        if is_dto_annotated:
+            return dto
+        return dto.to_data_type()
+
+    return dto_extractor  # type:ignore[return-value]

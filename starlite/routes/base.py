@@ -120,9 +120,11 @@ class BaseRoute(ABC):
 
         return KwargsModel.create_for_signature_model(
             signature_model=get_signature_model(route_handler),
+            parsed_signature=route_handler.parsed_fn_signature,
             dependencies=route_handler.resolve_dependencies(),
             path_parameters=path_parameters,
             layered_parameters=route_handler.resolve_layered_parameters(),
+            data_dto=route_handler.resolve_dto(),
         )
 
     @staticmethod
