@@ -4,9 +4,10 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_lazyfixture import lazy_fixture
 
-from starlite import WebSocket
+from starlite import Request, WebSocket
 from starlite.datastructures import State
 from starlite.di import Provide
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.handlers.websocket_handlers import WebsocketListener, websocket_listener
 from starlite.testing import create_test_client
 from starlite.types.asgi_types import WebSocketMode
@@ -186,3 +187,25 @@ def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
         ws.send_text("something")
         ws.send_text("something")
         assert ws.receive_json() == {"data": "something", "foo": 1}
+
+
+def test_listener_callback_no_data_arg_raises() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @websocket_listener("/")
+        def handler() -> None:
+            ...
+
+
+def test_listener_callback_request_and_body_arg_raises() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @websocket_listener("/")
+        def handler_request(data: str, request: Request) -> None:
+            ...
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @websocket_listener("/")
+        def handler_body(data: str, body: bytes) -> None:
+            ...
