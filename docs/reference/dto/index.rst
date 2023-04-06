@@ -5,3 +5,4 @@ dto
     :titlesonly:
 
     interface
+    exceptions
