@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import cast
+from typing import Dict, List, Optional, Type, Union, cast
 from unittest.mock import MagicMock
 
 import pytest
@@ -20,7 +18,7 @@ def mock() -> MagicMock:
 
 
 @pytest.fixture
-def listener_class(mock: MagicMock) -> type[WebsocketListener]:
+def listener_class(mock: MagicMock) -> Type[WebsocketListener]:
     class Listener(WebsocketListener):
         def on_receive(self, data: str) -> str:
             mock(data)
@@ -55,7 +53,7 @@ def async_listener_callable(mock: MagicMock) -> websocket_listener:
         lazy_fixture("listener_class"),
     ],
 )
-def test_basic_listener(mock: MagicMock, listener: websocket_listener | type[WebsocketListener]) -> None:
+def test_basic_listener(mock: MagicMock, listener: Union[websocket_listener, Type[WebsocketListener]]) -> None:
     client = create_test_client([listener])
     with client.websocket_connect("/") as ws:
         ws.send_text("foo")
@@ -97,7 +95,7 @@ def test_listener_receive_string(receive_mode: WebSocketMode, mock: MagicMock) -
 @pytest.mark.parametrize("receive_mode", ["text", "binary"])
 def test_listener_receive_json(receive_mode: WebSocketMode, mock: MagicMock) -> None:
     @websocket_listener("/", receive_mode=receive_mode)
-    def handler(data: list[str]) -> None:
+    def handler(data: List[str]) -> None:
         mock(data)
 
     client = create_test_client([handler])
@@ -125,7 +123,7 @@ def test_listener_return_bytes(send_mode: WebSocketMode) -> None:
 @pytest.mark.parametrize("send_mode", ["text", "binary"])
 def test_listener_send_json(send_mode: WebSocketMode) -> None:
     @websocket_listener("/", send_mode=send_mode)
-    def handler(data: str) -> dict[str, str]:
+    def handler(data: str) -> Dict[str, str]:
         return {"data": data}
 
     client = create_test_client([handler])
@@ -146,7 +144,7 @@ def test_listener_return_none() -> None:
 
 def test_listener_return_optional_none() -> None:
     @websocket_listener("/")
-    def handler(data: str) -> str | None:
+    def handler(data: str) -> Optional[str]:
         if data == "hello":
             return "world"
         return None
@@ -160,7 +158,7 @@ def test_listener_return_optional_none() -> None:
 
 def test_listener_pass_socket(mock: MagicMock) -> None:
     @websocket_listener("/")
-    def handler(data: str, socket: WebSocket) -> dict[str, str]:
+    def handler(data: str, socket: WebSocket) -> Dict[str, str]:
         mock(socket=socket)
         return {"data": data}
 
@@ -180,7 +178,7 @@ def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
         return cast("int", state.foo)
 
     @websocket_listener("/", dependencies={"foo": Provide(foo_dependency)})
-    def handler(data: str, foo: int) -> dict[str, str | int]:
+    def handler(data: str, foo: int) -> Dict[str, Union[str, int]]:
         return {"data": data, "foo": foo}
 
     client = create_test_client([handler])
