@@ -11,11 +11,18 @@ from starlite._parsers import (
     parse_url_encoded_form_data,
 )
 from starlite.datastructures.upload_file import UploadFile
-from starlite.dto.kwarg_extractor import create_dto_extractor
+from starlite.dto.interface import DTOInterface
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ValidationException
 from starlite.params import BodyKwarg
 from starlite.types import Empty
+
+if TYPE_CHECKING:
+    from starlite._kwargs import KwargsModel
+    from starlite._kwargs.parameter_definition import ParameterDefinition
+    from starlite._signature.field import SignatureField
+    from starlite.connection import ASGIConnection, Request
+    from starlite.types.parsed_signature import ParsedParameter
 
 __all__ = (
     "body_extractor",
@@ -36,13 +43,6 @@ __all__ = (
     "socket_extractor",
     "state_extractor",
 )
-
-
-if TYPE_CHECKING:
-    from starlite._kwargs import KwargsModel
-    from starlite._kwargs.parameter_definition import ParameterDefinition
-    from starlite._signature.field import SignatureField
-    from starlite.connection import ASGIConnection, Request
 
 
 def create_connection_value_extractor(
@@ -396,3 +396,26 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
         values["data"] = data_extractor(connection)
 
     return extractor
+
+
+def create_dto_extractor(
+    parsed_parameter: ParsedParameter, dto_type: type[DTOInterface]
+) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
+    """Create a DTO data extractor.
+
+    Args:
+        parsed_parameter: :class:`ParsedParameter` instance representing the ``"data"`` kwarg.
+        dto_type: The :class:`DTOInterface` subclass.
+
+    Returns:
+        An extractor function.
+    """
+    is_dto_annotated = parsed_parameter.parsed_type.is_subclass_of(DTOInterface)
+
+    async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
+        dto = await dto_type.from_connection(connection)
+        if is_dto_annotated:
+            return dto
+        return dto.to_data_type()
+
+    return dto_extractor  # type:ignore[return-value]
