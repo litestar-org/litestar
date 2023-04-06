@@ -1,21 +1,20 @@
-import sys
-from typing import TYPE_CHECKING, Type, Union
+from __future__ import annotations
 
-from typing_extensions import TypeAlias
+import sys
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
-    from typing_extensions import _TypedDictMeta  # type: ignore
+    from typing import Type
+
+    from typing_extensions import TypeAlias, _TypedDictMeta  # type: ignore
 
 
 if sys.version_info >= (3, 10):
-    from types import NoneType as _NoneType
     from types import UnionType
-
-    NoneType = _NoneType  # type: ignore[valid-type]
 
     UNION_TYPES = {UnionType, Union}
 else:  # pragma: no cover
     UNION_TYPES = {Union}
-    NoneType = type(None)
 
+NoneType: type[None] = type(None)
 TypedDictClass: TypeAlias = "Type[_TypedDictMeta]"

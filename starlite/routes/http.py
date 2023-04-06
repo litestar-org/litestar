@@ -81,7 +81,7 @@ class HTTPRoute(BaseRoute):
         await response(scope, receive, send)
 
         if after_response_handler := route_handler.resolve_after_response():
-            await after_response_handler(request)  # type: ignore
+            await after_response_handler(request)
 
         if form_data := scope.get("_form", {}):
             await self._cleanup_temporary_files(form_data=cast("dict[str, Any]", form_data))

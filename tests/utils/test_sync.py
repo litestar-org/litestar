@@ -1,3 +1,6 @@
+import pytest
+
+from starlite.exceptions import ImproperlyConfiguredException
 from starlite.utils.sync import AsyncCallable
 
 
@@ -103,3 +106,9 @@ async def test_function_wrapper_wraps_async_class_correctly() -> None:
 
     await wrapped_class(new_value=10)  # type: ignore
     assert instance.value == 10
+
+
+def test_raises_improper_config_if_set_parsed_signature_not_called() -> None:
+    wrapped = AsyncCallable(lambda: None)
+    with pytest.raises(ImproperlyConfiguredException):
+        wrapped.parsed_signature

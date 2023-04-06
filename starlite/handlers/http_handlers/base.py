@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from inspect import Signature
 from typing import TYPE_CHECKING, AnyStr, Mapping, cast
 
 from typing_extensions import TypedDict
@@ -45,7 +44,7 @@ from starlite.types import (
     TypeEncodersMap,
 )
 from starlite.types.builtin_types import NoneType
-from starlite.utils import AsyncCallable, is_async_callable, is_class_and_subclass
+from starlite.utils import AsyncCallable, is_async_callable
 
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
@@ -268,8 +267,8 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         self.security = security
         self.responses = responses
         # memoized attributes, defaulted to Empty
-        self._resolved_after_response: AfterResponseHookHandler | None | EmptyType = Empty
-        self._resolved_before_request: BeforeRequestHookHandler | None | EmptyType = Empty
+        self._resolved_after_response: AsyncCallable | None | EmptyType = Empty
+        self._resolved_before_request: AsyncCallable | None | EmptyType = Empty
         self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
@@ -338,7 +337,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                     response_cookies.update(cast("set[Cookie]", layer_response_cookies))
         return frozenset(response_cookies)
 
-    def resolve_before_request(self) -> BeforeRequestHookHandler | None:
+    def resolve_before_request(self) -> AsyncCallable | None:
         """Resolve the before_handler handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
@@ -351,13 +350,10 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             before_request_handlers: list[AsyncCallable] = [
                 layer.before_request for layer in self.ownership_layers if layer.before_request  # type: ignore[misc]
             ]
-            self._resolved_before_request = cast(
-                "BeforeRequestHookHandler | None",
-                before_request_handlers[-1] if before_request_handlers else None,
-            )
-        return self._resolved_before_request
+            self._resolved_before_request = before_request_handlers[-1] if before_request_handlers else None
+        return cast("AsyncCallable | None", self._resolved_before_request)
 
-    def resolve_after_response(self) -> AfterResponseHookHandler | None:
+    def resolve_after_response(self) -> AsyncCallable | None:
         """Resolve the after_response handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
@@ -370,12 +366,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             after_response_handlers: list[AsyncCallable] = [
                 layer.after_response for layer in self.ownership_layers if layer.after_response  # type: ignore[misc]
             ]
-            self._resolved_after_response = cast(
-                "AfterResponseHookHandler | None",
-                after_response_handlers[-1] if after_response_handlers else None,
-            )
+            self._resolved_after_response = after_response_handlers[-1] if after_response_handlers else None
 
-        return cast("AfterResponseHookHandler | None", self._resolved_after_response)
+        return cast("AsyncCallable | None", self._resolved_after_response)
 
     def get_response_handler(self, is_response_type_data: bool = False) -> Callable[[Any], Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.
@@ -407,13 +400,9 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             return_annotation = return_type.annotation
 
             if before_request_handler := self.resolve_before_request():
-                before_request_handler_signature = Signature.from_callable(before_request_handler)
-                if (
-                    before_request_handler_signature.return_annotation
-                    and before_request_handler_signature.return_annotation is not Signature.empty
-                ):
-                    return_annotation = before_request_handler_signature.return_annotation
-
+                handler_return_type = before_request_handler.parsed_signature.return_type
+                if not handler_return_type.is_subclass_of((Empty, NoneType)):
+                    return_annotation = handler_return_type.annotation
             self._response_handler_mapping["response_type_handler"] = create_response_handler(
                 cookies=cookies, after_request=after_request
             )
@@ -474,24 +463,17 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
     def on_registration(self) -> None:
         super().on_registration()
-        self.resolve_before_request()
+        if before_request := self.resolve_before_request():
+            before_request.set_parsed_signature(self.resolve_signature_namespace())
         self.resolve_after_response()
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
 
-        return_annotation = self.parsed_fn_signature.return_type.annotation
+        return_type = self.parsed_fn_signature.return_type
 
-        if not self.media_type:
-            if return_annotation in {str, bytes, AnyStr, Redirect, File} or any(
-                is_class_and_subclass(return_annotation, t_type) for t_type in (str, bytes)  # type: ignore
-            ):
-                self.media_type = MediaType.TEXT
-            else:
-                self.media_type = MediaType.JSON
-
-        if return_annotation is Empty:
+        if return_type.annotation is Empty:
             raise ImproperlyConfiguredException(
                 "A return value of a route handler function should be type annotated."
                 "If your function doesn't return a value, annotate it as returning 'None'."
@@ -499,19 +481,19 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         if (
             self.status_code < 200 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
-        ) and return_annotation not in {None, NoneType}:
+        ) and not return_type.is_subclass_of(NoneType):
             raise ImproperlyConfiguredException(
                 "A status code 204, 304 or in the range below 200 does not support a response body."
                 "If the function should return a value, change the route handler status code to an appropriate value.",
             )
 
-        if (
-            is_class_and_subclass(return_annotation, File) or is_class_and_subclass(return_annotation, FileResponse)
-        ) and self.media_type in (
-            MediaType.JSON,
-            MediaType.HTML,
-        ):
-            self.media_type = MediaType.TEXT
+        if not self.media_type:
+            if return_type.annotation is AnyStr or return_type.is_subclass_of(
+                (str, bytes, Redirect, File, FileResponse)
+            ):
+                self.media_type = MediaType.TEXT
+            else:
+                self.media_type = MediaType.JSON
 
         if "socket" in self.parsed_fn_signature.parameters:
             raise ImproperlyConfiguredException("The 'socket' kwarg is not supported with http handlers")

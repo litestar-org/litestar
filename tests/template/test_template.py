@@ -109,10 +109,10 @@ def test_media_type_inferred(extension: str, expected_type: MediaType, template_
 
 
 def test_before_request_handler_content_type(template_dir: Path) -> None:
-    (template_dir / "about.html").write_text("about starlite...")
+    template_loc = template_dir / "about.html"
 
-    def before_request_handler(request: "Request") -> None:
-        return None
+    def before_request_handler(_: "Request") -> None:
+        template_loc.write_text("before request")
 
     @get("/", before_request=before_request_handler)
     def index() -> Template:
@@ -124,3 +124,4 @@ def test_before_request_handler_content_type(template_dir: Path) -> None:
         res = client.get("/")
         assert res.status_code == 200
         assert res.headers["content-type"].startswith(MediaType.HTML.value)
+        assert res.text == "before request"

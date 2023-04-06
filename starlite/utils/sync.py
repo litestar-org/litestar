@@ -4,6 +4,7 @@ from asyncio import iscoroutinefunction
 from functools import partial
 from inspect import getfullargspec, ismethod
 from typing import (
+    TYPE_CHECKING,
     Any,
     AsyncGenerator,
     Awaitable,
@@ -12,12 +13,19 @@ from typing import (
     Iterable,
     Iterator,
     TypeVar,
+    cast,
 )
 
 from anyio.to_thread import run_sync
 from typing_extensions import ParamSpec, TypeGuard
 
+from starlite.exceptions import ImproperlyConfiguredException
+from starlite.types import Empty
 from starlite.utils.helpers import Ref
+
+if TYPE_CHECKING:
+    from starlite.types.empty import EmptyType
+    from starlite.types.parsed_signature import ParsedSignature
 
 __all__ = ("AsyncCallable", "AsyncIteratorWrapper", "as_async_callable_list", "async_partial", "is_async_callable")
 
@@ -45,7 +53,7 @@ def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[
 class AsyncCallable(Generic[P, T]):
     """Wrap a callable into an asynchronous callable."""
 
-    __slots__ = ("args", "kwargs", "ref", "is_method", "num_expected_args")
+    __slots__ = ("args", "kwargs", "ref", "is_method", "num_expected_args", "_parsed_signature")
 
     def __init__(self, fn: Callable[P, T]) -> None:
         """Initialize the wrapper from any callable.
@@ -53,6 +61,7 @@ class AsyncCallable(Generic[P, T]):
         Args:
             fn: Callable to wrap - can be any sync or async callable.
         """
+        self._parsed_signature: ParsedSignature | EmptyType = Empty
         self.is_method = ismethod(fn) or (callable(fn) and ismethod(fn.__call__))  # type: ignore
         self.num_expected_args = len(getfullargspec(fn).args) - (1 if self.is_method else 0)
         self.ref = Ref[Callable[..., Awaitable[T]]](
@@ -70,6 +79,25 @@ class AsyncCallable(Generic[P, T]):
             The return value of the wrapped function.
         """
         return await self.ref.value(*args, **kwargs)
+
+    @property
+    def parsed_signature(self) -> ParsedSignature:
+        if self._parsed_signature is Empty:
+            raise ImproperlyConfiguredException(
+                "Parsed signature is not set. Call `set_parsed_signature()` at an appropriate time during handler"
+                "registration."
+            )
+        return cast("ParsedSignature", self._parsed_signature)
+
+    def set_parsed_signature(self, namespace: dict[str, Any]) -> None:
+        """Set the parsed signature of the wrapped function.
+
+        Args:
+            namespace: Namespace for forward ref resolution.
+        """
+        from starlite.types.parsed_signature import ParsedSignature
+
+        self._parsed_signature = ParsedSignature.from_fn(self.ref.value, namespace)
 
 
 def as_async_callable_list(value: Callable | list[Callable]) -> list[AsyncCallable]:
