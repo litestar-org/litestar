@@ -20,8 +20,6 @@ __all__ = ("WebsocketRouteHandler", "websocket", "websocket_listener", "Websocke
 if TYPE_CHECKING:
     from typing import Any, Mapping
 
-    from litestar.types.asgi_types import WebSocketMode
-
     from litestar.connection import WebSocket
     from litestar.dto.interface import DTOInterface
     from litestar.types import (
@@ -35,6 +33,7 @@ if TYPE_CHECKING:
         SyncOrAsyncUnion,
         TypeEncodersMap,
     )
+    from litestar.types.asgi_types import WebSocketMode
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
@@ -188,7 +187,6 @@ class websocket_listener(WebsocketRouteHandler):
         *,
         wants_receive_type: Any,
         can_send_data: bool,
-        may_not_send_data: bool,
         should_encode_to_json: bool,
         pass_socket: bool,
         callback: AsyncCallable,
@@ -208,16 +206,6 @@ class websocket_listener(WebsocketRouteHandler):
             return received_data
 
         async def handle_send(socket: WebSocket, data_to_send: Any) -> None:
-            if not can_send_data:
-                if data_to_send is None:
-                    raise RuntimeError(f"Expected {callback} to not return a value. Returned {data_to_send!r}")
-                return
-
-            if data_to_send is None:
-                if not may_not_send_data:
-                    raise RuntimeError(f"Expected {callback} to return a value. Returned None")
-                return
-
             if should_encode_to_json:
                 data_to_send = json_encoder.encode(data_to_send)
 
@@ -233,7 +221,8 @@ class websocket_listener(WebsocketRouteHandler):
                 try:
                     received_data = await handle_receive(socket)
                     data_to_send = await callback(data=received_data, **kwargs)
-                    await handle_send(socket, data_to_send)
+                    if can_send_data:
+                        await handle_send(socket, data_to_send)
                 except WebSocketDisconnect:
                     if self._on_disconnect:
                         await self._on_disconnect(socket)
@@ -273,13 +262,11 @@ class websocket_listener(WebsocketRouteHandler):
             )
         )
         can_send_data = not listener_callback_signature.return_type.is_subclass_of(NoneType)
-        has_optional_return_type = listener_callback_signature.return_type.is_optional
         pass_socket = "socket" in listener_callback_signature.parameters
 
         listener_fn = self._create_listener_fn(
             callback=listener_callback,
             can_send_data=can_send_data,
-            may_not_send_data=has_optional_return_type,
             should_encode_to_json=should_encode_to_json,
             wants_receive_type=listener_callback_signature.parameters["data"].annotation,
             pass_socket=pass_socket,
