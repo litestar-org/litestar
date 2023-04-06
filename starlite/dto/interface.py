@@ -61,10 +61,16 @@ class DTOInterface(Protocol):
 
     @classmethod
     def on_registration(cls, parsed_type: ParsedType, route_handler: BaseRouteHandler) -> None:
-        """Do something each time the DTOInterface type is encountered during signature modelling.
+        """Receive the ``parsed_type`` and ``route_handler`` that this DTO is configured to represent.
+
+        At this point, if the DTO type does not support the annotated type of ``parsed_type``, it should raise an
+        ``UnsupportedType`` exception.
 
         Args:
             parsed_type: :class:`ParsedType <.types.parsed_signature.ParsedType>` instance, will be either the parsed
                 annotation of a ``"data"`` kwarg, or the parsed return type annotation of a route handler.
             route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
+
+        Raises:
+            UnsupportedType: If the DTO type does not support the annotated type of ``parsed_type``.
         """
