@@ -1,5 +1,3 @@
-from sys import version_info
-
 import pytest
 from polyfactory import BaseFactory
 
