@@ -58,7 +58,7 @@
         :pr: 1277
 
         Add a ``__version__`` constant to the ``starlite`` namespace, containing a
-        ``starlitetyping.NamedTuple``, holding information about the currently
+        :class:`NamedTuple <typing.NamedTuple>`, holding information about the currently
         installed version of Starlite
 
 
@@ -81,7 +81,7 @@
         objects and submodules containing them.
 
         .. seealso::
-            :ref``starliteusage/cli:autodiscovery``
+            :ref:`CLI autodiscovery <usage/cli:autodiscovery>`
 
     .. change:: Configurable exception logging and traceback truncation
         :type: feature
@@ -202,7 +202,7 @@
     .. change:: Remove ``picologging`` dependency from the ``standard`` package extra
         :type: misc
         :breaking:
-        :pr: 131
+        :pr: 1313
 
         `picologging <https://github.com/microsoft/picologging>`_ has been removed form the ``standard`` package extra.
         If you have been previously relying on this, you need to change ``pip install starlite[standard]`` to
@@ -415,7 +415,7 @@
         :ref:`usage/responses:Response Headers` and :ref:`usage/responses:Response Cookies` now have the same
         interface, along with the ``headers`` and ``cookies`` keyword arguments to
         ``starlite.response.Response``. They each allow to pass either a
-        ``Mapping[st``starlitetyping.Mapping``, e.g. a dictionary, or a ``starlitetyping.Sequence`` of
+        `:class:`Mapping[str, str] <typing.Mapping>`, e.g. a dictionary, or a :class:`Sequence <typing.Sequence>` of
         ``starlite.datastructures.response_header.ResponseHeader`` or
         ``starlite.datastructures.cookie.Cookie`` respectively.
 
