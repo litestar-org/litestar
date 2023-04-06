@@ -85,6 +85,7 @@ nitpick_ignore = [
     ("py:class", "starlite._signature.field.SignatureField"),
     ("py:class", "types.parsed_signature.ParsedSignature"),
     ("py:class", "starlite.utils.sync.AsyncCallable"),
+    ("py:class", "starlite.utils.sync.AsyncCallable"),
     ("py:class", "types.parsed_signature.ParsedType"),
 ]
 nitpick_ignore_regex = [
