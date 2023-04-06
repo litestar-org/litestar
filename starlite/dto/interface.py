@@ -19,6 +19,8 @@ DataT = TypeVar("DataT")
 
 @runtime_checkable
 class DTOInterface(Protocol[DataT]):
+    __slots__ = ()
+
     @abstractmethod
     def to_data_type(self) -> DataT:
         """Return the data held by the DTO."""
