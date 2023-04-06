@@ -481,7 +481,7 @@
         :type: bugfix
         :pr: 1256
 
-        Using a relative ``pathlib.Path` did not resolve correctly and result in a ``NotFoundException``
+        Using a relative :class:`pathlib.Path` did not resolve correctly and result in a ``NotFoundException``
 
     .. change:: Fix ``--reload`` flag to ``starlite run`` not working correctly
         :type: bugfix
