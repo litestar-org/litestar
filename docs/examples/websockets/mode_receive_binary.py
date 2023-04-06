@@ -1,4 +1,4 @@
-from starlite import Starlite, websocket_listener
+from litestar import Starlite, websocket_listener
 
 
 @websocket_listener("/", receive_mode="binary")

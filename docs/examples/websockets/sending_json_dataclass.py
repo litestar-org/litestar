@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from starlite import Starlite, websocket_listener
+from litestar import Litestar, websocket_listener
 
 
 @dataclass
@@ -15,4 +15,4 @@ async def handler(data: str) -> Message:
     return Message(message=data, timestamp=datetime.now().timestamp())
 
 
-app = Starlite([handler])
+app = Litestar([handler])

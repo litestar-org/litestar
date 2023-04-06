@@ -5,7 +5,7 @@ WebSockets
 Handling WebSocket in an application often involves dealing with low level constructs
 such as the socket itself, setting up a loop and listening for incoming data, handling
 exceptions and parsing incoming and serializing outgoing data. In addition to the
-low-level :class:`websocket route handler <.handlers.websocket>`, Starlite offers two
+low-level :class:`websocket route handler <.handlers.websocket>`, Litestar offers two
 high level interfaces:
 
 - :class:`websocket_listener <.handlers.websocket_listener>`
@@ -19,8 +19,8 @@ sent over the connection. The low level details will be handled behind the curta
 
 .. code-block:: python
 
-    from starlite import Starlite
-    from starlite.handlers.websocket_handlers import websocket_listener
+    from litestar import Litestar
+    from litestar.handlers.websocket_handlers import websocket_listener
 
 
     @websocket_listener("/")
@@ -28,7 +28,7 @@ sent over the connection. The low level details will be handled behind the curta
         return data
 
 
-    app = Starlite([handler])
+    app = Litestar([handler])
 
 
 This handler will accept connections on ``/``, and wait to receive data. Once a message
@@ -82,7 +82,7 @@ Sending data is done by simply returning the value to be sent from the handler f
 Similar to receiving data, type annotations configure how the data is being handled.
 Values are are not :class:`str` or :class:`bytes` are assumed to be JSON encodable and
 will be serialized accordingly before being sent. This serialization is available for
-all data types currently supported by Starlite (
+all data types currently supported by Litestar (
 :doc:`dataclasses <python:library/dataclasses>`\ es, :class:`TypedDict <typing.TypedDict>`,
 :class:`NamedTuple <typing.NamedTuple>`,  :class:`msgspec.Struct`, etc.).
 

@@ -4,13 +4,13 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_lazyfixture import lazy_fixture
 
-from starlite import Request, WebSocket
-from starlite.datastructures import State
-from starlite.di import Provide
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers.websocket_handlers import WebsocketListener, websocket_listener
-from starlite.testing import create_test_client
-from starlite.types.asgi_types import WebSocketMode
+from litestar import Request, WebSocket
+from litestar.datastructures import State
+from litestar.di import Provide
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
+from litestar.testing import create_test_client
+from litestar.types.asgi_types import WebSocketMode
 
 
 @pytest.fixture

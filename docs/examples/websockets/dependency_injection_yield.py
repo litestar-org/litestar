@@ -1,8 +1,8 @@
 from typing import TypedDict
 
-from starlite import Starlite, websocket_listener
-from starlite.datastructures import State
-from starlite.di import Provide
+from litestar import Starlite, websocket_listener
+from litestar.datastructures import State
+from litestar.di import Provide
 
 
 class Message(TypedDict):

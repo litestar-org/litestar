@@ -1,4 +1,4 @@
-from starlite import Starlite, WebSocket, websocket_listener
+from litestar import Litestar, WebSocket, websocket_listener
 
 
 @websocket_listener("/")
@@ -9,4 +9,4 @@ async def handler(data: str, socket: WebSocket) -> str:
     return data
 
 
-app = Starlite([handler])
+app = Litestar([handler])

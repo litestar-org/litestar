@@ -1,5 +1,5 @@
-from starlite import Starlite, WebSocket
-from starlite.handlers import WebsocketListener
+from litestar import Starlite, WebSocket
+from litestar.handlers import WebsocketListener
 
 
 class Handler(WebsocketListener):

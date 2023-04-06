@@ -1,5 +1,5 @@
-from starlite import Starlite, websocket_listener
-from starlite.di import Provide
+from litestar import Starlite, websocket_listener
+from litestar.di import Provide
 
 
 def some_dependency() -> str:

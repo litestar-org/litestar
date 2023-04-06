@@ -20,6 +20,8 @@ __all__ = ("WebsocketRouteHandler", "websocket", "websocket_listener", "Websocke
 if TYPE_CHECKING:
     from typing import Any, Mapping
 
+    from litestar.types.asgi_types import WebSocketMode
+
     from litestar.connection import WebSocket
     from litestar.dto.interface import DTOInterface
     from litestar.types import (
@@ -33,7 +35,6 @@ if TYPE_CHECKING:
         SyncOrAsyncUnion,
         TypeEncodersMap,
     )
-    from starlite.types.asgi_types import WebSocketMode
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
