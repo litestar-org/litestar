@@ -16,7 +16,6 @@ Usage
     stores
     testing
     plugins/index
-    dto
     events
     openapi
     lifecycle-hooks

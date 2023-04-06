@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>openapi &#8212; Starlite Framework</title>
+    <title>dto &#8212; Starlite Framework</title>
   
   
   
@@ -50,13 +50,13 @@
     <script src="../../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/openapi/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/dto/index';</script>
     <script src="../../_static/versioning.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="openapi" href="openapi.html" />
-    <link rel="prev" title="server_side" href="../middleware/session/server_side.html" />
+    <link rel="next" title="interface" href="interface.html" />
+    <link rel="prev" title="di" href="../di.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -535,9 +535,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../dto/interface.html">interface</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dto/exceptions.html">exceptions</a></li>
+<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">dto</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">exceptions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">enums</a></li>
@@ -567,9 +567,9 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">openapi</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="openapi.html">openapi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="spec.html">spec</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../openapi/spec.html">spec</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
@@ -646,7 +646,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">openapi</li>
+    <li class="breadcrumb-item active" aria-current="page">dto</li>
   </ul>
 </nav>
 </div>
@@ -663,12 +663,12 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="openapi">
-<h1>openapi<a class="headerlink" href="#openapi" title="Permalink to this heading">#</a></h1>
+  <section id="dto">
+<h1>dto<a class="headerlink" href="#dto" title="Permalink to this heading">#</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="openapi.html">openapi</a></li>
-<li class="toctree-l1"><a class="reference internal" href="spec.html">spec</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">exceptions</a></li>
 </ul>
 </div>
 </section>
@@ -685,20 +685,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../middleware/session/server_side.html"
+       href="../di.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">server_side</p>
+        <p class="prev-next-title">di</p>
       </div>
     </a>
     <a class="right-next"
-       href="openapi.html"
+       href="interface.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">openapi</p>
+        <p class="prev-next-title">interface</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

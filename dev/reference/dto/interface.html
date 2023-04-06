@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>openapi &#8212; Starlite Framework</title>
+    <title>interface &#8212; Starlite Framework</title>
   
   
   
@@ -50,13 +50,13 @@
     <script src="../../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/openapi/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/dto/interface';</script>
     <script src="../../_static/versioning.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="openapi" href="openapi.html" />
-    <link rel="prev" title="server_side" href="../middleware/session/server_side.html" />
+    <link rel="next" title="exceptions" href="exceptions.html" />
+    <link rel="prev" title="dto" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -312,6 +312,10 @@ document.write(`
   
 
   
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
 
     </nav>
@@ -535,9 +539,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../dto/interface.html">interface</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dto/exceptions.html">exceptions</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">dto</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exceptions.html">exceptions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">enums</a></li>
@@ -567,9 +571,9 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">openapi</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="openapi.html">openapi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="spec.html">spec</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../openapi/spec.html">spec</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
@@ -646,7 +650,10 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">openapi</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">dto</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">interface</li>
   </ul>
 </nav>
 </div>
@@ -663,14 +670,88 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="openapi">
-<h1>openapi<a class="headerlink" href="#openapi" title="Permalink to this heading">#</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="openapi.html">openapi</a></li>
-<li class="toctree-l1"><a class="reference internal" href="spec.html">spec</a></li>
+  <section id="module-starlite.dto.interface">
+<span id="interface"></span><h1>interface<a class="headerlink" href="#module-starlite.dto.interface" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="starlite.dto.interface.DTOInterface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.dto.interface.</span></span><span class="sig-name descname"><span class="pre">DTOInterface</span></span><a class="headerlink" href="#starlite.dto.interface.DTOInterface" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.dto.interface.DTOInterface.to_data_type">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_data_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#starlite.dto.interface.DTOInterface.to_data_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the data held by the DTO.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.dto.interface.DTOInterface.to_encodable_type">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">to_encodable_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#starlite.connection.Request" title="starlite.connection.Request"><span class="pre">Request</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">StarliteEncodableType</span></span></span><a class="headerlink" href="#starlite.dto.interface.DTOInterface.to_encodable_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Encode data held by the DTO type to a type supported by starlite serialization.</p>
+<p>Can return either bytes or a type that Starlite can return to bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> – <a class="reference internal" href="../connection.html#starlite.connection.Request" title="starlite.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Either <code class="docutils literal notranslate"><span class="pre">bytes</span></code> or a type that Starlite can convert to bytes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.dto.interface.DTOInterface.from_connection">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#starlite.connection.Request" title="starlite.connection.Request"><span class="pre">Request</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#starlite.dto.interface.DTOInterface.from_connection" title="Permalink to this definition">#</a></dt>
+<dd><p>Construct an instance from a <a class="reference internal" href="../connection.html#starlite.connection.Request" title="starlite.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>connection</strong> – <a class="reference internal" href="../connection.html#starlite.connection.Request" title="starlite.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DTOInterface instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.dto.interface.DTOInterface.from_data">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#starlite.dto.interface.DTOInterface.from_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Construct an instance from data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – Data to construct the DTO from.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DTOInterface instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.dto.interface.DTOInterface.on_registration">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_registration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parsed_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ParsedType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../handlers.html#starlite.handlers.BaseRouteHandler" title="starlite.handlers.BaseRouteHandler"><span class="pre">BaseRouteHandler</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.dto.interface.DTOInterface.on_registration" title="Permalink to this definition">#</a></dt>
+<dd><p>Receive the <code class="docutils literal notranslate"><span class="pre">parsed_type</span></code> and <code class="docutils literal notranslate"><span class="pre">route_handler</span></code> that this DTO is configured to represent.</p>
+<p>At this point, if the DTO type does not support the annotated type of <code class="docutils literal notranslate"><span class="pre">parsed_type</span></code>, it should raise an
+<code class="docutils literal notranslate"><span class="pre">UnsupportedType</span></code> exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parsed_type</strong> – <code class="xref py py-class docutils literal notranslate"><span class="pre">ParsedType</span></code> instance, will be either the parsed
+annotation of a <code class="docutils literal notranslate"><span class="pre">&quot;data&quot;</span></code> kwarg, or the parsed return type annotation of a route handler.</p></li>
+<li><p><strong>route_handler</strong> – <a class="reference internal" href="../handlers.html#starlite.handlers.HTTPRouteHandler" title="starlite.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a> DTO type is declared upon.</p></li>
 </ul>
-</div>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="exceptions.html#starlite.dto.exceptions.UnsupportedType" title="starlite.dto.exceptions.UnsupportedType"><strong>UnsupportedType</strong></a> – If the DTO type does not support the annotated type of <code class="docutils literal notranslate"><span class="pre">parsed_type</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="starlite.dto.interface.DTOInterface.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#starlite.dto.interface.DTOInterface.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -685,20 +766,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../middleware/session/server_side.html"
+       href="index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">server_side</p>
+        <p class="prev-next-title">dto</p>
       </div>
     </a>
     <a class="right-next"
-       href="openapi.html"
+       href="exceptions.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">openapi</p>
+        <p class="prev-next-title">exceptions</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -711,6 +792,28 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.dto.interface.DTOInterface"><code class="docutils literal notranslate"><span class="pre">DTOInterface</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.dto.interface.DTOInterface.to_data_type"><code class="docutils literal notranslate"><span class="pre">DTOInterface.to_data_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.dto.interface.DTOInterface.to_encodable_type"><code class="docutils literal notranslate"><span class="pre">DTOInterface.to_encodable_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.dto.interface.DTOInterface.from_connection"><code class="docutils literal notranslate"><span class="pre">DTOInterface.from_connection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.dto.interface.DTOInterface.from_data"><code class="docutils literal notranslate"><span class="pre">DTOInterface.from_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.dto.interface.DTOInterface.on_registration"><code class="docutils literal notranslate"><span class="pre">DTOInterface.on_registration()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.dto.interface.DTOInterface.__init__"><code class="docutils literal notranslate"><span class="pre">DTOInterface.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

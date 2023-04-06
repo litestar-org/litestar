@@ -15,7 +15,7 @@ API reference
     data_extractors
     datastructures
     di
-    dto
+    dto/index
     enums
     events
     exceptions

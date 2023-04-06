@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>openapi &#8212; Starlite Framework</title>
+    <title>exceptions &#8212; Starlite Framework</title>
   
   
   
@@ -50,13 +50,13 @@
     <script src="../../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/openapi/index';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/dto/exceptions';</script>
     <script src="../../_static/versioning.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="openapi" href="openapi.html" />
-    <link rel="prev" title="server_side" href="../middleware/session/server_side.html" />
+    <link rel="next" title="enums" href="../enums.html" />
+    <link rel="prev" title="interface" href="interface.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -312,6 +312,10 @@ document.write(`
   
 
   
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
 
     </nav>
@@ -535,9 +539,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../dto/interface.html">interface</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../dto/exceptions.html">exceptions</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">dto</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="interface.html">interface</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">exceptions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../enums.html">enums</a></li>
@@ -567,9 +571,9 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">openapi</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="openapi.html">openapi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="spec.html">spec</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../openapi/spec.html">spec</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../pagination.html">pagination</a></li>
@@ -646,7 +650,10 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">openapi</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">dto</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">exceptions</li>
   </ul>
 </nav>
 </div>
@@ -663,14 +670,22 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="openapi">
-<h1>openapi<a class="headerlink" href="#openapi" title="Permalink to this heading">#</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="openapi.html">openapi</a></li>
-<li class="toctree-l1"><a class="reference internal" href="spec.html">spec</a></li>
-</ul>
-</div>
+  <section id="module-starlite.dto.exceptions">
+<span id="exceptions"></span><h1>exceptions<a class="headerlink" href="#module-starlite.dto.exceptions" title="Permalink to this heading">#</a></h1>
+<dl class="py exception">
+<dt class="sig sig-object py" id="starlite.dto.exceptions.DTOException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.dto.exceptions.</span></span><span class="sig-name descname"><span class="pre">DTOException</span></span><a class="headerlink" href="#starlite.dto.exceptions.DTOException" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../exceptions.html#starlite.exceptions.ImproperlyConfiguredException" title="starlite.exceptions.http_exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a></p>
+<p>Base exception for DTO errors.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="starlite.dto.exceptions.UnsupportedType">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.dto.exceptions.</span></span><span class="sig-name descname"><span class="pre">UnsupportedType</span></span><a class="headerlink" href="#starlite.dto.exceptions.UnsupportedType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#starlite.dto.exceptions.DTOException" title="starlite.dto.exceptions.DTOException"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOException</span></code></a></p>
+<p>Raised when a type is not supported by Starlite.</p>
+</dd></dl>
+
 </section>
 
 
@@ -685,20 +700,20 @@ document.write(`
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../middleware/session/server_side.html"
+       href="interface.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">server_side</p>
+        <p class="prev-next-title">interface</p>
       </div>
     </a>
     <a class="right-next"
-       href="openapi.html"
+       href="../enums.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">openapi</p>
+        <p class="prev-next-title">enums</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -711,6 +726,21 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.dto.exceptions.DTOException"><code class="docutils literal notranslate"><span class="pre">DTOException</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.dto.exceptions.UnsupportedType"><code class="docutils literal notranslate"><span class="pre">UnsupportedType</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
