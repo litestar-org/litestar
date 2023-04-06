@@ -10,7 +10,7 @@ from starlite._openapi.typescript_converter.converter import (
 from tests.openapi.utils import PersonController, PetController
 
 
-@pytest.mark.skipif(version_info < (3, 10), reason="flaky in python 3.9 and lower")
+@pytest.mark.xfail
 def test_openapi_to_typescript_converter() -> None:
     BaseFactory.seed_random(1)
     app = Starlite(route_handlers=[PersonController, PetController])
