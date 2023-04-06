@@ -429,8 +429,8 @@ def create_async_test_client(
         csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
-            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
-                validation of request data.
+        dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+            validation of request data.
         etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
             Can be overridden by route handlers.
         event_emitter_backend: A subclass of

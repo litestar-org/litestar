@@ -35,3 +35,19 @@ class MockDTO(DTOInterface[DataclassProtocol]):
     @classmethod
     def from_data(cls, data: DataclassProtocol) -> Self:
         return cls()
+
+
+class MockReturnDTO(DTOInterface[DataclassProtocol]):
+    def to_data_type(self) -> DataclassProtocol:
+        raise RuntimeError("Return DTO should have this method called")
+
+    def to_encodable_type(self, request: Request[Any, Any, Any]) -> bytes | StarliteEncodableType:
+        return b'{"a": 1, "b": "2"}'
+
+    @classmethod
+    async def from_connection(cls, connection: Request[Any, Any, Any]) -> Self:
+        raise RuntimeError("Return DTO should have this method called")
+
+    @classmethod
+    def from_data(cls, data: DataclassProtocol) -> Self:
+        return cls()
