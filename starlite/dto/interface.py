@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from abc import abstractmethod
+from typing import TYPE_CHECKING, Any, Protocol, TypeVar, runtime_checkable
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -11,13 +11,14 @@ if TYPE_CHECKING:
     from starlite.types import StarliteEncodableType
     from starlite.types.parsed_signature import ParsedType
 
-__all__ = ("AbstractDTOInterface", "DataT")
+__all__ = ("DTOInterface", "DataT")
 
 DataT = TypeVar("DataT")
 """Type var representing data held by a DTO instance."""
 
 
-class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
+@runtime_checkable
+class DTOInterface(Protocol[DataT]):
     @abstractmethod
     def to_data_type(self) -> DataT:
         """Return the data held by the DTO."""
@@ -44,7 +45,7 @@ class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
             connection: :class:`Request <.connection.Request>` instance.
 
         Returns:
-            AbstractDTOInterface instance.
+            DTOInterface instance.
         """
 
     @classmethod
@@ -56,12 +57,12 @@ class AbstractDTOInterface(Generic[DataT], metaclass=ABCMeta):
             data: Data to construct the DTO from.
 
         Returns:
-            AbstractDTOInterface instance.
+            DTOInterface instance.
         """
 
     @classmethod
     def on_registration(cls, parsed_type: ParsedType, route_handler: BaseRouteHandler) -> None:
-        """Do something each time the AbstractDTOInterface type is encountered during signature modelling.
+        """Do something each time the DTOInterface type is encountered during signature modelling.
 
         Args:
             parsed_type: :class:`ParsedType <.types.parsed_signature.ParsedType>` instance, will be either the parsed

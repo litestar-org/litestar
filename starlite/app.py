@@ -58,7 +58,7 @@ if TYPE_CHECKING:
     from starlite.config.cors import CORSConfig
     from starlite.config.csrf import CSRFConfig
     from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
-    from starlite.dto.interface import AbstractDTOInterface
+    from starlite.dto.interface import DTOInterface
     from starlite.events.listener import EventListener
     from starlite.handlers.base import BaseRouteHandler
     from starlite.logging.config import BaseLoggingConfig
@@ -187,7 +187,7 @@ class Starlite(Router):
         compression_config: CompressionConfig | None = None,
         cors_config: CORSConfig | None = None,
         csrf_config: CSRFConfig | None = None,
-        dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
+        dto: type[DTOInterface] | None | EmptyType = Empty,
         debug: bool = False,
         dependencies: Dependencies | None = None,
         etag: ETag | None = None,
@@ -211,7 +211,7 @@ class Starlite(Router):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: OptionalSequence[ResponseHeader] = None,
-        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
+        return_dto: type[DTOInterface] | None | EmptyType = Empty,
         security: OptionalSequence[SecurityRequirement] = None,
         signature_namespace: Mapping[str, Any] | None = None,
         state: State | None = None,
@@ -257,7 +257,7 @@ class Starlite(Router):
             csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
-            dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and
+            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
                 validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
                 Can be overridden by route handlers.
@@ -292,7 +292,7 @@ class Starlite(Router):
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
             response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
             response_cache_config: Configures caching behavior of the application.
-            return_dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing
+            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
                 outbound response data.
             route_handlers: A sequence of route handlers, which can include instances of
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any

@@ -32,7 +32,7 @@ from starlite._kwargs.parameter_definition import (
 from starlite._signature import SignatureModel, get_signature_model
 from starlite._signature.field import SignatureField
 from starlite.constants import RESERVED_KWARGS
-from starlite.dto.interface import AbstractDTOInterface
+from starlite.dto.interface import DTOInterface
 from starlite.enums import ParamType, RequestEncodingType
 from starlite.exceptions import ImproperlyConfiguredException
 from starlite.params import BodyKwarg, ParameterKwarg
@@ -72,7 +72,7 @@ class KwargsModel:
         self,
         *,
         expected_cookie_params: set[ParameterDefinition],
-        expected_dto_data: tuple[ParsedParameter, type[AbstractDTOInterface]] | None,
+        expected_dto_data: tuple[ParsedParameter, type[DTOInterface]] | None,
         expected_dependencies: set[Dependency],
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
         expected_msgpack_data: SignatureField | None,
@@ -261,7 +261,7 @@ class KwargsModel:
         dependencies: dict[str, Provide],
         path_parameters: set[str],
         layered_parameters: dict[str, SignatureField],
-        data_dto: type[AbstractDTOInterface] | None,
+        data_dto: type[DTOInterface] | None,
     ) -> KwargsModel:
         """Pre-determine what parameters are required for a given combination of route + route handler. It is executed
         during the application bootstrap process.
@@ -272,7 +272,7 @@ class KwargsModel:
             dependencies: A string keyed dictionary mapping dependency providers.
             path_parameters: Any expected path parameters.
             layered_parameters: A string keyed dictionary of layered parameters.
-            data_dto: A :class:`AbstractDTOInterface <starlite._dto.AbstractDTOInterface>` subclass if one is declared
+            data_dto: A :class:`DTOInterface <starlite._dto.DTOInterface>` subclass if one is declared
                 for the route handler, or ``None``.
 
         Returns:
@@ -304,7 +304,7 @@ class KwargsModel:
 
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None = None
         expected_msgpack_data: SignatureField | None = None
-        expected_dto_data: tuple[ParsedParameter, type[AbstractDTOInterface]] | None = None
+        expected_dto_data: tuple[ParsedParameter, type[DTOInterface]] | None = None
 
         data_signature_field = signature_fields.get("data")
 
@@ -325,7 +325,7 @@ class KwargsModel:
         elif data_signature_field:
             parsed_parameter = parsed_signature.parameters["data"]
             parsed_type = parsed_parameter.parsed_type
-            if parsed_type.is_subclass_of(AbstractDTOInterface):
+            if parsed_type.is_subclass_of(DTOInterface):
                 expected_dto_data = (parsed_parameter, parsed_type.annotation)
             elif data_dto:
                 expected_dto_data = (parsed_parameter, data_dto)

@@ -18,7 +18,7 @@ __all__ = ("Controller",)
 
 if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
-    from starlite.dto.interface import AbstractDTOInterface
+    from starlite.dto.interface import DTOInterface
     from starlite.openapi.spec import SecurityRequirement
     from starlite.response import Response
     from starlite.router import Router
@@ -93,8 +93,8 @@ class Controller:
     """
     dependencies: Dependencies | None
     """A string keyed dictionary of dependency :class:`Provider <.di.Provide>` instances."""
-    dto: type[AbstractDTOInterface] | None | EmptyType
-    """:class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and validation of request data."""
+    dto: type[DTOInterface] | None | EmptyType
+    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and validation of request data."""
     etag: ETag | None
     """An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this controller.
 
@@ -130,8 +130,8 @@ class Controller:
     """A list of :class:`Cookie <.datastructures.Cookie>` instances."""
     response_headers: ResponseHeaders | None
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>` instances."""
-    return_dto: type[AbstractDTOInterface] | None | EmptyType
-    """:class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing outbound response
+    return_dto: type[DTOInterface] | None | EmptyType
+    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing outbound response
     data.
     """
     tags: OptionalSequence[str]

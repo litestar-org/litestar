@@ -56,7 +56,7 @@ if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.datastructures.headers import Header
     from starlite.di import Provide
-    from starlite.dto.interface import AbstractDTOInterface
+    from starlite.dto.interface import DTOInterface
     from starlite.openapi.datastructures import ResponseSpec
     from starlite.openapi.spec import SecurityRequirement
     from starlite.plugins import SerializationPluginProtocol
@@ -126,7 +126,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
         dependencies: Mapping[str, Provide] | None = None,
-        dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
+        dto: type[DTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
@@ -138,7 +138,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
-        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
+        return_dto: type[DTOInterface] | None | EmptyType = Empty,
         status_code: int | None = None,
         sync_to_thread: bool = False,
         # OpenAPI related attributes
@@ -181,7 +181,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
-            dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and
+            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
                 validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` that will be added to the response.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -203,7 +203,7 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
                 instances.
             responses: A mapping of additional status codes and a description of their expected content.
                 This information will be included in the OpenAPI schema
-            return_dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing
+            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
                 outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response. Defaults to ``200`` for mixed method or ``GET``, ``PUT`` and

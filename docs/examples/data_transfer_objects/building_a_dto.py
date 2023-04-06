@@ -7,7 +7,7 @@ import msgspec
 
 from starlite import Starlite, put
 from starlite.contrib.sqlalchemy.base import Base
-from starlite.dto.interface import AbstractDTOInterface
+from starlite.dto.interface import DTOInterface
 
 if TYPE_CHECKING:
     from starlite.connection import Request
@@ -25,7 +25,7 @@ class CompanySchema(msgspec.Struct):
     worth: float
 
 
-class CompanyDTO(AbstractDTOInterface[Company]):
+class CompanyDTO(DTOInterface[Company]):
     def __init__(self, data: Company) -> None:
         self._data = data
 

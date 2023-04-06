@@ -21,7 +21,7 @@ __all__ = ("Router",)
 if TYPE_CHECKING:
     from starlite.datastructures import CacheControlHeader, ETag
     from starlite.di import Provide
-    from starlite.dto.interface import AbstractDTOInterface
+    from starlite.dto.interface import DTOInterface
     from starlite.openapi.spec import SecurityRequirement
     from starlite.routes import BaseRoute
     from starlite.types import (
@@ -85,7 +85,7 @@ class Router:
         before_request: BeforeRequestHookHandler | None = None,
         cache_control: CacheControlHeader | None = None,
         dependencies: Mapping[str, Provide] | None = None,
-        dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
+        dto: type[DTOInterface] | None | EmptyType = Empty,
         etag: ETag | None = None,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
@@ -95,7 +95,7 @@ class Router:
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
-        return_dto: type[AbstractDTOInterface] | None | EmptyType = Empty,
+        return_dto: type[DTOInterface] | None | EmptyType = Empty,
         route_handlers: Sequence[ControllerRouterHandler],
         security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
@@ -117,7 +117,7 @@ class Router:
                 :class:`CacheControlHeader <.datastructures.CacheControlHeader>` to add to route handlers of
                 this router. Can be overridden by route handlers.
             dependencies: A string keyed mapping of dependency :class:`Provide <.di.Provide>` instances.
-            dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for (de)serializing and
+            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
                 validation of request data.
             etag: An ``etag`` header of type :class:`ETag <.datastructures.ETag>` to add to route handlers of this app.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
@@ -135,7 +135,7 @@ class Router:
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
             response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
                 instances.
-            return_dto: :class:`AbstractDTOInterface <.dto.interface.AbstractDTOInterface>` to use for serializing
+            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
                 outbound response data.
             route_handlers: A required sequence of route handlers, which can include instances of
                 :class:`Router <.router.Router>`, subclasses of :class:`Controller <.controller.Controller>` or any
