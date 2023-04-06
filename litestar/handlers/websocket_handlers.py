@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING, Callable, Literal
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
 from litestar.handlers.base import BaseRouteHandler
 from litestar.serialization import decode_json
-from litestar.types.parsed_signature import ParsedSignature
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
+from litestar.types.parsed_signature import ParsedSignature
 from litestar.utils import AsyncCallable, is_async_callable
 
 __all__ = ("WebsocketRouteHandler", "websocket", "websocket_listener", "WebsocketListener")
@@ -17,8 +17,8 @@ __all__ = ("WebsocketRouteHandler", "websocket", "websocket_listener", "Websocke
 if TYPE_CHECKING:
     from typing import Any, Mapping
 
-    from litestar.dto.interface import DTOInterface
     from litestar.connection import WebSocket
+    from litestar.dto.interface import DTOInterface
     from litestar.types import (
         AnyCallable,
         Dependencies,
@@ -28,9 +28,8 @@ if TYPE_CHECKING:
         MaybePartial,  # noqa: F401
         Middleware,
         SyncOrAsyncUnion,
+        TypeEncodersMap,
     )
-
-__all__ = ("WebsocketRouteHandler", "websocket")
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
@@ -121,43 +120,84 @@ class websocket_listener(WebsocketRouteHandler):
         path: str | None | list[str] | None = None,
         *,
         dependencies: Dependencies | None = None,
+        dto: type[DTOInterface] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
         guards: list[Guard] | None = None,
         middleware: list[Middleware] | None = None,
-        name: str | None = None,
-        opt: dict[str, Any] | None = None,
-        signature_namespace: Mapping[str, Any] | None = None,
         mode: Literal["text", "binary"] = "text",
+        name: str | None = None,
         on_accept: Callable[[WebSocket], SyncOrAsyncUnion[None]] | None = None,
         on_disconnect: Callable[[WebSocket], SyncOrAsyncUnion[None]] | None = None,
+        opt: dict[str, Any] | None = None,
+        return_dto: type[DTOInterface] | None | EmptyType = Empty,
+        signature_namespace: Mapping[str, Any] | None = None,
+        type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
+        """Initialize ``WebsocketRouteHandler``
+
+        Args:
+            path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
+                to ``/``
+            dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+                validation of request data.
+            exception_handlers: A mapping of status codes and/or exception types to handler functions.
+            guards: A sequence of :class:`Guard <.types.Guard>` callables.
+            middleware: A sequence of :class:`Middleware <.types.Middleware>`.
+            mode: Websocket mode to receive data in, either `text` or `binary`.
+            name: A string identifying the route handler.
+            on_accept: Callback invoked after a connection has been accepted, receiving the
+                :class:`WebSocket <.connection.WebSocket>` instance as its only argument
+            on_disconnect: Callback invoked after a connection has been closed, receiving the
+                :class:`WebSocket <.connection.WebSocket>` instance as its only argument
+            opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
+                wherever you have access to :class:`Request <.connection.Request>` or
+                :class:`ASGI Scope <.types.Scope>`.
+            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+                outbound response data.
+            signature_namespace: A mapping of names to types for use in forward reference resolution during signature
+                modelling.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
+        """
         self._mode = mode
         self._pass_socket = False
         self._on_accept = AsyncCallable(on_accept) if on_accept else None
         self._on_disconnect = AsyncCallable(on_disconnect) if on_disconnect else None
+        self.type_encoders = type_encoders
 
         super().__init__(
             path=path,
             dependencies=dependencies,
+            dto=dto,
             exception_handlers=exception_handlers,
             guards=guards,
             middleware=middleware,
             name=name,
             opt=opt,
+            return_dto=return_dto,
             signature_namespace=signature_namespace,
             **kwargs,
         )
 
-    def __call__(self, listener_callback: AnyCallable) -> websocket_listener:
+    def _validate_handler_function(self) -> None:
+        """Validate the route handler function once it's set by inspecting its return annotations."""
+
+    def _validate_listener_callback_signature(self, listener_callback: AnyCallable) -> ParsedSignature:
         listener_callback_signature = ParsedSignature.from_fn(listener_callback, self.resolve_signature_namespace())
-        raw_listener_callback_signature = listener_callback_signature.original_signature
 
         if "data" not in listener_callback_signature.parameters:
             raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
         for param in ("request", "body"):
             if param in listener_callback_signature.parameters:
                 raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket listeners")
+
+        return listener_callback_signature
+
+    def __call__(self, listener_callback: AnyCallable) -> websocket_listener:
+        listener_callback_signature = self._validate_listener_callback_signature(listener_callback)
+        raw_listener_callback_signature = listener_callback_signature.original_signature
 
         if not is_async_callable(listener_callback):
             listener_callback = AsyncCallable(listener_callback)
@@ -200,44 +240,77 @@ class websocket_listener(WebsocketRouteHandler):
 
         new_signature = raw_listener_callback_signature.replace(parameters=new_params)
         listener_fn.__signature__ = new_signature  # type: ignore[attr-defined]
-        for param in new_signature.parameters.values():
-            listener_fn.__annotations__[param.name] = param.annotation
+        listener_fn.__annotations__ = {p.name: p.annotation for p in new_signature.parameters.values()}
 
         return super().__call__(listener_fn)
 
 
 class WebsocketListener(ABC):
     path: str | None | list[str] | None = None
+    """A path fragment for the route handler function or a sequence of path fragments. If not given defaults to ``/``"""
     dependencies: Dependencies | None = None
+    """A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances."""
+    dto: type[DTOInterface] | None | EmptyType = Empty
+    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and validation of request data"""
     exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None
+    """A mapping of status codes and/or exception types to handler functions."""
     guards: list[Guard] | None = None
+    """A sequence of :class:`Guard <.types.Guard>` callables."""
     middleware: list[Middleware] | None = None
-    name: str | None = None
-    opt: dict[str, Any] | None = None
-    signature_namespace: Mapping[str, Any] | None = None
+    """A sequence of :class:`Middleware <.types.Middleware>`."""
     mode: Literal["text", "binary"] = "text"
+    """Websocket mode to receive data in, either `text` or `binary`."""
+    name: str | None = None
+    """A string identifying the route handler."""
+    opt: dict[str, Any] | None = None
+    """
+    A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or wherever you
+    have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
+    """
+    return_dto: type[DTOInterface] | None | EmptyType = Empty
+    """:class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing outbound response data."""
+    signature_namespace: Mapping[str, Any] | None = None
+    """
+    A mapping of names to types for use in forward reference resolution during signature modelling.
+    """
+    type_encoders: TypeEncodersMap | None = None
+    """
+    type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+    """
 
     def __init__(self) -> None:
         self._handler = websocket_listener(
-            path=self.path,
             dependencies=self.dependencies,
+            dto=self.dto,
             exception_handlers=self.exception_handlers,
             guards=self.guards,
             middleware=self.middleware,
-            name=self.name,
-            opt=self.opt,
-            signature_namespace=self.signature_namespace,
             mode=self.mode,
+            name=self.name,
             on_accept=self.on_accept,
             on_disconnect=self.on_disconnect,
+            opt=self.opt,
+            path=self.path,
+            return_dto=self.return_dto,
+            signature_namespace=self.signature_namespace,
+            type_encoders=self.type_encoders,
         )(self.on_receive)
 
     def on_accept(self, socket: WebSocket) -> SyncOrAsyncUnion[None]:  # noqa: B027
-        pass
+        """Called after a WebSocket connection has been accepted"""
 
     @abstractmethod
     def on_receive(self, *args: Any, **kwargs: Any) -> Any:
+        """Called after data has been received from the WebSocket.
+
+        This should take a ``data`` argument, receiving the processed WebSocket data,
+        and can additionally include handler dependencies such as ``state``, or other
+        regular dependencies.
+
+        Data returned from this function will be serialized and sent via the socket
+        according to handler configuration.
+        """
         raise NotImplementedError
 
     def on_disconnect(self, socket: WebSocket) -> SyncOrAsyncUnion[None]:  # noqa: B027
-        pass
+        """Called after a WebSocket connection has been disconnected"""

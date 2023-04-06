@@ -203,11 +203,7 @@ class ParsedSignature:
     The only post-processing that occurs is the conversion of any forward referenced type annotations.
     """
 
-    __slots__ = (
-        "parameters",
-        "return_type",
-        "original_signature"
-    )
+    __slots__ = ("parameters", "return_type", "original_signature")
 
     parameters: dict[str, ParsedParameter]
     """A mapping of parameter names to ParsedSignatureParameter instances."""
@@ -238,5 +234,5 @@ class ParsedSignature:
         return ParsedSignature(
             parameters={p.name: p for p in parameters},
             return_type=ParsedType.from_annotation(fn_type_hints.get("return", Empty)),
-            original_signature=signature
+            original_signature=signature,
         )

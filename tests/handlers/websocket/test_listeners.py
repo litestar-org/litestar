@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import cast
 from unittest.mock import MagicMock
 
 import pytest
@@ -131,7 +132,7 @@ def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
         if not hasattr(state, "foo"):
             state.foo = 0
         state.foo += 1
-        return state.foo
+        return cast("int", state.foo)
 
     @websocket_listener("/", dependencies={"foo": Provide(foo_dependency)})
     def handler(data: str, foo: int) -> dict[str, str | int]:
