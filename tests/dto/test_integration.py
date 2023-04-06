@@ -29,7 +29,7 @@ def test_dto_defined_on_controller() -> None:
             assert data == Model(a=1, b="2")
             return data
 
-    with create_test_client(route_handlers=MyController, preferred_validation_backend="pydantic", debug=True) as client:
+    with create_test_client(route_handlers=MyController) as client:
         response = client.post("/", json={"what": "ever"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
@@ -43,7 +43,7 @@ def test_dto_defined_on_router() -> None:
 
     router = Router(path="/", route_handlers=[handler], dto=MockDTO)
 
-    with create_test_client(route_handlers=router, preferred_validation_backend="pydantic") as client:
+    with create_test_client(route_handlers=router) as client:
         response = client.post("/", json={"what": "ever"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
@@ -55,7 +55,7 @@ def test_dto_defined_on_app() -> None:
         assert data == Model(a=1, b="2")
         return data
 
-    with create_test_client(route_handlers=handler, dto=MockDTO, preferred_validation_backend="pydantic") as client:
+    with create_test_client(route_handlers=handler, dto=MockDTO) as client:
         response = client.post("/", json={"what": "ever"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
@@ -69,11 +69,7 @@ def test_set_dto_none_disables_inherited_dto() -> None:
 
     mock_dto = MagicMock(spec=MockDTO)
 
-    with create_test_client(
-        route_handlers=handler,
-        dto=mock_dto,  # pyright:ignore
-        preferred_validation_backend="pydantic",
-    ) as client:
+    with create_test_client(route_handlers=handler, dto=mock_dto) as client:  # pyright:ignore
         response = client.post("/", json={"hello": "world"})
         assert response.status_code == 201
         assert response.json() == {"hello": "world"}
@@ -86,9 +82,7 @@ def test_dto_and_return_dto() -> None:
         assert data == Model(a=1, b="2")
         return data
 
-    with create_test_client(
-        route_handlers=handler, dto=MockDTO, return_dto=MockReturnDTO, preferred_validation_backend="pydantic"
-    ) as client:
+    with create_test_client(route_handlers=handler, dto=MockDTO, return_dto=MockReturnDTO) as client:
         response = client.post("/", json={"what": "ever"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
@@ -100,7 +94,7 @@ def test_dto_annotated_handler() -> None:
         assert isinstance(data, MockDTO)
         return data
 
-    with create_test_client(route_handlers=handler, preferred_validation_backend="pydantic") as client:
+    with create_test_client(route_handlers=handler) as client:
         response = client.post("/", json={"what": "ever"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
