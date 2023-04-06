@@ -22,7 +22,7 @@
 
         The ``starlite.storage`` module added in the previous version has been
         renamed ``starlite.stores`` to reduce ambiguity, and a new feature, the
-        :class:`StoreRegistry <.stores.registry.StoreRegistry>` has been introduced;
+        ``starlite.stores.registry.StoreRegistry`` has been introduced;
         It serves as a central place to manage stores and reduces the amount of
         configuration needed for various integrations.
 
@@ -31,7 +31,7 @@
         - Change ``RateLimitMiddleware`` to use ``app.stores``
         - Change request caching to use ``app.stores``
         - Change server side sessions to use ``app.stores``
-        - Move ``starlite.config.cache.CacheConfig`` to  :class:`starlite.config.response_cache.ResponseCacheConfig`
+        - Move ``starlite.config.cache.CacheConfig`` to  ``starlite.config.response_cache.ResponseCacheConfig`
         - Rename ``Starlite.cache_config`` > ``Starlite.response_cache_config``
         - Rename ``AppConfig.cache_config`` > ``response_cache_config``
         - Remove ``starlite/cache`` module
@@ -39,13 +39,13 @@
         - Remove ``Starlite.cache`` attribute
 
         .. attention::
-            :class:`RateLimitMiddleware <.middleware.rate_limit.RateLimitMiddleware>`,
-            :class:`ResponseCacheConfig <.config.response_cache.ResponseCacheConfig>`,
-            and :class:`ServerSideSessionConfig <.middleware.session.server_side.ServerSideSessionConfig>`
+            ``starlite.middleware.rate_limit.RateLimitMiddleware``,
+            ``starlite.config.response_cache.ResponseCacheConfig``,
+            and ``starlite.middleware.session.server_side.ServerSideSessionConfig``
             instead of accepting a ``storage`` argument that could be passed a ``Storage`` instance now have to be
             configured via the ``store`` attribute, accepting a string key for the store to be used from the registry.
             The ``store`` attribute has a unique default set, guaranteeing a unique
-            :class:`MemoryStore <.stores.memory.MemoryStore>` instance is acquired for every one of them from the
+            ``starlite.stores.memory.MemoryStore`` instance is acquired for every one of them from the
             registry by default
 
         .. seealso::
@@ -58,7 +58,7 @@
         :pr: 1277
 
         Add a ``__version__`` constant to the ``starlite`` namespace, containing a
-        :class:`NamedTuple <typing.NamedTuple>`, holding information about the currently
+        ``starlitetyping.NamedTuple``, holding information about the currently
         installed version of Starlite
 
 
@@ -69,9 +69,6 @@
         Add a new ``version`` command to the CLI which displays the currently installed
         version of Starlite
 
-        .. seealso::
-            :ref:`The version command <usage/cli:version>`
-
 
     .. change:: Enhance CLI autodiscovery logic
         :type: feature
@@ -79,20 +76,20 @@
         :pr: 1322
 
         Update the CLI :ref:`usage/cli:autodiscovery` to only consider canonical modules app and application, but every
-        :class:`Starlite <.app.Starlite>` instance or application factory able to return a ``Starlite`` instance within
+        ``starlite.app.Starlite`` instance or application factory able to return a ``Starlite`` instance within
         those or one of their submodules, giving priority to the canonical names app and application for application
         objects and submodules containing them.
 
         .. seealso::
-            :ref:`CLI autodiscovery <usage/cli:autodiscovery>`
+            :ref``starliteusage/cli:autodiscovery``
 
     .. change:: Configurable exception logging and traceback truncation
         :type: feature
         :pr: 1296
 
-        Add three new configuration options to :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>`:
+        Add three new configuration options to ``starlite.logging.config.BaseLoggingConfig``:
 
-        :attr:`log_exceptions <.logging.config.LoggingConfig.log_exceptions>`
+        ``starlite.logging.config.LoggingConfig.log_exceptions``
             Configure when exceptions are logged.
 
             ``always``
@@ -104,15 +101,15 @@
             ``never``
                 Never log exception
 
-        :attr:`traceback_line_limit <.logging.config.LoggingConfig.traceback_line_limit>`
+        ``starlite.logging.config.LoggingConfig.traceback_line_limit``
             Configure how many lines of tracback are logged
 
-        :attr:`exception_logging_handler <.logging.config.LoggingConfig.exception_logging_handler>`
+        ``starlite.logging.config.LoggingConfig.exception_logging_handler``
             A callable that receives three parameters - the ``app.logger``, the connection scope and the traceback
             list, and should handle logging
 
         .. seealso::
-            :class:`LoggingConfig <.logging.config.LoggingConfig>`
+            ``starlite.logging.config.LoggingConfig``
 
 
     .. change:: Allow overwriting default OpenAPI response descriptions
@@ -141,7 +138,7 @@
         :pr: 1344
         :issue: 1315
 
-        ``after_request`` hooks were not being called automatically when a :class:`Response <.response.Response>`
+        ``after_request`` hooks were not being called automatically when a ``starlite.response.Response``
         instances was returned from a route handler directly.
 
         .. seealso::
@@ -153,7 +150,7 @@
         :pr: 1355
 
         An error would be raised when using the SQLAlchemy plugin with a
-        `sqlalchemy UUID <https://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.UUID>`_ type. This
+       ``starlitehttps://docs.sqlalchemy.org/en/20/core/type_basics.html#sqlalchemy.types.UUID``_ type. This
         was fixed by adding it to the provider map.
 
 
@@ -162,7 +159,7 @@
         :pr: 1363ad
 
         The HTML generated by the ReDoc and Swagger OpenAPI handlers would cause
-        `JSON.parse <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse>`_
+       ``starlitehttps://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse``_
         to throw an error. This was fixed by removing the call to ``JSON.parse``.
 
 
@@ -177,7 +174,7 @@
         :type: misc
         :pr: 1346
 
-        :class:`SimpleEventEmitter <.events.emitter.SimpleEventEmitter>` was updated to using an async worker, pulling
+        ``starlite.events.emitter.SimpleEventEmitter`` was updated to using an async worker, pulling
         emitted events from a queue and subsequently calling listeners. Previously listeners were called immediately,
         making the operation effectively "blocking".
 
@@ -187,9 +184,9 @@
         :breaking:
         :pr: 1376
 
-        :meth:`BaseEventEmitterBackend.emit <.events.emitter.BaseEventEmitterBackend>`, and subsequently
-        :meth:`SimpleEventEmitter.emit <.events.emitter.SimpleEventEmitter>` and
-        :meth:`Starlite.emit <.app.Starlite.emit>` have been changed to synchronous function, allowing them to easily be
+        :meth``starlite.events.emitter.BaseEventEmitterBackend``, and subsequently
+        :meth``starlite.events.emitter.SimpleEventEmitter`` and
+        :meth``starlite.app.Starlite.emit`` have been changed to synchronous function, allowing them to easily be
         used within synchronous route handlers.
 
 
@@ -205,9 +202,7 @@
     .. change:: Remove ``picologging`` dependency from the ``standard`` package extra
         :type: misc
         :breaking:
-        :pr: 1313
-
-        `picologging <https://github.com/microsoft/picologging>`_ has been removed form the ``standard`` package extra.
+        :pr: 131``starlitehttps://github.com/microsoft/picologging``_ has been removed form the ``standard`` package extra.
         If you have been previously relying on this, you need to change ``pip install starlite[standard]`` to
         ``pip install starlite[standard,picologging]``
 
@@ -217,8 +212,8 @@
         :pr: 1350
         :breaking:
 
-        The ``initial_state`` argument to :class:`Starlite <.app.Starlite>` has been replaced with a ``state`` keyword
-        argument, accepting an optional :class:`State <.datastructures.state.State>` instance.
+        The ``initial_state`` argument to ``starlite.app.Starlite`` has been replaced with a ``state`` keyword
+        argument, accepting an optional ``starlite.datastructures.state.State`` instance.
 
         Existing code using this keyword argument will need to be changed from
 
@@ -309,9 +304,9 @@
         :type: feature
         :pr: 1190
 
-        :meth:`Starlite.from_config <starlite.app.Starlite.from_config>` was added to the
-        :class:`Starlite <starlite.app.Starlite>` class which allows to construct an instance
-        from an :class:`AppConfig <starlite.config.app.AppConfig>` instance.
+        :meth``starlite.app.Starlite.from_config`` was added to the
+        ``starlite.app.Starlite`` class which allows to construct an instance
+        from an ``starlite.config.app.AppConfig`` instance.
 
     .. change:: Web concurrency option for CLI ``run`` command
         :pr: 1218
@@ -327,13 +322,13 @@
 
         Type annotations of the reserved ``state`` parameter in handler functions will
         now be validated such that annotations using an unsupported type will raise a
-        :class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>`.
+        ``starlite.exceptions.ImproperlyConfiguredException``.
 
     .. change:: Generic application state
         :type: feature
         :pr: 1030
 
-        :class:`ASGIConnection <starlite.connection.base.ASGIConnection>` and its subclasses are now generic on ``State``
+        ``starlite.connection.base.ASGIConnection`` and its subclasses are now generic on ``State``
         which allow to to fully type hint a request as ``Request[UserType, AuthType, StateType]``.
 
     .. change:: Dependency injection of classes
@@ -356,7 +351,7 @@
         :pr: 1184
         :breaking:
 
-        Storage backends for server-side sessions and ``Cache <starlite.cache.Cache>`` have been unified and replaced
+        Storage backends for server-side sessions``starlite.cache.Cache``` have been unified and replaced
         by the ``starlite.storages``, which implements generic asynchronous key/values stores backed
         by memory, the file system or redis.
 
@@ -377,8 +372,8 @@
         :pr: 1167
 
         ``type_encoders`` support has been added to
-        :class:`AbstractSecurityConfig <starlite.security.base.AbstractSecurityConfig>`, enabling support for customized
-        ``type_encoders`` for example in :class:`JWTAuth <starlite.contrib.jwt.jwt_auth.JWTAuth>`.
+        ``starlite.security.base.AbstractSecurityConfig``, enabling support for customized
+        ``type_encoders`` for example in ``starlite.contrib.jwt.jwt_auth.JWTAuth``.
 
 
     .. change::  Renamed handler module names
@@ -400,13 +395,13 @@
 
         The plugin protocol has been split into three distinct protocols, covering different use cases:
 
-        :class:`InitPluginProtocol <starlite.plugins.InitPluginProtocol>`
+        ``starlite.plugins.InitPluginProtocol``
             Hook into an application's initialization process
 
-        :class:`SerializationPluginProtocol <starlite.plugins.SerializationPluginProtocol>`
+        ``starlite.plugins.SerializationPluginProtocol``
             Extend the serialization and deserialization capabilities of an application
 
-        :class:`OpenAPISchemaPluginProtocol <starlite.plugins.OpenAPISchemaPluginProtocol>`
+        ``starlite.plugins.OpenAPISchemaPluginProtocol``
             Extend OpenAPI schema generation
 
 
@@ -417,10 +412,10 @@
 
         :ref:`usage/responses:Response Headers` and :ref:`usage/responses:Response Cookies` now have the same
         interface, along with the ``headers`` and ``cookies`` keyword arguments to
-        :class:`Response <starlite.response.Response>`. They each allow to pass either a
-        :class:`Mapping[str, str] <typing.Mapping>`, e.g. a dictionary, or a :class:`Sequence <typing.Sequence>` of
-        :class:`ResponseHeaders <starlite.datastructures.response_header.ResponseHeader>` or
-        :class:`Cookies <starlite.datastructures.cookie.Cookie>` respectively.
+        ``starlite.response.Response``. They each allow to pass either a
+        ``Mapping[st``starlitetyping.Mapping``, e.g. a dictionary, or a ``starlitetyping.Sequence`` of
+        ``starlite.datastructures.response_header.ResponseHeader`` or
+        ``starlite.datastructures.cookie.Cookie`` respectively.
 
 
     .. change:: Replace Pydantic models with dataclasses
@@ -432,33 +427,33 @@
         should be mostly non-breaking, unless you relied on those configuration objects being Pydantic models. The changed
         models are:
 
-        - :class:`starlite.config.allowed_hosts.AllowedHostsConfig`
-        - :class:`starlite.config.app.AppConfig`
-        - :class:`starlite.config.response_cache.ResponseCacheConfig`
-        - :class:`starlite.config.compression.CompressionConfig`
-        - :class:`starlite.config.cors.CORSConfig`
-        - :class:`starlite.config.csrf.CSRFConfig`
-        - :class:`starlite.logging.config.LoggingConfig`
-        - :class:`starlite.openapi.OpenAPIConfig`
-        - :class:`starlite.static_files.StaticFilesConfig`
-        - :class:`starlite.template.TemplateConfig`
-        - :class:`starlite.contrib.jwt.jwt_token.Token`
-        - :class:`starlite.contrib.jwt.jwt_auth.JWTAuth`
-        - :class:`starlite.contrib.jwt.jwt_auth.JWTCookieAuth`
-        - :class:`starlite.contrib.jwt.jwt_auth.OAuth2Login`
-        - :class:`starlite.contrib.jwt.jwt_auth.OAuth2PasswordBearerAuth`
-        - :class:`starlite.contrib.opentelemetry.OpenTelemetryConfig`
-        - :class:`starlite.middleware.logging.LoggingMiddlewareConfig`
-        - :class:`starlite.middleware.rate_limit.RateLimitConfig`
-        - :class:`starlite.middleware.session.base.BaseBackendConfig`
-        - :class:`starlite.middleware.session.client_side.CookieBackendConfig`
-        - :class:`starlite.middleware.session.server_side.ServerSideSessionConfig`
-        - :class:`starlite.response_containers.ResponseContainer`
-        - :class:`starlite.response_containers.File`
-        - :class:`starlite.response_containers.Redirect`
-        - :class:`starlite.response_containers.Stream`
-        - :class:`starlite.security.base.AbstractSecurityConfig`
-        - :class:`starlite.security.session_auth.SessionAuth`
+        - ``starlite.config.allowed_hosts.AllowedHostsConfig``
+        - ``starlite.config.app.AppConfig``
+        - ``starlite.config.response_cache.ResponseCacheConfig``
+        - ``starlite.config.compression.CompressionConfig``
+        - ``starlite.config.cors.CORSConfig``
+        - ``starlite.config.csrf.CSRFConfig``
+        - ``starlite.logging.config.LoggingConfig``
+        - ``starlite.openapi.OpenAPIConfig``
+        - ``starlite.static_files.StaticFilesConfig``
+        - ``starlite.template.TemplateConfig``
+        - ``starlite.contrib.jwt.jwt_token.Token``
+        - ``starlite.contrib.jwt.jwt_auth.JWTAuth``
+        - ``starlite.contrib.jwt.jwt_auth.JWTCookieAuth``
+        - ``starlite.contrib.jwt.jwt_auth.OAuth2Login``
+        - ``starlite.contrib.jwt.jwt_auth.OAuth2PasswordBearerAuth``
+        - ``starlite.contrib.opentelemetry.OpenTelemetryConfig``
+        - ``starlite.middleware.logging.LoggingMiddlewareConfig``
+        - ``starlite.middleware.rate_limit.RateLimitConfig``
+        - ``starlite.middleware.session.base.BaseBackendConfig``
+        - ``starlite.middleware.session.client_side.CookieBackendConfig``
+        - ``starlite.middleware.session.server_side.ServerSideSessionConfig``
+        - ``starlite.response_containers.ResponseContainer``
+        - ``starlite.response_containers.File``
+        - ``starlite.response_containers.Redirect``
+        - ``starlite.response_containers.Stream``
+        - ``starlite.security.base.AbstractSecurityConfig``
+        - ``starlite.security.session_auth.SessionAuth``
 
 
     .. change:: SQLAlchemy plugin moved to ``contrib``
@@ -466,7 +461,7 @@
         :breaking:
         :pr: 1252
 
-        The :class:`SQLAlchemyPlugin` has moved to ``starlite.contrib.sqlalchemy_1.plugin`` and will only be compatible
+        The ``SQLAlchemyPlugin` has moved to ``starlite.contrib.sqlalchemy_1.plugin`` and will only be compatible
         with the SQLAlchemy 1.4 release line. The newer SQLAlchemy 2.x releases will be supported by the
         ``contrib.sqlalchemy`` module.
 
@@ -479,14 +474,12 @@
         The ``starlite`` namespace has been cleared up, removing many names from it, which now have to be imported from
         their respective submodules individually. This was both done to improve developer experience as well as reduce
         the time it takes to ``import starlite``.
-        An overview of the changed import paths can be found in the
-        :ref:`migration guide <release-notes/migration_guide_2:Changed module paths>`
 
     .. change:: Fix resolving of relative paths in ``StaticFilesConfig``
         :type: bugfix
         :pr: 1256
 
-        Using a relative :class:`pathlib.Path` did not resolve correctly and result in a ``NotFoundException``
+        Using a relative ``pathlib.Path` did not resolve correctly and result in a ``NotFoundException``
 
     .. change:: Fix ``--reload`` flag to ``starlite run`` not working correctly
         :type: bugfix
@@ -522,7 +515,7 @@
         :type: bugfix
         :pr: 1223
 
-        :class:`starlite.contrib.jwt.jwt_auth.JWTCookieAuth` didn't set the ``domain`` configuration value on the response
+        ``starlite.contrib.jwt.jwt_auth.JWTCookieAuth`` didn't set the ``domain`` configuration value on the response
         cookie.
 
 
