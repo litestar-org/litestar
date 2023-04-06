@@ -206,12 +206,15 @@ class ParsedSignature:
     __slots__ = (
         "parameters",
         "return_type",
+        "original_signature"
     )
 
     parameters: dict[str, ParsedParameter]
     """A mapping of parameter names to ParsedSignatureParameter instances."""
     return_type: ParsedType
     """The return annotation of the callable."""
+    original_signature: Signature
+    """The raw signature as returned by :func:`inspect.signature`"""
 
     @classmethod
     def from_fn(cls, fn: AnyCallable, signature_namespace: dict[str, Any]) -> ParsedSignature:
@@ -235,4 +238,5 @@ class ParsedSignature:
         return ParsedSignature(
             parameters={p.name: p for p in parameters},
             return_type=ParsedType.from_annotation(fn_type_hints.get("return", Empty)),
+            original_signature=signature
         )

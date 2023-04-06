@@ -5,6 +5,9 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_lazyfixture import lazy_fixture
 
+from starlite import WebSocket
+from starlite.datastructures import State
+from starlite.di import Provide
 from starlite.handlers.websocket_handlers import WebsocketListener, websocket_listener
 from starlite.testing import create_test_client
 
@@ -107,3 +110,35 @@ def test_listener_send_json() -> None:
     with client.websocket_connect("/") as ws:
         ws.send_text("foo")
         assert ws.receive_json() == {"data": "foo"}
+
+
+def test_listener_pass_socket(mock: MagicMock) -> None:
+    @websocket_listener("/")
+    def handler(data: str, socket: WebSocket) -> dict[str, str]:
+        mock(socket=socket)
+        return {"data": data}
+
+    client = create_test_client([handler])
+    with client.websocket_connect("/") as ws:
+        ws.send_text("foo")
+        assert ws.receive_json() == {"data": "foo"}
+
+    assert isinstance(mock.call_args.kwargs["socket"], WebSocket)
+
+
+def test_listener_pass_additional_dependencies(mock: MagicMock) -> None:
+    def foo_dependency(state: State) -> int:
+        if not hasattr(state, "foo"):
+            state.foo = 0
+        state.foo += 1
+        return state.foo
+
+    @websocket_listener("/", dependencies={"foo": Provide(foo_dependency)})
+    def handler(data: str, foo: int) -> dict[str, str | int]:
+        return {"data": data, "foo": foo}
+
+    client = create_test_client([handler])
+    with client.websocket_connect("/") as ws:
+        ws.send_text("something")
+        ws.send_text("something")
+        assert ws.receive_json() == {"data": "something", "foo": 1}

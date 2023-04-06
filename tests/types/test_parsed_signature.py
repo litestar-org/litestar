@@ -1,6 +1,7 @@
 # ruff: noqa: UP006,UP007
 from __future__ import annotations
 
+import inspect
 from inspect import Parameter
 from typing import Any, List, Optional, Union
 
@@ -206,3 +207,4 @@ def test_parsed_signature() -> None:
     assert parsed_sig.parameters["bar"].parsed_type.args == (List[int], NoneType)
     assert parsed_sig.parameters["bar"].parsed_type.annotation == Union[List[int], NoneType]
     assert parsed_sig.parameters["bar"].default is None
+    assert parsed_sig.original_signature == inspect.signature(fn)

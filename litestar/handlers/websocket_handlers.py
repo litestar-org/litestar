@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import inspect
 from abc import ABC, abstractmethod
-from inspect import Signature
 from typing import TYPE_CHECKING, Callable, Literal
 
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
 from litestar.handlers.base import BaseRouteHandler
 from litestar.serialization import decode_json
+from litestar.types.parsed_signature import ParsedSignature
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
-from litestar.utils import AsyncCallable, Ref, is_async_callable
+from litestar.utils import AsyncCallable, is_async_callable
 
 __all__ = ("WebsocketRouteHandler", "websocket", "websocket_listener", "WebsocketListener")
 
@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from litestar.connection import WebSocket
     from litestar.types import (
         AnyCallable,
-        AsyncAnyCallable,
         Dependencies,
         EmptyType,
         ExceptionHandler,
@@ -151,19 +150,21 @@ class websocket_listener(WebsocketRouteHandler):
         )
 
     def __call__(self, listener_callback: AnyCallable) -> websocket_listener:
-        self._validate_listener_callback(listener_callback)
+        listener_callback_signature = ParsedSignature.from_fn(listener_callback, self.resolve_signature_namespace())
+        raw_listener_callback_signature = listener_callback_signature.original_signature
 
-        listener_callback_signature = inspect.signature(listener_callback)
+        if "data" not in listener_callback_signature.parameters:
+            raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
+        for param in ("request", "body"):
+            if param in listener_callback_signature.parameters:
+                raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket listeners")
 
         if not is_async_callable(listener_callback):
             listener_callback = AsyncCallable(listener_callback)
 
-        should_receive_json = listener_callback_signature.parameters["data"].annotation not in {
-            "str",
-            str,
-            "bytes",
-            bytes,
-        }
+        should_receive_json = not listener_callback_signature.parameters["data"].parsed_type.is_subclass_of(
+            (str, bytes)
+        )
 
         async def listener_fn(socket: WebSocket, **kwargs: Any) -> None:
             await socket.accept()
@@ -189,30 +190,20 @@ class websocket_listener(WebsocketRouteHandler):
                     break
 
         # make our listener_fn look like the callback, so we get a correct signature model
-        new_params = [p for p in listener_callback_signature.parameters.values() if p.name not in {"data"}]
-        if "socket" not in listener_callback_signature.parameters:
+        new_params = [p for p in raw_listener_callback_signature.parameters.values() if p.name not in {"data"}]
+        if "socket" not in raw_listener_callback_signature.parameters:
             new_params.append(
                 inspect.Parameter(name="socket", kind=inspect.Parameter.KEYWORD_ONLY, annotation="WebSocket")
             )
         else:
             self._pass_socket = True
 
-        listener_fn.__signature__ = listener_callback_signature.replace(parameters=new_params)  # type: ignore[attr-defined]
+        new_signature = raw_listener_callback_signature.replace(parameters=new_params)
+        listener_fn.__signature__ = new_signature  # type: ignore[attr-defined]
+        for param in new_signature.parameters.values():
+            listener_fn.__annotations__[param.name] = param.annotation
 
-        self.fn = Ref(listener_fn)
-        self.signature = Signature.from_callable(listener_fn)
-        return self
-
-    @staticmethod
-    def _validate_listener_callback(fn: AnyCallable) -> None:
-        """Validate the route handler function once it's set by inspecting its return annotations."""
-        signature = inspect.signature(fn)
-
-        if "data" not in signature.parameters:
-            raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
-        for param in ("request", "body"):
-            if param in signature.parameters:
-                raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket listeners")
+        return super().__call__(listener_fn)
 
 
 class WebsocketListener(ABC):
