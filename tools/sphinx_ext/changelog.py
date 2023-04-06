@@ -31,7 +31,7 @@ class ChangeDirective(SphinxDirective):
     def run(self) -> list[nodes.Node]:
         self.assert_has_content()
 
-        change_type = self.options["type"].lower()
+        change_type = self.options.get("type", "misc").lower()
         title = self.arguments[0]
 
         change_node = nodes.container("\n".join(self.content))
