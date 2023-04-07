@@ -3,7 +3,7 @@
 Stores
 ======
 
-.. py:currentmodule:: starlite.stores
+.. py:currentmodule:: litestar.stores
 
 
 When developing applications, oftentimes a simply storage mechanism is needed, for example when
@@ -11,26 +11,26 @@ When developing applications, oftentimes a simply storage mechanism is needed, f
 :ref:`server-side sessions <usage/middleware/builtin-middleware:Server-side sessions>`. In cases like these a
 traditional database is often not needed, and a simple key/value store suffices.
 
-Starlite provides several low level key value stores, offering an asynchronous interface to store data in a thread-
+Litestar provides several low level key value stores, offering an asynchronous interface to store data in a thread-
 and process-safe manner. These stores are centrally managed via a
-:class:`registry <starlite.stores.registry.StoreRegistry>`, allowing easy access throughout the whole application and
+:class:`registry <litestar.stores.registry.StoreRegistry>`, allowing easy access throughout the whole application and
 third party integration (for example plugins).
 
 
 Built-in stores
 ---------------
 
-:class:`MemoryStore <starlite.stores.memory.MemoryStore>`
+:class:`MemoryStore <litestar.stores.memory.MemoryStore>`
     A simple in-memory store, using a dictionary to hold data. This store offers no persistence but is suitable for
-    basic applications such as caching and has generally the lowest overhead. This is the default store used by Starlite
+    basic applications such as caching and has generally the lowest overhead. This is the default store used by Litestar
     internally.
 
-:class:`FileStore <starlite.stores.file.FileStore>`
+:class:`FileStore <litestar.stores.file.FileStore>`
     A store that saves data as files on disk. Persistence is built in, and data is easy to extract and back up.
     It is slower compared to in-memory solutions, and primarily suitable for situations when larger amounts of data
     need to be stored, is particularly long-lived, or persistence has a very high importance. Offers `namespacing`_.
 
-:class:`RedisStore <starlite.stores.redis.RedisStore>`
+:class:`RedisStore <litestar.stores.redis.RedisStore>`
     A store backend by `redis <https://redis.io/>`_. It offers all the guarantees and features of Redis, making it
     suitable for almost all applications. Offers `namespacing`_.
 
@@ -154,8 +154,8 @@ When using the :class:`RedisStore <.redis.RedisStore>`, this allows to re-use th
 :class:`Redis <redis.asyncio.Redis>` instance and connection, while ensuring isolation.
 
 .. note::
-    :class:`RedisStore <.redis.RedisStore>` uses the ``STARLITE`` namespace by default; all keys created by this store,
-    will use the ``STARLITE`` prefix when storing data in redis.
+    :class:`RedisStore <.redis.RedisStore>` uses the ``LITESTAR`` namespace by default; all keys created by this store,
+    will use the ``LITESTAR`` prefix when storing data in redis.
     :meth:`RedisStore.delete_all <.redis.RedisStore.delete_all>` is implemented in such a way that it will only delete
     keys matching the current namespace, making it safe and side-effect free.
 
@@ -175,10 +175,10 @@ Defining stores hierarchically like this still allows to easily clear everything
 Managing stores with the registry
 ---------------------------------
 
-The :class:`StoreRegistry <starlite.stores.registry.StoreRegistry>` is a central place through which stores can be
-configured and managed, and can help to easily access stores set up and used by other parts of the application, Starlite
+The :class:`StoreRegistry <litestar.stores.registry.StoreRegistry>` is a central place through which stores can be
+configured and managed, and can help to easily access stores set up and used by other parts of the application, Litestar
 internals or third party integrations. It is available throughout the whole application context via the
-:class:`Starlite.stores <starlite.app.Starlite>` attribute.
+:class:`Litestar.stores <litestar.app.Litestar>` attribute.
 
 It operates on a few basic principles:
 
@@ -192,17 +192,17 @@ It operates on a few basic principles:
     :language: python
 
 
-This pattern offers isolation of stores, and an easy way to configure stores used by middlewares and other Starlite
+This pattern offers isolation of stores, and an easy way to configure stores used by middlewares and other Litestar
 features or third party integrations.
 
 In the following example, the store set up by the
-:class:`RateLimitMiddleware <starlite.middleware.rate_limit.RateLimitMiddleware>` is accessed via the registry:
+:class:`RateLimitMiddleware <litestar.middleware.rate_limit.RateLimitMiddleware>` is accessed via the registry:
 
 .. literalinclude:: /examples/stores/registry_access_integration.py
     :language: python
 
 
-This works because :class:`RateLimitMiddleware <starlite.middleware.rate_limit.RateLimitMiddleware>` will request
+This works because :class:`RateLimitMiddleware <litestar.middleware.rate_limit.RateLimitMiddleware>` will request
 its store internally via ``app.stores.get`` as well.
 
 
@@ -214,7 +214,7 @@ every time a store is requested that hasn't been registered yet. It's similar to
 :meth:`dict.get`.
 
 By default, the default factory is a function that returns a new
-:class:`MemoryStore <starlite.stores.memory.MemoryStore>` instance. This behaviour can be changed by supplying a
+:class:`MemoryStore <litestar.stores.memory.MemoryStore>` instance. This behaviour can be changed by supplying a
 custom ``default_factory`` method to the registry.
 
 To make use of this, a registry instance can be passed directly to the application:
@@ -222,7 +222,7 @@ To make use of this, a registry instance can be passed directly to the applicati
 .. literalinclude:: /examples/stores/registry_default_factory.py
     :language: python
 
-The registry will now return the same :class:`MemoryStore <starlite.stores.memory.MemoryStore>` every time an undefined
+The registry will now return the same :class:`MemoryStore <litestar.stores.memory.MemoryStore>` every time an undefined
 store is being requested.
 
 
@@ -235,7 +235,7 @@ This mechanism also allows to control the stores used by various integrations, s
     :language: python
 
 
-In this example, the registry is being set up with stores using the ``sessions`` and ``request_cache`` keys. These are
+In this example, the registry is being set up with stores using the ``sessions`` and ``response_cache`` keys. These are
 not magic constants, but instead configuration values that can be changed. Those names just happen to be their default
 values. Adjusting those default values allows to easily re-use stores, without the need for a more complex setup:
 

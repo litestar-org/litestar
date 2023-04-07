@@ -1,5 +1,5 @@
 enums
 =====
 
-.. automodule:: starlite.enums
+.. automodule:: litestar.enums
     :members:

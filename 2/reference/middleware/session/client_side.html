@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>client_side &#8212; Starlite Framework</title>
+    <title>client_side &#8212; Litestar Framework</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -33,11 +33,11 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/style.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/starlite-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
@@ -47,6 +47,7 @@
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/litestar-theme.js"></script>
     <script src="../../../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
@@ -112,7 +113,7 @@
       <div class="navbar-item">
    
 
-<a class="navbar-brand logo" href="https://starliteproject.dev">
+<a class="navbar-brand logo" href="https://litestar.dev">
   
   
   
@@ -140,88 +141,218 @@
 
 
 
-    <nav class="navbar-nav">
-        <ul id="navbar-main-elements" class="navbar-nav">
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../../../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator">
                 
-                    <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../../../index.html">Documentation</a>
-    </li>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="../../../contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contribution Guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Community
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../../../contribution-guide.html">Contribution Guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            About
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/organization">Organization</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator">
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Release notes
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../../../release-notes/migration_guide_2.html">2.0 migration guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
-    </li>
-                            
-                        </ul>
-                    </div>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
-        </ul>
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../../../release-notes/migration_guide_2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.0 migration guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+
     </nav>
 </div>
       
@@ -266,7 +397,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -337,88 +468,218 @@ document.write(`
 
 
 
-    <nav class="navbar-nav">
-        <ul id="navbar-main-elements" class="navbar-nav">
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../../../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator">
                 
-                    <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../../../index.html">Documentation</a>
-    </li>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="../../../contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contribution Guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Community
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../../../contribution-guide.html">Contribution Guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            About
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/organization">Organization</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator">
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Release notes
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../../../release-notes/migration_guide_2.html">2.0 migration guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
-    </li>
-                            
-                        </ul>
-                    </div>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
-        </ul>
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../../../release-notes/migration_guide_2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.0 migration guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+
     </nav>
 </div>
         
@@ -439,7 +700,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -467,13 +728,14 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage/the-starlite-app.html">The Starlite App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/the-litestar-app.html">The Litestar App</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/routing.html">Routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/route-handlers.html">Route handlers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/parameters.html">Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/request-data.html">Request data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/responses.html">Responses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../usage/websockets.html">WebSockets</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../usage/middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/using-middleware.html">Using Middleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
@@ -490,11 +752,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/sqlalchemy.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/sqlalchemy.html">SQLAlchemy Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../../usage/dto.html">Data Transfer Objects (DTOs)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/events.html">Event Emitters and Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/openapi.html">OpenAPI integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
@@ -522,7 +783,12 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../contrib/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../contrib/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../contrib/sqlalchemy/config.html">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../contrib/sqlalchemy/plugin.html">plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../contrib/sqlalchemy_1/config.html">config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../contrib/sqlalchemy_1/plugin.html">plugin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../contrib/sqlalchemy_1/types.html">types</a></li>
@@ -535,18 +801,22 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../di.html">di</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../dto.html">dto</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../dto/interface.html">interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../dto/exceptions.html">exceptions</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="../index.html">middleware</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../index.html">middleware</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../authentication.html">authentication</a></li>
@@ -555,7 +825,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="index.html">session</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="index.html">session</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="base.html">base</a></li>
 <li class="toctree-l4 current active"><a class="current reference internal" href="#">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="server_side.html">server_side</a></li>
@@ -563,7 +833,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../openapi/spec.html">spec</a></li>
 </ul>
@@ -575,14 +845,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../response.html">response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../router.html">router</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../stores/memory.html">memory</a></li>
@@ -590,12 +860,13 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../stores/registry.html">registry</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../status_codes.html">status_code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -666,20 +937,20 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="module-starlite.middleware.session.client_side">
-<span id="client-side"></span><h1>client_side<a class="headerlink" href="#module-starlite.middleware.session.client_side" title="Permalink to this heading">#</a></h1>
+  <section id="module-litestar.middleware.session.client_side">
+<span id="client-side"></span><h1>client_side<a class="headerlink" href="#module-litestar.middleware.session.client_side" title="Permalink to this heading">#</a></h1>
 <dl class="field-list simple">
 <dt class="field-odd">members<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
 <dl class="py class">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.ClientSideSessionBackend">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.client_side.</span></span><span class="sig-name descname"><span class="pre">ClientSideSessionBackend</span></span><a class="headerlink" href="#starlite.middleware.session.client_side.ClientSideSessionBackend" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="base.html#starlite.middleware.session.base.BaseSessionBackend" title="starlite.middleware.session.base.BaseSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSessionBackend</span></code></a>[<a class="reference internal" href="#starlite.middleware.session.client_side.CookieBackendConfig" title="starlite.middleware.session.client_side.CookieBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code></a>]</p>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.ClientSideSessionBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.session.client_side.</span></span><span class="sig-name descname"><span class="pre">ClientSideSessionBackend</span></span><a class="headerlink" href="#litestar.middleware.session.client_side.ClientSideSessionBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#litestar.middleware.session.base.BaseSessionBackend" title="litestar.middleware.session.base.BaseSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSessionBackend</span></code></a>[<a class="reference internal" href="#litestar.middleware.session.client_side.CookieBackendConfig" title="litestar.middleware.session.client_side.CookieBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code></a>]</p>
 <p>Cookie backend for SessionMiddleware.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.ClientSideSessionBackend.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#starlite.middleware.session.client_side.CookieBackendConfig" title="starlite.middleware.session.client_side.CookieBackendConfig"><span class="pre">CookieBackendConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.__init__" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.ClientSideSessionBackend.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.middleware.session.client_side.CookieBackendConfig" title="litestar.middleware.session.client_side.CookieBackendConfig"><span class="pre">CookieBackendConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.__init__" title="Permalink to this definition">#</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -689,8 +960,8 @@ document.write(`
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.ClientSideSessionBackend.dump_data">
-<span class="sig-name descname"><span class="pre">dump_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../types.html#starlite.types.Scope" title="starlite.types.Scope"><span class="pre">Scope</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.dump_data" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data">
+<span class="sig-name descname"><span class="pre">dump_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Given serializable data, including pydantic models and numpy types, dump it into a bytes string, encrypt,
 encode and split it into chunks of the desirable size.</p>
 <dl class="field-list simple">
@@ -716,8 +987,8 @@ string that is encrypted using AES-CGM.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.ClientSideSessionBackend.load_data">
-<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.load_data" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.ClientSideSessionBackend.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.load_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Given a list of strings, decodes them into the session object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -730,8 +1001,8 @@ string that is encrypted using AES-CGM.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys">
-<span class="sig-name descname"><span class="pre">get_cookie_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection.html#starlite.connection.ASGIConnection" title="starlite.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys">
+<span class="sig-name descname"><span class="pre">get_cookie_keys</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a list of cookie-keys from the connection if they match the session-cookie pattern.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -744,8 +1015,8 @@ string that is encrypted using AES-CGM.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.ClientSideSessionBackend.store_in_message">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">store_in_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope_session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ScopeSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../types.html#starlite.types.Message" title="starlite.types.Message"><span class="pre">Message</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection.html#starlite.connection.ASGIConnection" title="starlite.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.store_in_message" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">store_in_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope_session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ScopeSession</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../types.html#litestar.types.Message" title="litestar.types.Message"><span class="pre">Message</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message" title="Permalink to this definition">#</a></dt>
 <dd><p>Store data from <code class="docutils literal notranslate"><span class="pre">scope_session</span></code> in <code class="docutils literal notranslate"><span class="pre">Message</span></code> in the form of cookies. If the contents of <code class="docutils literal notranslate"><span class="pre">scope_session</span></code>
 are too large to fit a single cookie, it will be split across several cookies, following the naming scheme of
 <code class="docutils literal notranslate"><span class="pre">&lt;cookie</span> <span class="pre">key&gt;-&lt;n&gt;</span></code>. If the session is empty or shrinks, cookies will be cleared by setting their value to
@@ -765,8 +1036,8 @@ are too large to fit a single cookie, it will be split across several cookies, f
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.ClientSideSessionBackend.load_from_connection">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection.html#starlite.connection.ASGIConnection" title="starlite.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.load_from_connection" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.ClientSideSessionBackend.load_from_connection">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_from_connection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.load_from_connection" title="Permalink to this definition">#</a></dt>
 <dd><p>Load session data from a connection’s session-cookies and return it as a dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -781,20 +1052,20 @@ are too large to fit a single cookie, it will be split across several cookies, f
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">starlite.middleware.session.client_side.</span></span><span class="sig-name descname"><span class="pre">CookieBackendConfig</span></span><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="base.html#starlite.middleware.session.base.BaseBackendConfig" title="starlite.middleware.session.base.BaseBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBackendConfig</span></code></a>[<a class="reference internal" href="#starlite.middleware.session.client_side.ClientSideSessionBackend" title="starlite.middleware.session.client_side.ClientSideSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code></a>]</p>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.session.client_side.</span></span><span class="sig-name descname"><span class="pre">CookieBackendConfig</span></span><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#litestar.middleware.session.base.BaseBackendConfig" title="litestar.middleware.session.base.BaseBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseBackendConfig</span></code></a>[<a class="reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend" title="litestar.middleware.session.client_side.ClientSideSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code></a>]</p>
 <p>Configuration for [SessionMiddleware] middleware.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.secret">
-<span class="sig-name descname"><span class="pre">secret</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a></em><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.secret" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.secret">
+<span class="sig-name descname"><span class="pre">secret</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.11)"><span class="pre">bytes</span></a></em><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.secret" title="Permalink to this definition">#</a></dt>
 <dd><p>A secret key to use for generating an encryption key.</p>
 <p>Must have a length of 16 (128 bits), 24 (192 bits) or 32 (256 bits) characters.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.key">
-<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'session'</span></em><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.key" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.key">
+<span class="sig-name descname"><span class="pre">key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'session'</span></em><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.key" title="Permalink to this definition">#</a></dt>
 <dd><p>Key to use for the cookie inside the header, e.g. <code class="docutils literal notranslate"><span class="pre">session=&lt;data&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">session</span></code> is the cookie key and
 <code class="docutils literal notranslate"><span class="pre">&lt;data&gt;</span></code> is the session data.</p>
 <div class="admonition-notes admonition">
@@ -807,57 +1078,57 @@ are too large to fit a single cookie, it will be split across several cookies, f
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.max_age">
-<span class="sig-name descname"><span class="pre">max_age</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1209600</span></em><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.max_age" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.max_age">
+<span class="sig-name descname"><span class="pre">max_age</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1209600</span></em><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.max_age" title="Permalink to this definition">#</a></dt>
 <dd><p>Maximal age of the cookie before its invalidated.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.path">
-<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/'</span></em><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.path" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/'</span></em><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.path" title="Permalink to this definition">#</a></dt>
 <dd><p>Path fragment that must exist in the request url for the cookie to be valid.</p>
 <p>Defaults to <code class="docutils literal notranslate"><span class="pre">'/'</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.domain">
-<span class="sig-name descname"><span class="pre">domain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.domain" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.domain">
+<span class="sig-name descname"><span class="pre">domain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.domain" title="Permalink to this definition">#</a></dt>
 <dd><p>Domain for which the cookie is valid.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">secret:</span> <span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'session'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1209600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scopes:</span> <span class="pre">~typing.Set[~typing.Literal[&lt;ScopeType.HTTP:</span> <span class="pre">'http'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;ScopeType.WEBSOCKET:</span> <span class="pre">'websocket'&gt;]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secure:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">httponly:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samesite:</span> <span class="pre">~typing.Literal['lax'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'strict'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'none']</span> <span class="pre">=</span> <span class="pre">'lax'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_opt_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'skip_session'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.__init__" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">secret:</span> <span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'session'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_age:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1209600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scopes:</span> <span class="pre">~typing.Set[~typing.Literal[&lt;ScopeType.HTTP:</span> <span class="pre">'http'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;ScopeType.WEBSOCKET:</span> <span class="pre">'websocket'&gt;]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secure:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">httponly:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samesite:</span> <span class="pre">~typing.Literal['lax'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'strict'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'none']</span> <span class="pre">=</span> <span class="pre">'lax'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">list[str]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_opt_key:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'skip_session'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.secure">
-<span class="sig-name descname"><span class="pre">secure</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.secure" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.secure">
+<span class="sig-name descname"><span class="pre">secure</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.secure" title="Permalink to this definition">#</a></dt>
 <dd><p>Https is required for the cookie.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.httponly">
-<span class="sig-name descname"><span class="pre">httponly</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.httponly" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.httponly">
+<span class="sig-name descname"><span class="pre">httponly</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.11)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.httponly" title="Permalink to this definition">#</a></dt>
 <dd><p>Forbids javascript to access the cookie via ‘Document.cookie’.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.samesite">
-<span class="sig-name descname"><span class="pre">samesite</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'lax'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'strict'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lax'</span></em><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.samesite" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.samesite">
+<span class="sig-name descname"><span class="pre">samesite</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'lax'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'strict'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lax'</span></em><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.samesite" title="Permalink to this definition">#</a></dt>
 <dd><p>Controls whether or not a cookie is sent with cross-site requests.</p>
 <p>Defaults to <code class="docutils literal notranslate"><span class="pre">lax</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.exclude">
-<span class="sig-name descname"><span class="pre">exclude</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.exclude" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.exclude">
+<span class="sig-name descname"><span class="pre">exclude</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.11)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.exclude" title="Permalink to this definition">#</a></dt>
 <dd><p>A pattern or list of patterns to skip in the session middleware.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="starlite.middleware.session.client_side.CookieBackendConfig.exclude_opt_key">
-<span class="sig-name descname"><span class="pre">exclude_opt_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'skip_session'</span></em><a class="headerlink" href="#starlite.middleware.session.client_side.CookieBackendConfig.exclude_opt_key" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.CookieBackendConfig.exclude_opt_key">
+<span class="sig-name descname"><span class="pre">exclude_opt_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'skip_session'</span></em><a class="headerlink" href="#litestar.middleware.session.client_side.CookieBackendConfig.exclude_opt_key" title="Permalink to this definition">#</a></dt>
 <dd><p>An identifier to use on routes to disable the session middleware for a particular route.</p>
 </dd></dl>
 
@@ -871,7 +1142,10 @@ are too large to fit a single cookie, it will be split across several cookies, f
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="base.html"
@@ -891,7 +1165,10 @@ are too large to fit a single cookie, it will be split across several cookies, f
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -906,27 +1183,27 @@ are too large to fit a single cookie, it will be split across several cookies, f
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.ClientSideSessionBackend"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.__init__"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.dump_data"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.dump_data()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.load_data"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.load_data()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.get_cookie_keys()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.store_in_message"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.store_in_message()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.ClientSideSessionBackend.load_from_connection"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.load_from_connection()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.__init__"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.dump_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.load_data"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.load_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.get_cookie_keys()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.store_in_message()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.load_from_connection"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.load_from_connection()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.secret"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.secret</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.key"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.key</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.max_age"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.max_age</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.path"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.path</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.domain"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.domain</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.__init__"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.secure"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.secure</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.httponly"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.httponly</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.samesite"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.samesite</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.exclude"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.exclude</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#starlite.middleware.session.client_side.CookieBackendConfig.exclude_opt_key"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.exclude_opt_key</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.secret"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.secret</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.key"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.key</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.max_age"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.max_age</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.path"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.domain"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.domain</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.__init__"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.secure"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.secure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.httponly"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.httponly</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.samesite"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.samesite</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.exclude"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.exclude</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig.exclude_opt_key"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig.exclude_opt_key</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -937,7 +1214,7 @@ are too large to fit a single cookie, it will be split across several cookies, f
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -945,8 +1222,8 @@ are too large to fit a single cookie, it will be split across several cookies, f
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -956,7 +1233,7 @@ are too large to fit a single cookie, it will be split across several cookies, f
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2023, Starlite-API.
+      © Copyright 2023, Litestar-Org.
       <br/>
     
   </p>
@@ -964,7 +1241,7 @@ are too large to fit a single cookie, it will be split across several cookies, f
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     <br/>
   </p>
 </div>
@@ -975,7 +1252,7 @@ are too large to fit a single cookie, it will be split across several cookies, f
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
 </p></div>
       
     </div>

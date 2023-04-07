@@ -1,5 +1,5 @@
 template
 ========
 
-.. automodule:: starlite.template
+.. automodule:: litestar.template
     :members:

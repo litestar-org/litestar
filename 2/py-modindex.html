@@ -8,7 +8,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Python Module Index &#8212; Starlite Framework</title>
+    <title>Python Module Index &#8212; Litestar Framework</title>
   
   
   
@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -32,11 +32,11 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="_static/style.css" />
-    <link rel="stylesheet" type="text/css" href="_static/starlite-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
@@ -46,6 +46,7 @@
     <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
+    <script src="_static/litestar-theme.js"></script>
     <script src="_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
@@ -112,7 +113,7 @@
       <div class="navbar-item">
    
 
-<a class="navbar-brand logo" href="https://starliteproject.dev">
+<a class="navbar-brand logo" href="https://litestar.dev">
   
   
   
@@ -140,88 +141,218 @@
 
 
 
-    <nav class="navbar-nav">
-        <ul id="navbar-main-elements" class="navbar-nav">
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator">
                 
-                    <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="index.html">Documentation</a>
-    </li>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contribution Guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Community
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="contribution-guide.html">Contribution Guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            About
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/organization">Organization</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator">
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Release notes
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="release-notes/migration_guide_2.html">2.0 migration guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
-    </li>
-                            
-                        </ul>
-                    </div>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
-        </ul>
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="release-notes/migration_guide_2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.0 migration guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+
     </nav>
 </div>
       
@@ -266,7 +397,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -333,88 +464,218 @@ document.write(`
 
 
 
-    <nav class="navbar-nav">
-        <ul id="navbar-main-elements" class="navbar-nav">
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator">
                 
-                    <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="index.html">Documentation</a>
-    </li>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contribution Guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Community
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="contribution-guide.html">Contribution Guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            About
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/organization">Organization</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator">
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Release notes
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="release-notes/migration_guide_2.html">2.0 migration guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
-    </li>
-                            
-                        </ul>
-                    </div>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
-        </ul>
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="release-notes/migration_guide_2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.0 migration guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+
     </nav>
 </div>
         
@@ -435,7 +696,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -463,13 +724,14 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage/the-starlite-app.html">The Starlite App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/the-litestar-app.html">The Litestar App</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/routing.html">Routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/route-handlers.html">Route handlers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/parameters.html">Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/request-data.html">Request data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/responses.html">Responses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/websockets.html">WebSockets</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="usage/middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage/middleware/using-middleware.html">Using Middleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
@@ -486,11 +748,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/plugins/sqlalchemy.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/plugins/sqlalchemy.html">SQLAlchemy Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="usage/dto.html">Data Transfer Objects (DTOs)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/events.html">Event Emitters and Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/openapi.html">OpenAPI integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
@@ -518,7 +779,12 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/contrib/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/contrib/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/config.html">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/plugin.html">plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy_1/config.html">config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy_1/plugin.html">plugin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy_1/types.html">types</a></li>
@@ -531,18 +797,22 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/di.html">di</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/dto.html">dto</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/interface.html">interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/exceptions.html">exceptions</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/authentication.html">authentication</a></li>
@@ -551,7 +821,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/server_side.html">server_side</a></li>
@@ -559,7 +829,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/openapi/spec.html">spec</a></li>
 </ul>
@@ -571,14 +841,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/response.html">response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/router.html">router</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/stores/memory.html">memory</a></li>
@@ -586,12 +856,13 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="reference/status_codes.html">status_code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -629,318 +900,338 @@ document.write(`
    <h1>Python Module Index</h1>
 
    <div class="modindex-jumpbox">
-   <a href="#cap-s"><strong>s</strong></a>
+   <a href="#cap-l"><strong>l</strong></a>
    </div>
 
    <table class="indextable modindextable">
      <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-s"><td></td><td>
-       <strong>s</strong></td><td></td></tr>
+     <tr class="cap" id="cap-l"><td></td><td>
+       <strong>l</strong></td><td></td></tr>
      <tr>
        <td><img src="_static/minus.png" class="toggler"
               id="toggle-1" style="display: none" alt="-" /></td>
        <td>
-       <code class="xref">starlite</code></td><td>
+       <code class="xref">litestar</code></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/app.html#module-starlite.app"><code class="xref">starlite.app</code></a></td><td>
+       <a href="reference/app.html#module-litestar.app"><code class="xref">litestar.app</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/background_tasks.html#module-starlite.background_tasks"><code class="xref">starlite.background_tasks</code></a></td><td>
+       <a href="reference/background_tasks.html#module-litestar.background_tasks"><code class="xref">litestar.background_tasks</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/config.html#module-starlite.config.allowed_hosts"><code class="xref">starlite.config.allowed_hosts</code></a></td><td>
+       <a href="reference/config.html#module-litestar.config.allowed_hosts"><code class="xref">litestar.config.allowed_hosts</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/config.html#module-starlite.config.app"><code class="xref">starlite.config.app</code></a></td><td>
+       <a href="reference/config.html#module-litestar.config.app"><code class="xref">litestar.config.app</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/config.html#module-starlite.config.compression"><code class="xref">starlite.config.compression</code></a></td><td>
+       <a href="reference/config.html#module-litestar.config.compression"><code class="xref">litestar.config.compression</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/config.html#module-starlite.config.cors"><code class="xref">starlite.config.cors</code></a></td><td>
+       <a href="reference/config.html#module-litestar.config.cors"><code class="xref">litestar.config.cors</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/config.html#module-starlite.config.csrf"><code class="xref">starlite.config.csrf</code></a></td><td>
+       <a href="reference/config.html#module-litestar.config.csrf"><code class="xref">litestar.config.csrf</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/config.html#module-starlite.config.response_cache"><code class="xref">starlite.config.response_cache</code></a></td><td>
+       <a href="reference/config.html#module-litestar.config.response_cache"><code class="xref">litestar.config.response_cache</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/connection.html#module-starlite.connection"><code class="xref">starlite.connection</code></a></td><td>
+       <a href="reference/connection.html#module-litestar.connection"><code class="xref">litestar.connection</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/htmx.html#module-starlite.contrib.htmx.request"><code class="xref">starlite.contrib.htmx.request</code></a></td><td>
+       <a href="reference/contrib/htmx.html#module-litestar.contrib.htmx.request"><code class="xref">litestar.contrib.htmx.request</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/htmx.html#module-starlite.contrib.htmx.response"><code class="xref">starlite.contrib.htmx.response</code></a></td><td>
+       <a href="reference/contrib/htmx.html#module-litestar.contrib.htmx.response"><code class="xref">litestar.contrib.htmx.response</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/jinja.html#module-starlite.contrib.jinja"><code class="xref">starlite.contrib.jinja</code></a></td><td>
+       <a href="reference/contrib/jinja.html#module-litestar.contrib.jinja"><code class="xref">litestar.contrib.jinja</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/jwt.html#module-starlite.contrib.jwt"><code class="xref">starlite.contrib.jwt</code></a></td><td>
+       <a href="reference/contrib/jwt.html#module-litestar.contrib.jwt"><code class="xref">litestar.contrib.jwt</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/mako.html#module-starlite.contrib.mako"><code class="xref">starlite.contrib.mako</code></a></td><td>
+       <a href="reference/contrib/mako.html#module-litestar.contrib.mako"><code class="xref">litestar.contrib.mako</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/opentelemetry.html#module-starlite.contrib.opentelemetry"><code class="xref">starlite.contrib.opentelemetry</code></a></td><td>
+       <a href="reference/contrib/opentelemetry.html#module-litestar.contrib.opentelemetry"><code class="xref">litestar.contrib.opentelemetry</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/piccolo_orm.html#module-starlite.contrib.piccolo_orm"><code class="xref">starlite.contrib.piccolo_orm</code></a></td><td>
+       <a href="reference/contrib/piccolo_orm.html#module-litestar.contrib.piccolo_orm"><code class="xref">litestar.contrib.piccolo_orm</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/sqlalchemy_1/config.html#module-starlite.contrib.sqlalchemy_1.config"><code class="xref">starlite.contrib.sqlalchemy_1.config</code></a></td><td>
+       <a href="reference/contrib/sqlalchemy/config.html#module-litestar.contrib.sqlalchemy.init_plugin.config"><code class="xref">litestar.contrib.sqlalchemy.init_plugin.config</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/sqlalchemy_1/plugin.html#module-starlite.contrib.sqlalchemy_1.plugin"><code class="xref">starlite.contrib.sqlalchemy_1.plugin</code></a></td><td>
+       <a href="reference/contrib/sqlalchemy/plugin.html#module-litestar.contrib.sqlalchemy.init_plugin.plugin"><code class="xref">litestar.contrib.sqlalchemy.init_plugin.plugin</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/sqlalchemy_1/types.html#module-starlite.contrib.sqlalchemy_1.types"><code class="xref">starlite.contrib.sqlalchemy_1.types</code></a></td><td>
+       <a href="reference/contrib/sqlalchemy_1/config.html#module-litestar.contrib.sqlalchemy_1.config"><code class="xref">litestar.contrib.sqlalchemy_1.config</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/contrib/tortoise_orm.html#module-starlite.contrib.tortoise_orm"><code class="xref">starlite.contrib.tortoise_orm</code></a></td><td>
+       <a href="reference/contrib/sqlalchemy_1/plugin.html#module-litestar.contrib.sqlalchemy_1.plugin"><code class="xref">litestar.contrib.sqlalchemy_1.plugin</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/controller.html#module-starlite.controller"><code class="xref">starlite.controller</code></a></td><td>
+       <a href="reference/contrib/sqlalchemy_1/types.html#module-litestar.contrib.sqlalchemy_1.types"><code class="xref">litestar.contrib.sqlalchemy_1.types</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/data_extractors.html#module-starlite.data_extractors"><code class="xref">starlite.data_extractors</code></a></td><td>
+       <a href="reference/contrib/tortoise_orm.html#module-litestar.contrib.tortoise_orm"><code class="xref">litestar.contrib.tortoise_orm</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/datastructures.html#module-starlite.datastructures"><code class="xref">starlite.datastructures</code></a></td><td>
+       <a href="reference/controller.html#module-litestar.controller"><code class="xref">litestar.controller</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/di.html#module-starlite.di"><code class="xref">starlite.di</code></a></td><td>
+       <a href="reference/data_extractors.html#module-litestar.data_extractors"><code class="xref">litestar.data_extractors</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/dto.html#module-starlite.dto"><code class="xref">starlite.dto</code></a></td><td>
+       <a href="reference/datastructures.html#module-litestar.datastructures"><code class="xref">litestar.datastructures</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/enums.html#module-starlite.enums"><code class="xref">starlite.enums</code></a></td><td>
+       <a href="reference/di.html#module-litestar.di"><code class="xref">litestar.di</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/events.html#module-starlite.events"><code class="xref">starlite.events</code></a></td><td>
+       <a href="reference/dto/exceptions.html#module-litestar.dto.exceptions"><code class="xref">litestar.dto.exceptions</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/exceptions.html#module-starlite.exceptions"><code class="xref">starlite.exceptions</code></a></td><td>
+       <a href="reference/dto/interface.html#module-litestar.dto.interface"><code class="xref">litestar.dto.interface</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/handlers.html#module-starlite.handlers"><code class="xref">starlite.handlers</code></a></td><td>
+       <a href="reference/enums.html#module-litestar.enums"><code class="xref">litestar.enums</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/logging/config.html#module-starlite.logging.config"><code class="xref">starlite.logging.config</code></a></td><td>
+       <a href="reference/events.html#module-litestar.events"><code class="xref">litestar.events</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/logging/picologging.html#module-starlite.logging.picologging"><code class="xref">starlite.logging.picologging</code></a></td><td>
+       <a href="reference/exceptions.html#module-litestar.exceptions"><code class="xref">litestar.exceptions</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/logging/standard.html#module-starlite.logging.standard"><code class="xref">starlite.logging.standard</code></a></td><td>
+       <a href="reference/handlers.html#module-litestar.handlers"><code class="xref">litestar.handlers</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/allowed_hosts.html#module-starlite.middleware.allowed_hosts"><code class="xref">starlite.middleware.allowed_hosts</code></a></td><td>
+       <a href="reference/logging/config.html#module-litestar.logging.config"><code class="xref">litestar.logging.config</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/authentication.html#module-starlite.middleware.authentication"><code class="xref">starlite.middleware.authentication</code></a></td><td>
+       <a href="reference/logging/picologging.html#module-litestar.logging.picologging"><code class="xref">litestar.logging.picologging</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/base.html#module-starlite.middleware.base"><code class="xref">starlite.middleware.base</code></a></td><td>
+       <a href="reference/logging/standard.html#module-litestar.logging.standard"><code class="xref">litestar.logging.standard</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/compression.html#module-starlite.middleware.compression"><code class="xref">starlite.middleware.compression</code></a></td><td>
+       <a href="reference/middleware/allowed_hosts.html#module-litestar.middleware.allowed_hosts"><code class="xref">litestar.middleware.allowed_hosts</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/cors.html#module-starlite.middleware.cors"><code class="xref">starlite.middleware.cors</code></a></td><td>
+       <a href="reference/middleware/authentication.html#module-litestar.middleware.authentication"><code class="xref">litestar.middleware.authentication</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/csrf.html#module-starlite.middleware.csrf"><code class="xref">starlite.middleware.csrf</code></a></td><td>
+       <a href="reference/middleware/base.html#module-litestar.middleware.base"><code class="xref">litestar.middleware.base</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/logging.html#module-starlite.middleware.logging"><code class="xref">starlite.middleware.logging</code></a></td><td>
+       <a href="reference/middleware/compression.html#module-litestar.middleware.compression"><code class="xref">litestar.middleware.compression</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/rate_limit.html#module-starlite.middleware.rate_limit"><code class="xref">starlite.middleware.rate_limit</code></a></td><td>
+       <a href="reference/middleware/cors.html#module-litestar.middleware.cors"><code class="xref">litestar.middleware.cors</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/session/base.html#module-starlite.middleware.session.base"><code class="xref">starlite.middleware.session.base</code></a></td><td>
+       <a href="reference/middleware/csrf.html#module-litestar.middleware.csrf"><code class="xref">litestar.middleware.csrf</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/session/client_side.html#module-starlite.middleware.session.client_side"><code class="xref">starlite.middleware.session.client_side</code></a></td><td>
+       <a href="reference/middleware/logging.html#module-litestar.middleware.logging"><code class="xref">litestar.middleware.logging</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/middleware/session/server_side.html#module-starlite.middleware.session.server_side"><code class="xref">starlite.middleware.session.server_side</code></a></td><td>
+       <a href="reference/middleware/rate_limit.html#module-litestar.middleware.rate_limit"><code class="xref">litestar.middleware.rate_limit</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/openapi/openapi.html#module-starlite.openapi"><code class="xref">starlite.openapi</code></a></td><td>
+       <a href="reference/middleware/session/base.html#module-litestar.middleware.session.base"><code class="xref">litestar.middleware.session.base</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/openapi/spec.html#module-starlite.openapi.spec"><code class="xref">starlite.openapi.spec</code></a></td><td>
+       <a href="reference/middleware/session/client_side.html#module-litestar.middleware.session.client_side"><code class="xref">litestar.middleware.session.client_side</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/pagination.html#module-starlite.pagination"><code class="xref">starlite.pagination</code></a></td><td>
+       <a href="reference/middleware/session/server_side.html#module-litestar.middleware.session.server_side"><code class="xref">litestar.middleware.session.server_side</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/params.html#module-starlite.params"><code class="xref">starlite.params</code></a></td><td>
+       <a href="reference/openapi/openapi.html#module-litestar.openapi"><code class="xref">litestar.openapi</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/partial.html#module-starlite.partial"><code class="xref">starlite.partial</code></a></td><td>
+       <a href="reference/openapi/spec.html#module-litestar.openapi.spec"><code class="xref">litestar.openapi.spec</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/plugins.html#module-starlite.plugins"><code class="xref">starlite.plugins</code></a></td><td>
+       <a href="reference/pagination.html#module-litestar.pagination"><code class="xref">litestar.pagination</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/response.html#module-starlite.response"><code class="xref">starlite.response</code></a></td><td>
+       <a href="reference/params.html#module-litestar.params"><code class="xref">litestar.params</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/router.html#module-starlite.router"><code class="xref">starlite.router</code></a></td><td>
+       <a href="reference/partial.html#module-litestar.partial"><code class="xref">litestar.partial</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/serialization.html#module-starlite.serialization"><code class="xref">starlite.serialization</code></a></td><td>
+       <a href="reference/plugins.html#module-litestar.plugins"><code class="xref">litestar.plugins</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/static_files.html#module-starlite.static_files"><code class="xref">starlite.static_files</code></a></td><td>
+       <a href="reference/response.html#module-litestar.response"><code class="xref">litestar.response</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/stores/base.html#module-starlite.stores.base"><code class="xref">starlite.stores.base</code></a></td><td>
+       <a href="reference/router.html#module-litestar.router"><code class="xref">litestar.router</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/stores/file.html#module-starlite.stores.file"><code class="xref">starlite.stores.file</code></a></td><td>
+       <a href="reference/serialization.html#module-litestar.serialization"><code class="xref">litestar.serialization</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/stores/memory.html#module-starlite.stores.memory"><code class="xref">starlite.stores.memory</code></a></td><td>
+       <a href="reference/static_files.html#module-litestar.static_files"><code class="xref">litestar.static_files</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/stores/redis.html#module-starlite.stores.redis"><code class="xref">starlite.stores.redis</code></a></td><td>
+       <a href="reference/status_codes.html#module-litestar.status_codes"><code class="xref">litestar.status_codes</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/stores/registry.html#module-starlite.stores.registry"><code class="xref">starlite.stores.registry</code></a></td><td>
+       <a href="reference/stores/base.html#module-litestar.stores.base"><code class="xref">litestar.stores.base</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/template.html#module-starlite.template"><code class="xref">starlite.template</code></a></td><td>
+       <a href="reference/stores/file.html#module-litestar.stores.file"><code class="xref">litestar.stores.file</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="reference/testing.html#module-starlite.testing"><code class="xref">starlite.testing</code></a></td><td>
+       <a href="reference/stores/memory.html#module-litestar.stores.memory"><code class="xref">litestar.stores.memory</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="reference/stores/redis.html#module-litestar.stores.redis"><code class="xref">litestar.stores.redis</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="reference/stores/registry.html#module-litestar.stores.registry"><code class="xref">litestar.stores.registry</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="reference/template.html#module-litestar.template"><code class="xref">litestar.template</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="reference/testing.html#module-litestar.testing"><code class="xref">litestar.testing</code></a></td><td>
        <em></em></td></tr>
    </table>
 
@@ -950,9 +1241,15 @@ document.write(`
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -962,7 +1259,7 @@ document.write(`
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -970,8 +1267,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -981,7 +1278,7 @@ document.write(`
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2023, Starlite-API.
+      © Copyright 2023, Litestar-Org.
       <br/>
     
   </p>
@@ -989,7 +1286,7 @@ document.write(`
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     <br/>
   </p>
 </div>
@@ -1000,7 +1297,7 @@ document.write(`
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
 </p></div>
       
     </div>

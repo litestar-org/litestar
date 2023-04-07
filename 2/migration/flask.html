@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>From Flask &#8212; Starlite Framework</title>
+    <title>From Flask &#8212; Litestar Framework</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -33,11 +33,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/starlite-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -47,6 +47,7 @@
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
+    <script src="../_static/litestar-theme.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
@@ -56,7 +57,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="From Starlette / FastAPI" href="fastapi.html" />
-    <link rel="prev" title="Migrating to Starlite" href="index.html" />
+    <link rel="prev" title="Migrating to Litestar" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -112,7 +113,7 @@
       <div class="navbar-item">
    
 
-<a class="navbar-brand logo" href="https://starliteproject.dev">
+<a class="navbar-brand logo" href="https://litestar.dev">
   
   
   
@@ -140,88 +141,218 @@
 
 
 
-    <nav class="navbar-nav">
-        <ul id="navbar-main-elements" class="navbar-nav">
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator">
                 
-                    <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../index.html">Documentation</a>
-    </li>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="../contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contribution Guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Community
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../contribution-guide.html">Contribution Guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            About
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/organization">Organization</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator">
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Release notes
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../release-notes/migration_guide_2.html">2.0 migration guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
-    </li>
-                            
-                        </ul>
-                    </div>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
-        </ul>
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../release-notes/migration_guide_2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.0 migration guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+
     </nav>
 </div>
       
@@ -266,7 +397,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -337,88 +468,218 @@ document.write(`
 
 
 
-    <nav class="navbar-nav">
-        <ul id="navbar-main-elements" class="navbar-nav">
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator">
                 
-                    <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../index.html">Documentation</a>
-    </li>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="../contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contribution Guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Community
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../contribution-guide.html">Contribution Guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            About
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/organization">Organization</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator">
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Release notes
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../release-notes/migration_guide_2.html">2.0 migration guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
-    </li>
-                            
-                        </ul>
-                    </div>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
-        </ul>
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../release-notes/migration_guide_2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.0 migration guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+
     </nav>
 </div>
         
@@ -439,7 +700,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -467,13 +728,14 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../usage/the-starlite-app.html">The Starlite App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/the-litestar-app.html">The Litestar App</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/routing.html">Routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/route-handlers.html">Route handlers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/parameters.html">Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/request-data.html">Request data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/responses.html">Responses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/websockets.html">WebSockets</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/middleware/using-middleware.html">Using Middleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
@@ -490,11 +752,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/sqlalchemy.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/sqlalchemy.html">SQLAlchemy Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/dto.html">Data Transfer Objects (DTOs)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/events.html">Event Emitters and Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/openapi.html">OpenAPI integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
@@ -522,7 +783,12 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/config.html">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugin.html">plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/config.html">config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/plugin.html">plugin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/types.html">types</a></li>
@@ -535,18 +801,22 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/dto.html">dto</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/interface.html">interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/exceptions.html">exceptions</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
@@ -555,7 +825,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
@@ -563,7 +833,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
 </ul>
@@ -575,14 +845,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/response.html">response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
@@ -590,12 +860,13 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/status_codes.html">status_code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Migrating to Starlite</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Migrating to Litestar</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -639,7 +910,7 @@ document.write(`
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Migrating to Starlite</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Migrating to Litestar</a></li>
     
     <li class="breadcrumb-item active" aria-current="page">From Flask</li>
   </ul>
@@ -662,7 +933,7 @@ document.write(`
 <h1>From Flask<a class="headerlink" href="#from-flask" title="Permalink to this heading">#</a></h1>
 <section id="asgi-vs-wsgi">
 <h2>ASGI vs WSGI<a class="headerlink" href="#asgi-vs-wsgi" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="https://flask.palletsprojects.com">Flask</a> is a WSGI framework, whereas Starlite
+<p><a class="reference external" href="https://flask.palletsprojects.com">Flask</a> is a WSGI framework, whereas Litestar
 is built using the modern <a class="reference external" href="https://asgi.readthedocs.io">ASGI</a> standard. A key difference
 is that <em>ASGI</em> is built with async in mind.</p>
 <p>While Flask has added support for <code class="docutils literal notranslate"><span class="pre">async/await</span></code>, it remains synchronous at its core;
@@ -672,7 +943,7 @@ What this means is that while you can use <code class="docutils literal notransl
 Flask handles asynchronous endpoints by creating an event loop for each request, run the
 endpoint function in it and then return its result.</p>
 <p>ASGI on the other hand does the exact opposite; It runs everything in a central event loop.
-Starlite then adds support for synchronous functions by running them in a non-blocking way
+Litestar then adds support for synchronous functions by running them in a non-blocking way
 <em>on the event loop</em>. What this means is that synchronous and asynchronous code both run
 concurrently.</p>
 </section>
@@ -700,9 +971,9 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-1">
-Starlite</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-1">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
@@ -715,7 +986,7 @@ Starlite</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;Hello, World&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">index</span><span class="p">,</span> <span class="n">hello</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">index</span><span class="p">,</span> <span class="n">hello</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -749,9 +1020,9 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-3">
-Starlite</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-3">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 
@@ -770,7 +1041,7 @@ Starlite</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Subpath </span><span class="si">{</span><span class="n">subpath</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">show_user_profile</span><span class="p">,</span> <span class="n">show_post</span><span class="p">,</span> <span class="n">show_subpath</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">show_user_profile</span><span class="p">,</span> <span class="n">show_post</span><span class="p">,</span> <span class="n">show_subpath</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -784,7 +1055,7 @@ in the documentation: <a class="reference external" href="usage/3-parameters/0-p
 </section>
 <section id="request-object">
 <h2>Request object<a class="headerlink" href="#request-object" title="Permalink to this heading">#</a></h2>
-<p>In Flask, the current request can be accessed through a global <code class="docutils literal notranslate"><span class="pre">request</span></code> variable. In Starlite,
+<p>In Flask, the current request can be accessed through a global <code class="docutils literal notranslate"><span class="pre">request</span></code> variable. In Litestar,
 the request can be accessed through an optional parameter in the handler function.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
@@ -803,9 +1074,9 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-5">
-Starlite</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Request</span>
+</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-5">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Request</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
@@ -820,7 +1091,7 @@ Starlite</label><div class="sd-tab-content docutils">
 <table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Flask</p></th>
-<th class="head"><p>Starlite</p></th>
+<th class="head"><p>Litestar</p></th>
 </tr>
 </thead>
 <tbody>
@@ -961,12 +1232,12 @@ Starlite</label><div class="sd-tab-content docutils">
 </section>
 <section id="static-files">
 <h2>Static files<a class="headerlink" href="#static-files" title="Permalink to this heading">#</a></h2>
-<p>Like Flask, Starlite also has capabilities for serving static files, but while Flask
+<p>Like Flask, Litestar also has capabilities for serving static files, but while Flask
 will automatically serve files from a <code class="docutils literal notranslate"><span class="pre">static</span></code> folder, this has to be configured explicitly
-in Starlite.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">StaticFilesConfig</span>
+in Litestar.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">StaticFilesConfig</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="p">[],</span> <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span><span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;static&quot;</span><span class="p">])]</span>
 <span class="p">)</span>
 </pre></div>
@@ -974,15 +1245,15 @@ in Starlite.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p>To learn more about static files, check out this chapter in the documentation:
-<a class="reference external" href="usage/0-the-starlite-app/3-static-files/">Static files</a></p>
+<a class="reference external" href="usage/0-the-litestar-app/3-static-files/">Static files</a></p>
 </div>
 </section>
 <section id="templates">
 <h2>Templates<a class="headerlink" href="#templates" title="Permalink to this heading">#</a></h2>
 <p>Flask comes with the <a class="reference external" href="https://jinja.palletsprojects.com/en/3.1.x/">Jinja</a> templating
-engine built-in. You can use Jinja with Starlite as well, but you’ll need to install it
-explicitly. You can do by installing Starlite with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[jinja]</span></code>.
-In addition to Jinja, Starlite supports <a class="reference external" href="https://www.makotemplates.org/">Mako</a> templates as well.</p>
+engine built-in. You can use Jinja with Litestar as well, but you’ll need to install it
+explicitly. You can do by installing Litestar with <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[jinja]</span></code>.
+In addition to Jinja, Litestar supports <a class="reference external" href="https://www.makotemplates.org/">Mako</a> templates as well.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
 </input><label class="sd-tab-label" data-sync-id="flask" for="sd-tab-item-6">
@@ -1000,10 +1271,10 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-7">
-Starlite</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">TemplateConfig</span><span class="p">,</span> <span class="n">Template</span>
-<span class="kn">from</span> <span class="nn">starlite.contrib.jinja</span> <span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
+</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-7">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">TemplateConfig</span><span class="p">,</span> <span class="n">Template</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.jinja</span> <span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/hello/{name:str}&quot;</span><span class="p">)</span>
@@ -1011,7 +1282,7 @@ Starlite</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">Template</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;hello.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">})</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="p">[</span><span class="n">hello</span><span class="p">],</span>
     <span class="n">template_config</span><span class="o">=</span><span class="n">TemplateConfig</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s2">&quot;templates&quot;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="n">JinjaTemplateEngine</span><span class="p">),</span>
 <span class="p">)</span>
@@ -1046,9 +1317,9 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-9">
-Starlite</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">ResponseHeader</span><span class="p">,</span> <span class="n">Cookie</span><span class="p">,</span> <span class="n">Response</span>
+</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-9">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">ResponseHeader</span><span class="p">,</span> <span class="n">Cookie</span><span class="p">,</span> <span class="n">Response</span>
 
 
 <span class="nd">@get</span><span class="p">(</span>
@@ -1107,9 +1378,9 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-11">
-Starlite</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Redirect</span>
+</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-11">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Redirect</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
@@ -1122,7 +1393,7 @@ Starlite</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">index</span><span class="p">,</span> <span class="n">hello</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">index</span><span class="p">,</span> <span class="n">hello</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1147,9 +1418,9 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-13">
-Starlite</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">HTTPException</span>
+</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-13">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">HTTPException</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
@@ -1157,7 +1428,7 @@ Starlite</label><div class="sd-tab-content docutils">
     <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;this did not work&quot;</span><span class="p">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">index</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">index</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1186,9 +1457,9 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-15">
-Starlite</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
+</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-15">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
@@ -1201,7 +1472,7 @@ Starlite</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="s2">&quot;not found&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">static_status</span><span class="p">,</span> <span class="n">dynamic_status</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">static_status</span><span class="p">,</span> <span class="n">dynamic_status</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1210,7 +1481,7 @@ Starlite</label><div class="sd-tab-content docutils">
 <section id="serialization">
 <h2>Serialization<a class="headerlink" href="#serialization" title="Permalink to this heading">#</a></h2>
 <p>Flask uses a mix of explicit conversion (such as <code class="docutils literal notranslate"><span class="pre">jsonify</span></code>) and inference (i.e. the type
-of the returned data) to determine how data should be serialized. Starlite instead assumes
+of the returned data) to determine how data should be serialized. Litestar instead assumes
 the data returned is intended to be serialized into JSON and will do so unless told otherwise.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
@@ -1238,9 +1509,9 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-17">
-Starlite</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
+</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-17">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/json&quot;</span><span class="p">)</span>
@@ -1258,7 +1529,7 @@ Starlite</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;&lt;strong&gt;hello, world&lt;/strong&gt;&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([</span><span class="n">get_json</span><span class="p">,</span> <span class="n">get_text</span><span class="p">,</span> <span class="n">get_html</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_json</span><span class="p">,</span> <span class="n">get_text</span><span class="p">,</span> <span class="n">get_html</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1284,16 +1555,16 @@ Flask</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="starlite" for="sd-tab-item-19">
-Starlite</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+</input><label class="sd-tab-label" data-sync-id="litestar" for="sd-tab-item-19">
+Litestar</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
 
 
 <span class="k">def</span> <span class="nf">handle_exception</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
     <span class="o">...</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">([],</span> <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span><span class="n">HTTPException</span><span class="p">:</span> <span class="n">handle_exception</span><span class="p">})</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([],</span> <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span><span class="n">HTTPException</span><span class="p">:</span> <span class="n">handle_exception</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -1312,7 +1583,10 @@ Starlite</label><div class="sd-tab-content docutils">
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="index.html"
@@ -1320,7 +1594,7 @@ Starlite</label><div class="sd-tab-content docutils">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Migrating to Starlite</p>
+        <p class="prev-next-title">Migrating to Litestar</p>
       </div>
     </a>
     <a class="right-next"
@@ -1332,7 +1606,10 @@ Starlite</label><div class="sd-tab-content docutils">
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1372,7 +1649,7 @@ Starlite</label><div class="sd-tab-content docutils">
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -1380,8 +1657,8 @@ Starlite</label><div class="sd-tab-content docutils">
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1391,7 +1668,7 @@ Starlite</label><div class="sd-tab-content docutils">
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2023, Starlite-API.
+      © Copyright 2023, Litestar-Org.
       <br/>
     
   </p>
@@ -1399,7 +1676,7 @@ Starlite</label><div class="sd-tab-content docutils">
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     <br/>
   </p>
 </div>
@@ -1410,7 +1687,7 @@ Starlite</label><div class="sd-tab-content docutils">
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
 </p></div>
       
     </div>

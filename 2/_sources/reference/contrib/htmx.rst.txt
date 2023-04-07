@@ -4,11 +4,11 @@ HTMX
 Request
 -------
 
-.. automodule:: starlite.contrib.htmx.request
+.. automodule:: litestar.contrib.htmx.request
     :members:
 
 Response
 --------
 
-.. automodule:: starlite.contrib.htmx.response
+.. automodule:: litestar.contrib.htmx.response
     :members:

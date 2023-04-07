@@ -69,12 +69,12 @@ Layered hooks
 
 .. admonition:: Layered architecture
 
-    Life cycle hooks are part of Starlite's layered architecture, which means you can
+    Life cycle hooks are part of Litestar's layered architecture, which means you can
     set them on every layer of the application. If you set hooks on multiple layers,
     the layer closest to the route handler will take precedence.
 
     You can read more about this here:
-    :ref:`Layered architecture <usage/the-starlite-app:layered architecture>`
+    :ref:`Layered architecture <usage/the-litestar-app:layered architecture>`
 
 
 .. literalinclude:: /examples/lifecycle_hooks/layered_hooks.py

@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Dependency Injection &#8212; Starlite Framework</title>
+    <title>Dependency Injection &#8212; Litestar Framework</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -33,11 +33,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/starlite-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -47,6 +47,7 @@
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
+    <script src="../_static/litestar-theme.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
@@ -55,7 +56,7 @@
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Middleware" href="middleware/index.html" />
+    <link rel="next" title="WebSockets" href="websockets.html" />
     <link rel="prev" title="Responses" href="responses.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -112,7 +113,7 @@
       <div class="navbar-item">
    
 
-<a class="navbar-brand logo" href="https://starliteproject.dev">
+<a class="navbar-brand logo" href="https://litestar.dev">
   
   
   
@@ -140,88 +141,218 @@
 
 
 
-    <nav class="navbar-nav">
-        <ul id="navbar-main-elements" class="navbar-nav">
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator">
                 
-                    <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../index.html">Documentation</a>
-    </li>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="../contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contribution Guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Community
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../contribution-guide.html">Contribution Guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            About
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/organization">Organization</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator">
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Release notes
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../release-notes/migration_guide_2.html">2.0 migration guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
-    </li>
-                            
-                        </ul>
-                    </div>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
-        </ul>
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../release-notes/migration_guide_2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.0 migration guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+
     </nav>
 </div>
       
@@ -266,7 +397,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -337,88 +468,218 @@ document.write(`
 
 
 
-    <nav class="navbar-nav">
-        <ul id="navbar-main-elements" class="navbar-nav">
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator">
                 
-                    <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../index.html">Documentation</a>
-    </li>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="../contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contribution Guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Community
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../contribution-guide.html">Contribution Guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            About
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/organization">Organization</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator">
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Release notes
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../release-notes/migration_guide_2.html">2.0 migration guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
-    </li>
-                            
-                        </ul>
-                    </div>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
-        </ul>
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../release-notes/migration_guide_2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.0 migration guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+
     </nav>
 </div>
         
@@ -439,7 +700,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -467,13 +728,14 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="the-starlite-app.html">The Starlite App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="the-litestar-app.html">The Litestar App</a></li>
 <li class="toctree-l2"><a class="reference internal" href="routing.html">Routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="route-handlers.html">Route handlers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="parameters.html">Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="request-data.html">Request data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="responses.html">Responses</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="websockets.html">WebSockets</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="middleware/using-middleware.html">Using Middleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/builtin-middleware.html">Built-in middleware</a></li>
@@ -490,11 +752,10 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plugins/sqlalchemy.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/sqlalchemy.html">SQLAlchemy Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="dto.html">Data Transfer Objects (DTOs)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="events.html">Event Emitters and Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lifecycle-hooks.html">Life Cycle Hooks</a></li>
@@ -522,7 +783,12 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/config.html">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugin.html">plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/config.html">config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/plugin.html">plugin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/types.html">types</a></li>
@@ -535,18 +801,22 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/dto.html">dto</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/interface.html">interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/exceptions.html">exceptions</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
@@ -555,7 +825,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
@@ -563,7 +833,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
 </ul>
@@ -575,14 +845,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/response.html">response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
@@ -590,12 +860,13 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/status_codes.html">status_code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -660,10 +931,10 @@ document.write(`
                   
   <section id="dependency-injection">
 <h1>Dependency Injection<a class="headerlink" href="#dependency-injection" title="Permalink to this heading">#</a></h1>
-<p>Starlite has a simple but powerful dependency injection system that allows for declaring dependencies on all layers of
+<p>Litestar has a simple but powerful dependency injection system that allows for declaring dependencies on all layers of
 the application:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 
 <span class="k">def</span> <span class="nf">bool_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -708,7 +979,7 @@ the application:</p>
 <span class="p">)</span>
 
 <span class="c1"># on the app</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_router</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;app_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">bool_fn</span><span class="p">)}</span>
 <span class="p">)</span>
 </pre></div>
@@ -716,7 +987,7 @@ the application:</p>
 <p>The above example illustrates how dependencies are declared on the different layers of the application.</p>
 <p>Dependencies can be either callables - sync or async functions, methods or class instances that implement the
 <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a> method, or classes. These are in turn wrapped inside an instance of the
-<a class="reference internal" href="../reference/di.html#starlite.di.Provide" title="starlite.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> class.</p>
+<a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> class.</p>
 <section id="pre-requisites-and-scope">
 <h2>Pre-requisites and Scope<a class="headerlink" href="#pre-requisites-and-scope" title="Permalink to this heading">#</a></h2>
 <p>The pre-requisites for dependency injection are these:</p>
@@ -734,7 +1005,7 @@ dependencies are available only to the route handlers registered on that particu
 are available to all route handlers.</p>
 </section>
 <section id="dependencies-with-yield-cleanup-step">
-<h2>Dependencies with yield (cleanup step)<a class="headerlink" href="#dependencies-with-yield-cleanup-step" title="Permalink to this heading">#</a></h2>
+<span id="yield-dependencies"></span><h2>Dependencies with yield (cleanup step)<a class="headerlink" href="#dependencies-with-yield-cleanup-step" title="Permalink to this heading">#</a></h2>
 <p>In addition to simple callables, dependencies can also be (async) generator functions, which allows
 to execute an additional cleanup step, such as closing a connection, after the handler function
 has returned.</p>
@@ -753,8 +1024,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">dependencies.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generator</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 <span class="n">CONNECTION</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;open&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 
@@ -772,7 +1043,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">conn</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -784,8 +1055,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">dependencies.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Generator</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 <span class="n">CONNECTION</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;open&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
 
@@ -803,7 +1074,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">conn</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -811,7 +1082,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 <p>If you run the code you’ll see that <code class="docutils literal notranslate"><span class="pre">CONNECTION</span></code> has been reset after the handler function
 returned:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 <span class="kn">from</span> <span class="nn">dependencies</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">CONNECTION</span>
 
 <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
@@ -834,8 +1105,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">dependencies.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generator</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 <span class="n">STATE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="s2">&quot;closed&quot;</span><span class="p">}</span>
 
@@ -863,7 +1134,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -875,8 +1146,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">dependencies.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Generator</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 <span class="n">STATE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="s2">&quot;closed&quot;</span><span class="p">}</span>
 
@@ -904,13 +1175,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 <span class="kn">from</span> <span class="nn">dependencies</span> <span class="kn">import</span> <span class="n">STATE</span><span class="p">,</span> <span class="n">app</span>
 
 <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
@@ -951,9 +1222,9 @@ the same mechanism that parses route handler functions, and they too - like rout
 injected into them.</p>
 <p>In fact, you can inject the same data that you
 can <a class="reference internal" href="route-handlers.html#handler-function-kwargs"><span class="std std-ref">inject into route handlers</span></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">patch</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-<span class="kn">from</span> <span class="nn">starlite.partial</span> <span class="kn">import</span> <span class="n">Partial</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">patch</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar.partial</span> <span class="kn">import</span> <span class="n">Partial</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">UUID4</span>
 
 
@@ -984,8 +1255,8 @@ in turn makes it available as a kwarg in the <code class="docutils literal notra
 <h2>Overriding Dependencies<a class="headerlink" href="#overriding-dependencies" title="Permalink to this heading">#</a></h2>
 <p>Because dependencies are declared at each level of the app using a string keyed dictionary, overriding dependencies is
 very simple:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 
 <span class="k">def</span> <span class="nf">bool_fn</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -1015,11 +1286,11 @@ controller. The lower scoped dependency therefore overrides the higher scoped on
 </section>
 <section id="the-provide-class">
 <h2>The Provide Class<a class="headerlink" href="#the-provide-class" title="Permalink to this heading">#</a></h2>
-<p>The <a class="reference internal" href="../reference/di.html#starlite.di.Provide" title="starlite.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> class is a wrapper used for dependency injection. To inject a callable you must wrap
+<p>The <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> class is a wrapper used for dependency injection. To inject a callable you must wrap
 it in <code class="docutils literal notranslate"><span class="pre">Provide</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 
 <span class="k">def</span> <span class="nf">my_dependency</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -1040,7 +1311,7 @@ it in <code class="docutils literal notranslate"><span class="pre">Provide</span
 </div>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
-<p>If <a class="reference internal" href="../reference/di.html#starlite.di.Provide" title="starlite.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide.use_cache</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the return value of the function will be memoized the first
+<p>If <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide.use_cache</span></code></a> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the return value of the function will be memoized the first
 time it is called and then will be used. There is no sophisticated comparison of kwargs, LRU implementation etc., so
 you should be careful when you choose to use this option. Note that dependencies will only be called once per
 request, even with <code class="docutils literal notranslate"><span class="pre">Provide.use_cache</span></code> set to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
@@ -1049,8 +1320,8 @@ request, even with <code class="docutils literal notranslate"><span class="pre">
 <section id="using-dependencies-in-dependencies">
 <h2>Using dependencies in dependencies<a class="headerlink" href="#using-dependencies-in-dependencies" title="Permalink to this heading">#</a></h2>
 <p>You can inject dependencies into other dependencies - exactly like you would into regular functions.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
 
 
@@ -1067,7 +1338,7 @@ request, even with <code class="docutils literal notranslate"><span class="pre">
     <span class="k">return</span> <span class="s2">&quot;its true!&quot;</span> <span class="k">if</span> <span class="n">injected_bool</span> <span class="k">else</span> <span class="s2">&quot;nope, its false...&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">true_or_false_handler</span><span class="p">],</span>
     <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">&quot;injected_integer&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">first_dependency</span><span class="p">),</span>
@@ -1085,7 +1356,7 @@ request, even with <code class="docutils literal notranslate"><span class="pre">
 <h2>The Dependency Function<a class="headerlink" href="#the-dependency-function" title="Permalink to this heading">#</a></h2>
 <section id="dependency-validation">
 <h3>Dependency validation<a class="headerlink" href="#dependency-validation" title="Permalink to this heading">#</a></h3>
-<p>By default, injected dependency values are validated by Starlite, for example, this application will raise an
+<p>By default, injected dependency values are validated by Litestar, for example, this application will raise an
 internal server error:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
@@ -1095,8 +1366,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 
 <span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1110,7 +1381,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1122,8 +1393,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
 
 <span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1137,13 +1408,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
-<p>Dependency validation can be toggled using the <a class="reference internal" href="../reference/params.html#starlite.params.Dependency" title="starlite.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> function.</p>
+<p>Dependency validation can be toggled using the <a class="reference internal" href="../reference/params.html#litestar.params.Dependency" title="litestar.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> function.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
@@ -1152,9 +1423,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-<span class="kn">from</span> <span class="nn">starlite.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
 
 
 <span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1168,7 +1439,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1180,9 +1451,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Dependency validation error</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-<span class="kn">from</span> <span class="nn">starlite.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
 
 
 <span class="k">def</span> <span class="nf">provide_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1196,7 +1467,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">injected</span><span class="p">}</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1206,12 +1477,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </section>
 <section id="dependency-function-as-a-marker">
 <h3>Dependency function as a marker<a class="headerlink" href="#dependency-function-as-a-marker" title="Permalink to this heading">#</a></h3>
-<p>The <a class="reference internal" href="../reference/params.html#starlite.params.Dependency" title="starlite.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> function can also be used as a marker that gives us a bit more detail
+<p>The <a class="reference internal" href="../reference/params.html#litestar.params.Dependency" title="litestar.params.Dependency"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dependency</span></code></a> function can also be used as a marker that gives us a bit more detail
 about your application.</p>
 <section id="exclude-dependencies-with-default-values-from-openapi-docs">
 <h4>Exclude dependencies with default values from OpenAPI docs<a class="headerlink" href="#exclude-dependencies-with-default-values-from-openapi-docs" title="Permalink to this heading">#</a></h4>
 <p>Depending on your application design, it is possible to have a dependency declared in a handler or
-<a class="reference internal" href="../reference/di.html#starlite.di.Provide" title="starlite.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> function that has a default value. If the dependency isn’t provided for the route, the
+<a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> function that has a default value. If the dependency isn’t provided for the route, the
 default should be used by the function.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
@@ -1221,7 +1492,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
@@ -1233,7 +1504,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">optional_dependency</span><span class="p">}</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1245,7 +1516,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
@@ -1257,7 +1528,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">optional_dependency</span><span class="p">}</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1265,7 +1536,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 <p>This doesn’t fail, but due to the way the application determines parameter types, it is inferred to be a query
 parameter.</p>
-<p>By declaring the parameter to be a dependency, Starlite knows to exclude it from the docs:</p>
+<p>By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-10">
@@ -1274,8 +1545,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
@@ -1287,7 +1558,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">optional_dependency</span><span class="p">}</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1299,8 +1570,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Dependency with default value</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
@@ -1312,7 +1583,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">optional_dependency</span><span class="p">}</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1328,20 +1599,20 @@ marker, the parameter is assumed to be a query parameter and the route will most
 <div class="code-block-caption"><span class="caption-text">Dependency not provided error</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Dependency</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello_world</span><span class="p">(</span><span class="n">non_optional_dependency</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Dependency</span><span class="p">())</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Notice we haven&#39;t provided the dependency to the route.</span>
 
-<span class="sd">    This is not great, however by explicitly marking dependencies, Starlite won&#39;t let the app start.</span>
+<span class="sd">    This is not great, however by explicitly marking dependencies, Litestar won&#39;t let the app start.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">non_optional_dependency</span><span class="p">}</span>
 
 
-<span class="c1"># app = Starlite(route_handlers=[hello_world])</span>
+<span class="c1"># app = Litestar(route_handlers=[hello_world])</span>
 
 <span class="c1"># ImproperlyConfiguredException: 500: Explicit dependency &#39;non_optional_dependency&#39; for &#39;hello_world&#39; has no default</span>
 <span class="c1"># value, or provided dependency.</span>
@@ -1359,7 +1630,10 @@ marker, the parameter is assumed to be a query parameter and the route will most
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="responses.html"
@@ -1371,15 +1645,18 @@ marker, the parameter is assumed to be a query parameter and the route will most
       </div>
     </a>
     <a class="right-next"
-       href="middleware/index.html"
+       href="websockets.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Middleware</p>
+        <p class="prev-next-title">WebSockets</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1421,7 +1698,7 @@ marker, the parameter is assumed to be a query parameter and the route will most
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -1429,8 +1706,8 @@ marker, the parameter is assumed to be a query parameter and the route will most
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1440,7 +1717,7 @@ marker, the parameter is assumed to be a query parameter and the route will most
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2023, Starlite-API.
+      © Copyright 2023, Litestar-Org.
       <br/>
     
   </p>
@@ -1448,7 +1725,7 @@ marker, the parameter is assumed to be a query parameter and the route will most
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     <br/>
   </p>
 </div>
@@ -1459,7 +1736,7 @@ marker, the parameter is assumed to be a query parameter and the route will most
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
 </p></div>
       
     </div>

@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Testing &#8212; Starlite Framework</title>
+    <title>Testing &#8212; Litestar Framework</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -33,11 +33,11 @@
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/starlite-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -47,6 +47,7 @@
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
+    <script src="../_static/litestar-theme.js"></script>
     <script src="../_static/design-tabs.js"></script>
     <script src="https://unpkg.com/mermaid@9.4.0/dist/mermaid.min.js"></script>
     <script>mermaid.initialize({startOnLoad:true});</script>
@@ -112,7 +113,7 @@
       <div class="navbar-item">
    
 
-<a class="navbar-brand logo" href="https://starliteproject.dev">
+<a class="navbar-brand logo" href="https://litestar.dev">
   
   
   
@@ -140,88 +141,218 @@
 
 
 
-    <nav class="navbar-nav">
-        <ul id="navbar-main-elements" class="navbar-nav">
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator">
                 
-                    <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../index.html">Documentation</a>
-    </li>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="../contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contribution Guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Community
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../contribution-guide.html">Contribution Guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            About
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/organization">Organization</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator">
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Release notes
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../release-notes/migration_guide_2.html">2.0 migration guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
-    </li>
-                            
-                        </ul>
-                    </div>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
-        </ul>
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../release-notes/migration_guide_2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.0 migration guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+
     </nav>
 </div>
       
@@ -266,7 +397,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -337,88 +468,218 @@ document.write(`
 
 
 
-    <nav class="navbar-nav">
-        <ul id="navbar-main-elements" class="navbar-nav">
+    <nav class="hidden lg:flex lg:gap-x-4">
+        
+    
+        
+            <a href="../index.html"
+               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Community
+            <div class="menu-state-indicator">
                 
-                    <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../index.html">Documentation</a>
-    </li>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="../contribution-guide.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Contribution Guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Community
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../contribution-guide.html">Contribution Guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
+    <a href="https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Code of Conduct
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            About
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/organization">Organization</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://starliteproject.dev/about/starlite-releases">Releases</a>
-    </li>
-                            
-                        </ul>
-                    </div>
-                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
             
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            About
+            <div class="menu-state-indicator">
                 
-                    <div class="nav-item dropdown">
-                        <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
-                            Release notes
-                        </button>
-                        <ul class="dropdown-menu">
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="../release-notes/migration_guide_2.html">2.0 migration guide</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/2/release-notes/changelog.html">2.x Changelog</a>
-    </li>
-                            
-                                <li class="nav-item">
-        <a class="nav-link nav-internal"
-           href="https://docs.starliteproject.dev/1/release-notes/changelog.html">1.x Changelog</a>
-    </li>
-                            
-                        </ul>
-                    </div>
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
                 
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
             
-        </ul>
+    <a href="https://litestar.dev/about/organization"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Organization
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://litestar.dev/about/litestar-releases"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        Releases
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+        
+            
+    <div class="relative">
+        <span type="button"
+                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
+                data-dropdown-state="closed"
+                aria-expanded="false">
+            Release notes
+            <div class="menu-state-indicator">
+                
+    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+     aria-hidden="true">
+    <path fill-rule="evenodd"
+          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+          clip-rule="evenodd"/>
+</svg>
+
+            </div>
+        </span>
+
+        <div class="
+            absolute -left-8 top-full z-10 mt-3
+            w-max max-w-md
+            overflow-hidden rounded-3xl
+            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
+            hidden
+            st-dropdown-menu">
+            <div class="p-4">
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="../release-notes/migration_guide_2.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.0 migration guide
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        2.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+                    
+    
+        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
+            
+    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
+       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
+        1.x Changelog
+        <span class="absolute inset-0"></span>
+    </a>
+
+        </div>
+    
+
+                
+            </div>
+        </div>
+    </div>
+
+        
+    
+
     </nav>
 </div>
         
@@ -439,7 +700,7 @@ document.write(`
           
           
           
-          <a href="https://github.com/starlite-api/starlite" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
+          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
         <li class="nav-item">
@@ -467,13 +728,14 @@ document.write(`
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="the-starlite-app.html">The Starlite App</a></li>
+<li class="toctree-l2"><a class="reference internal" href="the-litestar-app.html">The Litestar App</a></li>
 <li class="toctree-l2"><a class="reference internal" href="routing.html">Routing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="route-handlers.html">Route handlers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="parameters.html">Parameters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="request-data.html">Request data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="responses.html">Responses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="websockets.html">WebSockets</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="middleware/using-middleware.html">Using Middleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="middleware/builtin-middleware.html">Built-in middleware</a></li>
@@ -490,11 +752,10 @@ document.write(`
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="plugins/sqlalchemy.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/sqlalchemy.html">SQLAlchemy Plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="dto.html">Data Transfer Objects (DTOs)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="events.html">Event Emitters and Listeners</a></li>
 <li class="toctree-l2"><a class="reference internal" href="openapi.html">OpenAPI integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lifecycle-hooks.html">Life Cycle Hooks</a></li>
@@ -522,7 +783,12 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/config.html">config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugin.html">plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/config.html">config</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/plugin.html">plugin</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/types.html">types</a></li>
@@ -535,18 +801,22 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/dto.html">dto</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/interface.html">interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/exceptions.html">exceptions</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
@@ -555,7 +825,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
@@ -563,7 +833,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
 </ul>
@@ -575,14 +845,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/response.html">response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
@@ -590,12 +860,13 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/status_codes.html">status_code</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Starlite</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -660,16 +931,16 @@ document.write(`
                   
   <section id="testing">
 <h1>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">#</a></h1>
-<p>Testing is a first class citizen in Starlite, which offers several powerful testing utilities out of the box.</p>
+<p>Testing is a first class citizen in Litestar, which offers several powerful testing utilities out of the box.</p>
 <section id="test-client">
 <h2>Test Client<a class="headerlink" href="#test-client" title="Permalink to this heading">#</a></h2>
-<p>Starlite’s test client is built on top of
+<p>Litestar’s test client is built on top of
 the <a class="reference external" href="https://github.com/encode/httpx">httpx</a> library. To use the test client you should pass to it an
-instance of Starlite as the <code class="docutils literal notranslate"><span class="pre">app</span></code> kwarg.</p>
+instance of Litestar as the <code class="docutils literal notranslate"><span class="pre">app</span></code> kwarg.</p>
 <p>Let’s say we have a very simple app with a health check endpoint:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">my_app/main.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
@@ -677,7 +948,7 @@ instance of Starlite as the <code class="docutils literal notranslate"><span cla
     <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -688,8 +959,8 @@ instance of Starlite as the <code class="docutils literal notranslate"><span cla
 Sync</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">tests/test_health_check.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
 
@@ -708,8 +979,8 @@ Sync</label><div class="sd-tab-content docutils">
 Async</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">tests/test_health_check.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
 
@@ -733,7 +1004,7 @@ Sync</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">tests/conftest.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
 
@@ -752,7 +1023,7 @@ Async</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">tests/conftest.py</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
 
@@ -774,9 +1045,9 @@ Sync</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">tests/test_health_check.py</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
@@ -784,7 +1055,7 @@ Sync</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
 
 
 <span class="k">def</span> <span class="nf">test_health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -815,9 +1086,9 @@ Async</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">tests/test_health_check.py</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/health-check&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
@@ -825,7 +1096,7 @@ Async</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -854,19 +1125,19 @@ Async</label><div class="sd-tab-content docutils">
 <h3>Using sessions<a class="headerlink" href="#using-sessions" title="Permalink to this heading">#</a></h3>
 <p>If you are using <a class="reference internal" href="middleware/builtin-middleware.html#session-middleware"><span class="std std-ref">session middleware</span></a> for session persistence
 across requests, then you might want to inject or inspect session data outside a request. For this,
-<a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient" title="starlite.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> provides two methods:</p>
+<a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> provides two methods:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient.set_session_data" title="starlite.testing.TestClient.set_session_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_session_data</span></code></a></p></li>
-<li><p><a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient.get_session_data" title="starlite.testing.TestClient.get_session_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_session_data</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient.set_session_data" title="litestar.testing.TestClient.set_session_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_session_data</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient.get_session_data" title="litestar.testing.TestClient.get_session_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_session_data</span></code></a></p></li>
 </ul>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <ul class="simple">
-<li><p>The Session Middleware must be enabled in Starlite app provided to the TestClient to use sessions.</p></li>
+<li><p>The Session Middleware must be enabled in Litestar app provided to the TestClient to use sessions.</p></li>
 <li><p>If you are using the
-<a class="reference internal" href="../reference/middleware/session/client_side.html#starlite.middleware.session.client_side.ClientSideSessionBackend" title="starlite.middleware.session.client_side.ClientSideSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code></a> you need to
-install the <code class="docutils literal notranslate"><span class="pre">cryptography</span></code> package. You can do so by installing starlite with e.g.
-<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">starlite[cryptography]</span></code> or <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">add</span> <span class="pre">starlite[cryptography]</span></code></p></li>
+<a class="reference internal" href="../reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend" title="litestar.middleware.session.client_side.ClientSideSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code></a> you need to
+install the <code class="docutils literal notranslate"><span class="pre">cryptography</span></code> package. You can do so by installing litestar with e.g.
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cryptography]</span></code> or <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">add</span> <span class="pre">litestar[cryptography]</span></code></p></li>
 </ul>
 </div>
 <div class="sd-tab-set docutils">
@@ -881,9 +1152,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
@@ -893,7 +1164,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 
 <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
     <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
@@ -909,9 +1180,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
@@ -921,7 +1192,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 
 <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
     <span class="n">client</span><span class="o">.</span><span class="n">set_session_data</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">})</span>
@@ -933,9 +1204,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">post</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">TestClient</span>
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
@@ -945,7 +1216,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 
 <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
     <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
@@ -965,9 +1236,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
@@ -977,7 +1248,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -996,9 +1267,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="code-block-caption"><span class="caption-text">Setting session data</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
@@ -1008,7 +1279,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1023,9 +1294,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 <div class="literal-block-wrapper docutils container" id="id13">
 <div class="code-block-caption"><span class="caption-text">Getting session data</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Starlite</span><span class="p">,</span> <span class="n">post</span>
-<span class="kn">from</span> <span class="nn">starlite.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
 <span class="n">session_config</span> <span class="o">=</span> <span class="n">ServerSideSessionConfig</span><span class="p">()</span>
 
@@ -1035,7 +1306,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Starlite</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1050,11 +1321,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </section>
 <section id="using-a-blocking-portal">
 <h3>Using a blocking portal<a class="headerlink" href="#using-a-blocking-portal" title="Permalink to this heading">#</a></h3>
-<p>The <a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient" title="starlite.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> uses a feature of <a class="reference external" href="https://anyio.readthedocs.io/en/stable/">anyio</a> called
+<p>The <a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a> uses a feature of <a class="reference external" href="https://anyio.readthedocs.io/en/stable/">anyio</a> called
 a <strong>Blocking Portal</strong>.</p>
-<p>The <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.abc.BlockingPortal" title="(in AnyIO v3.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">anyio.abc.BlockingPortal</span></code></a> allows <a class="reference internal" href="../reference/testing.html#starlite.testing.TestClient" title="starlite.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a>
+<p>The <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.abc.BlockingPortal" title="(in AnyIO v3.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">anyio.abc.BlockingPortal</span></code></a> allows <a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient" title="litestar.testing.TestClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestClient</span></code></a>
 to execute asynchronous functions using a synchronous call. <code class="docutils literal notranslate"><span class="pre">TestClient</span></code> creates a blocking portal to manage
-<code class="docutils literal notranslate"><span class="pre">Starlite</span></code>’s async logic, and it allows <code class="docutils literal notranslate"><span class="pre">TestClient</span></code>’s API to remain fully synchronous.</p>
+<code class="docutils literal notranslate"><span class="pre">Litestar</span></code>’s async logic, and it allows <code class="docutils literal notranslate"><span class="pre">TestClient</span></code>’s API to remain fully synchronous.</p>
 <p>Any tests that are using an instance of <code class="docutils literal notranslate"><span class="pre">TestClient</span></code> can also make use of the blocking portal to execute asynchronous functions
 without the test itself being asynchronous.</p>
 <div class="literal-block-wrapper docutils container" id="id14">
@@ -1063,7 +1334,7 @@ without the test itself being asynchronous.</p>
 
 <span class="kn">import</span> <span class="nn">anyio</span>
 
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
 
 
 <span class="k">def</span> <span class="nf">test_with_portal</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1092,17 +1363,17 @@ without the test itself being asynchronous.</p>
 </section>
 <section id="creating-a-test-app">
 <h2>Creating a test app<a class="headerlink" href="#creating-a-test-app" title="Permalink to this heading">#</a></h2>
-<p>Starlite also offers a helper function called <a class="reference internal" href="../reference/testing.html#starlite.testing.create_test_client" title="starlite.testing.create_test_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_test_client</span></code></a> which first creates
-an instance of Starlite and then a test client using it. There are multiple use cases for this helper - when you need to check
-generic logic that is decoupled from a specific Starlite app, or when you want to test endpoints in isolation.</p>
+<p>Litestar also offers a helper function called <a class="reference internal" href="../reference/testing.html#litestar.testing.create_test_client" title="litestar.testing.create_test_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_test_client</span></code></a> which first creates
+an instance of Litestar and then a test client using it. There are multiple use cases for this helper - when you need to check
+generic logic that is decoupled from a specific Litestar app, or when you want to test endpoints in isolation.</p>
 <p>You can pass to this helper all the kwargs accepted by
-the starlite constructor, with the <code class="docutils literal notranslate"><span class="pre">route_handlers</span></code> kwarg being <strong>required</strong>. Yet unlike the Starlite app, which
+the litestar constructor, with the <code class="docutils literal notranslate"><span class="pre">route_handlers</span></code> kwarg being <strong>required</strong>. Yet unlike the Litestar app, which
 expects <code class="docutils literal notranslate"><span class="pre">route_handlers</span></code> to be a list, here you can also pass individual values.</p>
 <p>For example, you can do this:</p>
 <div class="literal-block-wrapper docutils container" id="id15">
 <div class="code-block-caption"><span class="caption-text">my_app/tests/test_health_check.py</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
 
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">health_check</span>
 
@@ -1118,8 +1389,8 @@ expects <code class="docutils literal notranslate"><span class="pre">route_handl
 <p>But also this:</p>
 <div class="literal-block-wrapper docutils container" id="id16">
 <div class="code-block-caption"><span class="caption-text">my_app/tests/test_health_check.py</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
 
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">health_check</span>
 
@@ -1135,16 +1406,16 @@ expects <code class="docutils literal notranslate"><span class="pre">route_handl
 </section>
 <section id="requestfactory">
 <h2>RequestFactory<a class="headerlink" href="#requestfactory" title="Permalink to this heading">#</a></h2>
-<p>Another helper is the <a class="reference internal" href="../reference/testing.html#starlite.testing.RequestFactory" title="starlite.testing.RequestFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestFactory</span></code></a> class, which creates instances of
-<a class="reference internal" href="../reference/connection.html#starlite.connection.Request" title="starlite.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">starlite.connection.request.Request</span></code></a>. The use case for this helper is when
+<p>Another helper is the <a class="reference internal" href="../reference/testing.html#litestar.testing.RequestFactory" title="litestar.testing.RequestFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestFactory</span></code></a> class, which creates instances of
+<a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.connection.request.Request</span></code></a>. The use case for this helper is when
 you need to test logic that expects to receive a request object.</p>
 <p>For example, lets say we wanted to unit test a <em>guard</em> function in isolation, to which end we’ll reuse the examples
 from the <a class="reference internal" href="security/guards.html"><span class="doc">route guards</span></a> documentation:</p>
 <div class="literal-block-wrapper docutils container" id="id17">
 <div class="code-block-caption"><span class="caption-text">my_app/guards.py</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">Request</span>
-<span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
-<span class="kn">from</span> <span class="nn">starlite.handlers.base</span> <span class="kn">import</span> <span class="n">BaseRouteHandler</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
+<span class="kn">from</span> <span class="nn">litestar.handlers.base</span> <span class="kn">import</span> <span class="n">BaseRouteHandler</span>
 
 
 <span class="k">def</span> <span class="nf">secret_token_guard</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">route_handler</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1161,7 +1432,7 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 <div class="code-block-caption"><span class="caption-text">my_app/secret.py</span><a class="headerlink" href="#id18" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
 
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 
 <span class="kn">from</span> <span class="nn">my_app.guards</span> <span class="kn">import</span> <span class="n">secret_token_guard</span>
 
@@ -1177,8 +1448,8 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 <div class="code-block-caption"><span class="caption-text">tests/guards/test_secret_token_guard.py</span><a class="headerlink" href="#id19" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">from</span> <span class="nn">starlite.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">RequestFactory</span>
+<span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">RequestFactory</span>
 
 <span class="kn">from</span> <span class="nn">my_app.guards</span> <span class="kn">import</span> <span class="n">secret_token_guard</span>
 <span class="kn">from</span> <span class="nn">my_app.secret</span> <span class="kn">import</span> <span class="n">secret_endpoint</span>
@@ -1201,17 +1472,17 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 </div>
 </div>
 </section>
-<section id="using-pydantic-factories">
-<h2>Using pydantic-factories<a class="headerlink" href="#using-pydantic-factories" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="https://github.com/starlite-api/pydantic-factories">Pydantic-factories</a> offers an easy
+<section id="using-polyfactory">
+<h2>Using polyfactory<a class="headerlink" href="#using-polyfactory" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://github.com/litestar-org/polyfactory">Polyfactory</a> offers an easy
 and powerful way to generate mock data from pydantic models and dataclasses.</p>
 <p>Let’s say we have an API that talks to an external service and retrieves some data:</p>
 <div class="literal-block-wrapper docutils container" id="id20">
 <div class="code-block-caption"><span class="caption-text">main.py</span><a class="headerlink" href="#id20" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
 
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 
 
 <span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -1235,9 +1506,9 @@ and powerful way to generate mock data from pydantic models and dataclasses.</p>
 <div class="code-block-caption"><span class="caption-text">tests/conftest.py</span><a class="headerlink" href="#id21" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-<span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
 
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Item</span><span class="p">,</span> <span class="n">get_item</span>
 
@@ -1262,7 +1533,7 @@ and powerful way to generate mock data from pydantic models and dataclasses.</p>
 </div>
 </div>
 <p>While we can define the test data manually, as is done in the above, this can be quite cumbersome. That’s
-where <a class="reference external" href="https://github.com/Goldziher/pydantic-factories">pydantic-factories</a> library comes in. It generates mock data for
+where <a class="reference external" href="https://github.com/litestar-org/polyfactory">polyfactory</a> library comes in. It generates mock data for
 pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:</p>
 <div class="literal-block-wrapper docutils container" id="id22">
 <div class="code-block-caption"><span class="caption-text">main.py</span><a class="headerlink" href="#id22" title="Permalink to this code">#</a></div>
@@ -1270,11 +1541,11 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
 
 <span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
-<span class="kn">from</span> <span class="nn">pydantic_factories</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
-<span class="kn">from</span> <span class="nn">starlite.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
-<span class="kn">from</span> <span class="nn">starlite</span> <span class="kn">import</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">starlite.di</span> <span class="kn">import</span> <span class="n">Provide</span>
-<span class="kn">from</span> <span class="nn">starlite.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+<span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
+<span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_200_OK</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
 
 
 <span class="k">class</span> <span class="nc">Item</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -1325,7 +1596,10 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="stores.html"
@@ -1345,7 +1619,10 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1367,7 +1644,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-test-app">Creating a test app</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requestfactory">RequestFactory</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-pydantic-factories">Using pydantic-factories</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-polyfactory">Using polyfactory</a></li>
 </ul>
   </nav></div>
 
@@ -1376,7 +1653,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -1384,8 +1661,8 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1395,7 +1672,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
         <div class="footer-item">
   <p class="copyright">
     
-      © Copyright 2023, Starlite-API.
+      © Copyright 2023, Litestar-Org.
       <br/>
     
   </p>
@@ -1403,7 +1680,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
       
         <div class="footer-item">
   <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
     <br/>
   </p>
 </div>
@@ -1414,7 +1691,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
     <div class="footer-items__end">
       
         <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
 </p></div>
       
     </div>

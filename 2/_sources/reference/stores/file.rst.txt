@@ -1,5 +1,5 @@
 file
 ====
 
-.. automodule:: starlite.stores.file
+.. automodule:: litestar.stores.file
     :members:

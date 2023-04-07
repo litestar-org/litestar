@@ -1,5 +1,5 @@
 pagination
 ==========
 
-.. automodule:: starlite.pagination
+.. automodule:: litestar.pagination
    :members:

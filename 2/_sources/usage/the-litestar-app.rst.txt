@@ -1,11 +1,11 @@
-The Starlite App
+The Litestar App
 ================
 
 
 Application object
 ------------------
 
-At the root of every Starlite application is an instance of the :class:`Starlite <starlite.app.Starlite>`
+At the root of every Litestar application is an instance of the :class:`Litestar <litestar.app.Litestar>`
 class. Typically, this code will be placed in a file called ``main.py`` at the project's root directory.
 
 Creating an app is straightforward – the only required arg is a list
@@ -26,11 +26,28 @@ and Route Handlers should be registered on it.
     :ref:`usage/routing:Registering Routes`
 
 
+Validation Backends
+-------------------
+
+Litestar supports both `attrs <https://www.attrs.org/en/stable/>`_ and `pydantic <https://docs.pydantic.dev/>`_ as
+validation backends. If you have one of these libraries installed alongside Litestar, it will be used automatically.
+If you have both of these installed though, Litestar will default to using attrs unless a handler uses a pydantic-specific
+type or a custom class that has the pydantic ``__get_validators__`` dunder defined. You can change this behaviour by
+setting the ``preferred_validation_backend`` kwarg to ``pydantic``:
+
+
+.. code-block:: python
+
+   from litestar import Litestar
+
+   app = Litestar(route_handlers=..., preferred_validation_backend="pydantic")
+
+
 Startup and Shutdown
 --------------------
 
 You can pass a list of callables - either sync or async functions, methods or class instances - to the ``on_startup``
-/ ``on_shutdown`` kwargs of the :class:`Starlite <starlite.app.Starlite>` instance. Those will be called in
+/ ``on_shutdown`` kwargs of the :class:`Litestar <litestar.app.Litestar>` instance. Those will be called in
 order, once the ASGI server (uvicorn, hypercorn etc.) emits the respective event.
 
 .. mermaid::
@@ -44,7 +61,7 @@ startup, and then close it gracefully upon shutdown.
 
 For example, lets create a database connection using the async engine from
 `SQLAlchemy <https://docs.sqlalchemy.org/en/latest/orm/extensions/asyncio.html>`_. We create two functions, one to get or
-establish the connection, and another to close it, and then pass them to the Starlite constructor:
+establish the connection, and another to close it, and then pass them to the Litestar constructor:
 
 .. literalinclude:: /examples/startup_and_shutdown.py
     :caption: Startup and Shutdown
@@ -61,7 +78,7 @@ The advantage of using application ``state``, is that it can be accessed during 
 it can be injected into dependencies and route handlers.
 
 The Application State is an instance of the :class:`State <.datastructures.state.State>` datastructure, and it is accessible
-via the :class:`app.state <.app.Starlite>` attribute. As such it can be accessed wherever the app instance is accessible.
+via the :class:`app.state <.app.Litestar>` attribute. As such it can be accessed wherever the app instance is accessible.
 
 It's important to understand in this context that the application instance is injected into the ASGI ``scope`` mapping for
 each connection (i.e. request or websocket connection) as ``scope["app"].state``. This makes the application accessible
@@ -80,7 +97,7 @@ Initializing Application State
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To seed application state, you can pass a :class:`State <.datastructures.state.State>` object to the ``state`` kwarg of
-the Starlite constructor:
+the Litestar constructor:
 
 .. literalinclude:: /examples/application_state/passing_initial_state.py
     :caption: Using Application State
@@ -102,14 +119,14 @@ the Starlite constructor:
 Injecting Application State into Route Handlers and Dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As seen in the above example, Starlite offers an easy way to inject state into route handlers and dependencies - simply
+As seen in the above example, Litestar offers an easy way to inject state into route handlers and dependencies - simply
 by specifying ``state`` as a kwarg to the handler function. I.e., you can simply do this in handler function or dependency
 to access the application state:
 
 .. code-block:: python
 
-   from starlite import get
-   from starlite.datastructures import State
+   from litestar import get
+   from litestar.datastructures import State
 
 
    @get("/")
@@ -117,13 +134,13 @@ to access the application state:
        ...
 
 When using this pattern you can specify the class to use for the state object. This type is not merely for type
-checkers, rather Starlite will instantiate a new state instance based on the type you set there. This allows users to
+checkers, rather Litestar will instantiate a new state instance based on the type you set there. This allows users to
 use custom classes for State, e.g.:
 
 While this is very powerful, it might encourage users to follow anti-patterns: it's important to emphasize that using
 state can lead to code that's hard to reason about and bugs that are difficult to understand, due to changes in
 different ASGI contexts. As such, this pattern should be used only when it is the best choice and in a limited fashion.
-To discourage its use, Starlite also offers a builtin ``ImmutableState`` class. You can use this class to type state and
+To discourage its use, Litestar also offers a builtin ``ImmutableState`` class. You can use this class to type state and
 ensure that no mutation of state is allowed:
 
 .. literalinclude:: /examples/application_state/using_immutable_state.py
@@ -137,18 +154,18 @@ Static Files
 
 Static files are served by the app from predefined locations. To configure static file serving, either pass an
 instance of :class:`StaticFilesConfig <.static_files.config.StaticFilesConfig>` or a list
-thereof to :class:`Starlite <.app.Starlite>` using the ``static_files_config`` kwarg.
+thereof to :class:`Litestar <.app.Litestar>` using the ``static_files_config`` kwarg.
 
-For example, lets say our Starlite app is going to serve **regular files** from the ``my_app/static`` folder and **html
+For example, lets say our Litestar app is going to serve **regular files** from the ``my_app/static`` folder and **html
 documents** from the ``my_app/html`` folder, and we would like to serve the **static files** on the ``/files`` path,
 and the **html files** on the ``/html`` path:
 
 .. code-block:: python
 
-   from starlite import Starlite
-   from starlite.config.static_files import StaticFilesConfig
+   from litestar import Litestar
+   from litestar.config.static_files import StaticFilesConfig
 
-   app = Starlite(
+   app = Litestar(
        route_handlers=[...],
        static_files_config=[
            StaticFilesConfig(directories=["static"], path="/files"),
@@ -170,10 +187,10 @@ folders belonging to that config. ``name`` should be a unique string across all 
 
 .. code-block:: python
 
-   from starlite import Starlite
-   from starlite.static_files.config import StaticFilesConfig
+   from litestar import Litestar
+   from litestar.static_files.config import StaticFilesConfig
 
-   app = Starlite(
+   app = Litestar(
        route_handlers=[...],
        static_files_config=[
            StaticFilesConfig(
@@ -194,10 +211,10 @@ To send them as attachments, use the ``send_as_attachment=True`` flag, which wil
 
 .. code-block:: python
 
-   from starlite import Starlite
-   from starlite.static_files.config import StaticFilesConfig
+   from litestar import Litestar
+   from litestar.static_files.config import StaticFilesConfig
 
-   app = Starlite(
+   app = Litestar(
        route_handlers=[...],
        static_files_config=[
            StaticFilesConfig(
@@ -213,24 +230,24 @@ File System support and Cloud Files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The :class:`StaticFilesConfig <.static_files.StaticFilesConfig>` class accepts a value called ``file_system``,
-which can be any class adhering to the Starlite :class:`FileSystemProtocol <starlite.types.FileSystemProtocol>`.
+which can be any class adhering to the Litestar :class:`FileSystemProtocol <litestar.types.FileSystemProtocol>`.
 
 This protocol is similar to the file systems defined by `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_,
 which cover all major cloud providers and a wide range of other use cases (e.g. HTTP based file service, ``ftp`` etc.).
 
 In order to use any file system, simply use `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ or one of
 the libraries based upon it, or provide a custom implementation adhering to the
-:class:`FileSystemProtocol <starlite.types.FileSystemProtocol>`.
+:class:`FileSystemProtocol <litestar.types.FileSystemProtocol>`.
 
 Logging
 -------
 
-Starlite has builtin pydantic based logging configuration that allows users to easily define logging:
+Litestar has builtin pydantic based logging configuration that allows users to easily define logging:
 
 .. code-block:: python
 
-   from starlite import Starlite, Request, get
-   from starlite.config.logging import LoggingConfig
+   from litestar import Litestar, Request, get
+   from litestar.config.logging import LoggingConfig
 
 
    @get("/")
@@ -248,11 +265,11 @@ Starlite has builtin pydantic based logging configuration that allows users to e
        }
    )
 
-   app = Starlite(route_handlers=[my_router_handler], logging_config=logging_config)
+   app = Litestar(route_handlers=[my_router_handler], logging_config=logging_config)
 
 .. attention::
 
-    Starlite configures a non-blocking `QueueListenerHandler` which
+    Litestar configures a non-blocking `QueueListenerHandler` which
     is keyed as `queue_listener` in the logging configuration. The above example is using this handler,
     which is optimal for async applications. Make sure to use it in your own loggers as in the above example.
 
@@ -260,19 +277,19 @@ Using Picologging
 ^^^^^^^^^^^^^^^^^
 
 `Picologging <https://github.com/microsoft/picologging>`_ is a high performance logging library that is developed by
-Microsoft. Starlite will default to using this library automatically if its installed - requiring zero configuration on
+Microsoft. Litestar will default to using this library automatically if its installed - requiring zero configuration on
 the part of the user. That is, if ``picologging`` is present the previous example will work with it automatically.
 
 Using StructLog
 ^^^^^^^^^^^^^^^
 
-`StructLog <https://www.structlog.org/en/stable/>`_ is a powerful structured-logging library. Starlite ships with a dedicated
+`StructLog <https://www.structlog.org/en/stable/>`_ is a powerful structured-logging library. Litestar ships with a dedicated
 logging config for using it:
 
 .. code-block:: python
 
-   from starlite import Starlite, Request, get
-   from starlite.config.logging import StructLoggingConfig
+   from litestar import Litestar, Request, get
+   from litestar.config.logging import StructLoggingConfig
 
 
    @get("/")
@@ -283,7 +300,7 @@ logging config for using it:
 
    logging_config = StructLoggingConfig()
 
-   app = Starlite(route_handlers=[my_router_handler], logging_config=logging_config)
+   app = Litestar(route_handlers=[my_router_handler], logging_config=logging_config)
 
 Subclass Logging Configs
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -294,7 +311,7 @@ You can easily create you own ``LoggingConfig`` class by subclassing
 Application Hooks
 -----------------
 
-Starlite includes several application level hooks that allow users to run their own sync or async callables. While you
+Litestar includes several application level hooks that allow users to run their own sync or async callables. While you
 are free to use these hooks as you see fit, the design intention behind them is to allow for easy instrumentation for
 observability (monitoring, tracing, logging etc.).
 
@@ -306,8 +323,8 @@ observability (monitoring, tracing, logging etc.).
 Before / After Startup
 ^^^^^^^^^^^^^^^^^^^^^^
 
-The ``before_startup`` and ``after_startup`` hooks take a :class:`sync or async callable <starlite.types.LifeSpanHookHandler>` that
-receives the Starlite application as an argument and run during the ASGI startup event. The callable is invoked
+The ``before_startup`` and ``after_startup`` hooks take a :class:`sync or async callable <litestar.types.LifeSpanHookHandler>` that
+receives the Litestar application as an argument and run during the ASGI startup event. The callable is invoked
 respectively before or after the list of callables defined in the ``on_startup`` list of callables.
 
 .. literalinclude:: /examples/application_hooks/startup_hooks.py
@@ -320,7 +337,7 @@ Before / After Shutdown
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``before_shutdown`` and ``after_shutdown`` are basically identical, with the difference being that the
-:class:`callable they receive <starlite.types.LifeSpanHookHandler>` in callable is invoked respectively before or after the
+:class:`callable they receive <litestar.types.LifeSpanHookHandler>` in callable is invoked respectively before or after the
 list of callables defined in the ``on_shutdown`` list of callables.
 
 .. literalinclude:: /examples/application_hooks/shutdown_hooks.py
@@ -331,7 +348,7 @@ list of callables defined in the ``on_shutdown`` list of callables.
 After Exception
 ^^^^^^^^^^^^^^^
 
-The ``after_exception`` hook takes a :class:`sync or async callable <starlite.types.AfterExceptionHookHandler>` that is called with
+The ``after_exception`` hook takes a :class:`sync or async callable <litestar.types.AfterExceptionHookHandler>` that is called with
 three arguments: the ``exception`` that occurred, the ASGI ``scope`` of the request or websocket connection and the
 application ``state``.
 
@@ -348,7 +365,7 @@ application ``state``.
 Before Send
 ^^^^^^^^^^^
 
-The ``before_send`` hook takes a :class:`sync or async callable <starlite.types.BeforeMessageSendHookHandler>` that is called when
+The ``before_send`` hook takes a :class:`sync or async callable <litestar.types.BeforeMessageSendHookHandler>` that is called when
 an ASGI message is sent. The hook receives the message instance and the application state.
 
 .. literalinclude:: /examples/application_hooks/before_send_hook.py
@@ -360,18 +377,18 @@ an ASGI message is sent. The hook receives the message instance and the applicat
 Application Init
 ^^^^^^^^^^^^^^^^
 
-Starlite includes a hook for intercepting the arguments passed to the :class:`Starlite constructor <starlite.app.Starlite>`,
+Litestar includes a hook for intercepting the arguments passed to the :class:`Litestar constructor <litestar.app.Litestar>`,
 before they are used to instantiate the application.
 
 Handlers can be passed to the ``on_app_init`` parameter on construction of the application, and in turn, each will receive
-an instance of :class:`AppConfig <starlite.config.app.AppConfig>` and must return an instance of same.
+an instance of :class:`AppConfig <litestar.config.app.AppConfig>` and must return an instance of same.
 
 This hook is useful for applying common configuration between applications, and for use by developers who may wish to
 develop third-party application configuration systems.
 
 .. note::
 
-    `on_app_init` handlers cannot be `async def` functions, as they are called within `Starlite.__init__()`, outside of
+    `on_app_init` handlers cannot be `async def` functions, as they are called within `Litestar.__init__()`, outside of
     an async context.
 
 .. literalinclude:: /examples/application_hooks/on_app_init.py
@@ -384,7 +401,7 @@ develop third-party application configuration systems.
 Layered architecture
 --------------------
 
-Starlite has a layered architecture compromising of (generally speaking) 4 layers:
+Litestar has a layered architecture compromising of (generally speaking) 4 layers:
 
 
 #. The application object
