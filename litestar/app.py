@@ -348,7 +348,7 @@ class Litestar(Router):
             opt=dict(opt or {}),
             parameters=parameters or {},
             plugins=list(plugins or []),
-            preferred_validation_backend=preferred_validation_backend or "attrs",
+            preferred_validation_backend=preferred_validation_backend or "pydantic",
             request_class=request_class,
             response_cache_config=response_cache_config or ResponseCacheConfig(),
             response_class=response_class,
