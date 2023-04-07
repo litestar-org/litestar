@@ -1,11 +1,11 @@
 from examples.openapi import customize_pydantic_model_name
-from starlite.testing import TestClient
+from litestar.testing import TestClient
 
 
 def test_schema_generation() -> None:
     with TestClient(app=customize_pydantic_model_name.app) as client:
         assert client.app.openapi_schema.to_schema() == {
-            "info": {"title": "Starlite API", "version": "1.0.0"},
+            "info": {"title": "Litestar API", "version": "1.0.0"},
             "openapi": "3.1.0",
             "servers": [{"url": "/"}],
             "paths": {

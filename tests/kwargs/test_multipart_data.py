@@ -8,12 +8,12 @@ from typing import Any, DefaultDict, Dict, List, Optional, Type
 import pytest
 from pydantic import BaseConfig, BaseModel
 
-from starlite import Request, post
-from starlite.datastructures.upload_file import UploadFile
-from starlite.enums import RequestEncodingType
-from starlite.params import Body
-from starlite.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
-from starlite.testing import create_test_client
+from litestar import Request, post
+from litestar.datastructures.upload_file import UploadFile
+from litestar.enums import RequestEncodingType
+from litestar.params import Body
+from litestar.status_codes import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from litestar.testing import create_test_client
 from tests import Person, PersonFactory
 from tests.kwargs import Form
 

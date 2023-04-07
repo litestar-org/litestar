@@ -1,7 +1,7 @@
 import pytest
 
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.utils.sync import AsyncCallable
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.utils.sync import AsyncCallable
 
 
 async def test_function_wrapper_wraps_method_correctly() -> None:

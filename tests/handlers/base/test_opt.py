@@ -2,10 +2,10 @@ from typing import TYPE_CHECKING, Any, Callable, Dict
 
 import pytest
 
-from starlite import (
+from litestar import (
     Controller,
+    Litestar,
     Router,
-    Starlite,
     asgi,
     delete,
     get,
@@ -16,8 +16,8 @@ from starlite import (
 )
 
 if TYPE_CHECKING:
-    from starlite import WebSocket
-    from starlite.types import Receive, RouteHandlerType, Scope, Send
+    from litestar import WebSocket
+    from litestar.types import Receive, RouteHandlerType, Scope, Send
 
 
 def regular_handler() -> None:
@@ -86,7 +86,7 @@ def test_opt_resolution(
             ...
 
     router = Router("/router", route_handlers=[MyController], opt=router_opt)
-    app = Starlite(route_handlers=[router], opt=app_opt)
+    app = Litestar(route_handlers=[router], opt=app_opt)
     assert (
         app.asgi_router.root_route_map_node.children["/router/controller"].asgi_handlers["GET"][1].opt == expected_opt
     )
@@ -107,7 +107,7 @@ def test_opt_not_affected_by_route_handler_copying() -> None:
     router = Router("/router", route_handlers=[MyController, fn_handler], opt={"router": "router"})
     another_router = Router("/another_router", route_handlers=[MyController, fn_handler])
 
-    app = Starlite(route_handlers=[router, another_router])
+    app = Litestar(route_handlers=[router, another_router])
 
     assert app.asgi_router.root_route_map_node.children["/router/controller"].asgi_handlers["GET"][1].opt == {
         "router": "router",

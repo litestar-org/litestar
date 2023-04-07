@@ -6,7 +6,7 @@ from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
 from sphinx.util.docutils import SphinxDirective
 
-_GH_BASE_URL = "https://github.com/starlite-api/starlite"
+_GH_BASE_URL = "https://github.com/starlite-api/litestar"
 
 
 def _parse_gh_reference(raw: str, type_: Literal["issues", "pull"]) -> list[str]:
@@ -31,7 +31,7 @@ class ChangeDirective(SphinxDirective):
     def run(self) -> list[nodes.Node]:
         self.assert_has_content()
 
-        change_type = self.options["type"].lower()
+        change_type = self.options.get("type", "misc").lower()
         title = self.arguments[0]
 
         change_node = nodes.container("\n".join(self.content))

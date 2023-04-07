@@ -4,10 +4,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from starlite._kwargs.cleanup import DependencyCleanupGroup
-from starlite.di import Provide
-from starlite.types import Empty
-from starlite.utils.compat import async_next
+from litestar._kwargs.cleanup import DependencyCleanupGroup
+from litestar.di import Provide
+from litestar.types import Empty
+from litestar.utils.compat import async_next
 
 
 class C:

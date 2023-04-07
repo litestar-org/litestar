@@ -7,21 +7,21 @@ import pytest
 from pydantic import BaseModel
 from typing_extensions import get_origin
 
-from starlite import MediaType, get
-from starlite.connection import Request
-from starlite.plugins import (
+from litestar import MediaType, get
+from litestar.connection import Request
+from litestar.plugins import (
     InitPluginProtocol,
     PluginMapping,
     SerializationPluginProtocol,
     get_plugin_for_value,
 )
-from starlite.testing import create_test_client
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from typing_extensions import TypeGuard
 
-    from starlite.config.app import AppConfig
-    from starlite.datastructures import State
+    from litestar.config.app import AppConfig
+    from litestar.datastructures import State
 
 
 class AModel:

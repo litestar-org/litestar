@@ -4,7 +4,7 @@ from typing import Any, AnyStr
 import pytest
 from pydantic.types import PaymentCardBrand
 
-from starlite import MediaType, get
+from litestar import MediaType, get
 from tests import Person
 
 

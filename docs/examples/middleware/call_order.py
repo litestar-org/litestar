@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING, List, Type
 
-from starlite import Controller, Router, Starlite, get
-from starlite.datastructures import State
-from starlite.middleware import MiddlewareProtocol
+from litestar import Controller, Litestar, Router, get
+from litestar.datastructures import State
+from litestar.middleware import MiddlewareProtocol
 
 if TYPE_CHECKING:
-    from starlite.types import ASGIApp, Receive, Scope, Send
+    from litestar.types import ASGIApp, Receive, Scope, Send
 
 
 def create_test_middleware(middleware_id: int) -> Type[MiddlewareProtocol]:
@@ -14,9 +14,9 @@ def create_test_middleware(middleware_id: int) -> Type[MiddlewareProtocol]:
             self.app = app
 
         async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
-            starlite_app = scope["app"]
-            starlite_app.state.setdefault("middleware_calls", [])
-            starlite_app.state["middleware_calls"].append(middleware_id)
+            litestar_app = scope["app"]
+            litestar_app.state.setdefault("middleware_calls", [])
+            litestar_app.state["middleware_calls"].append(middleware_id)
             await self.app(scope, receive, send)
 
     return TestMiddleware
@@ -40,7 +40,7 @@ router = Router(
     middleware=[create_test_middleware(2), create_test_middleware(3)],
 )
 
-app = Starlite(
+app = Litestar(
     route_handlers=[router],
     middleware=[create_test_middleware(0), create_test_middleware(1)],
 )

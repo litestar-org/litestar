@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import Dict
 from unittest.mock import MagicMock
 
-from starlite import Controller, Router, post
-from starlite.testing import create_test_client
+from litestar import Controller, Router, post
+from litestar.testing import create_test_client
 from tests.dto import MockDTO, MockReturnDTO, Model
 
 

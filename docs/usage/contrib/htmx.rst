@@ -1,12 +1,12 @@
 HTMX Request Class
 =====================
 
-This class extends the Starlite request class to allow it to read headers sent by the `htmx` client and make them accessible via properties.
+This class extends the Litestar request class to allow it to read headers sent by the `htmx` client and make them accessible via properties.
 
 .. code-block:: python
 
-    from starlite.contrib.htmx.request import HTMXRequest
-    from starlite.contrib.htmx.response import HTMXTemplate
+    from litestar.contrib.htmx.request import HTMXRequest
+    from litestar.contrib.htmx.response import HTMXTemplate
 
 
     @get(path="/form")
@@ -20,7 +20,7 @@ This class extends the Starlite request class to allow it to read headers sent b
         return HTMXTemplate(name="partial.html", context=context, push_url="/form")
 
 
-See :class:`HTMXDetails <starlite.contrib.htmx.request.HTMXDetails>` for a full list of available properties.
+See :class:`HTMXDetails <litestar.contrib.htmx.request.HTMXDetails>` for a full list of available properties.
 
 
 HTMX Response Classes
@@ -30,12 +30,12 @@ HTMX Response Classes
 HTMXTemplate Response Classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The most common  use-case for `htmx` to render an html page or html snippet. Starlite makes this easy by providing
-an :class:`HTMXTemplate <starlite.contrib.htmx.response.HTMXTemplate>` response:
+The most common  use-case for `htmx` to render an html page or html snippet. Litestar makes this easy by providing
+an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
 
 .. code-block:: python
 
-    from starlite.contrib.htmx.response import HTMXTemplate
+    from litestar.contrib.htmx.response import HTMXTemplate
 
 
     @get(path="/form")
@@ -57,17 +57,17 @@ an :class:`HTMXTemplate <starlite.contrib.htmx.response.HTMXTemplate>` response:
         )
 
 .. note::
-    - Return type is starlite's ``Template`` and not ``HTMXTemplate``.
+    - Return type is litestar's ``Template`` and not ``HTMXTemplate``.
     - ``trigger_event``, ``params`` and ``after parameters`` are linked to one another.
     - If you are triggering an event then ``after`` is required and it must be one of ``receive``, ``settle`` or ``swap``.
 
 HTMX provides two types of responses - one that donsn't allow changes to the DOM and one that does.
-Starlite supports both of these:
+Litestar supports both of these:
 
 1 - Responses that don't make any changes to DOM.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use :class:`HXStopPolling <starlite.contrib.htmx.response.HXStopPolling>` to stop polling for a response.
+Use :class:`HXStopPolling <litestar.contrib.htmx.response.HXStopPolling>` to stop polling for a response.
 
 .. code-block:: python
 
@@ -76,7 +76,7 @@ Use :class:`HXStopPolling <starlite.contrib.htmx.response.HXStopPolling>` to sto
         ...
         return HXStopPolling()
 
-Use :class:`ClientRedirect  <starlite.contrib.htmx.response.ClientRedirect>` to redirect with a page reload.
+Use :class:`ClientRedirect  <litestar.contrib.htmx.response.ClientRedirect>` to redirect with a page reload.
 
 .. code-block:: python
 
@@ -85,7 +85,7 @@ Use :class:`ClientRedirect  <starlite.contrib.htmx.response.ClientRedirect>` to 
         ...
         return ClientRedirect(redirect_to="/contact-us")
 
-Use :class:`ClientRefresh  <starlite.contrib.htmx.response.ClientRefresh>` to force a full page refresh.
+Use :class:`ClientRefresh  <litestar.contrib.htmx.response.ClientRefresh>` to force a full page refresh.
 
 .. code-block:: python
 
@@ -97,7 +97,7 @@ Use :class:`ClientRefresh  <starlite.contrib.htmx.response.ClientRefresh>` to fo
 2 - Responses that may change DOM.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use :class:`HXLocation <starlite.contrib.htmx.response.HXLocation>` to redirect to a new location without page reload.
+Use :class:`HXLocation <litestar.contrib.htmx.response.HXLocation>` to redirect to a new location without page reload.
 
 - Note: this class provides the ability to change ``target``, ``swapping`` method, the sent ``values`` and the ``headers``.)
 
@@ -117,7 +117,7 @@ Use :class:`HXLocation <starlite.contrib.htmx.response.HXLocation>` to redirect 
             values={"val": "one"},
         )  # values to submit with response.
 
-Use :class:`PushUrl <starlite.contrib.htmx.response.PushUrl>` to carry a response and push a url to the browser, optionally updating the `history` stack.
+Use :class:`PushUrl <litestar.contrib.htmx.response.PushUrl>` to carry a response and push a url to the browser, optionally updating the `history` stack.
 
 - Note: If the value for ``push_url`` is set to ``False`` it will prevent updating browser history.
 
@@ -128,7 +128,7 @@ Use :class:`PushUrl <starlite.contrib.htmx.response.PushUrl>` to carry a respons
         ...
         return PushUrl(content="Success!", push_url="/about")
 
-Use :class:`ReplaceUrl <starlite.contrib.htmx.response.ReplaceUrl>` to carry a response and replace the url in the browser's ``location`` bar.
+Use :class:`ReplaceUrl <litestar.contrib.htmx.response.ReplaceUrl>` to carry a response and replace the url in the browser's ``location`` bar.
 - Note: If the value to ``replace_url`` is set to ``False`` it will prevent it updating the browser location bar.
 
 .. code-block:: python
@@ -138,7 +138,7 @@ Use :class:`ReplaceUrl <starlite.contrib.htmx.response.ReplaceUrl>` to carry a r
         ...
         return ReplaceUrl(content="Success!", replace_url="/contact-us")
 
-Use :class:`Reswap <starlite.contrib.htmx.response.Reswap>` to carry a response perhaps a swap
+Use :class:`Reswap <litestar.contrib.htmx.response.Reswap>` to carry a response perhaps a swap
 
 .. code-block:: python
 
@@ -147,7 +147,7 @@ Use :class:`Reswap <starlite.contrib.htmx.response.Reswap>` to carry a response 
         ...
         return Reswap(content="Success!", method="beforebegin")
 
-Use :class:`Retarget <starlite.contrib.htmx.response.Retarget>` to carry a response and change the target element.
+Use :class:`Retarget <litestar.contrib.htmx.response.Retarget>` to carry a response and change the target element.
 
 .. code-block:: python
 
@@ -156,7 +156,7 @@ Use :class:`Retarget <starlite.contrib.htmx.response.Retarget>` to carry a respo
         ...
         return Retarget(content="Success!", target="#new-target")
 
-Use :class:`TriggerEvent <starlite.contrib.htmx.response.TriggerEvent>` to carry a response and trigger an event.
+Use :class:`TriggerEvent <litestar.contrib.htmx.response.TriggerEvent>` to carry a response and trigger an event.
 
 .. code-block:: python
 

@@ -1,5 +1,5 @@
 di
 --
 
-.. automodule:: starlite.di
+.. automodule:: litestar.di
     :members:

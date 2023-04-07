@@ -4,11 +4,11 @@ import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import booleans, lists, none, one_of, sampled_from
 
-from starlite import get
-from starlite.config.cors import CORSConfig
-from starlite.middleware.cors import CORSMiddleware
-from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
-from starlite.testing import create_test_client
+from litestar import get
+from litestar.config.cors import CORSConfig
+from litestar.middleware.cors import CORSMiddleware
+from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
+from litestar.testing import create_test_client
 
 
 def test_setting_cors_middleware() -> None:

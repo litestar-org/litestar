@@ -2,17 +2,17 @@ response_containers
 ===================
 
 
-.. autoclass:: starlite.response_containers.ResponseContainer
+.. autoclass:: litestar.response_containers.ResponseContainer
     :members:
 
-.. autoclass:: starlite.response_containers.File
+.. autoclass:: litestar.response_containers.File
     :members:
 
-.. autoclass:: starlite.response_containers.Redirect
+.. autoclass:: litestar.response_containers.Redirect
     :members:
 
-.. autoclass:: starlite.response_containers.Stream
+.. autoclass:: litestar.response_containers.Stream
     :members:
 
-.. autoclass:: starlite.response_containers.Template
+.. autoclass:: litestar.response_containers.Template
     :members:

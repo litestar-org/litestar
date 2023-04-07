@@ -1,10 +1,10 @@
 Plugins
 =======
 
-Starlite supports extension through plugins, which allow for the following:
+Litestar supports extension through plugins, which allow for the following:
 
 
-1. Updating the :doc:`Starlite application </usage/the-starlite-app>` during the init process
+1. Updating the :doc:`Litestar application </usage/the-litestar-app>` during the init process
 2. Serialization and deserialization of non-pydantic based 3rd party classes
 3. Automatic OpenAPI schema creation for 3rd party classes
 
@@ -22,7 +22,7 @@ following methods specified by the:
 .. code-block:: python
 
    from typing import Type, Any, Dict
-   from starlite.plugins import SerializationPluginProtocol
+   from litestar.plugins import SerializationPluginProtocol
    from pydantic import BaseModel
 
 
@@ -81,8 +81,8 @@ the :meth:`on_app_init <.plugins.InitPluginProtocol.on_app_init>` method:
 .. code-block:: python
 
    from typing import Any
-   from starlite.plugins import InitPluginProtocol
-   from starlite import Starlite, get
+   from litestar.plugins import InitPluginProtocol
+   from litestar import Litestar, get
 
 
    @get("/some-path")
@@ -91,7 +91,7 @@ the :meth:`on_app_init <.plugins.InitPluginProtocol.on_app_init>` method:
 
 
    class MyPlugin(InitPluginProtocol):
-       def on_app_init(self, app: Starlite) -> None:
+       def on_app_init(self, app: Litestar) -> None:
            # register a route handler
            app.register(my_handler)
 

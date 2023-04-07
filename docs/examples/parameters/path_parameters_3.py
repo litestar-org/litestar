@@ -1,9 +1,9 @@
 from pydantic import BaseModel, Json, conint
 
-from starlite import Starlite, get
-from starlite.openapi.spec.example import Example
-from starlite.openapi.spec.external_documentation import ExternalDocumentation
-from starlite.params import Parameter
+from litestar import Litestar, get
+from litestar.openapi.spec.example import Example
+from litestar.openapi.spec.external_documentation import ExternalDocumentation
+from litestar.params import Parameter
 
 
 class Version(BaseModel):
@@ -30,4 +30,4 @@ def get_product_version(
     return VERSIONS[version]
 
 
-app = Starlite(route_handlers=[get_product_version])
+app = Litestar(route_handlers=[get_product_version])

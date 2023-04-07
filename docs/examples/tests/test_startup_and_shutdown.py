@@ -2,9 +2,9 @@ from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock
 
 from examples import startup_and_shutdown
-from starlite import get
-from starlite.datastructures import State
-from starlite.testing import TestClient
+from litestar import get
+from litestar.datastructures import State
+from litestar.testing import TestClient
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch

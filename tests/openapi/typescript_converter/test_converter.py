@@ -1,8 +1,8 @@
 import pytest
 from polyfactory import BaseFactory
 
-from starlite import Starlite
-from starlite._openapi.typescript_converter.converter import (
+from litestar import Litestar
+from litestar._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
 from tests.openapi.utils import PersonController, PetController
@@ -11,7 +11,7 @@ from tests.openapi.utils import PersonController, PetController
 @pytest.mark.xfail
 def test_openapi_to_typescript_converter() -> None:
     BaseFactory.seed_random(1)
-    app = Starlite(route_handlers=[PersonController, PetController])
+    app = Litestar(route_handlers=[PersonController, PetController])
     assert app.openapi_schema
 
     result = convert_openapi_to_typescript(openapi_schema=app.openapi_schema)

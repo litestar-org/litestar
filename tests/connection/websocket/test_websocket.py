@@ -9,15 +9,15 @@ from typing import TYPE_CHECKING, Any, Literal
 import anyio
 import pytest
 
-from starlite.connection import WebSocket
-from starlite.datastructures.headers import Headers
-from starlite.exceptions import WebSocketDisconnect, WebSocketException
-from starlite.handlers.websocket_handlers import websocket
-from starlite.status_codes import WS_1001_GOING_AWAY
-from starlite.testing import TestClient, create_test_client
+from litestar.connection import WebSocket
+from litestar.datastructures.headers import Headers
+from litestar.exceptions import WebSocketDisconnect, WebSocketException
+from litestar.handlers.websocket_handlers import websocket
+from litestar.status_codes import WS_1001_GOING_AWAY
+from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
-    from starlite.types import Receive, Scope, Send
+    from litestar.types import Receive, Scope, Send
 
 
 @pytest.mark.parametrize("mode", ["text", "binary"])

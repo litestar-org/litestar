@@ -2,12 +2,12 @@ from typing import Dict
 
 import pytest
 
-from starlite import Controller, HttpMethod, Router, Starlite, get, post
-from starlite.datastructures import CacheControlHeader, ETag, ResponseHeader
-from starlite.datastructures.headers import Header
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.status_codes import HTTP_201_CREATED
-from starlite.testing import TestClient, create_test_client
+from litestar import Controller, HttpMethod, Litestar, Router, get, post
+from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
+from litestar.datastructures.headers import Header
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.status_codes import HTTP_201_CREATED
+from litestar.testing import TestClient, create_test_client
 
 
 def test_response_headers() -> None:
@@ -33,7 +33,7 @@ def test_response_headers() -> None:
     second_router = Router(
         path="/external", response_headers=[ResponseHeader(name="external", value="nope")], route_handlers=[]
     )
-    app = Starlite(
+    app = Litestar(
         openapi_config=None,
         response_headers=[app_first, app_second],
         route_handlers=[first_router, second_router],
@@ -132,7 +132,7 @@ def test_explicit_response_headers(
     def app_handler() -> None:
         pass
 
-    app = Starlite(
+    app = Litestar(
         route_handlers=[MyController, app_handler],
         **{config_kwarg: app_header},  # type: ignore[arg-type]
     )
@@ -189,7 +189,7 @@ def test_explicit_headers_override_response_headers(
     def my_handler() -> None:
         pass
 
-    app = Starlite(route_handlers=[my_handler])
+    app = Litestar(route_handlers=[my_handler])
 
     route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore
     resolved_headers = {header.name: header for header in route_handler.resolve_response_headers()}

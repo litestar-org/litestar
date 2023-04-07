@@ -1,5 +1,5 @@
-from starlite import Controller, MediaType, Starlite, get
-from starlite.datastructures import Cookie
+from litestar import Controller, Litestar, MediaType, get
+from litestar.datastructures import Cookie
 
 
 class MyController(Controller):
@@ -15,4 +15,4 @@ class MyController(Controller):
         return "hello world"
 
 
-app = Starlite(route_handlers=[MyController])
+app = Litestar(route_handlers=[MyController])

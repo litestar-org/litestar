@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING
 
 from typing_extensions import Self
 
-from starlite.dto.interface import DTOInterface
-from starlite.types.protocols import DataclassProtocol
-from starlite.types.serialization import StarliteEncodableType
+from litestar.dto.interface import DTOInterface
+from litestar.types.protocols import DataclassProtocol
+from litestar.types.serialization import LitestarEncodableType
 
 if TYPE_CHECKING:
     from typing import Any
 
-    from starlite.connection import Request
+    from litestar.connection import Request
 
 
 @dataclass
@@ -25,7 +25,7 @@ class MockDTO(DTOInterface):
     def to_data_type(self) -> Model:
         return Model(a=1, b="2")
 
-    def to_encodable_type(self, request: Request[Any, Any, Any]) -> bytes | StarliteEncodableType:
+    def to_encodable_type(self, request: Request[Any, Any, Any]) -> bytes | LitestarEncodableType:
         return Model(a=1, b="2")
 
     @classmethod
@@ -41,7 +41,7 @@ class MockReturnDTO(DTOInterface):
     def to_data_type(self) -> Any:
         raise RuntimeError("Return DTO should not have this method called")
 
-    def to_encodable_type(self, request: Request[Any, Any, Any]) -> bytes | StarliteEncodableType:
+    def to_encodable_type(self, request: Request[Any, Any, Any]) -> bytes | LitestarEncodableType:
         return b'{"a": 1, "b": "2"}'
 
     @classmethod

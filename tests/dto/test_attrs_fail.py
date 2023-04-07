@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from starlite import post
-from starlite.testing import create_test_client
+from litestar import post
+from litestar.testing import create_test_client
 from tests.dto import MockDTO, Model
 
 

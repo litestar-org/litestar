@@ -5,11 +5,11 @@ Response caching
 ----------------
 
 Sometimes it's desirable to cache some responses, especially if these involve expensive calculations, or when polling is
-expected. Starlite comes with a simple mechanism for caching:
+expected. Litestar comes with a simple mechanism for caching:
 
 .. code-block:: python
 
-   from starlite import get
+   from litestar import get
 
 
    @get("/cached-path", cache=True)
@@ -28,7 +28,7 @@ Alternatively you can specify the number of seconds to cache the responses from 
 
 .. code-block:: python
 
-   from starlite import get
+   from litestar import get
 
 
    @get("/cached-path", cache=120)  # seconds
@@ -41,8 +41,8 @@ sentinel instead:
 
 .. code-block:: python
 
-   from starlite import get
-   from starlite.config.response_cache import CACHE_FOREVER
+   from litestar import get
+   from litestar.config.response_cache import CACHE_FOREVER
 
 
    @get("/cached-path", cache=CACHE_FOREVER)  # seconds
@@ -54,7 +54,7 @@ Configuration
 -------------
 
 You can configure caching behaviour on the application level by passing an instance of
-:class:`ResponseCacheConfig <.config.response_cache.ResponseCacheConfig>` to the :class:`Starlite instance <.app.Starlite>`.
+:class:`ResponseCacheConfig <.config.response_cache.ResponseCacheConfig>` to the :class:`Litestar instance <.app.Litestar>`.
 
 
 Changing where data is stored
@@ -65,8 +65,8 @@ any :class:`Store <.stores.base.Store>`, for example :class:`RedisStore <.stores
 
 .. code-block:: python
 
-   from starlite.config.cache import ResponseCacheConfig
-   from starlite.stores.redis import RedisStore
+   from litestar.config.cache import ResponseCacheConfig
+   from litestar.stores.redis import RedisStore
 
    redis_store = RedisStore(url="redis://localhost/", port=6379, db=0)
 
@@ -76,25 +76,25 @@ any :class:`Store <.stores.base.Store>`, for example :class:`RedisStore <.stores
 Specifying a cache key builder
 ++++++++++++++++++++++++++++++
 
-Starlite uses the request's path + sorted query parameters as the cache key. This can be adjusted by providing a
+Litestar uses the request's path + sorted query parameters as the cache key. This can be adjusted by providing a
 "key builder" function, either at application or route handler level.
 
 .. code-block:: python
 
-    from starlite import Starlite, Request
-    from starlite.config.cache import ResponseCacheConfig
+    from litestar import Litestar, Request
+    from litestar.config.cache import ResponseCacheConfig
 
 
     def key_builder(request: Request) -> str:
         return request.url.path + request.headers.get("my-header", "")
 
 
-    app = Starlite([], cache_config=ResponseCacheConfig(key_builder=key_builder))
+    app = Litestar([], cache_config=ResponseCacheConfig(key_builder=key_builder))
 
 
 .. code-block:: python
 
-    from starlite import Starlite, Request, get
+    from litestar import Litestar, Request, get
 
 
     def key_builder(request: Request) -> str:

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from starlite._kwargs.extractors import create_dto_extractor
-from starlite.types.empty import Empty
-from starlite.types.parsed_signature import ParsedParameter, ParsedType
+from litestar._kwargs.extractors import create_dto_extractor
+from litestar.types.empty import Empty
+from litestar.types.parsed_signature import ParsedParameter, ParsedType
 from tests.dto import MockDTO, Model
 
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from starlite.contrib.sqlalchemy.init_plugin.config.engine import serializer
+from litestar.contrib.sqlalchemy.init_plugin.config.engine import serializer
 
 
 def test_serializer_returns_string() -> None:

@@ -2,7 +2,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from examples.application_hooks import after_exception_hook
-from starlite.testing import TestClient
+from litestar.testing import TestClient
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
