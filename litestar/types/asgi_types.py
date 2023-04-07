@@ -84,6 +84,7 @@ __all__ = (
     "WebSocketCloseEvent",
     "WebSocketConnectEvent",
     "WebSocketDisconnectEvent",
+    "WebSocketMode",
     "WebSocketReceiveEvent",
     "WebSocketReceiveMessage",
     "WebSocketResponseBodyEvent",
@@ -338,3 +339,4 @@ Send = Callable[[Message], Awaitable[None]]
 ASGIApp = Callable[[Scope, Receive, Send], Awaitable[None]]
 RawHeaders = Iterable[Tuple[bytes, bytes]]
 RawHeadersList = List[Tuple[bytes, bytes]]
+WebSocketMode = Literal["text", "binary"]

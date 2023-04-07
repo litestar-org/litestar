@@ -278,7 +278,13 @@ should not use the ``sync_to_thread`` option.
 Websocket route handlers
 ------------------------
 
-Litestar supports Websockets via the :func:`websocket <litestar.handlers.WebsocketRouteHandler>` decorator:
+A WebSocket connection can be handled with a :func:`websocket <litestar.handlers.WebsocketRouteHandler>` route handler.
+
+.. note::
+    The websocket handler is a low level approach, requiring to handle the socket directly,
+    and dealing with keeping it open, exceptions, client disconnects and content negotiation.
+
+    For a more high level approach to handling WebSockets, see :doc:`/usage/websockets`
 
 .. code-block:: python
 

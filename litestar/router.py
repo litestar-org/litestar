@@ -9,7 +9,7 @@ from litestar.controller import Controller
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.asgi_handlers import ASGIRouteHandler
 from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.handlers.websocket_handlers import WebsocketRouteHandler
+from litestar.handlers.websocket_handlers import WebsocketListener, WebsocketRouteHandler
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.types.empty import Empty
 from litestar.utils import find_index, is_class_and_subclass, join_paths, normalize_path, unique
@@ -288,6 +288,10 @@ class Router:
         """Ensure values passed to the register method are supported."""
         if is_class_and_subclass(value, Controller):
             return value(owner=self)
+
+        # this narrows down to an ABC, but we assume a non-abstract subclass of the ABC superclass
+        if is_class_and_subclass(value, WebsocketListener):  # type: ignore[type-abstract]
+            return value()._handler  # pyright: ignore
 
         if isinstance(value, Router):
             if value.owner:
