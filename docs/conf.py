@@ -11,8 +11,8 @@ __all__ = ["setup", "update_html_context"]
 
 
 project = "Litestar"
-copyright = "2023, Starlite-API"
-author = "Starlite-API"
+copyright = "2023, Litestar-Org"
+author = "Litestar-Org"
 release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
 
 extensions = [
@@ -135,7 +135,7 @@ suppress_warnings = [
     "ref.python",  # TODO: remove when https://github.com/sphinx-doc/sphinx/issues/4961 is fixed
 ]
 
-html_theme = "starlite_sphinx_theme"
+html_theme = "litestar_sphinx_theme"
 html_static_path = ["_static"]
 html_js_files = ["versioning.js"]
 html_css_files = ["style.css"]
@@ -147,22 +147,22 @@ html_theme_options = {
     "use_page_nav": False,
     "github_repo_name": "litestar",
     "logo": {
-        "link": "https://starliteproject.dev",
+        "link": "https://litestar.dev",
     },
     "extra_navbar_items": {
         "Documentation": "index",
         "Community": {
             "Contribution Guide": "contribution-guide",
-            "Code of Conduct": "https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md",
+            "Code of Conduct": "https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md",
         },
         "About": {
-            "Organization": "https://starliteproject.dev/about/organization",
-            "Releases": "https://starliteproject.dev/about/litestar-releases",
+            "Organization": "https://litestar.dev/about/organization",
+            "Releases": "https://litestar.dev/about/litestar-releases",
         },
         "Release notes": {
             "2.0 migration guide": "release-notes/migration_guide_2",
-            "2.x Changelog": "https://docs.starliteproject.dev/2/release-notes/changelog.html",
-            "1.x Changelog": "https://docs.starliteproject.dev/1/release-notes/changelog.html",
+            "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
+            "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
         },
     },
 }
@@ -175,7 +175,7 @@ def update_html_context(
 
 
 def setup(app: Sphinx) -> dict[str, bool]:
-    app.setup_extension("starlite_sphinx_theme")
+    app.setup_extension("litestar_sphinx_theme")
     app.setup_extension("pydata_sphinx_theme")
     app.connect("html-page-context", update_html_context)
 

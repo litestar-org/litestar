@@ -17,13 +17,6 @@ This is also highly configurable - and users can customize the OpenAPI spec in a
 configuration globally, to settings specific kwargs on route handler decorators.
 
 
-.. seealso::
-
-   The `pydantic-openapi-schema docs <https://starlite-api.github.io/pydantic-openapi-schema>`_ for a
-   full reference regarding the library's API.
-
-
-
 OpenAPI schema generation config
 --------------------------------
 

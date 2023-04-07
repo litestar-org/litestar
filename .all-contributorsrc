@@ -883,8 +883,8 @@
     }
   ],
   "contributorsPerLine": 7,
-  "projectName": "starlite",
-  "projectOwner": "starlite-api",
+  "projectName": "litestar",
+  "projectOwner": "litestar-org",
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true,

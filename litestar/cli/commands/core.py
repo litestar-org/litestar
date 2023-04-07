@@ -85,7 +85,7 @@ def run_command(
     console.rule("[yellow]Starting server process", align="left")
 
     # invoke uvicorn in a subprocess to be able to use the --reload flag. see
-    # https://github.com/starlite-api/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
+    # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
 
     process_args = {
         "reload": env.reload or reload,

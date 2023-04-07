@@ -1,4 +1,4 @@
-from litestar import Starlite, WebSocket
+from litestar import Litestar, WebSocket
 from litestar.handlers import WebsocketListener
 
 
@@ -15,4 +15,4 @@ class Handler(WebsocketListener):
         return data
 
 
-app = Starlite([Handler])
+app = Litestar([Handler])

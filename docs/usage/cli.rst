@@ -127,7 +127,7 @@ The ``info`` command displays useful information about the selected application 
    litestar info
 
 
-.. image:: /images/cli/starlite_info.png
+.. image:: /images/cli/litestar_info.png
    :alt: litestar info
 
 
@@ -141,7 +141,7 @@ The ``routes`` command displays a tree view of the routing table
    litestar routes
 
 
-.. image:: /images/cli/starlite_routes.png
+.. image:: /images/cli/litestar_routes.png
    :alt: litestar info
 
 

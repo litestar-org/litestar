@@ -309,10 +309,10 @@ We could thus test the guard function like so:
         secret_token_guard(request=request, route_handler=copied_endpoint_handler)
 
 
-Using pydantic-factories
+Using polyfactory
 ------------------------
 
-`Pydantic-factories <https://github.com/starlite-api/pydantic-factories>`__ offers an easy
+`Polyfactory <https://github.com/litestar-org/polyfactory>`__ offers an easy
 and powerful way to generate mock data from pydantic models and dataclasses.
 
 Let's say we have an API that talks to an external service and retrieves some data:
@@ -322,7 +322,7 @@ Let's say we have an API that talks to an external service and retrieves some da
 
     from typing import Protocol, runtime_checkable
 
-    from pydantic import BaseModel
+    from polyfactory.factories.pydantic import BaseModel
     from litestar import get
 
 
@@ -373,7 +373,7 @@ We could test the ``/item`` route like so:
             assert response.json() == item.dict()
 
 While we can define the test data manually, as is done in the above, this can be quite cumbersome. That's
-where `pydantic-factories <https://github.com/Goldziher/pydantic-factories>`_ library comes in. It generates mock data for
+where `polyfactory <https://github.com/litestar-org/polyfactory>`_ library comes in. It generates mock data for
 pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:
 
 

@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-from litestar import Starlite, websocket_listener
+from litestar import Litestar, websocket_listener
 from litestar.datastructures import State
 from litestar.di import Provide
 
@@ -24,4 +24,4 @@ async def handler(data: str, client_count: int) -> Message:
     return Message(message=data, client_count=client_count)
 
 
-app = Starlite([handler])
+app = Litestar([handler])

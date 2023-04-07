@@ -25,7 +25,7 @@ Code contributions
 Workflow
 ++++++++
 
-1. `Fork <https://github.com/starlite-api/starlite/fork>`_ the `Litestar repository <https://github.com/starlite-api/starlite>`_
+1. `Fork <https://github.com/litestar-org/litestar/fork>`_ the `Litestar repository <https://github.com/litestar-org/litestar>`_
 2. Clone your fork locally with git
 3. `Set up the environment <#setting-up-the-environment>`_
 4. Make your changes
@@ -209,8 +209,8 @@ Creating a new release
 ----------------------
 
 1. Increment the version in ``pyproject.toml`` according to the
-   `versioning scheme <https://starlite-api.github.io/starlite/latest/starlite-releases.html#version-numbering>`_
-2. `Draft a new release <https://github.com/starlite-api/starlite/releases/new>`_ on GitHub
+   `versioning scheme <https://litestar-org.github.io/litestar/latest/litestar-releases.html#version-numbering>`_
+2. `Draft a new release <https://github.com/litestar-org/litestar/releases/new>`_ on GitHub
 
    * Use ``vMAJOR.MINOR.PATCH`` (e.g. ``v1.2.3``) as both the tag and release title
    * Fill in the release description. You can use the "Generate release notes" function to get a draft for this
@@ -219,4 +219,4 @@ Creating a new release
    the contents of the release notes as they relate to changes in code
 4. Commit your changes and push to ``main``
 5. Publish the release
-6. Check that the "publish" `action <https://github.com/starlite-api/starlite/actions>`_ has run successfully
+6. Check that the "publish" `action <https://github.com/litestar-org/litestar/actions>`_ has run successfully

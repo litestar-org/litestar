@@ -56,7 +56,7 @@ T = TypeVar("T")
 def is_class_and_subclass(annotation: Any, t_type: type[T]) -> TypeGuard[type[T]]:
     """Return ``True`` if ``value`` is a ``class`` and is a subtype of ``t_type``.
 
-    See https://github.com/starlite-api/litestar/issues/367
+    See https://github.com/litestar-org/litestar/issues/367
 
     Args:
         annotation: The value to check if is class and subclass of ``t_type``.

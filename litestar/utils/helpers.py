@@ -30,7 +30,7 @@ def get_name(value: Any) -> str:
 def get_enum_string_value(value: Enum | str) -> str:
     """Return the string value of a string enum.
 
-    See: https://github.com/starlite-api/litestar/pull/633#issuecomment-1286519267
+    See: https://github.com/litestar-org/litestar/pull/633#issuecomment-1286519267
 
     Args:
         value: An enum or string.
