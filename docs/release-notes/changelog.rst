@@ -3,6 +3,157 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0alpha3
+
+    .. change:: SQLAlchemy 2.0 Plugin
+        :type: feature
+        :pr: 1395
+
+        A :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.init_plugin.plugin.SQLAlchemyInitPlugin>` was added,
+        providing support for managed synchronous and asynchronous sessions.
+
+        .. seealso::
+            :doc:`/usage/plugins/sqlalchemy`
+
+    .. change:: Attrs signature modelling
+        :type: feature
+        :pr: 1382
+
+        Added support to model route handler signatures with attrs instead of Pydantic
+
+    .. change:: Support setting status codes in ``Redirect`` container
+        :type: feature
+        :pr: 1412
+        :issue: 1371
+
+        Add support for manually setting status codes in the
+        :class:`Redirect <litestar.response_containers.Redirect>` response container.
+        This was previously only possible by setting the ``status_code`` parameter on
+        the corresponding route handler, making dynamic redirect status codes and
+        conditional redirects using this container hard to implement.
+
+    .. change:: Sentinel value to support caching responses indefinitely
+        :type: feature
+        :pr: 1414
+        :issue: 1365
+
+        Add the :class:`CACHE_FOREVER <litestar.config.response_cache.CACHE_FOREVER>` sentinel value, that, when passed
+        to a route handlers ``cache argument``, will cause it to be cached forever, skipping the default expiration.
+
+        Additionally, add support for setting
+        :attr:`ResponseCacheConfig.default_expiration <litestar.config.response_cache.ResponseCacheConfig>` to ``None``,
+        allowing to cache values indefinitely by default when setting ``cache=True`` on a route handler.
+
+    .. change:: `Accept`-header parsing and content negotiation
+        :type: feature
+        :pr: 1317
+
+        Add an :attr:`accept <litestar.connection.Request.accept>` property to
+        :class:`Request <litestar.connection.Request>`, returning the newly added
+        :class:`Accept <litestar.datastructures.headers.Accept>` header wrapper, representing the requests ``Accept``
+        HTTP header, offering basic content negotiation.
+
+        .. seealso::
+            :ref:`usage/responses:Content Negotiation`
+
+    .. change:: Enhanced WebSockets support
+        :type: feature
+        :pr: 1402
+
+        Add a new set of features for handling WebSockets, including automatic connection handling, (de)serialization
+        of incoming and outgoing data analogous to route handlers and OOP based event dispatching.
+
+        .. seealso::
+            :doc:`/usage/websockets`
+
+    .. change:: SQLAlchemy 1 plugin mutates app state destructively
+        :type: bugfix
+        :pr: 1391
+        :issue: 1368
+
+        When using the SQLAlchemy 1 plugin, repeatedly running through the application lifecycle (as done when testing
+        an application not provided by a factory function), would result in a :exc:`KeyError` on the second pass.
+
+        This was caused be the plugin's ``on_shutdown`` handler deleting the ``engine_app_state_key`` from the
+        application's state on application shutdown, but only adding it on application init.
+
+        This was fixed by adding performing the necessary setup actions on application startup rather than init.
+
+    .. change:: Fix SQLAlchemy 1 Plugin - ``'Request' object has no attribute 'dict'``
+        :type: bugfix
+        :pr: 1389
+        :issue: 1388
+
+        An annotation such as
+
+        .. code-block:: python
+
+            async def provide_user(request: Request[User, Token, Any]) -> User:
+                ...
+
+        would result in the error ``'Request' object has no attribute 'dict'``.
+
+        This was fixed by changing how ``get_plugin_for_value`` interacts with :func:`typing.get_args`
+
+    .. change:: Support OpenAPI schema generation with stringized return annotation
+        :type: bugfix
+        :pr: 1410
+        :issue: 1409
+
+        The following code would result in non-specific and incorrect information being generated for the OpenAPI schema:
+
+        .. code-block:: python
+
+            from __future__ import annotations
+
+            from starlite import Starlite, get
+
+
+            @get("/")
+            def hello_world() -> dict[str, str]:
+                return {"hello": "world"}
+
+        This could be alleviated by removing ``from __future__ import annotations``. Stringized annotations in any form
+        are now fully supported.
+
+    .. change:: Fix OpenAPI schema generation crashes for models with ``Annotated`` type attribute
+        :type: bugfix
+        :issue: 1372
+        :pr: 1400
+
+        When using a model that includes a type annotation with :class:`typing.Annotated` in a route handler, the
+        interactive documentation would raise an error when accessed. This has been fixed and :class:`typing.Annotated`
+        is now fully supported.
+
+    .. change:: Support empty ``data`` in ``RequestFactory``
+        :type: bugfix
+        :issue: 1419
+        :pr: 1420
+
+        Add support for passing an empty ``data`` parameter to a
+        :class:`RequestFactory <litestar.testing.RequestFactory>`, which would previously lead to an error.
+
+    .. change:: ``create_test_client`` and ``crate_async_test_client`` signatures and docstrings to to match ``Litestar``
+        :type: misc
+        :pr: 1417
+
+        Add missing parameters to :func:`create_test_client <litestar.testing.create_test_client>` and
+        :func:`create_test_client <litestar.testing.create_async_test_client>`. The following parameters were added:
+
+        - ``cache_control``
+        - ``debug``
+        - ``etag``
+        - ``opt``
+        - ``response_cache_config``
+        - ``response_cookies``
+        - ``response_headers``
+        - ``security``
+        - ``stores``
+        - ``tags``
+        - ``type_encoders``
+
+
+
 .. changelog:: 2.0.0alpha2
 
     .. change:: Repository contrib & SQLAlchemy repository
