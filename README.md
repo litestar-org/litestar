@@ -31,9 +31,9 @@
 
 </div>
 
-# Litestar → Litestar
+# Starlite → Litestar
 
-**[Litestar has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-starlite)**
+**[Starlite has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-starlite)**
 
 <hr>
 
