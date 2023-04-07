@@ -16,9 +16,9 @@ maintainers = [
 ]
 license = "MIT"
 readme = "README.md"
-homepage = "https://starliteproject.dev/"
-repository = "https://github.com/starlite-api/starlite"
-documentation = "https://docs.starliteproject.dev/"
+homepage = "https://litestar.dev/"
+repository = "https://github.com/litestar-org/litestar"
+documentation = "https://docs.litestar.dev/"
 keywords = [
     "api",
     "rest",

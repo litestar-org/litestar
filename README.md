@@ -24,16 +24,16 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
-[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/starlite?label=r%2FLitestar&logo=reddit)](https://reddit.com/r/litestar)
+[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/litestar?label=r%2FLitestar&logo=reddit)](https://reddit.com/r/litestar-api)
 [![Discord](https://img.shields.io/discord/919193495116337154?color=blue&label=chat%20on%20discord&logo=discord)](https://discord.gg/X3FJqy8d2j)
-[![Matrix](https://img.shields.io/badge/%5Bm%5D%20chat%20on%20Matrix-bridged-blue)](https://matrix.to/#/#starlite:matrix.org)
+[![Matrix](https://img.shields.io/badge/%5Bm%5D%20chat%20on%20Matrix-bridged-blue)](https://matrix.to/#/#litestar:matrix.org)
 [![Medium](https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white)](https://blog.litestar.dev)
 
 </div>
 
 # Starlite → Litestar
 
-**[Starlite has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-starlite)**
+**[Starlite has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-litestar)**
 
 <hr>
 
@@ -46,7 +46,7 @@ Check out the [documentation 📚](https://docs.litestar.dev/).
 ## Installation
 
 ```shell
-pip install starlite
+pip install litestar
 ```
 
 **Litestar 2.0 is coming out soon**, bringing many new features and improvements.
@@ -96,7 +96,7 @@ app = Litestar(route_handlers=[hello_world])
 
 ## Example Applications
 
-- [starlite-pg-redis-docker](https://github.com/litestar-org/starlite-pg-redis-docker): In addition to Litestar, this
+- [litestar-pg-redis-docker](https://github.com/litestar-org/litestar-pg-redis-docker): In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
 - [litestar-hello-world](https://github.com/litestar-org/litestar-hello-world): A bare-minimum application setup. Great
@@ -271,7 +271,7 @@ Litestar supports request life cycle hooks, similarly to Flask - i.e. `before_re
 ## Contributing
 
 Litestar is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
-or [join our Matrix](https://matrix.to/#/#starlite:matrix.org) space
+or [join our Matrix](https://matrix.to/#/#litestar:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
 see [the contribution guide](CONTRIBUTING.rst).
 

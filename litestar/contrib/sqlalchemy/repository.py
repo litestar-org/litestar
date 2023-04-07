@@ -264,7 +264,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         statement = kwargs.pop("base_select", self.statement)
         statement = statement.with_only_columns(
             sql_func.count(
-                self.model_type.id,  # type:ignore[attr-defined]
+                self.model_type.id,
             ),
             maintain_column_froms=True,
         ).order_by(None)
@@ -352,7 +352,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         statement = statement.add_columns(
             over(
                 sql_func.count(
-                    self.model_type.id,  # type:ignore[attr-defined]
+                    self.model_type.id,
                 ),
             )
         )

@@ -198,7 +198,7 @@ def test_check_throttle_handler() -> None:
 
 
 async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
-    # https://github.com/starlite-api/litestar/issues/781
+    # https://github.com/litestar-org/litestar/issues/781
     @get("/not-excluded")
     def handler() -> None:
         return None

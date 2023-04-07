@@ -7,7 +7,7 @@ Methodology
 -  Benchmarking is done using the `bombardier <https://github.com/codesenberg/bombardier>`__ benchmarking tool.
 -  Benchmarks are run on a dedicated machine, with a base Debian 11 installation.
 -  Each framework is contained within its own docker container, running on a dedicated CPU core (using the ``cset shield`` command and the ``--cpuset-cpus`` option for docker)
--  Tests for the frameworks are written to make them as comparable as possible while completing the same tasks (you can see them `here <https://github.com/starlite-api/api-performance-tests/tree/main/frameworks>`__)
+-  Tests for the frameworks are written to make them as comparable as possible while completing the same tasks (you can see them `here <https://github.com/litestar-org/api-performance-tests/tree/main/frameworks>`__)
 -  Each application is run using `uvicorn <https://www.uvicorn.org/>`__ with **one worker** and `uvloop <https://uvloop.readthedocs.io/>`__
 -  Test data has been randomly generated and is being imported from a shared module
 

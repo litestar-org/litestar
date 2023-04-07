@@ -181,7 +181,7 @@ def test_logging_middleware_post_body() -> None:
 def test_logging_messages_are_not_doubled(
     get_logger: "GetLogger", logger_name: str, caplog: "LogCaptureFixture"
 ) -> None:
-    # https://github.com/starlite-api/litestar/issues/896
+    # https://github.com/litestar-org/litestar/issues/896
 
     @get("/")
     async def hello_world_handler() -> Dict[str, str]:
@@ -219,7 +219,7 @@ def test_logging_middleware_log_fields(get_logger: "GetLogger", caplog: "LogCapt
 
 
 def test_logging_middleware_with_session_middleware(session_backend_config_memory: "ServerSideSessionConfig") -> None:
-    # https://github.com/starlite-api/litestar/issues/1228
+    # https://github.com/litestar-org/litestar/issues/1228
 
     @post("/")
     async def set_session(request: Request) -> None:

@@ -24,7 +24,7 @@ class DTOInterface(Protocol):
 
     @abstractmethod
     def to_encodable_type(self, request: Request[Any, Any, Any]) -> bytes | LitestarEncodableType:
-        """Encode data held by the DTO type to a type supported by starlite serialization.
+        """Encode data held by the DTO type to a type supported by litestar serialization.
 
         Can return either bytes or a type that Litestar can return to bytes.
 

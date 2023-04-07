@@ -1,4 +1,4 @@
-from litestar import Starlite, websocket_listener
+from litestar import Litestar, websocket_listener
 from litestar.di import Provide
 
 
@@ -11,4 +11,4 @@ async def handler(data: str, some: str) -> str:
     return data + some
 
 
-app = Starlite([handler])
+app = Litestar([handler])

@@ -77,7 +77,7 @@ jobs:
     needs:
       - test
       - validate
-    if: github.event.pull_request.head.repo.fork == false && github.repository_owner == 'starlite-api'
+    if: github.event.pull_request.head.repo.fork == false && github.repository_owner == 'litestar-org'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -87,7 +87,7 @@ jobs:
         with:
           name: coverage-xml
       - name: Fix coverage file for sonarcloud
-        run: sed -i "s/home\/runner\/work\/starlite\/starlite/github\/workspace/g" coverage.xml
+        run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
@@ -97,7 +97,7 @@ jobs:
     needs:
       - test
       - validate
-    if: github.event.pull_request.head.repo.fork == false && github.repository_owner == 'starlite-api'
+    if: github.event.pull_request.head.repo.fork == false && github.repository_owner == 'litestar-org'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
