@@ -33,7 +33,7 @@
 
 # Starlite → Litestar
 
-**[Starlite has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-litestar)**
+**[Starlite has been renamed to Litestar](https://litestar.dev/about/organization.html#litestar-and-starlite)**
 
 <hr>
 
@@ -96,7 +96,7 @@ app = Litestar(route_handlers=[hello_world])
 
 ## Example Applications
 
-- [litestar-pg-redis-docker](https://github.com/litestar-org/litestar-pg-redis-docker): In addition to Litestar, this
+- [starlite-pg-redis-docker](https://github.com/litestar-org/starlite-pg-redis-docker): In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
 - [litestar-hello-world](https://github.com/litestar-org/litestar-hello-world): A bare-minimum application setup. Great
