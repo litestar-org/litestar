@@ -8,15 +8,15 @@
 <div align="center">
 
 [![ci](https://github.com/litestar-org/litestar/actions/workflows/ci.yaml/badge.svg)](https://github.com/litestar-org/litestar/actions/workflows/ci.yaml)
-[![PyPI - Version](https://badge.fury.io/py/starlite.svg)](https://badge.fury.io/py/starlite)
-![PyPI - License](https://img.shields.io/pypi/l/starlite?color=blue)
-![PyPI - Support Python Versions](https://img.shields.io/pypi/pyversions/starlite)
+[![PyPI - Version](https://badge.fury.io/py/litestar.svg)](https://badge.fury.io/py/litestar)
+![PyPI - License](https://img.shields.io/pypi/l/litestar?color=blue)
+![PyPI - Support Python Versions](https://img.shields.io/pypi/pyversions/litestar)
 
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=coverage)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=starlite-api_starlite&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=starlite-api_starlite)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=coverage)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=litestar-org_litestar&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=litestar-org_litestar)
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
@@ -24,10 +24,10 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
-[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/starlite?label=r%2FLitestar&logo=reddit)](https://reddit.com/r/starlite)
+[![Reddit](https://img.shields.io/reddit/subreddit-subscribers/starlite?label=r%2FLitestar&logo=reddit)](https://reddit.com/r/litestar)
 [![Discord](https://img.shields.io/discord/919193495116337154?color=blue&label=chat%20on%20discord&logo=discord)](https://discord.gg/X3FJqy8d2j)
-[![Matrix](https://img.shields.io/badge/%5Bm%5D%20chat%20on%20Matrix-bridged-blue)](https://matrix.to/#/#starlitespace:matrix.org)
-[![Medium](https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white)](https://itnext.io/introducing-starlite-3928adaa19ae)
+[![Matrix](https://img.shields.io/badge/%5Bm%5D%20chat%20on%20Matrix-bridged-blue)](https://matrix.to/#/#starlite:matrix.org)
+[![Medium](https://img.shields.io/badge/Medium-12100E?style=flat&logo=medium&logoColor=white)](https://blog.litestar.dev)
 
 </div>
 
@@ -96,10 +96,10 @@ app = Litestar(route_handlers=[hello_world])
 
 ## Example Applications
 
-- [starlite-pg-redis-docker](https://github.com/litestar-org/litestar-pg-redis-docker): In addition to Litestar, this
+- [starlite-pg-redis-docker](https://github.com/litestar-org/starlite-pg-redis-docker): In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
-- [starlite-hello-world](https://github.com/litestar-org/litestar-hello-world): A bare-minimum application setup. Great
+- [litestar-hello-world](https://github.com/litestar-org/litestar-hello-world): A bare-minimum application setup. Great
   for testing and POC work.
 
 ## Performance
@@ -271,7 +271,7 @@ Litestar supports request life cycle hooks, similarly to Flask - i.e. `before_re
 ## Contributing
 
 Litestar is open to contributions big and small. You can always [join our discord](https://discord.gg/X3FJqy8d2j) server
-or [join our Matrix](https://matrix.to/#/#starlitespace:matrix.org) space
+or [join our Matrix](https://matrix.to/#/#starlite:matrix.org) space
 to discuss contributions and project maintenance. For guidelines on how to contribute, please
 see [the contribution guide](CONTRIBUTING.rst).
 
