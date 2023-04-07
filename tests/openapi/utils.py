@@ -14,12 +14,12 @@ from pydantic import (
     constr,
 )
 
-from starlite import Controller, MediaType, delete, get, patch, post, put
-from starlite.datastructures import ResponseHeader, State
-from starlite.exceptions import HTTPException
-from starlite.openapi.spec.example import Example
-from starlite.params import Parameter
-from starlite.partial import Partial
+from litestar import Controller, MediaType, delete, get, patch, post, put
+from litestar.datastructures import ResponseHeader, State
+from litestar.exceptions import HTTPException
+from litestar.openapi.spec.example import Example
+from litestar.params import Parameter
+from litestar.partial import Partial
 from tests import Person, PersonFactory, Pet, VanillaDataClassPerson
 
 

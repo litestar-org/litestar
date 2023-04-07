@@ -1,8 +1,8 @@
-from starlite import Controller, MediaType, Response, asgi
-from starlite.enums import ScopeType
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
-from starlite.types import Receive, Scope, Send
+from litestar import Controller, MediaType, Response, asgi
+from litestar.enums import ScopeType
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
+from litestar.types import Receive, Scope, Send
 
 
 def test_handle_asgi() -> None:
@@ -30,3 +30,20 @@ def test_handle_asgi() -> None:
         response = client.get("/asgi")
         assert response.status_code == HTTP_200_OK
         assert response.text == "Hello World"
+
+
+def test_asgi_signature_namespace() -> None:
+    class MyController(Controller):
+        path = "/asgi"
+        signature_namespace = {"b": Receive}
+
+        @asgi(signature_namespace={"c": Send})
+        async def root_asgi_handler(
+            self, scope: "a", receive: "b", send: "c"  # type:ignore[name-defined]  # noqa: F821
+        ) -> None:
+            await Response(scope["path"], media_type=MediaType.TEXT)(scope, receive, send)
+
+    with create_test_client([MyController], signature_namespace={"a": Scope}) as client:
+        response = client.get("/asgi")
+        assert response.status_code == HTTP_200_OK
+        assert response.text == "/asgi"

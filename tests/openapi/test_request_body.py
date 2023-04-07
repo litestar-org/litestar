@@ -2,11 +2,11 @@ from typing import List
 
 from pydantic import BaseConfig, BaseModel
 
-from starlite import Starlite, post
-from starlite._openapi.request_body import create_request_body
-from starlite.datastructures.upload_file import UploadFile
-from starlite.enums import RequestEncodingType
-from starlite.params import Body
+from litestar import Litestar, post
+from litestar._openapi.request_body import create_request_body
+from litestar.datastructures.upload_file import UploadFile
+from litestar.enums import RequestEncodingType
+from litestar.params import Body
 from tests.openapi.utils import PersonController
 
 
@@ -19,7 +19,7 @@ class FormData(BaseModel):
 
 
 def test_create_request_body() -> None:
-    for route in Starlite(route_handlers=[PersonController]).routes:
+    for route in Litestar(route_handlers=[PersonController]).routes:
         for route_handler, _ in route.route_handler_map.values():  # type: ignore
             handler_fields = route_handler.signature_model.fields  # type: ignore
             if "data" in handler_fields:
@@ -48,8 +48,8 @@ def test_upload_file_request_body_generation() -> None:
     ) -> None:
         return None
 
-    app = Starlite(route_handlers=[handle_form_upload, handle_file_upload, handle_file_list_upload])
-    schema_dict = app.openapi_schema.to_schema()  # type: ignore[union-attr]
+    app = Litestar(route_handlers=[handle_form_upload, handle_file_upload, handle_file_list_upload])
+    schema_dict = app.openapi_schema.to_schema()
     paths = schema_dict["paths"]
     components = schema_dict["components"]
     assert paths["/file-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {

@@ -1,12 +1,12 @@
-from typing import TYPE_CHECKING, Any, Type, cast
+from typing import TYPE_CHECKING, Any, Type
 
 import pytest
 
-from starlite import Controller, Router, Starlite, get
-from starlite.handlers.http_handlers import HTTPRouteHandler
+from litestar import Controller, Litestar, Router, get
+from litestar.handlers.http_handlers import HTTPRouteHandler
 
 if TYPE_CHECKING:
-    from starlite.openapi.spec.open_api import OpenAPI
+    from litestar.openapi.spec.open_api import OpenAPI
 
 
 @pytest.fixture()
@@ -37,13 +37,13 @@ def router(controller: Type[Controller]) -> Router:
 
 
 @pytest.fixture()
-def app(handler: HTTPRouteHandler, controller: Type[Controller], router: Router) -> Starlite:
-    return Starlite(route_handlers=[handler, controller, router])
+def app(handler: HTTPRouteHandler, controller: Type[Controller], router: Router) -> Litestar:
+    return Litestar(route_handlers=[handler, controller, router])
 
 
 @pytest.fixture()
-def openapi_schema(app: Starlite) -> "OpenAPI":
-    return cast("OpenAPI", app.openapi_schema)
+def openapi_schema(app: Litestar) -> "OpenAPI":
+    return app.openapi_schema
 
 
 def test_openapi_schema_handler_tags(openapi_schema: "OpenAPI") -> None:

@@ -1,31 +1,31 @@
 from typing import Any, List, Optional, Type, cast
 
 import pytest
+from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, Field
-from pydantic_factories import ModelFactory
 
-from starlite import (
+from litestar import (
     Controller,
     HttpMethod,
+    Litestar,
     MediaType,
     Request,
-    Starlite,
     delete,
     get,
     patch,
     post,
     put,
 )
-from starlite.datastructures.state import ImmutableState, State
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.status_codes import (
+from litestar.datastructures.state import ImmutableState, State
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
 )
-from starlite.testing import create_test_client
-from starlite.types import Scope
+from litestar.testing import create_test_client
+from litestar.types import Scope
 from tests import Person, PersonFactory
 
 
@@ -40,7 +40,7 @@ def test_application_immutable_state_injection() -> None:
         assert state
         return cast("str", state.msg)
 
-    with create_test_client(route_handler, initial_state={"called": False}) as client:
+    with create_test_client(route_handler, state=State({"called": False})) as client:
         client.app.state.msg = "hello"
         assert not client.app.state.called
         response = client.get("/")
@@ -55,7 +55,7 @@ def test_application_state_injection(state_typing: Type[State]) -> None:
         state.called = True  # type: ignore
         return cast("str", state.msg)  # type: ignore
 
-    with create_test_client(route_handler, initial_state={"called": False}) as client:
+    with create_test_client(route_handler, state=State({"called": False})) as client:
         client.app.state.msg = "hello"
         assert not client.app.state.called
         response = client.get("/")
@@ -312,4 +312,4 @@ def test_improper_use_of_state_kwarg() -> None:
             return None
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[MyController], openapi_config=None)
+        Litestar(route_handlers=[MyController], openapi_config=None)

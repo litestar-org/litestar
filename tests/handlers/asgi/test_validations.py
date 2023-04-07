@@ -2,12 +2,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import asgi
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.testing import create_test_client
+from litestar import asgi
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
-    from starlite.types import Receive, Scope, Send
+    from litestar.types import Receive, Scope, Send
 
 
 def test_asgi_handler_validation() -> None:
@@ -15,25 +15,25 @@ def test_asgi_handler_validation() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(fn_without_scope_arg)
+        asgi(path="/")(fn_without_scope_arg).on_registration()
 
     async def fn_without_receive_arg(scope: "Scope", send: "Send") -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(fn_without_receive_arg)
+        asgi(path="/")(fn_without_receive_arg).on_registration()
 
     async def fn_without_send_arg(scope: "Scope", receive: "Receive") -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(fn_without_send_arg)
+        asgi(path="/")(fn_without_send_arg).on_registration()
 
     async def fn_with_return_annotation(scope: "Scope", receive: "Receive", send: "Send") -> dict:
         return {}
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(fn_with_return_annotation)
+        asgi(path="/")(fn_with_return_annotation).on_registration()
 
     asgi_handler_with_no_fn = asgi(path="/")
 
@@ -44,4 +44,4 @@ def test_asgi_handler_validation() -> None:
         return None
 
     with pytest.raises(ImproperlyConfiguredException):
-        asgi(path="/")(sync_fn)  # type: ignore
+        asgi(path="/")(sync_fn).on_registration()  # type: ignore

@@ -1,9 +1,9 @@
 from typing import Any
 
-from starlite import Starlite, get
-from starlite.connection import ASGIConnection
-from starlite.logging.config import LoggingConfig
-from starlite.testing import RequestFactory
+from litestar import Litestar, get
+from litestar.connection import ASGIConnection
+from litestar.logging.config import LoggingConfig
+from litestar.testing import RequestFactory
 
 
 def test_connection_base_properties() -> None:
@@ -11,7 +11,7 @@ def test_connection_base_properties() -> None:
     def handler() -> None:
         return None
 
-    app = Starlite(route_handlers=[handler], logging_config=LoggingConfig())
+    app = Litestar(route_handlers=[handler], logging_config=LoggingConfig())
     user = {"name": "moishe"}
     auth = {"key": "value"}
     session = {"session": "abc"}
@@ -41,4 +41,3 @@ def test_connection_base_properties() -> None:
     assert connection.user is user
     assert connection.auth is auth
     assert connection.session is session
-    assert connection.cache is app.cache

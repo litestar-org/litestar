@@ -1,7 +1,7 @@
-from starlite import MediaType, Starlite, post
-from starlite.datastructures import UploadFile
-from starlite.enums import RequestEncodingType
-from starlite.params import Body
+from litestar import Litestar, MediaType, post
+from litestar.datastructures import UploadFile
+from litestar.enums import RequestEncodingType
+from litestar.params import Body
 
 
 @post(path="/", media_type=MediaType.TEXT)
@@ -13,4 +13,4 @@ def handle_file_upload(
     return f"{filename}, {content.decode()}"
 
 
-app = Starlite(route_handlers=[handle_file_upload])
+app = Litestar(route_handlers=[handle_file_upload])

@@ -1,7 +1,6 @@
-from starlite import Starlite, get
-from starlite.exceptions import MissingDependencyException
-from starlite.logging.config import LoggingConfig
-from starlite.middleware.logging import LoggingMiddlewareConfig
+from litestar import Litestar, get
+from litestar.logging.config import LoggingConfig
+from litestar.middleware.logging import LoggingMiddlewareConfig
 
 
 @get("/")
@@ -11,7 +10,7 @@ async def handler() -> dict[str, str]:
 
 logging_middleware_config = LoggingMiddlewareConfig()
 
-app = Starlite(
+app = Litestar(
     route_handlers=[handler],
     logging_config=LoggingConfig(),
     middleware=[logging_middleware_config.middleware],
@@ -19,9 +18,6 @@ app = Starlite(
 
 
 if __name__ == "__main__":
-    try:
-        import uvicorn
+    import uvicorn
 
-        uvicorn.run(app)
-    except ImportError as e:
-        raise MissingDependencyException("uvicorn is not installed") from e
+    uvicorn.run(app)

@@ -5,7 +5,7 @@ import pytest
 from test_apps.openapi_test_app.main import app as openapi_test_app
 from yaml import dump as dump_yaml
 
-from starlite.cli.main import starlite_group as cli_command
+from litestar.cli.main import litestar_group as cli_command
 
 if TYPE_CHECKING:
     from click.testing import CliRunner
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 def test_openapi_schema_command(
     runner: "CliRunner", mocker: "MockerFixture", monkeypatch: "MonkeyPatch", filename: str
 ) -> None:
-    monkeypatch.setenv("STARLITE_APP", "test_apps.openapi_test_app.main:app")
+    monkeypatch.setenv("LITESTAR_APP", "test_apps.openapi_test_app.main:app")
     mock_path_write_text = mocker.patch("pathlib.Path.write_text")
     command = "schema openapi"
 
@@ -41,7 +41,7 @@ def test_openapi_schema_command(
 def test_openapi_typescript_command(
     runner: "CliRunner", mocker: "MockerFixture", monkeypatch: "MonkeyPatch", filename: str, namespace: str
 ) -> None:
-    monkeypatch.setenv("STARLITE_APP", "test_apps.openapi_test_app.main:app")
+    monkeypatch.setenv("LITESTAR_APP", "test_apps.openapi_test_app.main:app")
     mock_path_write_text = mocker.patch("pathlib.Path.write_text")
     command = "schema typescript"
 

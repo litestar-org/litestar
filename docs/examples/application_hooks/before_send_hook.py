@@ -1,11 +1,15 @@
-from typing import TYPE_CHECKING, Dict
+from __future__ import annotations
 
-from starlite import Starlite, get
-from starlite.datastructures import MutableScopeHeaders
+from typing import TYPE_CHECKING
+
+from litestar import Litestar, get
+from litestar.datastructures import MutableScopeHeaders
 
 if TYPE_CHECKING:
-    from starlite.datastructures import State
-    from starlite.types import Message
+    from typing import Dict
+
+    from litestar.datastructures import State
+    from litestar.types import Message, Scope
 
 
 @get("/test")
@@ -14,7 +18,7 @@ def handler() -> Dict[str, str]:
     return {"key": "value"}
 
 
-async def before_send_hook_handler(message: "Message", state: "State") -> None:
+async def before_send_hook_handler(message: Message, state: State, scope: Scope) -> None:
     """The function will be called on each ASGI message.
 
     We therefore ensure it runs only on the message start event.
@@ -24,9 +28,9 @@ async def before_send_hook_handler(message: "Message", state: "State") -> None:
         headers["My Header"] = state.message
 
 
-def on_startup(state: "State") -> None:
+def on_startup(state: State) -> None:
     """A function that will populate the app state before any requests are received."""
     state.message = "value injected during send"
 
 
-app = Starlite(route_handlers=[handler], on_startup=[on_startup], before_send=[before_send_hook_handler])
+app = Litestar(route_handlers=[handler], on_startup=[on_startup], before_send=[before_send_hook_handler])

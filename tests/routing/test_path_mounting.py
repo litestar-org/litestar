@@ -2,14 +2,14 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import MediaType, Response, Starlite, asgi, get, websocket
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
+from litestar import Litestar, MediaType, Response, asgi, get, websocket
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
-    from starlite.connection import WebSocket
-    from starlite.types import Receive, Scope, Send
+    from litestar.connection import WebSocket
+    from litestar.types import Receive, Scope, Send
 
 
 def test_supports_mounting() -> None:
@@ -62,7 +62,7 @@ def test_supports_sub_routes_below_asgi_handlers() -> None:
     def regular_handler() -> None:
         return
 
-    assert Starlite(route_handlers=[asgi_handler, regular_handler])
+    assert Litestar(route_handlers=[asgi_handler, regular_handler])
 
 
 def test_does_not_support_asgi_handlers_on_same_level_as_regular_handlers() -> None:
@@ -76,7 +76,7 @@ def test_does_not_support_asgi_handlers_on_same_level_as_regular_handlers() -> N
         return
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[asgi_handler, regular_handler])
+        Litestar(route_handlers=[asgi_handler, regular_handler])
 
 
 def test_does_not_support_asgi_handlers_on_same_level_as_websockets() -> None:
@@ -90,4 +90,4 @@ def test_does_not_support_asgi_handlers_on_same_level_as_websockets() -> None:
         return
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[asgi_handler, regular_handler])
+        Litestar(route_handlers=[asgi_handler, regular_handler])

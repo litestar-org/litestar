@@ -1,21 +1,23 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 import pytest
 from pydantic import ValidationError
 from pytest import FixtureRequest
 
-from starlite.datastructures import (
+from litestar import MediaType
+from litestar.datastructures import (
+    Accept,
     CacheControlHeader,
     ETag,
     Headers,
     MutableScopeHeaders,
 )
-from starlite.datastructures.headers import Header
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
+from litestar.datastructures.headers import Header
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 
 if TYPE_CHECKING:
-    from starlite.types.asgi_types import RawHeaders, RawHeadersList
+    from litestar.types.asgi_types import RawHeaders, RawHeadersList
 
 
 @pytest.fixture
@@ -332,3 +334,31 @@ def test_etag_to_header() -> None:
 
 def test_etag_to_header_weak() -> None:
     assert ETag(value="foo", weak=True).to_header() == 'W/"foo"'
+
+
+@pytest.mark.parametrize(
+    "accept_value,provided_types,best_match",
+    (
+        ("text/plain", ["text/plain"], "text/plain"),
+        ("text/plain", [MediaType.TEXT], MediaType.TEXT),
+        ("text/plain", ["text/plain"], "text/plain"),
+        ("text/plain", ["text/html"], None),
+        ("text/*", ["text/html"], "text/html"),
+        ("*/*", ["text/html"], "text/html"),
+        ("text/plain;p=test", ["text/plain"], "text/plain"),
+        ("text/plain", ["text/plain;p=test"], None),
+        ("text/plain;p=test", ["text/plain;p=test"], "text/plain;p=test"),
+        ("text/plain", ["text/*"], "text/plain"),
+        ("text/html", ["*/*"], "text/html"),
+        ("text/plain;q=0.8,text/html", ["text/plain", "text/html"], "text/html"),
+        ("text/*,text/html", ["text/plain", "text/html"], "text/html"),
+    ),
+)
+def test_accept_best_match(accept_value: str, provided_types: List[str], best_match: Optional[str]) -> None:
+    accept = Accept(accept_value)
+    assert accept.best_match(provided_types) == best_match
+
+
+def test_accept_accepts() -> None:
+    accept = Accept("text/plain;q=0.8,text/html")
+    assert accept.accepts(MediaType.TEXT)

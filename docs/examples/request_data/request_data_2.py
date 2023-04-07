@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from starlite import Starlite, post
+from litestar import Litestar, post
 
 
 @dataclass
@@ -14,4 +14,4 @@ async def index(data: User) -> User:
     return data
 
 
-app = Starlite(route_handlers=[index])
+app = Litestar(route_handlers=[index])

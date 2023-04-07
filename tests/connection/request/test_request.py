@@ -9,20 +9,20 @@ from unittest.mock import patch
 
 import pytest
 
-from starlite import MediaType, get
-from starlite.connection.base import empty_send
-from starlite.connection.request import Request
-from starlite.datastructures import Address
-from starlite.exceptions import InternalServerException, SerializationException
-from starlite.response import Response
-from starlite.serialization import encode_msgpack
-from starlite.static_files.config import StaticFilesConfig
-from starlite.testing import TestClient, create_test_client
+from litestar import MediaType, get
+from litestar.connection.base import empty_send
+from litestar.connection.request import Request
+from litestar.datastructures import Address
+from litestar.exceptions import InternalServerException, SerializationException
+from litestar.response import Response
+from litestar.serialization import encode_msgpack
+from litestar.static_files.config import StaticFilesConfig
+from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from starlite.types import Receive, Scope, Send
+    from litestar.types import Receive, Scope, Send
 
 
 async def test_request_empty_body_to_json(anyio_backend: str) -> None:
@@ -180,6 +180,17 @@ def test_request_headers() -> None:
             "connection": "keep-alive",
         }
     }
+
+
+def test_request_accept_header() -> None:
+    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+        request = Request[Any, Any, Any](scope, receive)
+        response = Response(content={"accepted_types": list(request.accept)})
+        await response(scope, receive, send)
+
+    client = TestClient(app)
+    response = client.get("/", headers={"Accept": "text/plain, application/xml;q=0.7, text/html;p=test"})
+    assert response.json() == {"accepted_types": ["text/html;p=test", "text/plain", "application/xml;q=0.7"]}
 
 
 @pytest.mark.parametrize(

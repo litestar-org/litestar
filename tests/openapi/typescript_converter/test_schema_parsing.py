@@ -2,10 +2,10 @@ from typing import Any, List
 
 import pytest
 
-from starlite._openapi.typescript_converter.schema_parsing import parse_schema
-from starlite._openapi.typescript_converter.types import TypeScriptIntersection
-from starlite.openapi.spec import Schema
-from starlite.openapi.spec.enums import OpenAPIType
+from litestar._openapi.typescript_converter.schema_parsing import parse_schema
+from litestar._openapi.typescript_converter.types import TypeScriptIntersection
+from litestar.openapi.spec import Schema
+from litestar.openapi.spec.enums import OpenAPIType
 
 object_schema_1 = Schema(
     type=OpenAPIType.OBJECT,

@@ -4,10 +4,10 @@ from uuid import uuid4
 import pytest
 from pydantic import UUID4
 
-from starlite import get
-from starlite.params import Parameter, ParameterKwarg
-from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from starlite.testing import create_test_client
+from litestar import get
+from litestar.params import Parameter, ParameterKwarg
+from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(
@@ -36,9 +36,9 @@ def test_header_params(
     with create_test_client(test_method) as client:
         response = client.get(test_path, headers=param_dict)
         if should_raise:
-            assert response.status_code == HTTP_400_BAD_REQUEST
+            assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
         else:
-            assert response.status_code == HTTP_200_OK
+            assert response.status_code == HTTP_200_OK, response.json()
 
 
 def test_header_param_example() -> None:

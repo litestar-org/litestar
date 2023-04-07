@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
 
-from starlite import Starlite, get
+from litestar import Litestar, get
 
 
 @get("/")
@@ -19,7 +19,7 @@ def index(
     }
 
 
-app = Starlite(route_handlers=[index])
+app = Litestar(route_handlers=[index])
 
 
 # run: /?date=2022-11-28T13:22:06.916540&floating_number=0.1&number=42&strings=1&strings=2

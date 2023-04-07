@@ -1,10 +1,19 @@
 import importlib.metadata
 import os
+import re
+from functools import partial
+from typing import Any
 
-project = "Starlite"
-copyright = "2023, Starlite-API"
-author = "Starlite-API"
-release = os.getenv("_STARLITE_DOCS_BUILD_VERSION", importlib.metadata.version("starlite").rsplit(".")[0])
+from sphinx.addnodes import document
+from sphinx.application import Sphinx
+
+__all__ = ["setup", "update_html_context"]
+
+
+project = "Litestar"
+copyright = "2023, Litestar-Org"
+author = "Litestar-Org"
+release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
 
 extensions = [
     "sphinx.ext.intersphinx",
@@ -18,7 +27,6 @@ extensions = [
     "sphinxcontrib.mermaid",
 ]
 
-templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
@@ -27,7 +35,7 @@ intersphinx_mapping = {
     "msgspec": ("https://jcristharif.com/msgspec/", None),
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
-    "sqlalchemy": ("https://docs.sqlalchemy.org/en/14/", None),
+    "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
     "click": ("https://click.palletsprojects.com/en/8.1.x/", None),
     "redis": ("https://redis-py.readthedocs.io/en/stable/", None),
     "picologging": ("https://microsoft.github.io/picologging", None),
@@ -64,48 +72,55 @@ nitpick_ignore = [
     ("py:class", "sqlalchemy.dialects.postgresql.named_types.ENUM"),
     # type vars and aliases / intentionally undocumented
     ("py:class", "RouteHandlerType"),
-    ("py:obj", "starlite.security.base.AuthType"),
+    ("py:obj", "litestar.security.base.AuthType"),
     ("py:class", "ControllerRouterHandler"),
     ("py:class", "PathParameterDefinition"),
     ("py:class", "BaseSessionBackendT"),
     ("py:class", "AnyIOBackend"),
     ("py:class", "T"),
     ("py:class", "C"),
+    ("py:class", "EmptyType"),
     # intentionally undocumented
     ("py:class", "NoneType"),
-    ("py:class", "starlite._signature.models.SignatureField"),
+    ("py:class", "litestar._signature.field.SignatureField"),
+    ("py:class", "types.parsed_signature.ParsedSignature"),
+    ("py:class", "litestar.utils.sync.AsyncCallable"),
+    ("py:class", "litestar.utils.sync.AsyncCallable"),
+    ("py:class", "types.parsed_signature.ParsedType"),
 ]
 nitpick_ignore_regex = [
-    (r"py:.*", r"starlite\.types.*"),
-    (r"py:.*", r"starlite.*\.T"),
+    (r"py:.*", r"litestar\.types.*"),
+    (r"py:.*", r"litestar.*\.T"),
     (r"py:.*", r".*R_co"),
     (r"py:.*", r".*UserType"),
-    (r"py:.*", r"starlite\.middleware\.session\.base\.BaseSessionBackendT"),
+    (r"py:.*", r"litestar\.middleware\.session\.base\.BaseSessionBackendT"),
     (r"py:obj", r"typing\..*"),
     (r"py:.*", r"httpx.*"),
     # type vars
-    ("py:.*", r"starlite\.plugins\.ModelT"),
-    ("py:.*", r"starlite\.plugins\.DataContainerT"),
-    ("py:.*", r"starlite\.pagination\.C"),
-    ("py:.*", r"starlite.middleware.session.base.ConfigT"),
+    ("py:.*", r"litestar\.pagination\.C"),
+    ("py:.*", r"litestar.middleware.session.base.ConfigT"),
     ("py:.*", r"multidict\..*"),
-    (r"py:.*", r"starlite\.connection\.base\.UserT"),
-    (r"py:.*", r"starlite\.connection\.base\.AuthT"),
-    (r"py:.*", r"starlite\.connection\.base\.StateT"),
-    (r"py:.*", r"starlite\.connection\.base\.HandlerT"),
+    (r"py:.*", r"litestar\.connection\.base\.UserT"),
+    (r"py:.*", r"litestar\.connection\.base\.AuthT"),
+    (r"py:.*", r"litestar\.connection\.base\.StateT"),
+    (r"py:.*", r"litestar\.connection\.base\.HandlerT"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
 # The source of the references is taken 1:1 from the warnings as reported by Sphinx, e.g
-# **/starlite/testing/client/async_client.py:docstring of starlite.testing.AsyncTestClient.exit_stack:1: WARNING: py:class reference target not found: AsyncExitStack
-# would be added as: "starlite.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
+# **/litestar/testing/client/async_client.py:docstring of litestar.testing.AsyncTestClient.exit_stack:1: WARNING: py:class reference target not found: AsyncExitStack
+# would be added as: "litestar.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
 ignore_missing_refs = {
     # No idea what autodoc is doing here. Possibly unfixable on our end
-    "starlite.template.base.TemplateEngineProtocol.get_template": {"starlite.template.base.T_co"},
-    "starlite.template": {"starlite.template.base.T_co"},
-    "starlite.openapi.OpenAPIController.security": {"SecurityRequirement"},
-    "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
-    "starlite.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
+    "litestar.template.base.TemplateEngineProtocol.get_template": {"litestar.template.base.T_co"},
+    "litestar.template": {"litestar.template.base.T_co"},
+    "litestar.openapi.OpenAPIController.security": {"SecurityRequirement"},
+    "litestar.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
+    "litestar.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
+    re.compile(r"litestar\.plugins.*"): re.compile(".*(ModelT|DataContainerT)"),
+    re.compile(r"litestar\.contrib\.sqlalchemy\.init_plugin\.config.*"): re.compile(
+        ".*(ConnectionT|EngineT|SessionT|SessionMakerT)"
+    ),
 }
 
 
@@ -120,53 +135,48 @@ suppress_warnings = [
     "ref.python",  # TODO: remove when https://github.com/sphinx-doc/sphinx/issues/4961 is fixed
 ]
 
-html_theme = "pydata_sphinx_theme"
+html_theme = "litestar_sphinx_theme"
 html_static_path = ["_static"]
-html_css_files = ["style.css"]
 html_js_files = ["versioning.js"]
-html_favicon = "images/favicon.ico"
-html_logo = "images/logo.svg"
+html_css_files = ["style.css"]
 html_show_sourcelink = False
-html_sidebars = {"about/*": []}
-html_title = "Starlite Framework"
-
-html_additional_pages = {"index": "landing-page.html"}
+html_title = "Litestar Framework"
 
 
 html_theme_options = {
-    "use_edit_page_button": False,
-    "show_toc_level": 4,
-    "navbar_align": "left",
-    "icon_links": [
-        {
-            "name": "GitHub",
-            "url": "https://github.com/starlite-api/starlite",
-            "icon": "fa-brands fa-github",
-            "type": "fontawesome",
-        },
-        {
-            "name": "Discord",
-            "url": "https://discord.gg/X3FJqy8d2j",
-            "icon": "fa-brands fa-discord",
-            "type": "fontawesome",
-        },
-    ],
-    "navbar_end": ["navbar-icon-links"],
-    "navbar_persistent": ["search-button", "theme-switcher"],
-}
-
-
-html_context = {
-    "navbar_items": {
-        "Documentation": "lib/index",
+    "use_page_nav": False,
+    "github_repo_name": "litestar",
+    "logo": {
+        "link": "https://litestar.dev",
+    },
+    "extra_navbar_items": {
+        "Documentation": "index",
         "Community": {
-            "Contribution guide": "community/contribution-guide/index",
-            "Code of Conduct": "https://github.com/starlite-api/.github/blob/main/CODE_OF_CONDUCT.md",
+            "Contribution Guide": "contribution-guide",
+            "Code of Conduct": "https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md",
         },
         "About": {
-            "Organization": "about/organization",
-            "Releases": "about/starlite-releases",
+            "Organization": "https://litestar.dev/about/organization",
+            "Releases": "https://litestar.dev/about/litestar-releases",
         },
-        "Release notes": "release-notes/index",
-    }
+        "Release notes": {
+            "2.0 migration guide": "release-notes/migration_guide_2",
+            "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
+            "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
+        },
+    },
 }
+
+
+def update_html_context(
+    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: document
+) -> None:
+    context["generate_toctree_html"] = partial(context["generate_toctree_html"], startdepth=0)
+
+
+def setup(app: Sphinx) -> dict[str, bool]:
+    app.setup_extension("litestar_sphinx_theme")
+    app.setup_extension("pydata_sphinx_theme")
+    app.connect("html-page-context", update_html_context)
+
+    return {"parallel_read_safe": True, "parallel_write_safe": True}

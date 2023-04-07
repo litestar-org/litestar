@@ -1,28 +1,36 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Literal
+from typing import TYPE_CHECKING, Dict, Literal
 
 import pytest
 from pydantic import BaseModel
 
-from starlite import Controller, MediaType, get
-from starlite._openapi.schema_generation.schema import (
+from litestar import Controller, MediaType, get
+from litestar._openapi.schema_generation.schema import (
     KWARG_MODEL_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     _process_schema_result,
     create_schema,
     create_schema_for_annotation,
+    create_schema_for_dataclass,
+    create_schema_for_pydantic_model,
+    create_schema_for_typed_dict,
 )
-from starlite._signature.models import PydanticSignatureModel, SignatureField
-from starlite.app import DEFAULT_OPENAPI_CONFIG
-from starlite.di import Provide
-from starlite.enums import ParamType
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
-from starlite.openapi.spec.example import Example
-from starlite.openapi.spec.schema import Schema
-from starlite.params import BodyKwarg, Parameter, ParameterKwarg
-from starlite.testing import create_test_client
+from litestar._signature.field import SignatureField
+from litestar._signature.models.pydantic_signature_model import PydanticSignatureModel
+from litestar.app import DEFAULT_OPENAPI_CONFIG
+from litestar.di import Provide
+from litestar.enums import ParamType
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
+from litestar.openapi.spec.example import Example
+from litestar.openapi.spec.schema import Schema
+from litestar.params import BodyKwarg, Parameter, ParameterKwarg
+from litestar.testing import create_test_client
 from tests import Person, Pet
+
+if TYPE_CHECKING:
+    from types import ModuleType
+    from typing import Callable
 
 
 def test_process_schema_result() -> None:
@@ -177,3 +185,63 @@ def test_title_validation() -> None:
             plugins=[],
             schemas=schemas,
         )
+
+
+@pytest.mark.parametrize("with_future_annotations", [True, False])
+def test_create_schema_for_pydantic_model_with_annotated_model_attribute(
+    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
+) -> None:
+    """Test that a model with an annotated attribute is correctly handled."""
+    module = create_module(
+        f"""
+{'from __future__ import annotations' if with_future_annotations else ''}
+from typing_extensions import Annotated
+from pydantic import BaseModel
+
+class Foo(BaseModel):
+    foo: Annotated[int, "Foo description"]
+"""
+    )
+    schema = create_schema_for_pydantic_model(module.Foo, generate_examples=False, plugins=[], schemas={})
+    assert schema.properties and "foo" in schema.properties
+
+
+@pytest.mark.parametrize("with_future_annotations", [True, False])
+def test_create_schema_for_dataclass_with_annotated_model_attribute(
+    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
+) -> None:
+    """Test that a model with an annotated attribute is correctly handled."""
+    module = create_module(
+        f"""
+{'from __future__ import annotations' if with_future_annotations else ''}
+from typing_extensions import Annotated
+from dataclasses import dataclass
+
+@dataclass
+class Foo:
+    foo: Annotated[int, "Foo description"]
+"""
+    )
+    schema = create_schema_for_dataclass(module.Foo, generate_examples=False, plugins=[], schemas={})
+    assert schema.properties and "foo" in schema.properties
+
+
+@pytest.mark.parametrize("with_future_annotations", [True, False])
+def test_create_schema_for_typedict_with_annotated_required_and_not_required_model_attributes(
+    with_future_annotations: bool, create_module: "Callable[[str], ModuleType]"
+) -> None:
+    """Test that a model with an annotated attribute is correctly handled."""
+    module = create_module(
+        f"""
+{'from __future__ import annotations' if with_future_annotations else ''}
+from typing_extensions import Annotated, Required, NotRequired
+from typing import TypedDict
+
+class Foo(TypedDict):
+    foo: Annotated[int, "Foo description"]
+    bar: Annotated[Required[int], "Bar description"]
+    baz: Annotated[NotRequired[int], "Baz description"]
+"""
+    )
+    schema = create_schema_for_typed_dict(module.Foo, generate_examples=False, plugins=[], schemas={})
+    assert schema.properties and all(key in schema.properties for key in ("foo", "bar", "baz"))

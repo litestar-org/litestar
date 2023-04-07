@@ -1,0 +1,83 @@
+name: "Bug Report"
+description: Create an issue for a bug.
+title: "Bug: <title>"
+labels: ["bug", "triage required"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: Please enter an description of the bug you are encountering
+      placeholder:
+    validations:
+      required: true
+  - type: input
+    id: reprod-url
+    attributes:
+      label: "URL to code causing the issue"
+      description: Please enter the URL to provide a reproduction of the issue, if applicable
+      placeholder: ex. https://github.com/USERNAME/REPO-NAME
+    validations:
+      required: false
+  - type: textarea
+    id: mcve
+    attributes:
+      label: "MCVE"
+      description: "Please provide a minimal, complete, and verifiable example of the issue."
+      value: |
+        ```py
+        # Your MCVE code here
+        ```
+      render: python
+    validations:
+      required: false
+  - type: textarea
+    id: reprod
+    attributes:
+      label: "Steps to reproduce"
+      description: Please enter the exact steps to reproduce the issue
+      value: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+      render: bash
+    validations:
+      required: false
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: "Screenshots"
+      description: If applicable, add screenshots to help explain your problem.
+      value: |
+        "![SCREENSHOT_DESCRIPTION](SCREENSHOT_LINK.png)"
+      render: bash
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs"
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: bash
+    validations:
+      required: false
+  - type: textarea
+    id: version
+    attributes:
+      label: "Litestar Version"
+      description: What version of Litestar are you using when encountering this issue?
+    validations:
+      required: true
+  - type: checkboxes
+    id: platform
+    attributes:
+      label: "Platform"
+      description: What platform are you encountering the issue on?
+      options:
+        - label: "Linux"
+        - label: "Mac"
+        - label: "Windows"
+        - label: "Other (Please specify in the description above)"
+    validations:
+      required: false

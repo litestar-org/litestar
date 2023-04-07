@@ -8,15 +8,15 @@ from hypothesis import given, settings
 from hypothesis.strategies import integers, none, one_of, sampled_from, text, timedeltas
 from pydantic import BaseModel, Field
 
-from starlite import Request, Response, Starlite, get
-from starlite.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
-from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
-from starlite.testing import create_test_client
+from litestar import Litestar, Request, Response, get
+from litestar.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
+from litestar.testing import create_test_client
 from tests import User, UserFactory
 
 if TYPE_CHECKING:
-    from starlite.connection import ASGIConnection
-    from starlite.storage.memory import MemoryStorage
+    from litestar.connection import ASGIConnection
+    from litestar.stores.memory import MemoryStore
 
 
 @given(
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 )
 @settings(deadline=None)
 async def test_jwt_auth(
-    mock_db: "MemoryStorage",
+    mock_db: "MemoryStore",
     algorithm: str,
     auth_header: str,
     default_token_expiration: timedelta,
@@ -137,7 +137,7 @@ async def test_jwt_auth(
 )
 @settings(deadline=None)
 async def test_jwt_cookie_auth(
-    mock_db: "MemoryStorage",
+    mock_db: "MemoryStore",
     algorithm: str,
     auth_header: str,
     auth_cookie: str,
@@ -294,12 +294,12 @@ def test_jwt_auth_openapi() -> None:
         }
     }
     assert jwt_auth.security_requirement == {"BearerToken": []}
-    app = Starlite(on_app_init=[jwt_auth.on_app_init])
+    app = Litestar(on_app_init=[jwt_auth.on_app_init])
 
     assert app.openapi_schema
     assert app.openapi_schema.to_schema() == {
         "openapi": "3.1.0",
-        "info": {"title": "Starlite API", "version": "1.0.0"},
+        "info": {"title": "Litestar API", "version": "1.0.0"},
         "servers": [{"url": "/"}],
         "paths": {},
         "components": {
@@ -318,7 +318,7 @@ def test_jwt_auth_openapi() -> None:
     }
 
 
-async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStorage") -> None:
+async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> None:
     user = UserFactory.build()
 
     await mock_db.set(str(user.id), user, 120)  # type: ignore[arg-type]
@@ -361,10 +361,10 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStorage") -> 
 
     assert jwt_auth.security_requirement == {"BearerToken": []}
 
-    app = Starlite(on_app_init=[jwt_auth.on_app_init])
-    assert app.openapi_schema.to_schema() == {  # type: ignore
+    app = Litestar(on_app_init=[jwt_auth.on_app_init])
+    assert app.openapi_schema.to_schema() == {
         "openapi": "3.1.0",
-        "info": {"title": "Starlite API", "version": "1.0.0"},
+        "info": {"title": "Litestar API", "version": "1.0.0"},
         "servers": [{"url": "/"}],
         "paths": {},
         "components": {
@@ -386,7 +386,7 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStorage") -> 
 
 
 def test_type_encoders() -> None:
-    # see: https://github.com/starlite-api/starlite/issues/1136
+    # see: https://github.com/litestar-org/litestar/issues/1136
 
     class User(BaseModel):
         id: str = Field(..., alias="_id")

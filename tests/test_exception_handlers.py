@@ -2,18 +2,18 @@ from typing import TYPE_CHECKING, Type
 
 import pytest
 
-from starlite import Controller, Request, Response, Router, get
-from starlite.exceptions import (
+from litestar import Controller, Request, Response, Router, get
+from litestar.exceptions import (
     HTTPException,
     InternalServerException,
     NotFoundException,
     ServiceUnavailableException,
     ValidationException,
 )
-from starlite.testing import create_test_client
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
-    from starlite.types import ExceptionHandler
+    from litestar.types import ExceptionHandler
 
 
 @pytest.mark.parametrize(

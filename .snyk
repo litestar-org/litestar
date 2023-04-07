@@ -1,5 +1,0 @@
-ignore:
-  SNYK-PYTHON-CRYPTOGRAPHY-3172287:
-    - '*':
-        reason: Fix pending
-        expires: 2023-03-01T00:00:00.000Z

@@ -1,0 +1,37 @@
+name: "Feature Request"
+description: Create an issue for a new feature request
+title: "Enhancement: <title>"
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Summary"
+      description: Provide a brief summary of your feature request
+      placeholder: Describe in a few lines your feature request
+    validations:
+      required: true
+  - type: textarea
+    id: basic_example
+    attributes:
+      label: "Basic Example"
+      description: Indicate here some basic examples of your feature.
+      placeholder: Provide some basic example of your feature request
+    validations:
+      required: false
+  - type: textarea
+    id: drawbacks
+    attributes:
+      label: "Drawbacks and Impact"
+      description: What are the drawbacks or impacts of your feature request?
+      placeholder: Describe any the drawbacks or impacts of your feature request
+    validations:
+      required: false
+  - type: textarea
+    id: unresolved_question
+    attributes:
+      label: "Unresolved questions"
+      description: What, if any, unresolved questions do you have about your feature request?
+      placeholder: Identify any unresolved issues.
+    validations:
+      required: false

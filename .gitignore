@@ -1,5 +1,6 @@
 # folders
-*.egg-info/
+__pycache__/
+.auto_pytabs_cache/
 .hypothesis/
 .idea/
 .mypy_cache/
@@ -7,7 +8,7 @@
 .scannerwork/
 .venv/
 .vscode/
-__pycache__/
+*.egg-info/
 build/
 dist/
 node_modules/

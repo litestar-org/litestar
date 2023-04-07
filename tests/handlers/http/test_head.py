@@ -2,12 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from starlite import HttpMethod, head
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response import FileResponse
-from starlite.response_containers import File
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
+from litestar import HttpMethod, head
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.response import FileResponse
+from litestar.response_containers import File
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
 
 
 def test_head_decorator() -> None:
@@ -27,6 +27,8 @@ def test_head_decorator_raises_validation_error_if_body_is_declared() -> None:
         def handler() -> dict:
             return {}
 
+        handler.on_registration()
+
 
 def test_head_decorator_raises_validation_error_if_method_is_passed() -> None:
     with pytest.raises(ImproperlyConfiguredException):
@@ -35,14 +37,20 @@ def test_head_decorator_raises_validation_error_if_method_is_passed() -> None:
         def handler() -> None:
             return
 
+        handler.on_registration()
+
 
 def test_head_decorator_does_not_raise_for_file() -> None:
     @head("/")
     def handler() -> File:
         return File(path=Path("test_head.py"))
 
+    handler.on_registration()
+
 
 def test_head_decorator_does_not_raise_for_file_response() -> None:
     @head("/")
     def handler() -> "FileResponse":
         return FileResponse("test_to_response.py")
+
+    handler.on_registration()

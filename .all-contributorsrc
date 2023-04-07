@@ -610,7 +610,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/17198460?v=4",
       "profile": "https://github.com/ste-pool",
       "contributions": [
-        "code"
+        "code",
+        "infra"
       ]
     },
     {
@@ -825,11 +826,65 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "onerandomusername",
+      "name": "arl",
+      "avatar_url": "https://avatars.githubusercontent.com/u/71233171?v=4",
+      "profile": "https://gh.arielle.codes",
+      "contributions": [
+        "maintenance"
+      ]
+    },
+    {
+      "login": "Galdanwing",
+      "name": "Antoine van der Horst",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29492757?v=4",
+      "profile": "https://github.com/Galdanwing",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "zoni",
+      "name": "Nick Groenen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/145285?v=4",
+      "profile": "https://nick.groenen.me",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "giorgiovilardo",
+      "name": "Giorgio Vilardo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56472600?v=4",
+      "profile": "https://github.com/giorgiovilardo",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "bollwyvl",
+      "name": "Nicholas Bollweg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45380?v=4",
+      "profile": "https://github.com/bollwyvl",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "tompin82",
+      "name": "Tomas Jonsson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47041409?v=4",
+      "profile": "https://github.com/tompin82",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "projectName": "starlite",
-  "projectOwner": "starlite-api",
+  "projectName": "litestar",
+  "projectOwner": "litestar-org",
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true,

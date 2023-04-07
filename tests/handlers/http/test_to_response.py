@@ -9,26 +9,27 @@ import pytest
 from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.responses import Response as StarletteResponse
 
-from starlite import HttpMethod, MediaType, Request, Response, Starlite, get, route
-from starlite._signature import create_signature_model
-from starlite.background_tasks import BackgroundTask
-from starlite.datastructures import Cookie, ResponseHeader
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.response import (
+from litestar import HttpMethod, Litestar, MediaType, Request, Response, get, route
+from litestar._signature import create_signature_model
+from litestar.background_tasks import BackgroundTask
+from litestar.datastructures import Cookie, ResponseHeader
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.response import (
     FileResponse,
     RedirectResponse,
     StreamingResponse,
     TemplateResponse,
 )
-from starlite.response_containers import File, Redirect, Stream, Template
-from starlite.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
-from starlite.testing import RequestFactory, create_test_client
+from litestar.response_containers import File, Redirect, Stream, Template
+from litestar.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
+from litestar.testing import RequestFactory, create_test_client
+from litestar.types.parsed_signature import ParsedSignature
 from tests import Person, PersonFactory
 
 if TYPE_CHECKING:
     from typing import AsyncGenerator
 
-    from starlite.routes import HTTPRoute
+    from litestar.routes import HTTPRoute
 
 
 def my_generator() -> Generator[str, None, None]:
@@ -90,18 +91,24 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         return data
 
     person_instance = PersonFactory.build()
-    test_function.signature_model = create_signature_model(test_function.fn.value, [], set())
+    test_function.signature_model = create_signature_model(
+        fn=test_function.fn.value,
+        plugins=[],
+        preferred_validation_backend="pydantic",
+        dependency_name_set=set(),
+        parsed_signature=ParsedSignature.from_fn(test_function.fn.value, {}),
+    )
 
     response = await test_function.to_response(
         data=test_function.fn.value(data=person_instance),
         plugins=[],
-        app=Starlite(route_handlers=[]),
+        app=Litestar(route_handlers=[]),
         request=RequestFactory().get(),
     )
     assert loads(response.body) == person_instance.dict()  # type: ignore
 
 
-async def test_to_response_returning_starlite_response() -> None:
+async def test_to_response_returning_litestar_response() -> None:
     @get(path="/test")
     def test_function() -> Response:
         return Response(media_type=MediaType.TEXT, content="ok")
@@ -197,7 +204,7 @@ def test_to_response_returning_redirect_response_from_redirect() -> None:
 
     with create_test_client(route_handlers=[redirect_handler, proxy_handler]) as client:
         response = client.get("/test")
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == HTTP_200_OK, response.json()
         assert response.json() == {"message": "redirected by before request hook"}
 
 

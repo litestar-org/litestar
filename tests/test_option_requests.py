@@ -1,27 +1,30 @@
+import random
+from itertools import permutations
 from typing import TYPE_CHECKING, List, Mapping, Optional
 
 import pytest
-from hypothesis import given
-from hypothesis.strategies import permutations
 
-from starlite import get, route
-from starlite.config.cors import CORSConfig
-from starlite.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
-from starlite.testing import create_test_client
+from litestar import get, route
+from litestar.config.cors import CORSConfig
+from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
-    from starlite.types import Method
+    from litestar.types import Method
 
 
-@given(http_methods=permutations(["GET", "POST", "POST", "PATCH", "DELETE", "HEAD"]))
+@pytest.mark.parametrize(
+    "http_methods",
+    (list(perm) for perm in iter(permutations(["GET", "POST", "PATCH", "DELETE", "HEAD"], r=random.randrange(1, 6)))),
+)
 def test_regular_options_request(http_methods: List["Method"]) -> None:
     @route("/", http_method=http_methods)
     def handler() -> None:
         return None
 
-    with create_test_client(handler) as client:
+    with create_test_client(handler, openapi_config=None) as client:
         response = client.options("/")
-        assert response.status_code == HTTP_204_NO_CONTENT
+        assert response.status_code == HTTP_204_NO_CONTENT, response.text
         assert response.headers.get("Allow") == ", ".join(sorted({*http_methods, "OPTIONS"}))
 
 
