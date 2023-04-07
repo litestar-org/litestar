@@ -181,6 +181,8 @@ class websocket_listener(WebsocketRouteHandler):
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
+        # since none of the validation rules of WebsocketRouteHandler apply here, this is let empty. Validation of the
+        # user supplied method happens at init time of this handler instead in __call__
 
     def _create_listener_fn(  # noqa: C901
         self,
