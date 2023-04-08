@@ -10,9 +10,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Iterator
 from uuid import UUID, uuid4
 
-import asyncmy
 import pytest
-from asyncmy.errors import OperationalError
+from asyncmy.connection import Connection as MySQLConnection
 from sqlalchemy import NullPool, insert
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import (
@@ -22,8 +21,8 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from starlite.contrib.repository.exceptions import RepositoryError
-from starlite.contrib.sqlalchemy import base
+from litestar.contrib.repository.exceptions import RepositoryError
+from litestar.contrib.sqlalchemy import base
 from tests.contrib.sqlalchemy.models import Author, AuthorRepository, BookRepository
 
 if TYPE_CHECKING:
@@ -83,18 +82,12 @@ async def db_responsive(host: str) -> bool:
     Returns:
         Boolean indicating if we can connect to the database.
     """
-    try:
-        conn = await asyncmy.connect(host=host, port=3360, user="app", db="db", password="super-secret")
-    except (ConnectionError, OperationalError):
-        return False
-
-    try:
-        async with conn.cursor() as cursor:
-            await cursor.execute("select 1")
-            resp = await cursor.fetchall()
-        return bool(resp[0] == 1)
-    finally:
-        conn.close()
+    conn = MySQLConnection(host=host, port=3360, user="app", database="db", password="super-secret", echo=True)
+    conn = await conn.connect()
+    async with conn.cursor() as cursor:
+        await cursor.execute("select 1 as is_available")
+        resp = await cursor.fetchone()
+    return bool(resp[0] == 1)
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -106,7 +99,7 @@ async def _containers(docker_ip: str, docker_services: Services) -> None:  # pyl
         docker_ip:
         docker_services:
     """
-    await wait_until_responsive(timeout=60.0, pause=0.1, check=db_responsive, host=docker_ip)
+    await wait_until_responsive(timeout=30.0, pause=5, check=db_responsive, host=docker_ip)
 
 
 @pytest.fixture(name="engine")
@@ -122,7 +115,7 @@ async def fx_engine(docker_ip: str) -> AsyncEngine:
     return create_async_engine(
         URL(
             drivername="mysql+asyncmy",
-            username="root",
+            username="app",
             password="super-secret",
             host=docker_ip,
             port=3360,
