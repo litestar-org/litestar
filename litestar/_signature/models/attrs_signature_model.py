@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 import traceback
 from dataclasses import asdict
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from functools import lru_cache, partial
 from pathlib import PurePath
 from typing import (
@@ -73,7 +73,7 @@ def _structure_datetime(value: Any, cls: type[datetime]) -> datetime:
         return value
 
     try:
-        return cls.fromtimestamp(float(value))
+        return cls.fromtimestamp(float(value), tz=timezone.utc)
     except (ValueError, TypeError):
         pass
 
