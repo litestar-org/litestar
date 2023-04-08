@@ -284,7 +284,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         statement = kwargs.pop("statement", self.statement)
         statement = statement.with_only_columns(
             sql_func.count(
-                self.model_type.id,  # type: ignore[attr-defined]
+                self.model_type.id,
             ),
             maintain_column_froms=True,
         ).order_by(None)
@@ -371,9 +371,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         statement = kwargs.pop("statement", self.statement)
         statement = statement.add_columns(
             over(
-                sql_func.count(
-                    self.model_type.id,  # type: ignore[attr-defined]
-                ),
+                sql_func.count(self.model_type.id),
             )
         )
         statement = self._apply_filters(*filters, statement=statement)
@@ -536,7 +534,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             statement = statement.where(field < before)
         if after is not None:
             statement = statement.where(field > before)
-        return statement  # noqa: RET504
+        return statement
 
     def _filter_select_by_kwargs(self, statement: SelectT, **kwargs: Any) -> SelectT:
         for key, val in kwargs.items():
