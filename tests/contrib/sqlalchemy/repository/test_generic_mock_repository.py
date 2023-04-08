@@ -408,14 +408,36 @@ async def test_get_or_create() -> None:
         columns."""
 
         random_column: Mapped[str]
+        cool_attribute: Mapped[str | None]
 
-    instances = [Model(random_column="value 1"), Model(random_column="value 2")]
+    instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
     mock_repo = GenericMockRepository[Model]()
     inserted_instances = await mock_repo.add_many(instances)
-    fetched_instance, fetched_created = await mock_repo.get_or_create(random_column="value 1")
+    fetched_instance, fetched_created = await mock_repo.get_or_create(random_column="value 2")
     assert await mock_repo.count() == 2
-    assert inserted_instances[0] == fetched_instance
+    assert inserted_instances[1] == fetched_instance
     assert fetched_created is False
     _, created = await mock_repo.get_or_create(random_column="value 3")
     assert await mock_repo.count() == 3
     assert created
+
+
+async def test_get_or_create_match_fields() -> None:
+    """Test that the repository get_or_create returns a model record correctly."""
+
+    class Model(base.AuditBase):
+        """Inheriting from AuditBase gives the model 'created' and 'updated'
+        columns."""
+
+        random_column: Mapped[str]
+        cool_attribute: Mapped[str | None]
+
+    instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
+    mock_repo = GenericMockRepository[Model]()
+    inserted_instances = await mock_repo.add_many(instances)
+    fetched_instance, fetched_created = await mock_repo.get_or_create(
+        match_fields=["random_column"], random_column="value 1", cool_attribute="other thing"
+    )
+    assert await mock_repo.count() == 2
+    assert inserted_instances[0] == fetched_instance
+    assert fetched_created is False

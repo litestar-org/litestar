@@ -64,6 +64,8 @@ def wrap_sqlalchemy_exception() -> Any:
 class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
     """SQLAlchemy based implementation of the repository interface."""
 
+    match_fields: list[str] | str | None = None
+
     def __init__(self, *, statement: Select[tuple[ModelT]] | None = None, session: AsyncSession, **kwargs: Any) -> None:
         """Repository pattern for SQLAlchemy models.
 
@@ -237,7 +239,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
                 self.session.expunge(instance)
             return instance  # type: ignore
 
-    async def get_or_create(self, match_fields: list[str] | None = None, **kwargs: Any) -> tuple[ModelT, bool]:
+    async def get_or_create(self, match_fields: list[str] | str | None = None, **kwargs: Any) -> tuple[ModelT, bool]:
         """Get instance identified by ``kwargs`` or create if it doesn't exist.
 
         Args:
@@ -245,8 +247,11 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
-            a tuple that includes the instance and whether or not it needed to be created.
+            a tuple that includes the instance and whether or not it needed to be created.  When using match_fields and actual model values differ from `kwargs`, the model value will be updated.
         """
+        match_fields = match_fields if match_fields else self.match_fields
+        if isinstance(match_fields, str):
+            match_fields = [match_fields]
         if match_fields:
             match_filter = {
                 field_name: kwargs.get(field_name, None)
@@ -257,6 +262,12 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             match_filter = kwargs
         existing = await self.get_one_or_none(**match_filter)
         if existing:
+            for field_name, new_field_value in kwargs.items():
+                field = getattr(existing, field_name, None)
+                if field and field != new_field_value:
+                    setattr(existing, field_name, new_field_value)
+            if existing in self.session.dirty:
+                return (await self.update(existing)), False
             return existing, False
         return await self.add(self.model_type(**kwargs)), True  # type: ignore[arg-type]
 
