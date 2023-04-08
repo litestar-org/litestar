@@ -201,6 +201,10 @@ filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
     "ignore::DeprecationWarning:pkg_resources:2803",
 ]
+markers = [
+    "sqlalchemy_asyncmy: SQLAlchemy MySQL (asyncmy) Tests",
+    "sqlalchemy_asyncpg: SQLAlchemy Postgres (asyncpg) Tests"
+]
 
 [tool.pyright]
 include = ["litestar", "tests", "examples"]
