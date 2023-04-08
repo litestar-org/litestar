@@ -16,7 +16,7 @@ from litestar.utils.predicates import is_pydantic_constrained_field
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.plugins import PluginMapping
-    from litestar.types.parsed_signature import ParsedSignature
+    from litestar.utils.signature import ParsedSignature
 
 __all__ = ("PydanticSignatureModel",)
 

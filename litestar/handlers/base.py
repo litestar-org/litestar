@@ -7,9 +7,9 @@ from litestar._signature.field import SignatureField
 from litestar.dto.interface import DTOInterface
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
-from litestar.types.parsed_signature import ParsedSignature
 from litestar.utils import AsyncCallable, Ref, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
+from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
     from typing_extensions import Self

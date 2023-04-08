@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.handlers import BaseRouteHandler
     from litestar.types import LitestarEncodableType
-    from litestar.types.parsed_signature import ParsedType
+    from litestar.utils.signature import ParsedType
 
 __all__ = ("DTOInterface",)
 

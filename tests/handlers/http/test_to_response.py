@@ -23,7 +23,7 @@ from litestar.response import (
 from litestar.response_containers import File, Redirect, Stream, Template
 from litestar.status_codes import HTTP_200_OK, HTTP_308_PERMANENT_REDIRECT
 from litestar.testing import RequestFactory, create_test_client
-from litestar.types.parsed_signature import ParsedSignature
+from litestar.utils.signature import ParsedSignature
 from tests import Person, PersonFactory
 
 if TYPE_CHECKING:
