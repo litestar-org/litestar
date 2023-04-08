@@ -147,7 +147,7 @@ async def test_repo_count_method(author_repo: AuthorRepository) -> None:
     assert await author_repo.count() == 2
 
 
-async def test_repo_base_select_override(author_repo: AuthorRepository) -> None:
+async def test_repo_statement_override(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy base select override with sqlite.
 
     Args:
@@ -155,7 +155,7 @@ async def test_repo_base_select_override(author_repo: AuthorRepository) -> None:
     """
     all_count = await author_repo.count()
     filtered_count = await author_repo.count(
-        base_select=select(Author).where(Author.id == UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"))
+        statement=select(Author).where(Author.id == UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"))
     )
     assert all_count == 2
     assert filtered_count == 1

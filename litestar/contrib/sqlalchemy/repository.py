@@ -14,6 +14,8 @@ from litestar.contrib.repository.filters import (
     BeforeAfter,
     CollectionFilter,
     LimitOffset,
+    OrderBy,
+    SearchFilter,
 )
 
 if TYPE_CHECKING:
@@ -62,20 +64,18 @@ def wrap_sqlalchemy_exception() -> Any:
 class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
     """SQLAlchemy based implementation of the repository interface."""
 
-    def __init__(
-        self, *, session: AsyncSession, base_select: Select[tuple[ModelT]] | None = None, **kwargs: Any
-    ) -> None:
+    def __init__(self, *, statement: Select[tuple[ModelT]] | None = None, session: AsyncSession, **kwargs: Any) -> None:
         """Repository pattern for SQLAlchemy models.
 
         Args:
+            statement: To facilitate customization of the underlying select query.
             session: Session managing the unit-of-work for the operation.
-            base_select: To facilitate customization of the underlying select query.
             **kwargs: Additional arguments.
 
         """
         super().__init__(**kwargs)
         self.session = session
-        self.statement = base_select if base_select is not None else select(self.model_type)
+        self.statement = statement if statement is not None else select(self.model_type)
 
     async def add(self, data: ModelT) -> ModelT:
         """Add `data` to the collection.
@@ -193,7 +193,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             NotFoundError: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
-            statement = kwargs.pop("base_select", self.statement)
+            statement = kwargs.pop("statement", self.statement)
             statement = self._filter_select_by_kwargs(statement=statement, **{self.id_attribute: item_id})
             instance = (await self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
@@ -213,7 +213,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             NotFoundError: If no instance found identified by `item_id`.
         """
         with wrap_sqlalchemy_exception():
-            statement = kwargs.pop("base_select", self.statement)
+            statement = kwargs.pop("statement", self.statement)
             statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
             instance = (await self._execute(statement)).scalar_one_or_none()
             instance = self.check_not_found(instance)
@@ -230,23 +230,32 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
             The retrieved instance or None
         """
         with wrap_sqlalchemy_exception():
-            statement = kwargs.pop("base_select", self.statement)
+            statement = kwargs.pop("statement", self.statement)
             statement = self._filter_select_by_kwargs(statement=statement, **kwargs)
             instance = (await self._execute(statement)).scalar_one_or_none()
             if instance:
                 self.session.expunge(instance)
             return instance  # type: ignore
 
-    async def get_or_create(self, **kwargs: Any) -> tuple[ModelT, bool]:
+    async def get_or_create(self, match_fields: list[str] | None = None, **kwargs: Any) -> tuple[ModelT, bool]:
         """Get instance identified by ``kwargs`` or create if it doesn't exist.
 
         Args:
+            match_fields: a list of keys to use to match the existing model.  When empty, all fields are matched.
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
             a tuple that includes the instance and whether or not it needed to be created.
         """
-        existing = await self.get_one_or_none(**kwargs)
+        if match_fields:
+            match_filter = {
+                field_name: kwargs.get(field_name, None)
+                for field_name in match_fields
+                if kwargs.get(field_name, None) is not None
+            }
+        else:
+            match_filter = kwargs
+        existing = await self.get_one_or_none(**match_filter)
         if existing:
             return existing, False
         return await self.add(self.model_type(**kwargs)), True  # type: ignore[arg-type]
@@ -261,10 +270,10 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query, ignoring pagination.
         """
-        statement = kwargs.pop("base_select", self.statement)
+        statement = kwargs.pop("statement", self.statement)
         statement = statement.with_only_columns(
             sql_func.count(
-                self.model_type.id,
+                self.model_type.id,  # type: ignore[attr-defined]
             ),
             maintain_column_froms=True,
         ).order_by(None)
@@ -348,11 +357,11 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             Count of records returned by query, ignoring pagination.
         """
-        statement = kwargs.pop("base_select", self.statement)
+        statement = kwargs.pop("statement", self.statement)
         statement = statement.add_columns(
             over(
                 sql_func.count(
-                    self.model_type.id,
+                    self.model_type.id,  # type: ignore[attr-defined]
                 ),
             )
         )
@@ -379,7 +388,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Returns:
             The list of instances, after filtering applied.
         """
-        statement = kwargs.pop("base_select", self.statement)
+        statement = kwargs.pop("statement", self.statement)
         statement = self._apply_filters(*filters, statement=statement)
         statement = self._filter_select_by_kwargs(statement, **kwargs)
 
@@ -493,6 +502,12 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
                 )
             elif isinstance(filter_, CollectionFilter):
                 statement = self._filter_in_collection(filter_.field_name, filter_.values, statement=statement)
+            elif isinstance(filter_, OrderBy):
+                statement = self._order_by(statement, filter_.field_name, sort_desc=bool(filter_.sort_order == "desc"))
+            elif isinstance(filter_, SearchFilter):
+                statement = self._filter_by_like(
+                    statement, filter_.field_name, value=filter_.value, ignore_case=bool(filter_.ignore_case)
+                )
             else:
                 raise RepositoryError(f"Unexpected filter: {filter_}")
         return statement
@@ -516,3 +531,12 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         for key, val in kwargs.items():
             statement = statement.where(getattr(self.model_type, key) == val)
         return statement
+
+    def _filter_by_like(self, statement: SelectT, field_name: str, value: str, ignore_case: bool) -> SelectT:
+        field = getattr(self.model_type, field_name)
+        search_text = f"%{value}%"
+        return statement.where(field.ilike(search_text) if ignore_case else field.like(search_text))
+
+    def _order_by(self, statement: SelectT, field_name: str, sort_desc: bool = False) -> SelectT:
+        field = getattr(self.model_type, field_name)
+        return statement.order_by(field.desc() if sort_desc else field.asc())

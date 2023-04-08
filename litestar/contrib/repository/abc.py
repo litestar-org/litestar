@@ -9,7 +9,7 @@ from .exceptions import NotFoundError
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
-    from .filters import BeforeAfter, CollectionFilter, LimitOffset
+    from .filters import BeforeAfter, CollectionFilter, LimitOffset, OrderBy, SearchFilter
 
 __all__ = ("AbstractRepository", "FilterTypes")
 
@@ -17,7 +17,7 @@ T = TypeVar("T")
 RepoT = TypeVar("RepoT", bound="AbstractRepository")
 CollectionT = TypeVar("CollectionT")
 
-FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset"
+FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset | OrderBy | SearchFilter"
 """Aggregate type alias of the types supported for collection filtering."""
 
 

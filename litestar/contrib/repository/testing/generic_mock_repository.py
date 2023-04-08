@@ -179,17 +179,26 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         return self._find_or_raise_not_found(item_id)
 
-    async def get_or_create(self, **kwargs: Any) -> tuple[ModelT, bool]:
+    async def get_or_create(self, match_fields: list[str] | None = None, **kwargs: Any) -> tuple[ModelT, bool]:
         """Get instance identified by ``kwargs`` or create if it doesn't exist.
 
         Args:
+            match_fields: a list of keys to use to match the existing model.  When empty, all fields are matched.
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
             a tuple that includes the instance and whether it needed to be created.
 
         """
-        existing = await self.get_one_or_none(**kwargs)
+        if match_fields:
+            match_filter = {
+                field_name: kwargs.get(field_name, None)
+                for field_name in match_fields
+                if kwargs.get(field_name, None) is not None
+            }
+        else:
+            match_filter = kwargs
+        existing = await self.get_one_or_none(**match_filter)
         if existing:
             return existing, False
         return await self.add(self.model_type(**kwargs)), True

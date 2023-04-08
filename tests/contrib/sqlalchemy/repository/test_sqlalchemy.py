@@ -37,7 +37,7 @@ def mock_repo() -> SQLAlchemyRepository:
 
         model_type = MagicMock()  # pyright:ignore[reportGeneralTypeIssues]
 
-    return Repo(session=AsyncMock(spec=AsyncSession, bind=MagicMock()), base_select=MagicMock())
+    return Repo(session=AsyncMock(spec=AsyncSession, bind=MagicMock()), statement=MagicMock())
 
 
 async def test_sqlalchemy_tablename(monkeypatch: MonkeyPatch) -> None:

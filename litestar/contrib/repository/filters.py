@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, Literal, TypeVar
 
 if TYPE_CHECKING:
     from collections import abc
@@ -10,11 +10,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
-__all__ = (
-    "BeforeAfter",
-    "CollectionFilter",
-    "LimitOffset",
-)
+__all__ = ["BeforeAfter", "CollectionFilter", "LimitOffset", "OrderBy", "SearchFilter"]
 
 
 @dataclass
@@ -47,3 +43,25 @@ class LimitOffset:
     """Value for ``LIMIT`` clause of query."""
     offset: int
     """Value for ``OFFSET`` clause of query."""
+
+
+@dataclass
+class OrderBy(Generic[T]):
+    """Data required to construct a ``ORDER BY ...`` clause."""
+
+    field_name: str
+    """Name of the model attribute to sort on."""
+    sort_order: Literal["asc", "desc"]
+    """Sort ascending or descending"""
+
+
+@dataclass
+class SearchFilter(Generic[T]):
+    """Data required to construct a ``WHERE field_name LIKE '%' || :value || '%' clause."""
+
+    field_name: str
+    """Name of the model attribute to sort on."""
+    value: str
+    """Values for ``LIKE`` clause."""
+    ignore_case: bool | None = False
+    """Should the search be case insensitive."""
