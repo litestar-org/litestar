@@ -2,11 +2,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import HttpMethod, MediaType, Starlite, get
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.static_files.config import StaticFilesConfig
-from starlite.status_codes import HTTP_200_OK, HTTP_405_METHOD_NOT_ALLOWED
-from starlite.testing import create_test_client
+from litestar import HttpMethod, Litestar, MediaType, get
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.static_files.config import StaticFilesConfig
+from litestar.status_codes import HTTP_200_OK, HTTP_405_METHOD_NOT_ALLOWED
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -62,7 +62,7 @@ def test_runtime_validation_of_static_path_and_path_parameter(tmpdir: "Path") ->
         return f
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(
+        Litestar(
             route_handlers=[handler], static_files_config=[StaticFilesConfig(path="/static", directories=[tmpdir])]
         )
 

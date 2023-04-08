@@ -1,7 +1,7 @@
 rate_limit
 ==========
 
-.. automodule:: starlite.middleware.rate_limit
+.. automodule:: litestar.middleware.rate_limit
     :members:
 
-.. autoclass:: starlite.middleware.rate_limit.DurationUnit
+.. autoclass:: litestar.middleware.rate_limit.DurationUnit

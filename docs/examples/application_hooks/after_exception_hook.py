@@ -1,15 +1,15 @@
 import logging
 from typing import TYPE_CHECKING
 
-from starlite import Starlite, get
-from starlite.exceptions import HTTPException
-from starlite.status_codes import HTTP_400_BAD_REQUEST
+from litestar import Litestar, get
+from litestar.exceptions import HTTPException
+from litestar.status_codes import HTTP_400_BAD_REQUEST
 
 logger = logging.getLogger()
 
 if TYPE_CHECKING:
-    from starlite.datastructures import State
-    from starlite.types import Scope
+    from litestar.datastructures import State
+    from litestar.types import Scope
 
 
 @get("/some-path")
@@ -33,4 +33,4 @@ async def after_exception_handler(exc: Exception, scope: "Scope", state: "State"
     )
 
 
-app = Starlite([my_handler], after_exception=[after_exception_handler])
+app = Litestar([my_handler], after_exception=[after_exception_handler])

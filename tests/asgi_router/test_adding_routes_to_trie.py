@@ -2,11 +2,11 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from starlite import Starlite, asgi
-from starlite.exceptions import ImproperlyConfiguredException
+from litestar import Litestar, asgi
+from litestar.exceptions import ImproperlyConfiguredException
 
 if TYPE_CHECKING:
-    from starlite.types import Receive, Scope, Send
+    from litestar.types import Receive, Scope, Send
 
 
 def test_add_mount_route_disallow_path_parameter() -> None:
@@ -14,4 +14,4 @@ def test_add_mount_route_disallow_path_parameter() -> None:
         return None
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[asgi("/mount-path", is_static=True)(handler), asgi("/mount-path/{id:str}")(handler)])
+        Litestar(route_handlers=[asgi("/mount-path", is_static=True)(handler), asgi("/mount-path/{id:str}")(handler)])

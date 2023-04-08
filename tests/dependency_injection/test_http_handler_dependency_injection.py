@@ -1,13 +1,13 @@
 from asyncio import sleep
 from typing import TYPE_CHECKING, Any, Dict
 
-from starlite import Controller, get
-from starlite.di import Provide
-from starlite.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from starlite.testing import create_test_client
+from litestar import Controller, get
+from litestar.di import Provide
+from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
-    from starlite.connection import Request
+    from litestar.connection import Request
 
 
 def router_first_dependency() -> bool:

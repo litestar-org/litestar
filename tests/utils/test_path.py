@@ -1,6 +1,6 @@
 import pytest
 
-from starlite.utils.path import join_paths, normalize_path
+from litestar.utils.path import join_paths, normalize_path
 
 
 @pytest.mark.parametrize(

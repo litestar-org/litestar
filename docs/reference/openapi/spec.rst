@@ -2,8 +2,8 @@ spec
 ====
 
 
-.. automodule:: starlite.openapi.spec
+.. automodule:: litestar.openapi.spec
     :members:
 
 
-.. autodata:: starlite.openapi.spec.SecurityRequirement
+.. autodata:: litestar.openapi.spec.SecurityRequirement

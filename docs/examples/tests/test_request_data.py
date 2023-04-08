@@ -1,6 +1,6 @@
 from examples.request_data.msgpack_request import app as msgpack_app
-from starlite.serialization import encode_msgpack
-from starlite.testing import TestClient
+from litestar.serialization import encode_msgpack
+from litestar.testing import TestClient
 
 
 def test_msgpack_app() -> None:

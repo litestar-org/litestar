@@ -2,11 +2,11 @@ from typing import TYPE_CHECKING, Callable
 
 import pytest
 
-from starlite.datastructures import MultiDict
-from starlite.datastructures.url import URL, make_absolute_url
+from litestar.datastructures import MultiDict
+from litestar.datastructures.url import URL, make_absolute_url
 
 if TYPE_CHECKING:
-    from starlite.types import Scope
+    from litestar.types import Scope
 
 
 @pytest.mark.parametrize(

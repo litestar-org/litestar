@@ -2,13 +2,13 @@ from typing import TYPE_CHECKING, Any, List
 
 import pytest
 
-from starlite import Controller, Router, Starlite, get
-from starlite.openapi.config import OpenAPIConfig
-from starlite.openapi.spec import Components, SecurityRequirement
-from starlite.openapi.spec.security_scheme import SecurityScheme
+from litestar import Controller, Litestar, Router, get
+from litestar.openapi.config import OpenAPIConfig
+from litestar.openapi.spec import Components, SecurityRequirement
+from litestar.openapi.spec.security_scheme import SecurityScheme
 
 if TYPE_CHECKING:
-    from starlite.handlers.http_handlers import HTTPRouteHandler
+    from litestar.handlers.http_handlers import HTTPRouteHandler
 
 
 @pytest.fixture()
@@ -30,7 +30,7 @@ def protected_route() -> "HTTPRouteHandler":
 
 
 def test_schema_without_security_property(public_route: "HTTPRouteHandler") -> None:
-    app = Starlite(route_handlers=[public_route])
+    app = Litestar(route_handlers=[public_route])
     schema = app.openapi_schema
 
     assert schema
@@ -39,7 +39,7 @@ def test_schema_without_security_property(public_route: "HTTPRouteHandler") -> N
 
 
 def test_schema_with_security_scheme_defined(public_route: "HTTPRouteHandler") -> None:
-    app = Starlite(
+    app = Litestar(
         route_handlers=[public_route],
         openapi_config=OpenAPIConfig(
             title="test app",
@@ -73,7 +73,7 @@ def test_schema_with_security_scheme_defined(public_route: "HTTPRouteHandler") -
 
 
 def test_schema_with_route_security_overridden(protected_route: "HTTPRouteHandler") -> None:
-    app = Starlite(
+    app = Litestar(
         route_handlers=[protected_route],
         openapi_config=OpenAPIConfig(
             title="test app",
@@ -107,7 +107,7 @@ def test_layered_security_declaration() -> None:
 
     router = Router("/router", route_handlers=[MyController], security=[{"routerToken": []}])
 
-    app = Starlite(
+    app = Litestar(
         route_handlers=[router],
         security=[{"appToken": []}],
         openapi_config=OpenAPIConfig(

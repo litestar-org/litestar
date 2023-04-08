@@ -1,20 +1,21 @@
 import random
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from unittest.mock import MagicMock
 from uuid import uuid4
 
 import pytest
 
-from starlite import Request, Starlite, get
-from starlite.config.response_cache import ResponseCacheConfig
-from starlite.stores.base import Store
-from starlite.testing import TestClient, create_test_client
+from litestar import Litestar, Request, get
+from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
+from litestar.stores.base import Store
+from litestar.stores.memory import MemoryStore
+from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
 
-    from starlite import Response
+    from litestar import Response
 
 
 @pytest.fixture()
@@ -33,7 +34,7 @@ def test_default_cache_response(sync_to_thread: bool, mock: MagicMock) -> None:
         "/cached",
         sync_to_thread=sync_to_thread,
         cache=True,
-        type_encoders={int: str},  # test pickling issues. see https://github.com/starlite-api/starlite/issues/1096
+        type_encoders={int: str},  # test pickling issues. see https://github.com/litestar-org/litestar/issues/1096
     )
     async def handler() -> str:
         return mock()  # type: ignore[no-any-return]
@@ -75,7 +76,7 @@ def test_default_expiration(mock: MagicMock, frozen_datetime: "FrozenDateTimeFac
         return mock()  # type: ignore[no-any-return]
 
     with create_test_client(
-        [handler], after_request=after_request_handler, cache_config=ResponseCacheConfig(default_expiration=1)
+        [handler], after_request=after_request_handler, response_cache_config=ResponseCacheConfig(default_expiration=1)
     ) as client:
         first_response = client.get("/cached-default")
         second_response = client.get("/cached-default")
@@ -88,6 +89,42 @@ def test_default_expiration(mock: MagicMock, frozen_datetime: "FrozenDateTimeFac
         assert mock.call_count == 2
 
 
+@pytest.mark.parametrize("expiration,expected_expiration", [(True, None), (10, 10)])
+def test_default_expiration_none(
+    memory_store: MemoryStore, expiration: int, expected_expiration: Optional[int]
+) -> None:
+    @get("/cached", cache=expiration)
+    def handler() -> None:
+        return None
+
+    app = Litestar(
+        [handler],
+        stores={"response_cache": memory_store},
+        response_cache_config=ResponseCacheConfig(default_expiration=None),
+    )
+
+    with TestClient(app) as client:
+        client.get("/cached")
+
+    if expected_expiration is None:
+        assert memory_store._store["/cached"].expires_at is None
+    else:
+        assert memory_store._store["/cached"].expires_at
+
+
+def test_cache_forever(memory_store: MemoryStore) -> None:
+    @get("/cached", cache=CACHE_FOREVER)
+    async def handler() -> None:
+        return None
+
+    app = Litestar([handler], stores={"response_cache": memory_store})
+
+    with TestClient(app) as client:
+        client.get("/cached")
+
+    assert memory_store._store["/cached"].expires_at is None
+
+
 @pytest.mark.parametrize("sync_to_thread", (True, False))
 async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str, mock: MagicMock) -> None:
     def custom_cache_key_builder(request: Request) -> str:
@@ -97,11 +134,11 @@ async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str, mock: 
     async def handler() -> str:
         return mock()  # type: ignore[no-any-return]
 
-    app = Starlite([handler])
+    app = Litestar([handler])
 
     with TestClient(app) as client:
         client.get("/cached")
-        store = app.stores.get("request_cache")
+        store = app.stores.get("response_cache")
         assert await store.exists("/cached:::cached")
 
 
@@ -110,7 +147,7 @@ async def test_non_default_store_name(mock: MagicMock) -> None:
     def handler() -> str:
         return mock()  # type: ignore[no-any-return]
 
-    app = Starlite([handler], response_cache_config=ResponseCacheConfig(store="some_store"))
+    app = Litestar([handler], response_cache_config=ResponseCacheConfig(store="some_store"))
 
     with TestClient(app=app) as client:
         response_one = client.get("/")
@@ -131,7 +168,7 @@ async def test_with_stores(store: Store, mock: MagicMock) -> None:
     def handler() -> str:
         return mock()  # type: ignore[no-any-return]
 
-    app = Starlite([handler], stores={"request_cache": store})
+    app = Litestar([handler], stores={"response_cache": store})
 
     with TestClient(app=app) as client:
         response_one = client.get("/")

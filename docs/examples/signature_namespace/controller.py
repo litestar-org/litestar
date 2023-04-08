@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from starlite import Controller, post
+from litestar import Controller, post
 
 if TYPE_CHECKING:
     from .domain import Model

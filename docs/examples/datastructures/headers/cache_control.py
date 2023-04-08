@@ -1,7 +1,7 @@
 import time
 
-from starlite import Controller, Starlite, get
-from starlite.datastructures import CacheControlHeader
+from litestar import Controller, Litestar, get
+from litestar.datastructures import CacheControlHeader
 
 
 class MyController(Controller):
@@ -24,7 +24,7 @@ def get_population_count() -> int:
     return 100000
 
 
-app = Starlite(
+app = Litestar(
     route_handlers=[MyController, get_population_count],
     cache_control=CacheControlHeader(max_age=2_628_288, public=True),
 )

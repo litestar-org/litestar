@@ -25,7 +25,7 @@ Code contributions
 Workflow
 ++++++++
 
-1. `Fork <https://github.com/starlite-api/starlite/fork>`_ the `Starlite repository <https://github.com/starlite-api/starlite>`_
+1. `Fork <https://github.com/litestar-org/litestar/fork>`_ the `Litestar repository <https://github.com/litestar-org/litestar>`_
 2. Clone your fork locally with git
 3. `Set up the environment <#setting-up-the-environment>`_
 4. Make your changes
@@ -48,7 +48,7 @@ Guidelines for writing code
   `mypy <https://mypy.readthedocs.io/en/stable/>`_ and `pyright <https://github.com/microsoft/pyright>`_
 
   * When requiring complex types, use a `type alias <https://docs.python.org/3/library/typing.html#type-aliases>`_.
-    Check ``starlite/types`` if a type alias for your use case already exists
+    Check ``litestar/types`` if a type alias for your use case already exists
   * If something cannot be typed correctly due to a limitation of the type checkers, you may use
     `typing.cast <https://docs.python.org/3/library/typing.html#typing.cast>`_ to rectify the situation. However, you
     should only use as a last resort if you've exhausted all other options of
@@ -71,9 +71,9 @@ Guidelines for writing code
 Writing and running tests
 +++++++++++++++++++++++++
 
-Tests are contained within the ``tests`` directory, and follow the same directory structure as the ``starlite`` module.
+Tests are contained within the ``tests`` directory, and follow the same directory structure as the ``litestar`` module.
 If you are adding a test case, it should be located within the correct submodule of ``tests``. E.g. tests for
-``starlite/utils/sync.py`` reside in ``tests/utils/test_sync.py``.
+``litestar/utils/sync.py`` reside in ``tests/utils/test_sync.py``.
 
 The ``Makefile`` includes several commands for running tests:
 
@@ -124,7 +124,7 @@ Adding examples
 ~~~~~~~~~~~~~~~
 
 The examples from the docs are located in their own modules inside the ``/docs/examples`` folder. This makes it easier
-to test them alongside the rest of the test suite, ensuring they do not become stale as Starlite evolves.
+to test them alongside the rest of the test suite, ensuring they do not become stale as Litestar evolves.
 
 Please follow the next guidelines when adding a new example:
 
@@ -144,7 +144,7 @@ Automatically execute examples
 Our docs include a Sphinx extension that can automatically run requests against example apps
 and include their result in the documentation page when its being built. This only requires 2 steps:
 
-1. Create an example file with an ``app`` object in it, which is an instance of ``Starlite``
+1. Create an example file with an ``app`` object in it, which is an instance of ``Litestar``
 2. Add a comment in the form of ``# run: /hello`` to the example file
 
 When building the docs (or serving them locally), a process serving the ``app`` instance
@@ -163,7 +163,7 @@ In practice, this looks like the following:
 
    from typing import Dict
 
-   from starlite import Starlite, get
+   from litestar import Litestar, get
 
 
    @get("/")
@@ -172,7 +172,7 @@ In practice, this looks like the following:
        return {"hello": "world"}
 
 
-   app = Starlite(route_handlers=[hello_world])
+   app = Litestar(route_handlers=[hello_world])
 
    # run: /
 
@@ -185,7 +185,7 @@ This is equivalent to:
 
        from typing import Dict
 
-       from starlite import Starlite, get
+       from litestar import Litestar, get
 
 
        @get("/")
@@ -194,7 +194,7 @@ This is equivalent to:
            return {"hello": "world"}
 
 
-       app = Starlite(route_handlers=[hello_world])
+       app = Litestar(route_handlers=[hello_world])
 
 
    .. admonition:: Run it
@@ -209,8 +209,8 @@ Creating a new release
 ----------------------
 
 1. Increment the version in ``pyproject.toml`` according to the
-   `versioning scheme <https://starlite-api.github.io/starlite/latest/starlite-releases.html#version-numbering>`_
-2. `Draft a new release <https://github.com/starlite-api/starlite/releases/new>`_ on GitHub
+   `versioning scheme <https://litestar-org.github.io/litestar/latest/litestar-releases.html#version-numbering>`_
+2. `Draft a new release <https://github.com/litestar-org/litestar/releases/new>`_ on GitHub
 
    * Use ``vMAJOR.MINOR.PATCH`` (e.g. ``v1.2.3``) as both the tag and release title
    * Fill in the release description. You can use the "Generate release notes" function to get a draft for this
@@ -219,4 +219,4 @@ Creating a new release
    the contents of the release notes as they relate to changes in code
 4. Commit your changes and push to ``main``
 5. Publish the release
-6. Check that the "publish" `action <https://github.com/starlite-api/starlite/actions>`_ has run successfully
+6. Check that the "publish" `action <https://github.com/litestar-org/litestar/actions>`_ has run successfully

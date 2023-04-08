@@ -1,8 +1,8 @@
 from uuid import uuid4
 
 from examples.contrib.jwt.using_oauth2_password_bearer import app
-from starlite.status_codes import HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
-from starlite.testing import TestClient
+from litestar.status_codes import HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
+from litestar.testing import TestClient
 
 
 def test_using_oauth2_password_bearer_auth() -> None:

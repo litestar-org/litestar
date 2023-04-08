@@ -3,11 +3,11 @@ from typing import Dict
 
 import pytest
 
-from starlite import HttpMethod, MediaType, WebSocket, delete, get, route
-from starlite.exceptions import ImproperlyConfiguredException, ValidationException
-from starlite.handlers.http_handlers import HTTPRouteHandler
-from starlite.response_containers import File, Redirect
-from starlite.status_codes import (
+from litestar import HttpMethod, MediaType, WebSocket, delete, get, route
+from litestar.exceptions import ImproperlyConfiguredException, ValidationException
+from litestar.handlers.http_handlers import HTTPRouteHandler
+from litestar.response_containers import File, Redirect
+from litestar.status_codes import (
     HTTP_100_CONTINUE,
     HTTP_200_OK,
     HTTP_304_NOT_MODIFIED,
@@ -34,18 +34,14 @@ def test_route_handler_validation_http_method() -> None:
         route(http_method=[HttpMethod.GET, "poft"], status_code=HTTP_200_OK)  # type: ignore
 
 
-async def test_function_validation(anyio_backend: str) -> None:
+async def test_function_validation() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @get(path="/")
         def method_with_no_annotation():  # type: ignore
             pass
 
-    with pytest.raises(ValidationException):
-
-        @get(path="/", status_code=HTTP_200_OK)
-        def redirect_method_without_proper_status() -> Redirect:
-            return Redirect(path="/redirected")
+        method_with_no_annotation.on_registration()
 
     with pytest.raises(ImproperlyConfiguredException):
 
@@ -53,11 +49,15 @@ async def test_function_validation(anyio_backend: str) -> None:
         def method_with_no_content() -> Dict[str, str]:
             return {}
 
+        method_with_no_content.on_registration()
+
     with pytest.raises(ImproperlyConfiguredException):
 
         @get(path="/", status_code=HTTP_304_NOT_MODIFIED)
         def method_with_not_modified() -> Dict[str, str]:
             return {}
+
+        method_with_not_modified.on_registration()
 
     with pytest.raises(ImproperlyConfiguredException):
 
@@ -65,13 +65,19 @@ async def test_function_validation(anyio_backend: str) -> None:
         def method_with_status_lower_than_200() -> Dict[str, str]:
             return {}
 
+        method_with_status_lower_than_200.on_registration()
+
     @get(path="/", status_code=HTTP_307_TEMPORARY_REDIRECT)
     def redirect_method() -> Redirect:
         return Redirect("/test")
 
+    redirect_method.on_registration()
+
     @get(path="/")
     def file_method() -> File:
         return File(path=Path("."), filename="test_validations.py")
+
+    file_method.on_registration()
 
     assert file_method.media_type == MediaType.TEXT
 
@@ -81,8 +87,12 @@ async def test_function_validation(anyio_backend: str) -> None:
         def test_function_1(socket: WebSocket) -> None:
             return None
 
+        test_function_1.on_registration()
+
     with pytest.raises(ImproperlyConfiguredException):
 
         @get("/person")
         def test_function_2(self, data: Person) -> None:  # type: ignore
             return None
+
+        test_function_2.on_registration()

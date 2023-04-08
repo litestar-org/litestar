@@ -1,6 +1,6 @@
-from starlite import WebSocket, websocket
-from starlite.params import Parameter
-from starlite.testing import create_test_client
+from litestar import WebSocket, websocket
+from litestar.params import Parameter
+from litestar.testing import create_test_client
 
 
 def test_handle_websocket_params_parsing() -> None:

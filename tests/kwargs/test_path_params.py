@@ -7,11 +7,11 @@ from uuid import UUID, uuid1, uuid4
 import pytest
 from pydantic import UUID4
 
-from starlite import MediaType, Starlite, get, post
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.params import Parameter
-from starlite.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
-from starlite.testing import create_test_client
+from litestar import Litestar, MediaType, get, post
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import Parameter
+from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from litestar.testing import create_test_client
 
 
 @pytest.mark.parametrize(
@@ -84,9 +84,9 @@ def test_path_params(params_dict: dict, should_raise: bool) -> None:
             f"{params_dict['version']}/{params_dict['service_id']}/{params_dict['user_id']}/{params_dict['order_id']}"
         )
         if should_raise:
-            assert response.status_code == HTTP_400_BAD_REQUEST
+            assert response.status_code == HTTP_400_BAD_REQUEST, response.json()
         else:
-            assert response.status_code == HTTP_200_OK
+            assert response.status_code == HTTP_200_OK, response.json()
 
 
 @pytest.mark.parametrize(
@@ -109,7 +109,7 @@ def test_path_param_validation(path: str) -> None:
         raise AssertionError("should not be called")
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[test_method])
+        Litestar(route_handlers=[test_method])
 
 
 def test_duplicate_path_param_validation() -> None:
@@ -118,7 +118,7 @@ def test_duplicate_path_param_validation() -> None:
         raise AssertionError("should not be called")
 
     with pytest.raises(ImproperlyConfiguredException):
-        Starlite(route_handlers=[test_method])
+        Litestar(route_handlers=[test_method])
 
 
 @pytest.mark.parametrize(
@@ -152,7 +152,7 @@ def test_path_param_type_resolution(param_type_name: str, param_type_class: Any,
 
     with create_test_client(handler) as client:
         response = client.get("/some/test/path/" + str(value))
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == HTTP_200_OK, response.json()
 
 
 def test_differently_named_path_params_on_same_level() -> None:

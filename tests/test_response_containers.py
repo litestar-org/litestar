@@ -2,21 +2,21 @@ import os
 from inspect import iscoroutine
 from os import stat
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import pytest
 from fsspec.implementations.local import LocalFileSystem
 
-from starlite import get
-from starlite.datastructures import ETag
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.file_system import BaseLocalFileSystem
-from starlite.response_containers import File
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import RequestFactory, create_test_client
+from litestar import get
+from litestar.datastructures import ETag
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.file_system import BaseLocalFileSystem
+from litestar.response_containers import File, Redirect
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import RequestFactory, create_test_client
 
 if TYPE_CHECKING:
-    from starlite.types import FileSystemProtocol
+    from litestar.types import FileSystemProtocol
 
 
 @pytest.mark.parametrize("file_system", (BaseLocalFileSystem(), LocalFileSystem()))
@@ -155,3 +155,34 @@ def test_file_system_validation(tmpdir: "Path") -> None:
         path=path,
         file_system=ImplementedFS(),
     )
+
+
+@pytest.mark.parametrize(
+    "status_code,expected_status_code",
+    [
+        (301, 301),
+        (302, 302),
+        (303, 303),
+        (307, 307),
+        (308, 308),
+    ],
+)
+def test_redirect_dynamic_status_code(status_code: Optional[int], expected_status_code: int) -> None:
+    @get("/")
+    def handler() -> Redirect:
+        return Redirect(path="/something-else", status_code=status_code)  # type: ignore[arg-type]
+
+    with create_test_client([handler]) as client:
+        res = client.get("/", follow_redirects=False)
+        assert res.status_code == expected_status_code
+
+
+@pytest.mark.parametrize("handler_status_code", [301, 307, None])
+def test_redirect(handler_status_code: Optional[int]) -> None:
+    @get("/", status_code=handler_status_code)
+    def handler() -> Redirect:
+        return Redirect(path="/something-else", status_code=301)
+
+    with create_test_client([handler]) as client:
+        res = client.get("/", follow_redirects=False)
+        assert res.status_code == 301

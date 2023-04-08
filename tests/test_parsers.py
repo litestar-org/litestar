@@ -3,16 +3,16 @@ from urllib.parse import urlencode
 
 import pytest
 
-from starlite import HttpMethod
-from starlite._parsers import (
+from litestar import HttpMethod
+from litestar._parsers import (
     _parse_headers,
     parse_cookie_string,
     parse_headers,
     parse_query_string,
     parse_url_encoded_form_data,
 )
-from starlite.datastructures import Cookie, MultiDict
-from starlite.testing import RequestFactory, create_test_client
+from litestar.datastructures import Cookie, MultiDict
+from litestar.testing import RequestFactory, create_test_client
 
 
 def test_parse_form_data() -> None:
@@ -102,7 +102,7 @@ def test_parse_query_string() -> None:
     ),
 )
 def test_query_parsing_of_escaped_values(values: Tuple[Tuple[str, str], Tuple[str, str]]) -> None:
-    # https://github.com/starlite-api/starlite/issues/915
+    # https://github.com/litestar-org/litestar/issues/915
     with create_test_client([]) as client:
         request = client.build_request(method=HttpMethod.GET, url="http://www.example.com", params=dict(values))
         parsed_query = parse_query_string(request.url.query)

@@ -3,9 +3,9 @@ from typing import Any, List, Optional, Tuple
 
 import pytest
 
-from starlite import get
-from starlite.app import DEFAULT_OPENAPI_CONFIG
-from starlite.pagination import (
+from litestar import get
+from litestar.app import DEFAULT_OPENAPI_CONFIG
+from litestar.pagination import (
     AbstractAsyncClassicPaginator,
     AbstractAsyncCursorPaginator,
     AbstractAsyncOffsetPaginator,
@@ -16,8 +16,8 @@ from starlite.pagination import (
     CursorPagination,
     OffsetPagination,
 )
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
 from tests import Person, PersonFactory
 
 

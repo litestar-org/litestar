@@ -3,16 +3,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from starlite import get
-from starlite.datastructures import MutableScopeHeaders
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
+from litestar import get
+from litestar.datastructures import MutableScopeHeaders
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from typing import Dict
 
-    from starlite.datastructures import State
-    from starlite.types import Message, Scope
+    from litestar.datastructures import State
+    from litestar.types import Message, Scope
 
 
 def test_before_send() -> None:

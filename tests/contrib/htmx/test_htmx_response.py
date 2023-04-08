@@ -3,10 +3,10 @@ from typing import Any
 
 import pytest
 
-from starlite import MediaType, get
-from starlite.contrib.htmx._utils import HTMXHeaders
-from starlite.contrib.htmx.request import HTMXRequest
-from starlite.contrib.htmx.response import (
+from litestar import MediaType, get
+from litestar.contrib.htmx._utils import HTMXHeaders
+from litestar.contrib.htmx.request import HTMXRequest
+from litestar.contrib.htmx.response import (
     ClientRedirect,
     ClientRefresh,
     HTMXTemplate,
@@ -18,11 +18,11 @@ from starlite.contrib.htmx.response import (
     Retarget,
     TriggerEvent,
 )
-from starlite.contrib.jinja import JinjaTemplateEngine
-from starlite.contrib.mako import MakoTemplateEngine
-from starlite.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
-from starlite.template.config import TemplateConfig
-from starlite.testing import create_test_client
+from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.contrib.mako import MakoTemplateEngine
+from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
+from litestar.template.config import TemplateConfig
+from litestar.testing import create_test_client
 
 
 async def test_hx_stop_polling_response() -> None:

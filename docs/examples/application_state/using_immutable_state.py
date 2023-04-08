@@ -1,5 +1,5 @@
-from starlite import Starlite, get
-from starlite.datastructures import ImmutableState
+from litestar import Litestar, get
+from litestar.datastructures import ImmutableState
 
 
 @get("/")
@@ -8,4 +8,4 @@ def handler(state: ImmutableState) -> dict:
     return state.dict()
 
 
-app = Starlite(route_handlers=[handler])
+app = Litestar(route_handlers=[handler])

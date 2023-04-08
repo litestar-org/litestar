@@ -20,10 +20,10 @@ from typing import (
 
 import pytest
 
-from starlite import Response, get
-from starlite.pagination import CursorPagination
-from starlite.utils import is_any, is_class_and_subclass, is_optional_union, is_union
-from starlite.utils.predicates import (
+from litestar import Response, get
+from litestar.pagination import CursorPagination
+from litestar.utils import is_any, is_class_and_subclass, is_optional_union, is_union
+from litestar.utils.predicates import (
     is_generic,
     is_mapping,
     is_non_string_iterable,

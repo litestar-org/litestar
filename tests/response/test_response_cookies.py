@@ -1,9 +1,9 @@
 from uuid import uuid4
 
-from starlite import Controller, HttpMethod, Response, Router, Starlite, get
-from starlite.datastructures import Cookie
-from starlite.status_codes import HTTP_200_OK
-from starlite.testing import create_test_client
+from litestar import Controller, HttpMethod, Litestar, Response, Router, get
+from litestar.datastructures import Cookie
+from litestar.status_codes import HTTP_200_OK
+from litestar.testing import create_test_client
 
 
 def test_response_cookies() -> None:
@@ -32,7 +32,7 @@ def test_response_cookies() -> None:
 
     second_router = Router(path="/external", response_cookies=[Cookie(key="external", value="nope")], route_handlers=[])
 
-    app = Starlite(
+    app = Litestar(
         openapi_config=None,
         response_cookies=[app_first, app_second],
         route_handlers=[first_router, second_router],
@@ -104,7 +104,7 @@ def test_response_cookie_documentation_only_not_rendering() -> None:
 
 
 def test_response_cookie_documentation_only_not_producing_second_header() -> None:
-    # https://github.com/starlite-api/starlite/issues/870
+    # https://github.com/litestar-org/litestar/issues/870
     def after_request(response: Response) -> Response:
         response.set_cookie("my-cookie", "123")
         return response
@@ -129,7 +129,7 @@ def test_response_cookie_documentation_only_not_producing_second_header() -> Non
 
 
 def test_response_cookie_is_always_set() -> None:
-    # https://github.com/starlite-api/starlite/issues/888
+    # https://github.com/litestar-org/litestar/issues/888
     @get(path="/set-cookie")
     def set_cookie_handler() -> Response[None]:
         return Response(

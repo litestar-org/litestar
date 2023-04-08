@@ -15,7 +15,7 @@ API reference
     data_extractors
     datastructures
     di
-    dto
+    dto/index
     enums
     events
     exceptions
@@ -34,6 +34,7 @@ API reference
     serialization
     static_files
     stores/index
+    status_codes
     template
     testing
     types

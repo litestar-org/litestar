@@ -862,11 +862,29 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "bollwyvl",
+      "name": "Nicholas Bollweg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45380?v=4",
+      "profile": "https://github.com/bollwyvl",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "tompin82",
+      "name": "Tomas Jonsson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47041409?v=4",
+      "profile": "https://github.com/tompin82",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "projectName": "starlite",
-  "projectOwner": "starlite-api",
+  "projectName": "litestar",
+  "projectOwner": "litestar-org",
   "repoType": "github",
   "repoHost": "https://github.com",
   "skipCi": true,

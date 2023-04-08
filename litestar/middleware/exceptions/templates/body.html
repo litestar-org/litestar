@@ -1,0 +1,20 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style type="text/css">
+      {styles}
+    </style>
+    <title>Litestar exception page</title>
+  </head>
+  <body>
+    <h4>{error}</h4>
+    <h3><span>{error_description}</span></h3>
+    {exception_data}
+    <script type="text/javascript">
+      // prettier-ignore
+      {scripts} // NOSONAR
+    </script>
+  </body>
+</html>

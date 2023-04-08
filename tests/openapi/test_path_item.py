@@ -2,21 +2,21 @@ from typing import TYPE_CHECKING, Any, Tuple, cast
 
 import pytest
 
-from starlite import Controller, Request, Router, Starlite, get
-from starlite._openapi.path_item import create_path_item
-from starlite._openapi.utils import default_operation_id_creator
-from starlite.exceptions import ImproperlyConfiguredException
-from starlite.handlers.http_handlers import HTTPRouteHandler
-from starlite.utils import find_index
+from litestar import Controller, Litestar, Request, Router, get
+from litestar._openapi.path_item import create_path_item
+from litestar._openapi.utils import default_operation_id_creator
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.handlers.http_handlers import HTTPRouteHandler
+from litestar.utils import find_index
 from tests.openapi.utils import PersonController
 
 if TYPE_CHECKING:
-    from starlite.routes import HTTPRoute
+    from litestar.routes import HTTPRoute
 
 
 @pytest.fixture()
 def route() -> "HTTPRoute":
-    app = Starlite(route_handlers=[PersonController], openapi_config=None)
+    app = Litestar(route_handlers=[PersonController], openapi_config=None)
     index = find_index(app.routes, lambda x: x.path_format == "/{service_id}/person/{person_id}")
     return cast("HTTPRoute", app.routes[index])
 
@@ -28,7 +28,7 @@ def routes_with_router() -> Tuple["HTTPRoute", "HTTPRoute"]:
 
     router_v1 = Router(path="/v1", route_handlers=[PersonController])
     router_v2 = Router(path="/v2", route_handlers=[PersonControllerV2])
-    app = Starlite(route_handlers=[router_v1, router_v2], openapi_config=None)
+    app = Litestar(route_handlers=[router_v1, router_v2], openapi_config=None)
     index_v1 = find_index(app.routes, lambda x: x.path_format == "/v1/{service_id}/person/{person_id}")
     index_v2 = find_index(app.routes, lambda x: x.path_format == "/v2/{service_id}/person/{person_id}")
     return cast("HTTPRoute", app.routes[index_v1]), cast("HTTPRoute", app.routes[index_v2])
@@ -43,7 +43,7 @@ def route_with_multiple_methods() -> "HTTPRoute":
         async def root(self, *, request: Request[str, str, Any]) -> None:
             pass
 
-    app = Starlite(route_handlers=[MultipleMethodsRouteController], openapi_config=None)
+    app = Litestar(route_handlers=[MultipleMethodsRouteController], openapi_config=None)
     index = find_index(app.routes, lambda x: x.path_format == "/")
     return cast("HTTPRoute", app.routes[index])
 
@@ -158,7 +158,7 @@ def test_operation_id_validation() -> None:
     def handler_2() -> None:
         ...
 
-    app = Starlite(route_handlers=[handler_1, handler_2])
+    app = Litestar(route_handlers=[handler_1, handler_2])
 
     with pytest.raises(ImproperlyConfiguredException):
         app.openapi_schema

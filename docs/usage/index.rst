@@ -4,19 +4,19 @@ Usage
 .. toctree::
     :titlesonly:
 
-    the-starlite-app
+    the-litestar-app
     routing
     route-handlers
     parameters
     request-data
     responses
     dependency-injection
+    websockets
     middleware/index
     security/index
     stores
     testing
     plugins/index
-    dto
     events
     openapi
     lifecycle-hooks

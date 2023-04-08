@@ -4,18 +4,18 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from freezegun import freeze_time
 
-from starlite import Request, Starlite, get
-from starlite.middleware.rate_limit import (
+from litestar import Litestar, Request, get
+from litestar.middleware.rate_limit import (
     DURATION_VALUES,
     CacheObject,
     DurationUnit,
     RateLimitConfig,
 )
-from starlite.serialization import decode_json, encode_json
-from starlite.static_files.config import StaticFilesConfig
-from starlite.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
-from starlite.stores.base import Store
-from starlite.testing import TestClient, create_test_client
+from litestar.serialization import decode_json, encode_json
+from litestar.static_files.config import StaticFilesConfig
+from litestar.status_codes import HTTP_200_OK, HTTP_429_TOO_MANY_REQUESTS
+from litestar.stores.base import Store
+from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -29,7 +29,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
 
     config = RateLimitConfig(rate_limit=(unit, 1))
     cache_key = "RateLimitMiddleware::testclient"
-    app = Starlite(route_handlers=[handler], middleware=[config.middleware])
+    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
     store = app.stores.get("rate_limit")
 
     with freeze_time() as frozen_time, TestClient(app=app) as client:
@@ -65,7 +65,7 @@ async def test_non_default_store(memory_store: Store) -> None:
     def handler() -> None:
         return None
 
-    app = Starlite(
+    app = Litestar(
         [handler], middleware=[RateLimitConfig(("second", 10)).middleware], stores={"rate_limit": memory_store}
     )
 
@@ -81,7 +81,7 @@ async def test_set_store_name(memory_store: Store) -> None:
     def handler() -> None:
         return None
 
-    app = Starlite(
+    app = Litestar(
         [handler],
         middleware=[RateLimitConfig(("second", 10), store="some_store").middleware],
         stores={"some_store": memory_store},
@@ -101,7 +101,7 @@ async def test_reset() -> None:
 
     config = RateLimitConfig(rate_limit=("second", 1))
     cache_key = "RateLimitMiddleware::testclient"
-    app = Starlite(route_handlers=[handler], middleware=[config.middleware])
+    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
     store = app.stores.get("rate_limit")
 
     with TestClient(app=app) as client:
@@ -198,7 +198,7 @@ def test_check_throttle_handler() -> None:
 
 
 async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
-    # https://github.com/starlite-api/starlite/issues/781
+    # https://github.com/litestar-org/litestar/issues/781
     @get("/not-excluded")
     def handler() -> None:
         return None
