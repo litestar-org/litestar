@@ -9,6 +9,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.partial import Partial
 from litestar.types.builtin_types import NoneType
 from tests import (
+    AttrsPerson,
     Person,
     PydanticDataClassPerson,
     TypedDictPerson,
@@ -54,6 +55,16 @@ def test_partial_typeddict() -> None:
     partial = Partial[TypedDictPerson]
 
     assert len(get_type_hints(partial)) == len(get_type_hints(TypedDictPerson))
+
+    for annotation in get_type_hints(partial).values():
+        assert isinstance(annotation, GenericAlias)
+        assert NoneType in get_args(annotation)
+
+
+def test_partial_attrs() -> None:
+    partial = Partial[AttrsPerson]
+
+    assert len(get_type_hints(partial)) == len(get_type_hints(AttrsPerson))
 
     for annotation in get_type_hints(partial).values():
         assert isinstance(annotation, GenericAlias)

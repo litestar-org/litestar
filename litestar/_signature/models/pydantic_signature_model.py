@@ -155,6 +155,8 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
                 field_info = FieldInfo(
                     **asdict(parameter.default), kwargs_model=parameter.default, parsed_parameter=parameter
                 )
+            elif isinstance(parameter.default, DependencyKwarg):
+                field_info = FieldInfo(default=..., kwargs_model=parameter.default, parsed_parameter=parameter)
             else:
                 field_info = FieldInfo(default=..., parsed_parameter=parameter)
 

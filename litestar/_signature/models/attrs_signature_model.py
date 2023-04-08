@@ -320,6 +320,7 @@ class AttrsSignatureModel(SignatureModel):
                     default=parameter.default.default if parameter.default.default is not Empty else None,
                     metadata={
                         "kwargs_model": parameter.default,
+                        "parsed_parameter": parameter,
                     },
                 )
             elif parameter.has_default:

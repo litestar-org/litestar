@@ -31,6 +31,7 @@ from litestar.types.builtin_types import UNION_TYPES, NoneType
 
 __all__ = (
     "annotation_is_iterable_of_type",
+    "get_origin_or_inner_type",
     "get_safe_generic_origin",
     "make_non_optional_union",
     "unwrap_annotation",

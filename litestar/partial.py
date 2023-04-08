@@ -1,30 +1,34 @@
+from __future__ import annotations
+
 from dataclasses import MISSING, dataclass
 from dataclasses import Field as DataclassField
 from inspect import getmro
 from typing import (
     TYPE_CHECKING,
     Any,
-    Dict,
     Generic,
     Optional,
-    Tuple,
     Type,
     TypeVar,
     Union,
     get_type_hints,
 )
 
-from pydantic import BaseModel, create_model
-from pydantic.typing import is_classvar
 from typing_extensions import TypeAlias, TypedDict, get_args
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.builtin_types import NoneType
 from litestar.utils.predicates import (
-    is_class_and_subclass,
+    is_attrs_class,
+    is_class_var,
     is_dataclass_class,
+    is_pydantic_model_class,
     is_typed_dict,
 )
+
+if TYPE_CHECKING:
+    import attrs
+    import pydantic
 
 __all__ = ("Partial",)
 
@@ -41,22 +45,19 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
-SupportedTypes: TypeAlias = "Union[Type[DataclassProtocol], Type[BaseModel], TypedDictClass]"
+SupportedTypes: TypeAlias = "Union[Type[DataclassProtocol], Type[pydantic.BaseModel], TypedDictClass]"
 """Types that are supported by :class:`Partial <litestar.types.partial.Partial>`"""
 
 
 class Partial(Generic[T]):
-    """Type generation for PATCH routes.
-
-    Partial is a special typing helper that takes a generic T, which must be a
-    :class:`TypedDict <typing.TypedDict>`, dataclass or pydantic model class, and
+    """Partial is a special typing helper that takes a generic T, and
     returns to static type checkers a version of this T in which all fields -
     and nested fields - are optional.
     """
 
-    _models: Dict[SupportedTypes, SupportedTypes] = {}
+    _models: dict[SupportedTypes, SupportedTypes] = {}
 
-    def __class_getitem__(cls, item: Type[T]) -> Type[T]:
+    def __class_getitem__(cls, item: type[T]) -> type[T]:
         """Take a pydantic model class, :class:`TypedDict <typing.TypedDict>` or a dataclass and return an all optional
         version of that class.
 
@@ -67,8 +68,10 @@ class Partial(Generic[T]):
             A pydantic model, :class:`TypedDict <typing.TypedDict>`, or dataclass.
         """
         if item not in cls._models:
-            if is_class_and_subclass(item, BaseModel):
+            if is_pydantic_model_class(item):
                 cls._create_partial_pydantic_model(item=item)
+            elif is_attrs_class(item):
+                cls._create_partial_attrs_model(item=item)
             elif is_dataclass_class(item):
                 cls._create_partial_dataclass(item=item)
             elif is_typed_dict(item):
@@ -81,32 +84,55 @@ class Partial(Generic[T]):
         return cls._models[item]  # type:ignore[return-value]
 
     @classmethod
-    def _create_partial_pydantic_model(cls, item: Type[BaseModel]) -> None:
+    def _create_partial_pydantic_model(cls, item: type[pydantic.BaseModel]) -> None:
         """Receives a pydantic model class and creates an all optional subclass of it.
 
         Args:
             item: A pydantic model class.
         """
-        field_definitions: Dict[str, Tuple[Any, None]] = {}
+        import pydantic
+
+        field_definitions: dict[str, tuple[Any, None]] = {}
         for field_name, field_type in get_type_hints(item).items():
-            if is_classvar(field_type):
+            if is_class_var(field_type):
                 continue
             if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
                 field_definitions[field_name] = (Optional[field_type], None)
             else:
                 field_definitions[field_name] = (field_type, None)
 
-        cls._models[item] = create_model(cls._create_partial_type_name(item), __base__=item, **field_definitions)  # type: ignore
+        cls._models[item] = pydantic.create_model(cls._create_partial_type_name(item), __base__=item, **field_definitions)  # type: ignore
 
     @classmethod
-    def _create_partial_dataclass(cls, item: "Type[DataclassProtocol]") -> None:
+    def _create_partial_attrs_model(cls, item: type[attrs.AttrsInstance]) -> None:
+        import attrs
+
+        fields: dict[str, Any] = {}
+        for field_name, field_type in get_type_hints(item).items():
+            if is_class_var(field_type):
+                continue
+            if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
+                fields[field_name] = Optional[field_type]
+            else:
+                fields[field_name] = field_type
+
+        cls._models[item] = attrs.define(
+            type(
+                cls._create_partial_type_name(item),
+                (item,),
+                {"__annotations__": fields, **{k: None for k in fields}},  # type: ignore[misc]
+            )
+        )
+
+    @classmethod
+    def _create_partial_dataclass(cls, item: type[DataclassProtocol]) -> None:
         """Receives a dataclass class and creates an all optional subclass of it.
 
         Args:
             item: A dataclass class.
         """
-        fields: Dict[str, DataclassField] = cls._create_optional_field_map(item)
-        partial_type: "Type[DataclassProtocol]" = dataclass(
+        fields: dict[str, DataclassField] = cls._create_optional_field_map(item)
+        partial_type: "type[DataclassProtocol]" = dataclass(
             type(cls._create_partial_type_name(item), (item,), {"__dataclass_fields__": fields})
         )
         annotated_ancestors = [a for a in getmro(partial_type) if hasattr(a, "__annotations__")]
@@ -126,7 +152,7 @@ class Partial(Generic[T]):
         Args:
             item: A :class:`TypedDict <typing.TypeDict>` class.
         """
-        type_hints: Dict[str, Any] = {}
+        type_hints: dict[str, Any] = {}
         for key_name, value_type in get_type_hints(item).items():
             if NoneType in get_args(value_type):
                 type_hints[key_name] = value_type
@@ -135,7 +161,7 @@ class Partial(Generic[T]):
         cls._models[item] = TypedDict(cls._create_partial_type_name(item), type_hints, total=False)  # type:ignore
 
     @staticmethod
-    def _create_optional_field_map(item: "Type[DataclassProtocol]") -> Dict[str, DataclassField]:
+    def _create_optional_field_map(item: type[DataclassProtocol]) -> dict[str, DataclassField]:
         """Create a map of field name to optional dataclass Fields for a given dataclass.
 
         Args:
@@ -144,7 +170,7 @@ class Partial(Generic[T]):
         Returns:
             A map of field name to optional dataclass fields.
         """
-        fields: Dict[str, DataclassField] = {}
+        fields: dict[str, DataclassField] = {}
         # https://github.com/python/typing/discussions/1056
         for field_name, dataclass_field in item.__dataclass_fields__.items():  # pyright:ignore
             if not isinstance(dataclass_field.type, GenericAlias) or NoneType not in dataclass_field.type.__args__:
