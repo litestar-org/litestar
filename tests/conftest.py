@@ -59,6 +59,7 @@ from fakeredis.aioredis import FakeRedis
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
+from litestar.testing import RequestFactory
 
 
 def pytest_generate_tests(metafunc: Callable) -> None:
@@ -288,3 +289,8 @@ def mock_db() -> MemoryStore:
 def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
     with freeze_time() as frozen:
         yield cast("FrozenDateTimeFactory", frozen)
+
+
+@pytest.fixture()
+def request_factory() -> RequestFactory:
+    return RequestFactory()

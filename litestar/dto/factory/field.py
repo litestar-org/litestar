@@ -5,8 +5,13 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
 
-__all__ = ("DTO_FIELD_META_KEY", "DTOField", "dto_field")
-
+__all__ = (
+    "DTO_FIELD_META_KEY",
+    "DTOField",
+    "Mark",
+    "Purpose",
+    "dto_field",
+)
 
 DTO_FIELD_META_KEY = "__dto__"
 

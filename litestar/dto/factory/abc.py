@@ -9,18 +9,25 @@ from typing_extensions import Annotated, Self, get_args, get_origin
 
 from litestar.dto.interface import DTOInterface
 
+from .backends import MsgspecDTOBackend
 from .config import DTOConfig
 from .exc import InvalidAnnotation
 from .field import Mark, Purpose
 from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
-from .utils import parse_config_from_annotated
+from .utils import build_data_from_struct, build_struct_from_model, parse_config_from_annotated
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Generator
 
+    from litestar.connection import Request
     from litestar.handlers import BaseRouteHandler
 
-__all__ = ["AbstractDTOFactory"]
+    from .backends import AbstractDTOBackend
+
+__all__ = [
+    "AbstractDTOFactory",
+    "MsgspecBackedDTOFactory",
+]
 
 DataT = TypeVar("DataT")
 
@@ -38,6 +45,10 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
     field_definitions: ClassVar[FieldDefinitionsType]
     """Field definitions parsed from the model."""
+    dto_backend_type: ClassVar[type[AbstractDTOBackend]]
+    """DTO backend type."""
+    dto_backend: ClassVar[AbstractDTOBackend]
+    """DTO backend instance."""
 
     _postponed_cls_init_called: ClassVar[bool]
     _reverse_field_mappings: ClassVar[dict[str, FieldDefinition]]
@@ -224,6 +235,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         Use this to do things like type inspection on models that should not occur during compile time.
         """
         cls.field_definitions = cls.parse_model(cls.model_type)
+        cls.dto_backend = cls.dto_backend_type.from_field_definitions(cls.annotation, cls.field_definitions)
 
     @classmethod
     def on_startup(cls, resolved_handler_annotation: Any, route_handler: BaseRouteHandler) -> None:
@@ -246,3 +258,30 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         if not cls._postponed_cls_init_called:
             cls._postponed_cls_init_called = True
             cls.postponed_cls_init()
+
+
+class MsgspecBackedDTOFactory(AbstractDTOFactory[DataT], Generic[DataT], metaclass=ABCMeta):
+    dto_backend_type = MsgspecDTOBackend
+    dto_backend: ClassVar[MsgspecDTOBackend]
+
+    @classmethod
+    async def from_connection(cls, connection: Request[Any, Any, Any]) -> Self:
+        """Construct an instance from bytes.
+
+        Args:
+            connection: A byte representation of the DTO model.
+
+        Returns:
+            AbstractDTOFactory instance.
+        """
+        parsed = cls.dto_backend.parse_raw(await connection.body(), connection.content_type[0])
+        return cls(data=build_data_from_struct(cls.model_type, parsed, cls.field_definitions))  # type:ignore[arg-type]
+
+    def to_encodable_type(self, request: Request[Any, Any, Any]) -> Any:
+        if isinstance(self.data, self.model_type):
+            return build_struct_from_model(self.data, self.dto_backend.data_container_type)
+        type_ = get_origin(self.annotation) or self.annotation
+        return type_(
+            build_struct_from_model(datum, self.dto_backend.data_container_type)
+            for datum in self.data  # pyright:ignore
+        )
