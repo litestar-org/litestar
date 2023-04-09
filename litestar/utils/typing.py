@@ -197,10 +197,12 @@ def get_origin_or_inner_type(annotation: Any) -> Any:
     Returns:
         Any type.
     """
-
     origin = get_origin(annotation)
     if origin in wrapper_type_set:
-        origin, _, _ = unwrap_annotation(annotation)
+        inner, _, _ = unwrap_annotation(annotation)
+        # we need to recursively call here 'get_origin_or_inner_type' because we might be dealing with a generic type alias
+        # e.g. Annotated[dict[str, list[int]]
+        origin = get_origin_or_inner_type(inner)
     return types_mapping.get(origin, origin)
 
 

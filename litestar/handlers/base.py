@@ -152,7 +152,7 @@ class BaseRouteHandler(Generic[T]):
         This method is memoized so the computation occurs only once.
 
         Returns:
-            A :class:`ParsedSignature <.types.parsed_signature.ParsedSignature>` instance
+            A :class:`ParsedSignature <.utils.signature.ParsedSignature>` instance
         """
         if self._parsed_fn_signature is Empty:
             self._parsed_fn_signature = ParsedSignature.from_fn(

@@ -11,7 +11,6 @@ from typing import (
     DefaultDict,
     Deque,
     Dict,
-    ForwardRef,
     FrozenSet,
     Generic,
     Iterable,
@@ -337,12 +336,4 @@ def is_class_var(annotation: Any) -> bool:
         A boolean.
     """
     annotation = get_origin_or_inner_type(annotation) or annotation
-    return (
-        annotation
-        and hasattr(annotation, "__class__")
-        and (
-            (annotation.__class__ == ClassVar.__class__ and getattr(annotation, "_name", None) == "ClassVar")
-            or annotation.__class__ is ForwardRef
-            and annotation.__forward_arg__.startswith("ClassVar[")
-        )
-    )
+    return annotation is ClassVar
