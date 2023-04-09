@@ -208,6 +208,7 @@ exclude = [
     "litestar/contrib/sqlalchemy_1",
     "litestar/openapi",
     "litestar/plugins",
+    "tests/contrib/sqlalchemy/test_dto.py",
     "tests/contrib/sqlalchemy_1",
     "tests/openapi",
     "tests/plugins",

@@ -238,7 +238,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         cls.dto_backend = cls.dto_backend_type.from_field_definitions(cls.annotation, cls.field_definitions)
 
     @classmethod
-    def on_startup(cls, resolved_handler_annotation: Any, route_handler: BaseRouteHandler) -> None:
+    def on_registration(cls, resolved_handler_annotation: Any, route_handler: BaseRouteHandler) -> None:
         """Do something each time the DTO type is encountered during signature modelling.
 
         Args:
