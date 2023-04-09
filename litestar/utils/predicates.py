@@ -271,7 +271,7 @@ def is_pydantic_model_instance(annotation: Any) -> "TypeGuard[pydantic.BaseModel
     return False  # pragma: no cover
 
 
-def is_attrs_class(annotation: Any) -> TypeGuard[type["attrs.AttrsInstance"]]:  # pyright: ignore
+def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # pyright: ignore
     """Given a type annotation determine if the annotation is a class that includes an attrs attribute.
 
     Args:
