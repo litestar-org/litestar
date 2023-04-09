@@ -1,6 +1,7 @@
-from typing import Annotated, Dict
+from typing import Dict
 
 from pydantic import BaseConfig, BaseModel
+from typing_extensions import Annotated
 
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile

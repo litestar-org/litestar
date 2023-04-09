@@ -1,4 +1,6 @@
-from typing import Annotated, Any, Dict
+from typing import Any, Dict
+
+from typing_extensions import Annotated
 
 from litestar import Litestar, get
 from litestar.di import Provide

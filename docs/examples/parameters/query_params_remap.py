@@ -1,4 +1,6 @@
-from typing import Annotated, Dict
+from typing import Dict
+
+from typing_extensions import Annotated
 
 from litestar import Litestar, get
 from litestar.params import Parameter
