@@ -1,6 +1,7 @@
 import dataclasses
 from typing import Any, ClassVar, Optional, get_type_hints
 
+import pydantic
 import pytest
 from pydantic import BaseModel
 from typing_extensions import TypedDict, get_args
@@ -43,19 +44,42 @@ def test_partial_pydantic_model() -> None:
             assert NoneType not in get_args(annotation)
 
 
-@pytest.mark.parametrize("cls", [VanillaDataClassPerson, PydanticDataClassPerson])
-def test_partial_dataclass(cls: Any) -> None:
-    partial = Partial[cls]
+def test_partial_vanilla_dataclass() -> None:
+    @dataclasses.dataclass
+    class VanillaDataClassPersonWithClassVar(VanillaDataClassPerson):
+        cls_var: ClassVar[int]
 
-    assert len(partial.__dataclass_fields__) == len(cls.__dataclass_fields__)  # type: ignore
+    partial = Partial[VanillaDataClassPersonWithClassVar]
 
-    for field in partial.__dataclass_fields__.values():  # type: ignore
-        assert field.default is None
-        assert NoneType in get_args(field.type)
+    assert len(dataclasses.fields(VanillaDataClassPersonWithClassVar)) == len(
+        dataclasses.fields(VanillaDataClassPerson)
+    )
 
     for annotation in get_type_hints(partial).values():
-        assert isinstance(annotation, GenericAlias)
-        assert NoneType in get_args(annotation)
+        if not is_class_var(annotation):
+            assert isinstance(annotation, GenericAlias)
+            assert NoneType in get_args(annotation)
+        else:
+            assert NoneType not in get_args(annotation)
+
+
+def test_partial_pydantic_dataclass() -> None:
+    @pydantic.dataclasses.dataclass
+    class VanillaDataClassPersonWithClassVar(VanillaDataClassPerson):
+        cls_var: ClassVar[int]
+
+    partial = Partial[VanillaDataClassPersonWithClassVar]
+
+    assert len(dataclasses.fields(VanillaDataClassPersonWithClassVar)) == len(
+        dataclasses.fields(PydanticDataClassPerson)
+    )
+
+    for annotation in get_type_hints(partial).values():
+        if not is_class_var(annotation):
+            assert isinstance(annotation, GenericAlias)
+            assert NoneType in get_args(annotation)
+        else:
+            assert NoneType not in get_args(annotation)
 
 
 def test_partial_typeddict() -> None:

@@ -1,7 +1,6 @@
 from collections import defaultdict, deque
 from inspect import Signature
 from typing import (
-    Annotated,
     Any,
     ClassVar,
     DefaultDict,
@@ -21,6 +20,7 @@ from typing import (
 )
 
 import pytest
+from typing_extensions import Annotated
 
 from litestar import Response, get
 from litestar.pagination import CursorPagination

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import MISSING, fields, make_dataclass
+from dataclasses import make_dataclass
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -12,7 +12,7 @@ from typing import (
     get_type_hints,
 )
 
-from typing_extensions import NotRequired, TypeAlias, TypedDict
+from typing_extensions import TypeAlias, TypedDict
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.builtin_types import NoneType
@@ -130,20 +130,13 @@ class Partial(Generic[T]):
             item: A dataclass class.
         """
         field_definitions: list[tuple[str, type, Any]] = []
-        dataclass_fields = {field.name: field for field in fields(item)}
         for field_name, field_type in get_type_hints(item).items():
-            dataclass_field = dataclass_fields[field_name]
-            default_value = (
-                dataclass_field.default if dataclass_field.default is not MISSING else dataclass_field.default_factory
-            )
-
             if is_class_var(field_type):
-                field_definitions.append((field_name, field_type, default_value))
-            elif not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
+                continue
+            if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
                 field_definitions.append((field_name, Optional[field_type], None))  # type: ignore[arg-type]
             else:
                 field_definitions.append((field_name, field_type, None))
-
         cls._models[item] = make_dataclass(
             cls_name=cls._create_partial_type_name(item),
             fields=field_definitions,
@@ -160,10 +153,10 @@ class Partial(Generic[T]):
         field_definitions: dict[str, Any] = {}
         for field_name, field_type in get_type_hints(item).items():
             if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
-                field_definitions[field_name] = NotRequired[Optional[field_type]]  # pyright: ignore
+                field_definitions[field_name] = Optional[field_type]
             else:
-                field_definitions[field_name] = NotRequired[field_type]  # pyright: ignore
-        cls._models[item] = TypedDict(cls._create_partial_type_name(item), field_definitions)  # type: ignore
+                field_definitions[field_name] = field_type
+        cls._models[item] = TypedDict(cls._create_partial_type_name(item), field_definitions, total=False)  # type: ignore
 
     @staticmethod
     def _create_partial_type_name(item: SupportedTypes) -> str:
