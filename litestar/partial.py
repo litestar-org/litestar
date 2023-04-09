@@ -132,7 +132,7 @@ class Partial(Generic[T]):
             item: A dataclass class.
         """
         fields: dict[str, DataclassField] = cls._create_optional_field_map(item)
-        partial_type: "type[DataclassProtocol]" = dataclass(
+        partial_type: type[DataclassProtocol] = dataclass(
             type(cls._create_partial_type_name(item), (item,), {"__dataclass_fields__": fields})
         )
         annotated_ancestors = [a for a in getmro(partial_type) if hasattr(a, "__annotations__")]
