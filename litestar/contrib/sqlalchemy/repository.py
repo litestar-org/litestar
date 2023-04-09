@@ -8,7 +8,7 @@ from sqlalchemy import Select, delete, over, select, text, update
 from sqlalchemy import func as sql_func
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from litestar.contrib.repository.abc import AbstractRepository
+from litestar.contrib.repository.abc import AsyncAbstractRepository
 from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
 from litestar.contrib.repository.filters import (
     BeforeAfter,
@@ -29,13 +29,13 @@ if TYPE_CHECKING:
     from litestar.contrib.sqlalchemy import base
 
 __all__ = (
-    "SQLAlchemyRepository",
+    "AsyncSQLAlchemyRepository",
     "ModelT",
 )
 
 T = TypeVar("T")
 ModelT = TypeVar("ModelT", bound="base.Base | base.AuditBase")
-SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyRepository")
+SQLARepoT = TypeVar("SQLARepoT", bound="AsyncSQLAlchemyRepository")
 SelectT = TypeVar("SelectT", bound="Select[Any]")
 RowT = TypeVar("RowT", bound=Tuple[Any, ...])
 
@@ -61,7 +61,7 @@ def wrap_sqlalchemy_exception() -> Any:
         raise RepositoryError(f"An exception occurred: {exc}") from exc
 
 
-class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
+class AsyncSQLAlchemyRepository(AsyncAbstractRepository[ModelT], Generic[ModelT]):
     """SQLAlchemy based implementation of the repository interface."""
 
     match_fields: list[str] | str | None = None

@@ -11,17 +11,17 @@ if TYPE_CHECKING:
 
     from .filters import BeforeAfter, CollectionFilter, LimitOffset, OrderBy, SearchFilter
 
-__all__ = ("AbstractRepository", "FilterTypes")
+__all__ = ("AsyncAbstractRepository", "FilterTypes")
 
 T = TypeVar("T")
-RepoT = TypeVar("RepoT", bound="AbstractRepository")
+RepoT = TypeVar("RepoT", bound="AsyncAbstractRepository")
 CollectionT = TypeVar("CollectionT")
 
 FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset | OrderBy | SearchFilter"
 """Aggregate type alias of the types supported for collection filtering."""
 
 
-class AbstractRepository(Generic[T], metaclass=ABCMeta):
+class AsyncAbstractRepository(Generic[T], metaclass=ABCMeta):
     """Interface for persistent data interaction."""
 
     model_type: type[T]
@@ -160,7 +160,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """Update instance with the attribute values present on ``data``.
 
         Args:
-            data: An instance that should have a value for :attr:`id_attribute <AbstractRepository.id_attribute>` that exists in the
+            data: An instance that should have a value for :attr:`id_attribute <AsyncAbstractRepository.id_attribute>` that exists in the
                 collection.
 
         Returns:
@@ -175,7 +175,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """Update multiple instances with the attribute values present on instances in ``data``.
 
         Args:
-            data: A list of instance that should have a value for :attr:`id_attribute <AbstractRepository.id_attribute>` that exists in the
+            data: A list of instance that should have a value for :attr:`id_attribute <AsyncAbstractRepository.id_attribute>` that exists in the
                 collection.
 
         Returns:
@@ -195,7 +195,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         Args:
             data: Instance to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on ``data`` named as value of
-                :attr:`id_attribute <AbstractRepository.id_attribute>`.
+                :attr:`id_attribute <AsyncAbstractRepository.id_attribute>`.
 
         Returns:
             The updated or created instance.
@@ -240,7 +240,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
                 have the property that their attribute named ``key`` has value equal to ``value``.
 
         Raises:
-            RepositoryError: if a named attribute doesn't exist on :attr:`model_type <AbstractRepository.model_type>`.
+            RepositoryError: if a named attribute doesn't exist on :attr:`model_type <AsyncAbstractRepository.model_type>`.
         """
 
     @staticmethod
@@ -259,13 +259,13 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @classmethod
     def get_id_attribute_value(cls, item: T) -> Any:
-        """Get value of attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` on ``item``.
+        """Get value of attribute named as :attr:`id_attribute <AsyncAbstractRepository.id_attribute>` on ``item``.
 
         Args:
-            item: Anything that should have an attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` value.
+            item: Anything that should have an attribute named as :attr:`id_attribute <AsyncAbstractRepository.id_attribute>` value.
 
         Returns:
-            The value of attribute on ``item`` named as :attr:`id_attribute <AbstractRepository.id_attribute>`.
+            The value of attribute on ``item`` named as :attr:`id_attribute <AsyncAbstractRepository.id_attribute>`.
         """
         return getattr(item, cls.id_attribute)
 
@@ -275,10 +275,10 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
         Args:
             item_id: Value of ID to be set on instance
-            item: Anything that should have an attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` value.
+            item: Anything that should have an attribute named as :attr:`id_attribute <AsyncAbstractRepository.id_attribute>` value.
 
         Returns:
-            Item with ``item_id`` set to :attr:`id_attribute <AbstractRepository.id_attribute>`
+            Item with ``item_id`` set to :attr:`id_attribute <AsyncAbstractRepository.id_attribute>`
         """
         setattr(item, cls.id_attribute, item_id)
         return item

@@ -8,7 +8,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar.contrib.sqlalchemy.base import AuditBase, Base
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyRepository
+from litestar.contrib.sqlalchemy.repository import AsyncSQLAlchemyRepository
 
 
 class Author(AuditBase):
@@ -26,13 +26,13 @@ class Book(Base):
     author: Mapped[Author] = relationship(lazy="joined", innerjoin=True)
 
 
-class AuthorRepository(SQLAlchemyRepository[Author]):
+class AuthorRepository(AsyncSQLAlchemyRepository[Author]):
     """Author repository."""
 
     model_type = Author
 
 
-class BookRepository(SQLAlchemyRepository[Book]):
+class BookRepository(AsyncSQLAlchemyRepository[Book]):
     """Author repository."""
 
     model_type = Book

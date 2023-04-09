@@ -1,7 +1,7 @@
 SQLAlchemy Repository
 =====================
 
-Litestar comes with a built-in repository class (:class:`SQLAlchemyRepository <.contrib.sqlalchemy.repository.SQLAlchemyRepository>`.) for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ to make CRUD operations easier.
+Litestar comes with a built-in repository class (:class:`AsyncSQLAlchemyRepository <.contrib.sqlalchemy.repository.AsyncSQLAlchemyRepository>`.) for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ to make CRUD operations easier.
 
 Features
 --------
