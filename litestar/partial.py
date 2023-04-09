@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import MISSING, dataclass
-from dataclasses import Field as DataclassField
-from inspect import getmro
+from dataclasses import MISSING, fields, make_dataclass
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -14,7 +12,7 @@ from typing import (
     get_type_hints,
 )
 
-from typing_extensions import TypeAlias, TypedDict, get_args
+from typing_extensions import NotRequired, TypeAlias, TypedDict
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.builtin_types import NoneType
@@ -107,20 +105,20 @@ class Partial(Generic[T]):
     def _create_partial_attrs_model(cls, item: type[attrs.AttrsInstance]) -> None:
         import attrs
 
-        fields: dict[str, Any] = {}
+        field_definitions: dict[str, Any] = {}
         for field_name, field_type in get_type_hints(item).items():
             if is_class_var(field_type):
                 continue
             if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
-                fields[field_name] = Optional[field_type]
+                field_definitions[field_name] = Optional[field_type]
             else:
-                fields[field_name] = field_type
+                field_definitions[field_name] = field_type
 
         cls._models[item] = attrs.define(
             type(
                 cls._create_partial_type_name(item),
                 (item,),
-                {"__annotations__": fields, **{k: None for k in fields}},  # type: ignore[misc]
+                {"__annotations__": field_definitions, **{k: None for k in field_definitions}},  # type: ignore[misc]
             )
         )
 
@@ -131,19 +129,26 @@ class Partial(Generic[T]):
         Args:
             item: A dataclass class.
         """
-        fields: dict[str, DataclassField] = cls._create_optional_field_map(item)
-        partial_type: type[DataclassProtocol] = dataclass(
-            type(cls._create_partial_type_name(item), (item,), {"__dataclass_fields__": fields})
-        )
-        annotated_ancestors = [a for a in getmro(partial_type) if hasattr(a, "__annotations__")]
-        for ancestor in annotated_ancestors:
-            for field_name, annotation in ancestor.__annotations__.items():
-                if not isinstance(annotation, GenericAlias) or NoneType not in annotation.__args__:
-                    partial_type.__annotations__[field_name] = Optional[annotation]
-                else:
-                    partial_type.__annotations__[field_name] = annotation
+        field_definitions: list[tuple[str, type, Any]] = []
+        dataclass_fields = {field.name: field for field in fields(item)}
+        for field_name, field_type in get_type_hints(item).items():
+            dataclass_field = dataclass_fields[field_name]
+            default_value = (
+                dataclass_field.default if dataclass_field.default is not MISSING else dataclass_field.default_factory
+            )
 
-        cls._models[item] = partial_type
+            if is_class_var(field_type):
+                field_definitions.append((field_name, field_type, default_value))
+            elif not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
+                field_definitions.append((field_name, Optional[field_type], None))  # type: ignore[arg-type]
+            else:
+                field_definitions.append((field_name, field_type, None))
+
+        cls._models[item] = make_dataclass(
+            cls_name=cls._create_partial_type_name(item),
+            fields=field_definitions,
+            bases=(item,),
+        )
 
     @classmethod
     def _create_partial_typeddict(cls, item: "TypedDictClass") -> None:
@@ -152,33 +157,13 @@ class Partial(Generic[T]):
         Args:
             item: A :class:`TypedDict <typing.TypeDict>` class.
         """
-        type_hints: dict[str, Any] = {}
-        for key_name, value_type in get_type_hints(item).items():
-            if NoneType in get_args(value_type):
-                type_hints[key_name] = value_type
-                continue
-            type_hints[key_name] = Optional[value_type]
-        cls._models[item] = TypedDict(cls._create_partial_type_name(item), type_hints, total=False)  # type:ignore
-
-    @staticmethod
-    def _create_optional_field_map(item: type[DataclassProtocol]) -> dict[str, DataclassField]:
-        """Create a map of field name to optional dataclass Fields for a given dataclass.
-
-        Args:
-            item: A dataclass class.
-
-        Returns:
-            A map of field name to optional dataclass fields.
-        """
-        fields: dict[str, DataclassField] = {}
-        # https://github.com/python/typing/discussions/1056
-        for field_name, dataclass_field in item.__dataclass_fields__.items():  # pyright:ignore
-            if not isinstance(dataclass_field.type, GenericAlias) or NoneType not in dataclass_field.type.__args__:
-                dataclass_field.type = Optional[dataclass_field.type]
-            if dataclass_field.default_factory is MISSING:
-                dataclass_field.default = None if dataclass_field.default is MISSING else dataclass_field.default
-            fields[field_name] = dataclass_field
-        return fields
+        field_definitions: dict[str, Any] = {}
+        for field_name, field_type in get_type_hints(item).items():
+            if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
+                field_definitions[field_name] = NotRequired[Optional[field_type]]  # pyright: ignore
+            else:
+                field_definitions[field_name] = NotRequired[field_type]  # pyright: ignore
+        cls._models[item] = TypedDict(cls._create_partial_type_name(item), field_definitions)  # type: ignore
 
     @staticmethod
     def _create_partial_type_name(item: SupportedTypes) -> str:
