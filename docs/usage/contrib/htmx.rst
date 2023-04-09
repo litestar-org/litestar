@@ -61,7 +61,7 @@ an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
     - ``trigger_event``, ``params`` and ``after parameters`` are linked to one another.
     - If you are triggering an event then ``after`` is required and it must be one of ``receive``, ``settle`` or ``swap``.
 
-HTMX provides two types of responses - one that donsn't allow changes to the DOM and one that does.
+HTMX provides two types of responses - one that doesn't allow changes to the DOM and one that does.
 Litestar supports both of these:
 
 1 - Responses that don't make any changes to DOM.
