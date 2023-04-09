@@ -303,26 +303,27 @@ class AttrsSignatureModel(SignatureModel):
         for parameter in parsed_signature.parameters.values():
             annotation = type_overrides.get(parameter.name, parameter.parsed_type.annotation)
 
-            if isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
-                attribute = attr.attrib(
-                    type=annotation,
-                    metadata={
-                        **asdict(parameter.default),
-                        "kwargs_model": parameter.default,
-                        "parsed_parameter": parameter,
-                    },
-                    default=parameter.default.default if parameter.default.default is not Empty else attr.NOTHING,
-                    validator=_create_validators(annotation=annotation, kwargs_model=parameter.default),
-                )
-            elif isinstance(parameter.default, DependencyKwarg):
-                attribute = attr.attrib(
-                    type=annotation,
-                    default=parameter.default.default if parameter.default.default is not Empty else None,
-                    metadata={
-                        "kwargs_model": parameter.default,
-                        "parsed_parameter": parameter,
-                    },
-                )
+            if kwargs_container := parameter.kwarg_container:
+                if isinstance(kwargs_container, DependencyKwarg):
+                    attribute = attr.attrib(
+                        type=annotation if not kwargs_container.skip_validation else Any,
+                        default=kwargs_container.default if kwargs_container.default is not Empty else None,
+                        metadata={
+                            "kwargs_model": kwargs_container,
+                            "parsed_parameter": parameter,
+                        },
+                    )
+                else:
+                    attribute = attr.attrib(
+                        type=annotation,
+                        metadata={
+                            **asdict(kwargs_container),
+                            "kwargs_model": kwargs_container,
+                            "parsed_parameter": parameter,
+                        },
+                        default=kwargs_container.default if kwargs_container.default is not Empty else attr.NOTHING,
+                        validator=_create_validators(annotation=annotation, kwargs_model=kwargs_container),
+                    )
             elif parameter.has_default:
                 attribute = attr.attrib(type=annotation, default=parameter.default)
             else:
