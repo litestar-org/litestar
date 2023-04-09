@@ -158,6 +158,8 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
                         kwargs_model=kwargs_container,
                         parsed_parameter=parameter,
                     )
+                    if kwargs_container.skip_validation:
+                        field_type = Any
                 else:
                     field_info = FieldInfo(
                         **{k: v for k, v in asdict(kwargs_container).items() if v is not Empty},

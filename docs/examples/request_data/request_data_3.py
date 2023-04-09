@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from typing_extensions import Annotated
+
 from litestar import Litestar, post
 from litestar.params import Body
 
@@ -12,7 +14,7 @@ class User:
 
 @post(path="/")
 async def create_user(
-    data: User = Body(title="Create User", description="Create a new user."),
+    data: Annotated[User, Body(title="Create User", description="Create a new user.")],
 ) -> User:
     return data
 
