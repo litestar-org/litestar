@@ -898,6 +898,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "sonpro1296",
+      "name": "sonpro1296",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17319142?v=4",
+      "profile": "https://github.com/sonpro1296",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
