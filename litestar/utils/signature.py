@@ -3,29 +3,27 @@ from __future__ import annotations
 import sys
 import typing
 from dataclasses import dataclass
-from inspect import Parameter, Signature, isclass, ismethod
+from inspect import Parameter, Signature, getmembers, isclass, ismethod
+from itertools import chain
 from typing import Any, AnyStr, Collection, Union
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin, get_type_hints
 
-from litestar.connection import Request, WebSocket
-from litestar.datastructures import Headers, ImmutableState, State
+from litestar import connection, datastructures, types
+from litestar.datastructures import ImmutableState
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
-from litestar.types import AnyCallable, Empty, Receive, Scope, Send, WebSocketScope
+from litestar.types import AnyCallable, Empty
 from litestar.types.builtin_types import UNION_TYPES, NoneType
 from litestar.utils.typing import get_safe_generic_origin, unwrap_annotation
 
 _GLOBAL_NAMES = {
-    "Headers": Headers,
-    "ImmutableState": ImmutableState,
-    "Receive": Receive,
-    "Request": Request,
-    "Scope": Scope,
-    "Send": Send,
-    "State": State,
-    "WebSocket": WebSocket,
-    "WebSocketScope": WebSocketScope,
+    namespace: export
+    for namespace, export in chain(
+        tuple(getmembers(types)), tuple(getmembers(connection)), tuple(getmembers(datastructures))
+    )
+    if namespace[0].isupper()
+    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)  # pyright: ignore
 }
 """A mapping of names used for handler signature forward-ref resolution.
 
@@ -39,7 +37,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     """Resolve type hints for ``fn``.
 
     Args:
-        fn: Thing that is having its signature modelled.
+        fn: Callable that is being inspected
         namespace: Extra names for resolution of forward references.
 
     Returns:
