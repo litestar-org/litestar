@@ -880,6 +880,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "khiemdoan",
+      "name": "Khiem Doan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15646249?v=4",
+      "profile": "https://www.linkedin.com/in/khiem-doan/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
