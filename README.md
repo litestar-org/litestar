@@ -20,7 +20,7 @@
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-93-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-94-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -404,6 +404,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tompin82"><img src="https://avatars.githubusercontent.com/u/47041409?v=4?s=100" width="100px;" alt="Tomas Jonsson"/><br /><sub><b>Tomas Jonsson</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=tompin82" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/khiem-doan/"><img src="https://avatars.githubusercontent.com/u/15646249?v=4?s=100" width="100px;" alt="Khiem Doan"/><br /><sub><b>Khiem Doan</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=khiemdoan" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/kedod"><img src="https://avatars.githubusercontent.com/u/35638715?v=4?s=100" width="100px;" alt="kedod"/><br /><sub><b>kedod</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=kedod" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
