@@ -1,7 +1,7 @@
 SQLAlchemy Models & Repository
 ==============================
 
-Litestar comes with a built-in repository class (:class:`AsyncSQLAlchemyRepository <.contrib.sqlalchemy.repository.AsyncSQLAlchemyRepository>`.) for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ to make CRUD operations easier.
+Litestar comes with a built-in repository class (:class:`AsyncSQLAlchemyRepository <litestar.contrib.sqlalchemy.repository.AsyncSQLAlchemyRepository>`.) for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ to make CRUD operations easier.
 
 Features
 --------
@@ -28,7 +28,7 @@ Models using these bases also include the following enhancements:
 Basic Controller Integration.
 -----------------------------
 
-Once you have declared your models, you are ready to use the :class:`AsyncSQLAlchemyRepository <.contrib.sqlalchemy.repository.AsyncSQLAlchemyRepository>` class with your controllers and function based routes.
+Once you have declared your models, you are ready to use the :class:`AsyncSQLAlchemyRepository <litestar.contrib.sqlalchemy.repository.AsyncSQLAlchemyRepository>` class with your controllers and function based routes.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :caption: sqlalchemy_async_repository.py
