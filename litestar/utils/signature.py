@@ -11,6 +11,7 @@ from typing_extensions import Annotated, NotRequired, Required, get_args, get_or
 from litestar.connection import Request, WebSocket
 from litestar.datastructures import Headers, ImmutableState, State
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from litestar.types import AnyCallable, Empty, Receive, Scope, Send, WebSocketScope
 from litestar.types.builtin_types import UNION_TYPES, NoneType
 from litestar.utils.typing import get_safe_generic_origin, unwrap_annotation
@@ -194,6 +195,19 @@ class ParsedParameter:
     """The default value of the parameter."""
     parsed_type: ParsedType
     """The annotation of the parameter."""
+
+    @property
+    def kwarg_container(self) -> ParameterKwarg | BodyKwarg | DependencyKwarg | None:
+        """A kwarg container, if any"""
+        for value in (*self.metadata, self.default):
+            if isinstance(value, (ParameterKwarg, BodyKwarg, DependencyKwarg)):
+                return value
+        return None
+
+    @property
+    def metadata(self) -> tuple[Any, ...]:
+        """The metadata of the parameter's annotation."""
+        return self.parsed_type.metadata
 
     @property
     def annotation(self) -> Any:

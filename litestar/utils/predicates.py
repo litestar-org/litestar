@@ -23,6 +23,7 @@ from typing import (
     TypeVar,
 )
 
+from msgspec import Struct
 from typing_extensions import (
     ParamSpec,
     TypeGuard,
@@ -324,6 +325,18 @@ def is_pydantic_constrained_field(
         )
     except ImportError:
         return False
+
+
+def is_struct_class(annotation: Any) -> TypeGuard[type[Struct]]:
+    """Check if the given annotation is a :class:`Struct <msgspec.Struct>` type.
+
+    Args:
+        annotation: A type annotation
+
+    Returns:
+        A typeguard for :class:`Struct <msgspec.Struct>`.
+    """
+    return is_class_and_subclass(annotation, Struct)
 
 
 def is_class_var(annotation: Any) -> bool:

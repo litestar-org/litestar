@@ -1,11 +1,13 @@
 from typing import Any
 
+from typing_extensions import Annotated
+
 from litestar import get
 from litestar.params import Dependency
 
 
 @get("/")
-def hello_world(non_optional_dependency: int = Dependency()) -> dict[str, Any]:
+def hello_world(non_optional_dependency: Annotated[int, Dependency()]) -> dict[str, Any]:
     """Notice we haven't provided the dependency to the route.
 
     This is not great, however by explicitly marking dependencies, Litestar won't let the app start.

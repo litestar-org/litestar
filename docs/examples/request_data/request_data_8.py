@@ -1,6 +1,7 @@
 from typing import Dict
 
 from pydantic import BaseConfig, BaseModel
+from typing_extensions import Annotated
 
 from litestar import Litestar, post
 from litestar.datastructures import UploadFile
@@ -18,7 +19,7 @@ class FormData(BaseModel):
 
 @post(path="/")
 async def handle_file_upload(
-    data: FormData = Body(media_type=RequestEncodingType.MULTI_PART),
+    data: Annotated[FormData, Body(media_type=RequestEncodingType.MULTI_PART)],
 ) -> Dict:
     cv_content = await data.cv.read()
     diploma_content = await data.diploma.read()
