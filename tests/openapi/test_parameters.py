@@ -104,11 +104,6 @@ def test_create_parameters() -> None:
         "oneOf": [
             {"type": "null"},
             {
-                "type": "string",
-                "enum": ["M", "F", "O", "A"],
-                "examples": [{"description": "Example  value", "value": "A"}],
-            },
-            {
                 "items": {
                     "type": "string",
                     "enum": ["M", "F", "O", "A"],
@@ -116,6 +111,11 @@ def test_create_parameters() -> None:
                 },
                 "type": "array",
                 "examples": [{"description": "Example  value", "value": ["A"]}],
+            },
+            {
+                "type": "string",
+                "enum": ["M", "F", "O", "A"],
+                "examples": [{"description": "Example  value", "value": "A"}],
             },
         ],
         "examples": [{"value": "M"}, {"value": ["M", "O"]}],

@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from litestar._kwargs.parameter_definition import ParameterDefinition
     from litestar._signature.field import SignatureField
     from litestar.connection import ASGIConnection, Request
-    from litestar.types.parsed_signature import ParsedParameter
+    from litestar.utils.signature import ParsedParameter
 
 __all__ = (
     "body_extractor",

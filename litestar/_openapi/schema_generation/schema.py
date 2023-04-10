@@ -37,6 +37,7 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_constrained_field_schema,
 )
 from litestar._openapi.schema_generation.examples import create_examples_for_field
+from litestar._openapi.schema_generation.utils import sort_schemas_and_references
 from litestar._signature.field import SignatureField
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.datastructures import UploadFile
@@ -386,10 +387,12 @@ def create_schema_for_union_field(
         A schema instance.
     """
     return Schema(
-        one_of=[
-            create_schema(field=sub_field, generate_examples=generate_examples, plugins=plugins, schemas=schemas)
-            for sub_field in field.children or []
-        ]
+        one_of=sort_schemas_and_references(
+            [
+                create_schema(field=sub_field, generate_examples=generate_examples, plugins=plugins, schemas=schemas)
+                for sub_field in field.children or []
+            ]
+        )
     )
 
 
@@ -419,7 +422,10 @@ def create_schema_for_object_type(
             for sub_field in (field.children or ())
         ]
 
-        return Schema(type=OpenAPIType.ARRAY, items=Schema(one_of=items) if len(items) > 1 else items[0])
+        return Schema(
+            type=OpenAPIType.ARRAY,
+            items=Schema(one_of=sort_schemas_and_references(items)) if len(items) > 1 else items[0],
+        )
 
     if field.is_literal:
         return create_literal_schema(field.field_type)

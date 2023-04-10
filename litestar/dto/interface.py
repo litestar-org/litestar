@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.handlers import BaseRouteHandler
     from litestar.types import LitestarEncodableType
-    from litestar.types.parsed_signature import ParsedType
+    from litestar.utils.signature import ParsedType
 
 __all__ = ("DTOInterface",)
 
@@ -67,7 +67,7 @@ class DTOInterface(Protocol):
         ``UnsupportedType`` exception.
 
         Args:
-            parsed_type: :class:`ParsedType <.types.parsed_signature.ParsedType>` instance, will be either the parsed
+            parsed_type: ParsedType instance, will be either the parsed
                 annotation of a ``"data"`` kwarg, or the parsed return type annotation of a route handler.
             route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
 

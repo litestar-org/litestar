@@ -1,11 +1,13 @@
 from typing import Dict
 
+from typing_extensions import Annotated
+
 from litestar import Litestar, get
 from litestar.params import Parameter
 
 
 @get("/")
-def index(snake_case: str = Parameter(query="camelCase")) -> Dict[str, str]:
+def index(snake_case: Annotated[str, Parameter(query="camelCase")]) -> Dict[str, str]:
     return {"param": snake_case}
 
 

@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from typing_extensions import Annotated
+
 from litestar import Litestar, post
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -13,7 +15,7 @@ class User:
 
 @post(path="/")
 async def create_user(
-    data: User = Body(media_type=RequestEncodingType.MULTI_PART),
+    data: Annotated[User, Body(media_type=RequestEncodingType.MULTI_PART)],
 ) -> User:
     return data
 
