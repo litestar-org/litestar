@@ -38,7 +38,7 @@ async def async_sqlalchemy_init(db_session: AsyncSession, db_engine: AsyncEngine
 
 
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite", session_dependency_key="async_session"
+    connection_string="sqlite+aiosqlite:///test.sqlite", session_dependency_key="db_session"
 )  # Create 'async_session' dependency.
 sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 
