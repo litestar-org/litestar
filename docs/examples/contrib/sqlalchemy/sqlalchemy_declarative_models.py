@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 
-# the SQLAlchemy includes a declarative model for you to use in your SQLAlchemy models.
+# the SQLAlchemy base includes a declarative model for you to use in your models.
 # The `Base` class includes a `UUID` based primary key (`id`)
 class Author(Base):
     name: Mapped[str]

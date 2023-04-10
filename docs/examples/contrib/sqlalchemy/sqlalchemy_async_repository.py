@@ -31,7 +31,7 @@ class BaseModel(_BaseModel):
         orm_mode = True
 
 
-# the SQLAlchemy includes a declarative model for you to use in your SQLAlchemy models.
+# the SQLAlchemy base includes a declarative model for you to use in your models.
 # The `Base` class includes a `UUID` based primary key (`id`)
 class AuthorModel(Base):
     # we can optionally provide the table name instead of auto-generating it
@@ -110,7 +110,7 @@ def provide_limit_offset_pagination(
 
 
 class AuthorController(Controller):
-    """Handles the login and registration of the application."""
+    """Author CRUD"""
 
     dependencies = {"authors_repo": Provide(provide_authors_repo)}
 
