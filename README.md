@@ -38,7 +38,7 @@
 <hr>
 
 Litestar is a powerful, performant, flexible and opinionated ASGI framework,
-offering first class typing support and a full [Pydantic](https://github.com/samuelcolvin/pydantic)
+offering first class typing support and a full [Pydantic](https://github.com/pydantic/pydantic)
 integration.
 
 Check out the [documentation 📚](https://docs.litestar.dev/).
@@ -75,7 +75,7 @@ app = Litestar(route_handlers=[hello_world])
 
 - [Class based controllers](#class-based-controllers)
 - [Dependency Injection](#dependency-injection)
-- [Validation and Parsing](#data-parsing-type-hints-and-pydantic) using [Pydantic](https://github.com/samuelcolvin/pydantic)
+- [Validation and Parsing](#data-parsing-type-hints-and-pydantic) using [Pydantic](https://github.com/pydantic/pydantic)
 - [Layered Middleware](#middleware)
 - [Plugin System](#plugin-system-orm-support-and-dtos)
 - [OpenAPI 3.1 schema generation](#openapi)
