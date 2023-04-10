@@ -12,6 +12,7 @@ from typing import (
     get_type_hints,
 )
 
+import msgspec
 from typing_extensions import TypeAlias, TypedDict
 
 from litestar.exceptions import ImproperlyConfiguredException
@@ -21,6 +22,7 @@ from litestar.utils.predicates import (
     is_class_var,
     is_dataclass_class,
     is_pydantic_model_class,
+    is_struct_class,
     is_typed_dict,
 )
 
@@ -29,7 +31,6 @@ if TYPE_CHECKING:
     import pydantic
 
 __all__ = ("Partial",)
-
 
 try:
     # python 3.9 changed these variable
@@ -45,6 +46,18 @@ T = TypeVar("T")
 
 SupportedTypes: TypeAlias = "Union[Type[DataclassProtocol], Type[pydantic.BaseModel], TypedDictClass]"
 """Types that are supported by :class:`Partial <litestar.types.partial.Partial>`"""
+
+
+def _create_partial_type_name(item: SupportedTypes) -> str:
+    return f"Partial{item.__name__}"
+
+
+def _extract_type_hints(item: Any) -> tuple[tuple[str, Any], ...]:
+    return tuple(
+        (field_name, field_type)
+        for field_name, field_type in get_type_hints(item).items()
+        if not is_class_var(field_type)
+    )
 
 
 class Partial(Generic[T]):
@@ -66,7 +79,9 @@ class Partial(Generic[T]):
             A pydantic model, :class:`TypedDict <typing.TypedDict>`, or dataclass.
         """
         if item not in cls._models:
-            if is_pydantic_model_class(item):
+            if is_struct_class(item):
+                cls._create_partial_struct(item=item)
+            elif is_pydantic_model_class(item):
                 cls._create_partial_pydantic_model(item=item)
             elif is_attrs_class(item):
                 cls._create_partial_attrs_model(item=item)
@@ -91,24 +106,22 @@ class Partial(Generic[T]):
         import pydantic
 
         field_definitions: dict[str, tuple[Any, None]] = {}
-        for field_name, field_type in get_type_hints(item).items():
-            if is_class_var(field_type):
-                continue
+        for field_name, field_type in _extract_type_hints(item):
             if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
                 field_definitions[field_name] = (Optional[field_type], None)
             else:
                 field_definitions[field_name] = (field_type, None)
 
-        cls._models[item] = pydantic.create_model(cls._create_partial_type_name(item), __base__=item, **field_definitions)  # type: ignore
+        cls._models[item] = pydantic.create_model(
+            _create_partial_type_name(item), __base__=item, **field_definitions
+        )  # type: ignore
 
     @classmethod
     def _create_partial_attrs_model(cls, item: type[attrs.AttrsInstance]) -> None:
         import attrs
 
         field_definitions: dict[str, Any] = {}
-        for field_name, field_type in get_type_hints(item).items():
-            if is_class_var(field_type):
-                continue
+        for field_name, field_type in _extract_type_hints(item):
             if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
                 field_definitions[field_name] = Optional[field_type]
             else:
@@ -116,7 +129,7 @@ class Partial(Generic[T]):
 
         cls._models[item] = attrs.define(
             type(
-                cls._create_partial_type_name(item),
+                _create_partial_type_name(item),
                 (item,),
                 {"__annotations__": field_definitions, **{k: None for k in field_definitions}},  # type: ignore[misc]
             )
@@ -130,15 +143,13 @@ class Partial(Generic[T]):
             item: A dataclass class.
         """
         field_definitions: list[tuple[str, type, Any]] = []
-        for field_name, field_type in get_type_hints(item).items():
-            if is_class_var(field_type):
-                continue
+        for field_name, field_type in _extract_type_hints(item):
             if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
                 field_definitions.append((field_name, Optional[field_type], None))  # type: ignore[arg-type]
             else:
                 field_definitions.append((field_name, field_type, None))
         cls._models[item] = make_dataclass(
-            cls_name=cls._create_partial_type_name(item),
+            cls_name=_create_partial_type_name(item),
             fields=field_definitions,
             bases=(item,),
         )
@@ -151,13 +162,28 @@ class Partial(Generic[T]):
             item: A :class:`TypedDict <typing.TypeDict>` class.
         """
         field_definitions: dict[str, Any] = {}
-        for field_name, field_type in get_type_hints(item).items():
+        for field_name, field_type in _extract_type_hints(item):
             if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
                 field_definitions[field_name] = Optional[field_type]
             else:
                 field_definitions[field_name] = field_type
-        cls._models[item] = TypedDict(cls._create_partial_type_name(item), field_definitions, total=False)  # type: ignore
+        cls._models[item] = TypedDict(_create_partial_type_name(item), field_definitions, total=False)  # type: ignore
 
-    @staticmethod
-    def _create_partial_type_name(item: SupportedTypes) -> str:
-        return f"Partial{item.__name__}"
+    @classmethod
+    def _create_partial_struct(cls, item: type[msgspec.Struct]) -> None:
+        """Receives a :class:`Struct <msgspec.Struct> class and creates a new type with all attributes ``Optional``.
+
+        Args:
+            item: A :class:`Struct <msgspec.Struct>` class.
+        """
+        field_definitions: list[tuple[str, type, Any]] = []
+        for field_name, field_type in _extract_type_hints(item):
+            if not isinstance(field_type, GenericAlias) or NoneType not in field_type.__args__:
+                field_definitions.append((field_name, Optional[field_type], None))  # type: ignore[arg-type]
+            else:
+                field_definitions.append((field_name, field_type, None))
+        cls._models[item] = msgspec.defstruct(
+            name=_create_partial_type_name(item),
+            fields=field_definitions,
+            bases=(item,),
+        )

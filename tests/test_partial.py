@@ -3,6 +3,7 @@ from typing import Any, ClassVar, Optional, get_type_hints
 
 import pydantic
 import pytest
+from msgspec.inspect import type_info
 from pydantic import BaseModel
 from typing_extensions import TypedDict, get_args
 
@@ -12,6 +13,7 @@ from litestar.types.builtin_types import NoneType
 from litestar.utils import is_class_var
 from tests import (
     AttrsPerson,
+    MsgSpecStructPerson,
     Person,
     PydanticDataClassPerson,
     TypedDictPerson,
@@ -73,6 +75,22 @@ def test_partial_pydantic_dataclass() -> None:
     assert len(dataclasses.fields(VanillaDataClassPersonWithClassVar)) == len(
         dataclasses.fields(PydanticDataClassPerson)
     )
+
+    for annotation in get_type_hints(partial).values():
+        if not is_class_var(annotation):
+            assert isinstance(annotation, GenericAlias)
+            assert NoneType in get_args(annotation)
+        else:
+            assert NoneType not in get_args(annotation)
+
+
+def test_partial_msgspec_struct() -> None:
+    class MsgspecPersonWithClassVar(MsgSpecStructPerson):
+        cls_var: ClassVar[int]
+
+    partial = Partial[MsgspecPersonWithClassVar]
+
+    assert len(type_info(MsgspecPersonWithClassVar).fields) == len(type_info(MsgSpecStructPerson).fields)  # type: ignore
 
     for annotation in get_type_hints(partial).values():
         if not is_class_var(annotation):
