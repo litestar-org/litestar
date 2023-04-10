@@ -8,7 +8,7 @@ from datetime import datetime, timezone, tzinfo
 from typing import TYPE_CHECKING, Generic, Protocol, TypeVar
 from uuid import uuid4
 
-from litestar.contrib.repository.abc import AsyncAbstractRepository
+from litestar.contrib.repository.abc import AbstractAsyncRepository
 from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
 
 if TYPE_CHECKING:
@@ -18,14 +18,14 @@ if TYPE_CHECKING:
     from litestar.contrib.repository import FilterTypes
 
 ModelT = TypeVar("ModelT", bound="HasID")
-MockRepoT = TypeVar("MockRepoT", bound="AsyncGenericMockRepository")
+MockRepoT = TypeVar("MockRepoT", bound="GenericAsyncMockRepository")
 
 
 class HasID(Protocol):
     id: Any
 
 
-class AsyncGenericMockRepository(AsyncAbstractRepository[ModelT], Generic[ModelT]):
+class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
     """A repository implementation for tests.
 
     Uses a :class:`dict` for storage.

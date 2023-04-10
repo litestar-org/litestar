@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from .abc import AsyncAbstractRepository, FilterTypes
+from .abc import AbstractAsyncRepository, FilterTypes
 from .exceptions import ConflictError, NotFoundError, RepositoryError
 
 __all__ = (
-    "AsyncAbstractRepository",
+    "AbstractAsyncRepository",
     "ConflictError",
     "FilterTypes",
     "NotFoundError",

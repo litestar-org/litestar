@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
     from .filters import BeforeAfter, CollectionFilter, LimitOffset, OrderBy, SearchFilter
 
-__all__ = ("AsyncAbstractRepository", "FilterTypes")
+__all__ = ("AbstractAsyncRepository", "FilterTypes")
 
 T = TypeVar("T")
 RepoT = TypeVar("RepoT", bound="AsyncAbstractRepository")
@@ -21,7 +21,7 @@ FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset | Or
 """Aggregate type alias of the types supported for collection filtering."""
 
 
-class AsyncAbstractRepository(Generic[T], metaclass=ABCMeta):
+class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
     """Interface for persistent data interaction."""
 
     model_type: type[T]

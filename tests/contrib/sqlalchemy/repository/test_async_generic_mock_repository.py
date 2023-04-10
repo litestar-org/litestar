@@ -8,7 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
 from litestar.contrib.repository.testing.generic_mock_repository import (
-    AsyncGenericMockRepository,
+    GenericAsyncMockRepository,
 )
 from litestar.contrib.sqlalchemy import base
 from tests.contrib.sqlalchemy.models import Author, Book
@@ -26,24 +26,24 @@ def fx_authors() -> list[Author]:
 @pytest.fixture(name="author_repository_type")
 def fx_author_repository_type(
     authors: list[Author], monkeypatch: pytest.MonkeyPatch
-) -> type[AsyncGenericMockRepository[Author]]:
+) -> type[GenericAsyncMockRepository[Author]]:
     """Mock Author repository, pre-seeded with collection data."""
-    repo = AsyncGenericMockRepository[Author]
+    repo = GenericAsyncMockRepository[Author]
     repo.seed_collection(authors)
     return repo
 
 
 @pytest.fixture(name="author_repository")
 def fx_author_repository(
-    author_repository_type: type[AsyncGenericMockRepository[Author]],
-) -> AsyncGenericMockRepository[Author]:
+    author_repository_type: type[GenericAsyncMockRepository[Author]],
+) -> GenericAsyncMockRepository[Author]:
     """Mock Author repository instance."""
     return author_repository_type()
 
 
 async def test_repo_raises_conflict_if_add_with_id(
     authors: list[Author],
-    author_repository: AsyncGenericMockRepository[Author],
+    author_repository: GenericAsyncMockRepository[Author],
 ) -> None:
     """Test mock repo raises conflict if add identified entity."""
     with pytest.raises(ConflictError):
@@ -52,7 +52,7 @@ async def test_repo_raises_conflict_if_add_with_id(
 
 async def test_repo_raises_conflict_if_add_many_with_id(
     authors: list[Author],
-    author_repository: AsyncGenericMockRepository[Author],
+    author_repository: GenericAsyncMockRepository[Author],
 ) -> None:
     """Test mock repo raises conflict if add identified entity."""
     with pytest.raises(ConflictError):
@@ -61,14 +61,14 @@ async def test_repo_raises_conflict_if_add_many_with_id(
 
 def test_generic_mock_repository_parametrization() -> None:
     """Test that the mock repository handles multiple types."""
-    author_repo = AsyncGenericMockRepository[Author]
-    book_repo = AsyncGenericMockRepository[Book]
+    author_repo = GenericAsyncMockRepository[Author]
+    book_repo = GenericAsyncMockRepository[Book]
     assert author_repo.model_type is Author  # type:ignore[misc]
     assert book_repo.model_type is Book  # type:ignore[misc]
 
 
 def test_generic_mock_repository_seed_collection(
-    author_repository_type: type[AsyncGenericMockRepository[Author]],
+    author_repository_type: type[GenericAsyncMockRepository[Author]],
 ) -> None:
     """Test seeding instances."""
     author_repository_type.seed_collection([Author(id="abc")])
@@ -76,7 +76,7 @@ def test_generic_mock_repository_seed_collection(
 
 
 def test_generic_mock_repository_clear_collection(
-    author_repository_type: type[AsyncGenericMockRepository[Author]],
+    author_repository_type: type[GenericAsyncMockRepository[Author]],
 ) -> None:
     """Test clearing collection for type."""
     author_repository_type.clear_collection()
@@ -84,7 +84,7 @@ def test_generic_mock_repository_clear_collection(
 
 
 def test_generic_mock_repository_filter_collection_by_kwargs(
-    author_repository: AsyncGenericMockRepository[Author],
+    author_repository: GenericAsyncMockRepository[Author],
 ) -> None:
     """Test filtering the repository collection by kwargs."""
     collection = author_repository.filter_collection_by_kwargs(author_repository.collection, name="Leo Tolstoy")
@@ -93,7 +93,7 @@ def test_generic_mock_repository_filter_collection_by_kwargs(
 
 
 def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(
-    author_repository: AsyncGenericMockRepository[Author],
+    author_repository: GenericAsyncMockRepository[Author],
 ) -> None:
     """Test that filtering by kwargs has `AND` semantics when multiple kwargs,
     not `OR`."""
@@ -104,7 +104,7 @@ def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(
 
 
 def test_generic_mock_repository_raises_repository_exception_if_named_attribute_doesnt_exist(
-    author_repository: AsyncGenericMockRepository[Author],
+    author_repository: GenericAsyncMockRepository[Author],
 ) -> None:
     """Test that a repo exception is raised if a named attribute doesn't
     exist."""
@@ -126,12 +126,12 @@ async def test_sets_created_updated_on_add() -> None:
     assert "created" not in vars(instance)
     assert "updated" not in vars(instance)
 
-    instance = await AsyncGenericMockRepository[Model]().add(instance)
+    instance = await GenericAsyncMockRepository[Model]().add(instance)
     assert "created" in vars(instance)
     assert "updated" in vars(instance)
 
 
-async def test_sets_updated_on_update(author_repository: AsyncGenericMockRepository[Author]) -> None:
+async def test_sets_updated_on_update(author_repository: GenericAsyncMockRepository[Author]) -> None:
     """Test that the repository updates the 'updated' timestamp if
     necessary."""
 
@@ -152,7 +152,7 @@ async def test_does_not_set_created_updated() -> None:
         ...
 
     instance = Model()
-    repo = AsyncGenericMockRepository[Model]()
+    repo = GenericAsyncMockRepository[Model]()
     assert "created" not in vars(instance)
     assert "updated" not in vars(instance)
     instance = await repo.add(instance)
@@ -174,7 +174,7 @@ async def test_add() -> None:
 
     instance = Model()
 
-    inserted_instance = await AsyncGenericMockRepository[Model]().add(instance)
+    inserted_instance = await GenericAsyncMockRepository[Model]().add(instance)
     assert inserted_instance == instance
 
 
@@ -189,7 +189,7 @@ async def test_add_many() -> None:
 
     instances = [Model(), Model()]
 
-    inserted_instances = await AsyncGenericMockRepository[Model]().add_many(instances)
+    inserted_instances = await GenericAsyncMockRepository[Model]().add_many(instances)
     assert len(instances) == len(inserted_instances)
 
 
@@ -202,7 +202,7 @@ async def test_update() -> None:
 
         random_column: Mapped[str]
 
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
 
     instance = await mock_repo.add(Model(random_column="A"))
     instance.random_column = "B"
@@ -220,7 +220,7 @@ async def test_update_many() -> None:
 
         random_column: Mapped[str]
 
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     instances = [Model(random_column="A"), Model(random_column="B")]
     inserted_instances = await mock_repo.add_many(instances)
     for instance in inserted_instances:
@@ -240,7 +240,7 @@ async def test_upsert() -> None:
 
         random_column: Mapped[str]
 
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
 
     instance = await mock_repo.upsert(Model(random_column="A"))
     instance.random_column = "B"
@@ -258,7 +258,7 @@ async def test_list() -> None:
 
         ...
 
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     inserted_instances = await mock_repo.add_many([Model(), Model()])
     listed_instances = await mock_repo.list()
     assert inserted_instances == listed_instances
@@ -273,7 +273,7 @@ async def test_delete() -> None:
 
         ...
 
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     inserted_instances = await mock_repo.add_many([Model(), Model()])
     delete_instance = await mock_repo.delete(inserted_instances[0].id)
     assert delete_instance.id == inserted_instances[0].id
@@ -290,7 +290,7 @@ async def test_delete_many() -> None:
 
         ...
 
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     inserted_instances = await mock_repo.add_many([Model(), Model()])
     delete_instances = await mock_repo.delete_many([obj.id for obj in inserted_instances])
     assert len(delete_instances) == 2
@@ -308,7 +308,7 @@ async def test_list_and_count() -> None:
         ...
 
     instances = [Model(), Model()]
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     inserted_instances = await mock_repo.add_many(instances)
     listed_instances, count = await mock_repo.list_and_count()
     assert inserted_instances == listed_instances
@@ -325,7 +325,7 @@ async def test_exists() -> None:
         random_column: Mapped[str]
 
     instances = [Model(random_column="value 1"), Model(random_column="value 2")]
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     _ = await mock_repo.add_many(instances)
     exists = await mock_repo.exists(random_column="value 1")
     assert exists
@@ -341,7 +341,7 @@ async def test_count() -> None:
         ...
 
     instances = [Model(), Model()]
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     _ = await mock_repo.add_many(instances)
     count = await mock_repo.count()
     assert count == len(instances)
@@ -357,7 +357,7 @@ async def test_get() -> None:
         random_column: Mapped[str]
 
     instances = [Model(random_column="value 1"), Model(random_column="value 2")]
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     inserted_instances = await mock_repo.add_many(instances)
     item_id = inserted_instances[0].id
     fetched_instance = await mock_repo.get(item_id)
@@ -374,7 +374,7 @@ async def test_get_one() -> None:
         random_column: Mapped[str]
 
     instances = [Model(random_column="value 1"), Model(random_column="value 2")]
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     inserted_instances = await mock_repo.add_many(instances)
     fetched_instance = await mock_repo.get_one(random_column="value 1")
     assert inserted_instances[0] == fetched_instance
@@ -392,7 +392,7 @@ async def test_get_one_or_none() -> None:
         random_column: Mapped[str]
 
     instances = [Model(random_column="value 1"), Model(random_column="value 2")]
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     inserted_instances = await mock_repo.add_many(instances)
     fetched_instance = await mock_repo.get_one_or_none(random_column="value 1")
     assert inserted_instances[0] == fetched_instance
@@ -411,7 +411,7 @@ async def test_get_or_create() -> None:
         cool_attribute: Mapped[str] = mapped_column(nullable=True)
 
     instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     inserted_instances = await mock_repo.add_many(instances)
     fetched_instance, fetched_created = await mock_repo.get_or_create(random_column="value 2")
     assert await mock_repo.count() == 2
@@ -433,7 +433,7 @@ async def test_get_or_create_match_fields() -> None:
         cool_attribute: Mapped[str] = mapped_column(nullable=True)
 
     instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
-    mock_repo = AsyncGenericMockRepository[Model]()
+    mock_repo = GenericAsyncMockRepository[Model]()
     inserted_instances = await mock_repo.add_many(instances)
     fetched_instance, fetched_created = await mock_repo.get_or_create(
         match_fields=["random_column"], random_column="value 1", cool_attribute="other thing"
