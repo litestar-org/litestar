@@ -4,7 +4,7 @@ from datetime import date, datetime
 from uuid import uuid4
 
 import pytest
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, mapped_column
 
 from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
 from litestar.contrib.repository.testing.generic_mock_repository import (
@@ -408,7 +408,7 @@ async def test_get_or_create() -> None:
         columns."""
 
         random_column: Mapped[str]
-        cool_attribute: Mapped[str | None]
+        cool_attribute: Mapped[str] = mapped_column(nullable=True)
 
     instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
     mock_repo = AsyncGenericMockRepository[Model]()
@@ -430,7 +430,7 @@ async def test_get_or_create_match_fields() -> None:
         columns."""
 
         random_column: Mapped[str]
-        cool_attribute: Mapped[str | None]
+        cool_attribute: Mapped[str] = mapped_column(nullable=True)
 
     instances = [Model(random_column="value 1", cool_attribute="yep"), Model(random_column="value 2")]
     mock_repo = AsyncGenericMockRepository[Model]()
