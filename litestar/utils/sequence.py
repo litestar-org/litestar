@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, Sequence, TypeVar
 
-__all__ = ("find_index", "unique")
+__all__ = ("find_index", "unique", "compact")
 
 
 T = TypeVar("T")

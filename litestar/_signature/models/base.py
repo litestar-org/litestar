@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from litestar._signature.field import SignatureField
     from litestar.connection import ASGIConnection
     from litestar.plugins import PluginMapping
-    from litestar.types.parsed_signature import ParsedSignature
+    from litestar.utils.signature import ParsedSignature
 
 __all__ = ("SignatureModel",)
 

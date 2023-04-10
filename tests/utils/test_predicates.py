@@ -2,6 +2,7 @@ from collections import defaultdict, deque
 from inspect import Signature
 from typing import (
     Any,
+    ClassVar,
     DefaultDict,
     Deque,
     Dict,
@@ -19,11 +20,13 @@ from typing import (
 )
 
 import pytest
+from typing_extensions import Annotated
 
 from litestar import Response, get
 from litestar.pagination import CursorPagination
 from litestar.utils import is_any, is_class_and_subclass, is_optional_union, is_union
 from litestar.utils.predicates import (
+    is_class_var,
     is_generic,
     is_mapping,
     is_non_string_iterable,
@@ -184,3 +187,16 @@ def test_is_union(value: Any, expected: bool) -> None:
 )
 def test_is_optional_union(value: Any, expected: bool) -> None:
     assert is_optional_union(value) is expected
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    (
+        (ClassVar[int], True),
+        (Annotated[ClassVar[int], "abc"], True),
+        (Dict[str, int], False),
+        (None, False),
+    ),
+)
+def test_is_class_var(value: Any, expected: bool) -> None:
+    assert is_class_var(value) is expected

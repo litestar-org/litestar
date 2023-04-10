@@ -3,6 +3,7 @@ from enum import Enum
 from typing import Dict, List, Optional
 from uuid import UUID
 
+import attrs
 import msgspec
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, Field
@@ -61,6 +62,16 @@ class PydanticDataClassPerson:
 
 
 class TypedDictPerson(TypedDict):
+    first_name: str
+    last_name: str
+    id: str
+    optional: Optional[str]
+    complex: Dict[str, List[Dict[str, str]]]
+    pets: Optional[List[Pet]]
+
+
+@attrs.define
+class AttrsPerson:
     first_name: str
     last_name: str
     id: str

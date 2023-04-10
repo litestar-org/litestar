@@ -39,7 +39,6 @@ from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.types.parsed_signature import ParsedSignature
 from litestar.utils import (
     as_async_callable_list,
     async_partial,
@@ -49,6 +48,7 @@ from litestar.utils import (
 )
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.helpers import unwrap_partial
+from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig

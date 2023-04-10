@@ -12,8 +12,8 @@ from litestar.handlers.base import BaseRouteHandler
 from litestar.serialization import decode_json, default_serializer
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
-from litestar.types.parsed_signature import ParsedSignature
 from litestar.utils import AsyncCallable, is_async_callable
+from litestar.utils.signature import ParsedSignature
 
 __all__ = ("WebsocketRouteHandler", "websocket", "websocket_listener", "WebsocketListener")
 

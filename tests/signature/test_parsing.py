@@ -11,7 +11,7 @@ from litestar.params import Dependency, Parameter
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, TestClient, create_test_client
 from litestar.types.helper_types import OptionalSequence
-from litestar.types.parsed_signature import ParsedSignature
+from litestar.utils.signature import ParsedSignature
 from tests.test_plugins import AModel, APlugin
 
 if TYPE_CHECKING:

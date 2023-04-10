@@ -8,8 +8,16 @@ from typing_extensions import get_args, get_origin
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from litestar.types import Empty
-from litestar.utils import is_any, is_optional_union, is_union, make_non_optional_union
-from litestar.utils.predicates import is_generic, is_mapping, is_non_string_iterable, is_non_string_sequence
+from litestar.utils.predicates import (
+    is_any,
+    is_generic,
+    is_mapping,
+    is_non_string_iterable,
+    is_non_string_sequence,
+    is_optional_union,
+    is_union,
+)
+from litestar.utils.typing import make_non_optional_union
 
 __all__ = ("SignatureField",)
 

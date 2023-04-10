@@ -1,5 +1,7 @@
 from typing import Any, Dict
 
+from typing_extensions import Annotated
+
 from litestar import Litestar, get
 from litestar.di import Provide
 from litestar.params import Dependency
@@ -11,7 +13,7 @@ def provide_str() -> str:
 
 
 @get("/", dependencies={"injected": Provide(provide_str)})
-def hello_world(injected: int = Dependency(skip_validation=True)) -> Dict[str, Any]:
+def hello_world(injected: Annotated[int, Dependency(skip_validation=True)]) -> Dict[str, Any]:
     """Handler expects an `int`, but we've provided a `str`."""
     return {"hello": injected}
 

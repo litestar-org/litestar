@@ -43,7 +43,7 @@ __all__ = ("KwargsModel",)
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
-    from litestar.types.parsed_signature import ParsedParameter, ParsedSignature
+    from litestar.utils.signature import ParsedParameter, ParsedSignature
 
 
 class KwargsModel:

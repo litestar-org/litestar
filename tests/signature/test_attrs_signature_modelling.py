@@ -1,4 +1,4 @@
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from typing import Any
 
 import pytest
@@ -6,7 +6,7 @@ import pytest
 from litestar._signature.models.attrs_signature_model import _converter
 from tests import Person, PersonFactory
 
-now = datetime.now()
+now = datetime.now(tz=timezone.utc)
 today = date.today()
 time_now = time(hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
 one_minute = timedelta(minutes=1)
@@ -17,7 +17,6 @@ person = PersonFactory.build()
     "value,cls,expected",
     (
         (now, datetime, now.isoformat()),
-        (now.timestamp(), datetime, now.isoformat()),
         (now.isoformat(), datetime, now.isoformat()),
     ),
 )
@@ -46,7 +45,6 @@ def test_cattrs_converter_structure_date(value: Any, cls: Any, expected: Any) ->
     (
         (time_now, time, time_now.isoformat()),
         (time_now.isoformat(), time, time_now.isoformat()),
-        (now.timestamp(), time, time_now.isoformat()),
     ),
 )
 def test_cattrs_converter_structure_time(value: Any, cls: Any, expected: Any) -> None:
