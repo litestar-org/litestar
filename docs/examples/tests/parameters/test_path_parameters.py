@@ -6,16 +6,16 @@ from litestar.testing import TestClient
 
 def test_path_parameters_1() -> None:
     with TestClient(app=app) as client:
-        res = client.get("/user/1")
-        assert res.status_code == 200
-        assert res.json() == {"id": 1, "name": "John Doe"}
+        response = client.get("/user/1")
+        assert response.status_code == 200
+        assert response.json() == {"id": 1, "name": "John Doe"}
 
 
 def test_path_parameters_2() -> None:
     with TestClient(app=app_2) as client:
-        res = client.get("/orders/1667924386")
-        assert res.status_code == 200
-        assert res.json() == [
+        response = client.get("/orders/1667924386")
+        assert response.status_code == 200
+        assert response.json() == [
             {"id": 1, "customer_id": 2},
             {"id": 2, "customer_id": 2},
         ]
@@ -23,6 +23,6 @@ def test_path_parameters_2() -> None:
 
 def test_path_parameters_3() -> None:
     with TestClient(app=app_3) as client:
-        res = client.get("/versions/1")
-        assert res.status_code == 200
-        assert res.json() == {"id": 1, "specs": {"some": "value"}}
+        response = client.get("/versions/1")
+        assert response.status_code == 200
+        assert response.json() == {"id": 1, "specs": {"some": "value"}}

@@ -7,6 +7,7 @@ from inspect import isclass
 from typing import (
     TYPE_CHECKING,
     Any,
+    ClassVar,
     DefaultDict,
     Deque,
     Dict,
@@ -22,6 +23,7 @@ from typing import (
     TypeVar,
 )
 
+from msgspec import Struct
 from typing_extensions import (
     ParamSpec,
     TypeGuard,
@@ -48,6 +50,23 @@ try:
 except ImportError:  # pragma: no cover
     attrs = Empty  # type: ignore
 
+__all__ = (
+    "is_any",
+    "is_attrs_class",
+    "is_class_and_subclass",
+    "is_class_var",
+    "is_dataclass_class",
+    "is_generic",
+    "is_mapping",
+    "is_non_string_iterable",
+    "is_non_string_sequence",
+    "is_optional_union",
+    "is_pydantic_constrained_field",
+    "is_pydantic_model_class",
+    "is_pydantic_model_instance",
+    "is_typed_dict",
+    "is_union",
+)
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -252,7 +271,7 @@ def is_pydantic_model_instance(annotation: Any) -> "TypeGuard[pydantic.BaseModel
     return False  # pragma: no cover
 
 
-def is_attrs_class(annotation: Any) -> TypeGuard["attrs.AttrsInstance"]:  # pyright: ignore
+def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # pyright: ignore
     """Given a type annotation determine if the annotation is a class that includes an attrs attribute.
 
     Args:
@@ -306,3 +325,28 @@ def is_pydantic_constrained_field(
         )
     except ImportError:
         return False
+
+
+def is_struct_class(annotation: Any) -> TypeGuard[type[Struct]]:
+    """Check if the given annotation is a :class:`Struct <msgspec.Struct>` type.
+
+    Args:
+        annotation: A type annotation
+
+    Returns:
+        A typeguard for :class:`Struct <msgspec.Struct>`.
+    """
+    return is_class_and_subclass(annotation, Struct)
+
+
+def is_class_var(annotation: Any) -> bool:
+    """Check if the given annotation is a ClassVar.
+
+    Args:
+        annotation: A type annotation
+
+    Returns:
+        A boolean.
+    """
+    annotation = get_origin_or_inner_type(annotation) or annotation
+    return annotation is ClassVar

@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 import traceback
 from dataclasses import asdict
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from functools import lru_cache, partial
 from pathlib import PurePath
 from typing import (
@@ -39,7 +39,7 @@ except ImportError as e:
 
 if TYPE_CHECKING:
     from litestar.plugins import PluginMapping
-    from litestar.types.parsed_signature import ParsedSignature
+    from litestar.utils.signature import ParsedSignature
 
 key_re = re.compile("@ attribute (.*)|'(.*)'")
 
@@ -73,7 +73,7 @@ def _structure_datetime(value: Any, cls: type[datetime]) -> datetime:
         return value
 
     try:
-        return cls.fromtimestamp(float(value))
+        return cls.fromtimestamp(float(value), tz=timezone.utc)
     except (ValueError, TypeError):
         pass
 
@@ -303,25 +303,27 @@ class AttrsSignatureModel(SignatureModel):
         for parameter in parsed_signature.parameters.values():
             annotation = type_overrides.get(parameter.name, parameter.parsed_type.annotation)
 
-            if isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
-                attribute = attr.attrib(
-                    type=annotation,
-                    metadata={
-                        **asdict(parameter.default),
-                        "kwargs_model": parameter.default,
-                        "parsed_parameter": parameter,
-                    },
-                    default=parameter.default.default if parameter.default.default is not Empty else attr.NOTHING,
-                    validator=_create_validators(annotation=annotation, kwargs_model=parameter.default),
-                )
-            elif isinstance(parameter.default, DependencyKwarg):
-                attribute = attr.attrib(
-                    type=annotation,
-                    default=parameter.default.default if parameter.default.default is not Empty else None,
-                    metadata={
-                        "kwargs_model": parameter.default,
-                    },
-                )
+            if kwargs_container := parameter.kwarg_container:
+                if isinstance(kwargs_container, DependencyKwarg):
+                    attribute = attr.attrib(
+                        type=annotation if not kwargs_container.skip_validation else Any,
+                        default=kwargs_container.default if kwargs_container.default is not Empty else None,
+                        metadata={
+                            "kwargs_model": kwargs_container,
+                            "parsed_parameter": parameter,
+                        },
+                    )
+                else:
+                    attribute = attr.attrib(
+                        type=annotation,
+                        metadata={
+                            **asdict(kwargs_container),
+                            "kwargs_model": kwargs_container,
+                            "parsed_parameter": parameter,
+                        },
+                        default=kwargs_container.default if kwargs_container.default is not Empty else attr.NOTHING,
+                        validator=_create_validators(annotation=annotation, kwargs_model=kwargs_container),
+                    )
             elif parameter.has_default:
                 attribute = attr.attrib(type=annotation, default=parameter.default)
             else:
