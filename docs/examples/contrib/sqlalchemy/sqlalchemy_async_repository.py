@@ -13,7 +13,7 @@ from litestar import Litestar, get
 from litestar.contrib.repository.filters import LimitOffset
 from litestar.contrib.sqlalchemy.base import AuditBase, Base
 from litestar.contrib.sqlalchemy.init_plugin import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-from litestar.contrib.sqlalchemy.repository import AsyncSQLAlchemyRepository
+from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from litestar.controller import Controller
 from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
@@ -69,7 +69,7 @@ class AuthorUpdate(BaseModel):
     dob: date | None = None
 
 
-class AuthorRepository(AsyncSQLAlchemyRepository[AuthorModel]):
+class AuthorRepository(SQLAlchemyAsyncRepository[AuthorModel]):
     """Author repository."""
 
     model_type = AuthorModel

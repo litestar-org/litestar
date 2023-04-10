@@ -29,13 +29,13 @@ if TYPE_CHECKING:
     from litestar.contrib.sqlalchemy import base
 
 __all__ = (
-    "AsyncSQLAlchemyRepository",
+    "SQLAlchemyAsyncRepository",
     "ModelT",
 )
 
 T = TypeVar("T")
 ModelT = TypeVar("ModelT", bound="base.Base | base.AuditBase")
-SQLARepoT = TypeVar("SQLARepoT", bound="AsyncSQLAlchemyRepository")
+SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyAsyncRepository")
 SelectT = TypeVar("SelectT", bound="Select[Any]")
 RowT = TypeVar("RowT", bound=Tuple[Any, ...])
 
@@ -61,7 +61,7 @@ def wrap_sqlalchemy_exception() -> Any:
         raise RepositoryError(f"An exception occurred: {exc}") from exc
 
 
-class AsyncSQLAlchemyRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
+class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
     """SQLAlchemy based implementation of the repository interface."""
 
     match_fields: list[str] | str | None = None

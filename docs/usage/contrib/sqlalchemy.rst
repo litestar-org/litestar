@@ -1,7 +1,7 @@
 SQLAlchemy Models & Repository
 ==============================
 
-Litestar comes with a built-in repository class (`AsyncSQLAlchemyRepository`) for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ to make CRUD operations easier.
+Litestar comes with a built-in repository class (`SQLAlchemyAsyncRepository`) for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ to make CRUD operations easier.
 
 Features
 --------
@@ -15,7 +15,7 @@ Features
 Basic Use
 ---------
 
-To use the `AsyncSQLAlchemyRepository` repository, you must first define your models using one of the included built-in `DeclarativeBase` ORM base implementations  (`Base` and `AuditBase`).  Both include a UUID based primary key and `AuditBase` includes an `updated` and `created` timestamp column.
+To use the `SQLAlchemyAsyncRepository` repository, you must first define your models using one of the included built-in `DeclarativeBase` ORM base implementations  (`Base` and `AuditBase`).  Both include a UUID based primary key and `AuditBase` includes an `updated` and `created` timestamp column.
 
 Models using these bases also include the following enhancements:
 * Auto-generated snake-case table name from class name
@@ -28,7 +28,7 @@ Models using these bases also include the following enhancements:
 Basic Controller Integration.
 -----------------------------
 
-Once you have declared your models, you are ready to use the `AsyncSQLAlchemyRepository` class with your controllers and function based routes.
+Once you have declared your models, you are ready to use the `SQLAlchemyAsyncRepository` class with your controllers and function based routes.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :caption: sqlalchemy_async_repository.py
