@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal
 from urllib.parse import quote
 
-from litestar.constants import REDIRECT_STATUS_CODES
+from litestar.constants import REDIRECT_ALLOWED_MEDIA_TYPES, REDIRECT_STATUS_CODES
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import Response
@@ -29,6 +29,7 @@ class RedirectResponse(Response[Any]):
         headers: dict[str, Any] | None = None,
         cookies: ResponseCookies | None = None,
         encoding: str = "utf-8",
+        media_type: str | MediaType = MediaType.TEXT,
     ) -> None:
         """Initialize the response.
 
@@ -41,9 +42,11 @@ class RedirectResponse(Response[Any]):
             cookies: A list of :class:`Cookie <.datastructures.Cookie>` instances to be set under the response
                 ``Set-Cookie`` header.
             encoding: The encoding to be used for the response headers.
+            media_type: A value for the response ``Content-Type`` header.
+
 
         Raises:
-            ImproperlyConfiguredException: If status code is not a redirect status code.
+            ImproperlyConfiguredException: Either if status code is not a redirect status code or media type is not supported.
         """
         if status_code not in REDIRECT_STATUS_CODES:
             raise ImproperlyConfiguredException(
@@ -51,12 +54,18 @@ class RedirectResponse(Response[Any]):
                 f"Redirect responses should have one of "
                 f"the following status codes: {', '.join([str(s) for s in REDIRECT_STATUS_CODES])}"
             )
+        if media_type not in REDIRECT_ALLOWED_MEDIA_TYPES:
+            raise ImproperlyConfiguredException(
+                f"{media_type} media type is not supported yet. "
+                f"Media type should be one of "
+                f"the following values: {', '.join([str(s) for s in REDIRECT_ALLOWED_MEDIA_TYPES])}"
+            )
         super().__init__(
             background=background,
             content=b"",
             cookies=cookies,
             headers={**(headers or {}), "location": quote(url, safe="/#%[]=:;$&()+,!?*@'~")},
-            media_type=MediaType.TEXT,
+            media_type=media_type,
             status_code=status_code,
             encoding=encoding,
         )
