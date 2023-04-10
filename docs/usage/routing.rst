@@ -18,7 +18,7 @@ parameters.
 .. seealso::
 
    If you are interested in the technical aspects of the implementation, refer to
-   `this GitHub issue <https://github.com/starlpytestite-api/litestar/issues/177>`_ - it includes
+   `this GitHub issue <https://github.com/litestar-org/litestar/issues/177>`_ - it includes
    an indepth discussion of the pertinent code.
 
 
