@@ -24,9 +24,9 @@ if TYPE_CHECKING:
 
     from sqlalchemy.engine import Result
     from sqlalchemy.ext.asyncio import AsyncSession
+    from sqlalchemy.orm import DeclarativeBase
 
     from litestar.contrib.repository import FilterTypes
-    from litestar.contrib.sqlalchemy import base
 
 __all__ = (
     "SQLAlchemyAsyncRepository",
@@ -34,7 +34,7 @@ __all__ = (
 )
 
 T = TypeVar("T")
-ModelT = TypeVar("ModelT", bound="base.Base | base.AuditBase")
+ModelT = TypeVar("ModelT", bound="DeclarativeBase")
 SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyAsyncRepository")
 SelectT = TypeVar("SelectT", bound="Select[Any]")
 RowT = TypeVar("RowT", bound=Tuple[Any, ...])
@@ -269,7 +269,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             if existing in self.session.dirty:
                 return (await self.update(existing)), False
             return existing, False
-        return await self.add(self.model_type(**kwargs)), True  # type: ignore[arg-type]
+        return await self.add(self.model_type(**kwargs)), True
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
         """Get the count of records returned by a query.
