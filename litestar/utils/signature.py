@@ -67,7 +67,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     return get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, init=False)
 class ParsedType:
     """Represents a type annotation."""
 
@@ -108,6 +108,31 @@ class ParsedType:
     inner_types: tuple[ParsedType, ...]
     """The type's generic args parsed as ``ParsedType``, if applicable."""
 
+    def __init__(self, annotation: Any) -> None:
+        """Initialize ParsedType.
+
+        Args:
+            annotation: The type annotation. This should be extracted from the return of
+                ``get_type_hints(..., include_extras=True)`` so that forward references are resolved and recursive
+                ``Annotated`` types are flattened.
+
+        Returns:
+            ParsedType
+        """
+        unwrapped, metadata, wrappers = unwrap_annotation(annotation)
+        origin = get_origin(unwrapped)
+        args = get_args(unwrapped)
+        object.__setattr__(self, "raw", annotation)
+        object.__setattr__(self, "annotation", unwrapped)
+        object.__setattr__(self, "origin", origin)
+        object.__setattr__(self, "args", args)
+        object.__setattr__(self, "metadata", metadata)
+        object.__setattr__(self, "is_annotated", Annotated in wrappers)
+        object.__setattr__(self, "is_required", Required in wrappers)
+        object.__setattr__(self, "is_not_required", NotRequired in wrappers)
+        object.__setattr__(self, "safe_generic_origin", get_safe_generic_origin(origin))
+        object.__setattr__(self, "inner_types", tuple(ParsedType(arg) for arg in args))
+
     @property
     def is_optional(self) -> bool:
         """Whether the annotation is Optional or not."""
@@ -146,35 +171,6 @@ class ParsedType:
             Whether any of the type's generic args are a subclass of the given type.
         """
         return any(t.is_subclass_of(cl) for t in self.inner_types)
-
-    @classmethod
-    def from_annotation(cls, annotation: Any) -> ParsedType:
-        """Initialize ParsedType.
-
-        Args:
-            annotation: The type annotation. This should be extracted from the return of
-                ``get_type_hints(..., include_extras=True)`` so that forward references are resolved and recursive
-                ``Annotated`` types are flattened.
-
-        Returns:
-            ParsedType
-        """
-        unwrapped, metadata, wrappers = unwrap_annotation(annotation)
-
-        origin = get_origin(unwrapped)
-        args = get_args(unwrapped)
-        return ParsedType(
-            raw=annotation,
-            annotation=unwrapped,
-            origin=origin,
-            args=args,
-            metadata=metadata,
-            is_annotated=Annotated in wrappers,
-            is_required=Required in wrappers,
-            is_not_required=NotRequired in wrappers,
-            safe_generic_origin=get_safe_generic_origin(origin),
-            inner_types=tuple(cls.from_annotation(arg) for arg in args),
-        )
 
 
 @dataclass(frozen=True)
@@ -246,7 +242,7 @@ class ParsedParameter:
         return ParsedParameter(
             name=parameter.name,
             default=Empty if parameter.default is Signature.empty else parameter.default,
-            parsed_type=ParsedType.from_annotation(annotation),
+            parsed_type=ParsedType(annotation),
         )
 
 
@@ -289,6 +285,6 @@ class ParsedSignature:
         )
         return ParsedSignature(
             parameters={p.name: p for p in parameters},
-            return_type=ParsedType.from_annotation(fn_type_hints.get("return", Empty)),
+            return_type=ParsedType(fn_type_hints.get("return", Empty)),
             original_signature=signature,
         )
