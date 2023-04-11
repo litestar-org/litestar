@@ -86,8 +86,8 @@ def runner() -> CliRunner:
 
 
 @pytest.fixture
-def mock_uvicorn_run(mocker: MockerFixture) -> "MagicMock":
-    return mocker.patch("uvicorn.run")
+def mock_subprocess_run(mocker: MockerFixture) -> "MagicMock":
+    return mocker.patch("subprocess.run")
 
 
 @pytest.fixture
