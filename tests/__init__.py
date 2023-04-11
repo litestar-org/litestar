@@ -1,6 +1,6 @@
 from dataclasses import dataclass as vanilla_dataclass
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Dict, List, NotRequired, Optional
 from uuid import UUID
 
 import attrs
@@ -8,7 +8,7 @@ import msgspec
 from polyfactory.factories.pydantic_factory import ModelFactory
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass as pydantic_dataclass
-from typing_extensions import TypedDict
+from typing_extensions import Required, TypedDict
 
 
 class Species(str, Enum):
@@ -62,12 +62,12 @@ class PydanticDataClassPerson:
 
 
 class TypedDictPerson(TypedDict):
-    first_name: str
-    last_name: str
-    id: str
-    optional: Optional[str]
-    complex: Dict[str, List[Dict[str, str]]]
-    pets: Optional[List[Pet]]
+    first_name: Required[str]
+    last_name: Required[str]
+    id: Required[str]
+    optional: NotRequired[Optional[str]]
+    complex: Required[Dict[str, List[Dict[str, str]]]]
+    pets: NotRequired[Optional[List[Pet]]]
 
 
 @attrs.define

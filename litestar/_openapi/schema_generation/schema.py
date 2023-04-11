@@ -5,7 +5,6 @@ from copy import copy
 from dataclasses import MISSING, fields
 from datetime import date, datetime, time, timedelta
 from enum import EnumMeta
-from inspect import getdoc
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from pathlib import Path
 from typing import (
@@ -50,6 +49,7 @@ from litestar.serialization import encode_json
 from litestar.types import DataclassProtocol, Empty, TypedDictClass
 from litestar.utils.predicates import (
     is_dataclass_class,
+    is_optional_union,
     is_pydantic_constrained_field,
     is_pydantic_model_class,
     is_typed_dict,
@@ -83,7 +83,6 @@ if TYPE_CHECKING:
         ConstrainedList = Any  # type: ignore
         ConstrainedSet = Any  # type: ignore
         ConstrainedStr = Any  # type: ignore
-
 try:
     import pydantic
 
@@ -535,9 +534,10 @@ def create_schema_for_pydantic_model(
     Returns:
         A schema instance.
     """
-    field_type_hints = get_type_hints(field_type, include_extras=False)
+
+    field_type_hints = get_type_hints(field_type)
     return Schema(
-        required=[field.alias or field.name for field in field_type.__fields__.values() if field.required],
+        required=sorted([field.alias or field.name for field in field_type.__fields__.values() if field.required]),
         properties={
             (f.alias or f.name): create_schema(
                 field=SignatureField.create(field_type=field_type_hints[f.name], name=f.alias or f.name),
@@ -549,7 +549,6 @@ def create_schema_for_pydantic_model(
         },
         type=OpenAPIType.OBJECT,
         title=_get_type_schema_name(field_type),
-        description=getdoc(field_type) or None,
     )
 
 
@@ -570,10 +569,19 @@ def create_schema_for_dataclass(
     Returns:
         A schema instance.
     """
+    field_type_hints = get_type_hints(field_type)
     return Schema(
-        required=[
-            field.name for field in fields(field_type) if field.default is MISSING and field.default_factory is MISSING
-        ],
+        required=sorted(
+            [
+                field.name
+                for field in fields(field_type)
+                if (
+                    field.default is MISSING
+                    and field.default_factory is MISSING
+                    and not is_optional_union(field_type_hints[field.name])
+                )
+            ]
+        ),
         properties={
             k: create_schema(
                 field=SignatureField.create(field_type=v, name=k),
@@ -581,11 +589,10 @@ def create_schema_for_dataclass(
                 plugins=plugins,
                 schemas=schemas,
             )
-            for k, v in get_type_hints(field_type, include_extras=False).items()
+            for k, v in field_type_hints.items()
         },
         type=OpenAPIType.OBJECT,
         title=_get_type_schema_name(field_type),
-        description=getdoc(field_type) or None,
     )
 
 
@@ -607,7 +614,7 @@ def create_schema_for_typed_dict(
         A schema instance.
     """
     return Schema(
-        required=list(getattr(field_type, "__required_keys__", [])),
+        required=sorted(getattr(field_type, "__required_keys__", [])),
         properties={
             k: create_schema(
                 field=SignatureField.create(field_type=v, name=k),
@@ -615,11 +622,10 @@ def create_schema_for_typed_dict(
                 plugins=plugins,
                 schemas=schemas,
             )
-            for k, v in get_type_hints(field_type, include_extras=False).items()
+            for k, v in get_type_hints(field_type).items()
         },
         type=OpenAPIType.OBJECT,
         title=_get_type_schema_name(field_type),
-        description=getdoc(field_type) or None,
     )
 
 
