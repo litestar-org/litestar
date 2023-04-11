@@ -1,4 +1,6 @@
 import inspect
+import subprocess
+from typing import Any, Dict, List
 
 from click import command, option
 from rich.tree import Tree
@@ -6,6 +8,18 @@ from rich.tree import Tree
 from starlite import HTTPRoute, Starlite, WebSocketRoute
 from starlite.cli.utils import StarliteCLIException, StarliteEnv, console, show_app_info
 from starlite.utils.helpers import unwrap_partial
+
+
+def _convert_uvicorn_args(args: Dict[str, Any]) -> List[str]:
+    process_args = []
+    for arg, value in args.items():
+        if isinstance(value, bool):
+            if value:
+                process_args.append(f"--{arg}")
+        else:
+            process_args.append(f"--{arg}={value}")
+
+    return process_args
 
 
 @command(name="info")
@@ -38,24 +52,24 @@ def run_command(
     """
 
     try:
-        import uvicorn
+        import uvicorn  # noqa: F401
     except ImportError:
         raise StarliteCLIException("Uvicorn needs to be installed to run an app")  # pylint: disable=W0707
 
     if debug or env.debug:
         app.debug = True
 
-    show_app_info(app)
+    # invoke uvicorn in a subprocess to be able to use the --reload flag. see
+    # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
 
-    console.rule("[yellow]Starting server process", align="left")
+    process_args = {
+        "reload": env.reload or reload,
+        "host": env.host or host,
+        "port": env.port or port,
+        "factory": env.is_app_factory,
+    }
 
-    uvicorn.run(
-        env.app_path,
-        reload=env.reload or reload,
-        host=env.host or host,
-        port=env.port or port,
-        factory=env.is_app_factory,
-    )
+    subprocess.run(["uvicorn", env.app_path, *_convert_uvicorn_args(process_args)], check=True)
 
 
 @command(name="routes")
