@@ -4,6 +4,7 @@ from datetime import datetime
 from re import Pattern
 from typing import TYPE_CHECKING, Any
 
+from litestar._openapi.schema_generation.utils import sort_schemas_and_references
 from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema
@@ -127,7 +128,7 @@ def create_collection_constrained_field_schema(
             for sub_field in children
         ]
         if len(items) > 1:
-            schema.items = Schema(one_of=items)
+            schema.items = Schema(one_of=sort_schemas_and_references(items))
         else:
             schema.items = items[0]
     else:

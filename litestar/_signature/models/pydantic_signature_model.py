@@ -4,7 +4,7 @@ from dataclasses import asdict
 from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseConfig, BaseModel, ValidationError, create_model
-from pydantic.fields import FieldInfo, ModelField, Undefined
+from pydantic.fields import FieldInfo, ModelField
 
 from litestar._signature.field import SignatureField
 from litestar._signature.models.base import SignatureModel
@@ -16,7 +16,7 @@ from litestar.utils.predicates import is_pydantic_constrained_field
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.plugins import PluginMapping
-    from litestar.types.parsed_signature import ParsedSignature
+    from litestar.utils.signature import ParsedSignature
 
 __all__ = ("PydanticSignatureModel",)
 
@@ -151,23 +151,30 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         for parameter in parsed_signature.parameters.values():
             field_type = type_overrides.get(parameter.name, parameter.parsed_type.annotation)
 
-            if isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
-                field_info = FieldInfo(
-                    **asdict(parameter.default), kwargs_model=parameter.default, parsed_parameter=parameter
-                )
+            if kwargs_container := parameter.kwarg_container:
+                if isinstance(kwargs_container, DependencyKwarg):
+                    field_info = FieldInfo(
+                        default=kwargs_container.default if kwargs_container.default is not Empty else None,
+                        kwargs_model=kwargs_container,
+                        parsed_parameter=parameter,
+                    )
+                    if kwargs_container.skip_validation:
+                        field_type = Any
+                else:
+                    field_info = FieldInfo(
+                        **{k: v for k, v in asdict(kwargs_container).items() if v is not Empty},
+                        kwargs_model=kwargs_container,
+                        parsed_parameter=parameter,
+                    )
             else:
                 field_info = FieldInfo(default=..., parsed_parameter=parameter)
 
-            if isinstance(parameter.default, DependencyKwarg):
-                field_info.default = parameter.default.default if parameter.default.default is not Empty else None
-            elif isinstance(parameter.default, (ParameterKwarg, BodyKwarg)):
-                field_info.default = parameter.default.default if parameter.default.default is not Empty else Undefined
-            elif is_pydantic_constrained_field(parameter.default):
-                field_type = parameter.default
-            elif parameter.has_default:
-                field_info.default = parameter.default
-            elif parameter.parsed_type.is_optional:
-                field_info.default = None
+                if is_pydantic_constrained_field(parameter.default):
+                    field_type = parameter.default
+                elif parameter.has_default:
+                    field_info.default = parameter.default
+                elif parameter.parsed_type.is_optional:
+                    field_info.default = None
 
             field_definitions[parameter.name] = (field_type, field_info)
 

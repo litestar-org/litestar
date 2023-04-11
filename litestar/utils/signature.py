@@ -1,27 +1,70 @@
 from __future__ import annotations
 
-from collections.abc import Collection
+import sys
+import typing
 from dataclasses import dataclass
-from inspect import Parameter, Signature
-from typing import TYPE_CHECKING, Any, AnyStr, Union
+from inspect import Parameter, Signature, getmembers, isclass, ismethod
+from itertools import chain
+from typing import Any, AnyStr, Collection, Union
 
-from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin
+from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin, get_type_hints
 
-from litestar.datastructures.state import ImmutableState
+from litestar import connection, datastructures, types
+from litestar.datastructures import ImmutableState
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
+from litestar.types import AnyCallable, Empty
 from litestar.types.builtin_types import UNION_TYPES, NoneType
-from litestar.types.empty import Empty
-from litestar.utils.signature_parsing import get_fn_type_hints
 from litestar.utils.typing import get_safe_generic_origin, unwrap_annotation
 
-if TYPE_CHECKING:
-    from litestar.types import AnyCallable
+_GLOBAL_NAMES = {
+    namespace: export
+    for namespace, export in chain(
+        tuple(getmembers(types)), tuple(getmembers(connection)), tuple(getmembers(datastructures))
+    )
+    if namespace[0].isupper()
+    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)  # pyright: ignore
+}
+"""A mapping of names used for handler signature forward-ref resolution.
 
-__all__ = (
-    "ParsedType",
-    "ParsedParameter",
-    "ParsedSignature",
-)
+This allows users to include these names within an `if TYPE_CHECKING:` block in their handler module.
+"""
+
+__all__ = ("get_fn_type_hints", "ParsedType", "ParsedParameter", "ParsedSignature")
+
+
+def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Resolve type hints for ``fn``.
+
+    Args:
+        fn: Callable that is being inspected
+        namespace: Extra names for resolution of forward references.
+
+    Returns:
+        Mapping of names to types.
+    """
+    fn_to_inspect: Any = fn
+
+    if isclass(fn_to_inspect):
+        fn_to_inspect = fn_to_inspect.__init__
+
+    # detect objects that are not functions and that have a `__call__` method
+    if callable(fn_to_inspect) and ismethod(fn_to_inspect.__call__):
+        fn_to_inspect = fn_to_inspect.__call__
+
+    # inspect the underlying function for methods
+    if hasattr(fn_to_inspect, "__func__"):
+        fn_to_inspect = fn_to_inspect.__func__
+
+    # Order important. If a litestar name has been overridden in the function module, we want
+    # to use that instead of the litestar one.
+    namespace = {
+        **_GLOBAL_NAMES,
+        **vars(typing),
+        **vars(sys.modules[fn_to_inspect.__module__]),
+        **(namespace or {}),
+    }
+    return get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
 
 
 @dataclass(frozen=True)
@@ -150,6 +193,19 @@ class ParsedParameter:
     """The default value of the parameter."""
     parsed_type: ParsedType
     """The annotation of the parameter."""
+
+    @property
+    def kwarg_container(self) -> ParameterKwarg | BodyKwarg | DependencyKwarg | None:
+        """A kwarg container, if any"""
+        for value in (*self.metadata, self.default):
+            if isinstance(value, (ParameterKwarg, BodyKwarg, DependencyKwarg)):
+                return value
+        return None
+
+    @property
+    def metadata(self) -> tuple[Any, ...]:
+        """The metadata of the parameter's annotation."""
+        return self.parsed_type.metadata
 
     @property
     def annotation(self) -> Any:

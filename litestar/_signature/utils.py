@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
     from litestar._signature.models.base import SignatureModel
     from litestar.plugins import SerializationPluginProtocol
-    from litestar.types.parsed_signature import ParsedParameter, ParsedSignature
+    from litestar.utils.signature import ParsedParameter, ParsedSignature
 
 __all__ = (
     "create_signature_model",

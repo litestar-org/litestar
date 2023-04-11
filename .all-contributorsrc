@@ -880,6 +880,34 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "khiemdoan",
+      "name": "Khiem Doan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15646249?v=4",
+      "profile": "https://www.linkedin.com/in/khiem-doan/",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "kedod",
+      "name": "kedod",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35638715?v=4",
+      "profile": "https://github.com/kedod",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "sonpro1296",
+      "name": "sonpro1296",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17319142?v=4",
+      "profile": "https://github.com/sonpro1296",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,

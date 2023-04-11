@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from collections import deque
 from sys import version_info
-from typing import Any, Deque, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Deque, Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import pytest
 from typing_extensions import Annotated
@@ -53,4 +55,5 @@ def test_make_non_optional_union(annotation: Any, expected: Any) -> None:
 
 def test_get_origin_or_inner_type() -> None:
     assert get_origin_or_inner_type(List[Person]) == list
-    assert get_origin_or_inner_type(Annotated[List[Person], "foo"]) == List[Person]
+    assert get_origin_or_inner_type(Annotated[List[Person], "foo"]) == list
+    assert get_origin_or_inner_type(Annotated[Dict[str, List[Person]], "foo"]) == dict

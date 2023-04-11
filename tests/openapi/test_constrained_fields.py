@@ -44,7 +44,7 @@ def test_create_collection_constrained_field_schema_sub_fields() -> None:
         )
         assert schema.type == OpenAPIType.ARRAY
         expected = {
-            "items": {"oneOf": [{"type": "string"}, {"type": "integer"}]},
+            "items": {"oneOf": [{"type": "integer"}, {"type": "string"}]},
             "type": "array",
             "maxItems": 10,
             "minItems": 1,
