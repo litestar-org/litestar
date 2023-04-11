@@ -120,7 +120,7 @@ auto-pytabs = {extras = ["sphinx"], version = ">=0.1.1"}
 
 [tool.poetry.extras]
 brotli = ["brotli"]
-cli = ["click", "rich", "jsbeautifier"]
+cli = ["click", "rich", "jsbeautifier", "uvicorn"]
 cryptography = ["cryptography"]
 jinja = ["jinja2"]
 jwt = ["python-jose", "cryptography"]
