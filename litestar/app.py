@@ -449,7 +449,9 @@ class Litestar(Router):
 
         self.asgi_handler = self._create_asgi_handler()
 
-        self.stores = config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
+        self.stores: StoreRegistry = (
+            config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
+        )
 
     @property
     def debug(self) -> bool:
@@ -459,6 +461,8 @@ class Litestar(Router):
     def debug(self, value: bool) -> None:
         if self.logger:
             self.logger.setLevel(logging.DEBUG if value else logging.INFO)
+        if isinstance(self.logging_config, LoggingConfig):
+            self.logging_config.loggers["litestar"]["level"] = "DEBUG" if value else "INFO"
         self._debug = value
 
     async def __call__(
