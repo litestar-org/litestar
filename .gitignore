@@ -7,6 +7,7 @@
 .scannerwork/
 .venv/
 .vscode/
+litestar/
 __pycache__/
 build/
 dist/
