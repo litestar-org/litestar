@@ -3,6 +3,71 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0alpha4
+
+    .. change:: ``attrs`` and ``msgspec`` support in :class:`Partial <litestar.partial.Partial>`
+        :type: feature
+        :pr: 1462
+
+        :class:`Partial <litestar.partial.Partial>` now supports constructing partial models for attrs and msgspec
+
+    .. change:: :class:`Annotated <typing.Annotated>` support for route handler and dependency annotations
+        :type: feature
+        :pr: 1462
+
+        :class:`Annotated <typing.Annotated>` can now be used in route handler and dependencies to specify additional
+        information about the fields.
+
+        .. code-block:: python
+
+            @get("/")
+            def index(param: int = Parameter(gt=5)) -> dict[str, int]:
+                ...
+
+        .. code-block:: python
+
+            @get("/")
+            def index(param: Annotated[int, Parameter(gt=5)]) -> dict[str, int]:
+                ...
+
+    .. change:: Support ``text/html`` Media-Type in ``Redirect`` response container
+        :type: bugfix
+        :issue: 1451
+        :pr: 1474
+
+        The media type in :class:`Redirect <litestar.response.RedirectResponse>` won't be forced to ``text/plain`` anymore and
+        now supports setting arbitrary media types.
+
+
+    .. change:: Fix global namespace for type resolution
+        :type: bugfix
+        :pr: 1477
+        :issue: 1472
+
+        Fix a bug where certain annotations would cause a :exc:`NameError`
+
+
+    .. change:: Add uvicorn to ``cli`` extra
+        :type: bugfix
+        :issue: 1478
+        :pr: 1480
+
+        Add the ``uvicorn`` package to the ``cli`` extra, as it is required unconditionally
+
+
+    .. change:: Update logging levels when setting ``Litestar.debug`` dynamically
+        :type: bugfix
+        :issue: 1476
+        :pr: 1482
+
+        When passing ``debug=True`` to :class:`Litestar <litestar.app.Litestar>`, the ``litestar`` logger would be set
+        up in debug mode, but changing the ``debug`` attribute after the class had been instantiated did not update the
+        logger accordingly.
+
+        This lead to a regression where the ``--debug`` flag to the CLI's ``run`` command would no longer have the
+        desired affect, as loggers would still be on the ``INFO`` level.
+
+
 .. changelog:: 2.0.0alpha3
 
     .. change:: SQLAlchemy 2.0 Plugin
