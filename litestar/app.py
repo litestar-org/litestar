@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
@@ -132,6 +133,7 @@ class Litestar(Router):
     """
 
     __slots__ = (
+        "_debug",
         "_openapi_schema",
         "after_exception",
         "after_shutdown",
@@ -145,7 +147,6 @@ class Litestar(Router):
         "compression_config",
         "cors_config",
         "csrf_config",
-        "debug",
         "event_emitter",
         "get_logger",
         "logger",
@@ -373,6 +374,7 @@ class Litestar(Router):
             config = handler(config)
 
         self._openapi_schema: OpenAPI | None = None
+        self._debug: bool = True
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
@@ -389,7 +391,6 @@ class Litestar(Router):
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
-        self.debug = config.debug
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
         self.logging_config = config.logging_config
         self.multipart_form_part_limit = config.multipart_form_part_limit
@@ -405,6 +406,7 @@ class Litestar(Router):
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket
+        self.debug = config.debug
 
         super().__init__(
             after_request=config.after_request,
@@ -435,9 +437,6 @@ class Litestar(Router):
         for route_handler in config.route_handlers:
             self.register(route_handler)
 
-        if self.debug and isinstance(self.logging_config, LoggingConfig):
-            self.logging_config.loggers["litestar"]["level"] = "DEBUG"
-
         if self.logging_config:
             self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("litestar")
@@ -450,7 +449,21 @@ class Litestar(Router):
 
         self.asgi_handler = self._create_asgi_handler()
 
-        self.stores = config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
+        self.stores: StoreRegistry = (
+            config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
+        )
+
+    @property
+    def debug(self) -> bool:
+        return self._debug
+
+    @debug.setter
+    def debug(self, value: bool) -> None:
+        if self.logger:
+            self.logger.setLevel(logging.DEBUG if value else logging.INFO)
+        if isinstance(self.logging_config, LoggingConfig):
+            self.logging_config.loggers["litestar"]["level"] = "DEBUG" if value else "INFO"
+        self._debug = value
 
     async def __call__(
         self,
