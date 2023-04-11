@@ -11,6 +11,7 @@ from litestar.dto.factory.config import DTOConfig
 from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO, DataT
 from litestar.dto.factory.types import FieldDefinition
+from litestar.utils.signature import ParsedType
 
 from . import Model
 
@@ -20,13 +21,13 @@ if TYPE_CHECKING:
     from litestar.testing import RequestFactory
 
 
-def test_on_startup(monkeypatch: MonkeyPatch) -> None:
+def test_on_registration(monkeypatch: MonkeyPatch) -> None:
     dto_type = DataclassDTO[Model]
     postponed_cls_init_mock = MagicMock()
     monkeypatch.setattr(dto_type, "postponed_cls_init", postponed_cls_init_mock)
     # call startup twice
-    dto_type.on_registration(Model, post())
-    dto_type.on_registration(Model, post())
+    dto_type.on_registration(ParsedType(Model), post())
+    dto_type.on_registration(ParsedType(Model), post())
     assert postponed_cls_init_mock.called_once()
 
 

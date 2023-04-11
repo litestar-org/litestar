@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
     from litestar.connection import Request
     from litestar.handlers import BaseRouteHandler
+    from litestar.utils.signature import ParsedType
 
     from .backends import AbstractDTOBackend
 
@@ -238,17 +239,18 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         cls.dto_backend = cls.dto_backend_type.from_field_definitions(cls.annotation, cls.field_definitions)
 
     @classmethod
-    def on_registration(cls, resolved_handler_annotation: Any, route_handler: BaseRouteHandler) -> None:
+    def on_registration(cls, parsed_type: ParsedType, route_handler: BaseRouteHandler) -> None:
         """Do something each time the DTO type is encountered during signature modelling.
 
         Args:
-            resolved_handler_annotation: Resolved annotation of the handler function.
+            parsed_type: representing the resolved annotation of the handler function.
             route_handler: Route handler instance.
         """
-        if issubclass(get_origin(resolved_handler_annotation) or resolved_handler_annotation, AbstractDTOFactory):
-            resolved_dto_annotation = resolved_handler_annotation.annotation
+        if parsed_type.is_subclass_of(AbstractDTOFactory):
+            dto_type = parsed_type.annotation
+            resolved_dto_annotation = dto_type.annotation
         else:
-            resolved_dto_annotation = resolved_handler_annotation
+            resolved_dto_annotation = parsed_type.annotation
 
         if not issubclass(handler_type := cls.get_model_type(resolved_dto_annotation), cls.model_type):
             raise InvalidAnnotation(
