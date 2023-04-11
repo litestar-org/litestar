@@ -1000,7 +1000,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <h2>Validation and customizing OpenAPI documentation<a class="headerlink" href="#validation-and-customizing-openapi-documentation" title="Permalink to this heading">#</a></h2>
 <p>With the help of <a class="reference internal" href="../reference/params.html#litestar.params.Body" title="litestar.params.Body"><code class="xref py py-class docutils literal notranslate"><span class="pre">Body</span></code></a>, you have fine-grained control over the validation
 of the request body, and can also customize the OpenAPI documentation:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
@@ -1014,13 +1020,43 @@ of the request body, and can also customize the OpenAPI documentation:</p>
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">User</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Create User&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create a new user.&quot;</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Create User&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create a new user.&quot;</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Create User&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Create a new user.&quot;</span><span class="p">)],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 <section id="specifying-a-content-type">
@@ -1034,7 +1070,13 @@ help to generate the correct media-type in the OpenAPI schema.</p>
 <p>To access data sent as <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST">url-encoded form data</a>,
 i.e. <code class="docutils literal notranslate"><span class="pre">application/x-www-form-urlencoded</span></code> Content-Type header, use <a class="reference internal" href="../reference/params.html#litestar.params.Body" title="litestar.params.Body"><code class="xref py py-class docutils literal notranslate"><span class="pre">Body</span></code></a> and specify
 <a class="reference internal" href="../reference/enums.html#litestar.enums.RequestEncodingType" title="litestar.enums.RequestEncodingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestEncodingType.URL_ENCODED</span></code></a> as the <code class="docutils literal notranslate"><span class="pre">media_type</span></code>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
+Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
@@ -1049,13 +1091,44 @@ i.e. <code class="docutils literal notranslate"><span class="pre">application/x-
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">User</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">URL_ENCODED</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">URL_ENCODED</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
+<span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">URL_ENCODED</span><span class="p">)],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1068,7 +1141,13 @@ dictionaries and deeply nested data. It should only be used for simple data stru
 <p>You can access data uploaded using a request with a
 <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST">multipart/form-data</a>
 Content-Type header by specifying it in the <a class="reference internal" href="../reference/params.html#litestar.params.Body" title="litestar.params.Body"><code class="xref py py-class docutils literal notranslate"><span class="pre">Body</span></code></a> function:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
+Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
@@ -1083,13 +1162,44 @@ Content-Type header by specifying it in the <a class="reference internal" href="
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">User</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
+<span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
 </div>
 </section>
 </section>
@@ -1100,10 +1210,16 @@ of <a class="reference internal" href="../reference/datastructures.html#litestar
 interface for working with files. Therefore, you need to type your file uploads accordingly.</p>
 <p>To access a single file simply type <code class="docutils literal notranslate"><span class="pre">data</span></code> as <a class="reference internal" href="../reference/datastructures.html#litestar.datastructures.UploadFile" title="litestar.datastructures.upload_file.UploadFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">UploadFile</span></code></a>:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-2">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-8">
 Async</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">post</span>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-10">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
@@ -1111,7 +1227,7 @@ Async</label><div class="sd-tab-content docutils">
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
@@ -1122,10 +1238,42 @@ Async</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-3">
+<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-11">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
+<span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
+<span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-9">
 Sync</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">post</span>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-12">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
@@ -1133,7 +1281,7 @@ Sync</label><div class="sd-tab-content docutils">
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">UploadFile</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">content</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
@@ -1142,6 +1290,32 @@ Sync</label><div class="sd-tab-content docutils">
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-13">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
+<span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
+<span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="n">MediaType</span><span class="o">.</span><span class="n">TEXT</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">filename</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handle_file_upload</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1155,12 +1329,13 @@ function we don’t need this wrapper, so we can use its <a class="reference ext
 <h3>Multiple files<a class="headerlink" href="#multiple-files" title="Permalink to this heading">#</a></h3>
 <p>To access multiple files with known filenames, you can use a pydantic model:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
+<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-14">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">BaseModel</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
@@ -1178,7 +1353,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">FormData</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">FormData</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
     <span class="n">cv_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">diploma_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">diploma</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -1190,10 +1365,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
+<input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-15">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseConfig</span><span class="p">,</span> <span class="n">BaseModel</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
@@ -1211,7 +1387,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">FormData</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">FormData</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="n">cv_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">diploma_content</span> <span class="o">=</span> <span class="k">await</span> <span class="n">data</span><span class="o">.</span><span class="n">diploma</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -1229,10 +1405,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <h3>Files as a dictionary<a class="headerlink" href="#files-as-a-dictionary" title="Permalink to this heading">#</a></h3>
 <p>If you do not care about parsing and validation and only want to access the form data as a dictionary, you can use a <code class="docutils literal notranslate"><span class="pre">dict</span></code> instead:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
+<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-16">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
@@ -1242,7 +1420,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">]</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">file_contents</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1256,10 +1434,12 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
+<input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-17">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
@@ -1267,7 +1447,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">]</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">file_contents</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1287,10 +1467,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <h3>Files as a list<a class="headerlink" href="#files-as-a-list" title="Permalink to this heading">#</a></h3>
 <p>Finally, you can also access the files as a list without the filenames:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-18">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
@@ -1300,7 +1482,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">]</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">file_contents</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
@@ -1314,10 +1496,12 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-9">
+<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-19">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">UploadFile</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
@@ -1325,7 +1509,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_file_upload</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">]</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">),</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">UploadFile</span><span class="p">],</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MULTI_PART</span><span class="p">)],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="n">file_contents</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
@@ -1347,12 +1531,14 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>To receive <a class="reference external" href="https://msgpack.org/">MessagePack</a> data, specify the appropriate <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code>
 for <code class="docutils literal notranslate"><span class="pre">Body</span></code> , by using <a class="reference internal" href="../reference/enums.html#litestar.enums.RequestEncodingType" title="litestar.enums.RequestEncodingType"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestEncodingType.MESSAGEPACK</span></code></a>:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-10">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-20">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">msgpack_request.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
@@ -1360,7 +1546,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">msgpack_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MESSAGEPACK</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">msgpack_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MESSAGEPACK</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
     <span class="c1"># This will try to parse the request body as `MessagePack` regardless of the</span>
     <span class="c1"># `Content-Type`</span>
     <span class="k">return</span> <span class="n">data</span>
@@ -1371,18 +1557,20 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-11">
+<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-21">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">msgpack_request.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.enums</span> <span class="kn">import</span> <span class="n">RequestEncodingType</span>
 <span class="kn">from</span> <span class="nn">litestar.params</span> <span class="kn">import</span> <span class="n">Body</span>
 
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">msgpack_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MESSAGEPACK</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">msgpack_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Body</span><span class="p">(</span><span class="n">media_type</span><span class="o">=</span><span class="n">RequestEncodingType</span><span class="o">.</span><span class="n">MESSAGEPACK</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="c1"># This will try to parse the request body as `MessagePack` regardless of the</span>
     <span class="c1"># `Content-Type`</span>
     <span class="k">return</span> <span class="n">data</span>

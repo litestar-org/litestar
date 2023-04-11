@@ -926,6 +926,65 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.0.0alpha4">
+<h2>2.0.0alpha4<a class="headerlink" href="#2.0.0alpha4" title="Permalink to this heading">#</a></h2>
+<section id="2.0.0alpha4-feature">
+<h3>Features<a class="headerlink" href="#2.0.0alpha4-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt><code class="docutils literal notranslate"><span class="pre">attrs</span></code> and <code class="docutils literal notranslate"><span class="pre">msgspec</span></code> support in <a class="reference internal" href="../reference/partial.html#litestar.partial.Partial" title="litestar.partial.Partial"><code class="xref py py-class docutils literal notranslate"><span class="pre">Partial</span></code></a></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/partial.html#litestar.partial.Partial" title="litestar.partial.Partial"><code class="xref py py-class docutils literal notranslate"><span class="pre">Partial</span></code></a> now supports constructing partial models for attrs and msgspec</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1462">litestar-org/litestar#1462</a></span></p>
+</div>
+</dd>
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code> support for route handler and dependency annotations</dt><dd><div class="changelog-change docutils container">
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code> can now be used in route handler and dependencies to specify additional
+information about the fields.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1462">litestar-org/litestar#1462</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.0.0alpha4-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha4-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Support <code class="docutils literal notranslate"><span class="pre">text/html</span></code> Media-Type in <code class="docutils literal notranslate"><span class="pre">Redirect</span></code> response container</dt><dd><div class="changelog-change docutils container">
+<p>The media type in <a class="reference internal" href="../reference/response.html#litestar.response.RedirectResponse" title="litestar.response.RedirectResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">Redirect</span></code></a> won’t be forced to <code class="docutils literal notranslate"><span class="pre">text/plain</span></code> anymore and
+now supports setting arbitrary media types.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1451">litestar-org/litestar#1451</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1474">litestar-org/litestar#1474</a></span></p>
+</div>
+</dd>
+<dt>Fix global namespace for type resolution</dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where certain annotations would cause a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NameError" title="(in Python v3.11)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NameError</span></code></a></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1472">litestar-org/litestar#1472</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1477">litestar-org/litestar#1477</a></span></p>
+</div>
+</dd>
+<dt>Add uvicorn to <code class="docutils literal notranslate"><span class="pre">cli</span></code> extra</dt><dd><div class="changelog-change docutils container">
+<p>Add the <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code> package to the <code class="docutils literal notranslate"><span class="pre">cli</span></code> extra, as it is required unconditionally</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1478">litestar-org/litestar#1478</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1480">litestar-org/litestar#1480</a></span></p>
+</div>
+</dd>
+<dt>Update logging levels when setting <code class="docutils literal notranslate"><span class="pre">Litestar.debug</span></code> dynamically</dt><dd><div class="changelog-change docutils container">
+<p>When passing <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> to <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>, the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> logger would be set
+up in debug mode, but changing the <code class="docutils literal notranslate"><span class="pre">debug</span></code> attribute after the class had been instantiated did not update the
+logger accordingly.</p>
+<p>This lead to a regression where the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> flag to the CLI’s <code class="docutils literal notranslate"><span class="pre">run</span></code> command would no longer have the
+desired affect, as loggers would still be on the <code class="docutils literal notranslate"><span class="pre">INFO</span></code> level.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1476">litestar-org/litestar#1476</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1482">litestar-org/litestar#1482</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.0.0alpha3">
 <h2>2.0.0alpha3<a class="headerlink" href="#2.0.0alpha3" title="Permalink to this heading">#</a></h2>
 <section id="2.0.0alpha3-feature">
@@ -1574,6 +1633,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha4">2.0.0alpha4</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha4-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha4-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha3">2.0.0alpha3</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha3-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha3-bugfix">Bugfixes</a></li>
