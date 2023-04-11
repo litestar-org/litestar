@@ -283,9 +283,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         """
         statement = kwargs.pop("statement", self.statement)
         statement = statement.with_only_columns(
-            sql_func.count(
-                self.model_type.id,
-            ),
+            sql_func.count(getattr(self.model_type, self.id_attribute)),
             maintain_column_froms=True,
         ).order_by(None)
         statement = self._apply_filters(*filters, apply_pagination=False, statement=statement)
@@ -371,7 +369,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         statement = kwargs.pop("statement", self.statement)
         statement = statement.add_columns(
             over(
-                sql_func.count(self.model_type.id),
+                sql_func.count(getattr(self.model_type, self.id_attribute)),
             )
         )
         statement = self._apply_filters(*filters, statement=statement)
