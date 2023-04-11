@@ -82,8 +82,10 @@ def test_media_type(media_type: Union[MediaType, str], template_dir: Path) -> No
 @pytest.mark.parametrize(
     "extension,expected_type",
     [
+        (".json", MediaType.JSON),
         (".html", MediaType.HTML),
         (".html.other", MediaType.HTML),
+        (".css", MediaType.CSS),
         (".xml", MediaType.XML),
         (".xml.other", MediaType.XML),
         (".txt", MediaType.TEXT),

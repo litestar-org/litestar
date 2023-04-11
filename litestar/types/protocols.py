@@ -79,6 +79,16 @@ class Logger(Protocol):  # pragma: no cover
              **kwargs: Any kwargs.
         """
 
+    def setLevel(self, level: int) -> None:  # noqa: N802
+        """Set the log level
+
+        Args:
+            level: Log level to set as an integer
+
+        Returns:
+            None
+        """
+
 
 @runtime_checkable
 class DataclassProtocol(Protocol):
