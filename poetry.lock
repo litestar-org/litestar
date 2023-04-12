@@ -196,42 +196,24 @@ tests-no-zope = ["cloudpickle", "cloudpickle", "hypothesis", "hypothesis", "mypy
 
 [[package]]
 name = "auto-pytabs"
-version = "0.2.0"
+version = "0.3.0"
 description = "Automatically generate code examples for different Python versions in mkdocs or Sphinx based documentations"
 category = "dev"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "auto_pytabs-0.2.0-py3-none-any.whl", hash = "sha256:10ce92fc0ee798ecf42dcee1078d4f5940e6aaea18a22baca93134e391e8b94e"},
-    {file = "auto_pytabs-0.2.0.tar.gz", hash = "sha256:6b7aa14ce9fed641198ba1ce7710adf086780a2e7ec31034d96df35c80f5669f"},
+    {file = "auto_pytabs-0.3.0-py3-none-any.whl", hash = "sha256:c7ac3b187e2435951f8f72e30fe0c5a321fbfc9e295ccb51d11f8b0e4fb1b892"},
+    {file = "auto_pytabs-0.3.0.tar.gz", hash = "sha256:f9f9585e21886c3844434766d50f28bef709d5aad004972a097fc6b588cc610d"},
 ]
 
 [package.dependencies]
-autoflake = ">=2.0.0,<3.0.0"
-pytest-mock = ">=3.10.0,<4.0.0"
-pyupgrade = ">=3.3.1,<4.0.0"
-sphinx = {version = ">=4,<6", optional = true, markers = "extra == \"sphinx\""}
+ruff = ">=0.0.260,<0.0.261"
+sphinx = {version = ">=4", optional = true, markers = "extra == \"sphinx\""}
 
 [package.extras]
-markdown = ["markdown (>=3.2.1,<3.4)"]
+markdown = ["markdown (>=3.2.1)"]
 mkdocs = ["mkdocs (>=1.4.2,<2.0.0)"]
-sphinx = ["sphinx (>=4,<6)"]
-
-[[package]]
-name = "autoflake"
-version = "2.0.2"
-description = "Removes unused imports and unused variables"
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "autoflake-2.0.2-py3-none-any.whl", hash = "sha256:a82d8efdcbbb7129a8a23238c529fb9d9919c562e26bb7963ea6890fbfff7d02"},
-    {file = "autoflake-2.0.2.tar.gz", hash = "sha256:e0164421ff13f805f08a023e249d84200bd00463d213b490906bfefa67e83830"},
-]
-
-[package.dependencies]
-pyflakes = ">=3.0.0"
-tomli = {version = ">=2.0.1", markers = "python_version < \"3.11\""}
+sphinx = ["sphinx (>=4)"]
 
 [[package]]
 name = "babel"
@@ -707,31 +689,31 @@ toml = ["tomli"]
 
 [[package]]
 name = "cryptography"
-version = "40.0.1"
+version = "40.0.2"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "cryptography-40.0.1-cp36-abi3-macosx_10_12_universal2.whl", hash = "sha256:918cb89086c7d98b1b86b9fdb70c712e5a9325ba6f7d7cfb509e784e0cfc6917"},
-    {file = "cryptography-40.0.1-cp36-abi3-macosx_10_12_x86_64.whl", hash = "sha256:9618a87212cb5200500e304e43691111570e1f10ec3f35569fdfcd17e28fd797"},
-    {file = "cryptography-40.0.1-cp36-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3a4805a4ca729d65570a1b7cac84eac1e431085d40387b7d3bbaa47e39890b88"},
-    {file = "cryptography-40.0.1-cp36-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:63dac2d25c47f12a7b8aa60e528bfb3c51c5a6c5a9f7c86987909c6c79765554"},
-    {file = "cryptography-40.0.1-cp36-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:0a4e3406cfed6b1f6d6e87ed243363652b2586b2d917b0609ca4f97072994405"},
-    {file = "cryptography-40.0.1-cp36-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:1e0af458515d5e4028aad75f3bb3fe7a31e46ad920648cd59b64d3da842e4356"},
-    {file = "cryptography-40.0.1-cp36-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:d8aa3609d337ad85e4eb9bb0f8bcf6e4409bfb86e706efa9a027912169e89122"},
-    {file = "cryptography-40.0.1-cp36-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:cf91e428c51ef692b82ce786583e214f58392399cf65c341bc7301d096fa3ba2"},
-    {file = "cryptography-40.0.1-cp36-abi3-win32.whl", hash = "sha256:650883cc064297ef3676b1db1b7b1df6081794c4ada96fa457253c4cc40f97db"},
-    {file = "cryptography-40.0.1-cp36-abi3-win_amd64.whl", hash = "sha256:a805a7bce4a77d51696410005b3e85ae2839bad9aa38894afc0aa99d8e0c3160"},
-    {file = "cryptography-40.0.1-pp38-pypy38_pp73-macosx_10_12_x86_64.whl", hash = "sha256:cd033d74067d8928ef00a6b1327c8ea0452523967ca4463666eeba65ca350d4c"},
-    {file = "cryptography-40.0.1-pp38-pypy38_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:d36bbeb99704aabefdca5aee4eba04455d7a27ceabd16f3b3ba9bdcc31da86c4"},
-    {file = "cryptography-40.0.1-pp38-pypy38_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:32057d3d0ab7d4453778367ca43e99ddb711770477c4f072a51b3ca69602780a"},
-    {file = "cryptography-40.0.1-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:f5d7b79fa56bc29580faafc2ff736ce05ba31feaa9d4735048b0de7d9ceb2b94"},
-    {file = "cryptography-40.0.1-pp39-pypy39_pp73-macosx_10_12_x86_64.whl", hash = "sha256:7c872413353c70e0263a9368c4993710070e70ab3e5318d85510cc91cce77e7c"},
-    {file = "cryptography-40.0.1-pp39-pypy39_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:28d63d75bf7ae4045b10de5413fb1d6338616e79015999ad9cf6fc538f772d41"},
-    {file = "cryptography-40.0.1-pp39-pypy39_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:6f2bbd72f717ce33100e6467572abaedc61f1acb87b8d546001328d7f466b778"},
-    {file = "cryptography-40.0.1-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:cc3a621076d824d75ab1e1e530e66e7e8564e357dd723f2533225d40fe35c60c"},
-    {file = "cryptography-40.0.1.tar.gz", hash = "sha256:2803f2f8b1e95f614419926c7e6f55d828afc614ca5ed61543877ae668cc3472"},
+    {file = "cryptography-40.0.2-cp36-abi3-macosx_10_12_universal2.whl", hash = "sha256:8f79b5ff5ad9d3218afb1e7e20ea74da5f76943ee5edb7f76e56ec5161ec782b"},
+    {file = "cryptography-40.0.2-cp36-abi3-macosx_10_12_x86_64.whl", hash = "sha256:05dc219433b14046c476f6f09d7636b92a1c3e5808b9a6536adf4932b3b2c440"},
+    {file = "cryptography-40.0.2-cp36-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4df2af28d7bedc84fe45bd49bc35d710aede676e2a4cb7fc6d103a2adc8afe4d"},
+    {file = "cryptography-40.0.2-cp36-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0dcca15d3a19a66e63662dc8d30f8036b07be851a8680eda92d079868f106288"},
+    {file = "cryptography-40.0.2-cp36-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:a04386fb7bc85fab9cd51b6308633a3c271e3d0d3eae917eebab2fac6219b6d2"},
+    {file = "cryptography-40.0.2-cp36-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:adc0d980fd2760c9e5de537c28935cc32b9353baaf28e0814df417619c6c8c3b"},
+    {file = "cryptography-40.0.2-cp36-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:d5a1bd0e9e2031465761dfa920c16b0065ad77321d8a8c1f5ee331021fda65e9"},
+    {file = "cryptography-40.0.2-cp36-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:a95f4802d49faa6a674242e25bfeea6fc2acd915b5e5e29ac90a32b1139cae1c"},
+    {file = "cryptography-40.0.2-cp36-abi3-win32.whl", hash = "sha256:aecbb1592b0188e030cb01f82d12556cf72e218280f621deed7d806afd2113f9"},
+    {file = "cryptography-40.0.2-cp36-abi3-win_amd64.whl", hash = "sha256:b12794f01d4cacfbd3177b9042198f3af1c856eedd0a98f10f141385c809a14b"},
+    {file = "cryptography-40.0.2-pp38-pypy38_pp73-macosx_10_12_x86_64.whl", hash = "sha256:142bae539ef28a1c76794cca7f49729e7c54423f615cfd9b0b1fa90ebe53244b"},
+    {file = "cryptography-40.0.2-pp38-pypy38_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:956ba8701b4ffe91ba59665ed170a2ebbdc6fc0e40de5f6059195d9f2b33ca0e"},
+    {file = "cryptography-40.0.2-pp38-pypy38_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:4f01c9863da784558165f5d4d916093737a75203a5c5286fde60e503e4276c7a"},
+    {file = "cryptography-40.0.2-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:3daf9b114213f8ba460b829a02896789751626a2a4e7a43a28ee77c04b5e4958"},
+    {file = "cryptography-40.0.2-pp39-pypy39_pp73-macosx_10_12_x86_64.whl", hash = "sha256:48f388d0d153350f378c7f7b41497a54ff1513c816bcbbcafe5b829e59b9ce5b"},
+    {file = "cryptography-40.0.2-pp39-pypy39_pp73-manylinux_2_28_aarch64.whl", hash = "sha256:c0764e72b36a3dc065c155e5b22f93df465da9c39af65516fe04ed3c68c92636"},
+    {file = "cryptography-40.0.2-pp39-pypy39_pp73-manylinux_2_28_x86_64.whl", hash = "sha256:cbaba590180cba88cb99a5f76f90808a624f18b169b90a4abb40c1fd8c19420e"},
+    {file = "cryptography-40.0.2-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:7a38250f433cd41df7fcb763caa3ee9362777fdb4dc642b9a349721d2bf47404"},
+    {file = "cryptography-40.0.2.tar.gz", hash = "sha256:c33c0d32b8594fa647d2e01dbccc303478e16fdd7cf98652d5b3ed11aa5e5c99"},
 ]
 
 [package.dependencies]
@@ -2020,14 +2002,14 @@ attrs = ">=19.2.0"
 
 [[package]]
 name = "packaging"
-version = "23.0"
+version = "23.1"
 description = "Core utilities for Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "packaging-23.0-py3-none-any.whl", hash = "sha256:714ac14496c3e68c99c29b00845f7a2b85f3bb6f1078fd9f72fd20f0570002b2"},
-    {file = "packaging-23.0.tar.gz", hash = "sha256:b6ad297f8907de0fa2fe1ccbd26fdaf387f5f47c7275fedf8cce89f99446cf97"},
+    {file = "packaging-23.1-py3-none-any.whl", hash = "sha256:994793af429502c4ea2ebf6bf664629d07c1a9fe974af92966e4b8d2df7edc61"},
+    {file = "packaging-23.1.tar.gz", hash = "sha256:a392980d2b6cffa644431898be54b0045151319d1e7ec34f0cfed48767dd334f"},
 ]
 
 [[package]]
@@ -2295,18 +2277,6 @@ doc = ["ablog (>=0.11.0rc2)", "colorama", "ipyleaflet", "jupyter_sphinx", "linki
 test = ["codecov", "pytest", "pytest-cov", "pytest-regressions"]
 
 [[package]]
-name = "pyflakes"
-version = "3.0.1"
-description = "passive checker of Python programs"
-category = "dev"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "pyflakes-3.0.1-py2.py3-none-any.whl", hash = "sha256:ec55bf7fe21fff7f1ad2f7da62363d749e2a470500eab1b555334b67aa1ef8cf"},
-    {file = "pyflakes-3.0.1.tar.gz", hash = "sha256:ec8b276a6b60bd80defed25add7e439881c19e64850afd9b346283d4165fd0fd"},
-]
-
-[[package]]
 name = "pygments"
 version = "2.15.0"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -2524,21 +2494,6 @@ files = [
 ]
 
 [[package]]
-name = "pyupgrade"
-version = "3.3.1"
-description = "A tool to automatically upgrade syntax for newer versions."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "pyupgrade-3.3.1-py2.py3-none-any.whl", hash = "sha256:3b93641963df022d605c78aeae4b5956a5296ea24701eafaef9c487527b77e60"},
-    {file = "pyupgrade-3.3.1.tar.gz", hash = "sha256:f88bce38b0ba92c2a9a5063c8629e456e8d919b67d2d42c7ecab82ff196f9813"},
-]
-
-[package.dependencies]
-tokenize-rt = ">=3.2.0"
-
-[[package]]
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
@@ -2632,14 +2587,14 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "rich"
-version = "13.3.3"
+version = "13.3.4"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
 category = "main"
 optional = false
 python-versions = ">=3.7.0"
 files = [
-    {file = "rich-13.3.3-py3-none-any.whl", hash = "sha256:540c7d6d26a1178e8e8b37e9ba44573a3cd1464ff6348b99ee7061b95d1c6333"},
-    {file = "rich-13.3.3.tar.gz", hash = "sha256:dc84400a9d842b3a9c5ff74addd8eb798d155f36c1c91303888e0a66850d2a15"},
+    {file = "rich-13.3.4-py3-none-any.whl", hash = "sha256:22b74cae0278fd5086ff44144d3813be1cedc9115bdfabbfefd86400cb88b20a"},
+    {file = "rich-13.3.4.tar.gz", hash = "sha256:b5d573e13605423ec80bdd0cd5f8541f7844a0e71a13f74cf454ccb2f490708b"},
 ]
 
 [package.dependencies]
@@ -2664,6 +2619,33 @@ files = [
 
 [package.dependencies]
 pyasn1 = ">=0.1.3"
+
+[[package]]
+name = "ruff"
+version = "0.0.260"
+description = "An extremely fast Python linter, written in Rust."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "ruff-0.0.260-py3-none-macosx_10_7_x86_64.whl", hash = "sha256:c559650b623f3fbdc39c7ed1bcb064765c666a53ee738c53d1461afbf3f23db2"},
+    {file = "ruff-0.0.260-py3-none-macosx_10_9_x86_64.macosx_11_0_arm64.macosx_10_9_universal2.whl", hash = "sha256:90ff1479e292a84c388a8a035d223247ddeea5f6760752a9142b88b6d59ac334"},
+    {file = "ruff-0.0.260-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:25584d1b9f445fde72651caab97e7430a4c5bfd2a0ce9af39868753826cba10d"},
+    {file = "ruff-0.0.260-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:8032e35357384a29791c75194a71e314031171eb0731fcaa872dfaf4c1f4470a"},
+    {file = "ruff-0.0.260-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:1e4fa7293f97c021825b3b72f2bf53f0eb4f59625608a889678c1fc6660f412d"},
+    {file = "ruff-0.0.260-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:8bec0271e2c8cd36bcf915cb9f6a93e40797a3ff3d2cda4ca87b7bed9e598472"},
+    {file = "ruff-0.0.260-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:3e075a61aaff8ebe56172217f0ac14c5df9637b289bf161ac697445a9003d5c2"},
+    {file = "ruff-0.0.260-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:f8678f54eb2696481618902a10c3cb28325f3323799af99997ad6f06005ea4f5"},
+    {file = "ruff-0.0.260-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:57d9f0bfdef739b76aa3112b9182a214f0f34589a2659f88353492c7670fe2fe"},
+    {file = "ruff-0.0.260-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:3ec1f77219ba5adaa194289cb82ba924ff2ed931fd00b8541d66a1724c89fbc9"},
+    {file = "ruff-0.0.260-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:aae2170a7ec6f7fc4a73db30aa7aa7fce936176bf66bf85f77f69ddd1dd4a665"},
+    {file = "ruff-0.0.260-py3-none-musllinux_1_2_i686.whl", hash = "sha256:5f847b72ef994ab88e9da250c7eb5cbb3f1555b92a9f22c5ed1c27a44b7e98d6"},
+    {file = "ruff-0.0.260-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:6dd705d4eff405c2b70513188fbff520f49db6df91f0d5e8258c5d469efa58bc"},
+    {file = "ruff-0.0.260-py3-none-win32.whl", hash = "sha256:3866a96b2ef92c7d837ba6bf8fc9dd125a67886f1c5512ad6fa5d5fefaceff87"},
+    {file = "ruff-0.0.260-py3-none-win_amd64.whl", hash = "sha256:0733d524946decbd4f1e63f7dc26820f5c1e6c31da529ba20fb995057f8e79b1"},
+    {file = "ruff-0.0.260-py3-none-win_arm64.whl", hash = "sha256:12542a26f189a5a10c719bfa14d415d0511ac05e5c9ff5e79cc9d5cc50b81bc8"},
+    {file = "ruff-0.0.260.tar.gz", hash = "sha256:ea8f94262f33b81c47ee9d81f455b144e94776f5c925748cb0c561a12206eae1"},
+]
 
 [[package]]
 name = "sentinels"
@@ -2811,14 +2793,14 @@ test = ["pytest", "pytest-cov"]
 
 [[package]]
 name = "sphinx-copybutton"
-version = "0.5.1"
+version = "0.5.2"
 description = "Add a copy button to each of your code cells."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "sphinx-copybutton-0.5.1.tar.gz", hash = "sha256:366251e28a6f6041514bfb5439425210418d6c750e98d3a695b73e56866a677a"},
-    {file = "sphinx_copybutton-0.5.1-py3-none-any.whl", hash = "sha256:0842851b5955087a7ec7fc870b622cb168618ad408dee42692e9a5c97d071da8"},
+    {file = "sphinx-copybutton-0.5.2.tar.gz", hash = "sha256:4cf17c82fb9646d1bc9ca92ac280813a3b605d8c421225fd9913154103ee1fbd"},
+    {file = "sphinx_copybutton-0.5.2-py3-none-any.whl", hash = "sha256:fb543fd386d917746c9a2c50360c7905b605726b9355cd26e9974857afeae06e"},
 ]
 
 [package.dependencies]
@@ -3089,18 +3071,6 @@ files = [
 [package.dependencies]
 colorama = ">=0.4.0,<0.5.0"
 docstring-parser = ">=0.12"
-
-[[package]]
-name = "tokenize-rt"
-version = "5.0.0"
-description = "A wrapper around the stdlib `tokenize` which roundtrips."
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "tokenize_rt-5.0.0-py2.py3-none-any.whl", hash = "sha256:c67772c662c6b3dc65edf66808577968fb10badfc2042e3027196bed4daf9e5a"},
-    {file = "tokenize_rt-5.0.0.tar.gz", hash = "sha256:3160bc0c3e8491312d0485171dea861fc160a240f5f5766b72a1165408d10740"},
-]
 
 [[package]]
 name = "tomli"
@@ -3523,16 +3493,16 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [extras]
 attrs = ["attrs", "cattrs", "python-dateutil", "pytimeparse"]
 brotli = ["brotli"]
-cli = ["click", "jsbeautifier", "rich"]
+cli = ["click", "jsbeautifier", "rich", "uvicorn"]
 cryptography = ["cryptography"]
-full = ["alembic", "attrs", "brotli", "cattrs", "click", "cryptography", "jinja2", "jsbeautifier", "opentelemetry-instrumentation-asgi", "python-jose", "pytimeparse", "redis", "rich", "sqlalchemy", "structlog"]
+full = ["alembic", "attrs", "brotli", "cattrs", "click", "cryptography", "jinja2", "jsbeautifier", "opentelemetry-instrumentation-asgi", "python-jose", "pytimeparse", "redis", "rich", "sqlalchemy", "structlog", "uvicorn"]
 jinja = ["jinja2"]
 jwt = ["cryptography", "python-jose"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 picologging = ["picologging"]
 redis = ["redis"]
 sqlalchemy = ["alembic", "sqlalchemy"]
-standard = ["click", "jinja2", "jsbeautifier", "rich"]
+standard = ["click", "jinja2", "jsbeautifier", "rich", "uvicorn"]
 structlog = ["structlog"]
 tortoise-orm = []
 

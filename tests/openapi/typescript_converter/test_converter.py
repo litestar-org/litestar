@@ -253,7 +253,7 @@ def test_openapi_to_typescript_converter() -> None:
         "\tfirst_name: string;\n"
         "\tid: string;\n"
         "\tlast_name: string;\n"
-        "\toptional: null | string;\n"
+        "\toptional?: null | string;\n"
         "\tpets?: null | {\n"
         "\tage: number;\n"
         "\tname: string;\n"
