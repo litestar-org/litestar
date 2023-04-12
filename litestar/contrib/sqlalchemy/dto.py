@@ -39,7 +39,8 @@ class SQLAlchemyDTO(MsgspecBackedDTOFactory[DataT], Generic[DataT]):
         columns = mapper.columns
         relationships = mapper.relationships
 
-        for key, parsed_type in get_model_type_hints(model_type).items():
+        namespace = {m.class_.__name__: m.class_ for m in mapper.registry.mappers if m is not mapper}
+        for key, parsed_type in get_model_type_hints(model_type, namespace=namespace).items():
             elem: Column[Any] | RelationshipProperty[Any] | None
             elem = columns.get(key, relationships.get(key))  # pyright:ignore
             if elem is None:

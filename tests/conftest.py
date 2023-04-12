@@ -1,4 +1,6 @@
 import importlib.util
+import random
+import string
 import sys
 from os import environ, urandom
 from pathlib import Path
@@ -15,7 +17,6 @@ from typing import (
     Union,
     cast,
 )
-from uuid import uuid4
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -264,7 +265,11 @@ def create_module(tmp_path: Path, monkeypatch: "MonkeyPatch") -> "Callable[[str]
             assert val is not None
             return val
 
-        module_name = uuid4().hex
+        def module_name_generator() -> str:
+            letters = string.ascii_lowercase
+            return "".join(random.choice(letters) for _ in range(10))
+
+        module_name = module_name_generator()
         path = tmp_path / f"{module_name}.py"
         path.write_text(source)
         # https://docs.python.org/3/library/importlib.html#importing-a-source-file-directly

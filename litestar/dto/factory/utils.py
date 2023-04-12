@@ -30,17 +30,20 @@ T = TypeVar("T")
 StructT = TypeVar("StructT", bound=Struct)
 
 
-def get_model_type_hints(model_type: type[Any]) -> dict[str, ParsedType]:
+def get_model_type_hints(model_type: type[Any], namespace: dict[str, Any] | None = None) -> dict[str, ParsedType]:
     """Retrieve type annotations for ``model_type``.
 
     Args:
         model_type: Any type-annotated class.
+        namespace: Optional namespace to use for resolving type hints.
 
     Returns:
         Parsed type hints for ``model_type`` resolved within the scope of its module.
     """
     model_module = getmodule(model_type)
-    localns = vars(model_module) if model_module is not None else {}
+    localns = namespace or {}
+    if model_module:
+        localns.update(vars(model_module))
     return {k: ParsedType(v) for k, v in get_type_hints(model_type, localns=localns).items()}
 
 

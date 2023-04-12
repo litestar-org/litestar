@@ -484,3 +484,69 @@ dto_type = SQLAlchemyDTO[Annotated[B, DTOConfig(purpose=Purpose.WRITE)]]
     )
     assert isinstance(model, module.B)
     assert model.a is None
+
+
+async def test_forward_ref_relationship_resolution(
+    create_module: Callable[[str], ModuleType], request_factory: RequestFactory
+) -> None:
+    """Testing that classes related to the mapped class for the dto are considered for forward-ref resolution.
+
+    The key part of this test is that the `B` type is only imported inside an `if TYPE_CHECKING:` block
+    in `a_module`, so it should not be available for forward-ref resolution when `a_module` is imported. This
+    works due to related mapped classes (via `mapper.registry.mappers`) being added to foward-ref resolution
+    namespace.
+    """
+    base_module = create_module(
+        """
+from __future__ import annotations
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+class Base(DeclarativeBase):
+    id: Mapped[int] = mapped_column(primary_key=True)
+"""
+    )
+
+    b_module = create_module(
+        f"""
+from __future__ import annotations
+
+from {base_module.__name__} import Base
+
+class B(Base):
+    __tablename__ = "b"
+"""
+    )
+
+    a_module = create_module(
+        f"""
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from typing_extensions import Annotated
+
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto.factory import DTOConfig, Purpose
+
+from {base_module.__name__} import Base
+
+if TYPE_CHECKING:
+    from {b_module.__name__} import B
+
+class A(Base):
+    __tablename__ = "a"
+    b_id: Mapped[int] = mapped_column(ForeignKey("b.id"))
+    b: Mapped[B] = relationship()
+
+dto_type = SQLAlchemyDTO[Annotated[A, DTOConfig(purpose=Purpose.WRITE)]]
+"""
+    )
+
+    model = await get_model_from_dto(
+        a_module.dto_type,
+        request_factory.post(data={"id": 1, "b_id": 2, "b": {"id": 2}}),
+    )
+    assert isinstance(model, a_module.A)
+    assert isinstance(model.b, b_module.B)
