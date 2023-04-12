@@ -62,6 +62,8 @@ def run_command(
     # invoke uvicorn in a subprocess to be able to use the --reload flag. see
     # https://github.com/litestar-org/litestar/issues/1191 and https://github.com/encode/uvicorn/issues/1045
 
+    show_app_info(app)
+
     process_args = {
         "reload": env.reload or reload,
         "host": env.host or host,

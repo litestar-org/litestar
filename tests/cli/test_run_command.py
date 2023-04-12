@@ -26,7 +26,7 @@ def test_run_command(
     mocker: MockerFixture,
     runner: CliRunner,
     monkeypatch: MonkeyPatch,
-    mock_uvicorn_run: MagicMock,
+    mock_subprocess_run: MagicMock,
     reload: Optional[bool],
     port: Optional[int],
     host: Optional[str],
@@ -72,13 +72,12 @@ def test_run_command(
     assert result.exception is None
     assert result.exit_code == 0
 
-    mock_uvicorn_run.assert_called_once_with(
-        f"{path.stem}:app",
-        reload=reload,
-        port=port,
-        host=host,
-        factory=False,
-    )
+    expected_args = ["uvicorn", f"{path.stem}:app", f"--host={host}", f"--port={port}"]
+    if reload:
+        expected_args.append("--reload")
+
+    mock_subprocess_run.assert_called_once()
+    assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
     mock_show_app_info.assert_called_once()
 
 
@@ -93,7 +92,7 @@ def test_run_command(
 )
 def test_run_command_with_autodiscover_app_factory(
     runner: CliRunner,
-    mock_uvicorn_run: MagicMock,
+    mock_subprocess_run: MagicMock,
     file_name: str,
     file_content: str,
     factory_name: str,
@@ -107,18 +106,14 @@ def test_run_command_with_autodiscover_app_factory(
     assert result.exception is None
     assert result.exit_code == 0
 
-    mock_uvicorn_run.assert_called_once_with(
-        f"{path.stem}:{factory_name}",
-        reload=False,
-        port=8000,
-        host="127.0.0.1",
-        factory=True,
-    )
+    expected_args = ["uvicorn", f"{path.stem}:{factory_name}", "--host=127.0.0.1", "--port=8000", "--factory"]
+    mock_subprocess_run.assert_called_once()
+    assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
 
 
 def test_run_command_with_app_factory(
     runner: CliRunner,
-    mock_uvicorn_run: MagicMock,
+    mock_subprocess_run: MagicMock,
     create_app_file: CreateAppFileFixture,
 ) -> None:
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
@@ -128,13 +123,9 @@ def test_run_command_with_app_factory(
     assert result.exception is None
     assert result.exit_code == 0
 
-    mock_uvicorn_run.assert_called_once_with(
-        f"{app_path}",
-        reload=False,
-        port=8000,
-        host="127.0.0.1",
-        factory=True,
-    )
+    expected_args = ["uvicorn", str(app_path), "--host=127.0.0.1", "--port=8000", "--factory"]
+    mock_subprocess_run.assert_called_once()
+    assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
 
 
 def test_run_command_force_debug(app_file: Path, mocker: MockerFixture, runner: CliRunner) -> None:
