@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from datetime import date, datetime
 from typing import TYPE_CHECKING, ClassVar, List, TypeVar
 from uuid import UUID, uuid4
@@ -370,6 +371,41 @@ dto_type = SQLAlchemyDTO[A]
     )
     model = await get_model_from_dto(module.dto_type, request_factory.post(data={"id": 1}))
     assert vars(model)["a"] is None
+
+
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="requires python3.10 or higher")
+async def test_dto_mapped_union_type(
+    create_module: Callable[[str], ModuleType], request_factory: RequestFactory
+) -> None:
+    """Test where a column type declared as e.g., `Mapped[str | None]`."""
+
+    module = create_module(
+        """
+from __future__ import annotations
+
+from typing import Union
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from typing_extensions import Annotated
+
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto.factory import DTOConfig, Purpose
+
+class Base(DeclarativeBase):
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+class A(Base):
+    __tablename__ = "a"
+    a: Mapped[str | None]
+
+dto_type = SQLAlchemyDTO[A]
+    """
+    )
+    model = await get_model_from_dto(module.dto_type, request_factory.post(data={"id": 1}))
+    assert vars(model)["a"] is None
+    model = await get_model_from_dto(module.dto_type, request_factory.post(data={"id": 1, "a": "a"}))
+    assert vars(model)["a"] == "a"
 
 
 async def test_dto_self_referencing_relationships(
