@@ -1,6 +1,13 @@
 1.x Changelog
 =============
 
+1.51.10
+-------
+
+* Fix ``Partial`` modifying dataclasses
+* Fix CLI `--reload` flag not working as expected
+* Add uvicorn to ``cli`` extra
+
 1.51.9
 ------
 
