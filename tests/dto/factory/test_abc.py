@@ -11,6 +11,7 @@ from litestar.dto.factory.config import DTOConfig
 from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO, DataT
 from litestar.dto.factory.types import FieldDefinition
+from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
 
 from . import Model
@@ -126,7 +127,7 @@ async def test_from_connection(request_factory: RequestFactory) -> None:
 
 
 def test_config_field_definitions() -> None:
-    new_def = FieldDefinition(field_name="z", field_type=str, default="something")
+    new_def = FieldDefinition(name="z", parsed_type=ParsedType(str), default="something")
     config = DTOConfig(field_definitions=[new_def])
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.postponed_cls_init()
@@ -142,11 +143,11 @@ def test_config_field_mapping() -> None:
 
 
 def test_config_field_mapping_new_definition() -> None:
-    config = DTOConfig(field_mapping={"a": FieldDefinition(field_name="z", field_type=str)})
+    config = DTOConfig(field_mapping={"a": FieldDefinition(name="z", parsed_type=ParsedType(str), default=Empty)})
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.postponed_cls_init()
     assert "a" not in dto_type.field_definitions
     z = dto_type.field_definitions["z"]
     assert isinstance(z, FieldDefinition)
-    assert z.field_name == "z"
-    assert z.field_type is str
+    assert z.name == "z"
+    assert z.annotation is str

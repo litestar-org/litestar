@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, TypeVar
 from msgspec import Struct
 from typing_extensions import get_args, get_origin, get_type_hints
 
+from litestar.utils.signature import ParsedType
 from litestar.utils.typing import unwrap_annotation
 
 from .config import DTOConfig
@@ -29,18 +30,18 @@ T = TypeVar("T")
 StructT = TypeVar("StructT", bound=Struct)
 
 
-def get_model_type_hints(model_type: type[Any]) -> dict[str, Any]:
+def get_model_type_hints(model_type: type[Any]) -> dict[str, ParsedType]:
     """Retrieve type annotations for ``model_type``.
 
     Args:
         model_type: Any type-annotated class.
 
     Returns:
-        Type hints for ``model_type`` resolved within the scope of its module.
+        Parsed type hints for ``model_type`` resolved within the scope of its module.
     """
     model_module = getmodule(model_type)
     localns = vars(model_module) if model_module is not None else {}
-    return get_type_hints(model_type, localns=localns)
+    return {k: ParsedType(v) for k, v in get_type_hints(model_type, localns=localns).items()}
 
 
 def parse_config_from_annotated(item: Any) -> tuple[type[Any], DTOConfig]:
@@ -83,19 +84,17 @@ def build_data_from_struct(
     for k in data.__slots__:  # type:ignore[attr-defined]
         v = getattr(data, k)
 
-        field_definition = field_definitions[k]
+        field = field_definitions[k]
 
-        if isinstance(field_definition, NestedFieldDefinition) and isinstance(v, CollectionsIterable):
-            if field_definition.origin is None:  # pragma: no cover
+        if isinstance(field, NestedFieldDefinition) and isinstance(v, CollectionsIterable):
+            parsed_type = field.field_definition.parsed_type
+            if parsed_type.origin is None:  # pragma: no cover
                 raise RuntimeError("Unexpected origin value for collection type.")
-            unstructured_data[k] = field_definition.origin(
-                build_data_from_struct(field_definition.nested_type, item, field_definition.nested_field_definitions)
-                for item in v
+            unstructured_data[k] = parsed_type.origin(
+                build_data_from_struct(field.nested_type, item, field.nested_field_definitions) for item in v
             )
-        elif isinstance(field_definition, NestedFieldDefinition):
-            unstructured_data[k] = build_data_from_struct(
-                field_definition.nested_type, v, field_definition.nested_field_definitions
-            )
+        elif isinstance(field, NestedFieldDefinition):
+            unstructured_data[k] = build_data_from_struct(field.nested_type, v, field.nested_field_definitions)
         else:
             unstructured_data[k] = v
 

@@ -10,6 +10,8 @@ from litestar.dto.factory.backends.msgspec import MsgspecDTOBackend
 from litestar.dto.factory.types import FieldDefinition, NestedFieldDefinition
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
+from litestar.types.empty import Empty
+from litestar.utils.signature import ParsedType
 
 from . import Model
 
@@ -29,17 +31,15 @@ def fx_msgspec_backend() -> MsgspecDTOBackend:
 
 def test_dto_backend() -> None:
     field_definitions: FieldDefinitionsType = {
-        "a": FieldDefinition(field_name="a", field_type=int),
-        "b": FieldDefinition(field_name="b", field_type=str, default="b"),
-        "c": FieldDefinition(field_name="c", field_type=List[int], default_factory=list),
+        "a": FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty),
+        "b": FieldDefinition(name="b", parsed_type=ParsedType(str), default="b"),
+        "c": FieldDefinition(name="c", parsed_type=ParsedType(List[int]), default_factory=list, default=Empty),
         "nested": NestedFieldDefinition(
-            field_definition=FieldDefinition(field_name="nested", field_type=Model),
-            origin=None,
-            args=(),
+            field_definition=FieldDefinition(name="nested", parsed_type=ParsedType(Model), default=Empty),
             nested_type=Model,
             nested_field_definitions={
-                "a": FieldDefinition(field_name="a", field_type=int),
-                "b": FieldDefinition(field_name="b", field_type=str),
+                "a": FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty),
+                "b": FieldDefinition(name="b", parsed_type=ParsedType(str), default=Empty),
             },
         ),
     }

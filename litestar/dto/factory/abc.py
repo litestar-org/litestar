@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from copy import copy
 from itertools import chain
-from typing import TYPE_CHECKING, Generic, Iterable, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
-from typing_extensions import Annotated, Self, get_args, get_origin
+from typing_extensions import Annotated, Self, get_origin
 
 from litestar.dto.interface import DTOInterface
+from litestar.types.builtin_types import NoneType
+from litestar.utils.signature import ParsedType
 
 from .backends import MsgspecDTOBackend
 from .config import DTOConfig
@@ -21,7 +22,6 @@ if TYPE_CHECKING:
 
     from litestar.connection import Request
     from litestar.handlers import BaseRouteHandler
-    from litestar.utils.signature import ParsedType
 
     from .backends import AbstractDTOBackend
 
@@ -153,22 +153,21 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             if cls.should_exclude_field(field_definition):
                 continue
 
-            if field_mapping := cls.config.field_mapping.get(field_definition.field_name):
+            if field_mapping := cls.config.field_mapping.get(field_definition.name):
                 if isinstance(field_mapping, str):
                     cls._reverse_field_mappings[field_mapping] = field_definition
-                    field_definition = copy(field_definition)  # noqa: PLW2901
-                    field_definition.field_name = field_mapping
+                    field_definition = field_definition.copy_with(name=field_mapping)  # noqa: PLW2901
                 else:
-                    cls._reverse_field_mappings[field_mapping.field_name] = field_definition
+                    cls._reverse_field_mappings[field_mapping.name] = field_definition
                     field_definition = field_mapping  # noqa: PLW2901
 
             if cls.detect_nested_field(field_definition):
                 nested_field_definition = cls.handle_nested(field_definition, nested_depth, recursive_depth)
                 if nested_field_definition is not None:
-                    defined_fields[field_definition.field_name] = nested_field_definition
+                    defined_fields[field_definition.name] = nested_field_definition
                 continue
 
-            defined_fields[field_definition.field_name] = field_definition
+            defined_fields[field_definition.name] = field_definition
         return defined_fields
 
     @classmethod
@@ -178,13 +177,9 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         if nested_depth == cls.config.max_nested_depth:
             return None
 
-        args = get_args(field_definition.field_type)
-        origin = get_origin(field_definition.field_type)
         nested = NestedFieldDefinition(
             field_definition=field_definition,
-            origin=origin,
-            args=args,
-            nested_type=args[0] if args else field_definition.field_type,
+            nested_type=cls.get_model_type(field_definition.annotation),
         )
 
         if (is_recursive := nested.is_recursive(cls.model_type)) and recursive_depth == cls.config.max_nested_recursion:
@@ -196,20 +191,23 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         return nested
 
     @staticmethod
-    def get_model_type(item: type) -> Any:
+    def get_model_type(annotation: type) -> Any:
         """Get model type represented by the DTO.
 
-        Unwraps iterable annotation.
+        If ``annotation`` is a collection, then the inner type is returned.
 
         Args:
-            item: any type.
+            annotation: any type.
 
         Returns:
             The model type that is represented by the DTO.
         """
-        if issubclass(get_origin(item) or item, Iterable):
-            return get_args(item)[0]
-        return item
+        parsed_type = ParsedType(annotation)
+        if parsed_type.is_collection:
+            return parsed_type.inner_types[0].annotation
+        if parsed_type.is_optional:
+            return next(t for t in parsed_type.inner_types if t.annotation is not NoneType).annotation
+        return parsed_type.annotation
 
     @classmethod
     def should_exclude_field(cls, field_definition: FieldDefinition) -> bool:
@@ -221,7 +219,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         Returns:
             ``True`` if the field should not be included in any data transfer.
         """
-        field_name = field_definition.field_name
+        field_name = field_definition.name
         dto_field = field_definition.dto_field
         excluded = field_name in cls.config.exclude
         not_included = cls.config.include and field_name not in cls.config.include

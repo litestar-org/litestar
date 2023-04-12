@@ -76,5 +76,5 @@ def _create_msgspec_struct_for_field_definitions(
                 _create_struct_field_def(k, v.make_field_type(nested_struct), _create_msgspec_field(v.field_definition))
             )
         else:
-            struct_fields.append(_create_struct_field_def(k, v.field_type, _create_msgspec_field(v)))
+            struct_fields.append(_create_struct_field_def(k, v.parsed_type.annotation, _create_msgspec_field(v)))
     return defstruct(model_name, struct_fields, frozen=True, kw_only=True)

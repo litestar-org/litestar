@@ -4,15 +4,15 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from sqlalchemy import inspect
 from sqlalchemy.orm import DeclarativeBase, Mapped
-from typing_extensions import get_args, get_origin
 
 from litestar.dto.factory.abc import MsgspecBackedDTOFactory
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.factory.types import FieldDefinition
 from litestar.dto.factory.utils import get_model_type_hints
+from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Generator, Iterable
+    from typing import Any, ClassVar, Collection, Generator
 
     from sqlalchemy import Column
     from sqlalchemy.orm import RelationshipProperty
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 __all__ = ("SQLAlchemyDTO", "DataT")
 
-DataT = TypeVar("DataT", bound="DeclarativeBase | Iterable[DeclarativeBase]")
+DataT = TypeVar("DataT", bound="DeclarativeBase | Collection[DeclarativeBase]")
 AnyDeclarativeT = TypeVar("AnyDeclarativeT", bound="DeclarativeBase")
 
 
@@ -39,33 +39,43 @@ class SQLAlchemyDTO(MsgspecBackedDTOFactory[DataT], Generic[DataT]):
         columns = mapper.columns
         relationships = mapper.relationships
 
-        for key, type_hint in get_model_type_hints(model_type).items():
+        for key, parsed_type in get_model_type_hints(model_type).items():
             elem: Column[Any] | RelationshipProperty[Any] | None
             elem = columns.get(key, relationships.get(key))  # pyright:ignore
             if elem is None:
                 continue
 
-            if get_origin(type_hint) is Mapped:
-                (type_hint,) = get_args(type_hint)  # noqa: PLW2901
+            if parsed_type.origin is Mapped:
+                (parsed_type,) = parsed_type.inner_types  # noqa: PLW2901
+
+            default: Any = Empty
+            default_factory: Any = Empty  # pyright:ignore
+            if sqla_default := getattr(elem, "default", None):
+                if sqla_default.is_scalar:
+                    default = sqla_default.arg
+                elif sqla_default.is_callable:
+
+                    def default_factory(d: Any = sqla_default) -> Any:
+                        return d.arg({})
+
+                else:
+                    raise ValueError("Unexpected default type")
+            else:
+                if getattr(elem, "nullable", False):
+                    default = None
 
             field_def = FieldDefinition(
-                field_name=key, field_type=type_hint, dto_field=elem.info.get(DTO_FIELD_META_KEY)
+                name=key,
+                default=default,
+                parsed_type=parsed_type,
+                default_factory=default_factory,
+                dto_field=elem.info.get(DTO_FIELD_META_KEY),
             )
-
-            if (default := getattr(elem, "default", None)) is None:
-                if getattr(elem, "nullable", False):
-                    field_def.default = None
-            elif default.is_scalar:
-                field_def.default = default.arg
-            elif default.is_callable:
-                field_def.default_factory = lambda d=default: d.arg({})  # type:ignore[misc]
-            else:
-                raise ValueError("Unexpected default type")
 
             yield field_def
 
     @classmethod
     def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
-        if args := get_args(field_definition.field_type):
-            return any(issubclass(a, DeclarativeBase) for a in args)
-        return issubclass(field_definition.field_type, DeclarativeBase)
+        if field_definition.parsed_type.inner_types:
+            return any(inner.is_subclass_of(DeclarativeBase) for inner in field_definition.parsed_type.inner_types)
+        return field_definition.parsed_type.is_subclass_of(DeclarativeBase)
