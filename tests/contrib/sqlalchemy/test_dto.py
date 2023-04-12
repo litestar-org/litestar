@@ -446,3 +446,41 @@ dto_type = SQLAlchemyDTO[A]
     assert encodable_type.id == 1
     assert encodable_type.b_id == 1
     assert encodable_type.b.id == 1
+
+
+async def test_dto_optional_relationship_with_none_value(
+    create_module: Callable[[str], ModuleType], request_factory: RequestFactory
+) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+
+from typing import Optional
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from typing_extensions import Annotated
+
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto.factory import DTOConfig, Purpose
+
+class Base(DeclarativeBase):
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+class A(Base):
+    __tablename__ = "a"
+
+class B(Base):
+    __tablename__ = "b"
+    a_id: Mapped[Optional[int]] = mapped_column(ForeignKey("a.id"))
+    a: Mapped[Optional[A]] = relationship(A)
+
+dto_type = SQLAlchemyDTO[Annotated[B, DTOConfig(purpose=Purpose.WRITE)]]
+"""
+    )
+    model = await get_model_from_dto(
+        module.dto_type,
+        request_factory.post(data={"id": 2, "a_id": None, "a": None}),
+    )
+    assert isinstance(model, module.B)
+    assert model.a is None

@@ -62,10 +62,8 @@ def parse_config_from_annotated(item: Any) -> tuple[type[Any], DTOConfig]:
     return unwrapped, expected_config
 
 
-def build_data_from_struct(
-    model_type: type[T], data: Struct | Iterable[Struct], field_definitions: FieldDefinitionsType
-) -> T | Iterable[T]:
-    """Create instance or iterable of instances of ``model_type``.
+def _build_data_from_struct(model_type: type[T], data: Struct, field_definitions: FieldDefinitionsType) -> T:
+    """Create instance of ``model_type``.
 
     Args:
         model_type: the model type received by the DTO on type narrowing.
@@ -73,13 +71,8 @@ def build_data_from_struct(
         field_definitions: model field definitions.
 
     Returns:
-        Data parsed into ``annotation``.
+        Data parsed into ``model_type``.
     """
-    if isinstance(data, CollectionsIterable):
-        return type(data)(  # type:ignore[return-value]
-            build_data_from_struct(model_type, item, field_definitions) for item in data  # type:ignore[call-arg]
-        )
-
     unstructured_data = {}
     for k in data.__slots__:  # type:ignore[attr-defined]
         v = getattr(data, k)
@@ -91,14 +84,34 @@ def build_data_from_struct(
             if parsed_type.origin is None:  # pragma: no cover
                 raise RuntimeError("Unexpected origin value for collection type.")
             unstructured_data[k] = parsed_type.origin(
-                build_data_from_struct(field.nested_type, item, field.nested_field_definitions) for item in v
+                _build_data_from_struct(field.nested_type, item, field.nested_field_definitions) for item in v
             )
-        elif isinstance(field, NestedFieldDefinition):
-            unstructured_data[k] = build_data_from_struct(field.nested_type, v, field.nested_field_definitions)
+        elif isinstance(field, NestedFieldDefinition) and isinstance(v, Struct):
+            unstructured_data[k] = _build_data_from_struct(field.nested_type, v, field.nested_field_definitions)
         else:
             unstructured_data[k] = v
 
     return model_type(**unstructured_data)
+
+
+def build_data_from_struct(
+    model_type: type[T], data: Struct | Iterable[Struct], field_definitions: FieldDefinitionsType
+) -> T | Iterable[T]:
+    """Create instance or iterable of instances of ``model_type``.
+
+    Args:
+        model_type: the model type received by the DTO on type narrowing.
+        data: primitive data that has been parsed and validated via the backend.
+        field_definitions: model field definitions.
+
+    Returns:
+        Data parsed into ``model_type``.
+    """
+    if isinstance(data, CollectionsIterable):
+        return type(data)(  # type:ignore[return-value]
+            build_data_from_struct(model_type, item, field_definitions) for item in data  # type:ignore[call-arg]
+        )
+    return _build_data_from_struct(model_type, data, field_definitions)
 
 
 def build_struct_from_model(model: Any, struct_type: type[StructT]) -> StructT:
