@@ -230,12 +230,7 @@ class HTMXTemplate(ResponseContainer[TemplateResponse]):
             )
         )
 
-        template = Template(
-            name=self.name,
-            background=self.background,
-            context=self.context,
-            encoding=self.encoding
-        )
+        template = Template(name=self.name, background=self.background, context=self.context, encoding=self.encoding)
 
         return template.to_response(
             headers=hx_headers, media_type=media_type, app=app, status_code=status_code, request=request
