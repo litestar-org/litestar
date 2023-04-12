@@ -5,7 +5,7 @@ from inspect import getmodule
 from typing import TYPE_CHECKING, TypeVar
 
 from msgspec import Struct
-from typing_extensions import get_args, get_origin, get_type_hints
+from typing_extensions import get_type_hints
 
 from litestar.utils.signature import ParsedType
 from litestar.utils.typing import unwrap_annotation
@@ -114,15 +114,13 @@ def build_struct_from_model(model: Any, struct_type: type[StructT]) -> StructT:
         Instance of ``struct_type``.
     """
     data = {}
-    struct_type_annotations = get_type_hints(struct_type)
-    for key, type_ in struct_type_annotations.items():
+    for key, parsed_type in get_model_type_hints(struct_type).items():
         model_val = getattr(model, key)
-        if issubclass(type_, Struct):
-            data[key] = build_struct_from_model(model_val, type_)
-        elif issubclass(origin := (get_origin(type_) or type_), CollectionsIterable):
-            args = get_args(type_)
-            if args and issubclass(args[0], Struct):
-                data[key] = origin(build_struct_from_model(m, args[0]) for m in model_val)  # pyright:ignore
+        if parsed_type.is_subclass_of(Struct):
+            data[key] = build_struct_from_model(model_val, parsed_type.annotation)
+        elif parsed_type.is_collection:
+            if parsed_type.inner_types and (inner_type := parsed_type.inner_types[0]).is_subclass_of(Struct):
+                data[key] = parsed_type.origin(build_struct_from_model(m, inner_type.annotation) for m in model_val)
             else:
                 data[key] = model_val
         else:
