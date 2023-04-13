@@ -134,9 +134,14 @@ class ParsedType:
         object.__setattr__(self, "inner_types", tuple(ParsedType(arg) for arg in args))
 
     @property
+    def is_union(self) -> bool:
+        """Whether the annotation is a union type or not."""
+        return self.origin in UNION_TYPES
+
+    @property
     def is_optional(self) -> bool:
         """Whether the annotation is Optional or not."""
-        return bool(self.origin in UNION_TYPES and NoneType in self.args)
+        return bool(self.is_union and NoneType in self.args)
 
     @property
     def is_collection(self) -> bool:

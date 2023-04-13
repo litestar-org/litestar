@@ -134,6 +134,15 @@ def build_struct_from_model(model: Any, struct_type: type[StructT]) -> StructT:
         model_val = getattr(model, key)
         if parsed_type.is_subclass_of(Struct):
             data[key] = build_struct_from_model(model_val, parsed_type.annotation)
+        elif parsed_type.is_union and parsed_type.has_inner_subclass_of(Struct) and model_val is not None:
+            for inner_type in parsed_type.inner_types:
+                if inner_type.is_subclass_of(Struct):
+                    try:
+                        data[key] = build_struct_from_model(model_val, inner_type.annotation)
+                    except TypeError:
+                        continue
+                    else:
+                        break
         elif parsed_type.is_collection:
             if parsed_type.inner_types and (inner_type := parsed_type.inner_types[0]).is_subclass_of(Struct):
                 data[key] = parsed_type.origin(build_struct_from_model(m, inner_type.annotation) for m in model_val)
