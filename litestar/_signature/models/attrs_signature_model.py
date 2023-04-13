@@ -85,7 +85,7 @@ def _structure_date(value: Any, cls: type[date]) -> date:
         return value
 
     if isinstance(value, (float, int, Decimal)):
-        return cls.fromtimestamp(float(value))
+        return datetime.fromtimestamp(float(value), tz=timezone.utc).date()
 
     dt = _structure_datetime(value=value, cls=datetime)
     return cls(year=dt.year, month=dt.month, day=dt.day)

@@ -7,7 +7,7 @@ from litestar._signature.models.attrs_signature_model import _converter
 from tests import Person, PersonFactory
 
 now = datetime.now(tz=timezone.utc)
-today = date.today()
+today = now.date()
 time_now = time(hour=now.hour, minute=now.minute, second=now.second, microsecond=now.microsecond)
 one_minute = timedelta(minutes=1)
 person = PersonFactory.build()
