@@ -633,13 +633,13 @@ def create_schema_for_struct_class(
             ]
         ),
         properties={
-            k: create_schema(
-                field=SignatureField.create(field_type=v, name=k),
+            field.encode_name: create_schema(
+                field=SignatureField.create(field_type=field.type, name=field.encode_name),
                 generate_examples=generate_examples,
                 plugins=plugins,
                 schemas=schemas,
             )
-            for k, v in get_type_hints(field_type).items()
+            for field in msgspec_struct_fields(field_type)
         },
         type=OpenAPIType.OBJECT,
         title=_get_type_schema_name(field_type),
