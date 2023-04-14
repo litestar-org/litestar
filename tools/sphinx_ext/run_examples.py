@@ -18,6 +18,7 @@ import httpx
 import uvicorn
 from auto_pytabs.sphinx_ext import CodeBlockOverride, LiteralIncludeOverride
 from docutils.nodes import Node, admonition, literal_block, title
+from docutils.parsers.rst import directives
 from sphinx.addnodes import highlightlang
 
 from litestar import Litestar
@@ -124,13 +125,15 @@ def exec_examples(app_file: Path, run_configs: list[list[str]]) -> str:
 
 
 class LiteralInclude(LiteralIncludeOverride):
+    option_spec = {**LiteralIncludeOverride.option_spec, "no-run": directives.flag}
+
     def run(self) -> list[Node]:
         cwd = Path.cwd()
         docs_dir = cwd / "docs"
         language = self.options.get("language")
         file = Path(self.env.relfn2path(self.arguments[0])[1])
 
-        if (language != "python" and file.suffix != ".py") or self.options.get("no-run"):
+        if (language != "python" and file.suffix != ".py") or "no-run" in self.options:
             return super().run()
 
         content = file.read_text()

@@ -217,6 +217,7 @@ Example Applications
     :hidden:
 
     usage/index
+    tutorials/index
     reference/index
     migration/index
     benchmarks
