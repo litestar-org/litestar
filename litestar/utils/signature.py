@@ -5,7 +5,7 @@ import typing
 from dataclasses import dataclass
 from inspect import Parameter, Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import Any, AnyStr, Collection, Union
+from typing import Any, AnyStr, Collection, ForwardRef, TypeVar, Union
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin, get_type_hints
 
@@ -134,6 +134,16 @@ class ParsedType:
         object.__setattr__(self, "inner_types", tuple(ParsedType(arg) for arg in args))
 
     @property
+    def is_forward_ref(self) -> bool:
+        """Whether the annotation is a forward reference or not."""
+        return isinstance(self.annotation, (str, ForwardRef))
+
+    @property
+    def is_type_var(self) -> bool:
+        """Whether the annotation is a TypeVar or not."""
+        return isinstance(self.annotation, TypeVar)
+
+    @property
     def is_union(self) -> bool:
         """Whether the annotation is a union type or not."""
         return self.origin in UNION_TYPES
@@ -164,7 +174,7 @@ class ParsedType:
             return self.origin not in UNION_TYPES and issubclass(self.origin, cl)
         if self.annotation is AnyStr:
             return issubclass(str, cl) or issubclass(bytes, cl)
-        return self.annotation is not Any and issubclass(self.annotation, cl)
+        return self.annotation is not Any and not self.is_type_var and issubclass(self.annotation, cl)
 
     def has_inner_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
         """Whether any generic args are a subclass of the given type.

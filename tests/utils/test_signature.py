@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import inspect
 from inspect import Parameter
-from typing import Any, List, Optional, Union
+from typing import Any, ForwardRef, List, Optional, TypeVar, Union
 
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
@@ -15,6 +15,8 @@ from litestar.types.asgi_types import Receive, Scope, Send
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedParameter, ParsedSignature, ParsedType, get_fn_type_hints
+
+T = TypeVar("T")
 
 
 def test_get_fn_type_hints_asgi_app() -> None:
@@ -236,6 +238,37 @@ def test_parsed_type_from_union_annotation() -> None:
         "inner_types": (ParsedType(int), ParsedType(List[int])),
     }
     _check_parsed_type(ParsedType(annotation), expected)
+
+
+@pytest.mark.parametrize("value", ["int", ForwardRef("int")])
+def test_parsed_type_is_forward_ref_predicate(value: Any) -> None:
+    """Test ParsedType with ForwardRef."""
+    parsed_type = ParsedType(value)
+    assert parsed_type.is_forward_ref is True
+    assert parsed_type.annotation == value
+    assert parsed_type.origin is None
+    assert parsed_type.args == ()
+    assert parsed_type.metadata == ()
+    assert parsed_type.is_annotated is False
+    assert parsed_type.is_required is False
+    assert parsed_type.is_not_required is False
+    assert parsed_type.safe_generic_origin is None
+    assert parsed_type.inner_types == ()
+
+
+def test_parsed_type_is_type_var_predicate() -> None:
+    """Test ParsedType.is_type_var."""
+    assert ParsedType(int).is_type_var is False
+    assert ParsedType(T).is_type_var is True
+    assert ParsedType(Union[int, T]).is_type_var is False
+
+
+def test_parsed_type_is_union_predicate() -> None:
+    """Test ParsedType.is_union."""
+    assert ParsedType(int).is_union is False
+    assert ParsedType(Optional[int]).is_union is True
+    assert ParsedType(Union[int, None]).is_union is True
+    assert ParsedType(Union[int, str]).is_union is True
 
 
 def test_parsed_type_is_optional_predicate() -> None:

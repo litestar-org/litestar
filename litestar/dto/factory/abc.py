@@ -6,7 +6,7 @@ from itertools import chain
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from msgspec import Struct
-from typing_extensions import Annotated, Self, get_origin
+from typing_extensions import Self, get_origin
 
 from litestar.dto.interface import DTOInterface
 from litestar.types.builtin_types import NoneType
@@ -17,7 +17,7 @@ from .config import DTOConfig
 from .exc import InvalidAnnotation
 from .field import Mark, Purpose
 from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
-from .utils import get_model_type_hints, parse_configs_from_annotated
+from .utils import get_model_type_hints, parse_configs_from_annotation
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
@@ -65,26 +65,24 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         """
         self.data = data
 
-    def __class_getitem__(cls, annotation: TypeVar | type[Any]) -> type[Self]:
-        if isinstance(annotation, TypeVar):
-            return cls
+    def __class_getitem__(cls, annotation: Any) -> type[Self]:
+        parsed_type = ParsedType(annotation)
 
-        configs: tuple[DTOConfig, ...]
-        if get_origin(annotation) is Annotated:
-            annotation, configs = parse_configs_from_annotated(annotation)
-        else:
-            configs = getattr(cls, "configs", (DTOConfig(),))
-
-        if isinstance(annotation, str):
+        if parsed_type.is_forward_ref:
             raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
 
+        configs = parse_configs_from_annotation(parsed_type)
+
+        if parsed_type.is_type_var and not configs:
+            return cls
+
         cls_dict: dict[str, Any] = {
-            "configs": configs,
+            "configs": configs or (DTOConfig(),),
             "_postponed_cls_init_called": False,
             "_reverse_field_mappings": {},
         }
-        if not isinstance(annotation, TypeVar):
-            cls_dict.update(annotation=annotation, model_type=cls.get_model_type(annotation))
+        if not parsed_type.is_type_var:
+            cls_dict.update(annotation=parsed_type.annotation, model_type=cls.get_model_type(parsed_type.annotation))
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
 
