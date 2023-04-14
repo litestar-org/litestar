@@ -68,6 +68,13 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     def __class_getitem__(cls, annotation: Any) -> type[Self]:
         parsed_type = ParsedType(annotation)
 
+        if (parsed_type.is_optional and len(parsed_type.args) > 2) or (
+            parsed_type.is_union and not parsed_type.is_optional
+        ):
+            raise InvalidAnnotation(
+                "Unions are currently not supported as type argument to DTO. Want this? Open an issue."
+            )
+
         if parsed_type.is_forward_ref:
             raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
 
