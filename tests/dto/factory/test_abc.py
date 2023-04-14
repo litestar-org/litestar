@@ -39,7 +39,7 @@ def test_forward_referenced_type_argument_raises_exception() -> None:
 
 def test_type_narrowing_with_scalar_type_arg() -> None:
     dto = DataclassDTO[Model]
-    assert dto.config == DTOConfig()
+    assert dto.configs == (DTOConfig(),)
     assert dto._postponed_cls_init_called is False
     assert dto.annotation is Model
     assert dto.model_type is Model
@@ -47,7 +47,7 @@ def test_type_narrowing_with_scalar_type_arg() -> None:
 
 def test_type_narrowing_with_iterable_type_arg() -> None:
     dto = DataclassDTO[List[Model]]
-    assert dto.config == DTOConfig()
+    assert dto.configs == (DTOConfig(),)
     assert dto._postponed_cls_init_called is False
     assert get_origin(dto.annotation) is list
     assert get_args(dto.annotation) == (Model,)
@@ -57,7 +57,7 @@ def test_type_narrowing_with_iterable_type_arg() -> None:
 def test_type_narrowing_with_annotated_scalar_type_arg() -> None:
     config = DTOConfig()
     dto = DataclassDTO[Annotated[Model, config]]
-    assert dto.config is config
+    assert dto.configs[0] is config
     assert dto._postponed_cls_init_called is False
     assert dto.annotation is Model
     assert dto.model_type is Model
@@ -66,7 +66,7 @@ def test_type_narrowing_with_annotated_scalar_type_arg() -> None:
 def test_type_narrowing_with_annotated_iterable_type_arg() -> None:
     config = DTOConfig()
     dto = DataclassDTO[Annotated[List[Model], config]]
-    assert dto.config is config
+    assert dto.configs[0] is config
     assert dto._postponed_cls_init_called is False
     assert get_origin(dto.annotation) is list
     assert get_args(dto.annotation) == (Model,)
@@ -85,20 +85,15 @@ def test_type_narrowing_with_annotated_type_var() -> None:
     generic_dto = DataclassDTO[Annotated[t, config]]
     assert generic_dto is not DataclassDTO
     assert issubclass(generic_dto, DataclassDTO)
-    assert generic_dto.config is config
+    assert generic_dto.configs[0] is config
     assert not hasattr(generic_dto, "annotation")
     assert not hasattr(generic_dto, "model_type")
-
-
-def test_unexpected_annotated_metadata_argument() -> None:
-    with pytest.raises(InvalidAnnotation):
-        DataclassDTO[Annotated[Model, object()]]
 
 
 def test_extra_annotated_metadata_ignored() -> None:
     config = DTOConfig()
     dto = DataclassDTO[Annotated[Model, config, "a"]]
-    assert dto.config is config
+    assert dto.configs[0] is config
 
 
 def test_config_provided_by_subclass() -> None:
@@ -116,7 +111,7 @@ def test_overwrite_config() -> None:
     generic_dto = DataclassDTO[Annotated[t, DTOConfig()]]
     config = DTOConfig()
     dto = generic_dto[Annotated[Model, config]]  # pyright: ignore
-    assert dto.config is config
+    assert dto.configs[0] is config
 
 
 async def test_from_connection(request_factory: RequestFactory) -> None:
@@ -151,3 +146,12 @@ def test_config_field_mapping_new_definition() -> None:
     assert isinstance(z, FieldDefinition)
     assert z.name == "z"
     assert z.annotation is str
+
+
+def test_type_narrowing_with_multiple_configs() -> None:
+    config_1 = DTOConfig()
+    config_2 = DTOConfig()
+    dto = DataclassDTO[Annotated[Model, config_1, config_2]]
+    assert len(dto.configs) == 2
+    assert dto.configs[0] is config_1
+    assert dto.configs[1] is config_2

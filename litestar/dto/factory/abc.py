@@ -17,7 +17,7 @@ from .config import DTOConfig
 from .exc import InvalidAnnotation
 from .field import Mark, Purpose
 from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
-from .utils import get_model_type_hints, parse_config_from_annotated
+from .utils import get_model_type_hints, parse_configs_from_annotated
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
@@ -43,8 +43,8 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
     annotation: ClassVar[type[Any]]
     """The full annotation used to make the generic DTO concrete."""
-    config: ClassVar[DTOConfig]
-    """Config object to define the properties of the DTO."""
+    configs: ClassVar[tuple[DTOConfig, ...]]
+    """Config objects to define properties of the DTO."""
     model_type: ClassVar[type[Any]]
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
     field_definitions: ClassVar[FieldDefinitionsType]
@@ -65,28 +65,28 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         """
         self.data = data
 
-    def __class_getitem__(cls, item: TypeVar | type[Any]) -> type[Self]:
-        if isinstance(item, TypeVar):
+    def __class_getitem__(cls, annotation: TypeVar | type[Any]) -> type[Self]:
+        if isinstance(annotation, TypeVar):
             return cls
 
-        config: DTOConfig
-        if get_origin(item) is Annotated:
-            item, config = parse_config_from_annotated(item)
+        configs: tuple[DTOConfig, ...]
+        if get_origin(annotation) is Annotated:
+            annotation, configs = parse_configs_from_annotated(annotation)
         else:
-            config = getattr(cls, "config", DTOConfig())
+            configs = getattr(cls, "configs", (DTOConfig(),))
 
-        if isinstance(item, str):
+        if isinstance(annotation, str):
             raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
 
         cls_dict: dict[str, Any] = {
-            "config": config,
+            "configs": configs,
             "_postponed_cls_init_called": False,
             "_reverse_field_mappings": {},
         }
-        if not isinstance(item, TypeVar):
-            cls_dict.update(annotation=item, model_type=cls.get_model_type(item))
+        if not isinstance(annotation, TypeVar):
+            cls_dict.update(annotation=annotation, model_type=cls.get_model_type(annotation))
 
-        return type(f"{cls.__name__}[{item}]", (cls,), cls_dict)
+        return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
 
     def to_data_type(self) -> DataT:
         """Return the data held by the DTO."""
@@ -126,7 +126,9 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         """
 
     @classmethod
-    def parse_model(cls, model_type: Any, nested_depth: int = 0, recursive_depth: int = 0) -> FieldDefinitionsType:
+    def parse_model(
+        cls, model_type: Any, config: DTOConfig, nested_depth: int = 0, recursive_depth: int = 0
+    ) -> FieldDefinitionsType:
         """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
 
         .. important::
@@ -152,11 +154,11 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             {"new_field": (str | None, None)}
         """
         defined_fields: dict[str, FieldDefinition | NestedFieldDefinition] = {}
-        for field_definition in chain(cls.generate_field_definitions(model_type), cls.config.field_definitions):
-            if cls.should_exclude_field(field_definition):
+        for field_definition in chain(cls.generate_field_definitions(model_type), config.field_definitions):
+            if cls.should_exclude_field(field_definition, config):
                 continue
 
-            if field_mapping := cls.config.field_mapping.get(field_definition.name):
+            if field_mapping := config.field_mapping.get(field_definition.name):
                 if isinstance(field_mapping, str):
                     cls._reverse_field_mappings[field_mapping] = field_definition
                     field_definition = field_definition.copy_with(name=field_mapping)  # noqa: PLW2901
@@ -165,7 +167,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
                     field_definition = field_mapping  # noqa: PLW2901
 
             if cls.detect_nested_field(field_definition):
-                nested_field_definition = cls.handle_nested(field_definition, nested_depth, recursive_depth)
+                nested_field_definition = cls.handle_nested(field_definition, nested_depth, recursive_depth, config)
                 if nested_field_definition is not None:
                     defined_fields[field_definition.name] = nested_field_definition
                 continue
@@ -175,9 +177,9 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
     @classmethod
     def handle_nested(
-        cls, field_definition: FieldDefinition, nested_depth: int, recursive_depth: int
+        cls, field_definition: FieldDefinition, nested_depth: int, recursive_depth: int, config: DTOConfig
     ) -> NestedFieldDefinition | None:
-        if nested_depth == cls.config.max_nested_depth:
+        if nested_depth == config.max_nested_depth:
             return None
 
         nested = NestedFieldDefinition(
@@ -185,11 +187,11 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             nested_type=cls.get_model_type(field_definition.annotation),
         )
 
-        if (is_recursive := nested.is_recursive(cls.model_type)) and recursive_depth == cls.config.max_nested_recursion:
+        if (is_recursive := nested.is_recursive(cls.model_type)) and recursive_depth == config.max_nested_recursion:
             return None
 
         nested.nested_field_definitions = cls.parse_model(
-            nested.nested_type, nested_depth + 1, recursive_depth + is_recursive
+            nested.nested_type, config, nested_depth + 1, recursive_depth + is_recursive
         )
         return nested
 
@@ -213,21 +215,22 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         return parsed_type.annotation
 
     @classmethod
-    def should_exclude_field(cls, field_definition: FieldDefinition) -> bool:
+    def should_exclude_field(cls, field_definition: FieldDefinition, config: DTOConfig) -> bool:
         """Returns ``True`` where a field should be excluded from data transfer.
 
         Args:
             field_definition: defined DTO field
+            config: DTO configuration
 
         Returns:
             ``True`` if the field should not be included in any data transfer.
         """
         field_name = field_definition.name
         dto_field = field_definition.dto_field
-        excluded = field_name in cls.config.exclude
-        not_included = cls.config.include and field_name not in cls.config.include
+        excluded = field_name in config.exclude
+        not_included = config.include and field_name not in config.include
         private = dto_field and dto_field.mark is Mark.PRIVATE
-        read_only_for_write = cls.config.purpose is Purpose.WRITE and dto_field and dto_field.mark is Mark.READ_ONLY
+        read_only_for_write = config.purpose is Purpose.WRITE and dto_field and dto_field.mark is Mark.READ_ONLY
         return bool(excluded or not_included or private or read_only_for_write)
 
     @classmethod
@@ -236,7 +239,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
         Use this to do things like type inspection on models that should not occur during compile time.
         """
-        cls.field_definitions = cls.parse_model(cls.model_type)
+        cls.field_definitions = cls.parse_model(cls.model_type, cls.configs[0])
         cls.dto_backend = cls.dto_backend_type.from_field_definitions(cls.annotation, cls.field_definitions)
 
     @classmethod
