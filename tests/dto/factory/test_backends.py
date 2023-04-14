@@ -24,13 +24,9 @@ class MyStruct(Struct):
     b: str
 
 
-@pytest.fixture(name="msgspec_backend")
-def fx_msgspec_backend() -> MsgspecDTOBackend:
-    return MsgspecDTOBackend(annotation=List[Model], data_container_type=MyStruct)
-
-
-def test_dto_backend() -> None:
-    field_definitions: FieldDefinitionsType = {
+@pytest.fixture(name="field_definitions")
+def fx_field_definitions() -> FieldDefinitionsType:
+    return {
         "a": FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty),
         "b": FieldDefinition(name="b", parsed_type=ParsedType(str), default="b"),
         "c": FieldDefinition(name="c", parsed_type=ParsedType(List[int]), default_factory=list, default=Empty),
@@ -43,7 +39,17 @@ def test_dto_backend() -> None:
             },
         ),
     }
-    backend = MsgspecDTOBackend.from_field_definitions(type, field_definitions)
+
+
+@pytest.fixture(name="msgspec_backend")
+def fx_msgspec_backend(field_definitions: FieldDefinitionsType) -> MsgspecDTOBackend:
+    return MsgspecDTOBackend(
+        parsed_type=ParsedType(List[Model]), data_container_type=MyStruct, field_definitions=field_definitions
+    )
+
+
+def test_dto_backend(field_definitions: FieldDefinitionsType) -> None:
+    backend = MsgspecDTOBackend.from_field_definitions(ParsedType(type), field_definitions)
     assert to_builtins(backend.parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"}}', media_type=MediaType.JSON)) == {
         "a": 1,
         "b": "b",
@@ -75,6 +81,8 @@ def test_msgspec_backend_iterable_annotation(msgspec_backend: MsgspecDTOBackend)
         assert msgspec_backend.annotation == list[MyStruct]
 
 
-def test_msgspec_backend_scalar_annotation() -> None:
-    msgspec_backend = MsgspecDTOBackend(annotation=Model, data_container_type=MyStruct)
+def test_msgspec_backend_scalar_annotation(field_definitions: FieldDefinitionsType) -> None:
+    msgspec_backend = MsgspecDTOBackend(
+        parsed_type=ParsedType(Model), data_container_type=MyStruct, field_definitions=field_definitions
+    )
     assert msgspec_backend.annotation == MyStruct

@@ -38,7 +38,9 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
 
     @classmethod
     def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:
-        return cls(annotation, _create_msgspec_struct_for_field_definitions(str(uuid4()), field_definitions))
+        return cls(
+            annotation, _create_msgspec_struct_for_field_definitions(str(uuid4()), field_definitions), field_definitions
+        )
 
 
 def _create_msgspec_field(field_definition: FieldDefinition) -> MsgspecField | None:

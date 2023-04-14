@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
     from litestar.dto.factory.types import FieldDefinitionsType
     from litestar.enums import MediaType
+    from litestar.utils.signature import ParsedType
 
 __all__ = ("AbstractDTOBackend",)
 
@@ -22,21 +23,31 @@ BackendT = TypeVar("BackendT")
 
 
 class AbstractDTOBackend(ABC, Generic[BackendT]):
-    __slots__ = ("data_container_type", "annotation")
+    __slots__ = (
+        "data_container_type",
+        "annotation",
+        "field_definitions",
+        "parsed_type",
+    )
 
-    def __init__(self, annotation: type[Any], data_container_type: type[BackendT]) -> None:
+    def __init__(
+        self, parsed_type: ParsedType, data_container_type: type[BackendT], field_definitions: FieldDefinitionsType
+    ) -> None:
         """Create dto backend instance.
 
         Args:
-            annotation: Annotation received by the DTO.
+            parsed_type: Annotation received by the DTO.
             data_container_type: Parsing/validation/serialization model.
+            field_definitions: Info about the model fields that should be included in transfer data.
         """
         self.data_container_type = data_container_type
-        self.annotation = build_annotation_for_backend(annotation, data_container_type)
+        self.annotation = build_annotation_for_backend(parsed_type.annotation, data_container_type)
+        self.field_definitions = field_definitions
+        self.parsed_type = parsed_type
 
     @classmethod
     @abstractmethod
-    def from_field_definitions(cls, annotation: type[Any], field_definitions: FieldDefinitionsType) -> Self:
+    def from_field_definitions(cls, annotation: ParsedType, field_definitions: FieldDefinitionsType) -> Self:
         """Create a backend instance per model field definitions and annotation.
 
         The annotation is required in order to detect if the backend is representing scalar or sequence data.

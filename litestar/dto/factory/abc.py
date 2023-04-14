@@ -6,7 +6,6 @@ from itertools import chain
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from msgspec import Struct
-from typing_extensions import Self, get_origin
 
 from litestar.dto.interface import DTOInterface
 from litestar.types.builtin_types import NoneType
@@ -21,6 +20,8 @@ from .utils import get_model_type_hints, parse_configs_from_annotation
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
+
+    from typing_extensions import Self
 
     from litestar.connection import Request
     from litestar.handlers import BaseRouteHandler
@@ -39,31 +40,26 @@ StructT = TypeVar("StructT", bound=Struct)
 class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     """Base class for DTO types."""
 
-    __slots__ = ("data",)
+    __slots__ = ("_data",)
 
-    annotation: ClassVar[type[Any]]
-    """The full annotation used to make the generic DTO concrete."""
     configs: ClassVar[tuple[DTOConfig, ...]]
     """Config objects to define properties of the DTO."""
     model_type: ClassVar[type[Any]]
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
-    field_definitions: ClassVar[FieldDefinitionsType]
-    """Field definitions parsed from the model."""
     dto_backend_type: ClassVar[type[AbstractDTOBackend]]
     """DTO backend type."""
-    dto_backend: ClassVar[AbstractDTOBackend]
-    """DTO backend instance."""
 
-    _postponed_cls_init_called: ClassVar[bool]
     _reverse_field_mappings: ClassVar[dict[str, FieldDefinition]]
+    _type_config_backend_map: ClassVar[dict[tuple[ParsedType, DTOConfig], AbstractDTOBackend]]
+    _handler_config_backend_map: ClassVar[dict[tuple[Purpose, BaseRouteHandler, DTOConfig], AbstractDTOBackend]]
 
-    def __init__(self, data: DataT) -> None:
+    def __init__(self, data: DataT | Collection[DataT]) -> None:
         """Create an AbstractDTOFactory type.
 
         Args:
             data: the data represented by the DTO.
         """
-        self.data = data
+        self._data = data
 
     def __class_getitem__(cls, annotation: Any) -> type[Self]:
         parsed_type = ParsedType(annotation)
@@ -85,20 +81,21 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
         cls_dict: dict[str, Any] = {
             "configs": configs or (DTOConfig(),),
-            "_postponed_cls_init_called": False,
             "_reverse_field_mappings": {},
+            "_type_config_backend_map": {},
+            "_handler_config_backend_map": {},
         }
         if not parsed_type.is_type_var:
-            cls_dict.update(annotation=parsed_type.annotation, model_type=cls.get_model_type(parsed_type.annotation))
+            cls_dict.update(model_type=parsed_type.annotation)
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
 
-    def to_data_type(self) -> DataT:
+    def to_data_type(self) -> DataT | Collection[DataT]:
         """Return the data held by the DTO."""
-        return self.data
+        return self._data
 
     @classmethod
-    def from_data(cls, data: DataT) -> Self:
+    def from_data(cls, data: DataT | Collection[DataT]) -> Self:
         """Construct an instance from data.
 
         Args:
@@ -239,15 +236,6 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         return bool(excluded or not_included or private or read_only_for_write)
 
     @classmethod
-    def postponed_cls_init(cls) -> None:
-        """Delayed configuration callback.
-
-        Use this to do things like type inspection on models that should not occur during compile time.
-        """
-        cls.field_definitions = cls.parse_model(cls.model_type, cls.configs[0])
-        cls.dto_backend = cls.dto_backend_type.from_field_definitions(cls.annotation, cls.field_definitions)
-
-    @classmethod
     def on_registration(cls, parsed_type: ParsedType, route_handler: BaseRouteHandler) -> None:
         """Do something each time the DTO type is encountered during signature modelling.
 
@@ -256,24 +244,54 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             route_handler: Route handler instance.
         """
         if parsed_type.is_subclass_of(AbstractDTOFactory):
-            dto_type = parsed_type.annotation
-            resolved_dto_annotation = dto_type.annotation
+            raise InvalidAnnotation("AbstractDTOFactory does not support being set as a handler annotation")
+
+        if parsed_type.is_collection:
+            if len(parsed_type.inner_types) != 1:
+                raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
+            handler_type = parsed_type.inner_types[0]
         else:
-            resolved_dto_annotation = parsed_type.annotation
+            handler_type = parsed_type
 
-        if not issubclass(handler_type := cls.get_model_type(resolved_dto_annotation), cls.model_type):
-            raise InvalidAnnotation(
-                f"DTO annotation mismatch: DTO narrowed with '{cls.model_type}', handler type is '{handler_type}'"
-            )
+        if not handler_type.is_subclass_of(cls.model_type):
+            raise InvalidAnnotation(f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'")
 
-        if not cls._postponed_cls_init_called:
-            cls._postponed_cls_init_called = True
-            cls.postponed_cls_init()
+        is_data_type = (
+            "data" in route_handler.parsed_fn_signature.parameters
+            and parsed_type == route_handler.parsed_fn_signature.parameters["data"].parsed_type
+        )
+        is_return_type = parsed_type == route_handler.parsed_fn_signature.return_type
+
+        for config in cls.configs:
+            key = (parsed_type, config)
+            backend = cls._type_config_backend_map.get(key)
+            if backend is None:
+                backend = cls._type_config_backend_map.setdefault(
+                    key,
+                    cls.dto_backend_type.from_field_definitions(parsed_type, cls.parse_model(cls.model_type, config)),
+                )
+
+            if is_data_type:
+                cls._handler_config_backend_map[(Purpose.WRITE, route_handler, config)] = backend
+
+            if is_return_type:
+                cls._handler_config_backend_map[(Purpose.READ, route_handler, config)] = backend
+
+    @classmethod
+    def get_config_for_connection(cls, connection: Request[Any, Any, Any]) -> DTOConfig:
+        """Get the DTO configuration for the given connection.
+
+        Args:
+            connection: A connection instance.
+
+        Returns:
+            The DTO configuration for the connection.
+        """
+        return cls.configs[0]
 
 
 class MsgspecBackedDTOFactory(AbstractDTOFactory[DataT], Generic[DataT], metaclass=ABCMeta):
     dto_backend_type = MsgspecDTOBackend
-    dto_backend: ClassVar[MsgspecDTOBackend]
 
     @classmethod
     async def from_connection(cls, connection: Request[Any, Any, Any]) -> Self:
@@ -285,17 +303,19 @@ class MsgspecBackedDTOFactory(AbstractDTOFactory[DataT], Generic[DataT], metacla
         Returns:
             AbstractDTOFactory instance.
         """
-        parsed = cls.dto_backend.parse_raw(await connection.body(), connection.content_type[0])
-        return cls(data=_build_data_from_struct(cls.model_type, parsed, cls.field_definitions))  # type:ignore[arg-type]
+        config = cls.get_config_for_connection(connection)
+        backend = cls._handler_config_backend_map[(Purpose.WRITE, connection.route_handler, config)]
+        parsed = backend.parse_raw(await connection.body(), connection.content_type[0])
+        return cls(data=_build_data_from_struct(cls.model_type, parsed, backend.field_definitions))
 
     def to_encodable_type(self, request: Request[Any, Any, Any]) -> Any:
-        if isinstance(self.data, self.model_type):
-            return _build_struct_from_model(self.data, self.dto_backend.data_container_type)
-        type_ = get_origin(self.annotation) or self.annotation
-        return type_(
-            _build_struct_from_model(datum, self.dto_backend.data_container_type)
-            for datum in self.data  # pyright:ignore
-        )
+        config = self.get_config_for_connection(request)
+        backend = self._handler_config_backend_map[(Purpose.READ, request.route_handler, config)]
+        if isinstance(self._data, CollectionsCollection):
+            return backend.parsed_type.origin(
+                _build_struct_from_model(datum, backend.data_container_type) for datum in self._data  # pyright:ignore
+            )
+        return _build_struct_from_model(self._data, backend.data_container_type)
 
 
 def _build_model_from_struct(model_type: type[DataT], data: Struct, field_definitions: FieldDefinitionsType) -> DataT:

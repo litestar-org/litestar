@@ -133,6 +133,15 @@ class ParsedType:
         object.__setattr__(self, "safe_generic_origin", get_safe_generic_origin(origin))
         object.__setattr__(self, "inner_types", tuple(ParsedType(arg) for arg in args))
 
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, ParsedType):
+            return False
+
+        if self.origin:
+            return bool(self.origin == other.origin and self.inner_types == other.inner_types)
+
+        return bool(self.annotation == other.annotation)
+
     @property
     def is_forward_ref(self) -> bool:
         """Whether the annotation is a forward reference or not."""

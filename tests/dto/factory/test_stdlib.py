@@ -22,9 +22,7 @@ class Model:
 
 @pytest.fixture(name="dto_type")
 def fx_dto_type() -> type[DataclassDTO[Model]]:
-    dto_type = DataclassDTO[Model]
-    dto_type.postponed_cls_init()
-    return dto_type
+    return DataclassDTO[Model]
 
 
 @pytest.mark.skipif(sys.version_info > (3, 8), reason="generic builtin collection")
