@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
+from collections.abc import Collection as CollectionsCollection
 from itertools import chain
 from typing import TYPE_CHECKING, Generic, TypeVar
 
+from msgspec import Struct
 from typing_extensions import Annotated, Self, get_origin
 
 from litestar.dto.interface import DTOInterface
@@ -15,10 +17,10 @@ from .config import DTOConfig
 from .exc import InvalidAnnotation
 from .field import Mark, Purpose
 from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
-from .utils import build_data_from_struct, build_struct_from_model, parse_config_from_annotated
+from .utils import get_model_type_hints, parse_config_from_annotated
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Generator
+    from typing import Any, ClassVar, Collection, Generator
 
     from litestar.connection import Request
     from litestar.handlers import BaseRouteHandler
@@ -31,6 +33,7 @@ __all__ = [
 ]
 
 DataT = TypeVar("DataT")
+StructT = TypeVar("StructT", bound=Struct)
 
 
 class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
@@ -275,13 +278,130 @@ class MsgspecBackedDTOFactory(AbstractDTOFactory[DataT], Generic[DataT], metacla
             AbstractDTOFactory instance.
         """
         parsed = cls.dto_backend.parse_raw(await connection.body(), connection.content_type[0])
-        return cls(data=build_data_from_struct(cls.model_type, parsed, cls.field_definitions))  # type:ignore[arg-type]
+        return cls(data=_build_data_from_struct(cls.model_type, parsed, cls.field_definitions))  # type:ignore[arg-type]
 
     def to_encodable_type(self, request: Request[Any, Any, Any]) -> Any:
         if isinstance(self.data, self.model_type):
-            return build_struct_from_model(self.data, self.dto_backend.data_container_type)
+            return _build_struct_from_model(self.data, self.dto_backend.data_container_type)
         type_ = get_origin(self.annotation) or self.annotation
         return type_(
-            build_struct_from_model(datum, self.dto_backend.data_container_type)
+            _build_struct_from_model(datum, self.dto_backend.data_container_type)
             for datum in self.data  # pyright:ignore
         )
+
+
+def _build_model_from_struct(model_type: type[DataT], data: Struct, field_definitions: FieldDefinitionsType) -> DataT:
+    """Create instance of ``model_type``.
+
+    Args:
+        model_type: the model type received by the DTO on type narrowing.
+        data: primitive data that has been parsed and validated via the backend.
+        field_definitions: model field definitions.
+
+    Returns:
+        Data parsed into ``model_type``.
+    """
+    unstructured_data = {}
+    for k in data.__slots__:  # type:ignore[attr-defined]
+        v = getattr(data, k)
+
+        field = field_definitions[k]
+
+        if isinstance(field, NestedFieldDefinition) and isinstance(v, CollectionsCollection):
+            parsed_type = field.field_definition.parsed_type
+            if parsed_type.origin is None:  # pragma: no cover
+                raise RuntimeError("Unexpected origin value for collection type.")
+            unstructured_data[k] = parsed_type.origin(
+                _build_model_from_struct(field.nested_type, item, field.nested_field_definitions) for item in v
+            )
+        elif isinstance(field, NestedFieldDefinition) and isinstance(v, Struct):
+            unstructured_data[k] = _build_model_from_struct(field.nested_type, v, field.nested_field_definitions)
+        else:
+            unstructured_data[k] = v
+
+    return model_type(**unstructured_data)
+
+
+def _build_data_from_struct(
+    model_type: type[DataT], data: Struct | Collection[Struct], field_definitions: FieldDefinitionsType
+) -> DataT | Collection[DataT]:
+    """Create instance or iterable of instances of ``model_type``.
+
+    Args:
+        model_type: the model type received by the DTO on type narrowing.
+        data: primitive data that has been parsed and validated via the backend.
+        field_definitions: model field definitions.
+
+    Returns:
+        Data parsed into ``model_type``.
+    """
+    if isinstance(data, CollectionsCollection):
+        return type(data)(  # type:ignore[return-value]
+            _build_data_from_struct(model_type, item, field_definitions) for item in data  # type:ignore[call-arg]
+        )
+    return _build_model_from_struct(model_type, data, field_definitions)
+
+
+def _build_struct_from_model(model: Any, struct_type: type[StructT]) -> StructT:
+    """Convert ``model`` to instance of ``struct_type``
+
+    It is expected that attributes of ``struct_type`` are a subset of the attributes of ``model``.
+
+    Args:
+        model: a model instance
+        struct_type: a subclass of ``msgspec.Struct``
+
+    Returns:
+        Instance of ``struct_type``.
+    """
+    data = {}
+    for key, parsed_type in get_model_type_hints(struct_type).items():
+        model_val = getattr(model, key)
+        if parsed_type.is_subclass_of(Struct):
+            data[key] = _build_struct_from_model(model_val, parsed_type.annotation)
+        elif parsed_type.is_union:
+            data[key] = _handle_union_type(parsed_type, model_val)
+        elif parsed_type.is_collection:
+            data[key] = _handle_collection_type(parsed_type, model_val)
+        else:
+            data[key] = model_val
+    return struct_type(**data)
+
+
+def _handle_union_type(parsed_type: ParsedType, model_val: Any) -> Any:
+    """Handle union type.
+
+    Args:
+        parsed_type: Parsed type.
+        model_val: Model value.
+
+    Returns:
+        Model value.
+    """
+    for inner_type in parsed_type.inner_types:
+        if inner_type.is_subclass_of(Struct):
+            # If there are multiple struct inner types, we use the first one that creates without exception.
+            # This is suboptimal, and perhaps can be improved by assigning the model that the inner struct
+            # was derived upon to the struct itself, which would allow us to isolate the correct struct to use
+            # for the nested model type instance. For the most likely case of an optional union of a single
+            # nested type, this should be sufficient.
+            try:
+                return _build_struct_from_model(model_val, inner_type.annotation)
+            except (AttributeError, TypeError):
+                continue
+    return model_val
+
+
+def _handle_collection_type(parsed_type: ParsedType, model_val: Any) -> Any:
+    """Handle collection type.
+
+    Args:
+        parsed_type: Parsed type.
+        model_val: Model value.
+
+    Returns:
+        Model value.
+    """
+    if parsed_type.inner_types and (inner_type := parsed_type.inner_types[0]).is_subclass_of(Struct):
+        return parsed_type.origin(_build_struct_from_model(m, inner_type.annotation) for m in model_val)
+    return model_val
