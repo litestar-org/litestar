@@ -75,7 +75,7 @@ def test_tortoise_orm_plugin_openapi_spec_generation(scaffold_tortoise: Callable
             },
         },
         "type": "object",
-        "required": ["name", "created_at"],
+        "required": ["created_at", "name"],
         "title": "Tournament",
     }
     assert schema.components

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Any, Generic, Mapping, TypeVar
 
@@ -30,8 +31,11 @@ if TYPE_CHECKING:
 
 T = TypeVar("T", bound=ASGIApp)
 
+# ensure that httpx logging is not interfering with our test client
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
-class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore [misc]
+
+class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[misc]
     lifespan_handler: LifeSpanHandler
     exit_stack: AsyncExitStack
 

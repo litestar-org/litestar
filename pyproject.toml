@@ -185,7 +185,6 @@ build-backend = "poetry.core.masonry.api"
 line-length = 120
 include = '\.pyi?$'
 
-
 [tool.coverage.run]
 omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
 
@@ -353,6 +352,7 @@ known-first-party = ["litestar", "tests", "examples"]
 "docs/examples/**" = ["T201"]
 "litestar/exceptions/*.*" = ["N818"]
 "litestar/handlers/**/*.*" = ["N801"]
+"litestar/_openapi/schema_generation/schema.py" = ["C901"]
 "litestar/params.py" = ["N802"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
