@@ -37,7 +37,7 @@ The most basic application we can implement is one that simply returns the strin
 "Hello, world!":
 
 
-.. literalinclude:: hello_world.py
+.. literalinclude:: examples/hello_world.py
     :language: python
 
 
@@ -45,8 +45,7 @@ Now save the contents of this example in a file called ``app.py`` and type
 ``litestar run`` in your terminal. This will serve the application locally on your
 machine. Now visit http://127.0.0.1:8000/ in your browser:
 
-.. image:: hello_world.png
-
+.. image:: images/hello_world.png
 
 
 .. toctree::

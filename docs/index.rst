@@ -216,8 +216,8 @@ Example Applications
     :caption: Documentation
     :hidden:
 
-    usage/index
     tutorials/index
+    usage/index
     reference/index
     migration/index
     benchmarks

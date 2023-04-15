@@ -3,8 +3,6 @@ from typing import List
 
 from litestar import Litestar, get
 
-__all__ = ["TodoItem", "get_todo_list"]
-
 
 @dataclass
 class TodoItem:
@@ -20,8 +18,8 @@ TODO_LIST = [
 
 
 @get("/")
-async def get_todo_list() -> List[TodoItem]:
-    return TODO_LIST
+async def get_todo_list(done: bool) -> List[TodoItem]:
+    return [item for item in TODO_LIST if item.done == done]
 
 
 app = Litestar([get_todo_list])

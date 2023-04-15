@@ -2,9 +2,6 @@ from typing import Dict, List, Union
 
 from litestar import Litestar, get
 
-__all__ = ["get_todo_list"]
-
-
 TODO_LIST = [
     {"title": "Start writing TODO list", "done": True},
     {"title": "???", "done": False},

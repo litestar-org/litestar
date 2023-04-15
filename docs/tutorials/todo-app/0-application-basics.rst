@@ -19,7 +19,7 @@ method which we want to use. Using ``get`` tells Litestar that we only want to u
 function when a ``GET`` request is being made.
 
 
-.. literalinclude:: hello_world.py
+.. literalinclude:: examples/hello_world.py
     :language: python
     :emphasize-lines: 4
     :linenos:
@@ -55,7 +55,7 @@ Type annotations play an important role in a Litestar application. They tell Lit
 how you want your data to behave, and what you intend to do with it.
 
 
-.. literalinclude:: hello_world.py
+.. literalinclude:: examples/hello_world.py
     :language: python
     :emphasize-lines: 5
     :linenos:
@@ -84,7 +84,7 @@ The last step is to create an application object; An instance of the
 and we can use it to register our previously defined route handlers by passing a list
 of them as the first argument to the class:
 
-.. literalinclude:: hello_world.py
+.. literalinclude:: examples/hello_world.py
     :language: python
     :emphasize-lines: 9
     :linenos:
@@ -100,7 +100,7 @@ Running the application
 
 As we learned in the previous step, Litestar itself is simply a Python object. This in
 itself is not enough to be able to communicate using the language of the web: HTTP. For
-that we need a dedicated programm: An application server.
+that we need a dedicated program: An application server.
 `uvicorn <https://www.uvicorn.org/>`_ is an example of this. It enables us to pass it
 our application and serve it via HTTP.
 
