@@ -32,7 +32,7 @@ __all__ = (
 )
 
 T = TypeVar("T")
-ModelT = TypeVar("ModelT", bound="base.Base | base.AuditBase")
+ModelT = TypeVar("ModelT", bound="base.ModelProtocol")
 SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyRepository")
 SelectT = TypeVar("SelectT", bound="Select[Any]")
 RowT = TypeVar("RowT", bound=Tuple[Any, ...])
@@ -249,7 +249,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         existing = await self.get_one_or_none(**kwargs)
         if existing:
             return existing, False
-        return await self.add(self.model_type(**kwargs)), True  # type: ignore[arg-type]
+        return await self.add(self.model_type(**kwargs)), True
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
         """Get the count of records returned by a query.
@@ -264,7 +264,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         statement = kwargs.pop("base_select", self.statement)
         statement = statement.with_only_columns(
             sql_func.count(
-                self.model_type.id,
+                getattr(self.model_type, self.id_attribute),
             ),
             maintain_column_froms=True,
         ).order_by(None)
@@ -351,9 +351,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         statement = kwargs.pop("base_select", self.statement)
         statement = statement.add_columns(
             over(
-                sql_func.count(
-                    self.model_type.id,
-                ),
+                sql_func.count(getattr(self.model_type, self.id_attribute)),
             )
         )
         statement = self._apply_filters(*filters, statement=statement)
