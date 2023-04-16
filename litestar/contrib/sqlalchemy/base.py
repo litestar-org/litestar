@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import Any, Protocol, TypeVar
+from typing import Any, ClassVar, Protocol, TypeVar, runtime_checkable
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
@@ -51,11 +51,12 @@ def touch_updated_timestamp(session: Session, *_: Any) -> None:
             instance.updated = datetime.now()  # noqa: DTZ005
 
 
+@runtime_checkable
 class ModelProtocol(Protocol):
     """The base SQLAlchemy model protocol."""
 
-    __table__: Any
-    __name__: Any
+    __table__: ClassVar[Any]
+    __name__: str
 
     def to_dict(self, exclude: set[str] | None = None) -> dict[str, Any]:
         """Convert model to dictionary.
