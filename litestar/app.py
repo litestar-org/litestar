@@ -30,6 +30,7 @@ from litestar.middleware.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec.components import Components
 from litestar.plugins import (
+    DTOSerializationPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
     SerializationPluginProtocol,
@@ -147,6 +148,7 @@ class Litestar(Router):
         "compression_config",
         "cors_config",
         "csrf_config",
+        "dto_serialization_plugins",
         "event_emitter",
         "get_logger",
         "logger",
@@ -402,6 +404,7 @@ class Litestar(Router):
         self.request_class = config.request_class or Request
         self.response_cache_config = config.response_cache_config
         self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
+        self.dto_serialization_plugins = [p for p in config.plugins if isinstance(p, DTOSerializationPluginProtocol)]
         self.state = config.state
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None

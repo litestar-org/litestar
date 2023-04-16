@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from litestar.controller import Controller
     from litestar.di import Provide
     from litestar.params import ParameterKwarg
+    from litestar.plugins import DTOSerializationPluginProtocol
     from litestar.router import Router
     from litestar.types import AsyncAnyCallable, ExceptionHandler
     from litestar.types.composite_types import MaybePartial
@@ -338,6 +339,22 @@ class BaseRouteHandler(Generic[T]):
 
         return cast("type[DTOInterface] | None", self._resolved_return_dto)
 
+    def _set_dto(self, dto: type[DTOInterface]) -> None:
+        """Set the data_dto for the handler.
+
+        Args:
+            dto: The :class:`DTO type <.dto.interface.DTOInterface>` to set.
+        """
+        self._resolved_dto = dto
+
+    def _set_return_dto(self, dto: type[DTOInterface]) -> None:
+        """Set the return_dto for the handler.
+
+        Args:
+            dto: The :class:`DTO type <.dto.interface.DTOInterface>` to set.
+        """
+        self._resolved_return_dto = dto
+
     def _init_handler_dtos(self) -> None:
         """Initialize the data and return DTOs for the handler."""
         data_parameter = self.parsed_fn_signature.parameters.get("data")
@@ -376,10 +393,26 @@ class BaseRouteHandler(Generic[T]):
         self.resolve_guards()
         self.resolve_middleware()
         self.resolve_opts()
+        self._handle_serialization_plugins(app.dto_serialization_plugins)
         self._init_handler_dtos()
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
+
+    def _handle_serialization_plugins(self, plugins: list[DTOSerializationPluginProtocol]) -> None:
+        """Handle the serialization plugins for the handler."""
+        if (data_param := self.parsed_fn_signature.parameters.get("data")) and self.resolve_dto() is None:
+            for plugin in plugins:
+                if plugin.supports_type(data_param.parsed_type):
+                    self._set_dto(plugin.create_dto_for_type(data_param.parsed_type))
+                    break
+
+        if self.resolve_return_dto() is None:
+            return_type = self.parsed_fn_signature.return_type
+            for plugin in plugins:
+                if plugin.supports_type(return_type):
+                    self._set_return_dto(plugin.create_dto_for_type(return_type))
+                    break
 
     def __str__(self) -> str:
         """Return a unique identifier for the route handler.

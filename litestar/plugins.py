@@ -21,9 +21,12 @@ from litestar.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
+    from litestar.dto.factory.abc import AbstractDTOFactory
     from litestar.openapi.spec import Schema
+    from litestar.utils.signature import ParsedType
 
 __all__ = (
+    "DTOSerializationPluginProtocol",
     "InitPluginProtocol",
     "OpenAPISchemaPluginProtocol",
     "PluginMapping",
@@ -149,6 +152,36 @@ class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
 
 
 @runtime_checkable
+class DTOSerializationPluginProtocol(Protocol):
+    """Protocol used to define a serialization plugin for DTOs."""
+
+    __slots__ = ()
+
+    @staticmethod
+    def supports_type(parsed_type: ParsedType) -> bool:
+        """Given a value of indeterminate type, determine if this value is supported by the plugin.
+
+        Args:
+            parsed_type: A parsed type.
+
+        Returns:
+            Whether the type is supported by the plugin.
+        """
+        raise NotImplementedError()
+
+    def create_dto_for_type(self, parsed_type: ParsedType) -> type[AbstractDTOFactory]:
+        """Given a parsed type, create a DTO class.
+
+        Args:
+            parsed_type: A parsed type.
+
+        Returns:
+            A DTO class.
+        """
+        raise NotImplementedError()
+
+
+@runtime_checkable
 class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
     """Plugin to extend the support of OpenAPI schema generation for non-library types."""
 
@@ -223,4 +256,6 @@ class PluginMapping(NamedTuple):
         return self.plugin.from_data_container_instance(self.model_class, value)
 
 
-PluginProtocol = Union[SerializationPluginProtocol, InitPluginProtocol, OpenAPISchemaPluginProtocol]
+PluginProtocol = Union[
+    DTOSerializationPluginProtocol, SerializationPluginProtocol, InitPluginProtocol, OpenAPISchemaPluginProtocol
+]
