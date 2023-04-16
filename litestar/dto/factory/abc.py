@@ -24,7 +24,9 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar.connection import Request
+    from litestar.enums import RequestEncodingType
     from litestar.handlers import BaseRouteHandler
+    from litestar.openapi.spec import RequestBody, Schema
 
     from .backends import AbstractDTOBackend
 
@@ -297,6 +299,22 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         """
         config = cls.configs[0]
         return cls._handler_config_backend_map[(purpose, route_handler, config)]
+
+    @classmethod
+    def create_openapi_request_body(
+        cls,
+        handler: BaseRouteHandler,
+        generate_examples: bool,
+        media_type: RequestEncodingType | str,
+        schemas: dict[str, Schema],
+    ) -> RequestBody | None:
+        """Create an OpenAPI request body.
+
+        Returns:
+            OpenAPI request body.
+        """
+        backend = cls.get_backend(Purpose.WRITE, handler)
+        return backend.create_openapi_request_body(generate_examples, media_type, schemas)
 
 
 class MsgspecBackedDTOFactory(AbstractDTOFactory[DataT], Generic[DataT], metaclass=ABCMeta):

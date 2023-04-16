@@ -7,7 +7,9 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar.connection import Request
+    from litestar.enums import RequestEncodingType
     from litestar.handlers import BaseRouteHandler
+    from litestar.openapi.spec import RequestBody, Schema
     from litestar.types import LitestarEncodableType
     from litestar.utils.signature import ParsedType
 
@@ -74,3 +76,18 @@ class DTOInterface(Protocol):
             UnsupportedType: If the DTO type does not support the annotated type of ``parsed_type``.
         """
         return
+
+    @classmethod
+    def create_openapi_request_body(
+        cls,
+        handler: BaseRouteHandler,
+        generate_examples: bool,
+        media_type: RequestEncodingType | str,
+        schemas: dict[str, Schema],
+    ) -> RequestBody | None:
+        """Create an OpenAPI request body for the DTO.
+
+        Returns:
+            An optional :class:`RequestBody <.openapi.spec.request_body.RequestBody>` instance.
+        """
+        return None
