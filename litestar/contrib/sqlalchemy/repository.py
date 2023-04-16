@@ -263,9 +263,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         statement = kwargs.pop("base_select", self.statement)
         statement = statement.with_only_columns(
-            sql_func.count(
-                self.get_id_attribute_value(self.model_type)
-            ),
+            sql_func.count(self.get_id_attribute_value(self.model_type)),
             maintain_column_froms=True,
         ).order_by(None)
         statement = self._apply_filters(*filters, apply_pagination=False, statement=statement)
