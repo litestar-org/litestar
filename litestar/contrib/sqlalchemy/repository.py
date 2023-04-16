@@ -351,7 +351,7 @@ class SQLAlchemyRepository(AbstractRepository[ModelT], Generic[ModelT]):
         statement = kwargs.pop("base_select", self.statement)
         statement = statement.add_columns(
             over(
-                sql_func.count(getattr(self.model_type, self.id_attribute)),
+                sql_func.count(self.get_id_attribute_value(self.model_type)),
             )
         )
         statement = self._apply_filters(*filters, statement=statement)
