@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 import msgspec
@@ -32,16 +32,16 @@ class CompanyDTO(DTOInterface[Company]):
     def to_data_type(self) -> Company:
         return self._data
 
-    def to_encodable_type(self, **kwargs: Any) -> bytes | LitestarEncodableType:
+    def to_encodable_type(self) -> bytes | LitestarEncodableType:
         return CompanySchema(id=self._data.id, name=self._data.name, worth=self._data.worth)
 
     @classmethod
-    async def from_connection(cls, request: Request) -> CompanyDTO:
-        parsed_data = msgspec.json.decode(await request.body(), type=CompanySchema)
+    def from_bytes(cls, raw: bytes, connection: Request) -> CompanyDTO:
+        parsed_data = msgspec.json.decode(raw, type=CompanySchema)
         return cls(data=Company(id=parsed_data.id, name=parsed_data.name, worth=parsed_data.worth))
 
     @classmethod
-    def from_data(cls, data: Company) -> CompanyDTO:
+    def from_data(cls, data: Company, connection: Request) -> CompanyDTO:
         return cls(data=data)
 
 

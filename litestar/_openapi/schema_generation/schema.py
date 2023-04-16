@@ -5,7 +5,6 @@ from copy import copy
 from dataclasses import MISSING, fields
 from datetime import date, datetime, time, timedelta
 from enum import EnumMeta
-from inspect import getdoc
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from pathlib import Path
 from typing import (
@@ -31,6 +30,8 @@ from typing import (
 from uuid import UUID
 
 from _decimal import Decimal
+from msgspec import NODEFAULT, Struct
+from msgspec.structs import fields as msgspec_struct_fields
 from typing_extensions import get_args, get_type_hints
 
 from litestar._openapi.schema_generation.constrained_fields import (
@@ -49,9 +50,12 @@ from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagin
 from litestar.serialization import encode_json
 from litestar.types import DataclassProtocol, Empty, TypedDictClass
 from litestar.utils.predicates import (
+    is_attrs_class,
     is_dataclass_class,
+    is_optional_union,
     is_pydantic_constrained_field,
     is_pydantic_model_class,
+    is_struct_class,
     is_typed_dict,
 )
 from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_union
@@ -84,6 +88,10 @@ if TYPE_CHECKING:
         ConstrainedSet = Any  # type: ignore
         ConstrainedStr = Any  # type: ignore
 
+    try:
+        from attrs import AttrsInstance
+    except ImportError:
+        AttrsInstance = Any  # type: ignore
 try:
     import pydantic
 
@@ -329,9 +337,9 @@ def create_schema_for_annotation(annotation: Any) -> Schema | None:
 
 
 def create_schema_for_optional_field(
-    field: "SignatureField",
+    field: SignatureField,
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> Schema:
     """Create a Schema for an optional SignatureField.
@@ -370,9 +378,9 @@ def create_schema_for_optional_field(
 
 
 def create_schema_for_union_field(
-    field: "SignatureField",
+    field: SignatureField,
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> Schema:
     """Create a Schema for a union SignatureField.
@@ -397,9 +405,9 @@ def create_schema_for_union_field(
 
 
 def create_schema_for_object_type(
-    field: "SignatureField",
+    field: SignatureField,
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> Schema:
     """Create schema for object types (dict, Mapping, list, Sequence etc.) types.
@@ -439,9 +447,9 @@ def create_schema_for_object_type(
 
 
 def create_schema_for_builtin_generics(
-    field: "SignatureField",
+    field: SignatureField,
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> "Schema":
     """Handle builtin generic types.
@@ -521,7 +529,7 @@ def create_schema_for_builtin_generics(
 def create_schema_for_pydantic_model(
     field_type: type[BaseModel],
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> Schema:
     """Create a schema object for a given pydantic model class.
@@ -535,9 +543,10 @@ def create_schema_for_pydantic_model(
     Returns:
         A schema instance.
     """
-    field_type_hints = get_type_hints(field_type, include_extras=False)
+
+    field_type_hints = get_type_hints(field_type)
     return Schema(
-        required=[field.alias or field.name for field in field_type.__fields__.values() if field.required],
+        required=sorted([field.alias or field.name for field in field_type.__fields__.values() if field.required]),
         properties={
             (f.alias or f.name): create_schema(
                 field=SignatureField.create(field_type=field_type_hints[f.name], name=f.alias or f.name),
@@ -549,14 +558,98 @@ def create_schema_for_pydantic_model(
         },
         type=OpenAPIType.OBJECT,
         title=_get_type_schema_name(field_type),
-        description=getdoc(field_type) or None,
+    )
+
+
+def create_schema_for_attrs_class(
+    field_type: type[AttrsInstance],
+    generate_examples: bool,
+    plugins: list[OpenAPISchemaPluginProtocol],
+    schemas: dict[str, Schema],
+) -> Schema:
+    """Create a schema object for a given attrs class.
+
+    Args:
+        field_type: An attrs class.
+        generate_examples: Whether to generate examples if none are given.
+        plugins: A list of plugins.
+        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+
+    Returns:
+        A schema instance.
+    """
+    from attr import NOTHING
+    from attrs import fields_dict
+
+    field_type_hints = get_type_hints(field_type)
+    return Schema(
+        required=sorted(
+            [
+                field_name
+                for field_name, attribute in fields_dict(field_type).items()
+                if attribute.default is NOTHING and not is_optional_union(field_type_hints[field_name])
+            ]
+        ),
+        properties={
+            k: create_schema(
+                field=SignatureField.create(field_type=v, name=k),
+                generate_examples=generate_examples,
+                plugins=plugins,
+                schemas=schemas,
+            )
+            for k, v in field_type_hints.items()
+        },
+        type=OpenAPIType.OBJECT,
+        title=_get_type_schema_name(field_type),
+    )
+
+
+def create_schema_for_struct_class(
+    field_type: type[Struct],
+    generate_examples: bool,
+    plugins: list[OpenAPISchemaPluginProtocol],
+    schemas: dict[str, Schema],
+) -> Schema:
+    """Create a schema object for a given msgspec.Struct class.
+
+    Args:
+        field_type: A msgspec.Struct class.
+        generate_examples: Whether to generate examples if none are given.
+        plugins: A list of plugins.
+        schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
+
+    Returns:
+        A schema instance.
+    """
+
+    return Schema(
+        required=sorted(
+            [
+                field.encode_name
+                for field in msgspec_struct_fields(field_type)
+                if field.default is NODEFAULT
+                and field.default_factory is NODEFAULT
+                and not is_optional_union(field.type)
+            ]
+        ),
+        properties={
+            field.encode_name: create_schema(
+                field=SignatureField.create(field_type=field.type, name=field.encode_name),
+                generate_examples=generate_examples,
+                plugins=plugins,
+                schemas=schemas,
+            )
+            for field in msgspec_struct_fields(field_type)
+        },
+        type=OpenAPIType.OBJECT,
+        title=_get_type_schema_name(field_type),
     )
 
 
 def create_schema_for_dataclass(
     field_type: type[DataclassProtocol],
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> Schema:
     """Create a schema object for a given dataclass class.
@@ -570,10 +663,19 @@ def create_schema_for_dataclass(
     Returns:
         A schema instance.
     """
+    field_type_hints = get_type_hints(field_type)
     return Schema(
-        required=[
-            field.name for field in fields(field_type) if field.default is MISSING and field.default_factory is MISSING
-        ],
+        required=sorted(
+            [
+                field.name
+                for field in fields(field_type)
+                if (
+                    field.default is MISSING
+                    and field.default_factory is MISSING
+                    and not is_optional_union(field_type_hints[field.name])
+                )
+            ]
+        ),
         properties={
             k: create_schema(
                 field=SignatureField.create(field_type=v, name=k),
@@ -581,18 +683,17 @@ def create_schema_for_dataclass(
                 plugins=plugins,
                 schemas=schemas,
             )
-            for k, v in get_type_hints(field_type, include_extras=False).items()
+            for k, v in field_type_hints.items()
         },
         type=OpenAPIType.OBJECT,
         title=_get_type_schema_name(field_type),
-        description=getdoc(field_type) or None,
     )
 
 
 def create_schema_for_typed_dict(
     field_type: TypedDictClass,
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> Schema:
     """Create a schema object for a given typed dict.
@@ -607,7 +708,7 @@ def create_schema_for_typed_dict(
         A schema instance.
     """
     return Schema(
-        required=list(getattr(field_type, "__required_keys__", [])),
+        required=sorted(getattr(field_type, "__required_keys__", [])),
         properties={
             k: create_schema(
                 field=SignatureField.create(field_type=v, name=k),
@@ -615,18 +716,17 @@ def create_schema_for_typed_dict(
                 plugins=plugins,
                 schemas=schemas,
             )
-            for k, v in get_type_hints(field_type, include_extras=False).items()
+            for k, v in get_type_hints(field_type).items()
         },
         type=OpenAPIType.OBJECT,
         title=_get_type_schema_name(field_type),
-        description=getdoc(field_type) or None,
     )
 
 
 def create_schema_for_plugin(
-    field: "SignatureField",
+    field: SignatureField,
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
     plugin: OpenAPISchemaPluginProtocol,
 ) -> Schema | Reference:
@@ -661,7 +761,7 @@ def create_schema_for_plugin(
 
 
 def _process_schema_result(
-    field: "SignatureField",
+    field: SignatureField,
     schema: Schema,
     generate_examples: bool,
     schemas: dict[str, Schema],
@@ -694,9 +794,9 @@ def _process_schema_result(
 
 
 def create_schema(
-    field: "SignatureField",
+    field: SignatureField,
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
+    plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
 ) -> Schema | Reference:
     """Create a Schema for a given SignatureField.
@@ -722,6 +822,16 @@ def create_schema(
 
     elif is_pydantic_model_class(annotation=field.field_type):
         result = create_schema_for_pydantic_model(
+            field_type=field.field_type, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+        )
+
+    elif is_attrs_class(annotation=field.field_type):
+        result = create_schema_for_attrs_class(
+            field_type=field.field_type, generate_examples=generate_examples, plugins=plugins, schemas=schemas
+        )
+
+    elif is_struct_class(annotation=field.field_type):
+        result = create_schema_for_struct_class(
             field_type=field.field_type, generate_examples=generate_examples, plugins=plugins, schemas=schemas
         )
 

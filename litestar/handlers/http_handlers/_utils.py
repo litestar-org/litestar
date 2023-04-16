@@ -98,10 +98,8 @@ def create_data_handler(
         if isawaitable(data):
             data = await data
 
-        if isinstance(data, DTOInterface):
-            data = data.to_encodable_type(request=request)
-        elif return_dto:
-            data = return_dto.from_data(data=data).to_encodable_type(request=request)
+        if return_dto and not isinstance(data, DTOInterface):
+            data = return_dto.from_data(data, request)
         elif plugins:
             data = await normalize_response_data(data=data, plugins=plugins)
 
