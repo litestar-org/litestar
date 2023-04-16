@@ -80,8 +80,8 @@ async def get_model_from_dto(
 
     connection.scope["route_handler"] = handler
     dto_type.on_registration(ParsedType(annotation), handler)
-    dto_instance = await dto_type.from_connection(connection)
-    return dto_instance._data
+    dto_instance = dto_type.from_bytes(await connection.body(), connection)
+    return dto_instance.to_data_type()
 
 
 def assert_model_values(model_instance: DeclarativeBase, expected_values: dict[str, Any]) -> None:
@@ -238,9 +238,10 @@ async def test_dto_for_private_model_field(
             created=datetime.min,
             updated=datetime.min,
             field=datetime.min,
-        )
+        ),
+        connection=request,
     )
-    serializable = dto_instance.to_encodable_type(request)
+    serializable = dto_instance.to_encodable_type()
     assert b"field" not in encode_json(serializable)
 
 
@@ -459,7 +460,7 @@ dto_type = SQLAlchemyDTO[A]
     assert isinstance(model, module.A)
     assert isinstance(model.b, module.B)
     assert isinstance(model.b.a, module.A)
-    encodable_type = module.dto_type(data=model).to_encodable_type(request)
+    encodable_type = module.dto_type(data=model, connection=request).to_encodable_type()
     assert encodable_type.id == 1
     assert encodable_type.b_id == 1
     assert encodable_type.b.id == 1

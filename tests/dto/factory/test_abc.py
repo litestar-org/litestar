@@ -85,14 +85,16 @@ def test_overwrite_config() -> None:
     assert dto.configs[0] is second
 
 
-async def test_from_connection(request_factory: RequestFactory) -> None:
+async def test_from_bytes(request_factory: RequestFactory) -> None:
     @post()
     def handler(data: Model) -> Model:
         return data
 
     dto_type = DataclassDTO[Model]
     dto_type.on_registration(ParsedType(Model), handler)
-    dto_instance = await dto_type.from_connection(make_connection(request_factory, handler, data={"a": 1, "b": "two"}))
+    dto_instance = dto_type.from_bytes(
+        b'{"a":1,"b":"two"}', make_connection(request_factory, handler, data={"a": 1, "b": "two"})
+    )
     assert dto_instance._data == Model(a=1, b="two")
 
 

@@ -19,7 +19,7 @@ from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
 from .utils import get_model_type_hints, parse_configs_from_annotation
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Collection, Generator
+    from typing import Any, ClassVar, Collection, Generator, TypeAlias
 
     from typing_extensions import Self
 
@@ -33,6 +33,7 @@ __all__ = [
     "MsgspecBackedDTOFactory",
 ]
 
+AnyRequest: TypeAlias = "Request[Any, Any, Any]"
 DataT = TypeVar("DataT")
 StructT = TypeVar("StructT", bound=Struct)
 
@@ -40,7 +41,10 @@ StructT = TypeVar("StructT", bound=Struct)
 class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     """Base class for DTO types."""
 
-    __slots__ = ("_data",)
+    __slots__ = (
+        "_connection",
+        "_data",
+    )
 
     configs: ClassVar[tuple[DTOConfig, ...]]
     """Config objects to define properties of the DTO."""
@@ -53,13 +57,15 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     _type_config_backend_map: ClassVar[dict[tuple[ParsedType, DTOConfig], AbstractDTOBackend]]
     _handler_config_backend_map: ClassVar[dict[tuple[Purpose, BaseRouteHandler, DTOConfig], AbstractDTOBackend]]
 
-    def __init__(self, data: DataT | Collection[DataT]) -> None:
+    def __init__(self, data: DataT | Collection[DataT], connection: AnyRequest) -> None:
         """Create an AbstractDTOFactory type.
 
         Args:
             data: the data represented by the DTO.
+            connection: Request object.
         """
         self._data = data
+        self._connection = connection
 
     def __class_getitem__(cls, annotation: Any) -> type[Self]:
         parsed_type = ParsedType(annotation)
@@ -95,16 +101,17 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         return self._data
 
     @classmethod
-    def from_data(cls, data: DataT | Collection[DataT]) -> Self:
+    def from_data(cls, data: DataT | Collection[DataT], connection: AnyRequest) -> Self:
         """Construct an instance from data.
 
         Args:
             data: Data to construct the DTO from.
+            connection: Request object.
 
         Returns:
             AbstractDTOInterface instance.
         """
-        return cls(data=data)
+        return cls(data=data, connection=connection)
 
     @classmethod
     @abstractmethod
@@ -278,39 +285,42 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
                 cls._handler_config_backend_map[(Purpose.READ, route_handler, config)] = backend
 
     @classmethod
-    def get_config_for_connection(cls, connection: Request[Any, Any, Any]) -> DTOConfig:
+    def get_backend(cls, purpose: Purpose, route_handler: BaseRouteHandler) -> AbstractDTOBackend:
         """Get the DTO configuration for the given connection.
 
         Args:
-            connection: A connection instance.
+            purpose: Purpose of the data. ``Purpose.WRITE`` for ``"data"`` kwarg, ``Purpose.READ`` for return value.
+            route_handler: Route handler instance.
 
         Returns:
             The DTO configuration for the connection.
         """
-        return cls.configs[0]
+        config = cls.configs[0]
+        return cls._handler_config_backend_map[(purpose, route_handler, config)]
 
 
 class MsgspecBackedDTOFactory(AbstractDTOFactory[DataT], Generic[DataT], metaclass=ABCMeta):
     dto_backend_type = MsgspecDTOBackend
 
     @classmethod
-    async def from_connection(cls, connection: Request[Any, Any, Any]) -> Self:
+    def from_bytes(cls, raw: bytes, connection: AnyRequest) -> Self:
         """Construct an instance from bytes.
 
         Args:
+            raw: Raw connection data.
             connection: A byte representation of the DTO model.
 
         Returns:
             AbstractDTOFactory instance.
         """
-        config = cls.get_config_for_connection(connection)
-        backend = cls._handler_config_backend_map[(Purpose.WRITE, connection.route_handler, config)]
-        parsed = backend.parse_raw(await connection.body(), connection.content_type[0])
-        return cls(data=_build_data_from_struct(cls.model_type, parsed, backend.field_definitions))
+        backend = cls.get_backend(Purpose.WRITE, connection.route_handler)
+        parsed = backend.parse_raw(raw, connection.content_type[0])
+        return cls(
+            data=_build_data_from_struct(cls.model_type, parsed, backend.field_definitions), connection=connection
+        )
 
-    def to_encodable_type(self, request: Request[Any, Any, Any]) -> Any:
-        config = self.get_config_for_connection(request)
-        backend = self._handler_config_backend_map[(Purpose.READ, request.route_handler, config)]
+    def to_encodable_type(self) -> Any:
+        backend = self.get_backend(Purpose.READ, self._connection.route_handler)
         if isinstance(self._data, CollectionsCollection):
             return backend.parsed_type.origin(
                 _build_struct_from_model(datum, backend.data_container_type) for datum in self._data  # pyright:ignore
