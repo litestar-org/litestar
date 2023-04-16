@@ -97,7 +97,7 @@ def test_run_command(
         expected_args.append("--reload")
     if web_concurrency:
         expected_args.append(f"--workers={web_concurrency}")
-    if web_concurrency:
+    if app_dir:
         expected_args.append(f"--app_dir={app_dir}")
     mock_subprocess_run.assert_called_once()
     assert sorted(mock_subprocess_run.call_args_list[0].args[0]) == sorted(expected_args)
