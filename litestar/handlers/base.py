@@ -14,6 +14,7 @@ from litestar.utils.signature import ParsedSignature
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+    from litestar import Litestar
     from litestar._signature.models import SignatureModel
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
@@ -369,7 +370,7 @@ class BaseRouteHandler(Generic[T]):
                     f"If you wish to override a provider, it must have the same key."
                 )
 
-    def on_registration(self) -> None:
+    def on_registration(self, app: Litestar) -> None:
         """Called once per handler when the app object is instantiated."""
         self._validate_handler_function()
         self.resolve_guards()
