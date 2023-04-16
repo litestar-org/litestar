@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_checkable
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
@@ -18,6 +18,9 @@ from sqlalchemy.orm import (
     mapped_column,
     registry,
 )
+
+if TYPE_CHECKING:
+    from sqlalchemy.sql import FromClause
 
 __all__ = ("AuditBase", "AuditColumns", "Base", "CommonTableAttributes", "UUIDPrimaryKey", "touch_updated_timestamp")
 
@@ -51,6 +54,22 @@ def touch_updated_timestamp(session: Session, *_: Any) -> None:
             instance.updated = datetime.now()  # noqa: DTZ005
 
 
+@runtime_checkable
+class ModelProtocol(Protocol):
+    """The base SQLAlchemy model protocol."""
+
+    __table__: FromClause
+    __name__: ClassVar[str]
+
+    def to_dict(self, exclude: set[str] | None = None) -> dict[str, Any]:
+        """Convert model to dictionary.
+
+        Returns:
+            dict[str, Any]: A dict representation of the model
+        """
+        ...
+
+
 @declarative_mixin
 class UUIDPrimaryKey:
     """UUID Primary Key Field Mixin."""
@@ -78,8 +97,8 @@ class CommonTableAttributes:
     """Common attributes for SQLALchemy tables."""
 
     __abstract__ = True
-    __name__: str
-    __table__: Any
+    __name__: ClassVar[str]
+    __table__: FromClause
 
     # noinspection PyMethodParameters
     @declared_attr.directive
