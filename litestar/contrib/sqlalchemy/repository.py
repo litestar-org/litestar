@@ -34,8 +34,8 @@ __all__ = (
 )
 
 T = TypeVar("T")
-ModelT = TypeVar("ModelT", bound="DeclarativeBase")
-SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyAsyncRepository")
+ModelT = TypeVar("ModelT", bound="base.ModelProtocol")
+SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyRepository")
 SelectT = TypeVar("SelectT", bound="Select[Any]")
 RowT = TypeVar("RowT", bound=Tuple[Any, ...])
 
@@ -283,7 +283,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         """
         statement = kwargs.pop("statement", self.statement)
         statement = statement.with_only_columns(
-            sql_func.count(getattr(self.model_type, self.id_attribute)),
+            sql_func.count(self.get_id_attribute_value(self.model_type)),
             maintain_column_froms=True,
         ).order_by(None)
         statement = self._apply_filters(*filters, apply_pagination=False, statement=statement)
@@ -369,7 +369,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         statement = kwargs.pop("statement", self.statement)
         statement = statement.add_columns(
             over(
-                sql_func.count(getattr(self.model_type, self.id_attribute)),
+                sql_func.count(self.get_id_attribute_value(self.model_type))
             )
         )
         statement = self._apply_filters(*filters, statement=statement)

@@ -258,8 +258,8 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         return item_or_none
 
     @classmethod
-    def get_id_attribute_value(cls, item: T) -> Any:
-        """Get value of attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` on ``item``.
+    def get_id_attribute_value(cls, item: T | type[T]) -> Any:
+        """Get value of attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` on ``item``.
 
         Args:
             item: Anything that should have an attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` value.

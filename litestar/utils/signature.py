@@ -45,6 +45,8 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     """
     fn_to_inspect: Any = fn
 
+    module_name = fn_to_inspect.__module__
+
     if isclass(fn_to_inspect):
         fn_to_inspect = fn_to_inspect.__init__
 
@@ -61,7 +63,7 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
     namespace = {
         **_GLOBAL_NAMES,
         **vars(typing),
-        **vars(sys.modules[fn_to_inspect.__module__]),
+        **vars(sys.modules[module_name]),
         **(namespace or {}),
     }
     return get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
