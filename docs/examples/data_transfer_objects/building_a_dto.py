@@ -36,7 +36,7 @@ class CompanyDTO(DTOInterface[Company]):
         return CompanySchema(id=self._data.id, name=self._data.name, worth=self._data.worth)
 
     @classmethod
-    async def from_connection(cls, request: Request) -> CompanyDTO:
+    async def from_bytes(cls, request: Request) -> CompanyDTO:
         parsed_data = msgspec.json.decode(await request.body(), type=CompanySchema)
         return cls(data=Company(id=parsed_data.id, name=parsed_data.name, worth=parsed_data.worth))
 

@@ -413,7 +413,7 @@ def create_dto_extractor(
     is_dto_annotated = parsed_parameter.parsed_type.is_subclass_of(DTOInterface)
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        dto = await dto_type.from_connection(connection)
+        dto = dto_type.from_bytes(await connection.body(), connection)
         if is_dto_annotated:
             return dto
         return dto.to_data_type()
