@@ -23,13 +23,10 @@ class DTOInterface(Protocol):
         """Return the data held by the DTO."""
 
     @abstractmethod
-    def to_encodable_type(self, request: Request[Any, Any, Any]) -> bytes | LitestarEncodableType:
+    def to_encodable_type(self) -> bytes | LitestarEncodableType:
         """Encode data held by the DTO type to a type supported by litestar serialization.
 
         Can return either bytes or a type that Litestar can return to bytes.
-
-        Args:
-            request: :class:`Request <.connection.Request>` instance.
 
         Returns:
             Either ``bytes`` or a type that Litestar can convert to bytes.
@@ -37,10 +34,11 @@ class DTOInterface(Protocol):
 
     @classmethod
     @abstractmethod
-    async def from_connection(cls, connection: Request[Any, Any, Any]) -> Self:
+    def from_bytes(cls, raw: bytes, connection: Request[Any, Any, Any]) -> Self:
         """Construct an instance from a :class:`Request <.connection.Request>`.
 
         Args:
+            raw: Raw bytes of the payload.
             connection: :class:`Request <.connection.Request>` instance.
 
         Returns:
@@ -49,11 +47,12 @@ class DTOInterface(Protocol):
 
     @classmethod
     @abstractmethod
-    def from_data(cls, data: Any) -> Self:
+    def from_data(cls, data: Any, connection: Request[Any, Any, Any]) -> Self:
         """Construct an instance from data.
 
         Args:
-            data: Data to construct the DTO from.
+            data: User data, usually data returned from a handler.
+            connection: :class:`Request <.connection.Request>` instance.
 
         Returns:
             DTOInterface instance.
@@ -74,3 +73,4 @@ class DTOInterface(Protocol):
         Raises:
             UnsupportedType: If the DTO type does not support the annotated type of ``parsed_type``.
         """
+        return
