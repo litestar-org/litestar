@@ -43,15 +43,11 @@ def _create_struct_field_def(
     return name, type_, field_
 
 
-def _create_msgspec_struct_for_field_definitions(
-    model_name: str, field_definitions: FieldDefinitionsType
-) -> type[Struct]:
+def _create_struct_for_field_definitions(model_name: str, field_definitions: FieldDefinitionsType) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, MsgspecField]] = []
     for k, v in field_definitions.items():
         if isinstance(v, NestedFieldDefinition):
-            nested_struct = _create_msgspec_struct_for_field_definitions(
-                f"{model_name}.{k}", v.nested_field_definitions
-            )
+            nested_struct = _create_struct_for_field_definitions(f"{model_name}.{k}", v.nested_field_definitions)
             struct_fields.append(
                 _create_struct_field_def(k, v.make_field_type(nested_struct), _create_msgspec_field(v.field_definition))
             )
