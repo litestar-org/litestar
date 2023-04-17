@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import MISSING, fields
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.dto.factory.abc import MsgspecBackedDTOFactory
+from litestar.dto.factory.abc import AbstractDTOFactory
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.factory.types import FieldDefinition
 from litestar.dto.factory.utils import get_model_type_hints
@@ -21,7 +21,7 @@ DataT = TypeVar("DataT", bound="DataclassProtocol | Collection[DataclassProtocol
 AnyDataclass = TypeVar("AnyDataclass", bound="DataclassProtocol")
 
 
-class DataclassDTO(MsgspecBackedDTOFactory[DataT], Generic[DataT]):
+class DataclassDTO(AbstractDTOFactory[DataT], Generic[DataT]):
     """Support for domain modelling with dataclasses."""
 
     __slots__ = ()
