@@ -1,4 +1,5 @@
 import importlib.util
+import logging
 import sys
 from os import environ, urandom
 from pathlib import Path
@@ -285,3 +286,13 @@ def mock_db() -> MemoryStore:
 def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
     with freeze_time() as frozen:
         yield cast("FrozenDateTimeFactory", frozen)
+
+
+@pytest.fixture()
+def reset_httpx_logging() -> Generator[None, None, None]:
+    # ensure that httpx logging is not interfering with our test client
+    httpx_logger = logging.getLogger("httpx")
+    initial_level = httpx_logger.level
+    httpx_logger.setLevel(logging.WARNING)
+    yield
+    httpx_logger.setLevel(initial_level)

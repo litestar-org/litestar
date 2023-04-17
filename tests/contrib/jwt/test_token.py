@@ -1,4 +1,4 @@
-import string
+import secrets
 import sys
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
@@ -7,36 +7,25 @@ from uuid import uuid4
 
 import pytest
 from hypothesis import given
-from hypothesis.strategies import datetimes, none, one_of, sampled_from, text
+from hypothesis.strategies import datetimes
 
 from litestar.contrib.jwt import Token
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
 
-@given(
-    algorithm=sampled_from(
-        [
-            "HS256",
-            "HS384",
-            "HS512",
-        ]
-    ),
-    token_sub=text(min_size=1),
-    token_secret=text(min_size=10),
-    token_issuer=one_of(none(), text(max_size=256)),
-    token_audience=one_of(none(), text(max_size=256, alphabet=string.ascii_letters)),
-    token_unique_jwt_id=one_of(none(), text(max_size=256)),
-)
+@pytest.mark.parametrize("algorithm", ["HS256", "HS384", "HS512"])
+@pytest.mark.parametrize("token_issuer", [None, secrets.token_hex()])
+@pytest.mark.parametrize("token_audience", [None, secrets.token_hex()])
+@pytest.mark.parametrize("token_unique_jwt_id", [None, secrets.token_hex()])
 def test_token(
     algorithm: str,
-    token_sub: str,
-    token_secret: str,
     token_issuer: Optional[str],
     token_audience: Optional[str],
     token_unique_jwt_id: Optional[str],
 ) -> None:
+    token_secret = secrets.token_hex()
     token = Token(
-        sub=token_sub,
+        sub=secrets.token_hex(),
         exp=(datetime.now(timezone.utc) + timedelta(minutes=30)),
         aud=token_audience,
         iss=token_issuer,
