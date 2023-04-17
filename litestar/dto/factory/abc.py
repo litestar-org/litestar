@@ -19,14 +19,13 @@ from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
 from .utils import get_model_type_hints, parse_configs_from_annotation
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Collection, Generator, TypeAlias
+    from typing import Any, ClassVar, Collection, Generator, Literal, TypeAlias
 
     from typing_extensions import Self
 
     from litestar.connection import Request
-    from litestar.enums import RequestEncodingType
     from litestar.handlers import BaseRouteHandler
-    from litestar.openapi.spec import RequestBody, Schema
+    from litestar.openapi.spec import Reference, Schema
 
     from .backends import AbstractDTOBackend
 
@@ -301,20 +300,21 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         return cls._handler_config_backend_map[(purpose, route_handler, config)]
 
     @classmethod
-    def create_openapi_request_body(
+    def create_openapi_schema(
         cls,
+        schema_type: Literal["body", "response"],
         handler: BaseRouteHandler,
         generate_examples: bool,
-        media_type: RequestEncodingType | str,
         schemas: dict[str, Schema],
-    ) -> RequestBody | None:
+    ) -> Reference | Schema:
         """Create an OpenAPI request body.
 
         Returns:
             OpenAPI request body.
         """
-        backend = cls.get_backend(Purpose.WRITE, handler)
-        return backend.create_openapi_request_body(generate_examples, media_type, schemas)
+        purpose = Purpose.WRITE if schema_type == "body" else Purpose.READ
+        backend = cls.get_backend(purpose, handler)
+        return backend.create_openapi_schema(generate_examples, schemas)
 
 
 class MsgspecBackedDTOFactory(AbstractDTOFactory[DataT], Generic[DataT], metaclass=ABCMeta):

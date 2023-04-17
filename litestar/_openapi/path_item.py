@@ -4,7 +4,7 @@ from inspect import cleandoc
 from typing import TYPE_CHECKING
 
 from litestar._openapi.parameters import create_parameter_for_handler
-from litestar._openapi.request_body import create_request_body, create_request_body_for_dto
+from litestar._openapi.request_body import create_request_body
 from litestar._openapi.responses import create_responses
 from litestar._openapi.utils import SEPARATORS_CLEANUP_PATTERN
 from litestar.openapi.spec.operation import Operation
@@ -108,18 +108,13 @@ def create_path_item(
 
         request_body = None
         if "data" in handler_fields:
-            if dto := route_handler.resolve_dto():
-                request_body = create_request_body_for_dto(
-                    route_handler, dto, handler_fields["data"], create_examples, schemas
-                )
-                print(f"{request_body = }")
-            else:
-                request_body = create_request_body(
-                    field=handler_fields["data"],
-                    generate_examples=create_examples,
-                    plugins=plugins,
-                    schemas=schemas,
-                )
+            request_body = create_request_body(
+                route_handler=route_handler,
+                field=handler_fields["data"],
+                generate_examples=create_examples,
+                plugins=plugins,
+                schemas=schemas,
+            )
         operation_id = route_handler.operation_id or operation_id_creator(
             route_handler, http_method, route.path_components
         )

@@ -3,13 +3,16 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
+from litestar.openapi.spec import Schema
+
 if TYPE_CHECKING:
+    from typing import Literal
+
     from typing_extensions import Self
 
     from litestar.connection import Request
-    from litestar.enums import RequestEncodingType
     from litestar.handlers import BaseRouteHandler
-    from litestar.openapi.spec import RequestBody, Schema
+    from litestar.openapi.spec import Reference
     from litestar.types import LitestarEncodableType
     from litestar.utils.signature import ParsedType
 
@@ -78,16 +81,16 @@ class DTOInterface(Protocol):
         return
 
     @classmethod
-    def create_openapi_request_body(
+    def create_openapi_schema(
         cls,
+        schema_type: Literal["body", "response"],
         handler: BaseRouteHandler,
         generate_examples: bool,
-        media_type: RequestEncodingType | str,
         schemas: dict[str, Schema],
-    ) -> RequestBody | None:
+    ) -> Reference | Schema:
         """Create an OpenAPI request body for the DTO.
 
         Returns:
             An optional :class:`RequestBody <.openapi.spec.request_body.RequestBody>` instance.
         """
-        return None
+        return Schema()

@@ -8,8 +8,6 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar._openapi.schema_generation import create_schema
 from litestar._signature.field import SignatureField
-from litestar.openapi.spec.media_type import OpenAPIMediaType
-from litestar.openapi.spec.request_body import RequestBody
 
 from .utils import build_annotation_for_backend
 
@@ -19,8 +17,8 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar.dto.factory.types import FieldDefinitionsType
-    from litestar.enums import MediaType, RequestEncodingType
-    from litestar.openapi.spec import Schema
+    from litestar.enums import MediaType
+    from litestar.openapi.spec import Reference, Schema
     from litestar.utils.signature import ParsedType
 
 __all__ = ("AbstractDTOBackend",)
@@ -78,10 +76,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             The raw bytes parsed into primitive python types.
         """
 
-    def create_openapi_request_body(
-        self, generate_examples: bool, media_type: RequestEncodingType | str, schemas: dict[str, Schema]
-    ) -> RequestBody:
+    def create_openapi_schema(self, generate_examples: bool, schemas: dict[str, Schema]) -> Reference | Schema:
         """Create a RequestBody model for the given RouteHandler or return None."""
         field = SignatureField.create(self.annotation)
-        schema = create_schema(field=field, generate_examples=generate_examples, plugins=[], schemas=schemas)
-        return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema)})
+        return create_schema(field=field, generate_examples=generate_examples, plugins=[], schemas=schemas)

@@ -24,7 +24,11 @@ def test_create_request_body() -> None:
             handler_fields = route_handler.signature_model.fields  # type: ignore
             if "data" in handler_fields:
                 request_body = create_request_body(
-                    field=handler_fields["data"], generate_examples=True, plugins=[], schemas={}
+                    route_handler=route_handler,
+                    field=handler_fields["data"],
+                    generate_examples=True,
+                    plugins=[],
+                    schemas={},
                 )
                 assert request_body
 
