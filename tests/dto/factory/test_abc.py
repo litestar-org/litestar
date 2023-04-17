@@ -91,7 +91,7 @@ async def test_from_bytes(request_factory: RequestFactory) -> None:
         return data
 
     dto_type = DataclassDTO[Model]
-    dto_type.on_registration(ParsedType(Model), handler)
+    dto_type.on_registration(ParsedType(Model), handler, "body")
     dto_instance = dto_type.from_bytes(
         b'{"a":1,"b":"two"}', make_connection(request_factory, handler, data={"a": 1, "b": "two"})
     )
@@ -106,7 +106,7 @@ def test_config_field_definitions() -> None:
     new_def = FieldDefinition(name="z", parsed_type=ParsedType(str), default="something")
     config = DTOConfig(field_definitions=(new_def,))
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(ParsedType(Model), handler)
+    dto_type.on_registration(ParsedType(Model), handler, "body")
     assert get_backend(dto_type).field_definitions["z"] is new_def
 
 
@@ -117,7 +117,7 @@ def test_config_field_mapping() -> None:
 
     config = DTOConfig(field_mapping={"a": "z"})
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(ParsedType(Model), handler)
+    dto_type.on_registration(ParsedType(Model), handler, "body")
     field_definitions = get_backend(dto_type).field_definitions
     assert "a" not in field_definitions
     assert "z" in field_definitions
@@ -130,7 +130,7 @@ def test_config_field_mapping_new_definition() -> None:
 
     config = DTOConfig(field_mapping={"a": FieldDefinition(name="z", parsed_type=ParsedType(str), default=Empty)})
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(ParsedType(Model), handler)
+    dto_type.on_registration(ParsedType(Model), handler, "body")
     field_definitions = get_backend(dto_type).field_definitions
     assert "a" not in field_definitions
     z = field_definitions["z"]

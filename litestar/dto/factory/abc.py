@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
 from itertools import chain
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, Literal, TypeVar
 
 from litestar.dto.factory.backends import MsgspecDTOBackend
 from litestar.dto.interface import DTOInterface
@@ -255,12 +255,16 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         return bool(excluded or not_included or private or read_only_for_write)
 
     @classmethod
-    def on_registration(cls, parsed_type: ParsedType, route_handler: BaseRouteHandler) -> None:
+    def on_registration(
+        cls, parsed_type: ParsedType, route_handler: BaseRouteHandler, dto_for: Literal["body", "response"]
+    ) -> None:
         """Do something each time the DTO type is encountered during signature modelling.
 
         Args:
-            parsed_type: representing the resolved annotation of the handler function.
-            route_handler: Route handler instance.
+            parsed_type: ParsedType instance, will be either the parsed
+                annotation of a ``"data"`` kwarg, or the parsed return type annotation of a route handler.
+            route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
+            dto_for: indicates whether the DTO is for the request body or response.
         """
         if parsed_type.is_subclass_of(AbstractDTOFactory):
             raise InvalidAnnotation("AbstractDTOFactory does not support being set as a handler annotation")
@@ -275,12 +279,6 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         if not handler_type.is_subclass_of(cls.model_type):
             raise InvalidAnnotation(f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'")
 
-        is_data_type = (
-            "data" in route_handler.parsed_fn_signature.parameters
-            and parsed_type == route_handler.parsed_fn_signature.parameters["data"].parsed_type
-        )
-        is_return_type = parsed_type == route_handler.parsed_fn_signature.return_type
-
         for config in cls.configs:
             key = (parsed_type, config)
             backend = cls._type_config_backend_map.get(key)
@@ -290,10 +288,9 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
                     MsgspecDTOBackend.from_field_definitions(parsed_type, cls.parse_model(cls.model_type, config)),
                 )
 
-            if is_data_type:
+            if dto_for == "body":
                 cls._handler_config_backend_map[(Purpose.WRITE, route_handler, config)] = backend
-
-            if is_return_type:
+            else:
                 cls._handler_config_backend_map[(Purpose.READ, route_handler, config)] = backend
 
     @classmethod

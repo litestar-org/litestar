@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Literal, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -59,7 +59,9 @@ class DTOInterface(Protocol):
         """
 
     @classmethod
-    def on_registration(cls, parsed_type: ParsedType, route_handler: BaseRouteHandler) -> None:
+    def on_registration(
+        cls, parsed_type: ParsedType, route_handler: BaseRouteHandler, dto_for: Literal["body", "response"]
+    ) -> None:
         """Receive the ``parsed_type`` and ``route_handler`` that this DTO is configured to represent.
 
         At this point, if the DTO type does not support the annotated type of ``parsed_type``, it should raise an
@@ -69,6 +71,7 @@ class DTOInterface(Protocol):
             parsed_type: ParsedType instance, will be either the parsed
                 annotation of a ``"data"`` kwarg, or the parsed return type annotation of a route handler.
             route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
+            dto_for: indicates whether the DTO is for the request body or response.
 
         Raises:
             UnsupportedType: If the DTO type does not support the annotated type of ``parsed_type``.

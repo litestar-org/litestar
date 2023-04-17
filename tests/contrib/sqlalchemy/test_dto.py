@@ -79,7 +79,8 @@ async def get_model_from_dto(
         return data
 
     connection.scope["route_handler"] = handler
-    dto_type.on_registration(ParsedType(annotation), handler)
+    dto_type.on_registration(ParsedType(annotation), handler, "body")
+    dto_type.on_registration(ParsedType(annotation), handler, "response")
     dto_instance = dto_type.from_bytes(await connection.body(), connection)
     return dto_instance.to_data_type()
 
