@@ -16,7 +16,7 @@ from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
 from .utils import parse_configs_from_annotation
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Collection, Generator, Literal, TypeAlias
+    from typing import Any, ClassVar, Collection, Generator, TypeAlias
 
     from typing_extensions import Self
 
@@ -327,7 +327,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     @classmethod
     def create_openapi_schema(
         cls,
-        schema_type: Literal["body", "response"],
+        dto_for: ForType,
         handler: BaseRouteHandler,
         generate_examples: bool,
         schemas: dict[str, Schema],
@@ -337,6 +337,5 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         Returns:
             OpenAPI request body.
         """
-        purpose = Purpose.WRITE if schema_type == "body" else Purpose.READ
-        backend = cls.get_backend(purpose, handler)
+        backend = cls.get_backend(dto_for, handler)
         return backend.create_openapi_schema(generate_examples, schemas)

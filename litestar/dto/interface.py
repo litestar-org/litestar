@@ -6,8 +6,6 @@ from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 from litestar.openapi.spec import Schema
 
 if TYPE_CHECKING:
-    from typing import Literal
-
     from typing_extensions import Self
 
     from litestar.connection import Request
@@ -83,7 +81,7 @@ class DTOInterface(Protocol):
     @classmethod
     def create_openapi_schema(
         cls,
-        schema_type: Literal["body", "response"],
+        dto_for: ForType,
         handler: BaseRouteHandler,
         generate_examples: bool,
         schemas: dict[str, Schema],
