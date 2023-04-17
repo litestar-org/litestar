@@ -1,7 +1,6 @@
 from secrets import token_hex
 from typing import TYPE_CHECKING
 
-import anyio
 import pytest
 
 from litestar import Litestar, Request, get
@@ -12,6 +11,8 @@ from litestar.stores.memory import MemoryStore
 from litestar.testing import TestClient
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from litestar.middleware.session.server_side import ServerSideSessionBackend
 
 
@@ -66,7 +67,10 @@ async def test_get_set(
 
 
 async def test_get_renew_on_access(
-    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes, memory_store: MemoryStore
+    server_side_session_backend: "ServerSideSessionBackend",
+    session_data: bytes,
+    memory_store: MemoryStore,
+    frozen_datetime: "FrozenDateTimeFactory",
 ) -> None:
     server_side_session_backend.config.max_age = 1
     server_side_session_backend.config.renew_on_access = True
@@ -76,7 +80,7 @@ async def test_get_renew_on_access(
 
     await server_side_session_backend.get("foo", memory_store)
 
-    await anyio.sleep(1.01)
+    frozen_datetime.tick(1.01)
 
     assert await server_side_session_backend.get("foo", memory_store) is not None
 
@@ -114,11 +118,16 @@ async def test_delete_idempotence(
 
 
 async def test_max_age_expires(
-    server_side_session_backend: "ServerSideSessionBackend", session_data: bytes, memory_store: MemoryStore
+    server_side_session_backend: "ServerSideSessionBackend",
+    session_data: bytes,
+    memory_store: MemoryStore,
+    frozen_datetime: "FrozenDateTimeFactory",
 ) -> None:
     server_side_session_backend.config.max_age = 1
     await server_side_session_backend.set("foo", session_data, memory_store)
-    await anyio.sleep(1)
+
+    frozen_datetime.tick(1)
+
     assert not await server_side_session_backend.get("foo", memory_store)
 
 
