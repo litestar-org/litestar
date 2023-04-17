@@ -1,7 +1,5 @@
 from litestar import Litestar, get
 
-__all__ = ["hello_world"]
-
 
 @get("/")
 async def hello_world() -> str:
