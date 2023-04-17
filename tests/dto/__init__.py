@@ -51,6 +51,10 @@ class MockReturnDTO(DTOInterface):
         return b'{"a": 1, "b": "2"}'
 
     @classmethod
+    def from_builtins(cls, data: Any, connection: Request[Any, Any, Any]) -> Self:
+        return cls()
+
+    @classmethod
     def from_bytes(cls, raw: bytes, connection: AnyRequest) -> Self:
         raise RuntimeError("Return DTO should not have this method called")
 

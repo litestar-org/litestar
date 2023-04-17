@@ -34,6 +34,7 @@ class DTOInterface(Protocol):
         """
 
     @classmethod
+    @abstractmethod
     def from_builtins(cls, data: Any, connection: Request[Any, Any, Any]) -> Self:
         """Construct an instance from a builtin type.
 
