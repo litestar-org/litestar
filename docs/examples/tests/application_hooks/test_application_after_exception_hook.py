@@ -1,6 +1,8 @@
 import logging
 from typing import TYPE_CHECKING
 
+import pytest
+
 from examples.application_hooks import after_exception_hook
 from litestar.testing import TestClient
 
@@ -8,6 +10,7 @@ if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
 
 
+@pytest.mark.usefixtures("reset_httpx_logging")
 def test_application_shutdown_hooks(caplog: "LogCaptureFixture") -> None:
     with caplog.at_level(logging.INFO), TestClient(app=after_exception_hook.app) as client:
         assert len(caplog.messages) == 0
