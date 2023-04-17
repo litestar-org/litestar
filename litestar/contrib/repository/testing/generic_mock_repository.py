@@ -196,9 +196,9 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
             match_fields = [match_fields]
         if match_fields:
             match_filter = {
-                field_name: kwargs.get(field_name, None)
+                field_name: field_value
                 for field_name in match_fields
-                if kwargs.get(field_name, None) is not None
+                if (field_value := kwargs.get(field_name)) is not None
             }
         else:
             match_filter = kwargs
