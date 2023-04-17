@@ -28,13 +28,22 @@ from pydantic.color import Color
 from pydantic.json import decimal_encoder
 
 from litestar.dto.interface import DTOInterface
+from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.types import Empty
 
 if TYPE_CHECKING:
     from litestar.types import TypeEncodersMap
 
-__all__ = ("dec_hook", "decode_json", "decode_msgpack", "default_serializer", "encode_json", "encode_msgpack")
+__all__ = (
+    "dec_hook",
+    "decode_json",
+    "decode_media_type",
+    "decode_msgpack",
+    "default_serializer",
+    "encode_json",
+    "encode_msgpack",
+)
 
 T = TypeVar("T")
 
@@ -248,3 +257,26 @@ def decode_msgpack(raw: bytes, type_: Any = Empty) -> Any:
         return msgspec.msgpack.decode(raw, dec_hook=dec_hook, type=type_)
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
+
+
+def decode_media_type(raw: bytes, media_type: MediaType | str, type_: Any) -> Any:
+    """Decode a raw value into an object.
+
+    Args:
+        raw: Value to decode
+        media_type: Media type of the value
+        type_: An optional type to decode the data into
+
+    Returns:
+        An object
+
+    Raises:
+        SerializationException: If error decoding ``raw`` or ``media_type`` unsupported.
+    """
+    if media_type == MediaType.JSON:
+        return decode_json(raw, type_=type_)
+
+    if media_type == MediaType.MESSAGEPACK:
+        return decode_msgpack(raw, type_=type_)
+
+    raise SerializationException(f"Unsupported media type: '{media_type}'")

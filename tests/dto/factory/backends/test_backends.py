@@ -1,12 +1,14 @@
+# ruff: noqa: UP006
 from __future__ import annotations
 
 import sys
 from typing import TYPE_CHECKING, List
 
 import pytest
-from msgspec import Struct, to_builtins
+from msgspec import Struct, field, to_builtins
+from pydantic import BaseModel, Field
 
-from litestar.dto.factory.backends.msgspec import MsgspecDTOBackend
+from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.factory.types import FieldDefinition, NestedFieldDefinition
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
@@ -15,12 +17,42 @@ from litestar.utils.signature import ParsedType
 from tests.dto import Model
 
 if TYPE_CHECKING:
+    from typing import Any
+
+    from litestar.dto.factory.backends import AbstractDTOBackend
     from litestar.dto.factory.types import FieldDefinitionsType
+
+
+DESTRUCTURED = {
+    "a": 1,
+    "b": "b",
+    "c": [],
+    "nested": {"a": 1, "b": "two"},
+}
+
+
+class NestedModel(BaseModel):
+    a: int
+    b: str
+
+
+class MyModel(BaseModel):
+    a: int
+    b: str = "b"
+    c: List[int] = Field(default_factory=list)
+    nested: NestedModel
+
+
+class NestedStruct(Struct):
+    a: int
+    b: str
 
 
 class MyStruct(Struct):
     a: int
-    b: str
+    nested: NestedStruct
+    b: str = "b"
+    c: List[int] = field(default_factory=list)
 
 
 @pytest.fixture(name="field_definitions")
@@ -40,48 +72,60 @@ def fx_field_definitions() -> FieldDefinitionsType:
     }
 
 
-@pytest.fixture(name="msgspec_backend")
-def fx_msgspec_backend(field_definitions: FieldDefinitionsType) -> MsgspecDTOBackend:
-    return MsgspecDTOBackend(
-        parsed_type=ParsedType(List[Model]), data_container_type=MyStruct, field_definitions=field_definitions
+@pytest.fixture(name="backend", params=[(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)])
+def fx_backend(request: Any, field_definitions: FieldDefinitionsType) -> AbstractDTOBackend:
+    return request.param[0](  # type:ignore[no-any-return]
+        parsed_type=ParsedType(Model), data_container_type=request.param[1], field_definitions=field_definitions
     )
 
 
-def test_dto_backend(field_definitions: FieldDefinitionsType) -> None:
-    backend = MsgspecDTOBackend.from_field_definitions(ParsedType(type), field_definitions)
-    assert to_builtins(backend.parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"}}', media_type=MediaType.JSON)) == {
-        "a": 1,
-        "b": "b",
-        "c": [],
-        "nested": {"a": 1, "b": "two"},
-    }
+def _destructure(model: BaseModel | Struct) -> dict[str, Any]:
+    if isinstance(model, BaseModel):
+        return model.dict()
+    return to_builtins(model)  # type:ignore[no-any-return]
 
 
-def test_msgspec_backend_parse_raw_msgpack(msgspec_backend: MsgspecDTOBackend) -> None:
-    assert to_builtins(
-        msgspec_backend.parse_raw(b"\x91\x82\xa1a\x01\xa1b\xa3two", media_type=MediaType.MESSAGEPACK)
-    ) == [
-        {
-            "a": 1,
-            "b": "two",
-        }
-    ]
+def test_backend_parse_raw_json(backend: AbstractDTOBackend) -> None:
+    assert (
+        _destructure(backend.parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"}}', media_type=MediaType.JSON))
+        == DESTRUCTURED
+    )
 
 
-def test_msgspec_backend_parse_unsupported_media_type(msgspec_backend: MsgspecDTOBackend) -> None:
+def test_backend_parse_raw_msgpack(backend: AbstractDTOBackend) -> None:
+    assert (
+        _destructure(
+            backend.parse_raw(b"\x82\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two", media_type=MediaType.MESSAGEPACK)
+        )
+        == DESTRUCTURED
+    )
+
+
+def test_backend_parse_unsupported_media_type(backend: AbstractDTOBackend) -> None:
     with pytest.raises(SerializationException):
-        msgspec_backend.parse_raw(b"", media_type=MediaType.CSS)
+        backend.parse_raw(b"", media_type=MediaType.CSS)
 
 
-def test_msgspec_backend_iterable_annotation(msgspec_backend: MsgspecDTOBackend) -> None:
-    if sys.version_info < (3, 9):
-        assert msgspec_backend.annotation == List[MyStruct]
-    else:
-        assert msgspec_backend.annotation == list[MyStruct]
-
-
-def test_msgspec_backend_scalar_annotation(field_definitions: FieldDefinitionsType) -> None:
-    msgspec_backend = MsgspecDTOBackend(
-        parsed_type=ParsedType(Model), data_container_type=MyStruct, field_definitions=field_definitions
+@pytest.mark.parametrize(
+    ("backend_type", "backend_model"), [(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)]
+)
+def test_backend_iterable_annotation(
+    backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
+) -> None:
+    backend = backend_type(
+        ParsedType(List[Model]), data_container_type=backend_model, field_definitions=field_definitions
     )
-    assert msgspec_backend.annotation == MyStruct
+    if sys.version_info < (3, 9):
+        assert backend.annotation == List[backend_model]
+    else:
+        assert backend.annotation == list[backend_model]
+
+
+@pytest.mark.parametrize(
+    ("backend_type", "backend_model"), [(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)]
+)
+def test_backend_scalar_annotation(
+    backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
+) -> None:
+    backend = backend_type(ParsedType(Model), data_container_type=backend_model, field_definitions=field_definitions)
+    assert backend.annotation == backend_model
