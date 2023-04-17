@@ -90,53 +90,51 @@ def create_path_item(
     for http_method, handler_tuple in route.route_handler_map.items():
         route_handler, _ = handler_tuple
 
-        if not route_handler.include_in_schema:
-            continue
-
-        handler_fields = route_handler.signature_model.fields if route_handler.signature_model else {}
-        parameters = (
-            create_parameter_for_handler(
-                route_handler=route_handler,
-                handler_fields=handler_fields,
-                path_parameters=route.path_parameters,
-                generate_examples=create_examples,
-                schemas=schemas,
+        if route_handler.include_in_schema:
+            handler_fields = route_handler.signature_model.fields if route_handler.signature_model else {}
+            parameters = (
+                create_parameter_for_handler(
+                    route_handler=route_handler,
+                    handler_fields=handler_fields,
+                    path_parameters=route.path_parameters,
+                    generate_examples=create_examples,
+                    schemas=schemas,
+                )
+                or None
             )
-            or None
-        )
-        raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
+            raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
 
-        request_body = None
-        if "data" in handler_fields:
-            request_body = create_request_body(
-                route_handler=route_handler,
-                field=handler_fields["data"],
-                generate_examples=create_examples,
-                plugins=plugins,
-                schemas=schemas,
+            request_body = None
+            if "data" in handler_fields:
+                request_body = create_request_body(
+                    route_handler=route_handler,
+                    field=handler_fields["data"],
+                    generate_examples=create_examples,
+                    plugins=plugins,
+                    schemas=schemas,
+                )
+            operation_id = route_handler.operation_id or operation_id_creator(
+                route_handler, http_method, route.path_components
             )
-        operation_id = route_handler.operation_id or operation_id_creator(
-            route_handler, http_method, route.path_components
-        )
-        tags, security = extract_layered_values(route_handler)
-        operation = Operation(
-            operation_id=operation_id,
-            tags=tags,
-            summary=route_handler.summary or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),
-            description=get_description_for_handler(route_handler, use_handler_docstrings),
-            deprecated=route_handler.deprecated,
-            responses=create_responses(
-                route_handler=route_handler,
-                raises_validation_error=raises_validation_error,
-                generate_examples=create_examples,
-                plugins=plugins,
-                schemas=schemas,
-            ),
-            request_body=request_body,
-            parameters=parameters,  # type: ignore[arg-type]
-            security=security,
-        )
-        operation_ids.append(operation_id)
-        setattr(path_item, http_method.lower(), operation)
+            tags, security = extract_layered_values(route_handler)
+            operation = Operation(
+                operation_id=operation_id,
+                tags=tags,
+                summary=route_handler.summary or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),
+                description=get_description_for_handler(route_handler, use_handler_docstrings),
+                deprecated=route_handler.deprecated,
+                responses=create_responses(
+                    route_handler=route_handler,
+                    raises_validation_error=raises_validation_error,
+                    generate_examples=create_examples,
+                    plugins=plugins,
+                    schemas=schemas,
+                ),
+                request_body=request_body,
+                parameters=parameters,  # type: ignore[arg-type]
+                security=security,
+            )
+            operation_ids.append(operation_id)
+            setattr(path_item, http_method.lower(), operation)
 
     return path_item, operation_ids
