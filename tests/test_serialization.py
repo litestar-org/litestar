@@ -26,9 +26,11 @@ from pydantic.color import Color
 
 from litestar.connection import Request
 from litestar.dto.interface import DTOInterface
+from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.serialization import (
     decode_json,
+    decode_media_type,
     decode_msgpack,
     default_serializer,
     encode_json,
@@ -154,6 +156,17 @@ def test_decode_json_typed() -> None:
 def test_decode_msgpack_typed() -> None:
     model_json = model.json()
     assert decode_msgpack(encode_msgpack(model), Model).json() == model_json
+
+
+def test_decode_media_type() -> None:
+    model_json = model.json()
+    assert decode_media_type(model_json.encode("utf-8"), MediaType.JSON, Model).json() == model_json
+    assert decode_media_type(encode_msgpack(model), MediaType.MESSAGEPACK, Model).json() == model_json
+
+
+def test_decode_media_type_unsupported_media_type() -> None:
+    with pytest.raises(SerializationException):
+        decode_media_type(b"", MediaType.HTML, Model)
 
 
 @pytest.mark.parametrize("ret_val", [b'{"a":1,"b":"2"}', {"a": 1, "b": "2"}])
