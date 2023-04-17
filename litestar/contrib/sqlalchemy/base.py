@@ -8,11 +8,9 @@ from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
 from sqlalchemy import JSON, MetaData, String, Uuid
-from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
-    Session,
     declarative_mixin,
     declared_attr,
     mapped_column,
