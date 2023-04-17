@@ -31,6 +31,10 @@ class MockDTO(DTOInterface):
         return Model(a=1, b="2")
 
     @classmethod
+    def from_builtins(cls, data: Any, connection: Request[Any, Any, Any]) -> Self:
+        return cls()
+
+    @classmethod
     def from_bytes(cls, raw: bytes, connection: AnyRequest) -> Self:
         return cls()
 

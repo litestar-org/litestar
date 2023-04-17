@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import AbstractSet, Sequence
 
-    from litestar.dto.types import ForType
-
     from .types import FieldDefinition, FieldMappingType
 
 

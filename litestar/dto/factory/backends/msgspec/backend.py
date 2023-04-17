@@ -32,6 +32,9 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
     def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Struct | Collection[Struct]:
         return decode_media_type(raw, media_type, type_=self.annotation)  # type:ignore[no-any-return]
 
+    def populate_data_from_builtins(self, model_type: type[T], data: Any) -> T | Collection[T]:
+        raise NotImplementedError("Msgspec backend does not support marshalling types")
+
     def populate_data_from_raw(self, model_type: type[T], raw: bytes, media_type: MediaType | str) -> T | Collection[T]:
         parsed_data = self.parse_raw(raw, media_type)
         return _build_data_from_struct(model_type, parsed_data, self.field_definitions)

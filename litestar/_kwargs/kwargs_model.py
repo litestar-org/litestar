@@ -74,7 +74,7 @@ class KwargsModel:
         expected_cookie_params: set[ParameterDefinition],
         expected_dto_data: tuple[ParsedParameter, type[DTOInterface]] | None,
         expected_dependencies: set[Dependency],
-        expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
+        expected_form_data: tuple[RequestEncodingType | str, SignatureField, type[DTOInterface] | None] | None,
         expected_msgpack_data: SignatureField | None,
         expected_header_params: set[ParameterDefinition],
         expected_path_params: set[ParameterDefinition],
@@ -302,7 +302,7 @@ class KwargsModel:
         expected_query_parameters = {p for p in param_definitions if p.param_type == ParamType.QUERY}
         sequence_query_parameter_names = {p.field_alias for p in expected_query_parameters if p.is_sequence}
 
-        expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None = None
+        expected_form_data: tuple[RequestEncodingType | str, SignatureField, type[DTOInterface] | None] | None = None
         expected_msgpack_data: SignatureField | None = None
         expected_dto_data: tuple[ParsedParameter, type[DTOInterface]] | None = None
 
@@ -312,23 +312,23 @@ class KwargsModel:
         if data_signature_field and isinstance(data_signature_field.kwarg_model, BodyKwarg):
             media_type = data_signature_field.kwarg_model.media_type
 
-        if data_signature_field and media_type:
-            if media_type in (
-                RequestEncodingType.MULTI_PART,
-                RequestEncodingType.URL_ENCODED,
-            ):
-                expected_form_data = (media_type, data_signature_field)
+        if data_signature_field:
+            parsed_parameter = parsed_signature.parameters["data"]
+            parsed_type = parsed_parameter.parsed_type
 
+            dto_type: type[DTOInterface] | None = None
+            if parsed_type.is_subclass_of(DTOInterface):
+                dto_type = parsed_type.annotation
+            elif data_dto:
+                dto_type = data_dto
+
+            if media_type in (RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED):
+                expected_form_data = (media_type, data_signature_field, dto_type)
             elif media_type == RequestEncodingType.MESSAGEPACK:
                 expected_msgpack_data = data_signature_field
 
-        elif data_signature_field:
-            parsed_parameter = parsed_signature.parameters["data"]
-            parsed_type = parsed_parameter.parsed_type
-            if parsed_type.is_subclass_of(DTOInterface):
-                expected_dto_data = (parsed_parameter, parsed_type.annotation)
-            elif data_dto:
-                expected_dto_data = (parsed_parameter, data_dto)
+            if dto_type:
+                expected_dto_data = (parsed_parameter, dto_type)
 
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
@@ -429,7 +429,7 @@ class KwargsModel:
     @classmethod
     def _validate_dependency_data(
         cls,
-        expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
+        expected_form_data: tuple[RequestEncodingType | str, SignatureField, type[DTOInterface] | None] | None,
         dependency_kwargs_model: KwargsModel,
     ) -> None:
         """Validate that the 'data' kwarg is compatible across dependencies."""
@@ -438,8 +438,8 @@ class KwargsModel:
                 "Dependencies have incompatible 'data' kwarg types: one expects JSON and the other expects form-data"
             )
         if expected_form_data and dependency_kwargs_model.expected_form_data:
-            local_media_type, _ = expected_form_data
-            dependency_media_type, _ = dependency_kwargs_model.expected_form_data
+            local_media_type, _, _ = expected_form_data
+            dependency_media_type, _, _ = dependency_kwargs_model.expected_form_data
             if local_media_type != dependency_media_type:
                 raise ImproperlyConfiguredException(
                     "Dependencies have incompatible form-data encoding: one expects url-encoded and the other expects multi-part"

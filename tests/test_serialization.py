@@ -179,6 +179,10 @@ def test_encode_dto_instance(ret_val: "bytes | dict") -> None:
             return None
 
         @classmethod
+        def from_builtins(cls, data: Any, connection: Request[Any, Any, Any]) -> "DTO":
+            return cls()
+
+        @classmethod
         def from_bytes(cls, raw: bytes, connection: Request[Any, Any, Any]) -> "DTO":
             return cls()
 

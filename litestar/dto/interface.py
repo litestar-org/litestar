@@ -34,6 +34,18 @@ class DTOInterface(Protocol):
         """
 
     @classmethod
+    def from_builtins(cls, data: Any, connection: Request[Any, Any, Any]) -> Self:
+        """Construct an instance from a builtin type.
+
+        Args:
+            data: Builtin type.
+            connection: :class:`Request <.connection.Request>` instance.
+
+        Returns:
+            DTOInterface instance.
+        """
+
+    @classmethod
     @abstractmethod
     def from_bytes(cls, raw: bytes, connection: Request[Any, Any, Any]) -> Self:
         """Construct an instance from a :class:`Request <.connection.Request>`.
