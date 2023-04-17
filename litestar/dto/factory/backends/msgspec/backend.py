@@ -7,9 +7,7 @@ from uuid import uuid4
 from msgspec import Struct
 
 from litestar.dto.factory.backends.abc import AbstractDTOBackend
-from litestar.enums import MediaType
-from litestar.exceptions import SerializationException
-from litestar.serialization import decode_json, decode_msgpack
+from litestar.serialization import decode_media_type
 
 from .utils import _build_data_from_struct, _build_struct_from_model, _create_struct_for_field_definitions
 
@@ -18,6 +16,7 @@ if TYPE_CHECKING:
 
     from litestar.connection import Request
     from litestar.dto.factory.types import FieldDefinitionsType
+    from litestar.enums import MediaType
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = ("MsgspecDTOBackend",)
@@ -31,13 +30,7 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
     __slots__ = ()
 
     def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Struct | Collection[Struct]:
-        if media_type == MediaType.JSON:
-            transfer_data = decode_json(raw, type_=self.annotation)
-        elif media_type == MediaType.MESSAGEPACK:
-            transfer_data = decode_msgpack(raw, type_=self.annotation)
-        else:
-            raise SerializationException(f"Unsupported media type: '{media_type}'")
-        return transfer_data  # type:ignore[return-value]
+        return decode_media_type(raw, media_type, type_=self.annotation)  # type:ignore[no-any-return]
 
     def populate_data_from_raw(self, model_type: type[T], raw: bytes, media_type: MediaType | str) -> T | Collection[T]:
         parsed_data = self.parse_raw(raw, media_type)
