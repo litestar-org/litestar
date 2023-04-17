@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from sqlalchemy import inspect
+from sqlalchemy import inspect, orm, sql
 from sqlalchemy.orm import DeclarativeBase, Mapped
 
 from litestar.dto.factory.abc import MsgspecBackedDTOFactory
@@ -39,7 +39,11 @@ class SQLAlchemyDTO(MsgspecBackedDTOFactory[DataT], Generic[DataT]):
         columns = mapper.columns
         relationships = mapper.relationships
 
-        namespace = {m.class_.__name__: m.class_ for m in mapper.registry.mappers if m is not mapper}
+        # includes SQLAlchemy names and other mapped class names in the forward reference resolution namespace
+        namespace = dict(vars(orm))
+        namespace.update(vars(sql))
+        namespace.update({m.class_.__name__: m.class_ for m in mapper.registry.mappers if m is not mapper})
+
         for key, parsed_type in get_model_type_hints(model_type, namespace=namespace).items():
             elem: Column[Any] | RelationshipProperty[Any] | None
             elem = columns.get(key, relationships.get(key))  # pyright:ignore
