@@ -12,10 +12,10 @@ from typing_extensions import Annotated
 
 from litestar import post
 from litestar.contrib.sqlalchemy.dto import DataT, SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig, DTOField, Mark, Purpose
+from litestar.dto.factory import DTOConfig, DTOField, Mark
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
+from litestar.dto.types import ForType
 from litestar.serialization import encode_json
-from litestar.utils.signature import ParsedType
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -29,9 +29,7 @@ if TYPE_CHECKING:
 @pytest.fixture(name="base")
 def fx_base() -> type[DeclarativeBase]:
     class Base(DeclarativeBase):
-        id: Mapped[UUID] = mapped_column(
-            default=uuid4, primary_key=True, info={DTO_FIELD_META_KEY: DTOField(mark=Mark.READ_ONLY)}
-        )
+        id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
         created: Mapped[datetime] = mapped_column(
             default=datetime.now, info={DTO_FIELD_META_KEY: DTOField(mark=Mark.READ_ONLY)}
         )
@@ -79,8 +77,8 @@ async def get_model_from_dto(
         return data
 
     connection.scope["route_handler"] = handler
-    dto_type.on_registration(ParsedType(annotation), handler, "body")
-    dto_type.on_registration(ParsedType(annotation), handler, "response")
+    dto_type.on_registration(handler, "data")
+    dto_type.on_registration(handler, "return")
     dto_instance = dto_type.from_bytes(await connection.body(), connection)
     return dto_instance.to_data_type()
 
@@ -89,32 +87,17 @@ def assert_model_values(model_instance: DeclarativeBase, expected_values: dict[s
     assert {k: v for k, v in model_instance.__dict__.items() if not k.startswith("_")} == expected_values
 
 
-async def test_model_dto(
-    author_model: type[DeclarativeBase], raw_author: dict[str, Any], request_factory: RequestFactory
-) -> None:
-    model = await get_model_from_dto(SQLAlchemyDTO[author_model], author_model, request_factory.post(data=raw_author))
-    assert_model_values(
-        model,
-        {
-            "id": UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"),
-            "created": datetime(1, 1, 1, 0, 0),
-            "updated": datetime(1, 1, 1, 0, 0),
-            "name": "Agatha Christie",
-            "dob": date(1890, 9, 15),
-        },
-    )
-
-
 async def test_model_write_dto(
     author_model: type[DeclarativeBase], raw_author: dict[str, Any], request_factory: RequestFactory
 ) -> None:
-    config = DTOConfig(purpose=Purpose.WRITE)
+    config = DTOConfig(dto_for="data")
     model = await get_model_from_dto(
         SQLAlchemyDTO[Annotated[author_model, config]], author_model, request_factory.post(data=raw_author)
     )
     assert_model_values(
         model,
         {
+            "id": UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"),
             "name": "Agatha Christie",
             "dob": date(1890, 9, 15),
         },
@@ -124,15 +107,13 @@ async def test_model_write_dto(
 async def test_model_read_dto(
     author_model: type[DeclarativeBase], raw_author: dict[str, Any], request_factory: RequestFactory
 ) -> None:
-    config = DTOConfig(purpose=Purpose.READ)
+    config = DTOConfig(dto_for="return")
     dto_type = SQLAlchemyDTO[Annotated[author_model, config]]
     model = await get_model_from_dto(dto_type, author_model, request_factory.post(data=raw_author))
     assert_model_values(
         model,
         {
             "id": UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"),
-            "created": datetime(1, 1, 1, 0, 0),
-            "updated": datetime(1, 1, 1, 0, 0),
             "name": "Agatha Christie",
             "dob": date(1890, 9, 15),
         },
@@ -158,8 +139,6 @@ async def test_model_list_dto(author_model: type[DeclarativeBase], request_facto
         dto_data[0],
         {
             "id": UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b"),
-            "created": datetime(1, 1, 1, 0, 0),
-            "updated": datetime(1, 1, 1, 0, 0),
             "name": "Agatha Christie",
             "dob": date(1890, 9, 15),
         },
@@ -180,7 +159,7 @@ async def test_write_dto_field_default(base: type[DeclarativeBase], request_fact
     class Model(base):
         field: Mapped[int] = mapped_column(default=3)
 
-    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=Purpose.WRITE, include={"field"})]]
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(dto_for="data", include={"field"})]]
     model = await get_model_from_dto(dto_type, Model, request_factory.post(data={"a": "b"}))
     assert_model_values(model, {"field": 3})
 
@@ -193,7 +172,7 @@ async def test_write_dto_for_model_field_factory_default(
     class Model(base):
         field: Mapped[UUID] = mapped_column(default=lambda: val)
 
-    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=Purpose.WRITE, include={"field"})]]
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(dto_for="data", include={"field"})]]
     model = await get_model_from_dto(dto_type, Model, request_factory.post(data={"a": "b"}))
     assert_model_values(model, {"field": val})
 
@@ -209,20 +188,20 @@ async def test_write_dto_for_model_field_unsupported_default(
 
     with pytest.raises(ValueError):
         await get_model_from_dto(
-            SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=Purpose.WRITE)]], Model, request_factory.get()
+            SQLAlchemyDTO[Annotated[Model, DTOConfig(dto_for="data")]], Model, request_factory.get()
         )
 
 
-@pytest.mark.parametrize("purpose", [None, Purpose.WRITE, Purpose.READ])
+@pytest.mark.parametrize("dto_for", [None, "data", "return"])
 async def test_dto_for_private_model_field(
-    purpose: Purpose | None, base: type[DeclarativeBase], request_factory: RequestFactory
+    dto_for: ForType | None, base: type[DeclarativeBase], request_factory: RequestFactory
 ) -> None:
     class Model(base):
         field: Mapped[datetime] = mapped_column(
             info={DTO_FIELD_META_KEY: DTOField(mark=Mark.PRIVATE)},
         )
 
-    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=purpose)]]
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig()]]
     request = request_factory.post(
         data={
             "id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
@@ -246,14 +225,11 @@ async def test_dto_for_private_model_field(
     assert b"field" not in encode_json(serializable)
 
 
-@pytest.mark.parametrize("purpose", [Purpose.WRITE, Purpose.READ, None])
-async def test_dto_for_non_mapped_model_field(
-    purpose: Purpose | None, base: type[DeclarativeBase], request_factory: RequestFactory
-) -> None:
+async def test_dto_for_non_mapped_model_field(base: type[DeclarativeBase], request_factory: RequestFactory) -> None:
     class Model(base):
         field: ClassVar[datetime]
 
-    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=purpose)]]
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig()]]
     assert "field" not in vars(
         await get_model_from_dto(
             dto_type,
@@ -277,7 +253,7 @@ async def test_dto_mapped_as_dataclass_model_type(base: type[DeclarativeBase], r
         clz_var: ClassVar[str]
         field: Mapped[str]
 
-    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(purpose=Purpose.WRITE)]]
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(dto_for="data", exclude={"id"})]]
     model = await get_model_from_dto(dto_type, Model, request_factory.post(data={"clz_var": "nope", "field": "yep"}))
     assert_model_values(model, {"field": "yep"})
 
@@ -298,7 +274,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig, Purpose
+from litestar.dto.factory import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -311,7 +287,7 @@ class B(Base):
     __tablename__ = "b"
     a: Mapped[List[A]] = relationship("A")
 
-dto_type = SQLAlchemyDTO[Annotated[B, DTOConfig(purpose=Purpose.WRITE)]]
+dto_type = SQLAlchemyDTO[Annotated[B, DTOConfig()]]
 """
     )
 
@@ -339,7 +315,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig, Purpose
+from litestar.dto.factory import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -352,7 +328,7 @@ class B(Base):
     a_id: Mapped[int] = mapped_column(ForeignKey("a.id"))
     a: Mapped[A] = relationship(A)
 
-dto_type = SQLAlchemyDTO[Annotated[B, DTOConfig(purpose=Purpose.WRITE)]]
+dto_type = SQLAlchemyDTO[Annotated[B, DTOConfig()]]
 """
     )
     model = await get_model_from_dto(
@@ -376,7 +352,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig, Purpose
+from litestar.dto.factory import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -409,7 +385,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig, Purpose
+from litestar.dto.factory import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -439,7 +415,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig, Purpose
+from litestar.dto.factory import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -481,7 +457,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig, Purpose
+from litestar.dto.factory import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -494,7 +470,7 @@ class B(Base):
     a_id: Mapped[Optional[int]] = mapped_column(ForeignKey("a.id"))
     a: Mapped[Optional[A]] = relationship(A)
 
-dto_type = SQLAlchemyDTO[Annotated[B, DTOConfig(purpose=Purpose.WRITE)]]
+dto_type = SQLAlchemyDTO[Annotated[B, DTOConfig()]]
 """
     )
     model = await get_model_from_dto(
@@ -548,7 +524,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig, Purpose
+from litestar.dto.factory import DTOConfig
 
 from {base_module.__name__} import Base
 
@@ -560,7 +536,7 @@ class A(Base):
     b_id: Mapped[int] = mapped_column(ForeignKey("b.id"))
     b: Mapped[B] = relationship()
 
-dto_type = SQLAlchemyDTO[Annotated[A, DTOConfig(purpose=Purpose.WRITE)]]
+dto_type = SQLAlchemyDTO[Annotated[A, DTOConfig()]]
 """
     )
 
