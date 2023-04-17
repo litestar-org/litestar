@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from sqlalchemy import inspect, orm, sql
 from sqlalchemy.orm import DeclarativeBase, Mapped
 
-from litestar.dto.factory.abc import MsgspecBackedDTOFactory
+from litestar.dto.factory.abc import AbstractDTOFactory
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.factory.types import FieldDefinition
 from litestar.dto.factory.utils import get_model_type_hints
@@ -24,7 +24,7 @@ DataT = TypeVar("DataT", bound="DeclarativeBase | Collection[DeclarativeBase]")
 AnyDeclarativeT = TypeVar("AnyDeclarativeT", bound="DeclarativeBase")
 
 
-class SQLAlchemyDTO(MsgspecBackedDTOFactory[DataT], Generic[DataT]):
+class SQLAlchemyDTO(AbstractDTOFactory[DataT], Generic[DataT]):
     """Support for domain modelling with SQLAlchemy."""
 
     __slots__ = ()

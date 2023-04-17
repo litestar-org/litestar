@@ -12,8 +12,7 @@ from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
-
-from . import Model
+from tests.dto import Model
 
 if TYPE_CHECKING:
     from litestar.dto.factory.types import FieldDefinitionsType
