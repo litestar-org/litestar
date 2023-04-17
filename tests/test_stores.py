@@ -4,14 +4,17 @@ import math
 import shutil
 import string
 from datetime import timedelta
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import MagicMock, Mock, patch
 
-import anyio
 import pytest
 from _pytest.fixtures import FixtureRequest
+from freezegun.api import FakeDatetime, FrozenDateTimeFactory  # type: ignore[attr-defined]
+from msgspec.msgpack import decode as decode_msgpack
+from pytest_mock import MockerFixture
 
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.serialization import encode_msgpack
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
@@ -26,6 +29,28 @@ if TYPE_CHECKING:
 @pytest.fixture()
 def mock_redis() -> None:
     patch("litestar.Store.redis_backend.Redis")
+
+
+@pytest.fixture()
+def patch_storage_obj_frozen_datetime(mocker: MockerFixture) -> None:
+    def _msgpack_encode(data: Any) -> bytes:
+        def enc_hook(value: Any) -> Any:
+            if isinstance(value, FakeDatetime):
+                return value.isoformat()
+            raise TypeError()
+
+        return encode_msgpack(data, enc_hook=enc_hook)
+
+    def _msgpack_decode(data: Any, type: Any) -> Any:
+        def dec_hook(value_type: Any, value: Any) -> Any:
+            if value_type is FakeDatetime:
+                return FakeDatetime.fromisoformat(value)
+            raise TypeError()
+
+        return decode_msgpack(data, type=type, dec_hook=dec_hook)
+
+    mocker.patch("litestar.stores.base.msgpack_encode", _msgpack_encode)
+    mocker.patch("litestar.stores.base.msgpack_decode", _msgpack_decode)
 
 
 async def test_get(store: Store) -> None:
@@ -59,24 +84,24 @@ async def test_set_special_chars_key(store: Store, key: str) -> None:
     assert await store.get(key) == value
 
 
-async def test_expires(store: Store) -> None:
-    expiry = 0.01 if not isinstance(store, RedisStore) else 1  # redis doesn't allow fractional values
-    await store.set("foo", b"bar", expires_in=expiry)  # type: ignore[arg-type]
+@pytest.mark.usefixtures("patch_storage_obj_frozen_datetime")
+async def test_expires(store: Store, frozen_datetime: FrozenDateTimeFactory) -> None:
+    await store.set("foo", b"bar", expires_in=1)
 
-    await anyio.sleep(expiry + 0.01)
+    frozen_datetime.tick(2)
 
     stored_value = await store.get("foo")
 
     assert stored_value is None
 
 
+@pytest.mark.usefixtures("patch_storage_obj_frozen_datetime")
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
-async def test_get_and_renew(store: Store, renew_for: int | timedelta) -> None:
-    expiry = 1  # redis doesn't allow fractional values
-
-    await store.set("foo", b"bar", expires_in=expiry)
+async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_datetime: FrozenDateTimeFactory) -> None:
+    await store.set("foo", b"bar", expires_in=1)
     await store.get("foo", renew_for=renew_for)
-    await anyio.sleep(expiry + 0.01)
+
+    frozen_datetime.tick(2)
 
     stored_value = await store.get("foo")
 
@@ -260,8 +285,11 @@ async def test_namespaced_store_delete_all_propagates_down(namespaced_store: Nam
     assert await namespaced_store.get("bar") is None
 
 
+@pytest.mark.usefixtures("patch_storage_obj_frozen_datetime")
 @pytest.mark.parametrize("store_fixture", ["memory_store", "file_store"])
-async def test_memory_delete_expired(store_fixture: str, request: FixtureRequest) -> None:
+async def test_memory_delete_expired(
+    store_fixture: str, request: FixtureRequest, frozen_datetime: FrozenDateTimeFactory
+) -> None:
     store = request.getfixturevalue(store_fixture)
 
     expect_expired: list[str] = []
@@ -272,7 +300,7 @@ async def test_memory_delete_expired(store_fixture: str, request: FixtureRequest
         await store.set(key, b"value", expires_in=expires_in)
         (expect_expired if expires_in else expect_not_expired).append(key)
 
-    await anyio.sleep(0.002)
+    frozen_datetime.tick(1)
     await store.delete_expired()
 
     assert not any([await store.exists(key) for key in expect_expired])
