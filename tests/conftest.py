@@ -289,7 +289,7 @@ def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
 
 
 @pytest.fixture()
-def reset_httpx_logging() -> None:
+def reset_httpx_logging() -> Generator[None, None, None]:
     # ensure that httpx logging is not interfering with our test client
     httpx_logger = logging.getLogger("httpx")
     initial_level = httpx_logger.level
