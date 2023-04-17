@@ -19,13 +19,6 @@ __all__ = ("DTOConfig",)
 class DTOConfig:
     """Control the generated DTO."""
 
-    dto_for: ForType | None = field(default=None)
-    """Configure the DTO for "read" or "write" operations.
-
-    If "write", read-only fields are omitted from data transfer. If "read" or ``None``, read-only fields are included.
-
-    Fields marked "private" are always omitted, irrespective of purpose.
-    """
     exclude: AbstractSet[str] = field(default_factory=set)
     """Explicitly exclude fields from the generated DTO, incompatible with ``include``."""
     include: AbstractSet[str] = field(default_factory=set)
@@ -42,7 +35,6 @@ class DTOConfig:
     def __hash__(self) -> int:
         return hash(
             (
-                self.dto_for,
                 tuple(self.exclude),
                 tuple(self.include),
                 tuple(self.field_mapping),

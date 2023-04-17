@@ -90,10 +90,7 @@ def assert_model_values(model_instance: DeclarativeBase, expected_values: dict[s
 async def test_model_write_dto(
     author_model: type[DeclarativeBase], raw_author: dict[str, Any], request_factory: RequestFactory
 ) -> None:
-    config = DTOConfig(dto_for="data")
-    model = await get_model_from_dto(
-        SQLAlchemyDTO[Annotated[author_model, config]], author_model, request_factory.post(data=raw_author)
-    )
+    model = await get_model_from_dto(SQLAlchemyDTO[author_model], author_model, request_factory.post(data=raw_author))
     assert_model_values(
         model,
         {
@@ -107,7 +104,7 @@ async def test_model_write_dto(
 async def test_model_read_dto(
     author_model: type[DeclarativeBase], raw_author: dict[str, Any], request_factory: RequestFactory
 ) -> None:
-    config = DTOConfig(dto_for="return")
+    config = DTOConfig()
     dto_type = SQLAlchemyDTO[Annotated[author_model, config]]
     model = await get_model_from_dto(dto_type, author_model, request_factory.post(data=raw_author))
     assert_model_values(
@@ -159,7 +156,7 @@ async def test_write_dto_field_default(base: type[DeclarativeBase], request_fact
     class Model(base):
         field: Mapped[int] = mapped_column(default=3)
 
-    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(dto_for="data", include={"field"})]]
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(include={"field"})]]
     model = await get_model_from_dto(dto_type, Model, request_factory.post(data={"a": "b"}))
     assert_model_values(model, {"field": 3})
 
@@ -172,7 +169,7 @@ async def test_write_dto_for_model_field_factory_default(
     class Model(base):
         field: Mapped[UUID] = mapped_column(default=lambda: val)
 
-    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(dto_for="data", include={"field"})]]
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(include={"field"})]]
     model = await get_model_from_dto(dto_type, Model, request_factory.post(data={"a": "b"}))
     assert_model_values(model, {"field": val})
 
@@ -187,9 +184,7 @@ async def test_write_dto_for_model_field_unsupported_default(
         field: Mapped[datetime] = mapped_column(default=func.now())
 
     with pytest.raises(ValueError):
-        await get_model_from_dto(
-            SQLAlchemyDTO[Annotated[Model, DTOConfig(dto_for="data")]], Model, request_factory.get()
-        )
+        await get_model_from_dto(SQLAlchemyDTO[Annotated[Model, DTOConfig()]], Model, request_factory.get())
 
 
 @pytest.mark.parametrize("dto_for", [None, "data", "return"])
@@ -253,7 +248,7 @@ async def test_dto_mapped_as_dataclass_model_type(base: type[DeclarativeBase], r
         clz_var: ClassVar[str]
         field: Mapped[str]
 
-    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(dto_for="data", exclude={"id"})]]
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(exclude={"id"})]]
     model = await get_model_from_dto(dto_type, Model, request_factory.post(data={"clz_var": "nope", "field": "yep"}))
     assert_model_values(model, {"field": "yep"})
 
