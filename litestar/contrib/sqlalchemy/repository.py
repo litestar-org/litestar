@@ -24,9 +24,10 @@ if TYPE_CHECKING:
 
     from sqlalchemy.engine import Result
     from sqlalchemy.ext.asyncio import AsyncSession
-    from sqlalchemy.orm import DeclarativeBase
 
     from litestar.contrib.repository import FilterTypes
+
+    from . import base
 
 __all__ = (
     "SQLAlchemyAsyncRepository",
@@ -35,7 +36,7 @@ __all__ = (
 
 T = TypeVar("T")
 ModelT = TypeVar("ModelT", bound="base.ModelProtocol")
-SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyRepository")
+SQLARepoT = TypeVar("SQLARepoT", bound="SQLAlchemyAsyncRepository")
 SelectT = TypeVar("SelectT", bound="Select[Any]")
 RowT = TypeVar("RowT", bound=Tuple[Any, ...])
 
@@ -367,11 +368,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             Count of records returned by query, ignoring pagination.
         """
         statement = kwargs.pop("statement", self.statement)
-        statement = statement.add_columns(
-            over(
-                sql_func.count(self.get_id_attribute_value(self.model_type))
-            )
-        )
+        statement = statement.add_columns(over(sql_func.count(self.get_id_attribute_value(self.model_type))))
         statement = self._apply_filters(*filters, statement=statement)
         statement = self._filter_select_by_kwargs(statement, **kwargs)
         with wrap_sqlalchemy_exception():

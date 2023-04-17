@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_chec
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
-from sqlalchemy import JSON, MetaData, String, Uuid
+from sqlalchemy import MetaData, String, Uuid
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -18,6 +18,8 @@ from sqlalchemy.orm import (
     mapped_column,
     registry,
 )
+
+from .types import JSON
 
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause

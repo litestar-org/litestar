@@ -188,7 +188,7 @@ include = '\.pyi?$'
 
 [tool.codespell]
 ignore-words-list = "selectin"
- 
+
 [tool.coverage.run]
 omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
 
