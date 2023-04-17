@@ -344,7 +344,7 @@ class BaseRouteHandler(Generic[T]):
             parameter_type = data_parameter.parsed_type
             dto = parameter_type.annotation if parameter_type.is_subclass_of(DTOInterface) else self.resolve_dto()
             if dto:
-                dto.on_registration(parameter_type, self)
+                dto.on_registration(self, "data")
 
         return_type = self.parsed_fn_signature.return_type
         if return_type.annotation is not Empty:
@@ -352,7 +352,7 @@ class BaseRouteHandler(Generic[T]):
                 return_type.annotation if return_type.is_subclass_of(DTOInterface) else self.resolve_return_dto()
             )
             if return_dto:
-                return_dto.on_registration(return_type, self)
+                return_dto.on_registration(self, "return")
 
     async def authorize_connection(self, connection: "ASGIConnection") -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""

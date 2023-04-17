@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import AbstractSet, Sequence
 
-    from .field import Purpose
+    from litestar.dto.types import ForType
+
     from .types import FieldDefinition, FieldMappingType
 
 
@@ -18,13 +19,6 @@ __all__ = ("DTOConfig",)
 class DTOConfig:
     """Control the generated DTO."""
 
-    purpose: Purpose | Literal["read", "write"] | None = field(default=None)
-    """Configure the DTO for "read" or "write" operations.
-
-    If "write", read-only fields are omitted from data transfer. If "read" or ``None``, read-only fields are included.
-
-    Fields marked "private" are always omitted, irrespective of purpose.
-    """
     exclude: AbstractSet[str] = field(default_factory=set)
     """Explicitly exclude fields from the generated DTO, incompatible with ``include``."""
     include: AbstractSet[str] = field(default_factory=set)
@@ -41,7 +35,6 @@ class DTOConfig:
     def __hash__(self) -> int:
         return hash(
             (
-                self.purpose,
                 tuple(self.exclude),
                 tuple(self.include),
                 tuple(self.field_mapping),
