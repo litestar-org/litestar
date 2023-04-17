@@ -92,7 +92,7 @@ class EngineConfig:
     :attr:`create_engine.max_identifier_length parameter <sqlalchemy.create_engine.params.max_identifier_length>`, is
     used instead. The value of
     :attr:`create_engine.label_length <sqlalchemy.create_engine.params.label_length>` may not be larger than that of
-    :attr:`create_engine.max_identfier_length <sqlalchemy.create_engine.params.max_identifier_length>`."""
+    :attr:`create_engine.max_identifier_length <sqlalchemy.create_engine.params.max_identifier_length>`."""
     logging_name: str | EmptyType = Empty
     """String identifier which will be used within the “name” field of logging records generated within the
     “sqlalchemy.engine” logger. Defaults to a hexstring of the object`s id."""
