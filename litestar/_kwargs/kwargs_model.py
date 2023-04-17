@@ -438,8 +438,8 @@ class KwargsModel:
                 "Dependencies have incompatible 'data' kwarg types: one expects JSON and the other expects form-data"
             )
         if expected_form_data and dependency_kwargs_model.expected_form_data:
-            local_media_type, _, _ = expected_form_data
-            dependency_media_type, _, _ = dependency_kwargs_model.expected_form_data
+            local_media_type = expected_form_data[0]
+            dependency_media_type = dependency_kwargs_model.expected_form_data[0]
             if local_media_type != dependency_media_type:
                 raise ImproperlyConfiguredException(
                     "Dependencies have incompatible form-data encoding: one expects url-encoded and the other expects multi-part"
