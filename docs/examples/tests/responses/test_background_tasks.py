@@ -1,6 +1,8 @@
 import logging
 from typing import TYPE_CHECKING
 
+import pytest
+
 from examples.responses.background_tasks_1 import app as app_1
 from examples.responses.background_tasks_2 import app as app_2
 from examples.responses.background_tasks_3 import app as app_3
@@ -9,6 +11,9 @@ from litestar.testing import TestClient
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
+
+
+pytestmark = pytest.mark.usefixtures("reset_httpx_logging")
 
 
 def test_background_tasks_1(caplog: "LogCaptureFixture") -> None:

@@ -1,4 +1,3 @@
-from asyncio import sleep
 from typing import TYPE_CHECKING, Dict
 
 import pytest
@@ -22,7 +21,6 @@ def create_sync_test_handler(msg: str) -> "AfterResponseHookHandler":
 
 def create_async_test_handler(msg: str) -> "AfterResponseHookHandler":
     async def handler(_: Request) -> None:
-        await sleep(0.001)
         state["msg"] = msg
 
     return handler
