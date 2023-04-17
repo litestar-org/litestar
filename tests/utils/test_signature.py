@@ -44,6 +44,18 @@ def test_get_fn_type_hints(fn: Any) -> None:
     assert get_fn_type_hints(fn) == {"a": int, "b": str, "c": float, "return": NoneType}
 
 
+def test_get_fn_type_hints_class_no_init() -> None:
+    """Test that get_fn_type_hints works with classes that don't have an __init__ method.
+
+    Ref: https://github.com/litestar-org/litestar/issues/1504
+    """
+
+    class C:
+        ...
+
+    assert get_fn_type_hints(C) == {}
+
+
 class _TD(TypedDict):
     req_int: Required[int]
     req_list_int: Required[List[int]]
