@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, List
 import pytest
 from msgspec import Struct, to_builtins
 
-from litestar.dto.factory.backends.msgspec import MsgspecDTOBackend
+from litestar.dto.factory.backends import MsgspecDTOBackend
 from litestar.dto.factory.types import FieldDefinition, NestedFieldDefinition
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
