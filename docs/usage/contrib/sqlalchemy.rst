@@ -25,7 +25,7 @@ Models using these bases also include the following enhancements:
     :caption: sqlalchemy_declarative_models.py
     :language: python
 
-Basic Controller Integration.
+Basic Controller Integration
 -----------------------------
 
 Once you have declared your models, you are ready to use the `SQLAlchemyAsyncRepository` class with your controllers and function based routes.
