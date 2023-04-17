@@ -22,7 +22,7 @@ from sqlalchemy.orm import (
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause
 
-__all__ = ("AuditBase", "AuditColumns", "Base", "CommonTableAttributes", "UUIDPrimaryKey", "touch_updated_timestamp")
+__all__ = ("AuditBase", "AuditColumns", "Base", "CommonTableAttributes", "UUIDPrimaryKey")
 
 
 BaseT = TypeVar("BaseT", bound="Base")
@@ -35,23 +35,6 @@ convention = {
     "pk": "pk_%(table_name)s",
 }
 """Templates for automated constraint name generation."""
-
-
-@listens_for(Session, "before_flush")
-def touch_updated_timestamp(session: Session, *_: Any) -> None:
-    """Set timestamp on update.
-
-    Called from SQLAlchemy's
-    :meth:`before_flush <sqlalchemy.orm.SessionEvents.before_flush>` event to bump the ``updated``
-    timestamp on modified instances.
-
-    Args:
-        session: The sync :class:`Session <sqlalchemy.orm.Session>` instance that underlies the async
-            session.
-    """
-    for instance in session.dirty:
-        if hasattr(instance, "updated"):
-            instance.updated = datetime.now()  # noqa: DTZ005
 
 
 @runtime_checkable
@@ -88,7 +71,7 @@ class AuditColumns:
 
     created: Mapped[datetime] = mapped_column(default=datetime.now)
     """Date/time of instance creation."""
-    updated: Mapped[datetime] = mapped_column(default=datetime.now)
+    updated: Mapped[datetime] = mapped_column(default=datetime.now, onupdate=datetime.now)
     """Date/time of instance last update."""
 
 
