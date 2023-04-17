@@ -1,4 +1,5 @@
 import importlib.util
+import logging
 import random
 import string
 import sys
@@ -296,3 +297,13 @@ def frozen_datetime() -> Generator["FrozenDateTimeFactory", None, None]:
 @pytest.fixture()
 def request_factory() -> RequestFactory:
     return RequestFactory()
+
+
+@pytest.fixture()
+def reset_httpx_logging() -> Generator[None, None, None]:
+    # ensure that httpx logging is not interfering with our test client
+    httpx_logger = logging.getLogger("httpx")
+    initial_level = httpx_logger.level
+    httpx_logger.setLevel(logging.WARNING)
+    yield
+    httpx_logger.setLevel(initial_level)
