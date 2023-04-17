@@ -1,8 +1,6 @@
 from typing import Any, Dict, List, Mapping, Optional, cast
 
 import pytest
-from hypothesis import given, settings
-from hypothesis.strategies import booleans, lists, none, one_of, sampled_from
 
 from litestar import get
 from litestar.config.cors import CORSConfig
@@ -38,13 +36,10 @@ def test_setting_cors_middleware() -> None:
         assert cors_middleware.config.allow_origin_regex == cors_config.allow_origin_regex
 
 
-@given(
-    origin=one_of(none(), sampled_from(["http://www.example.com", "https://moishe.zuchmir.com"])),
-    allow_origins=lists(sampled_from(["*", "http://www.example.com", "https://moishe.zuchmir.com"])),
-    allow_credentials=booleans(),
-    expose_headers=lists(sampled_from(["X-First-Header", "SomeOtherHeader", "X-Second-Header"])),
-)
-@settings(deadline=None)
+@pytest.mark.parametrize("origin", [None, "http://www.example.com", "https://moishe.zuchmir.com"])
+@pytest.mark.parametrize("allow_origins", ["*", "http://www.example.com", "https://moishe.zuchmir.com"])
+@pytest.mark.parametrize("allow_credentials", [True, False])
+@pytest.mark.parametrize("expose_headers", ["X-First-Header", "SomeOtherHeader", "X-Second-Header"])
 def test_cors_simple_response(
     origin: Optional[str], allow_origins: List[str], allow_credentials: bool, expose_headers: List[str]
 ) -> None:

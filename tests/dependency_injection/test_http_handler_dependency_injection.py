@@ -15,7 +15,7 @@ def router_first_dependency() -> bool:
 
 
 async def router_second_dependency() -> bool:
-    await sleep(0.1)
+    await sleep(0)
     return False
 
 
@@ -26,7 +26,7 @@ def controller_first_dependency(headers: Dict[str, Any]) -> dict:
 
 async def controller_second_dependency(request: "Request") -> dict:
     assert request
-    await sleep(0.1)
+    await sleep(0)
     return {}
 
 
