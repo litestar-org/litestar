@@ -91,7 +91,7 @@ async def test_from_bytes(request_factory: RequestFactory) -> None:
         return data
 
     dto_type = DataclassDTO[Model]
-    dto_type.on_registration(handler, "data")
+    dto_type.on_registration(handler, "data", ParsedType(Model))
     connection = make_connection(request_factory, handler, data={"a": 1, "b": "two"})
     assert dto_type(connection).bytes_to_data_type(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 

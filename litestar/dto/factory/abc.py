@@ -93,7 +93,8 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     def bytes_to_data_type(self, raw: bytes) -> DataT | Collection[DataT]:
         """Return the data held by the DTO."""
         backend = self._handler_backend_map[("data", self.connection.route_handler)]
-        return backend.populate_data_from_raw(self.model_type, raw, self.connection.content_type[0])
+        content_type = getattr(self.connection, "content_type", (RequestEncodingType.JSON,))[0]
+        return backend.populate_data_from_raw(self.model_type, raw, content_type)
 
     def data_to_encodable_type(self, data: DataT | Collection[DataT]) -> LitestarEncodableType:
         backend = self._handler_backend_map[("return", self.connection.route_handler)]

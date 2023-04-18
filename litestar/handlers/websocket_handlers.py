@@ -205,14 +205,15 @@ class websocket_listener(WebsocketRouteHandler):
     ) -> Callable[..., Coroutine[None, None, None]]:
         json_encoder = JsonEncoder(enc_hook=partial(default_serializer, type_encoders=self.resolve_type_encoders()))
 
-        return_dto = self.resolve_return_dto()
+        data_dto_type = self.resolve_dto()
+        return_dto_type = self.resolve_return_dto()
 
-        async def handle_receive(socket: WebSocket) -> Any:
+        async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
             received_data: Any = await socket.receive_data(mode=self._receive_mode)  # pyright: ignore
-            if dto := self.resolve_dto():
+            if dto:
                 if isinstance(received_data, str):
                     received_data = received_data.encode("utf-8")
-                received_data = dto.from_bytes(received_data, socket).to_data_type()
+                received_data = dto.bytes_to_data_type(received_data)
             elif wants_receive_type is str:
                 if isinstance(received_data, bytes):
                     received_data = received_data.decode("utf-8")
@@ -223,9 +224,9 @@ class websocket_listener(WebsocketRouteHandler):
                 received_data = decode_json(received_data)
             return received_data
 
-        async def handle_send(socket: WebSocket, data_to_send: Any) -> None:
-            if return_dto:
-                data_to_send = json_encoder.encode(return_dto.from_data(data_to_send, socket).to_encodable_type())
+        async def handle_send(socket: WebSocket, data_to_send: Any, dto: DTOInterface | None) -> None:
+            if dto:
+                data_to_send = json_encoder.encode(dto.data_to_encodable_type(data_to_send))
             elif should_encode_to_json:
                 data_to_send = json_encoder.encode(data_to_send)
 
@@ -233,16 +234,20 @@ class websocket_listener(WebsocketRouteHandler):
 
         async def listener_fn(socket: WebSocket, **kwargs: Any) -> None:
             await socket.accept()
+
+            data_dto = data_dto_type(socket) if data_dto_type else None
+            return_dto = return_dto_type(socket) if return_dto_type else None
+
             if self._on_accept:
                 await self._on_accept(socket)
             if pass_socket:
                 kwargs["socket"] = socket
             while True:
                 try:
-                    received_data = await handle_receive(socket)
+                    received_data = await handle_receive(socket, data_dto)
                     data_to_send = await callback(data=received_data, **kwargs)
                     if can_send_data:
-                        await handle_send(socket, data_to_send)
+                        await handle_send(socket, data_to_send, return_dto)
                 except WebSocketDisconnect:
                     if self._on_disconnect:
                         await self._on_disconnect(socket)
@@ -252,12 +257,11 @@ class websocket_listener(WebsocketRouteHandler):
 
     def _init_handler_dtos(self) -> None:
         """Initialize the data and return DTOs for the handler."""
-        data_parameter = self._listener_callback_signature.parameters.get("data")
-        if data_parameter:
-            parameter_type = data_parameter.parsed_type
-            dto = parameter_type.annotation if parameter_type.is_subclass_of(DTOInterface) else self.resolve_dto()
-            if dto:
-                dto.on_registration(self, "data", data_parameter.parsed_type)
+        data_parameter = self._listener_callback_signature.parameters["data"]
+        parameter_type = data_parameter.parsed_type
+        dto = parameter_type.annotation if parameter_type.is_subclass_of(DTOInterface) else self.resolve_dto()
+        if dto:
+            dto.on_registration(self, "data", data_parameter.parsed_type)
 
         return_type = self._listener_callback_signature.return_type
         if return_type.annotation is not Empty:
