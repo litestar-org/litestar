@@ -410,6 +410,6 @@ def create_dto_extractor(
     """
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        return dto_type.from_bytes(await connection.body(), connection).to_data_type()
+        return dto_type(connection).bytes_to_data_type(await connection.body())
 
     return dto_extractor  # type:ignore[return-value]
