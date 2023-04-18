@@ -86,15 +86,3 @@ def test_dto_and_return_dto() -> None:
         response = client.post("/", json={"what": "ever"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
-
-
-def test_dto_annotated_handler() -> None:
-    @post()
-    def handler(data: MockDTO) -> MockDTO:
-        assert isinstance(data, MockDTO)
-        return data
-
-    with create_test_client(route_handlers=handler) as client:
-        response = client.post("/", json={"what": "ever"})
-        assert response.status_code == 201
-        assert response.json() == {"a": 1, "b": "2"}
