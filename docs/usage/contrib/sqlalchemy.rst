@@ -19,7 +19,7 @@ To use the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.reposi
 
 Models using these bases also include the following enhancements:
 * Auto-generated snake-case table name from class name
-* Pydantic BaseModel and Dict classes map to an optimized JSON type that is JSONB for the Postgres and JSON for other dialects.
+* Pydantic BaseModel and Dict classes map to an optimized JSON type that is :class:`JSONB <sqlalchemy.dialects.postgresql.JSONB>` for the Postgres and :class:`JSON <sqlalchemy.JSON>` for other dialects.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :caption: sqlalchemy_declarative_models.py
