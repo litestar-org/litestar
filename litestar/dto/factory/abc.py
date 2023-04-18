@@ -41,14 +41,14 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         "_data",
     )
 
-    configs: ClassVar[tuple[DTOConfig, ...]]
+    config: ClassVar[DTOConfig]
     """Config objects to define properties of the DTO."""
     model_type: ClassVar[type[Any]]
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
 
     _reverse_field_mappings: ClassVar[dict[str, FieldDefinition]]
-    _type_config_backend_map: ClassVar[dict[tuple[ParsedType, DTOConfig], AbstractDTOBackend]]
-    _handler_config_backend_map: ClassVar[dict[tuple[ForType, BaseRouteHandler, DTOConfig], AbstractDTOBackend]]
+    _type_backend_map: ClassVar[dict[tuple[ForType, ParsedType], AbstractDTOBackend]]
+    _handler_backend_map: ClassVar[dict[tuple[ForType, BaseRouteHandler], AbstractDTOBackend]]
 
     def __init__(self, data: DataT | Collection[DataT], connection: AnyRequest) -> None:
         """Create an AbstractDTOFactory type.
@@ -74,15 +74,21 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
 
         configs = parse_configs_from_annotation(parsed_type)
+        if configs:
+            config = configs[0]
+        elif hasattr(cls, "config"):
+            config = cls.config
+        else:
+            config = DTOConfig()
 
         if parsed_type.is_type_var and not configs:
             return cls
 
         cls_dict: dict[str, Any] = {
-            "configs": configs or (DTOConfig(),),
+            "config": config,
             "_reverse_field_mappings": {},
-            "_type_config_backend_map": {},
-            "_handler_config_backend_map": {},
+            "_type_backend_map": {},
+            "_handler_backend_map": {},
         }
         if not parsed_type.is_type_var:
             cls_dict.update(model_type=parsed_type.annotation)
@@ -296,18 +302,15 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         if not handler_type.is_subclass_of(cls.model_type):
             raise InvalidAnnotation(f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'")
 
-        for config in cls.configs:
-            key = (parsed_type, config)
-            backend = cls._type_config_backend_map.get(key)
-            if backend is None:
-                backend = cls._type_config_backend_map.setdefault(
-                    key,
-                    MsgspecDTOBackend.from_field_definitions(
-                        parsed_type, cls.parse_model(cls.model_type, config, dto_for)
-                    ),
-                )
-
-            cls._handler_config_backend_map[(dto_for, route_handler, config)] = backend
+        backend = cls._type_backend_map.get((dto_for, parsed_type))
+        if backend is None:
+            backend = cls._type_backend_map.setdefault(
+                (dto_for, parsed_type),
+                MsgspecDTOBackend.from_field_definitions(
+                    parsed_type, cls.parse_model(cls.model_type, cls.config, dto_for)
+                ),
+            )
+            cls._handler_backend_map[(dto_for, route_handler)] = backend
 
     @classmethod
     def get_backend(cls, dto_for: ForType, route_handler: BaseRouteHandler) -> AbstractDTOBackend:
@@ -320,5 +323,4 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         Returns:
             The DTO configuration for the connection.
         """
-        config = cls.configs[0]
-        return cls._handler_config_backend_map[(dto_for, route_handler, config)]
+        return cls._handler_backend_map[(dto_for, route_handler)]
