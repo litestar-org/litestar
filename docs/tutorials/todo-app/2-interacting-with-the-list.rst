@@ -23,6 +23,9 @@ of data we expect to receive, and set up validation. In this case, Litestar will
 request data in the form of JSON and use the type annotation we gave it to convert it
 into the correct format.
 
+.. seealso::
+    :doc:`/usage/request-data`
+
 
 Using the interactive documentation to test a route
 ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -67,8 +70,8 @@ will result in a useful error response:
     Sending a request without a ``title`` key fails
 
 
-Path parameters
----------------
+Create dynamic routes using path parameters
+-------------------------------------------
 
 The next task on the list is updating an item's status. For this, a way to refer to a
 specific item on the list is needed. This could be done using query parameters, but
@@ -102,7 +105,8 @@ as ``greeter(name="john")``, similar to how query parameters are injected.
     Just like query parameters, path parameters can convert and validate their values as
     well. This is configured using the ``:type`` colon annotation, similar to type
     annotations. ``value:str`` will receive values as a string, while e.g. ``value:int``
-    will try to convert it into an integer.
+    will try to convert it into an integer. A full list of supported types can be found
+    here: :ref:`usage/parameters:supported path parameter types`
 
 
 By using this pattern and combining it those from the earlier section about receiving
@@ -112,3 +116,7 @@ updated item in form of a dataclass instance, and updates the item in the list.
 
 .. literalinclude:: examples/update.py
     :language: python
+
+
+.. seealso::
+    :ref:`usage/parameters:path parameters`

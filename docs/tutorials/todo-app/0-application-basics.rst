@@ -39,9 +39,16 @@ Now that we have a working application, let us examine how we got here in a bit 
 Route handlers
 ---------------
 
-Route handlers are what tells your Litestar application to do when it gets a request. They are named this way because they typically handle a single URL path (or *route*), which is the part of the URL that's specific to your application. In our current example, the only route handler we have is for ``hello_world``, and it is using the ``/`` path.
+Route handlers are what tells your Litestar application to do when it gets a request.
+They are named this way because they typically handle a single URL path (or *route*),
+which is the part of the URL that's specific to your application. In our current
+example, the only route handler we have is for ``hello_world``, and it is using the
+``/`` path.
 
-.. tip:: For example, if your application has a route for handling requests to the "/home" URL path, you would create a route handler function that would be called when a request to that path is received.
+.. tip::
+    For example, if your application has a route for handling requests to the "/home"
+    URL path, you would create a route handler function that would be called when a
+    request to that path is received.
 
 The first argument to the route handler is the *path*, which in this example has been
 set to ``/``. This means that the function ``hello_world`` will be called when a request

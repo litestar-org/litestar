@@ -2,7 +2,7 @@ from typing import Dict, List, Union
 
 from litestar import Litestar, post
 
-TODO_LIST = []
+TODO_LIST: List[Dict[str, Union[str, bool]]] = []
 
 
 @post("/")

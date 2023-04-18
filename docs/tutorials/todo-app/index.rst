@@ -1,5 +1,5 @@
-A TODO application
-==================
+Developing a basic TODO application
+===================================
 
 .. admonition:: Who is this tutorial for?
     :class: info
@@ -31,3 +31,4 @@ working blocks of Litestar.
     0-application-basics
     1-accessing-the-list
     2-interacting-with-the-list
+    3-assembling-the-app

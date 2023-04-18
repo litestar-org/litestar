@@ -2,7 +2,7 @@ from typing import Dict, List, Union
 
 from litestar import Litestar, get
 
-TODO_LIST = [
+TODO_LIST: List[Dict[str, Union[str, bool]]] = [
     {"title": "Start writing TODO list", "done": True},
     {"title": "???", "done": False},
     {"title": "Profit", "done": False},
@@ -10,8 +10,8 @@ TODO_LIST = [
 
 
 @get("/")
-async def get_todo_list() -> List[Dict[str, Union[str, bool]]]:
+async def get_list() -> List[Dict[str, Union[str, bool]]]:
     return TODO_LIST
 
 
-app = Litestar([get_todo_list])
+app = Litestar([get_list])

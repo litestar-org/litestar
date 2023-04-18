@@ -10,7 +10,7 @@ class TodoItem:
     done: bool
 
 
-TODO_LIST = [
+TODO_LIST: List[TodoItem] = [
     TodoItem(title="Start writing TODO list", done=True),
     TodoItem(title="???", done=False),
     TodoItem(title="Profit", done=False),
@@ -18,8 +18,8 @@ TODO_LIST = [
 
 
 @get("/")
-async def get_todo_list(done: bool) -> List[TodoItem]:
+async def get_list(done: bool) -> List[TodoItem]:
     return [item for item in TODO_LIST if item.done == done]
 
 
-app = Litestar([get_todo_list])
+app = Litestar([get_list])

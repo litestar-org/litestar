@@ -10,7 +10,7 @@ class TodoItem:
     done: bool
 
 
-TODO_LIST = []
+TODO_LIST: List[TodoItem] = []
 
 
 @post("/")
