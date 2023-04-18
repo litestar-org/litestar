@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID
@@ -38,7 +36,7 @@ class AuthorModel(Base):
     __tablename__ = "author"
     name: Mapped[str]
     dob: Mapped[date | None]
-    books: Mapped[list[BookModel]] = relationship(back_populates="author", lazy="noload")
+    books: Mapped[list["BookModel"]] = relationship(back_populates="author", lazy="noload")
 
 
 # The `AuditBase` class includes the same UUID` based primary key (`id`) and 2 additional columns: `created` and `updated`.
@@ -47,7 +45,7 @@ class BookModel(AuditBase):
     __tablename__ = "book"
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
-    author: Mapped[AuthorModel] = relationship(lazy="joined", innerjoin=True, viewonly=True)
+    author: Mapped["AuthorModel"] = relationship(lazy="joined", innerjoin=True, viewonly=True)
 
 
 # we will explicitly define the schema instead of using DTO objects for clarity.
@@ -75,13 +73,13 @@ class AuthorRepository(SQLAlchemyAsyncRepository[AuthorModel]):
     model_type = AuthorModel
 
 
-async def provide_authors_repo(db_session: AsyncSession) -> AuthorRepository:
+async def provide_authors_repo(db_session: "AsyncSession") -> AuthorRepository:
     """This provides the default Authors repository."""
     return AuthorRepository(session=db_session)
 
 
 # we can optionally override the default `select` used for the repository to pass in specific SQL options such as join details
-async def provide_author_details_repo(db_session: AsyncSession) -> AuthorRepository:
+async def provide_author_details_repo(db_session: "AsyncSession") -> AuthorRepository:
     """This provides a simple example demonstrating how to override the join options for the repository."""
     return AuthorRepository(statement=select(AuthorModel).options(selectinload(AuthorModel.books)), session=db_session)
 

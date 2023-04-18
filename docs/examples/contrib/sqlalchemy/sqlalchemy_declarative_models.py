@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID
@@ -20,7 +18,7 @@ if TYPE_CHECKING:
 class Author(Base):
     name: Mapped[str]
     dob: Mapped[date]
-    books: Mapped[list[Book]] = relationship(back_populates="author", lazy="selectin")
+    books: Mapped[list["Book"]] = relationship(back_populates="author", lazy="selectin")
 
 
 # The `AuditBase` class includes the same UUID` based primary key (`id`) and 2 additional columns: `created` and `updated`.
@@ -32,7 +30,7 @@ class Book(AuditBase):
 
 
 @get(path="/sqlalchemy-app")
-async def async_sqlalchemy_init(db_session: AsyncSession, db_engine: AsyncEngine) -> list[Author]:
+async def async_sqlalchemy_init(db_session: "AsyncSession", db_engine: "AsyncEngine") -> list[Author]:
     """Interact with SQLAlchemy engine and session."""
     return await db_session.scalars(select(Author))
 
