@@ -92,6 +92,8 @@ async def db_responsive(host: str) -> bool:
     return bool(resp[0] == 1)
 
 
+@pytest.mark.sqlalchemy_asyncmy
+@pytest.fixture(scope="session", autouse=True)
 async def _containers(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
     """Starts containers for required services, fixture waits until they are
     responsive before returning.
