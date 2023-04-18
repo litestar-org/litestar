@@ -91,11 +91,9 @@ async def test_from_bytes(request_factory: RequestFactory) -> None:
         return data
 
     dto_type = DataclassDTO[Model]
-    dto_type.on_registration(handler, "data", ParsedType(Model))
-    dto_instance = dto_type.from_bytes(
-        b'{"a":1,"b":"two"}', make_connection(request_factory, handler, data={"a": 1, "b": "two"})
-    )
-    assert dto_instance._data == Model(a=1, b="two")
+    dto_type.on_registration(handler, "data")
+    connection = make_connection(request_factory, handler, data={"a": 1, "b": "two"})
+    assert dto_type(connection).bytes_to_data_type(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 
 
 def test_config_field_definitions() -> None:
