@@ -32,7 +32,6 @@ from litestar._kwargs.parameter_definition import (
 from litestar._signature import SignatureModel, get_signature_model
 from litestar._signature.field import SignatureField
 from litestar.constants import RESERVED_KWARGS
-from litestar.dto.interface import DTOInterface
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg, ParameterKwarg
@@ -43,7 +42,8 @@ __all__ = ("KwargsModel",)
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.di import Provide
-    from litestar.utils.signature import ParsedParameter, ParsedSignature
+    from litestar.dto.interface import DTOInterface
+    from litestar.utils.signature import ParsedSignature
 
 
 class KwargsModel:
@@ -72,7 +72,7 @@ class KwargsModel:
         self,
         *,
         expected_cookie_params: set[ParameterDefinition],
-        expected_dto_data: tuple[ParsedParameter, type[DTOInterface]] | None,
+        expected_dto_data: type[DTOInterface] | None,
         expected_dependencies: set[Dependency],
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None,
         expected_msgpack_data: SignatureField | None,
@@ -304,7 +304,7 @@ class KwargsModel:
 
         expected_form_data: tuple[RequestEncodingType | str, SignatureField] | None = None
         expected_msgpack_data: SignatureField | None = None
-        expected_dto_data: tuple[ParsedParameter, type[DTOInterface]] | None = None
+        expected_dto_data: type[DTOInterface] | None = None
 
         data_signature_field = signature_fields.get("data")
 
@@ -322,13 +322,8 @@ class KwargsModel:
             elif media_type == RequestEncodingType.MESSAGEPACK:
                 expected_msgpack_data = data_signature_field
 
-        elif data_signature_field:
-            parsed_parameter = parsed_signature.parameters["data"]
-            parsed_type = parsed_parameter.parsed_type
-            if parsed_type.is_subclass_of(DTOInterface):
-                expected_dto_data = (parsed_parameter, parsed_type.annotation)
-            elif data_dto:
-                expected_dto_data = (parsed_parameter, data_dto)
+        elif data_signature_field and data_dto:
+            expected_dto_data = data_dto
 
         for dependency in expected_dependencies:
             dependency_kwargs_model = cls.create_for_signature_model(
