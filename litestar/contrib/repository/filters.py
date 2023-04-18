@@ -57,7 +57,7 @@ class OrderBy(Generic[T]):
 
 @dataclass
 class SearchFilter(Generic[T]):
-    """Data required to construct a ``WHERE field_name LIKE '%' || :value || '%' clause."""
+    """Data required to construct a ``WHERE field_name LIKE '%' || :value || '%'`` clause."""
 
     field_name: str
     """Name of the model attribute to sort on."""

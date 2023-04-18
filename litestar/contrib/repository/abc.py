@@ -221,11 +221,11 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """Get a list of instances, optionally filtered.
 
         Args:
-            *filters: Types for specific filtering operations.
+            *filters: filters for specific filtering operations
             **kwargs: Instance attribute value filters.
 
         Returns:
-            The list of instances, after filtering applied.
+            The list of instances, after filtering applied
         """
 
     @abstractmethod
@@ -235,9 +235,13 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         Has ``AND`` semantics where multiple kwargs name/value pairs are provided.
 
         Args:
-            collection: the collection to be filtered
+            collection: the objects to be filtered
             **kwargs: key/value pairs such that objects remaining in the collection after filtering
                 have the property that their attribute named ``key`` has value equal to ``value``.
+
+
+        Returns:
+            The filtered objects
 
         Raises:
             RepositoryError: if a named attribute doesn't exist on :attr:`model_type <AbstractAsyncRepository.model_type>`.
@@ -248,7 +252,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """Raise :class:`NotFoundError` if ``item_or_none`` is ``None``.
 
         Args:
-            item_or_none: Item to be tested for existence.
+            item_or_none: Item (:class:`T <T>`) to be tested for existence.
 
         Returns:
             The item, if it exists.
@@ -259,7 +263,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
 
     @classmethod
     def get_id_attribute_value(cls, item: T | type[T]) -> Any:
-        """Get value of attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` on ``item``.
+        """Get value of attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` on ``item``.
 
         Args:
             item: Anything that should have an attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` value.

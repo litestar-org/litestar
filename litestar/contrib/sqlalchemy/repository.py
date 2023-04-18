@@ -114,7 +114,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             return data
 
     async def delete(self, item_id: Any) -> ModelT:
-        """Delete instance identified by `item_id`.
+        """Delete instance identified by ``item_id``.
 
         Args:
             item_id: Identifier of instance to be deleted.
@@ -123,7 +123,7 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
             The deleted instance.
 
         Raises:
-            NotFoundError: If no instance found identified by `item_id`.
+            NotFoundError: If no instance found identified by ``item_id``.
         """
         with wrap_sqlalchemy_exception():
             instance = await self.get(item_id)

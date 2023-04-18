@@ -15,11 +15,11 @@ Features
 Basic Use
 ---------
 
-To use the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>` repository, you must first define your models using one of the included built-in ``DeclarativeBase`` ORM base implementations  (:class:`Base <litestar.contrib.sqlalchemy.repository.Base>` and :class:`AuditBase <litestar.contrib.sqlalchemy.repository.AuditBase>`).  Both include a UUID based primary key and ``AuditBase`` includes an ``updated`` and ``created`` timestamp column.
+To use the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>` repository, you must first define your models using one of the included built-in ``DeclarativeBase`` ORM base implementations  (:class:`Base <litestar.contrib.sqlalchemy.base.Base>` and :class:`AuditBase <litestar.contrib.sqlalchemy.base.AuditBase>`).  Both include a UUID based primary key and ``AuditBase`` includes an ``updated`` and ``created`` timestamp column.
 
 Models using these bases also include the following enhancements:
 * Auto-generated snake-case table name from class name
-* Pydantic BaseModel and Dict classes map to an optimized JSON type that is :class:`JSONB <sqlalchemy.dialects.postgresql.JSONB>` for the Postgres and :class:`JSON <sqlalchemy.JSON>` for other dialects.
+* Pydantic BaseModel and Dict classes map to an optimized JSON type that is :class:`JSONB <sqlalchemy.dialects.postgresql.JSONB>` for the Postgres and :class:`JSON <sqlalchemy.types.JSON>` for other dialects.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :caption: sqlalchemy_declarative_models.py
