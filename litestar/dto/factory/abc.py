@@ -42,14 +42,14 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         "_data",
     )
 
-    configs: ClassVar[tuple[DTOConfig, ...]]
+    config: ClassVar[DTOConfig]
     """Config objects to define properties of the DTO."""
     model_type: ClassVar[type[Any]]
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
 
     _reverse_field_mappings: ClassVar[dict[str, FieldDefinition]]
-    _type_config_backend_map: ClassVar[dict[tuple[ParsedType, DTOConfig], AbstractDTOBackend]]
-    _handler_config_backend_map: ClassVar[dict[tuple[ForType, BaseRouteHandler, DTOConfig], AbstractDTOBackend]]
+    _type_backend_map: ClassVar[dict[tuple[ForType, ParsedType, RequestEncodingType | str | None], AbstractDTOBackend]]
+    _handler_backend_map: ClassVar[dict[tuple[ForType, BaseRouteHandler], AbstractDTOBackend]]
 
     def __init__(self, data: DataT | Collection[DataT], connection: AnyRequest) -> None:
         """Create an AbstractDTOFactory type.
@@ -75,15 +75,21 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
 
         configs = parse_configs_from_annotation(parsed_type)
+        if configs:
+            config = configs[0]
+        elif hasattr(cls, "config"):
+            config = cls.config
+        else:
+            config = DTOConfig()
 
         if parsed_type.is_type_var and not configs:
             return cls
 
         cls_dict: dict[str, Any] = {
-            "configs": configs or (DTOConfig(),),
+            "config": config,
             "_reverse_field_mappings": {},
-            "_type_config_backend_map": {},
-            "_handler_config_backend_map": {},
+            "_type_backend_map": {},
+            "_handler_backend_map": {},
         }
         if not parsed_type.is_type_var:
             cls_dict.update(model_type=parsed_type.annotation)
@@ -95,7 +101,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         return self._data
 
     def to_encodable_type(self) -> LitestarEncodableType:
-        backend = self.get_backend("return", self._connection.route_handler)
+        backend = self._handler_backend_map["return", self._connection.route_handler]
         return backend.encode_data(self._data, self._connection)
 
     @classmethod
@@ -122,7 +128,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         Returns:
             AbstractDTOInterface instance.
         """
-        backend = cls.get_backend("return", connection.route_handler)
+        backend = cls._handler_backend_map[("data", connection.route_handler)]
         return cls(data=backend.populate_data_from_builtins(cls.model_type, data), connection=connection)
 
     @classmethod
@@ -136,7 +142,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         Returns:
             AbstractDTOFactory instance.
         """
-        backend = cls.get_backend("data", connection.route_handler)
+        backend = cls._handler_backend_map[("data", connection.route_handler)]
         return cls(
             data=backend.populate_data_from_raw(cls.model_type, raw, connection.content_type[0]), connection=connection
         )
@@ -163,127 +169,6 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         """
 
     @classmethod
-    def parse_model(
-        cls,
-        model_type: Any,
-        config: DTOConfig,
-        dto_for: ForType,
-        nested_depth: int = 0,
-        recursive_depth: int = 0,
-    ) -> FieldDefinitionsType:
-        """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
-
-        .. important::
-            Implementations must respect the :attr:`config` object. For example:
-                - fields marked private must never be included in the field definitions.
-                - if a ``purpose`` is declared, then read-only fields must be taken into account.
-                - field mappings must be implemented.
-                - additional fields must be included, subject to ``purpose``.
-                - nested depth and nested recursion depth must be adhered to.
-
-        Returns:
-            Fields for data transfer.
-
-            Key is the name of the new field, and value is a tuple of type and default value pairs.
-
-            Add a new field called "new_field", that is a string, and required:
-            {"new_field": (str, ...)}
-
-            Add a new field called "new_field", that is a string, and not-required:
-            {"new_field": (str, "default")}
-
-            Add a new field called "new_field", that may be `None`:
-            {"new_field": (str | None, None)}
-        """
-        defined_fields: dict[str, FieldDefinition | NestedFieldDefinition] = {}
-        for field_definition in chain(cls.generate_field_definitions(model_type), config.field_definitions):
-            if cls.should_exclude_field(field_definition, config, dto_for):
-                continue
-
-            if field_mapping := config.field_mapping.get(field_definition.name):
-                if isinstance(field_mapping, str):
-                    cls._reverse_field_mappings[field_mapping] = field_definition
-                    field_definition = field_definition.copy_with(name=field_mapping)  # noqa: PLW2901
-                else:
-                    cls._reverse_field_mappings[field_mapping.name] = field_definition
-                    field_definition = field_mapping  # noqa: PLW2901
-
-            if cls.detect_nested_field(field_definition):
-                nested_field_definition = cls.handle_nested(
-                    field_definition, nested_depth, recursive_depth, config, dto_for
-                )
-                if nested_field_definition is not None:
-                    defined_fields[field_definition.name] = nested_field_definition
-                continue
-
-            defined_fields[field_definition.name] = field_definition
-        return defined_fields
-
-    @classmethod
-    def handle_nested(
-        cls,
-        field_definition: FieldDefinition,
-        nested_depth: int,
-        recursive_depth: int,
-        config: DTOConfig,
-        dto_for: ForType,
-    ) -> NestedFieldDefinition | None:
-        if nested_depth == config.max_nested_depth:
-            return None
-
-        nested = NestedFieldDefinition(
-            field_definition=field_definition,
-            nested_type=cls.get_model_type(field_definition.annotation),
-        )
-
-        if (is_recursive := nested.is_recursive(cls.model_type)) and recursive_depth == config.max_nested_recursion:
-            return None
-
-        nested.nested_field_definitions = cls.parse_model(
-            nested.nested_type, config, dto_for, nested_depth + 1, recursive_depth + is_recursive
-        )
-        return nested
-
-    @staticmethod
-    def get_model_type(annotation: type) -> Any:
-        """Get model type represented by the DTO.
-
-        If ``annotation`` is a collection, then the inner type is returned.
-
-        Args:
-            annotation: any type.
-
-        Returns:
-            The model type that is represented by the DTO.
-        """
-        parsed_type = ParsedType(annotation)
-        if parsed_type.is_collection:
-            return parsed_type.inner_types[0].annotation
-        if parsed_type.is_optional:
-            return next(t for t in parsed_type.inner_types if t.annotation is not NoneType).annotation
-        return parsed_type.annotation
-
-    @classmethod
-    def should_exclude_field(cls, field_definition: FieldDefinition, config: DTOConfig, dto_for: ForType) -> bool:
-        """Returns ``True`` where a field should be excluded from data transfer.
-
-        Args:
-            field_definition: defined DTO field
-            config: DTO configuration
-            dto_for: indicates whether the DTO is for the request body or response.
-
-        Returns:
-            ``True`` if the field should not be included in any data transfer.
-        """
-        field_name = field_definition.name
-        dto_field = field_definition.dto_field
-        excluded = field_name in config.exclude
-        not_included = config.include and field_name not in config.include
-        private = dto_field and dto_field.mark is Mark.PRIVATE
-        read_only_for_write = dto_for == "data" and dto_field and dto_field.mark is Mark.READ_ONLY
-        return bool(excluded or not_included or private or read_only_for_write)
-
-    @classmethod
     def on_registration(cls, route_handler: BaseRouteHandler, dto_for: ForType) -> None:
         """Do something each time the DTO type is encountered during signature modelling.
 
@@ -291,6 +176,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
             dto_for: indicates whether the DTO is for the request body or response.
         """
+
         parsed_signature = route_handler.parsed_fn_signature
         request_encoding_type: RequestEncodingType | str | None = None
         if dto_for == "data":
@@ -313,33 +199,142 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         if not handler_type.is_subclass_of(cls.model_type):
             raise InvalidAnnotation(f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'")
 
-        backend_type: type[AbstractDTOBackend]
-        if request_encoding_type == RequestEncodingType.URL_ENCODED:
-            backend_type = PydanticDTOBackend
-        else:
-            backend_type = MsgspecDTOBackend
+        key = (dto_for, parsed_type, request_encoding_type)
+        backend = cls._type_backend_map.get(key)
+        if backend is None:
+            backend_type: type[AbstractDTOBackend]
+            if request_encoding_type == RequestEncodingType.URL_ENCODED:
+                backend_type = PydanticDTOBackend
+            else:
+                backend_type = MsgspecDTOBackend
 
-        for config in cls.configs:
-            key = (parsed_type, config)
-            backend = cls._type_config_backend_map.get(key)
-            if backend is None:
-                backend = cls._type_config_backend_map.setdefault(
-                    key,
-                    backend_type.from_field_definitions(parsed_type, cls.parse_model(cls.model_type, config, dto_for)),
-                )
+            backend = cls._type_backend_map.setdefault(
+                key,
+                backend_type.from_field_definitions(
+                    parsed_type, _parse_model(cls, cls.model_type, cls.config, dto_for)
+                ),
+            )
+        cls._handler_backend_map[(dto_for, route_handler)] = backend
 
-            cls._handler_config_backend_map[(dto_for, route_handler, config)] = backend
 
-    @classmethod
-    def get_backend(cls, dto_for: ForType, route_handler: BaseRouteHandler) -> AbstractDTOBackend:
-        """Get the DTO configuration for the given connection.
+def _parse_model(
+    dto_factory_type: type[AbstractDTOFactory],
+    model_type: Any,
+    config: DTOConfig,
+    dto_for: ForType,
+    nested_depth: int = 0,
+    recursive_depth: int = 0,
+) -> FieldDefinitionsType:
+    """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
 
-        Args:
-            dto_for: indicates whether the DTO is for the request body or response.
-            route_handler: Route handler instance.
+    .. important::
+        Implementations must respect the :attr:`config` object. For example:
+            - fields marked private must never be included in the field definitions.
+            - if a ``purpose`` is declared, then read-only fields must be taken into account.
+            - field mappings must be implemented.
+            - additional fields must be included, subject to ``purpose``.
+            - nested depth and nested recursion depth must be adhered to.
 
-        Returns:
-            The DTO configuration for the connection.
-        """
-        config = cls.configs[0]
-        return cls._handler_config_backend_map[(dto_for, route_handler, config)]
+    Returns:
+        Fields for data transfer.
+
+        Key is the name of the new field, and value is a tuple of type and default value pairs.
+
+        Add a new field called "new_field", that is a string, and required:
+        {"new_field": (str, ...)}
+
+        Add a new field called "new_field", that is a string, and not-required:
+        {"new_field": (str, "default")}
+
+        Add a new field called "new_field", that may be `None`:
+        {"new_field": (str | None, None)}
+    """
+    defined_fields: dict[str, FieldDefinition | NestedFieldDefinition] = {}
+    for field_definition in chain(dto_factory_type.generate_field_definitions(model_type), config.field_definitions):
+        if _should_exclude_field(field_definition, config, dto_for):
+            continue
+
+        if field_mapping := config.field_mapping.get(field_definition.name):
+            if isinstance(field_mapping, str):
+                dto_factory_type._reverse_field_mappings[field_mapping] = field_definition
+                field_definition = field_definition.copy_with(name=field_mapping)  # noqa: PLW2901
+            else:
+                dto_factory_type._reverse_field_mappings[field_mapping.name] = field_definition
+                field_definition = field_mapping  # noqa: PLW2901
+
+        if dto_factory_type.detect_nested_field(field_definition):
+            nested_field_definition = _handle_nested(
+                dto_factory_type, field_definition, nested_depth, recursive_depth, config, dto_for
+            )
+            if nested_field_definition is not None:
+                defined_fields[field_definition.name] = nested_field_definition
+            continue
+
+        defined_fields[field_definition.name] = field_definition
+    return defined_fields
+
+
+def _should_exclude_field(field_definition: FieldDefinition, config: DTOConfig, dto_for: ForType) -> bool:
+    """Returns ``True`` where a field should be excluded from data transfer.
+
+    Args:
+        field_definition: defined DTO field
+        config: DTO configuration
+        dto_for: indicates whether the DTO is for the request body or response.
+
+    Returns:
+        ``True`` if the field should not be included in any data transfer.
+    """
+    field_name = field_definition.name
+    dto_field = field_definition.dto_field
+    excluded = field_name in config.exclude
+    not_included = config.include and field_name not in config.include
+    private = dto_field and dto_field.mark is Mark.PRIVATE
+    read_only_for_write = dto_for == "data" and dto_field and dto_field.mark is Mark.READ_ONLY
+    return bool(excluded or not_included or private or read_only_for_write)
+
+
+def _handle_nested(
+    dto_factory_type: type[AbstractDTOFactory],
+    field_definition: FieldDefinition,
+    nested_depth: int,
+    recursive_depth: int,
+    config: DTOConfig,
+    dto_for: ForType,
+) -> NestedFieldDefinition | None:
+    if nested_depth == config.max_nested_depth:
+        return None
+
+    nested = NestedFieldDefinition(
+        field_definition=field_definition,
+        nested_type=_get_model_type(field_definition.annotation),
+    )
+
+    if (
+        is_recursive := nested.is_recursive(dto_factory_type.model_type)
+    ) and recursive_depth == config.max_nested_recursion:
+        return None
+
+    nested.nested_field_definitions = _parse_model(
+        dto_factory_type, nested.nested_type, config, dto_for, nested_depth + 1, recursive_depth + is_recursive
+    )
+    return nested
+
+
+def _get_model_type(annotation: type) -> Any:
+    """Get model type represented by the DTO.
+
+    If ``annotation`` is a collection, then the inner type is returned.
+
+    Args:
+        annotation: any type.
+
+    Returns:
+        The model type that is represented by the DTO.
+    """
+    parsed_type = ParsedType(annotation)
+    if parsed_type.is_collection:
+        return parsed_type.inner_types[0].annotation
+    if parsed_type.is_optional:
+        return next(t for t in parsed_type.inner_types if t.annotation is not NoneType).annotation
+    return parsed_type.annotation
