@@ -4,7 +4,7 @@ repository
 .. toctree::
     :titlesonly:
 
-    abc 
+    abc
     filters
     exceptions
     testing

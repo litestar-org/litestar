@@ -36,7 +36,7 @@ repos:
       - id: prettier
         exclude: "_templates"
   - repo: https://github.com/python-formate/flake8-dunder-all
-    rev: v0.3.0b1
+    rev: v0.3.0
     hooks:
       - id: ensure-dunder-all
         exclude: "test*|examples*|tools"
