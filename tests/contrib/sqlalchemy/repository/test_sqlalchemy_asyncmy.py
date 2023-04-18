@@ -84,12 +84,21 @@ async def db_responsive(host: str) -> bool:
     Returns:
         Boolean indicating if we can connect to the database.
     """
-    conn = asyncmy.connect(host=host, port=3360, user="app", database="db", password="super-secret", echo=True)
-    conn = await conn.connect()
-    async with conn.cursor() as cursor:
-        await cursor.execute("select 1 as is_available")
-        resp = await cursor.fetchone()
-    return bool(resp[0] == 1)
+
+    try:
+        conn = await asyncmy.connect(
+            host=host,
+            port=3360,
+            user="app",
+            database="db",
+            password="super-secret",
+        )
+        async with conn.cursor() as cursor:
+            await cursor.execute("select 1 as is_available")
+            resp = await cursor.fetchone()
+        return bool(resp[0] == 1)
+    except asyncmy.errors.OperationalError:
+        return False
 
 
 @pytest.mark.sqlalchemy_asyncmy
