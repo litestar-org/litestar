@@ -330,7 +330,7 @@ def create_multipart_extractor(
             return None
 
         if dto_type:
-            return dto_type.from_builtins(form_values, connection).to_data_type()
+            return dto_type(connection).builtins_to_data_type(form_values)
 
         return form_values
 
@@ -362,7 +362,7 @@ def create_url_encoded_data_extractor(
             return None
 
         if dto_type:
-            return dto_type.from_builtins(form_values, connection).to_data_type()
+            return dto_type(connection).builtins_to_data_type(form_values)
 
         return form_values
 
@@ -427,6 +427,6 @@ def create_dto_extractor(
     """
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        return dto_type.from_bytes(await connection.body(), connection).to_data_type()
+        return dto_type(connection).bytes_to_data_type(await connection.body())
 
     return dto_extractor  # type:ignore[return-value]
