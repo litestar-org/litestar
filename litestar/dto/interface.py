@@ -4,8 +4,6 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
-
     from litestar.connection import Request
     from litestar.handlers import BaseRouteHandler
     from litestar.types import LitestarEncodableType
@@ -20,12 +18,16 @@ class DTOInterface(Protocol):
     __slots__ = ()
 
     @abstractmethod
-    def to_data_type(self) -> Any:
-        """Return the data held by the DTO."""
+    def __init__(self, connection: Request[Any, Any, Any]) -> None:
+        """Initialize the DTO.
+
+        Args:
+            connection: :class:`ASGIConnection <.connection.ASGIConnection>` instance.
+        """
 
     @abstractmethod
-    def to_encodable_type(self) -> bytes | LitestarEncodableType:
-        """Encode data held by the DTO type to a type supported by litestar serialization.
+    def data_to_encodable_type(self, data: Any) -> bytes | LitestarEncodableType:
+        """Encode data to a type supported by litestar serialization.
 
         Can return either bytes or a type that Litestar can return to bytes.
 
@@ -33,30 +35,15 @@ class DTOInterface(Protocol):
             Either ``bytes`` or a type that Litestar can convert to bytes.
         """
 
-    @classmethod
     @abstractmethod
-    def from_bytes(cls, raw: bytes, connection: Request[Any, Any, Any]) -> Self:
-        """Construct an instance from a :class:`Request <.connection.Request>`.
+    def bytes_to_data_type(self, raw: bytes) -> Any:
+        """Convert raw bytes to the data type that the DTO represents.
 
         Args:
             raw: Raw bytes of the payload.
-            connection: :class:`Request <.connection.Request>` instance.
 
         Returns:
-            DTOInterface instance.
-        """
-
-    @classmethod
-    @abstractmethod
-    def from_data(cls, data: Any, connection: Request[Any, Any, Any]) -> Self:
-        """Construct an instance from data.
-
-        Args:
-            data: User data, usually data returned from a handler.
-            connection: :class:`Request <.connection.Request>` instance.
-
-        Returns:
-            DTOInterface instance.
+            Data type that the DTO represents.
         """
 
     @classmethod
