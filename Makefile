@@ -16,13 +16,16 @@ docs-test:
 test-examples:
 	pytest docs/examples
 
+test-sqlalchemy-asyncpg:
+	pytest tests -m='sqlalchemy_asyncpg'
+
 test-sqlalchemy-asyncmy:
 	pytest tests -m='sqlalchemy_asyncmy'
 
 test:
-	pytest tests -m='not sqlalchemy_asyncmy'
+	pytest tests
 
-test-all: test test-examples
+test-all: test test-sqlalchemy-asyncpg test-sqlalchemy-asyncmy test-examples
 
 coverage:
 	pytest tests --cov=litestar

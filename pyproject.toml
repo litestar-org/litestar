@@ -203,7 +203,7 @@ exclude_lines = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--ignore=examples"
+addopts = "--ignore=examples -m='not sqlalchemy_asyncmy' -m='not sqlalchemy_asyncmy'"
 asyncio_mode = "auto"
 filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
