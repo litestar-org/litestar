@@ -85,6 +85,20 @@ def fx_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
     ]
 
 
+@pytest.fixture(name="raw_log_events")
+def fx_raw_log_events() -> list[dict[str, Any]]:
+    """Unstructured log event representations."""
+    return [
+        {
+            "id": UUID("f34545b9-663c-4fce-915d-dd1ae9cea42a"),
+            "logged_at": "0001-01-01T00:00:00",
+            "payload": {"foo": "bar", "baz": datetime.now()},
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+    ]
+
+
 async def _seed_db(engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_books: list[dict[str, Any]]) -> None:
     """Populate test database with sample data.
 
@@ -126,6 +140,16 @@ def fx_author_repo(session: AsyncSession) -> AuthorRepository:
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: AsyncSession) -> BookRepository:
     return BookRepository(session=session)
+
+
+def test_json_type(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy filter by kwargs with invalid column name.
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    with pytest.raises(RepositoryError):
+        author_repo.filter_collection_by_kwargs(author_repo.statement, whoops="silly me")
 
 
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepository) -> None:

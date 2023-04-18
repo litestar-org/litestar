@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class JSON(TypeDecorator):
     """Platform-independent JSON type.
 
-    Uses JSONB type for postgres, otherwise uses generic JSON
+    Uses JSONB type for postgres, otherwise uses the generic JSON data type.
     """
 
     class JSONType(String):

@@ -17,6 +17,7 @@ services:
       MYSQL_USER: app
       MYSQL_DATABASE: db
       MYSQL_ROOT_HOST: "%"
+      LANG: C.UTF-8
   redis:
     image: redis
     ports:

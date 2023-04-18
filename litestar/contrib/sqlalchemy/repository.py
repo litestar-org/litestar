@@ -240,11 +240,14 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
                 self.session.expunge(instance)
             return instance  # type: ignore
 
-    async def get_or_create(self, match_fields: list[str] | str | None = None, **kwargs: Any) -> tuple[ModelT, bool]:
+    async def get_or_create(
+        self, match_fields: list[str] | str | None = None, upsert: bool = True, **kwargs: Any
+    ) -> tuple[ModelT, bool]:
         """Get instance identified by ``kwargs`` or create if it doesn't exist.
 
         Args:
             match_fields: a list of keys to use to match the existing model.  When empty, all fields are matched.
+            upsert: When using match_fields and actual model values differ from `kwargs`, perform an update operation on the model.
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
@@ -262,15 +265,16 @@ class SQLAlchemyAsyncRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]
         else:
             match_filter = kwargs
         existing = await self.get_one_or_none(**match_filter)
-        if existing:
+        if not existing:
+            return await self.add(self.model_type(**kwargs)), True
+        if upsert:
             for field_name, new_field_value in kwargs.items():
                 field = getattr(existing, field_name, None)
                 if field and field != new_field_value:
                     setattr(existing, field_name, new_field_value)
             if existing in self.session.dirty:
                 return (await self.update(existing)), False
-            return existing, False
-        return await self.add(self.model_type(**kwargs)), True
+        return existing, False
 
     async def count(self, *filters: FilterTypes, **kwargs: Any) -> int:
         """Get the count of records returned by a query.

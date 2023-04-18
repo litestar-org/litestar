@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Iterator
 from uuid import UUID, uuid4
 
+import asyncmy
 import pytest
-from asyncmy.connection import Connection as MySQLConnection
 from sqlalchemy import NullPool, insert
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import (
@@ -84,7 +84,7 @@ async def db_responsive(host: str) -> bool:
     Returns:
         Boolean indicating if we can connect to the database.
     """
-    conn = MySQLConnection(host=host, port=3360, user="app", database="db", password="super-secret", echo=True)
+    conn = asyncmy.connect(host=host, port=3360, user="app", database="db", password="super-secret", echo=True)
     conn = await conn.connect()
     async with conn.cursor() as cursor:
         await cursor.execute("select 1 as is_available")
@@ -92,7 +92,6 @@ async def db_responsive(host: str) -> bool:
     return bool(resp[0] == 1)
 
 
-@pytest.fixture(scope="session", autouse=True)
 async def _containers(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
     """Starts containers for required services, fixture waits until they are
     responsive before returning.
@@ -101,7 +100,7 @@ async def _containers(docker_ip: str, docker_services: Services) -> None:  # pyl
         docker_ip:
         docker_services:
     """
-    await wait_until_responsive(timeout=30.0, pause=5, check=db_responsive, host=docker_ip)
+    await wait_until_responsive(timeout=30.0, pause=0.1, check=db_responsive, host=docker_ip)
 
 
 @pytest.mark.sqlalchemy_asyncmy
@@ -162,6 +161,21 @@ def fx_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "title": "Murder on the Orient Express",
             "author_id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
             "author": raw_authors[0],
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+    ]
+
+
+@pytest.mark.sqlalchemy_asyncmy
+@pytest.fixture(name="raw_log_events")
+def fx_raw_log_events() -> list[dict[str, Any]]:
+    """Unstructured log events representations."""
+    return [
+        {
+            "id": UUID("f34545b9-663c-4fce-915d-dd1ae9cea42a"),
+            "logged_at": "0001-01-01T00:00:00",
+            "payload": {"foo": "bar", "baz": datetime.now()},
             "created": "0001-01-01T00:00:00",
             "updated": "0001-01-01T00:00:00",
         },

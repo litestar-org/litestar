@@ -16,8 +16,11 @@ docs-test:
 test-examples:
 	pytest docs/examples
 
+test-sqlalchemy-asyncmy:
+	pytest tests -m='sqlalchemy_asyncmy'
+
 test:
-	pytest tests
+	pytest tests -m='not sqlalchemy_asyncmy'
 
 test-all: test test-examples
 
