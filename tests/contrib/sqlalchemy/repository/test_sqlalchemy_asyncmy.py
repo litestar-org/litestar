@@ -153,7 +153,7 @@ def fx_raw_authors() -> list[dict[str, Any]]:
             "updated": "0001-01-01T00:00:00",
         },
         {
-            "id": UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"),
+            "id": "5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2",
             "name": "Leo Tolstoy",
             "dob": "1828-09-09",
             "created": "0001-01-01T00:00:00",
@@ -184,7 +184,7 @@ def fx_raw_log_events() -> list[dict[str, Any]]:
     """Unstructured log events representations."""
     return [
         {
-            "id": UUID("f34545b9-663c-4fce-915d-dd1ae9cea42a"),
+            "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
             "logged_at": "0001-01-01T00:00:00",
             "payload": {"foo": "bar", "baz": datetime.now()},
             "created": "0001-01-01T00:00:00",
