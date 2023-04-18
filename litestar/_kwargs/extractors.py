@@ -11,7 +11,6 @@ from litestar._parsers import (
     parse_url_encoded_form_data,
 )
 from litestar.datastructures.upload_file import UploadFile
-from litestar.dto.interface import DTOInterface
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
@@ -22,7 +21,7 @@ if TYPE_CHECKING:
     from litestar._kwargs.parameter_definition import ParameterDefinition
     from litestar._signature.field import SignatureField
     from litestar.connection import ASGIConnection, Request
-    from litestar.utils.signature import ParsedParameter
+    from litestar.dto.interface import DTOInterface
 
 __all__ = (
     "body_extractor",
@@ -383,7 +382,7 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
         )
     elif kwargs_model.expected_dto_data:
-        data_extractor = create_dto_extractor(*kwargs_model.expected_dto_data)
+        data_extractor = create_dto_extractor(kwargs_model.expected_dto_data)
     else:
         data_extractor = cast(
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
@@ -399,23 +398,18 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
 
 
 def create_dto_extractor(
-    parsed_parameter: ParsedParameter, dto_type: type[DTOInterface]
+    dto_type: type[DTOInterface],
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a DTO data extractor.
 
     Args:
-        parsed_parameter: :class:`ParsedParameter` instance representing the ``"data"`` kwarg.
         dto_type: The :class:`DTOInterface` subclass.
 
     Returns:
         An extractor function.
     """
-    is_dto_annotated = parsed_parameter.parsed_type.is_subclass_of(DTOInterface)
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        dto = dto_type.from_bytes(await connection.body(), connection)
-        if is_dto_annotated:
-            return dto
-        return dto.to_data_type()
+        return dto_type(connection).bytes_to_data_type(await connection.body())
 
     return dto_extractor  # type:ignore[return-value]
