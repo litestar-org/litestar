@@ -14,9 +14,9 @@ from .utils import _build_data_from_struct, _build_struct_from_model, _create_st
 if TYPE_CHECKING:
     from typing import Any, Collection
 
-    from litestar.connection import Request
     from litestar.dto.factory.types import FieldDefinitionsType
     from litestar.enums import MediaType
+    from litestar.types.internal_types import AnyConnection
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = ("MsgspecDTOBackend",)
@@ -36,7 +36,7 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
         parsed_data = self.parse_raw(raw, media_type)
         return _build_data_from_struct(model_type, parsed_data, self.field_definitions)
 
-    def encode_data(self, data: Any, connection: Request) -> LitestarEncodableType:
+    def encode_data(self, data: Any, connection: AnyConnection) -> LitestarEncodableType:
         if isinstance(data, CollectionsCollection):
             return self.parsed_type.origin(  # type:ignore[no-any-return]
                 _build_struct_from_model(datum, self.data_container_type) for datum in data  # pyright:ignore

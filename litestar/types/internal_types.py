@@ -10,11 +10,14 @@ from typing import (
     Union,
 )
 
+from typing_extensions import TypeAlias
+
 from litestar.types import Method
 
 __all__ = (
-    "PathParameterDefinition",
+    "AnyConnection",
     "ControllerRouterHandler",
+    "PathParameterDefinition",
     "ReservedKwargs",
     "ResponseType",
     "RouteHandlerMapItem",
@@ -24,6 +27,7 @@ __all__ = (
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
+    from litestar.connection import ASGIConnection
     from litestar.controller import Controller
     from litestar.handlers.asgi_handlers import ASGIRouteHandler
     from litestar.handlers.http_handlers import HTTPRouteHandler
@@ -32,6 +36,7 @@ if TYPE_CHECKING:
     from litestar.router import Router
 else:
     Litestar = Any
+    ASGIConnection = Any
     ASGIRouteHandler = Any
     WebsocketRouteHandler = Any
     HTTPRouteHandler = Any
@@ -39,6 +44,7 @@ else:
     Controller = Any
     Router = Any
 
+AnyConnection: TypeAlias = "ASGIConnection[Any, Any, Any, Any]"
 ReservedKwargs = Literal["request", "socket", "headers", "query", "cookies", "state", "data"]
 LitestarType = Litestar
 RouteHandlerType = Union[HTTPRouteHandler, WebsocketRouteHandler, ASGIRouteHandler]

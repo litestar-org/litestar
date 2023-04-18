@@ -6,15 +6,12 @@ from typing import TYPE_CHECKING
 from typing_extensions import Self
 
 from litestar.dto.interface import DTOInterface
+from litestar.types.internal_types import AnyConnection
 from litestar.types.protocols import DataclassProtocol
 from litestar.types.serialization import LitestarEncodableType
 
 if TYPE_CHECKING:
-    from typing import Any, TypeAlias
-
-    from litestar.connection import Request
-
-AnyRequest: TypeAlias = "Request[Any, Any, Any]"
+    from typing import Any
 
 
 @dataclass
@@ -31,11 +28,11 @@ class MockDTO(DTOInterface):
         return Model(a=1, b="2")
 
     @classmethod
-    def from_bytes(cls, raw: bytes, connection: AnyRequest) -> Self:
+    def from_bytes(cls, raw: bytes, connection: AnyConnection) -> Self:
         return cls()
 
     @classmethod
-    def from_data(cls, data: DataclassProtocol, connection: AnyRequest) -> Self:
+    def from_data(cls, data: DataclassProtocol, connection: AnyConnection) -> Self:
         return cls()
 
 
@@ -47,9 +44,9 @@ class MockReturnDTO(DTOInterface):
         return b'{"a": 1, "b": "2"}'
 
     @classmethod
-    def from_bytes(cls, raw: bytes, connection: AnyRequest) -> Self:
+    def from_bytes(cls, raw: bytes, connection: AnyConnection) -> Self:
         raise RuntimeError("Return DTO should not have this method called")
 
     @classmethod
-    def from_data(cls, data: DataclassProtocol, connection: AnyRequest) -> Self:
+    def from_data(cls, data: DataclassProtocol, connection: AnyConnection) -> Self:
         return cls()

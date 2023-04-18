@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Callable, Coroutine
 
 from msgspec.json import Encoder as JsonEncoder
 
+from litestar.dto.interface import DTOInterface
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
 from litestar.handlers.base import BaseRouteHandler
 from litestar.serialization import decode_json, default_serializer
@@ -21,7 +22,6 @@ if TYPE_CHECKING:
     from typing import Any, Mapping
 
     from litestar.connection import WebSocket
-    from litestar.dto.interface import DTOInterface
     from litestar.types import (
         AnyCallable,
         Dependencies,
@@ -119,11 +119,14 @@ class websocket_listener(WebsocketRouteHandler):
     returned
     """
 
+    _listener_callback_signature: ParsedSignature
+
     def __init__(
         self,
         path: str | None | list[str] | None = None,
         *,
         dependencies: Dependencies | None = None,
+        dto: type[DTOInterface] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
         guards: list[Guard] | None = None,
         middleware: list[Middleware] | None = None,
@@ -133,6 +136,7 @@ class websocket_listener(WebsocketRouteHandler):
         on_accept: Callable[[WebSocket], SyncOrAsyncUnion[None]] | None = None,
         on_disconnect: Callable[[WebSocket], SyncOrAsyncUnion[None]] | None = None,
         opt: dict[str, Any] | None = None,
+        return_dto: type[DTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
@@ -143,6 +147,8 @@ class websocket_listener(WebsocketRouteHandler):
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
+                validation of request data.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
             middleware: A sequence of :class:`Middleware <.types.Middleware>`.
@@ -156,6 +162,8 @@ class websocket_listener(WebsocketRouteHandler):
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
+            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
+                outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature
                 modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
@@ -176,6 +184,8 @@ class websocket_listener(WebsocketRouteHandler):
             name=name,
             opt=opt,
             signature_namespace=signature_namespace,
+            dto=dto,
+            return_dto=return_dto,
             **kwargs,
         )
 
@@ -195,9 +205,15 @@ class websocket_listener(WebsocketRouteHandler):
     ) -> Callable[..., Coroutine[None, None, None]]:
         json_encoder = JsonEncoder(enc_hook=partial(default_serializer, type_encoders=self.resolve_type_encoders()))
 
+        return_dto = self.resolve_return_dto()
+
         async def handle_receive(socket: WebSocket) -> Any:
-            received_data = await socket.receive_data(mode=self._receive_mode)  # pyright: ignore
-            if wants_receive_type is str:
+            received_data: Any = await socket.receive_data(mode=self._receive_mode)  # pyright: ignore
+            if dto := self.resolve_dto():
+                if isinstance(received_data, str):
+                    received_data = received_data.encode("utf-8")
+                received_data = dto.from_bytes(received_data, socket).to_data_type()
+            elif wants_receive_type is str:
                 if isinstance(received_data, bytes):
                     received_data = received_data.decode("utf-8")
             elif wants_receive_type is bytes:
@@ -208,7 +224,9 @@ class websocket_listener(WebsocketRouteHandler):
             return received_data
 
         async def handle_send(socket: WebSocket, data_to_send: Any) -> None:
-            if should_encode_to_json:
+            if return_dto:
+                data_to_send = json_encoder.encode(return_dto.from_data(data_to_send, socket).to_encodable_type())
+            elif should_encode_to_json:
                 data_to_send = json_encoder.encode(data_to_send)
 
             await socket.send_data(data_to_send, self._send_mode)  # pyright: ignore
@@ -232,6 +250,23 @@ class websocket_listener(WebsocketRouteHandler):
 
         return listener_fn
 
+    def _init_handler_dtos(self) -> None:
+        """Initialize the data and return DTOs for the handler."""
+        data_parameter = self._listener_callback_signature.parameters.get("data")
+        if data_parameter:
+            parameter_type = data_parameter.parsed_type
+            dto = parameter_type.annotation if parameter_type.is_subclass_of(DTOInterface) else self.resolve_dto()
+            if dto:
+                dto.on_registration(self, "data", data_parameter.parsed_type)
+
+        return_type = self._listener_callback_signature.return_type
+        if return_type.annotation is not Empty:
+            return_dto = (
+                return_type.annotation if return_type.is_subclass_of(DTOInterface) else self.resolve_return_dto()
+            )
+            if return_dto:
+                return_dto.on_registration(self, "return", return_type)
+
     @staticmethod
     def _update_listener_fn_signature(listener_fn: Callable, callback_signature: inspect.Signature) -> None:
         # make our listener_fn look like the callback, so we get a correct signature model
@@ -246,7 +281,9 @@ class websocket_listener(WebsocketRouteHandler):
         listener_fn.__annotations__ = {p.name: p.annotation for p in new_signature.parameters.values()}
 
     def __call__(self, listener_callback: AnyCallable) -> websocket_listener:
-        listener_callback_signature = ParsedSignature.from_fn(listener_callback, self.resolve_signature_namespace())
+        self._listener_callback_signature = listener_callback_signature = ParsedSignature.from_fn(
+            listener_callback, self.resolve_signature_namespace()
+        )
 
         if "data" not in listener_callback_signature.parameters:
             raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")

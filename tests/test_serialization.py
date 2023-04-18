@@ -24,7 +24,6 @@ from pydantic import (
 )
 from pydantic.color import Color
 
-from litestar.connection import Request
 from litestar.dto.interface import DTOInterface
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
@@ -36,6 +35,7 @@ from litestar.serialization import (
     encode_json,
     encode_msgpack,
 )
+from litestar.types.internal_types import AnyConnection
 from litestar.types.serialization import LitestarEncodableType
 from tests import PersonFactory
 
@@ -179,11 +179,11 @@ def test_encode_dto_instance(ret_val: "bytes | dict") -> None:
             return None
 
         @classmethod
-        def from_bytes(cls, raw: bytes, connection: Request[Any, Any, Any]) -> "DTO":
+        def from_bytes(cls, raw: bytes, connection: AnyConnection) -> "DTO":
             return cls()
 
         @classmethod
-        def from_data(cls, data: Any, connection: Request[Any, Any, Any]) -> "DTO":
+        def from_data(cls, data: Any, connection: AnyConnection) -> "DTO":
             return cls()
 
     assert encode_json(DTO()) == b'{"a":1,"b":"2"}'

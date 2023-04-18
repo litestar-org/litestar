@@ -16,6 +16,7 @@ from litestar.dto.factory import DTOConfig, DTOField, Mark
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
 from litestar.dto.types import ForType
 from litestar.serialization import encode_json
+from litestar.utils.signature import ParsedType
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -77,8 +78,8 @@ async def get_model_from_dto(
         return data
 
     connection.scope["route_handler"] = handler
-    dto_type.on_registration(handler, "data")
-    dto_type.on_registration(handler, "return")
+    dto_type.on_registration(handler, "data", ParsedType(annotation))
+    dto_type.on_registration(handler, "return", ParsedType(annotation))
     dto_instance = dto_type.from_bytes(await connection.body(), connection)
     return dto_instance.to_data_type()
 

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.factory.backends import MsgspecDTOBackend
 from litestar.dto.interface import DTOInterface
+from litestar.enums import RequestEncodingType
 from litestar.types.builtin_types import NoneType
 from litestar.utils.signature import ParsedType
 
@@ -16,20 +17,19 @@ from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
 from .utils import parse_configs_from_annotation
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Collection, Generator, TypeAlias
+    from typing import Any, ClassVar, Collection, Generator
 
     from typing_extensions import Self
 
-    from litestar.connection import Request
     from litestar.dto.types import ForType
     from litestar.handlers import BaseRouteHandler
+    from litestar.types.internal_types import AnyConnection
     from litestar.types.serialization import LitestarEncodableType
 
     from .backends import AbstractDTOBackend
 
 __all__ = ["AbstractDTOFactory"]
 
-AnyRequest: TypeAlias = "Request[Any, Any, Any]"
 DataT = TypeVar("DataT")
 
 
@@ -50,7 +50,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     _type_config_backend_map: ClassVar[dict[tuple[ParsedType, DTOConfig], AbstractDTOBackend]]
     _handler_config_backend_map: ClassVar[dict[tuple[ForType, BaseRouteHandler, DTOConfig], AbstractDTOBackend]]
 
-    def __init__(self, data: DataT | Collection[DataT], connection: AnyRequest) -> None:
+    def __init__(self, data: DataT | Collection[DataT], connection: AnyConnection) -> None:
         """Create an AbstractDTOFactory type.
 
         Args:
@@ -98,7 +98,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         return backend.encode_data(self._data, self._connection)
 
     @classmethod
-    def from_data(cls, data: DataT | Collection[DataT], connection: AnyRequest) -> Self:
+    def from_data(cls, data: DataT | Collection[DataT], connection: AnyConnection) -> Self:
         """Construct an instance from data.
 
         Args:
@@ -111,7 +111,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         return cls(data=data, connection=connection)
 
     @classmethod
-    def from_bytes(cls, raw: bytes, connection: AnyRequest) -> Self:
+    def from_bytes(cls, raw: bytes, connection: AnyConnection) -> Self:
         """Construct an instance from bytes.
 
         Args:
@@ -122,9 +122,8 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             AbstractDTOFactory instance.
         """
         backend = cls.get_backend("data", connection.route_handler)
-        return cls(
-            data=backend.populate_data_from_raw(cls.model_type, raw, connection.content_type[0]), connection=connection
-        )
+        content_type = getattr(connection, "content_type", (RequestEncodingType.JSON,))[0]
+        return cls(data=backend.populate_data_from_raw(cls.model_type, raw, content_type), connection=connection)
 
     @classmethod
     @abstractmethod
@@ -269,20 +268,14 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         return bool(excluded or not_included or private or read_only_for_write)
 
     @classmethod
-    def on_registration(cls, route_handler: BaseRouteHandler, dto_for: ForType) -> None:
+    def on_registration(cls, route_handler: BaseRouteHandler, dto_for: ForType, parsed_type: ParsedType) -> None:
         """Do something each time the DTO type is encountered during signature modelling.
 
         Args:
             route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
             dto_for: indicates whether the DTO is for the request body or response.
+            parsed_type: :class:``ParsedType`` for represented  annotation.
         """
-
-        parsed_signature = route_handler.parsed_fn_signature
-        if dto_for == "data":
-            parsed_type = parsed_signature.parameters["data"].parsed_type
-        else:
-            parsed_type = parsed_signature.return_type
-
         if parsed_type.is_subclass_of(AbstractDTOFactory):
             raise InvalidAnnotation("AbstractDTOFactory does not support being set as a handler annotation")
 

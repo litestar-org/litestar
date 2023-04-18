@@ -13,9 +13,9 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from litestar.connection import Request
     from litestar.dto.factory.types import FieldDefinitionsType
     from litestar.enums import MediaType
+    from litestar.types.internal_types import AnyConnection
     from litestar.types.serialization import LitestarEncodableType
     from litestar.utils.signature import ParsedType
 
@@ -86,7 +86,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
 
     @abstractmethod
-    def encode_data(self, data: Any, connection: Request[Any, Any, Any]) -> LitestarEncodableType:
+    def encode_data(self, data: Any, connection: AnyConnection) -> LitestarEncodableType:
         """Encode data into a ``LitestarEncodableType``.
 
         Args:
