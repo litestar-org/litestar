@@ -1,14 +1,14 @@
 Making the list interactive
 ============================
 
-So far, our TODO list is not very useful, since it's static. You can't update items,
+So far, our TODO list application is not very useful, since it's static. You can't update items,
 nor add or remove them.
 
 Receiving incoming data
 -----------------------
 
 Let's start by implementing a route handler that handles the creation of new items.
-In the previous step you have used the ``get`` decorator, which responds to the ``GET``
+In the previous step you used the ``get`` decorator, which responds to the ``GET``
 HTTP method. In this case we want to react to ``POST`` requests, so we are going to use
 the corresponding ``post`` decorator.
 
@@ -16,7 +16,7 @@ the corresponding ``post`` decorator.
     :language: python
     :linenos:
 
-Request data can be received via the ``data`` keyword. Litestar will recognise this, and
+Request data can be received via the ``data`` keyword. Litestar will recognize this, and
 supply the data being sent with the request via this parameter. As with the query
 parameters in the previous chapter, we use the type annotations to configure what type
 of data we expect to receive, and set up validation. In this case, Litestar will expect

@@ -4,22 +4,21 @@ Application basics
 First steps
 ------------
 
-Before we start building our TODO application, let's start with the basics.
+Before we start building our TODO application, let us start with the basics.
 
 
 Install Litestar
 ++++++++++++++++
 
 To install Litestar, run ``pip install litestar[standard]``. This will install Litestar
-as well as `uvicorn <https://www.uvicorn.org/>`_ -  a server that you can use to serve
-your application.
+as well as `uvicorn <https://www.uvicorn.org/>`_ -  a web server to serve your application.
+.. note:: You can use any ASGI-capable web server, but this tutorial will use - and Litestar recommends - Uvicorn.
 
 
 Hello, world!
 +++++++++++++
 
-The most basic application one can implement and a classic is of course one that somehow
-prints ``"Hello, world!"``:
+The most basic application you can implement - and a classic one at that - is of course one that prints ``"Hello, world!"``:
 
 
 .. literalinclude:: examples/hello_world.py
@@ -34,16 +33,15 @@ machine. Now visit http://127.0.0.1:8000/ in your browser:
 .. image:: images/hello_world.png
 
 
-Having a working application, let's examine how we got here in a bit more detail.
+Now that we have a working application, let us examine how we got here in a bit more detail.
 
 
 Route handlers
 ---------------
 
-Route handlers are what you use to tell Litestar what functions to call when it receives
-a request. They are called route handlers because they are usually serving a single
-*route*, which in HTTP terms would be the *path*; The part of the URL that's specific
-to you application.
+Route handlers are what tells your Litestar application to do when it gets a request. They are named this way because they typically handle a single URL path (or *route*), which is the part of the URL that's specific to your application. In our current example, the only route handler we have is for ``hello_world``, and it is using the ``/`` path.
+
+.. tip:: For example, if your application has a route for handling requests to the "/home" URL path, you would create a route handler function that would be called when a request to that path is received.
 
 The first argument to the route handler is the *path*, which in this example has been
 set to ``/``. This means that the function ``hello_world`` will be called when a request
@@ -96,7 +94,7 @@ how you want your data to behave, and what you intend to do with it.
 
 In this example, the ``hello_world`` function has a return annotation of ``-> str``.
 This means that it will return a :class:`string <str>`, and lets Litestar know that
-you'd like to send the return value as-is.
+you would like to send the return value as-is.
 
 .. note::
     While type annotations by default don't have any influence on runtime behaviour,

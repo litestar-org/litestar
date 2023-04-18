@@ -35,8 +35,10 @@ from it to be serialized as JSON:
 Cleaning up the example with dataclasses
 ++++++++++++++++++++++++++++++++++++++++
 
-To make live a little easier, you can transform this example by using dataclasses
-instead of plain dictionaries:
+To make your life a little easier, you can transform this example by using :py:mod:`dataclasses` instead of plain dictionaries:
+
+.. tip:: For an in-depth explanation of dataclasses, you can read this excellent Real Python
+    article: `dataclasses <https://realpython.com/python-data-classes/>`_
 
 .. literalinclude:: examples/get_list/dataclass.py
     :caption: app.py
@@ -141,7 +143,7 @@ returning a normal response, it will send a response with the HTTP status code g
 
 Now we've got that out of the way but your code has grown to be quite complex for such a
 simple task, and you're probably thinking
-`"there must be a better way!" <https://github.com/rhettinger>`_. And there is! Instead
+`"there must be a better way!" <https://www.youtube.com/watch?t=566&v=p33CVV29OG8>`_. And there is! Instead
 of doing these things manually, you can also just let Litestar handle them for you!
 
 
@@ -162,7 +164,7 @@ for you should the supplied value not be a valid boolean.
 
 .. figure:: images/done-john-2.png
 
-    Trying out the example from before (visit http://127.0.0.1:8000?done=john) now
+    Browse to http://127.0.0.1:8000?done=john from our earlier example, and you will see it now
     results in this descriptive error message
 
 
@@ -230,7 +232,7 @@ supplied.
 
 .. figure:: images/get_todo_list.png
 
-    Visiting http://localhost:8000 again, now does not return an error anymore if the
+    Browsing to http://localhost:8000 once more, you will now see it does not return an error if the
     query parameter is omitted
 
 
@@ -247,9 +249,9 @@ supplied.
 Interactive documentation
 --------------------------
 
-So far we have explored our application by navigating to it manually, but there is
-another way: Litestar comes with an interactive documentation, which is generated for
-you automatically. All you need to do is run your app an visit
+So far we have explored our TODO application by navigating to it manually, but there is
+another way: Litestar comes with interactive API documentation, which is generated for
+you automatically. All you need to do is run your app (``litestar run``) and visit
 http://127.0.0.1:8000/schema/swagger
 
 .. figure:: images/swagger-get.png
@@ -270,3 +272,10 @@ allows you to send requests to it.
     `OpenAPI <https://www.openapis.org/>`_. Litestar generates an OpenAPI schema based
     on the route handlers, which can then be used by Swagger to set up the interactive
     documentation.
+    
+.. tip:: 
+    In addition to Swagger, Litestar serves the documentation from the generated OpenAPI schema with 
+    `ReDoc <https://redocly.com/>`_ and `Stoplight Elements <https://stoplight.io/open-source/elements/>`_.
+    You can browse to http://127.0.0.1:8000/schema/redoc and http://127.0.0.1:8000/schema/elemenets to 
+    view each, respectively
+
