@@ -70,7 +70,7 @@ T = TypeVar("T")
 
 
 async def get_model_from_dto(
-    dto_type: SQLAlchemyDTO[DataT], annotation: Any, connection: Request[Any, Any, Any]
+    dto_type: type[SQLAlchemyDTO[DataT]], annotation: Any, connection: Request[Any, Any, Any]
 ) -> DataT | Collection[DataT]:
     @post(signature_namespace={"annotation": annotation})
     def handler(data: annotation) -> annotation:
@@ -79,8 +79,7 @@ async def get_model_from_dto(
     connection.scope["route_handler"] = handler
     dto_type.on_registration(handler, "data")
     dto_type.on_registration(handler, "return")
-    dto_instance = dto_type.from_bytes(await connection.body(), connection)
-    return dto_instance.to_data_type()
+    return dto_type(connection).bytes_to_data_type(await connection.body())
 
 
 def assert_model_values(model_instance: DeclarativeBase, expected_values: dict[str, Any]) -> None:
@@ -207,16 +206,15 @@ async def test_dto_for_private_model_field(
     )
     assert "field" not in vars(await get_model_from_dto(dto_type, Model, request))
 
-    dto_instance = dto_type(
-        data=Model(
+    dto_instance = dto_type(connection=request)
+    serializable = dto_instance.data_to_encodable_type(
+        Model(
             id=UUID("0956ca9e-5671-4d7d-a862-b98e6368ed2c"),
             created=datetime.min,
             updated=datetime.min,
             field=datetime.min,
-        ),
-        connection=request,
+        )
     )
-    serializable = dto_instance.to_encodable_type()
     assert b"field" not in encode_json(serializable)
 
 

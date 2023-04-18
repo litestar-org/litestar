@@ -27,7 +27,6 @@ from pydantic import (
 from pydantic.color import Color
 from pydantic.json import decimal_encoder
 
-from litestar.dto.interface import DTOInterface
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.types import Empty
@@ -62,12 +61,6 @@ def _enc_constrained_bytes(bytes_: ConstrainedBytes) -> str:
 
 def _enc_constrained_date(date: ConstrainedDate) -> str:
     return date.isoformat()
-
-
-def _enc_dto(dto: DTOInterface) -> Any:
-    if isinstance(ret := dto.to_encodable_type(), bytes):
-        return msgspec.Raw(ret)
-    return ret
 
 
 def _enc_pattern(pattern: Pattern) -> Any:
@@ -105,8 +98,6 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     float: float,
     set: set,
     frozenset: frozenset,
-    # internal types
-    DTOInterface: _enc_dto,
 }
 
 

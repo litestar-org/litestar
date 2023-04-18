@@ -3,18 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from typing_extensions import Self
-
 from litestar.dto.interface import DTOInterface
 from litestar.types.protocols import DataclassProtocol
 from litestar.types.serialization import LitestarEncodableType
 
 if TYPE_CHECKING:
-    from typing import Any, TypeAlias
+    from typing import Any
 
     from litestar.connection import Request
-
-AnyRequest: TypeAlias = "Request[Any, Any, Any]"
 
 
 @dataclass
@@ -24,32 +20,22 @@ class Model:
 
 
 class MockDTO(DTOInterface):
-    def to_data_type(self) -> Model:
+    def __init__(self, connection: Request[Any, Any, Any]) -> None:
+        pass
+
+    def bytes_to_data_type(self, raw: bytes) -> Model:
         return Model(a=1, b="2")
 
-    def to_encodable_type(self) -> bytes | LitestarEncodableType:
+    def data_to_encodable_type(self, data: DataclassProtocol) -> bytes | LitestarEncodableType:
         return Model(a=1, b="2")
-
-    @classmethod
-    def from_bytes(cls, raw: bytes, connection: AnyRequest) -> Self:
-        return cls()
-
-    @classmethod
-    def from_data(cls, data: DataclassProtocol, connection: AnyRequest) -> Self:
-        return cls()
 
 
 class MockReturnDTO(DTOInterface):
-    def to_data_type(self) -> Any:
+    def __init__(self, connection: Request[Any, Any, Any]) -> None:
+        pass
+
+    def bytes_to_data_type(self, raw: bytes) -> Any:
         raise RuntimeError("Return DTO should not have this method called")
 
-    def to_encodable_type(self) -> bytes | LitestarEncodableType:
+    def data_to_encodable_type(self, data: DataclassProtocol) -> bytes | LitestarEncodableType:
         return b'{"a": 1, "b": "2"}'
-
-    @classmethod
-    def from_bytes(cls, raw: bytes, connection: AnyRequest) -> Self:
-        raise RuntimeError("Return DTO should not have this method called")
-
-    @classmethod
-    def from_data(cls, data: DataclassProtocol, connection: AnyRequest) -> Self:
-        return cls()

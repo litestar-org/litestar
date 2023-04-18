@@ -36,10 +36,7 @@ DataT = TypeVar("DataT")
 class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     """Base class for DTO types."""
 
-    __slots__ = (
-        "_connection",
-        "_data",
-    )
+    __slots__ = ("connection",)
 
     config: ClassVar[DTOConfig]
     """Config objects to define properties of the DTO."""
@@ -50,15 +47,13 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     _type_backend_map: ClassVar[dict[tuple[ForType, ParsedType], AbstractDTOBackend]]
     _handler_backend_map: ClassVar[dict[tuple[ForType, BaseRouteHandler], AbstractDTOBackend]]
 
-    def __init__(self, data: DataT | Collection[DataT], connection: AnyRequest) -> None:
+    def __init__(self, connection: AnyRequest) -> None:
         """Create an AbstractDTOFactory type.
 
         Args:
-            data: the data represented by the DTO.
             connection: Request object.
         """
-        self._data = data
-        self._connection = connection
+        self.connection = connection
 
     def __class_getitem__(cls, annotation: Any) -> type[Self]:
         parsed_type = ParsedType(annotation)
@@ -95,42 +90,14 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
 
-    def to_data_type(self) -> DataT | Collection[DataT]:
+    def bytes_to_data_type(self, raw: bytes) -> DataT | Collection[DataT]:
         """Return the data held by the DTO."""
-        return self._data
+        backend = self._handler_backend_map[("data", self.connection.route_handler)]
+        return backend.populate_data_from_raw(self.model_type, raw, self.connection.content_type[0])
 
-    def to_encodable_type(self) -> LitestarEncodableType:
-        backend = self._handler_backend_map["return", self._connection.route_handler]
-        return backend.encode_data(self._data, self._connection)
-
-    @classmethod
-    def from_data(cls, data: DataT | Collection[DataT], connection: AnyRequest) -> Self:
-        """Construct an instance from data.
-
-        Args:
-            data: Data to construct the DTO from.
-            connection: Request object.
-
-        Returns:
-            AbstractDTOInterface instance.
-        """
-        return cls(data=data, connection=connection)
-
-    @classmethod
-    def from_bytes(cls, raw: bytes, connection: AnyRequest) -> Self:
-        """Construct an instance from bytes.
-
-        Args:
-            raw: Raw connection data.
-            connection: A byte representation of the DTO model.
-
-        Returns:
-            AbstractDTOFactory instance.
-        """
-        backend = cls._handler_backend_map[("data", connection.route_handler)]
-        return cls(
-            data=backend.populate_data_from_raw(cls.model_type, raw, connection.content_type[0]), connection=connection
-        )
+    def data_to_encodable_type(self, data: DataT | Collection[DataT]) -> LitestarEncodableType:
+        backend = self._handler_backend_map[("return", self.connection.route_handler)]
+        return backend.encode_data(data, self.connection)
 
     @classmethod
     @abstractmethod
@@ -155,7 +122,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
     @classmethod
     def on_registration(cls, route_handler: BaseRouteHandler, dto_for: ForType) -> None:
-        """Do something each time the DTO type is encountered during signature modelling.
+        """Called each time the DTO type is encountered during signature modelling.
 
         Args:
             route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
