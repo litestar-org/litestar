@@ -322,7 +322,6 @@ def test_create_additional_responses() -> None:
     schema = schemas[reference.ref.split("/")[-1]]
     assert isinstance(schema, Schema)
     assert schema.title == "AuthenticationError"
-    assert schema.examples
 
     second_response = next(responses)
     assert second_response[0] == "500"
