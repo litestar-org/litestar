@@ -33,7 +33,7 @@ def make_connection(
 
 
 def get_backend(dto_type: type[DataclassDTO[Any]]) -> AbstractDTOBackend:
-    return next(iter(dto_type._type_config_backend_map.values()))
+    return next(iter(dto_type._type_backend_map.values()))
 
 
 def test_forward_referenced_type_argument_raises_exception() -> None:
@@ -43,14 +43,14 @@ def test_forward_referenced_type_argument_raises_exception() -> None:
 
 def test_type_narrowing_with_scalar_type_arg() -> None:
     dto = DataclassDTO[Model]
-    assert dto.configs == (DTOConfig(),)
+    assert dto.config == DTOConfig()
     assert dto.model_type is Model
 
 
 def test_type_narrowing_with_annotated_scalar_type_arg() -> None:
     config = DTOConfig()
     dto = DataclassDTO[Annotated[Model, config]]
-    assert dto.configs[0] is config
+    assert dto.config is config
     assert dto.model_type is Model
 
 
@@ -66,14 +66,14 @@ def test_type_narrowing_with_annotated_type_var() -> None:
     generic_dto = DataclassDTO[Annotated[t, config]]
     assert generic_dto is not DataclassDTO
     assert issubclass(generic_dto, DataclassDTO)
-    assert generic_dto.configs[0] is config
+    assert generic_dto.config is config
     assert not hasattr(generic_dto, "model_type")
 
 
 def test_extra_annotated_metadata_ignored() -> None:
     config = DTOConfig()
     dto = DataclassDTO[Annotated[Model, config, "a"]]
-    assert dto.configs[0] is config
+    assert dto.config is config
 
 
 def test_overwrite_config() -> None:
@@ -82,7 +82,7 @@ def test_overwrite_config() -> None:
     generic_dto = DataclassDTO[Annotated[t, first]]
     second = DTOConfig(exclude={"b"})
     dto = generic_dto[Annotated[Model, second]]  # pyright: ignore
-    assert dto.configs[0] is second
+    assert dto.config is second
 
 
 async def test_from_bytes(request_factory: RequestFactory) -> None:
@@ -143,6 +143,4 @@ def test_type_narrowing_with_multiple_configs() -> None:
     config_1 = DTOConfig()
     config_2 = DTOConfig()
     dto = DataclassDTO[Annotated[Model, config_1, config_2]]
-    assert len(dto.configs) == 2
-    assert dto.configs[0] is config_1
-    assert dto.configs[1] is config_2
+    assert dto.config is config_1
