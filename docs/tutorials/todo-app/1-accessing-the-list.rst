@@ -272,10 +272,10 @@ allows you to send requests to it.
     `OpenAPI <https://www.openapis.org/>`_. Litestar generates an OpenAPI schema based
     on the route handlers, which can then be used by Swagger to set up the interactive
     documentation.
-    
-.. tip:: 
-    In addition to Swagger, Litestar serves the documentation from the generated OpenAPI schema with 
-    `ReDoc <https://redocly.com/>`_ and `Stoplight Elements <https://stoplight.io/open-source/elements/>`_.
-    You can browse to http://127.0.0.1:8000/schema/redoc and http://127.0.0.1:8000/schema/elemenets to 
-    view each, respectively
 
+.. tip::
+    In addition to Swagger, Litestar serves the documentation from the generated
+    OpenAPI schema with `ReDoc <https://redocly.com/>`_ and
+    `Stoplight Elements <https://stoplight.io/open-source/elements/>`_. You can browse
+    to http://127.0.0.1:8000/schema/redoc and http://127.0.0.1:8000/schema/elements to
+    view each, respectively

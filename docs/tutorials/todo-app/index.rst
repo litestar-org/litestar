@@ -7,8 +7,8 @@ A TODO application
     This tutorial is intended to familiarize you with the basic concepts of Litestar.
     If you have no prior experience with Litestar or web frameworks in general, this
     is the right place to start.
-    
-.. note:: 
+
+.. note::
     Basic knowledge of Python and web development concepts are required
 
 
