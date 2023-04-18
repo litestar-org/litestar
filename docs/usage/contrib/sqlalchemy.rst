@@ -10,16 +10,16 @@ Features
 * Generic asynchronous repository for select, insert, update, and delete operations on SQLAlchemy models
 * Implements optimized methods for bulk inserts, updates, and deletes.
 * Integrated counts, pagination, filtering with ``LIKE``, ``IN``, and dates before and/or after.
-* Support for SQLite via `aiosqlite` and Postgres via `asyncpg`
+* Support for SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_, Postgres via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_, and MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_
 
 Basic Use
 ---------
 
-To use the `SQLAlchemyAsyncRepository` repository, you must first define your models using one of the included built-in `DeclarativeBase` ORM base implementations  (`Base` and `AuditBase`).  Both include a UUID based primary key and `AuditBase` includes an `updated` and `created` timestamp column.
+To use the :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>` repository, you must first define your models using one of the included built-in ``DeclarativeBase`` ORM base implementations  (:class:`Base <litestar.contrib.sqlalchemy.repository.Base>` and :class:`AuditBase <litestar.contrib.sqlalchemy.repository.AuditBase>`).  Both include a UUID based primary key and ``AuditBase`` includes an ``updated`` and ``created`` timestamp column.
 
 Models using these bases also include the following enhancements:
 * Auto-generated snake-case table name from class name
-* Pydantic BaseModel and Dict classes map to JSONB SQLAlchemy type map
+* Pydantic BaseModel and Dict classes map to an optimized JSON type that is JSONB for the Postgres and JSON for other dialects.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :caption: sqlalchemy_declarative_models.py
@@ -28,7 +28,7 @@ Models using these bases also include the following enhancements:
 Basic Controller Integration
 -----------------------------
 
-Once you have declared your models, you are ready to use the `SQLAlchemyAsyncRepository` class with your controllers and function based routes.
+Once you have declared your models, you are ready to use the ``SQLAlchemyAsyncRepository`` class with your controllers and function based routes.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_async_repository.py
     :caption: sqlalchemy_async_repository.py
