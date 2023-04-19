@@ -37,6 +37,17 @@ class DTOInterface(Protocol):
         """
 
     @abstractmethod
+    def builtins_to_data_type(self, builtins: Any) -> Any:
+        """Convert unstructured data to the data type that the DTO represents.
+
+        Args:
+            builtins: unstructured data parsed from the payload.
+
+        Returns:
+            Data type that the DTO represents.
+        """
+
+    @abstractmethod
     def bytes_to_data_type(self, raw: bytes) -> Any:
         """Convert raw bytes to the data type that the DTO represents.
 

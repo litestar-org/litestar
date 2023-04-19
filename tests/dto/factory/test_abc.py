@@ -6,10 +6,13 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar import post
+from litestar.dto.factory.backends import PydanticDTOBackend
 from litestar.dto.factory.config import DTOConfig
 from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.factory.types import FieldDefinition
+from litestar.enums import RequestEncodingType
+from litestar.params import Body
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
 
@@ -142,3 +145,19 @@ def test_type_narrowing_with_multiple_configs() -> None:
     config_2 = DTOConfig()
     dto = DataclassDTO[Annotated[Model, config_1, config_2]]
     assert dto.config is config_1
+
+
+@pytest.mark.parametrize("request_encoding_type", [RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED])
+def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestEncodingType) -> None:
+    @post()
+    def handler_1(data: Model = Body(media_type=request_encoding_type)) -> Model:
+        return data
+
+    @post()
+    def handler_2(data: Annotated[Model, Body(media_type=RequestEncodingType.URL_ENCODED)]) -> Model:
+        return data
+
+    for handler in handler_1, handler_2:
+        dto_type = DataclassDTO[Model]
+        dto_type.on_registration(handler, "data")
+        assert isinstance(dto_type._handler_backend_map[("data", handler)], PydanticDTOBackend)

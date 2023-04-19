@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Collection as CollectionsCollection
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, TypeVar, cast
 from uuid import uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, parse_obj_as
 
 from litestar.dto.factory.backends.abc import AbstractDTOBackend
 from litestar.serialization import decode_media_type
@@ -30,6 +30,10 @@ class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
 
     def parse_raw(self, raw: bytes, media_type: MediaType | str) -> BaseModel | Collection[BaseModel]:
         return decode_media_type(raw, media_type, type_=self.annotation)  # type:ignore[no-any-return]
+
+    def populate_data_from_builtins(self, model_type: type[T], data: Any) -> T | Collection[T]:
+        parsed_data = cast("BaseModel | Collection[BaseModel]", parse_obj_as(self.annotation, data))
+        return _build_data_from_pydantic_model(model_type, parsed_data, self.field_definitions)
 
     def populate_data_from_raw(self, model_type: type[T], raw: bytes, media_type: MediaType | str) -> T | Collection[T]:
         parsed_data = self.parse_raw(raw, media_type)

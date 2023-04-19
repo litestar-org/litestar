@@ -76,6 +76,18 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
 
     @abstractmethod
+    def populate_data_from_builtins(self, model_type: type[T], data: Any) -> T | Collection[T]:
+        """Populate model instance from builtin types.
+
+        Args:
+            model_type: Type of model to populate.
+            data: Builtin type.
+
+        Returns:
+            Instance or collection of ``model_type`` instances.
+        """
+
+    @abstractmethod
     def populate_data_from_raw(self, model_type: type[T], raw: bytes, media_type: MediaType | str) -> T | Collection[T]:
         """Parse raw bytes into instance of `model_type`.
 
@@ -83,6 +95,9 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
             model_type: Type of model to populate.
             raw: bytes
             media_type: encoding of raw data
+
+        Returns:
+            Instance or collection of ``model_type`` instances.
         """
 
     @abstractmethod
