@@ -115,7 +115,7 @@ def test_create_parameters() -> None:
             {
                 "type": "string",
                 "enum": ["M", "F", "O", "A"],
-                "examples": [{"description": "Example  value", "value": "A"}],
+                "examples": [{"description": "Example  value", "value": "M"}],
             },
         ],
         "examples": [{"value": "M"}, {"value": ["M", "O"]}],
