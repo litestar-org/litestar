@@ -42,6 +42,12 @@ Installation
     :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
         :code:`pip install litestar[openetelemetry]`
 
+    :doc:`SQLAlchemy </usage/plugins/sqlalchemy>`
+        :code:`pip install litestar[sqlalchemy]`
+
+    :doc:`Tortoise ORM </usage/plugins/tortoise-orm>`
+        :code:`pip install litestar[tortois-orm]`
+
     :doc:`CLI </usage/cli>`
         :code:`pip install litestar[cli]`
 
