@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import inspect
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, Coroutine
+from typing import TYPE_CHECKING, Any, Callable, Coroutine, cast
 
 from msgspec.json import Encoder as JsonEncoder
 
@@ -23,24 +23,24 @@ class _ListenerContext:
     __slots__ = (
         "can_send_data",
         "handler_function",
+        "handle_receive",
+        "handle_send",
         "json_encoder",
         "listener_callback",
         "listener_callback_signature",
         "pass_socket",
-        "should_encode_to_json",
-        "wants_receive_type",
         "resolved_data_dto",
         "resolved_return_dto",
     )
 
     can_send_data: bool
     handler_function: AnyCallable
+    handle_receive: Callable[[WebSocket, DTOInterface | None], Any]
+    handle_send: Callable[[WebSocket, Any, DTOInterface | None], Coroutine[None, None, None]]
     json_encoder: JsonEncoder
     listener_callback: AnyCallable
     listener_callback_signature: ParsedSignature
     pass_socket: bool
-    should_encode_to_json: bool
-    wants_receive_type: type
     resolved_data_dto: type[DTOInterface] | None
     resolved_return_dto: type[DTOInterface] | None
     resolved_type_encoders: TypeEncodersMap
@@ -61,63 +61,71 @@ def _update_listener_fn_signature(listener_context: _ListenerContext) -> None:
     }
 
 
-def _create_handler_function(
-    listener_context: _ListenerContext,
-    receive_mode: WebSocketMode,
-    send_mode: WebSocketMode,
-    on_accept: AsyncCallable | None,
-    on_disconnect: AsyncCallable | None,
-) -> Callable[..., Coroutine[None, None, None]]:
-    handle_receive = _create_handle_receive(listener_context, receive_mode)
-    handle_send = _create_handle_send(listener_context, send_mode)
-    return _create_listener_function(
-        handle_receive=handle_receive,
-        handle_send=handle_send,
-        listener_context=listener_context,
-        on_accept=on_accept,
-        on_disconnect=on_disconnect,
-    )
-
-
 def _create_handle_receive(
-    listener_context: _ListenerContext, receive_mode: WebSocketMode
+    resolved_data_dto: type[DTOInterface] | None,
+    receive_mode: WebSocketMode,
+    wants_receive_type: type,
 ) -> Callable[[WebSocket, DTOInterface | None], Coroutine[Any, None, None]]:
-    async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
-        received_data: Any = await socket.receive_data(mode=receive_mode)  # pyright: ignore
-        if dto:
+    if resolved_data_dto:
+
+        async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
+            received_data = await socket.receive_data(mode=receive_mode)
             if isinstance(received_data, str):
                 received_data = received_data.encode("utf-8")
-            received_data = dto.bytes_to_data_type(received_data)
-        elif listener_context.wants_receive_type is str:
+            return cast("DTOInterface", dto).bytes_to_data_type(received_data)
+
+    elif wants_receive_type is str:
+
+        async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
+            received_data = await socket.receive_data(mode=receive_mode)
             if isinstance(received_data, bytes):
-                received_data = received_data.decode("utf-8")
-        elif listener_context.wants_receive_type is bytes:
+                return received_data.decode("utf-8")
+            return received_data
+
+    elif wants_receive_type is bytes:
+
+        async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
+            received_data = await socket.receive_data(mode=receive_mode)
             if isinstance(received_data, str):
-                received_data = received_data.encode("utf-8")
-        else:
-            received_data = decode_json(received_data)
-        return received_data
+                return received_data.encode("utf-8")
+            return received_data
+
+    else:
+
+        async def handle_receive(socket: WebSocket, dto: DTOInterface | None) -> Any:
+            received_data = await socket.receive_data(mode=receive_mode)
+            return decode_json(received_data)
 
     return handle_receive
 
 
 def _create_handle_send(
-    listener_context: _ListenerContext, send_mode: WebSocketMode
+    resolved_return_dto: type[DTOInterface] | None,
+    json_encoder: JsonEncoder,
+    should_encode_to_json: bool,
+    send_mode: WebSocketMode,
 ) -> Callable[[WebSocket, Any, DTOInterface | None], Coroutine[None, None, None]]:
-    async def handle_send(socket: WebSocket, data_to_send: Any, dto: DTOInterface | None) -> None:
-        if dto:
-            data_to_send = listener_context.json_encoder.encode(dto.data_to_encodable_type(data_to_send))
-        elif listener_context.should_encode_to_json:
-            data_to_send = listener_context.json_encoder.encode(data_to_send)
+    if resolved_return_dto:
 
-        await socket.send_data(data_to_send, send_mode)  # pyright: ignore
+        async def handle_send(socket: WebSocket, data_to_send: Any, dto: DTOInterface | None) -> None:
+            data_to_send = json_encoder.encode(cast("DTOInterface", dto).data_to_encodable_type(data_to_send))
+            await socket.send_data(data_to_send, send_mode)  # pyright: ignore
+
+    elif should_encode_to_json:
+
+        async def handle_send(socket: WebSocket, data_to_send: Any, dto: DTOInterface | None) -> None:
+            data_to_send = json_encoder.encode(data_to_send)
+            await socket.send_data(data_to_send, send_mode)  # pyright: ignore
+
+    else:
+
+        async def handle_send(socket: WebSocket, data_to_send: Any, dto: DTOInterface | None) -> None:
+            await socket.send_data(data_to_send, send_mode)  # pyright: ignore
 
     return handle_send
 
 
-def _create_listener_function(
-    handle_receive: Callable[[WebSocket, DTOInterface | None], Any],
-    handle_send: Callable[[WebSocket, Any, DTOInterface | None], Coroutine[None, None, None]],
+def _create_handler_function(
     listener_context: _ListenerContext,
     on_accept: AsyncCallable | None,
     on_disconnect: AsyncCallable | None,
@@ -137,10 +145,10 @@ def _create_listener_function(
 
         while True:
             try:
-                received_data = await handle_receive(socket, data_dto)
+                received_data = await listener_context.handle_receive(socket, data_dto)
                 data_to_send = await listener_callback(data=received_data, **kwargs)
                 if listener_context.can_send_data:
-                    await handle_send(socket, data_to_send, return_dto)
+                    await listener_context.handle_send(socket, data_to_send, return_dto)
             except WebSocketDisconnect:
                 if on_disconnect:
                     await on_disconnect(socket)
@@ -151,6 +159,8 @@ def _create_listener_function(
 
 def _set_listener_context(
     listener_context: _ListenerContext,
+    receive_mode: WebSocketMode,
+    send_mode: WebSocketMode,
     resolved_data_dto: type[DTOInterface] | None,
     resolved_return_dto: type[DTOInterface] | None,
     resolved_signature_namespace: dict[str, Any],
@@ -168,17 +178,20 @@ def _set_listener_context(
             raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket listeners")
 
     listener_context.can_send_data = not listener_callback_signature.return_type.is_subclass_of(NoneType)
-    listener_context.json_encoder = JsonEncoder(
-        enc_hook=partial(default_serializer, type_encoders=resolved_type_encoders)
-    )
     listener_context.pass_socket = "socket" in listener_callback_signature.parameters
     listener_context.resolved_data_dto = resolved_data_dto
     listener_context.resolved_return_dto = resolved_return_dto
-    listener_context.should_encode_to_json = not (
+    listener_context.handle_receive = _create_handle_receive(
+        resolved_data_dto, receive_mode, listener_callback_signature.parameters["data"].annotation
+    )
+    should_encode_to_json = not (
         listener_callback_signature.return_type.is_subclass_of((str, bytes))
         or (
             listener_callback_signature.return_type.is_optional
             and listener_callback_signature.return_type.has_inner_subclass_of((str, bytes))
         )
     )
-    listener_context.wants_receive_type = listener_callback_signature.parameters["data"].annotation
+    json_encoder = JsonEncoder(enc_hook=partial(default_serializer, type_encoders=resolved_type_encoders))
+    listener_context.handle_send = _create_handle_send(
+        resolved_return_dto, json_encoder, should_encode_to_json, send_mode
+    )

@@ -140,8 +140,6 @@ class websocket_listener(WebsocketRouteHandler):
         self._listener_context.listener_callback = listener_callback
         self._listener_context.handler_function = handler_function = _create_handler_function(
             listener_context=self._listener_context,
-            receive_mode=self._receive_mode,
-            send_mode=self._send_mode,
             on_accept=self._on_accept,
             on_disconnect=self._on_disconnect,
         )
@@ -150,6 +148,8 @@ class websocket_listener(WebsocketRouteHandler):
     def on_registration(self) -> None:
         _set_listener_context(
             listener_context=self._listener_context,
+            receive_mode=self._receive_mode,
+            send_mode=self._send_mode,
             resolved_data_dto=self.resolve_dto(),
             resolved_return_dto=self.resolve_return_dto(),
             resolved_signature_namespace=self.resolve_signature_namespace(),
