@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Collection as CollectionsCollection
-from typing import TYPE_CHECKING, NewType, TypeVar
+from typing import TYPE_CHECKING, NewType, TypeVar, cast
 from uuid import uuid4
 
-from msgspec import Struct
+from msgspec import Struct, from_builtins
 
 from litestar.dto.factory.backends.abc import AbstractDTOBackend
 from litestar.serialization import decode_media_type
@@ -33,7 +33,8 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
         return decode_media_type(raw, media_type, type_=self.annotation)  # type:ignore[no-any-return]
 
     def populate_data_from_builtins(self, model_type: type[T], data: Any) -> T | Collection[T]:
-        raise NotImplementedError("Msgspec backend does not support marshalling types")
+        parsed_data = cast("Struct | Collection[Struct]", from_builtins(data, self.annotation))
+        return _build_data_from_struct(model_type, parsed_data, self.field_definitions)
 
     def populate_data_from_raw(self, model_type: type[T], raw: bytes, media_type: MediaType | str) -> T | Collection[T]:
         parsed_data = self.parse_raw(raw, media_type)

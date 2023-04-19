@@ -82,7 +82,7 @@ def test_dto_and_return_dto() -> None:
         assert data == Model(a=1, b="2")
         return data
 
-    with create_test_client(route_handlers=handler, dto=MockDTO, return_dto=MockReturnDTO, debug=True) as client:
+    with create_test_client(route_handlers=handler, dto=MockDTO, return_dto=MockReturnDTO) as client:
         response = client.post("/", json={"what": "ever"})
         assert response.status_code == 201
         assert response.json() == {"a": 1, "b": "2"}
