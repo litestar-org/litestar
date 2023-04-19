@@ -11,7 +11,11 @@ class TodoItem:
     done: bool
 
 
-TODO_LIST: List[TodoItem] = []
+TODO_LIST: List[TodoItem] = [
+    TodoItem(title="Start writing TODO list", done=True),
+    TodoItem(title="???", done=False),
+    TodoItem(title="Profit", done=False),
+]
 
 
 def get_todo_by_title(todo_name) -> TodoItem:

@@ -24,6 +24,7 @@ async def get_list(done: str) -> List[TodoItem]:
         return [item for item in TODO_LIST if item.done]
     if done == "false":
         return [item for item in TODO_LIST if not item.done]
+    breakpoint()
     raise HTTPException(f"Invalid query parameter value: {done!r}", status_code=400)
 
 
