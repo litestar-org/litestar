@@ -1,26 +1,29 @@
 from __future__ import annotations
 
 from copy import copy
+from functools import partial
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
+from litestar._signature import create_signature_model
 from litestar._signature.field import SignatureField
 from litestar.dto.interface import DTOInterface
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
-from litestar.utils import AsyncCallable, Ref, get_name, normalize_path
+from litestar.utils import AsyncCallable, Ref, async_partial, get_name, is_async_callable, normalize_path
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.signature import ParsedSignature, infer_request_encoding_from_parameter
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+    from litestar import Litestar
     from litestar._signature.models import SignatureModel
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
     from litestar.di import Provide
     from litestar.params import ParameterKwarg
     from litestar.router import Router
-    from litestar.types import AsyncAnyCallable, ExceptionHandler
+    from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
     from litestar.types.composite_types import MaybePartial
     from litestar.types.empty import EmptyType
 
@@ -374,16 +377,60 @@ class BaseRouteHandler(Generic[T]):
                     f"If you wish to override a provider, it must have the same key."
                 )
 
-    def on_registration(self) -> None:
+    def on_registration(self, app: Litestar) -> None:
         """Called once per handler when the app object is instantiated."""
         self._validate_handler_function()
         self.resolve_guards()
         self.resolve_middleware()
         self.resolve_opts()
         self._init_handler_dtos()
+        self._set_runtime_callables()
+        self._create_signature_model(app)
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
+
+    def _set_runtime_callables(self) -> None:
+        """Optimize the ``route_handler.fn`` and any ``provider.dependency`` callables for runtime by doing the following:
+
+        1. ensure that the ``self`` argument is preserved by binding it using partial.
+        2. ensure sync functions are wrapped in AsyncCallable for sync_to_thread handlers.
+        """
+        from litestar.controller import Controller
+
+        if isinstance(self.owner, Controller) and not hasattr(self.fn.value, "func"):
+            self.fn.value = partial(self.fn.value, self.owner)
+
+        for provider in self.resolve_dependencies().values():
+            if not is_async_callable(provider.dependency.value):
+                provider.has_sync_callable = False
+                if provider.sync_to_thread:
+                    provider.dependency.value = async_partial(provider.dependency.value)
+                else:
+                    provider.has_sync_callable = True
+
+    def _create_signature_model(self, app: Litestar) -> None:
+        """Create signature model for handler function and dependencies."""
+        if not self.signature_model:
+            self.signature_model = create_signature_model(
+                dependency_name_set=self.dependency_name_set,
+                fn=cast("AnyCallable", self.fn.value),
+                plugins=app.serialization_plugins,
+                preferred_validation_backend=app.preferred_validation_backend,
+                parsed_signature=self.parsed_fn_signature,
+            )
+
+        for provider in self.resolve_dependencies().values():
+            if not getattr(provider, "signature_model", None):
+                provider.signature_model = create_signature_model(
+                    dependency_name_set=self.dependency_name_set,
+                    fn=provider.dependency.value,
+                    plugins=app.serialization_plugins,
+                    preferred_validation_backend=app.preferred_validation_backend,
+                    parsed_signature=ParsedSignature.from_fn(
+                        unwrap_partial(provider.dependency.value), self.resolve_signature_namespace()
+                    ),
+                )
 
     def __str__(self) -> str:
         """Return a unique identifier for the route handler.
