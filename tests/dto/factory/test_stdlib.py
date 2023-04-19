@@ -6,12 +6,8 @@ from typing import ClassVar, List
 
 import pytest
 
-from litestar import post
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.factory.types import FieldDefinition
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
-from litestar.testing import create_test_client
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
 
@@ -54,20 +50,3 @@ def test_dataclass_detect_nested(dto_type: type[DataclassDTO[Model]]) -> None:
         is True
     )
     assert dto_type.detect_nested_field(FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty)) is False
-
-
-def test_url_encoded_form_data() -> None:
-    @dataclass
-    class User:
-        name: str
-        age: int
-
-    @post(dto=DataclassDTO[User], signature_namespace={"User": User})
-    def handler(data: User = Body(media_type=RequestEncodingType.URL_ENCODED)) -> User:
-        return data
-
-    with create_test_client(route_handlers=[handler]) as client:
-        response = client.post(
-            "/", content=b"name=John&age=42", headers={"Content-Type": "application/x-www-form-urlencoded"}
-        )
-        assert response.json() == {"name": "John", "age": 42}
