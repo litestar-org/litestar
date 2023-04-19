@@ -4,12 +4,11 @@ from typing import TYPE_CHECKING, Any, Mapping
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
-from litestar.types import Dependencies, Empty, EmptyType, ExceptionHandler, Guard, Middleware
 from litestar.types.builtin_types import NoneType
 from litestar.utils import is_async_callable
 
 if TYPE_CHECKING:
-    from litestar.dto.interface import DTOInterface
+    from litestar.types import Dependencies, ExceptionHandler, Guard, Middleware
 
 
 class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
@@ -25,13 +24,11 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
         path: str | None | list[str] | None = None,
         *,
         dependencies: Dependencies | None = None,
-        dto: type[DTOInterface] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
         guards: list[Guard] | None = None,
         middleware: list[Middleware] | None = None,
         name: str | None = None,
         opt: dict[str, Any] | None = None,
-        return_dto: type[DTOInterface] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
@@ -41,8 +38,6 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
-            dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
-                validation of request data.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
             middleware: A sequence of :class:`Middleware <.types.Middleware>`.
@@ -50,8 +45,6 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
-            return_dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for serializing
-                outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
@@ -59,14 +52,12 @@ class WebsocketRouteHandler(BaseRouteHandler["WebsocketRouteHandler"]):
 
         super().__init__(
             path=path,
-            dto=dto,
             dependencies=dependencies,
             exception_handlers=exception_handlers,
             guards=guards,
             middleware=middleware,
             name=name,
             opt=opt,
-            return_dto=return_dto,
             signature_namespace=signature_namespace,
             **kwargs,
         )

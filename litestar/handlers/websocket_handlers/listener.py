@@ -114,10 +114,12 @@ class websocket_listener(WebsocketRouteHandler):
             name=name,
             opt=opt,
             signature_namespace=signature_namespace,
-            dto=dto,
-            return_dto=return_dto,
             **kwargs,
         )
+
+        # need to be assigned after the super() call
+        self.dto = dto
+        self.return_dto = return_dto
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
