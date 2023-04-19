@@ -1,25 +1,23 @@
 from __future__ import annotations
 
 import inspect
-from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Coroutine, cast
 
-from msgspec.json import Encoder as JsonEncoder
-
-from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
-from litestar.serialization import decode_json, default_serializer
-from litestar.types.builtin_types import NoneType
+from litestar.exceptions import WebSocketDisconnect
+from litestar.serialization import decode_json
 from litestar.utils import AsyncCallable
-from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
+    from msgspec.json import Encoder as JsonEncoder
+
     from litestar import WebSocket
     from litestar.dto.interface import DTOInterface
     from litestar.types import AnyCallable, TypeEncodersMap
     from litestar.types.asgi_types import WebSocketMode
+    from litestar.utils.signature import ParsedSignature
 
 
-class _ListenerContext:
+class ListenerContext:
     __slots__ = (
         "can_send_data",
         "handler_function",
@@ -46,7 +44,7 @@ class _ListenerContext:
     resolved_type_encoders: TypeEncodersMap
 
 
-def _update_listener_fn_signature(listener_context: _ListenerContext) -> None:
+def update_listener_fn_signature(listener_context: ListenerContext) -> None:
     # make our listener_fn look like the callback, so we get a correct signature model
 
     callback_signature = listener_context.listener_callback_signature.original_signature
@@ -61,7 +59,7 @@ def _update_listener_fn_signature(listener_context: _ListenerContext) -> None:
     }
 
 
-def _create_handle_receive(
+def create_handle_receive(
     resolved_data_dto: type[DTOInterface] | None,
     receive_mode: WebSocketMode,
     wants_receive_type: type,
@@ -99,7 +97,7 @@ def _create_handle_receive(
     return handle_receive
 
 
-def _create_handle_send(
+def create_handle_send(
     resolved_return_dto: type[DTOInterface] | None,
     json_encoder: JsonEncoder,
     should_encode_to_json: bool,
@@ -125,8 +123,8 @@ def _create_handle_send(
     return handle_send
 
 
-def _create_handler_function(
-    listener_context: _ListenerContext,
+def create_handler_function(
+    listener_context: ListenerContext,
     on_accept: AsyncCallable | None,
     on_disconnect: AsyncCallable | None,
 ) -> Callable[..., Coroutine[None, None, None]]:
@@ -155,43 +153,3 @@ def _create_handler_function(
                 break
 
     return listener_fn
-
-
-def _set_listener_context(
-    listener_context: _ListenerContext,
-    receive_mode: WebSocketMode,
-    send_mode: WebSocketMode,
-    resolved_data_dto: type[DTOInterface] | None,
-    resolved_return_dto: type[DTOInterface] | None,
-    resolved_signature_namespace: dict[str, Any],
-    resolved_type_encoders: TypeEncodersMap,
-) -> None:
-    listener_context.listener_callback_signature = listener_callback_signature = ParsedSignature.from_fn(
-        listener_context.listener_callback, resolved_signature_namespace
-    )
-
-    if "data" not in listener_callback_signature.parameters:
-        raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
-
-    for param in ("request", "body"):
-        if param in listener_callback_signature.parameters:
-            raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket listeners")
-
-    listener_context.can_send_data = not listener_callback_signature.return_type.is_subclass_of(NoneType)
-    listener_context.pass_socket = "socket" in listener_callback_signature.parameters
-    listener_context.resolved_data_dto = resolved_data_dto
-    listener_context.resolved_return_dto = resolved_return_dto
-    listener_context.handle_receive = _create_handle_receive(
-        resolved_data_dto, receive_mode, listener_callback_signature.parameters["data"].annotation
-    )
-    should_encode_to_json = not (
-        listener_callback_signature.return_type.is_subclass_of((str, bytes))
-        or (
-            listener_callback_signature.return_type.is_optional
-            and listener_callback_signature.return_type.has_inner_subclass_of((str, bytes))
-        )
-    )
-    json_encoder = JsonEncoder(enc_hook=partial(default_serializer, type_encoders=resolved_type_encoders))
-    listener_context.handle_send = _create_handle_send(
-        resolved_return_dto, json_encoder, should_encode_to_json, send_mode
-    )

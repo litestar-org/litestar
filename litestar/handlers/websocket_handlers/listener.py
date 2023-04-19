@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Mapping
 
+from msgspec.json import Encoder as JsonEncoder
+
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.serialization import default_serializer
 from litestar.types import (
     AnyCallable,
     Dependencies,
@@ -14,14 +19,11 @@ from litestar.types import (
     SyncOrAsyncUnion,
     TypeEncodersMap,
 )
+from litestar.types.builtin_types import NoneType
 from litestar.utils import AsyncCallable
+from litestar.utils.signature import ParsedSignature
 
-from ._utils import (
-    _create_handler_function,
-    _ListenerContext,
-    _set_listener_context,
-    _update_listener_fn_signature,
-)
+from . import _utils
 from .route_handler import WebsocketRouteHandler
 
 if TYPE_CHECKING:
@@ -98,7 +100,7 @@ class websocket_listener(WebsocketRouteHandler):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
-        self._listener_context = _ListenerContext()
+        self._listener_context = _utils.ListenerContext()
         self._receive_mode: WebSocketMode = receive_mode
         self._send_mode: WebSocketMode = send_mode
         self._on_accept = AsyncCallable(on_accept) if on_accept else None
@@ -138,7 +140,7 @@ class websocket_listener(WebsocketRouteHandler):
 
     def __call__(self, listener_callback: AnyCallable) -> websocket_listener:
         self._listener_context.listener_callback = listener_callback
-        self._listener_context.handler_function = handler_function = _create_handler_function(
+        self._listener_context.handler_function = handler_function = _utils.create_handler_function(
             listener_context=self._listener_context,
             on_accept=self._on_accept,
             on_disconnect=self._on_disconnect,
@@ -146,20 +148,43 @@ class websocket_listener(WebsocketRouteHandler):
         return super().__call__(handler_function)
 
     def on_registration(self, app: Litestar) -> None:
-        _set_listener_context(
-            listener_context=self._listener_context,
-            receive_mode=self._receive_mode,
-            send_mode=self._send_mode,
-            resolved_data_dto=self.resolve_dto(),
-            resolved_return_dto=self.resolve_return_dto(),
-            resolved_signature_namespace=self.resolve_signature_namespace(),
-            resolved_type_encoders=self.resolve_type_encoders(),
-        )
-        _update_listener_fn_signature(self._listener_context)
-
+        self._set_listener_context()
+        _utils.update_listener_fn_signature(self._listener_context)
         # must call this after listener fn signature has been updated, as we assume that
         # the `parsed_fn_signature` property will be accessed somewhere in the MRO above us.
         super().on_registration(app)
+
+    def _set_listener_context(self) -> None:
+        listener_context = self._listener_context
+        listener_context.listener_callback_signature = listener_callback_signature = ParsedSignature.from_fn(
+            listener_context.listener_callback, self.resolve_signature_namespace()
+        )
+
+        if "data" not in listener_callback_signature.parameters:
+            raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
+
+        for param in ("request", "body"):
+            if param in listener_callback_signature.parameters:
+                raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket listeners")
+
+        listener_context.can_send_data = not listener_callback_signature.return_type.is_subclass_of(NoneType)
+        listener_context.pass_socket = "socket" in listener_callback_signature.parameters
+        listener_context.resolved_data_dto = resolved_data_dto = self.resolve_dto()
+        listener_context.resolved_return_dto = resolved_return_dto = self.resolve_return_dto()
+        listener_context.handle_receive = _utils.create_handle_receive(
+            resolved_data_dto, self._receive_mode, listener_callback_signature.parameters["data"].annotation
+        )
+        should_encode_to_json = not (
+            listener_callback_signature.return_type.is_subclass_of((str, bytes))
+            or (
+                listener_callback_signature.return_type.is_optional
+                and listener_callback_signature.return_type.has_inner_subclass_of((str, bytes))
+            )
+        )
+        json_encoder = JsonEncoder(enc_hook=partial(default_serializer, type_encoders=self.resolve_type_encoders()))
+        listener_context.handle_send = _utils.create_handle_send(
+            resolved_return_dto, json_encoder, should_encode_to_json, self._send_mode
+        )
 
 
 class WebsocketListener(ABC):
