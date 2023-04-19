@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Type, Union, cast
 from unittest.mock import MagicMock
 
@@ -8,6 +8,7 @@ from pytest_lazyfixture import lazy_fixture
 from litestar import Request, WebSocket
 from litestar.datastructures import State
 from litestar.di import Provide
+from litestar.dto.factory import dto_field
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
@@ -113,6 +114,7 @@ def test_listener_receive_with_dto(receive_mode: WebSocketMode, mock: MagicMock)
     @dataclass
     class User:
         name: str
+        hidden: str = field(default="super secret", metadata=dto_field("private"))
 
     user_dto = DataclassDTO[User]
 
@@ -124,11 +126,12 @@ def test_listener_receive_with_dto(receive_mode: WebSocketMode, mock: MagicMock)
 
     client = create_test_client([handler], debug=True, openapi_config=None)
     with client.websocket_connect("/") as ws:
-        ws.send_json({"name": "litestar user"}, mode=receive_mode)
+        ws.send_json({"name": "litestar user", "hidden": "whoops"}, mode=receive_mode)
 
     called_with = mock.mock_calls[0].args[0]
     assert isinstance(called_with, User)
     assert called_with.name == "litestar user"
+    assert called_with.hidden == "super secret"
 
 
 @pytest.mark.parametrize("send_mode", ["text", "binary"])
@@ -163,6 +166,7 @@ def test_listener_send_with_dto(send_mode: WebSocketMode, mock: MagicMock) -> No
     @dataclass
     class User:
         name: str
+        hidden: str = field(default="super secret", metadata=dto_field("private"))
 
     user_dto = DataclassDTO[User]
 
