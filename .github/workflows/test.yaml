@@ -58,11 +58,6 @@ jobs:
         run: |
           source $VENV
           pytest
-      - name: Test Database Backends
-        if: ${{ !inputs.coverage }}
-        run: |
-          source $VENV
-          pytest -m='sqlalchemy_asyncmy or sqlalchemy_asyncpg'
       - name: Test with coverage
         if: inputs.coverage
         run: poetry run pytest docs/examples tests --cov=litestar --cov-report=xml
