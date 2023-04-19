@@ -1,22 +1,22 @@
 Testing
 =======
 
-Testing is a first class citizen in Starlite, which offers several powerful testing utilities out of the box.
+Testing is a first class citizen in Litestar, which offers several powerful testing utilities out of the box.
 
 
 Test Client
 -----------
 
-Starlite's test client is built on top of
+Litestar's test client is built on top of
 the `httpx <https://github.com/encode/httpx>`_ library. To use the test client you should pass to it an
-instance of Starlite as the ``app`` kwarg.
+instance of Litestar as the ``app`` kwarg.
 
 Let's say we have a very simple app with a health check endpoint:
 
 .. code-block:: python
     :caption: my_app/main.py
 
-    from starlite import Starlite, MediaType, get
+    from litestar import Litestar, MediaType, get
 
 
     @get(path="/health-check", media_type=MediaType.TEXT)
@@ -24,7 +24,7 @@ Let's say we have a very simple app with a health check endpoint:
         return "healthy"
 
 
-    app = Starlite(route_handlers=[health_check])
+    app = Litestar(route_handlers=[health_check])
 
 
 We would then test it using the test client like so:
@@ -37,8 +37,8 @@ We would then test it using the test client like so:
         .. code-block:: python
             :caption: tests/test_health_check.py
 
-            from starlite.status_codes import HTTP_200_OK
-            from starlite.testing import TestClient
+            from litestar.status_codes import HTTP_200_OK
+            from litestar.testing import TestClient
 
             from my_app.main import app
 
@@ -55,8 +55,8 @@ We would then test it using the test client like so:
         .. code-block:: python
             :caption: tests/test_health_check.py
 
-            from starlite.status_codes import HTTP_200_OK
-            from starlite.testing import AsyncTestClient
+            from litestar.status_codes import HTTP_200_OK
+            from litestar.testing import AsyncTestClient
 
             from my_app.main import app
 
@@ -81,7 +81,7 @@ Since we would probably need to use the client in multiple places, it's better t
 
             import pytest
 
-            from starlite.testing import TestClient
+            from litestar.testing import TestClient
 
             from my_app.main import app
 
@@ -99,7 +99,7 @@ Since we would probably need to use the client in multiple places, it's better t
 
             import pytest
 
-            from starlite.testing import AsyncTestClient
+            from litestar.testing import AsyncTestClient
 
             from my_app.main import app
 
@@ -136,16 +136,16 @@ If you are using :ref:`session middleware <usage/middleware/builtin-middleware:s
 across requests, then you might want to inject or inspect session data outside a request. For this,
 :class:`TestClient <.testing.TestClient>` provides two methods:
 
-* :meth:`set_session_data <starlite.testing.TestClient.set_session_data>`
-* :meth:`get_session_data <starlite.testing.TestClient.get_session_data>`
+* :meth:`set_session_data <litestar.testing.TestClient.set_session_data>`
+* :meth:`get_session_data <litestar.testing.TestClient.get_session_data>`
 
 .. attention::
 
-    - The Session Middleware must be enabled in Starlite app provided to the TestClient to use sessions.
+    - The Session Middleware must be enabled in Litestar app provided to the TestClient to use sessions.
     - If you are using the
-      :class:`ClientSideSessionBackend <starlite.middleware.session.client_side.ClientSideSessionBackend>` you need to
-      install the ``cryptography`` package. You can do so by installing starlite with e.g.
-      ``pip install starlite[cryptography]`` or ``poetry add starlite[cryptography]``
+      :class:`ClientSideSessionBackend <litestar.middleware.session.client_side.ClientSideSessionBackend>` you need to
+      install the ``cryptography`` package. You can do so by installing litestar with e.g.
+      ``pip install litestar[cryptography]`` or ``poetry add litestar[cryptography]``
 
 .. tab-set::
 
@@ -182,7 +182,7 @@ a **Blocking Portal**.
 
 The :class:`anyio.abc.BlockingPortal` allows :class:`TestClient <.testing.TestClient>`
 to execute asynchronous functions using a synchronous call. ``TestClient`` creates a blocking portal to manage
-``Starlite``'s async logic, and it allows ``TestClient``'s API to remain fully synchronous.
+``Litestar``'s async logic, and it allows ``TestClient``'s API to remain fully synchronous.
 
 Any tests that are using an instance of ``TestClient`` can also make use of the blocking portal to execute asynchronous functions
 without the test itself being asynchronous.
@@ -195,12 +195,12 @@ without the test itself being asynchronous.
 Creating a test app
 -------------------
 
-Starlite also offers a helper function called :func:`create_test_client <starlite.testing.create_test_client>` which first creates
-an instance of Starlite and then a test client using it. There are multiple use cases for this helper - when you need to check
-generic logic that is decoupled from a specific Starlite app, or when you want to test endpoints in isolation.
+Litestar also offers a helper function called :func:`create_test_client <litestar.testing.create_test_client>` which first creates
+an instance of Litestar and then a test client using it. There are multiple use cases for this helper - when you need to check
+generic logic that is decoupled from a specific Litestar app, or when you want to test endpoints in isolation.
 
 You can pass to this helper all the kwargs accepted by
-the starlite constructor, with the ``route_handlers`` kwarg being **required**. Yet unlike the Starlite app, which
+the litestar constructor, with the ``route_handlers`` kwarg being **required**. Yet unlike the Litestar app, which
 expects ``route_handlers`` to be a list, here you can also pass individual values.
 
 For example, you can do this:
@@ -208,8 +208,8 @@ For example, you can do this:
 .. code-block:: python
     :caption: my_app/tests/test_health_check.py
 
-    from starlite.status_codes import HTTP_200_OK
-    from starlite.testing import create_test_client
+    from litestar.status_codes import HTTP_200_OK
+    from litestar.testing import create_test_client
 
     from my_app.main import health_check
 
@@ -225,8 +225,8 @@ But also this:
 .. code-block:: python
     :caption: my_app/tests/test_health_check.py
 
-    from starlite.status_codes import HTTP_200_OK
-    from starlite.testing import create_test_client
+    from litestar.status_codes import HTTP_200_OK
+    from litestar.testing import create_test_client
 
     from my_app.main import health_check
 
@@ -241,8 +241,8 @@ But also this:
 RequestFactory
 --------------
 
-Another helper is the :class:`RequestFactory <starlite.testing.RequestFactory>` class, which creates instances of
-:class:`starlite.connection.request.Request <starlite.connection.request.Request>`. The use case for this helper is when
+Another helper is the :class:`RequestFactory <litestar.testing.RequestFactory>` class, which creates instances of
+:class:`litestar.connection.request.Request <litestar.connection.request.Request>`. The use case for this helper is when
 you need to test logic that expects to receive a request object.
 
 For example, lets say we wanted to unit test a *guard* function in isolation, to which end we'll reuse the examples
@@ -252,9 +252,9 @@ from the :doc:`route guards </usage/security/guards>` documentation:
 .. code-block:: python
     :caption: my_app/guards.py
 
-    from starlite import Request
-    from starlite.exceptions import NotAuthorizedException
-    from starlite.handlers.base import BaseRouteHandler
+    from litestar import Request
+    from litestar.exceptions import NotAuthorizedException
+    from litestar.handlers.base import BaseRouteHandler
 
 
     def secret_token_guard(request: Request, route_handler: BaseRouteHandler) -> None:
@@ -271,7 +271,7 @@ We already have our route handler in place:
 
     from os import environ
 
-    from starlite import get
+    from litestar import get
 
     from my_app.guards import secret_token_guard
 
@@ -287,8 +287,8 @@ We could thus test the guard function like so:
 
     import pytest
 
-    from starlite.exceptions import NotAuthorizedException
-    from starlite.testing import RequestFactory
+    from litestar.exceptions import NotAuthorizedException
+    from litestar.testing import RequestFactory
 
     from my_app.guards import secret_token_guard
     from my_app.secret import secret_endpoint
@@ -309,10 +309,10 @@ We could thus test the guard function like so:
         secret_token_guard(request=request, route_handler=copied_endpoint_handler)
 
 
-Using pydantic-factories
+Using polyfactory
 ------------------------
 
-`Pydantic-factories <https://github.com/starlite-api/pydantic-factories>`__ offers an easy
+`Polyfactory <https://github.com/litestar-org/polyfactory>`__ offers an easy
 and powerful way to generate mock data from pydantic models and dataclasses.
 
 Let's say we have an API that talks to an external service and retrieves some data:
@@ -322,8 +322,8 @@ Let's say we have an API that talks to an external service and retrieves some da
 
     from typing import Protocol, runtime_checkable
 
-    from pydantic import BaseModel
-    from starlite import get
+    from polyfactory.factories.pydantic import BaseModel
+    from litestar import get
 
 
     class Item(BaseModel):
@@ -348,9 +348,9 @@ We could test the ``/item`` route like so:
 
     import pytest
 
-    from starlite.di import Provide
-    from starlite.status_codes import HTTP_200_OK
-    from starlite.testing import create_test_client
+    from litestar.di import Provide
+    from litestar.status_codes import HTTP_200_OK
+    from litestar.testing import create_test_client
 
     from my_app.main import Service, Item, get_item
 
@@ -373,7 +373,7 @@ We could test the ``/item`` route like so:
             assert response.json() == item.dict()
 
 While we can define the test data manually, as is done in the above, this can be quite cumbersome. That's
-where `pydantic-factories <https://github.com/Goldziher/pydantic-factories>`_ library comes in. It generates mock data for
+where `polyfactory <https://github.com/litestar-org/polyfactory>`_ library comes in. It generates mock data for
 pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:
 
 
@@ -385,10 +385,10 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
     import pytest
     from pydantic import BaseModel
     from polyfactory.factories.pydantic_factory import ModelFactory
-    from starlite.status_codes import HTTP_200_OK
-    from starlite import get
-    from starlite.di import Provide
-    from starlite.testing import create_test_client
+    from litestar.status_codes import HTTP_200_OK
+    from litestar import get
+    from litestar.di import Provide
+    from litestar.testing import create_test_client
 
 
     class Item(BaseModel):

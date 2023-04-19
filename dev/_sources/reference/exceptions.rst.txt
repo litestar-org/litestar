@@ -1,5 +1,5 @@
 exceptions
 ==========
 
-.. automodule:: starlite.exceptions
+.. automodule:: litestar.exceptions
     :members:

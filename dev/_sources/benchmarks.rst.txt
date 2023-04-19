@@ -7,7 +7,7 @@ Methodology
 -  Benchmarking is done using the `bombardier <https://github.com/codesenberg/bombardier>`__ benchmarking tool.
 -  Benchmarks are run on a dedicated machine, with a base Debian 11 installation.
 -  Each framework is contained within its own docker container, running on a dedicated CPU core (using the ``cset shield`` command and the ``--cpuset-cpus`` option for docker)
--  Tests for the frameworks are written to make them as comparable as possible while completing the same tasks (you can see them `here <https://github.com/starlite-api/api-performance-tests/tree/main/frameworks>`__)
+-  Tests for the frameworks are written to make them as comparable as possible while completing the same tasks (you can see them `here <https://github.com/litestar-org/api-performance-tests/tree/main/frameworks>`__)
 -  Each application is run using `uvicorn <https://www.uvicorn.org/>`__ with **one worker** and `uvloop <https://uvloop.readthedocs.io/>`__
 -  Test data has been randomly generated and is being imported from a shared module
 
@@ -59,8 +59,8 @@ Dependency injection
 *(not supported by* ``Starlette`` *)*
 
 -  Resolving 3 nested synchronous dependencies
--  Resolving 3 nested asynchronous dependencies (only supported by ``Starlite`` and ``FastAPI``)
--  Resolving 3 nested synchronous, and 3 nested asynchronous dependencies (only supported by ``Starlite`` and ``FastAPI``)
+-  Resolving 3 nested asynchronous dependencies (only supported by ``Litestar`` and ``FastAPI``)
+-  Resolving 3 nested synchronous, and 3 nested asynchronous dependencies (only supported by ``Litestar`` and ``FastAPI``)
 
 .. figure:: /images/benchmarks/rps_dependency-injection.svg
    :alt: RPS Dependency injection
@@ -94,5 +94,5 @@ For almost any test you can probably write an app that performs better or worse 
 
 While trying to design the tests in a way that simulate somewhat realistic scenarios, they can never give an exact
 representation of how a real world application, where, aside from the workload, many other factors come into play.
-These tests were mainly written to be used internally for starlite development, to help us locate the source of some
+These tests were mainly written to be used internally for litestar development, to help us locate the source of some
 performance regression we were experiencing.
