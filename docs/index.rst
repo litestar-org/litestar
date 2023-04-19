@@ -213,6 +213,7 @@ Example Applications
     :caption: Documentation
     :hidden:
 
+    tutorials/index
     usage/index
     reference/index
     migration/index
