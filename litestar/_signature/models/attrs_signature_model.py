@@ -15,8 +15,6 @@ from typing import (
 from uuid import UUID
 
 from _decimal import Decimal
-from dateutil.parser import parse
-from pytimeparse.timeparse import timeparse
 from typing_extensions import get_args
 
 from litestar._signature.field import SignatureField
@@ -35,7 +33,17 @@ try:
     import attrs
     import cattrs
 except ImportError as e:
-    raise MissingDependencyException("attrs is not installed") from e
+    raise MissingDependencyException("attrs") from e
+
+try:
+    from dateutil.parser import parse
+except ImportError as e:
+    raise MissingDependencyException("python-dateutil", "attrs") from e
+
+try:
+    from pytimeparse.timeparse import timeparse
+except ImportError as e:
+    raise MissingDependencyException("pytimeparse", "attrs") from e
 
 if TYPE_CHECKING:
     from litestar.plugins import PluginMapping
