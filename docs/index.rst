@@ -1,9 +1,6 @@
 Litestar library documentation
 ==============================
 
-.. attention:: ``Starlite`` is renaming to ``Litestar``! Some links may be broken while we migrate.
-
-
 Litestar is a powerful, flexible, highly performant and opinionated ASGI framework,
 offering first class typing support and a full `Pydantic <https://github.com/pydantic/pydantic>`_
 integration.
