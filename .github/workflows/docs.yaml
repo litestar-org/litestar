@@ -2,8 +2,7 @@ name: Documentation Building
 on:
   workflow_run:
     workflows: [Tests And Linting]
-    # branches: [main, v1.51]
-    branches: [v1.51]
+    branches: [main]
     types:
       - completed
   release:
