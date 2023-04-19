@@ -147,9 +147,10 @@ def test_type_narrowing_with_multiple_configs() -> None:
     assert dto.config is config_1
 
 
-def test_url_encoded_data_uses_pydantic_backend() -> None:
+@pytest.mark.parametrize("request_encoding_type", [RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED])
+def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestEncodingType) -> None:
     @post()
-    def handler_1(data: Model = Body(media_type=RequestEncodingType.URL_ENCODED)) -> Model:
+    def handler_1(data: Model = Body(media_type=request_encoding_type)) -> Model:
         return data
 
     @post()

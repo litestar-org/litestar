@@ -161,7 +161,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         backend = cls._type_backend_map.get(key)
         if backend is None:
             backend_type: type[AbstractDTOBackend]
-            if request_encoding_type == RequestEncodingType.URL_ENCODED:
+            if request_encoding_type in {RequestEncodingType.URL_ENCODED, RequestEncodingType.MULTI_PART}:
                 backend_type = PydanticDTOBackend
             else:
                 backend_type = MsgspecDTOBackend
