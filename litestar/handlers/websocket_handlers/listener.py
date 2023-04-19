@@ -25,7 +25,7 @@ from ._utils import (
 from .route_handler import WebsocketRouteHandler
 
 if TYPE_CHECKING:
-    from litestar import WebSocket
+    from litestar import Litestar, WebSocket
     from litestar.dto.interface import DTOInterface
     from litestar.types.asgi_types import WebSocketMode
 
@@ -145,7 +145,7 @@ class websocket_listener(WebsocketRouteHandler):
         )
         return super().__call__(handler_function)
 
-    def on_registration(self) -> None:
+    def on_registration(self, app: Litestar) -> None:
         _set_listener_context(
             listener_context=self._listener_context,
             receive_mode=self._receive_mode,
@@ -159,7 +159,7 @@ class websocket_listener(WebsocketRouteHandler):
 
         # must call this after listener fn signature has been updated, as we assume that
         # the `parsed_fn_signature` property will be accessed somewhere in the MRO above us.
-        super().on_registration()
+        super().on_registration(app)
 
 
 class WebsocketListener(ABC):
