@@ -41,7 +41,7 @@ def _create_field_meta(field: "SignatureField") -> FieldMeta:
     return FieldMeta(
         name=field.name,
         annotation=field.field_type,
-        constant=field.is_const,
+        constraints={"constant": field.is_const},
         default=field.default_value if field.default_value is not Empty else Null,
         children=[_create_field_meta(child) for child in field.children] if field.children else None,
     )
