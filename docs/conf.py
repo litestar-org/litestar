@@ -152,18 +152,35 @@ html_theme_options = {
     "extra_navbar_items": {
         "Documentation": "index",
         "Community": {
-            "Contribution Guide": "contribution-guide",
-            "Code of Conduct": "https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md",
+            "Contributing": {
+                "description": "Learn how to contribute to the Litestar project",
+                "link": "https://docs.litestar.dev/2/contribution-guide.html",
+                "icon": "contributing",
+            },
+            "Code of Conduct": {
+                "description": "Review the etiquette for interacting with the Litestar community",
+                "link": "https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md",
+                "icon": "coc",
+            },
         },
         "About": {
-            "Organization": "https://litestar.dev/about/organization",
-            "Releases": "https://litestar.dev/about/litestar-releases",
+            "Litestar Organization": {
+                "description": "Details about the Litestar organization",
+                "link": "about/organization",
+                "icon": "org",
+            },
+            "Releases": {
+                "description": "Details about the Litestar release process",
+                "link": "about/litestar-releases",
+                "icon": "releases",
+            },
         },
         "Release notes": {
             "2.0 migration guide": "release-notes/migration_guide_2",
             "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
             "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
         },
+        "Help": "https://github.com/orgs/litestar-org/discussions",
     },
 }
 
