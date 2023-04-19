@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, List
 
 import pytest
@@ -14,7 +15,6 @@ from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
-from tests.dto import Model
 
 if TYPE_CHECKING:
     from typing import Any
@@ -29,6 +29,20 @@ DESTRUCTURED = {
     "c": [],
     "nested": {"a": 1, "b": "two"},
 }
+
+
+@dataclass
+class NestedDC:
+    a: int
+    b: str
+
+
+@dataclass
+class DC:
+    a: int
+    b: str
+    c: List[int]
+    nested: NestedDC
 
 
 class NestedModel(BaseModel):
@@ -62,8 +76,8 @@ def fx_field_definitions() -> FieldDefinitionsType:
         "b": FieldDefinition(name="b", parsed_type=ParsedType(str), default="b"),
         "c": FieldDefinition(name="c", parsed_type=ParsedType(List[int]), default_factory=list, default=Empty),
         "nested": NestedFieldDefinition(
-            field_definition=FieldDefinition(name="nested", parsed_type=ParsedType(Model), default=Empty),
-            nested_type=Model,
+            field_definition=FieldDefinition(name="nested", parsed_type=ParsedType(NestedDC), default=Empty),
+            nested_type=NestedDC,
             nested_field_definitions={
                 "a": FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty),
                 "b": FieldDefinition(name="b", parsed_type=ParsedType(str), default=Empty),
@@ -75,7 +89,7 @@ def fx_field_definitions() -> FieldDefinitionsType:
 @pytest.fixture(name="backend", params=[(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)])
 def fx_backend(request: Any, field_definitions: FieldDefinitionsType) -> AbstractDTOBackend:
     return request.param[0](  # type:ignore[no-any-return]
-        parsed_type=ParsedType(Model), data_container_type=request.param[1], field_definitions=field_definitions
+        parsed_type=ParsedType(DC), data_container_type=request.param[1], field_definitions=field_definitions
     )
 
 
@@ -112,9 +126,7 @@ def test_backend_parse_unsupported_media_type(backend: AbstractDTOBackend) -> No
 def test_backend_iterable_annotation(
     backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
 ) -> None:
-    backend = backend_type(
-        ParsedType(List[Model]), data_container_type=backend_model, field_definitions=field_definitions
-    )
+    backend = backend_type(ParsedType(List[DC]), data_container_type=backend_model, field_definitions=field_definitions)
     if sys.version_info < (3, 9):
         assert backend.annotation == List[backend_model]
     else:
@@ -127,5 +139,16 @@ def test_backend_iterable_annotation(
 def test_backend_scalar_annotation(
     backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
 ) -> None:
-    backend = backend_type(ParsedType(Model), data_container_type=backend_model, field_definitions=field_definitions)
+    backend = backend_type(ParsedType(DC), data_container_type=backend_model, field_definitions=field_definitions)
     assert backend.annotation == backend_model
+
+
+@pytest.mark.parametrize(
+    ("backend_type", "backend_model"), [(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)]
+)
+def test_backend_populate_data_from_builtins(
+    backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
+) -> None:
+    backend = backend_type(ParsedType(DC), data_container_type=backend_model, field_definitions=field_definitions)
+    data = backend.populate_data_from_builtins(DC, data=DESTRUCTURED)
+    assert data == DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"))

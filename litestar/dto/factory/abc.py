@@ -4,8 +4,9 @@ from abc import ABCMeta, abstractmethod
 from itertools import chain
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from litestar.dto.factory.backends import MsgspecDTOBackend
+from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.interface import DTOInterface
+from litestar.enums import RequestEncodingType
 from litestar.types.builtin_types import NoneType
 from litestar.utils.signature import ParsedType
 
@@ -13,7 +14,7 @@ from .config import DTOConfig
 from .exc import InvalidAnnotation
 from .field import Mark
 from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
-from .utils import parse_configs_from_annotation
+from .utils import infer_request_encoding_from_parameter, parse_configs_from_annotation
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator, TypeAlias
@@ -44,7 +45,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     """If ``annotation`` is an iterable, this is the inner type, otherwise will be the same as ``annotation``."""
 
     _reverse_field_mappings: ClassVar[dict[str, FieldDefinition]]
-    _type_backend_map: ClassVar[dict[tuple[ForType, ParsedType], AbstractDTOBackend]]
+    _type_backend_map: ClassVar[dict[tuple[ForType, ParsedType, RequestEncodingType | str | None], AbstractDTOBackend]]
     _handler_backend_map: ClassVar[dict[tuple[ForType, BaseRouteHandler], AbstractDTOBackend]]
 
     def __init__(self, connection: AnyRequest) -> None:
@@ -90,6 +91,11 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
 
+    def builtins_to_data_type(self, builtins: Any) -> DataT | Collection[DataT]:
+        """Coerce the unstructured data into the data type."""
+        backend = self._handler_backend_map[("data", self.connection.route_handler)]
+        return backend.populate_data_from_builtins(self.model_type, builtins)
+
     def bytes_to_data_type(self, raw: bytes) -> DataT | Collection[DataT]:
         """Return the data held by the DTO."""
         backend = self._handler_backend_map[("data", self.connection.route_handler)]
@@ -130,7 +136,10 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         """
 
         parsed_signature = route_handler.parsed_fn_signature
+        request_encoding_type: RequestEncodingType | str | None = None
         if dto_for == "data":
+            data_param = parsed_signature.parameters["data"]
+            request_encoding_type = infer_request_encoding_from_parameter(data_param)
             parsed_type = parsed_signature.parameters["data"].parsed_type
         else:
             parsed_type = parsed_signature.return_type
@@ -148,11 +157,18 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         if not handler_type.is_subclass_of(cls.model_type):
             raise InvalidAnnotation(f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'")
 
-        backend = cls._type_backend_map.get((dto_for, parsed_type))
+        key = (dto_for, parsed_type, request_encoding_type)
+        backend = cls._type_backend_map.get(key)
         if backend is None:
+            backend_type: type[AbstractDTOBackend]
+            if request_encoding_type in {RequestEncodingType.URL_ENCODED, RequestEncodingType.MULTI_PART}:
+                backend_type = PydanticDTOBackend
+            else:
+                backend_type = MsgspecDTOBackend
+
             backend = cls._type_backend_map.setdefault(
-                (dto_for, parsed_type),
-                MsgspecDTOBackend.from_field_definitions(
+                key,
+                backend_type.from_field_definitions(
                     parsed_type, _parse_model(cls, cls.model_type, cls.config, dto_for)
                 ),
             )
