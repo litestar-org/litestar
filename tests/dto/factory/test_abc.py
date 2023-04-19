@@ -154,10 +154,10 @@ def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestE
         return data
 
     @post()
-    def handler_2(data: Annotated[Model, Body(media_type=RequestEncodingType.URL_ENCODED)]) -> Model:
+    def handler_2(data: Annotated[Model, Body(media_type=request_encoding_type)]) -> Model:
         return data
 
     for handler in handler_1, handler_2:
         dto_type = DataclassDTO[Model]
-        dto_type.on_registration(handler, "data")
+        dto_type.on_registration(handler, "data", ParsedType(Model), request_encoding_type)
         assert isinstance(dto_type._handler_backend_map[("data", handler)], PydanticDTOBackend)

@@ -9,7 +9,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
 from litestar.utils import AsyncCallable, Ref, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
-from litestar.utils.signature import ParsedSignature
+from litestar.utils.signature import ParsedSignature, infer_request_encoding_from_parameter
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -344,7 +344,12 @@ class BaseRouteHandler(Generic[T]):
             parameter_type = data_parameter.parsed_type
             dto = parameter_type.annotation if parameter_type.is_subclass_of(DTOInterface) else self.resolve_dto()
             if dto:
-                dto.on_registration(self, "data", data_parameter.parsed_type)
+                dto.on_registration(
+                    self,
+                    "data",
+                    data_parameter.parsed_type,
+                    infer_request_encoding_from_parameter(data_parameter),
+                )
 
         return_type = self.parsed_fn_signature.return_type
         if return_type.annotation is not Empty:

@@ -14,7 +14,7 @@ from .config import DTOConfig
 from .exc import InvalidAnnotation
 from .field import Mark
 from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
-from .utils import infer_request_encoding_from_parameter, parse_configs_from_annotation
+from .utils import parse_configs_from_annotation
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
@@ -127,19 +127,22 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         """
 
     @classmethod
-    def on_registration(cls, route_handler: BaseRouteHandler, dto_for: ForType, parsed_type: ParsedType) -> None:
+    def on_registration(
+        cls,
+        route_handler: BaseRouteHandler,
+        dto_for: ForType,
+        parsed_type: ParsedType,
+        request_encoding_type: RequestEncodingType | str | None = None,
+    ) -> None:
         """Called each time the DTO type is encountered during signature modelling.
 
         Args:
             route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
             dto_for: indicates whether the DTO is for the request body or response.
             parsed_type: :class:``ParsedType`` for represented  annotation.
+            request_encoding_type: :class:`RequestEncodingType <.types.serialization.RequestEncodingType>` for the
+                request.
         """
-        request_encoding_type: RequestEncodingType | str | None = None
-        if dto_for == "data":
-            data_param = route_handler.parsed_fn_signature.parameters["data"]
-            request_encoding_type = infer_request_encoding_from_parameter(data_param)
-
         if parsed_type.is_subclass_of(AbstractDTOFactory):
             raise InvalidAnnotation("AbstractDTOFactory does not support being set as a handler annotation")
 

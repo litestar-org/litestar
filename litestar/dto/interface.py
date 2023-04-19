@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
+    from litestar.enums import RequestEncodingType
     from litestar.handlers import BaseRouteHandler
     from litestar.types import LitestarEncodableType
     from litestar.types.internal_types import AnyConnection
@@ -59,7 +60,13 @@ class DTOInterface(Protocol):
         """
 
     @classmethod
-    def on_registration(cls, route_handler: BaseRouteHandler, dto_for: ForType, parsed_type: ParsedType) -> None:
+    def on_registration(
+        cls,
+        route_handler: BaseRouteHandler,
+        dto_for: ForType,
+        parsed_type: ParsedType,
+        request_encoding_type: RequestEncodingType | str | None = None,
+    ) -> None:
         """Receive the ``parsed_type`` and ``route_handler`` that this DTO is configured to represent.
 
         At this point, if the DTO type does not support the annotated type of ``parsed_type``, it should raise an
@@ -69,6 +76,8 @@ class DTOInterface(Protocol):
             route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
             parsed_type: :class:``ParsedType`` for represented  annotation.
             dto_for: indicates whether the DTO is for the request body or response.
+            request_encoding_type: :class:`RequestEncodingType <.enums.RequestEncodingType>` for the
+                request.
 
         Raises:
             UnsupportedType: If the DTO type does not support the annotated type of ``parsed_type``.
