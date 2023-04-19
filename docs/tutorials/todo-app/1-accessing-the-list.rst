@@ -185,7 +185,7 @@ instead.
 .. tip::
     It is important to note that this conversion is not the result of calling
     :class:`bool` on the raw value. ``bool("john")`` would be ``True``, since Python
-    considers all non-empty stringy to be truthy.
+    considers all non-empty strings to be truthy.
 
     Litestar however supports customary boolean representation commonly used in the HTTP
     world; ``true`` and ``1`` are both converted to :obj:`True`, while ``false``

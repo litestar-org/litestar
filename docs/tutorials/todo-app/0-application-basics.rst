@@ -39,7 +39,7 @@ Now that we have a working application, let us examine how we got here in a bit 
 Route handlers
 ---------------
 
-Route handlers are what tells your Litestar application to do when it gets a request.
+Route handlers tell your Litestar application what to do when it gets a request.
 They are named this way because they typically handle a single URL path (or *route*),
 which is the part of the URL that's specific to your application. In our current
 example, the only route handler we have is for ``hello_world``, and it is using the
@@ -138,7 +138,7 @@ Running the application
 -----------------------
 
 The last step is to actually run the application. Litestar does not include its own HTTP
-server though but instead makes use of the
+server, but instead makes use of the
 `ASGI protocol <https://asgi.readthedocs.io>`_, which is a protocol Python objects can
 use in order to interact with application servers like
 `uvicorn <https://www.uvicorn.org/>`_ that actually implement the HTTP protocol and

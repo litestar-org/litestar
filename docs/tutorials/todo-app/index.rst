@@ -20,7 +20,7 @@ functionalities:
 3. Mark TODO items as *done*
 
 This is not a whole lot of functionality, but enough to learn most of the fundamental
-working blocks of Litestar.
+building blocks of Litestar.
 
 
 

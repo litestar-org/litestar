@@ -2,7 +2,7 @@ Recap and assembling the final application
 ===========================================
 
 So far we have looked at the different parts of the application in isolation, but now
-it's time to put them all together an assemble a fully working application from them.
+it's time to put them all together and assemble a complete application.
 
 
 Final application
@@ -28,7 +28,7 @@ Recap
 A route handler set up with ``get("/")`` responds to ``GET`` requests and returns a list
 of all items on our TODO-list. The optional query parameter ``done`` allows to filter
 the items by status. The type annotation of ``bool`` converts the query parameter into
-a :class:`bool` and wrapping it in :class:`Optional <typing.Optional>` make it optional.
+a :class:`bool` and wrapping it in :class:`Optional <typing.Optional>` makes it optional.
 
 
 .. literalinclude:: /examples/todo_app/full_app.py
