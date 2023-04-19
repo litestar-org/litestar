@@ -9,7 +9,7 @@ Features
 * Pre-configured ``DeclarativeBase`` for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ 2.0 that includes a UUID based primary-key and an optional version with audit columns.
 * Generic asynchronous repository for select, insert, update, and delete operations on SQLAlchemy models
 * Implements optimized methods for bulk inserts, updates, and deletes.
-* Integrated counts, pagination, filtering with ``LIKE``, ``IN``, and dates before and/or after.
+* Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
 * Support for SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_, Postgres via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_, and MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_
 
 Basic Use
