@@ -19,7 +19,7 @@ TODO_LIST: List[TodoItem] = [
 
 @get("/")
 async def get_list(done: str) -> List[TodoItem]:
-    if done == "true":
+    if done == "1":
         return [item for item in TODO_LIST if item.done]
     return [item for item in TODO_LIST if not item.done]
 

@@ -79,21 +79,21 @@ of the same name.
 
 .. figure:: images/todos-done.png
 
-    Visiting http://127.0.0.1:8000?done=true will give you all the TODOs that have been
+    Visiting http://127.0.0.1:8000?done=1 will give you all the TODOs that have been
     marked as *done*
 
 
 .. figure:: images/todos-not-done.png
 
-    while http://127.0.0.1:8000?done=false will return only those not yet done
+    while http://127.0.0.1:8000?done=0 will return only those not yet done
 
 
 At first glance this seems to work just fine, but you might be able to spot a problem:
-If you input anything else than ``?done=true``, it would still return not-done items.
-``?done=john`` for example works just like ``?done=false``
+If you input anything else than ``?done=1``, it would still return not-done items.
+``?done=john`` for example works just like ``?done=0``
 
 An easy solution for this would be to simply check if the query parameter is either
-``true`` or ``false``, and return a response with an HTTP status code that indicates an
+``1`` or ``0``, and return a response with an HTTP status code that indicates an
 error if it's something else:
 
 .. literalinclude:: examples/get_list/query_param_validate_manually.py
@@ -101,7 +101,7 @@ error if it's something else:
     :language: python
     :linenos:
 
-If the query parameter equals ``true``, return all items that have ``done=True``:
+If the query parameter equals ``1``, return all items that have ``done=True``:
 
 .. literalinclude:: examples/get_list/query_param_validate_manually.py
     :language: python
@@ -112,7 +112,7 @@ If the query parameter equals ``true``, return all items that have ``done=True``
     :lineno-start: 23
 
 
-If the query parameter equals ``false``, return all items that have ``done=False``:
+If the query parameter equals ``0``, return all items that have ``done=False``:
 
 .. literalinclude:: examples/get_list/query_param_validate_manually.py
     :language: python

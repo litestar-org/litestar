@@ -20,11 +20,10 @@ TODO_LIST: List[TodoItem] = [
 
 @get("/")
 async def get_list(done: str) -> List[TodoItem]:
-    if done == "true":
+    if done == "1":
         return [item for item in TODO_LIST if item.done]
-    if done == "false":
+    if done == "0":
         return [item for item in TODO_LIST if not item.done]
-    breakpoint()
     raise HTTPException(f"Invalid query parameter value: {done!r}", status_code=400)
 
 
