@@ -5,22 +5,13 @@ from msgspec import to_builtins
 
 from litestar.testing import TestClient
 
-from . import full_app
-from . import update as update_app
-from .create import dataclass as dataclass_create_app
-from .create import dict as dict_create_app
-from .get_list import (
-    dataclass as get_dataclass_app,
-)
-from .get_list import (
-    dict as get_dict_app,
-)
-from .get_list import (
-    query_param,
-    query_param_default,
-    query_param_validate,
-    query_param_validate_manually,
-)
+from .todo_app import full_app
+from .todo_app import update as update_app
+from .todo_app.create import dataclass as dataclass_create_app
+from .todo_app.create import dict as dict_create_app
+from .todo_app.get_list import dataclass as get_dataclass_app
+from .todo_app.get_list import dict as get_dict_app
+from .todo_app.get_list import query_param, query_param_default, query_param_validate, query_param_validate_manually
 
 
 @pytest.mark.parametrize("module", [update_app, full_app])

@@ -12,7 +12,7 @@ In the previous step you used the ``get`` decorator, which responds to the ``GET
 HTTP method. In this case we want to react to ``POST`` requests, so we are going to use
 the corresponding ``post`` decorator.
 
-.. literalinclude:: examples/create/dict.py
+.. literalinclude:: /examples/todo_app/create/dict.py
     :language: python
     :linenos:
 
@@ -47,7 +47,7 @@ Improving the example with dataclasses
 As in the previous chapter, this too can be improved by using
 :doc:`dataclasses <python:library/dataclasses>` instead of plain dicts.
 
-.. literalinclude:: examples/create/dataclass.py
+.. literalinclude:: /examples/todo_app/create/dataclass.py
     :language: python
     :linenos:
 
@@ -114,7 +114,7 @@ data you can now set up a route handler that takes in the title of a TODO-item, 
 updated item in form of a dataclass instance, and updates the item in the list.
 
 
-.. literalinclude:: examples/update.py
+.. literalinclude:: /examples/todo_app/update.py
     :language: python
 
 

@@ -8,7 +8,7 @@ it's time to put them all together an assemble a fully working application from 
 Final application
 -----------------
 
-.. literalinclude:: examples/full_app.py
+.. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: app.py
     :linenos:
@@ -18,7 +18,7 @@ Recap
 -----
 
 
-.. literalinclude:: examples/full_app.py
+.. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: app.py
     :lines: 28-32
@@ -31,7 +31,7 @@ the items by status. The type annotation of ``bool`` converts the query paramete
 a :class:`bool` and wrapping it in :class:`Optional <typing.Optional>` make it optional.
 
 
-.. literalinclude:: examples/full_app.py
+.. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: app.py
     :lines: 35-38
@@ -46,7 +46,7 @@ instance of the ``TodoItem`` dataclass, which - finally - gets passed into the f
 
 
 
-.. literalinclude:: examples/full_app.py
+.. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: app.py
     :lines: 41-46
@@ -61,7 +61,7 @@ suffix in the path parameter means it will be treated as a string. Additionally,
 route handler receives data of a ``TodoItem`` the same way as the ``POST`` handler.
 
 
-.. literalinclude:: examples/full_app.py
+.. literalinclude:: /examples/todo_app/full_app.py
     :language: python
     :caption: app.py
     :lines: 49
@@ -78,4 +78,4 @@ Next steps
 ----------
 
 This tutorial covered some of the fundamental concepts of Litestar. For a more in-depth
-explanation of these topics, refer to the :doc:`Usage Guide </usage>`.
+explanation of these topics, refer to the :doc:`Usage Guide </usage/index>`.

@@ -8,7 +8,7 @@ The first thing you'll be setting up for our app is a route handler that returns
 single TODO-list. A TODO-list in this case will be a list of dictionaries representing
 the items on that TODO list.
 
-.. literalinclude:: examples/get_list/dict.py
+.. literalinclude:: /examples/todo_app/get_list/dict.py
     :language: python
     :caption: app.py
     :linenos:
@@ -26,7 +26,7 @@ Because the ``get_todo_list`` function has been annotated  with
 ``List[Dict[str, Union[str, bool]]]``, Litestar infers that you want the data returned
 from it to be serialized as JSON:
 
-.. literalinclude:: examples/get_list/dict.py
+.. literalinclude:: /examples/todo_app/get_list/dict.py
     :language: python
     :lineno-start: 13
     :lines: 13
@@ -40,7 +40,7 @@ To make your life a little easier, you can transform this example by using :py:m
 .. tip:: For an in-depth explanation of dataclasses, you can read this excellent Real Python
     article: `dataclasses <https://realpython.com/python-data-classes/>`_
 
-.. literalinclude:: examples/get_list/dataclass.py
+.. literalinclude:: /examples/todo_app/get_list/dataclass.py
     :caption: app.py
     :language: python
     :linenos:
@@ -71,7 +71,7 @@ the query parameter will be extracted from the URL, and passed to the function p
 of the same name.
 
 
-.. literalinclude:: examples/get_list/query_param.py
+.. literalinclude:: /examples/todo_app/get_list/query_param.py
     :caption: app.py
     :language: python
     :linenos:
@@ -96,14 +96,14 @@ An easy solution for this would be to simply check if the query parameter is eit
 ``1`` or ``0``, and return a response with an HTTP status code that indicates an
 error if it's something else:
 
-.. literalinclude:: examples/get_list/query_param_validate_manually.py
+.. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :caption: app.py
     :language: python
     :linenos:
 
 If the query parameter equals ``1``, return all items that have ``done=True``:
 
-.. literalinclude:: examples/get_list/query_param_validate_manually.py
+.. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :language: python
     :caption: app.py
     :lines: 23-24
@@ -114,7 +114,7 @@ If the query parameter equals ``1``, return all items that have ``done=True``:
 
 If the query parameter equals ``0``, return all items that have ``done=False``:
 
-.. literalinclude:: examples/get_list/query_param_validate_manually.py
+.. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :language: python
     :caption: app.py
     :lines: 25-26
@@ -127,7 +127,7 @@ Raising an ``HTTPException`` tells Litestar that something went wrong, and inste
 returning a normal response, it will send a response with the HTTP status code given
 (``400`` in this case) and the error message supplied.
 
-.. literalinclude:: examples/get_list/query_param_validate_manually.py
+.. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :language: python
     :caption: app.py
     :lines: 27
@@ -156,7 +156,7 @@ Litestar to convert the query parameter to a boolean value, matching the values 
 ``TodoItem.done`` attribute, and in the same step validate it, returning error responses
 for you should the supplied value not be a valid boolean.
 
-.. literalinclude:: examples/get_list/query_param_validate.py
+.. literalinclude:: /examples/todo_app/get_list/query_param_validate.py
     :language: python
     :caption: app.py
     :linenos:
@@ -175,7 +175,7 @@ Litestar will try to convert the value into a :class:`bool` first. Since ``john`
 (arguably) is not a representation of a boolean value, it will return an error response
 instead.
 
-.. literalinclude:: examples/get_list/query_param_validate.py
+.. literalinclude:: /examples/todo_app/get_list/query_param_validate.py
     :language: python
     :caption: app.py
     :lines: 21
@@ -195,7 +195,7 @@ instead.
 If the conversion is successful however, ``done`` is now a :class:`bool`, which can then
 be compared against the ``TodoItem.done`` attribute:
 
-.. literalinclude:: examples/get_list/query_param_validate.py
+.. literalinclude:: /examples/todo_app/get_list/query_param_validate.py
     :language: python
     :caption: app.py
     :lines: 22
@@ -224,7 +224,7 @@ parameter. If instead you want this to be optional, a default value needs to be
 supplied.
 
 
-.. literalinclude:: examples/get_list/query_param_default.py
+.. literalinclude:: /examples/todo_app/get_list/query_param_default.py
     :language: python
     :caption: app.py
     :linenos:

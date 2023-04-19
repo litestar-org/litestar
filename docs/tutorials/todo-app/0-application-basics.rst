@@ -21,7 +21,7 @@ Hello, world!
 The most basic application you can implement - and a classic one at that - is of course one that prints ``"Hello, world!"``:
 
 
-.. literalinclude:: examples/hello_world.py
+.. literalinclude:: /examples/todo_app/hello_world.py
     :language: python
     :caption: app.py
 
@@ -57,7 +57,7 @@ is being made to the ``/`` path of your application. The name of the handler dec
 Litestar that you only want to use this function when a ``GET`` request is being made.
 
 
-.. literalinclude:: examples/hello_world.py
+.. literalinclude:: /examples/todo_app/hello_world.py
     :language: python
     :emphasize-lines: 4
     :linenos:
@@ -93,7 +93,7 @@ Type annotations play an important role in a Litestar application. They tell Lit
 how you want your data to behave, and what you intend to do with it.
 
 
-.. literalinclude:: examples/hello_world.py
+.. literalinclude:: /examples/todo_app/hello_world.py
     :language: python
     :emphasize-lines: 5
     :linenos:
@@ -123,7 +123,7 @@ in order to start serving requests. The application is an instance of the
 and can be used to register previously defined route handlers by passing a list of them
 as the first argument:
 
-.. literalinclude:: examples/hello_world.py
+.. literalinclude:: /examples/todo_app/hello_world.py
     :language: python
     :emphasize-lines: 9
     :linenos:
