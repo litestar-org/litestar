@@ -13,11 +13,13 @@ __all__ = ("create_request_body",)
 
 if TYPE_CHECKING:
     from litestar._signature.field import SignatureField
+    from litestar.handlers import BaseRouteHandler
     from litestar.openapi.spec import Schema
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 
 def create_request_body(
+    route_handler: BaseRouteHandler,
     field: "SignatureField",
     generate_examples: bool,
     plugins: list["OpenAPISchemaPluginProtocol"],
@@ -28,5 +30,9 @@ def create_request_body(
     if isinstance(field.kwarg_model, BodyKwarg) and field.kwarg_model.media_type:
         media_type = field.kwarg_model.media_type
 
-    schema = create_schema(field=field, generate_examples=generate_examples, plugins=plugins, schemas=schemas)
+    if dto := route_handler.resolve_dto():
+        schema = dto.create_openapi_schema("data", route_handler, generate_examples, schemas)
+    else:
+        schema = create_schema(field=field, generate_examples=generate_examples, plugins=plugins, schemas=schemas)
+
     return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema)})

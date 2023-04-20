@@ -6,6 +6,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
+from litestar._openapi.schema_generation import create_schema
+from litestar._signature.field import SignatureField
+
 from .utils import build_annotation_for_backend
 
 if TYPE_CHECKING:
@@ -16,6 +19,7 @@ if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.dto.factory.types import FieldDefinitionsType
     from litestar.enums import MediaType
+    from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
     from litestar.utils.signature import ParsedType
 
@@ -111,3 +115,8 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Encoded data.
         """
+
+    def create_openapi_schema(self, generate_examples: bool, schemas: dict[str, Schema]) -> Reference | Schema:
+        """Create a RequestBody model for the given RouteHandler or return None."""
+        field = SignatureField.create(self.annotation)
+        return create_schema(field=field, generate_examples=generate_examples, plugins=[], schemas=schemas)

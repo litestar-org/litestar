@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.dto.types import ForType
     from litestar.handlers import BaseRouteHandler
+    from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
 
     from .backends import AbstractDTOBackend
@@ -173,6 +174,22 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
                 ),
             )
         cls._handler_backend_map[(dto_for, route_handler)] = backend
+
+    @classmethod
+    def create_openapi_schema(
+        cls,
+        dto_for: ForType,
+        handler: BaseRouteHandler,
+        generate_examples: bool,
+        schemas: dict[str, Schema],
+    ) -> Reference | Schema:
+        """Create an OpenAPI request body.
+
+        Returns:
+            OpenAPI request body.
+        """
+        backend = cls._handler_backend_map[(dto_for, handler)]
+        return backend.create_openapi_schema(generate_examples, schemas)
 
 
 def _parse_model(

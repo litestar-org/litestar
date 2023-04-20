@@ -3,9 +3,12 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
+from litestar.openapi.spec import Schema
+
 if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.handlers import BaseRouteHandler
+    from litestar.openapi.spec import Reference
     from litestar.types import LitestarEncodableType
 
     from .types import ForType
@@ -72,3 +75,18 @@ class DTOInterface(Protocol):
             UnsupportedType: If the DTO type does not support the annotated type of ``parsed_type``.
         """
         return
+
+    @classmethod
+    def create_openapi_schema(
+        cls,
+        dto_for: ForType,
+        handler: BaseRouteHandler,
+        generate_examples: bool,
+        schemas: dict[str, Schema],
+    ) -> Reference | Schema:
+        """Create an OpenAPI request body for the DTO.
+
+        Returns:
+            An optional :class:`RequestBody <.openapi.spec.request_body.RequestBody>` instance.
+        """
+        return Schema()
