@@ -30,7 +30,6 @@ from typing import (
 from uuid import UUID
 
 from _decimal import Decimal
-from msgspec import NODEFAULT, Struct
 from msgspec.structs import fields as msgspec_struct_fields
 from typing_extensions import get_args, get_type_hints
 
@@ -61,6 +60,8 @@ from litestar.utils.predicates import (
 from litestar.utils.typing import get_origin_or_inner_type, make_non_optional_union
 
 if TYPE_CHECKING:
+    from msgspec import Struct
+
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
     try:
@@ -627,9 +628,7 @@ def create_schema_for_struct_class(
             [
                 field.encode_name
                 for field in msgspec_struct_fields(field_type)
-                if field.default is NODEFAULT
-                and field.default_factory is NODEFAULT
-                and not is_optional_union(field.type)
+                if field.required and not is_optional_union(field.type)
             ]
         ),
         properties={

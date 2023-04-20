@@ -13,6 +13,7 @@ from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.factory.types import FieldDefinition, NestedFieldDefinition
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
+from litestar.openapi.spec.reference import Reference
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
 
@@ -152,3 +153,24 @@ def test_backend_populate_data_from_builtins(
     backend = backend_type(ParsedType(DC), data_container_type=backend_model, field_definitions=field_definitions)
     data = backend.populate_data_from_builtins(DC, data=DESTRUCTURED)
     assert data == DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"))
+
+
+@pytest.mark.parametrize(
+    ("backend_type", "backend_model"), [(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)]
+)
+def test_backend_create_openapi_schema(
+    backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
+) -> None:
+    backend = backend_type(ParsedType(DC), data_container_type=backend_model, field_definitions=field_definitions)
+    schemas: dict[str, Any] = {}
+    ref = backend.create_openapi_schema(False, schemas)
+    assert isinstance(ref, Reference)
+    schema = schemas[ref.value]
+    assert schema.properties["a"].type == "integer"
+    assert schema.properties["b"].type == "string"
+    assert schema.properties["c"].items.type == "integer"
+    assert schema.properties["c"].type == "array"
+    assert isinstance(nested := schema.properties["nested"], Reference)
+    nested_schema = schemas[nested.value]
+    assert nested_schema.properties["a"].type == "integer"
+    assert nested_schema.properties["b"].type == "string"
