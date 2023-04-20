@@ -6,3 +6,6 @@ sqlalchemy
 
     config
     plugin
+    repository
+    types
+    base

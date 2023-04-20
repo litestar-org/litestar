@@ -7,8 +7,8 @@ the :class:`SQLAlchemyInitPlugin <.contrib.sqlalchemy.init_plugin.plugin.SQLAlch
 Features
 --------
 
-* Managed `sessions <https://docs.sqlalchemy.org/en/14/orm/session.html>`_ (sync and async) including dependency injection
-* Managed `engine <https://docs.sqlalchemy.org/en/14/core/engines.html>`_ (sync and async) including dependency injection
+* Managed `sessions <https://docs.sqlalchemy.org/en/20/orm/session.html>`_ (sync and async) including dependency injection
+* Managed `engine <https://docs.sqlalchemy.org/en/20/core/engines.html>`_ (sync and async) including dependency injection
 * Typed configuration objects
 
 Basic Use

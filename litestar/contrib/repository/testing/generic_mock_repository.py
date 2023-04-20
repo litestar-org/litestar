@@ -8,7 +8,7 @@ from datetime import datetime, timezone, tzinfo
 from typing import TYPE_CHECKING, Generic, Protocol, TypeVar
 from uuid import uuid4
 
-from litestar.contrib.repository.abc import AbstractRepository
+from litestar.contrib.repository.abc import AbstractAsyncRepository
 from litestar.contrib.repository.exceptions import ConflictError, RepositoryError
 
 if TYPE_CHECKING:
@@ -18,14 +18,14 @@ if TYPE_CHECKING:
     from litestar.contrib.repository import FilterTypes
 
 ModelT = TypeVar("ModelT", bound="HasID")
-MockRepoT = TypeVar("MockRepoT", bound="GenericMockRepository")
+MockRepoT = TypeVar("MockRepoT", bound="GenericAsyncMockRepository")
 
 
 class HasID(Protocol):
     id: Any
 
 
-class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
+class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT]):
     """A repository implementation for tests.
 
     Uses a :class:`dict` for storage.
@@ -33,6 +33,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
 
     collection: MutableMapping[Hashable, ModelT]
     model_type: type[ModelT]
+    match_fields: list[str] | str | None = None
 
     _model_has_created: bool
     _model_has_updated: bool
@@ -179,18 +180,35 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """
         return self._find_or_raise_not_found(item_id)
 
-    async def get_or_create(self, **kwargs: Any) -> tuple[ModelT, bool]:
+    async def get_or_create(self, match_fields: list[str] | str | None = None, **kwargs: Any) -> tuple[ModelT, bool]:
         """Get instance identified by ``kwargs`` or create if it doesn't exist.
 
         Args:
+            match_fields: a list of keys to use to match the existing model.  When empty, all fields are matched.
             **kwargs: Identifier of the instance to be retrieved.
 
         Returns:
             a tuple that includes the instance and whether it needed to be created.
 
         """
-        existing = await self.get_one_or_none(**kwargs)
+        match_fields = match_fields if match_fields else self.match_fields
+        if isinstance(match_fields, str):
+            match_fields = [match_fields]
+        if match_fields:
+            match_filter = {
+                field_name: field_value
+                for field_name in match_fields
+                if (field_value := kwargs.get(field_name)) is not None
+            }
+        else:
+            match_filter = kwargs
+        existing = await self.get_one_or_none(**match_filter)
         if existing:
+            for field_name, new_field_value in kwargs.items():
+                field = getattr(existing, field_name, None)
+                if field and field != new_field_value:
+                    setattr(existing, field_name, new_field_value)
+
             return existing, False
         return await self.add(self.model_type(**kwargs)), True
 
@@ -237,7 +255,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """Update instance with the attribute values present on ``data``.
 
         Args:
-            data: An instance that should have a value for :attr:`id_attribute <GenericMockRepository.id_attribute>` that exists in the
+            data: An instance that should have a value for :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>` that exists in the
                 collection.
 
         Returns:
@@ -258,7 +276,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         """Update instances with the attribute values present on ``data``.
 
         Args:
-            data: A list of instances that should have a value for :attr:`id_attribute <GenericMockRepository.id_attribute>`
+            data: A list of instances that should have a value for :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>`
                 that exists in the collection.
 
         Returns:
@@ -286,7 +304,7 @@ class GenericMockRepository(AbstractRepository[ModelT], Generic[ModelT]):
         Args:
             data: Instance to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on `data` named as value of
-                :attr:`id_attribute <GenericMockRepository.id_attribute>`.
+                :attr:`id_attribute <AsyncGenericMockRepository.id_attribute>`.
 
         Returns:
             The updated or created instance.
