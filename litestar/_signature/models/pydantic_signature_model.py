@@ -15,7 +15,6 @@ from litestar.utils.predicates import is_pydantic_constrained_field
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
-    from litestar.plugins import PluginMapping
     from litestar.utils.signature import ParsedSignature
 
 __all__ = ("PydanticSignatureModel",)
@@ -53,27 +52,12 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
 
         return signature.to_dict()
 
-    def _resolve_field_value(self, key: str) -> Any:
-        """Return value using key mapping, if available.
-
-        Args:
-            key: A field name.
-
-        Returns:
-            The plugin value, if available.
-        """
-        value = self.__getattribute__(key)
-        mapping = self.field_plugin_mappings.get(key)
-        return mapping.get_model_instance_for_value(value) if mapping else value
-
     def to_dict(self) -> dict[str, Any]:
         """Normalize access to the signature model's dictionary method, because different backends use different methods
         for this.
 
         Returns: A dictionary of string keyed values.
         """
-        if self.field_plugin_mappings:
-            return {key: self._resolve_field_value(key) for key in self.__fields__}
         return {key: self.__getattribute__(key) for key in self.__fields__}
 
     @classmethod
@@ -128,7 +112,6 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
         fn_name: str,
         fn_module: str | None,
         parsed_signature: ParsedSignature,
-        field_plugin_mappings: dict[str, PluginMapping],
         dependency_names: set[str],
         type_overrides: dict[str, Any],
     ) -> type[PydanticSignatureModel]:
@@ -138,7 +121,6 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
             fn_name: Name of the callable.
             fn_module: Name of the function's module, if any.
             parsed_signature: A ParsedSignature instance.
-            field_plugin_mappings: A mapping of field names to plugin mappings.
             dependency_names: A set of dependency names.
             type_overrides: A dictionary of type overrides, either will override a parameter type with a type derived
                 from a plugin, or set the type to ``Any`` if validation should be skipped for the parameter.
@@ -185,7 +167,6 @@ class PydanticSignatureModel(SignatureModel, BaseModel):
             **field_definitions,
         )
         model.return_annotation = parsed_signature.return_type.annotation
-        model.field_plugin_mappings = field_plugin_mappings
         model.dependency_name_set = dependency_names
         model.populate_signature_fields()
         return model

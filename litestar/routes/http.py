@@ -159,12 +159,7 @@ class HTTPRoute(BaseRoute):
                 route_handler=route_handler, parameter_model=parameter_model, request=request
             )
 
-        response: ASGIApp = await route_handler.to_response(
-            app=scope["app"],
-            data=response_data,
-            plugins=request.app.serialization_plugins,
-            request=request,
-        )
+        response: ASGIApp = await route_handler.to_response(app=scope["app"], data=response_data, request=request)
 
         if cleanup_group:
             await cleanup_group.cleanup()

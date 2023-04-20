@@ -6,9 +6,7 @@ from typing import TYPE_CHECKING, Any, Sequence, cast
 
 from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
-from litestar.plugins import get_plugin_for_value
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from litestar.utils import is_async_callable
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -16,7 +14,6 @@ if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.datastructures import Cookie, ResponseHeader
     from litestar.dto.interface import DTOInterface
-    from litestar.plugins import SerializationPluginProtocol
     from litestar.response import Response
     from litestar.response_containers import ResponseContainer
     from litestar.types import (
@@ -37,7 +34,6 @@ __all__ = (
     "get_default_status_code",
     "normalize_headers",
     "normalize_http_method",
-    "normalize_response_data",
 )
 
 
@@ -90,7 +86,6 @@ def create_data_handler(
 
     async def handler(
         data: Any,
-        plugins: list["SerializationPluginProtocol"],
         return_dto: type[DTOInterface] | None,
         request: Request[Any, Any, Any],
         **kwargs: Any,
@@ -100,8 +95,6 @@ def create_data_handler(
 
         if return_dto:
             data = return_dto(request).data_to_encodable_type(data)
-        elif plugins:
-            data = await normalize_response_data(data=data, plugins=plugins)
 
         return await create_response(data=data)
 
@@ -160,30 +153,6 @@ def normalize_headers(headers: frozenset[ResponseHeader]) -> dict[str, str]:
         for header in headers
         if not header.documentation_only
     }
-
-
-async def normalize_response_data(data: Any, plugins: list["SerializationPluginProtocol"]) -> Any:
-    """Normalize the response's data by awaiting any async values and resolving plugins.
-
-    Args:
-        data: An arbitrary value
-        plugins: A list of :class:`plugins <litestar.plugins.base.SerializationPluginProtocol>`
-    Returns:
-        Value for the response body
-    """
-
-    plugin = get_plugin_for_value(value=data, plugins=plugins)
-    if not plugin:
-        return data
-
-    if is_async_callable(plugin.to_dict):
-        if isinstance(data, (list, tuple)):
-            return [await plugin.to_dict(datum) for datum in data]
-        return await plugin.to_dict(data)
-
-    if isinstance(data, (list, tuple)):
-        return [plugin.to_dict(datum) for datum in data]
-    return plugin.to_dict(data)
 
 
 def create_response_container_handler(

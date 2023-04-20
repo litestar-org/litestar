@@ -30,7 +30,6 @@ from litestar.plugins import (
     DTOSerializationPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
-    SerializationPluginProtocol,
 )
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
@@ -155,7 +154,6 @@ class Litestar(Router):
         "request_class",
         "response_cache_config",
         "route_map",
-        "serialization_plugins",
         "state",
         "static_files_config",
         "stores",
@@ -395,7 +393,6 @@ class Litestar(Router):
         self.preferred_validation_backend: Literal["pydantic", "attrs"] = config.preferred_validation_backend
         self.request_class = config.request_class or Request
         self.response_cache_config = config.response_cache_config
-        self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
         self.dto_serialization_plugins = [p for p in config.plugins if isinstance(p, DTOSerializationPluginProtocol)]
         self.state = config.state
         self.static_files_config = config.static_files_config

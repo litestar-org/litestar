@@ -428,7 +428,6 @@ class BaseRouteHandler(Generic[T]):
             self.signature_model = create_signature_model(
                 dependency_name_set=self.dependency_name_set,
                 fn=cast("AnyCallable", self.fn.value),
-                plugins=app.serialization_plugins,
                 preferred_validation_backend=app.preferred_validation_backend,
                 parsed_signature=self.parsed_fn_signature,
             )
@@ -438,7 +437,6 @@ class BaseRouteHandler(Generic[T]):
                 provider.signature_model = create_signature_model(
                     dependency_name_set=self.dependency_name_set,
                     fn=provider.dependency.value,
-                    plugins=app.serialization_plugins,
                     preferred_validation_backend=app.preferred_validation_backend,
                     parsed_signature=ParsedSignature.from_fn(
                         unwrap_partial(provider.dependency.value), self.resolve_signature_namespace()

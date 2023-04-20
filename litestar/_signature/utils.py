@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 from litestar.constants import SKIP_VALIDATION_NAMES
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import DependencyKwarg
-from litestar.plugins import PluginMapping, get_plugin_for_value
 from litestar.types import AnyCallable, Empty
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.predicates import is_attrs_class
@@ -32,7 +31,6 @@ if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
     from litestar._signature.models.base import SignatureModel
-    from litestar.plugins import SerializationPluginProtocol
     from litestar.utils.signature import ParsedParameter, ParsedSignature
 
 __all__ = (
@@ -47,7 +45,6 @@ SignatureModelType: TypeAlias = "type[SignatureModel]"
 def create_signature_model(
     dependency_name_set: set[str],
     fn: AnyCallable,
-    plugins: list[SerializationPluginProtocol],
     preferred_validation_backend: Literal["pydantic", "attrs"],
     parsed_signature: ParsedSignature,
 ) -> type[SignatureModel]:
@@ -57,7 +54,6 @@ def create_signature_model(
     Args:
         dependency_name_set: A set of dependency names
         fn: A callable.
-        plugins: A list of plugins.
         preferred_validation_backend: Validation/Parsing backend to prefer, if installed
         parsed_signature: A parsed signature for the handler/dependency function.
 
@@ -76,21 +72,16 @@ def create_signature_model(
         dependency_name_set=dependency_name_set, fn=unwrapped_fn, parsed_signature=parsed_signature
     )
 
-    field_plugin_mappings = _create_field_plugin_mappings(parsed_signature, plugins)
-
     model_class = _get_signature_model_type(
-        preferred_validation_backend=preferred_validation_backend,
-        parsed_signature=parsed_signature,
-        field_plugin_mappings=field_plugin_mappings,
+        preferred_validation_backend=preferred_validation_backend, parsed_signature=parsed_signature
     )
 
-    type_overrides = _create_type_overrides(parsed_signature, field_plugin_mappings)
+    type_overrides = _create_type_overrides(parsed_signature)
 
     return model_class.create(
         fn_name=fn_name,
         fn_module=fn_module,
         parsed_signature=parsed_signature,
-        field_plugin_mappings=field_plugin_mappings,
         dependency_names={*dependency_name_set, *dependency_names},
         type_overrides=type_overrides,
     )
@@ -112,39 +103,19 @@ def _any_attrs_annotation(parsed_signature: ParsedSignature) -> bool:
     return False
 
 
-def _any_pydantic_annotation(
-    parsed_signature: ParsedSignature, field_plugin_mappings: dict[str, PluginMapping]
-) -> bool:
+def _any_pydantic_annotation(parsed_signature: ParsedSignature) -> bool:
     for parameter in parsed_signature.parameters.values():
         parsed_type = parameter.parsed_type
-        if (
-            any(_is_pydantic_annotation(t.annotation) for t in parsed_type.inner_types)
-            or _is_pydantic_annotation(parsed_type.annotation)
-            or field_plugin_mappings.get(parameter.name)
+        if any(_is_pydantic_annotation(t.annotation) for t in parsed_type.inner_types) or _is_pydantic_annotation(
+            parsed_type.annotation
         ):
             return True
     return False
 
 
-def _create_field_plugin_mappings(
-    parsed_signature: ParsedSignature, plugins: list[SerializationPluginProtocol]
-) -> dict[str, PluginMapping]:
-    field_plugin_mappings = {}
-    for parameter in parsed_signature.parameters.values():
-        parsed_type = parameter.parsed_type
-        if plugin := get_plugin_for_value(parameter.parsed_type.annotation, plugins):
-            type_value = parsed_type.inner_types[0].annotation if parsed_type.is_collection else parsed_type.annotation
-            field_plugin_mappings[parameter.name] = PluginMapping(plugin=plugin, model_class=type_value)
-    return field_plugin_mappings
-
-
-def _create_type_overrides(
-    parsed_signature: ParsedSignature, field_plugin_mappings: dict[str, PluginMapping]
-) -> dict[str, type]:
+def _create_type_overrides(parsed_signature: ParsedSignature) -> dict[str, Any]:
     type_overrides = {}
     for parameter in parsed_signature.parameters.values():
-        if plugin_mapping := field_plugin_mappings.get(parameter.name):
-            type_overrides[parameter.name] = _get_type_annotation_from_plugin_mapping(parameter, plugin_mapping)
         if _should_skip_validation(parameter):
             type_overrides[parameter.name] = Any
     return type_overrides
@@ -153,37 +124,16 @@ def _create_type_overrides(
 def _get_signature_model_type(
     preferred_validation_backend: Literal["pydantic", "attrs"],
     parsed_signature: ParsedSignature,
-    field_plugin_mappings: dict[str, PluginMapping],
 ) -> type[SignatureModel]:
     pydantic_installed = PydanticSignatureModel is not Empty  # type: ignore[comparison-overlap]
     attrs_installed = AttrsSignatureModel is not Empty  # type: ignore[comparison-overlap]
     if (
         pydantic_installed
         and (not attrs_installed or not _any_attrs_annotation(parsed_signature))
-        and (
-            preferred_validation_backend == "pydantic"
-            or _any_pydantic_annotation(parsed_signature, field_plugin_mappings)
-        )
+        and (preferred_validation_backend == "pydantic" or _any_pydantic_annotation(parsed_signature))
     ):
         return cast(SignatureModelType, PydanticSignatureModel)
     return cast(SignatureModelType, AttrsSignatureModel)
-
-
-def _get_type_annotation_from_plugin_mapping(parameter: ParsedParameter, plugin_mapping: PluginMapping) -> Any:
-    """Use plugin declared for parameter annotation type to generate a pydantic model.
-
-    Args:
-        parameter:  ParsedSignatureParameter
-        plugin_mapping: A PluginMapping
-
-    Returns:
-        A pydantic model to be used as a type
-    """
-    parsed_type = parameter.parsed_type
-    pydantic_model = plugin_mapping.plugin.to_data_container_class(
-        model_class=plugin_mapping.model_class, parameter_name=parameter.name
-    )
-    return parsed_type.safe_generic_origin[pydantic_model] if parsed_type.is_collection else pydantic_model
 
 
 def _is_pydantic_annotation(annotation: Any) -> bool:

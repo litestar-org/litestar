@@ -59,7 +59,6 @@ if TYPE_CHECKING:
     from litestar.dto.interface import DTOInterface
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
-    from litestar.plugins import SerializationPluginProtocol
     from litestar.types import MaybePartial  # noqa: F401
 
 
@@ -450,23 +449,20 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             else self._response_handler_mapping["default_handler"],
         )
 
-    async def to_response(
-        self, app: Litestar, data: Any, plugins: list["SerializationPluginProtocol"], request: Request
-    ) -> ASGIApp:
+    async def to_response(self, app: Litestar, data: Any, request: Request) -> ASGIApp:
         """Return a :class:`Response <.response.Response>` from the handler by resolving and calling it.
 
         Args:
             app: The :class:`Litestar <litestar.app.Litestar>` app instance
             data: Either an instance of a :class:`ResponseContainer <.response_containers.ResponseContainer>`,
                 a Response instance or an arbitrary value.
-            plugins: An optional mapping of plugins
             request: A :class:`Request <.connection.Request>` instance
 
         Returns:
             A Response instance
         """
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
-        return await response_handler(app=app, data=data, plugins=plugins, request=request, return_dto=self.resolve_return_dto())  # type: ignore
+        return await response_handler(app=app, data=data, request=request, return_dto=self.resolve_return_dto())  # type: ignore
 
     def on_registration(self, app: Litestar) -> None:
         super().on_registration(app)
