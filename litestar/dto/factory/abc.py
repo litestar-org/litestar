@@ -146,9 +146,6 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         else:
             parsed_type = parsed_signature.return_type
 
-        if parsed_type.is_subclass_of(AbstractDTOFactory):
-            raise InvalidAnnotation("AbstractDTOFactory does not support being set as a handler annotation")
-
         if parsed_type.is_collection:
             if len(parsed_type.inner_types) != 1:
                 raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
