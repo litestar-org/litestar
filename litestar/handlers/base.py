@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
 from litestar._signature import create_signature_model
 from litestar._signature.field import SignatureField
-from litestar.dto.interface import DTOInterface
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
 from litestar.utils import AsyncCallable, Ref, async_partial, get_name, is_async_callable, normalize_path
@@ -21,6 +20,7 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
     from litestar.di import Provide
+    from litestar.dto.interface import DTOInterface
     from litestar.params import ParameterKwarg
     from litestar.router import Router
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
@@ -342,25 +342,13 @@ class BaseRouteHandler(Generic[T]):
 
     def _init_handler_dtos(self) -> None:
         """Initialize the data and return DTOs for the handler."""
-        data_parameter = self.parsed_fn_signature.parameters.get("data")
-        if data_parameter:
-            parameter_type = data_parameter.parsed_type
-            dto = parameter_type.annotation if parameter_type.is_subclass_of(DTOInterface) else self.resolve_dto()
-            if dto:
-                dto.on_registration(
-                    self,
-                    "data",
-                    data_parameter.parsed_type,
-                    infer_request_encoding_from_parameter(data_parameter),
-                )
-
-        return_type = self.parsed_fn_signature.return_type
-        if return_type.annotation is not Empty:
-            return_dto = (
-                return_type.annotation if return_type.is_subclass_of(DTOInterface) else self.resolve_return_dto()
+        if (dto := self.resolve_dto()) and (data_parameter := self.parsed_fn_signature.parameters.get("data")):
+            dto.on_registration(
+                self, "data", data_parameter.parsed_type, infer_request_encoding_from_parameter(data_parameter)
             )
-            if return_dto:
-                return_dto.on_registration(self, "return", return_type)
+
+        if return_dto := self.resolve_return_dto():
+            return_dto.on_registration(self, "return", self.parsed_fn_signature.return_type)
 
     async def authorize_connection(self, connection: "ASGIConnection") -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
