@@ -116,6 +116,4 @@ the :meth:`on_app_init <.plugins.InitPluginProtocol.on_app_init>` method:
     :titlesonly:
     :hidden:
 
-    piccolo-orm
-    sqlalchemy
-    tortoise-orm
+    sqlalchemy/index
