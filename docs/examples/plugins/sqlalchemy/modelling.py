@@ -1,6 +1,6 @@
-from litestar.contrib.sqlalchemy.base import Base
-
 from sqlalchemy.orm import Mapped
+
+from litestar.contrib.sqlalchemy.base import Base
 
 
 class TodoItem(Base):

@@ -3,8 +3,8 @@ from __future__ import annotations
 from .init import (
     AsyncSessionConfig,
     EngineConfig,
-    GenericSQLAlchemyConfig,
     GenericSessionConfig,
+    GenericSQLAlchemyConfig,
     SQLAlchemyAsyncConfig,
     SQLAlchemyInitPlugin,
     SQLAlchemySyncConfig,

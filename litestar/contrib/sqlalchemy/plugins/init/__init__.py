@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from .config import (
     AsyncSessionConfig,
+    EngineConfig,
     GenericSessionConfig,
     GenericSQLAlchemyConfig,
-    EngineConfig,
     SQLAlchemyAsyncConfig,
     SQLAlchemySyncConfig,
     SyncSessionConfig,

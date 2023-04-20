@@ -11,4 +11,3 @@ Installation
 You will need to install SQLAlchemy alongside Litestar to follow along. You can do this by running
 ``pip install litestar[standard,sqlalchemy]``. This will install Litestar, SQLAlchemy, and
 `uvicorn <https://www.uvicorn.org/>`_.
-
