@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, Mapping
+from typing import TYPE_CHECKING, Any, Callable, Mapping, cast
 
 from msgspec.json import Encoder as JsonEncoder
 
+from litestar._signature import create_signature_model
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import default_serializer
 from litestar.types import (
@@ -149,10 +150,21 @@ class websocket_listener(WebsocketRouteHandler):
 
     def on_registration(self, app: Litestar) -> None:
         self._set_listener_context()
-        _utils.update_listener_fn_signature(self._listener_context)
-        # must call this after listener fn signature has been updated, as we assume that
-        # the `parsed_fn_signature` property will be accessed somewhere in the MRO above us.
         super().on_registration(app)
+
+    def _create_signature_model(self, app: Litestar) -> None:
+        """Create signature model for handler function."""
+        if not self.signature_model:
+            new_signature = _utils.create_handler_signature(
+                self._listener_context.listener_callback_signature.original_signature
+            )
+            self.signature_model = create_signature_model(
+                dependency_name_set=self.dependency_name_set,
+                fn=cast("AnyCallable", self.fn.value),
+                plugins=app.serialization_plugins,
+                preferred_validation_backend=app.preferred_validation_backend,
+                parsed_signature=ParsedSignature.from_signature(new_signature, self.resolve_signature_namespace()),
+            )
 
     def _set_listener_context(self) -> None:
         listener_context = self._listener_context

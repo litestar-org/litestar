@@ -44,21 +44,6 @@ class ListenerContext:
     resolved_type_encoders: TypeEncodersMap
 
 
-def update_listener_fn_signature(listener_context: ListenerContext) -> None:
-    # make our listener_fn look like the callback, so we get a correct signature model
-
-    callback_signature = listener_context.listener_callback_signature.original_signature
-    new_params = [p for p in callback_signature.parameters.values() if p.name not in {"data"}]
-    if "socket" not in callback_signature.parameters:
-        new_params.append(inspect.Parameter(name="socket", kind=inspect.Parameter.KEYWORD_ONLY, annotation="WebSocket"))
-    # TODO: could this be avoided if logic for construction of a signature model were moved on to the route handler?
-    new_signature = callback_signature.replace(parameters=new_params)
-    listener_context.handler_function.__signature__ = new_signature  # type: ignore[attr-defined]
-    listener_context.handler_function.__annotations__ = {
-        p.name: p.annotation for p in new_signature.parameters.values()
-    }
-
-
 def create_handle_receive(
     resolved_data_dto: type[DTOInterface] | None,
     receive_mode: WebSocketMode,
@@ -128,7 +113,7 @@ def create_handler_function(
     on_accept: AsyncCallable | None,
     on_disconnect: AsyncCallable | None,
 ) -> Callable[..., Coroutine[None, None, None]]:
-    async def listener_fn(socket: WebSocket, **kwargs: Any) -> None:
+    async def handler_fn(socket: WebSocket, **kwargs: Any) -> None:
         await socket.accept()
 
         listener_callback = AsyncCallable(listener_context.listener_callback)
@@ -152,4 +137,26 @@ def create_handler_function(
                     await on_disconnect(socket)
                 break
 
-    return listener_fn
+    return handler_fn
+
+
+def create_handler_signature(callback_signature: inspect.Signature) -> inspect.Signature:
+    """Creates a :class:`inspect.Signature` for the handler function for signature modelling.
+
+    This is required for two reasons:
+
+        1. the :class:`.handlers.WebsocketHandler` signature model cannot contain the ``data`` parameter, which is
+            required for :class:`.handlers.websocket_listener` handlers.
+        2. the :class;`.handlers.WebsocketHandler` signature model must include the ``socket`` parameter, which is
+            optional for :class:`.handlers.websocket_listener` handlers.
+
+    Args:
+        callback_signature: The :class:`inspect.Signature` of the listener callback.
+
+    Returns:
+        The :class:`inspect.Signature` for the listener callback as required for signature modelling.
+    """
+    new_params = [p for p in callback_signature.parameters.values() if p.name not in {"data"}]
+    if "socket" not in callback_signature.parameters:
+        new_params.append(inspect.Parameter(name="socket", kind=inspect.Parameter.KEYWORD_ONLY, annotation="WebSocket"))
+    return callback_signature.replace(parameters=new_params)
