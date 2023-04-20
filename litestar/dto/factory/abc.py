@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar.connection import Request
+    from litestar.dto.interface import HandlerContext
     from litestar.dto.types import ForType
     from litestar.handlers import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
@@ -128,17 +129,17 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         """
 
     @classmethod
-    def on_registration(cls, route_handler: BaseRouteHandler, dto_for: ForType) -> None:
+    def on_registration(cls, handler_context: HandlerContext) -> None:
         """Called each time the DTO type is encountered during signature modelling.
 
         Args:
-            route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
-            dto_for: indicates whether the DTO is for the request body or response.
+            handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the
+                handler and application of the DTO.
         """
 
-        parsed_signature = route_handler.parsed_fn_signature
+        parsed_signature = handler_context.route_handler.parsed_fn_signature
         request_encoding_type: RequestEncodingType | str | None = None
-        if dto_for == "data":
+        if handler_context.dto_for == "data":
             data_param = parsed_signature.parameters["data"]
             request_encoding_type = infer_request_encoding_from_parameter(data_param)
             parsed_type = parsed_signature.parameters["data"].parsed_type
@@ -158,7 +159,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         if not handler_type.is_subclass_of(cls.model_type):
             raise InvalidAnnotation(f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'")
 
-        key = (dto_for, parsed_type, request_encoding_type)
+        key = (handler_context.dto_for, parsed_type, request_encoding_type)
         backend = cls._type_backend_map.get(key)
         if backend is None:
             backend_type: type[AbstractDTOBackend]
@@ -170,10 +171,10 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             backend = cls._type_backend_map.setdefault(
                 key,
                 backend_type.from_field_definitions(
-                    parsed_type, _parse_model(cls, cls.model_type, cls.config, dto_for)
+                    parsed_type, _parse_model(cls, cls.model_type, cls.config, handler_context.dto_for)
                 ),
             )
-        cls._handler_backend_map[(dto_for, route_handler)] = backend
+        cls._handler_backend_map[(handler_context.dto_for, handler_context.route_handler)] = backend
 
     @classmethod
     def create_openapi_schema(

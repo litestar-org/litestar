@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar, cast
 
 from litestar._signature import create_signature_model
 from litestar._signature.field import SignatureField
-from litestar.dto.interface import DTOInterface
+from litestar.dto.interface import DTOInterface, HandlerContext
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Dependencies, Empty, ExceptionHandlersMap, Guard, Middleware, TypeEncodersMap
 from litestar.utils import AsyncCallable, Ref, async_partial, get_name, is_async_callable, normalize_path
@@ -347,7 +347,7 @@ class BaseRouteHandler(Generic[T]):
             parameter_type = data_parameter.parsed_type
             dto = parameter_type.annotation if parameter_type.is_subclass_of(DTOInterface) else self.resolve_dto()
             if dto:
-                dto.on_registration(self, "data")
+                dto.on_registration(HandlerContext("data", self))
 
         return_type = self.parsed_fn_signature.return_type
         if return_type.annotation is not Empty:
@@ -355,7 +355,7 @@ class BaseRouteHandler(Generic[T]):
                 return_type.annotation if return_type.is_subclass_of(DTOInterface) else self.resolve_return_dto()
             )
             if return_dto:
-                return_dto.on_registration(self, "return")
+                return_dto.on_registration(HandlerContext("return", self))
 
     async def authorize_connection(self, connection: "ASGIConnection") -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""

@@ -11,6 +11,7 @@ from litestar.dto.factory.config import DTOConfig
 from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.factory.types import FieldDefinition
+from litestar.dto.interface import HandlerContext
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.types.empty import Empty
@@ -94,7 +95,7 @@ async def test_from_bytes(request_factory: RequestFactory) -> None:
         return data
 
     dto_type = DataclassDTO[Model]
-    dto_type.on_registration(handler, "data")
+    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
     connection = make_connection(request_factory, handler, data={"a": 1, "b": "two"})
     assert dto_type(connection).bytes_to_data_type(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 
@@ -107,7 +108,7 @@ def test_config_field_definitions() -> None:
     new_def = FieldDefinition(name="z", parsed_type=ParsedType(str), default="something")
     config = DTOConfig(field_definitions=(new_def,))
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(handler, "data")
+    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
     assert get_backend(dto_type).field_definitions["z"] is new_def
 
 
@@ -118,7 +119,7 @@ def test_config_field_mapping() -> None:
 
     config = DTOConfig(field_mapping={"a": "z"})
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(handler, "data")
+    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
     field_definitions = get_backend(dto_type).field_definitions
     assert "a" not in field_definitions
     assert "z" in field_definitions
@@ -131,7 +132,7 @@ def test_config_field_mapping_new_definition() -> None:
 
     config = DTOConfig(field_mapping={"a": FieldDefinition(name="z", parsed_type=ParsedType(str), default=Empty)})
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(handler, "data")
+    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
     field_definitions = get_backend(dto_type).field_definitions
     assert "a" not in field_definitions
     z = field_definitions["z"]
@@ -159,5 +160,5 @@ def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestE
 
     for handler in handler_1, handler_2:
         dto_type = DataclassDTO[Model]
-        dto_type.on_registration(handler, "data")
+        dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
         assert isinstance(dto_type._handler_backend_map[("data", handler)], PydanticDTOBackend)

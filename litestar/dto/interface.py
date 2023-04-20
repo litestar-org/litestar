@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 from litestar.openapi.spec import Schema
@@ -13,7 +14,17 @@ if TYPE_CHECKING:
 
     from .types import ForType
 
-__all__ = ("DTOInterface",)
+__all__ = ("DTOInterface", "HandlerContext")
+
+
+@dataclass
+class HandlerContext:
+    """Context object passed to the ``on_registration`` method of a DTO."""
+
+    __slots__ = ("dto_for", "route_handler")
+
+    dto_for: ForType
+    route_handler: BaseRouteHandler
 
 
 @runtime_checkable
@@ -61,22 +72,6 @@ class DTOInterface(Protocol):
         """
 
     @classmethod
-    def on_registration(cls, route_handler: BaseRouteHandler, dto_for: ForType) -> None:
-        """Receive the ``parsed_type`` and ``route_handler`` that this DTO is configured to represent.
-
-        At this point, if the DTO type does not support the annotated type of ``parsed_type``, it should raise an
-        ``UnsupportedType`` exception.
-
-        Args:
-            route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
-            dto_for: indicates whether the DTO is for the request body or response.
-
-        Raises:
-            UnsupportedType: If the DTO type does not support the annotated type of ``parsed_type``.
-        """
-        return
-
-    @classmethod
     def create_openapi_schema(
         cls,
         dto_for: ForType,
@@ -90,3 +85,19 @@ class DTOInterface(Protocol):
             An optional :class:`RequestBody <.openapi.spec.request_body.RequestBody>` instance.
         """
         return Schema()
+
+    @classmethod
+    def on_registration(cls, handler_context: HandlerContext) -> None:
+        """Receive the ``parsed_type`` and ``route_handler`` that this DTO is configured to represent.
+
+        At this point, if the DTO type does not support the annotated type of ``parsed_type``, it should raise an
+        ``UnsupportedType`` exception.
+
+        Args:
+            handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the
+                handler and application of the DTO.
+
+        Raises:
+            UnsupportedType: If the DTO type does not support the annotated type of ``parsed_type``.
+        """
+        return

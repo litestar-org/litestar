@@ -14,6 +14,7 @@ from litestar import post
 from litestar.contrib.sqlalchemy.dto import DataT, SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig, DTOField, Mark
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
+from litestar.dto.interface import HandlerContext
 from litestar.dto.types import ForType
 from litestar.serialization import encode_json
 
@@ -77,8 +78,8 @@ async def get_model_from_dto(
         return data
 
     connection.scope["route_handler"] = handler
-    dto_type.on_registration(handler, "data")
-    dto_type.on_registration(handler, "return")
+    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
+    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="return"))
     return dto_type(connection).bytes_to_data_type(await connection.body())
 
 
