@@ -35,7 +35,7 @@ def test_route_handler_validation_http_method() -> None:
 
 
 async def test_function_validation() -> None:
-    app = Litestar()
+    Litestar()
 
     with pytest.raises(ImproperlyConfiguredException):
 
