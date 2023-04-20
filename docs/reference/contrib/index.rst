@@ -9,7 +9,4 @@ contrib
     jwt
     mako
     opentelemetry
-    piccolo_orm
     sqlalchemy/index
-    sqlalchemy_1/index
-    tortoise_orm
