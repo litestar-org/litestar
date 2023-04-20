@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from litestar.contrib.sqlalchemy.init_plugin.config.engine import serializer
+from litestar.contrib.sqlalchemy.plugins.init.config.engine import serializer
 
 
 def test_serializer_returns_string() -> None:

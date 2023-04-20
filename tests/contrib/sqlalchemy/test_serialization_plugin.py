@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from litestar.contrib.sqlalchemy.serialization_plugin import SQLAlchemySerializationPlugin
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
@@ -22,7 +22,7 @@ from __future__ import annotations
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
-from litestar.contrib.sqlalchemy.serialization_plugin import SQLAlchemySerializationPlugin
+from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)

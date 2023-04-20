@@ -4,16 +4,17 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import DeclarativeBase
 
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.plugins import SerializationPluginProtocol
 
-from .dto import SQLAlchemyDTO
+from . import _slots_base
 
 if TYPE_CHECKING:
     from litestar.utils.signature import ParsedType
 
 
-class SQLAlchemySerializationPlugin(SerializationPluginProtocol):
-    __slots__ = ("_type_dto_map",)
+class SQLAlchemySerializationPlugin(SerializationPluginProtocol, _slots_base.SlotsBase):
+    __slots__ = ()
 
     def __init__(self) -> None:
         self._type_dto_map: dict[type[DeclarativeBase], type[SQLAlchemyDTO]] = {}
