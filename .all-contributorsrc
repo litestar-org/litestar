@@ -910,6 +910,15 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "patrickarmengol",
+      "name": "Patrick Armengol",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42473149?v=4",
+      "profile": "https://patrickarmengol.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
