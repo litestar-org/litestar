@@ -342,7 +342,7 @@ class BaseRouteHandler(Generic[T]):
         return cast("type[DTOInterface] | None", self._resolved_return_dto)
 
     def _set_dto(self, dto: type[DTOInterface]) -> None:
-        """Set the data_dto for the handler.
+        """Set the dto for the handler.
 
         Args:
             dto: The :class:`DTO type <.dto.interface.DTOInterface>` to set.

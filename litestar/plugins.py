@@ -77,7 +77,7 @@ class SerializationPluginProtocol(Protocol):
         """
         raise NotImplementedError()
 
-    def create_dto_for_type(self, parsed_type: ParsedType) -> type[AbstractDTOFactory]:
+    def create_dto_for_type(self, parsed_type: ParsedType) -> type[DTOInterface]:
         """Given a parsed type, create a DTO class.
 
         Args:
