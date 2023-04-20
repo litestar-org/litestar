@@ -44,7 +44,7 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
-from litestar.utils import AsyncCallable, is_async_callable
+from litestar.utils import AsyncCallable, async_partial, is_async_callable
 
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
@@ -507,6 +507,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
+
+    def _set_runtime_callables(self) -> None:
+        """Set the runtime callables for the route handler."""
+        super()._set_runtime_callables()
+        self.has_sync_callable = False
+        if not is_async_callable(self.fn.value):
+            if self.sync_to_thread:
+                self.fn.value = async_partial(self.fn.value)
+            else:
+                self.has_sync_callable = True
 
 
 route = HTTPRouteHandler
