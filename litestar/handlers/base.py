@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from litestar.controller import Controller
     from litestar.di import Provide
     from litestar.params import ParameterKwarg
-    from litestar.plugins import DTOSerializationPluginProtocol
+    from litestar.plugins import SerializationPluginProtocol
     from litestar.router import Router
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
     from litestar.types.composite_types import MaybePartial
@@ -395,7 +395,7 @@ class BaseRouteHandler(Generic[T]):
         self.resolve_guards()
         self.resolve_middleware()
         self.resolve_opts()
-        self._handle_serialization_plugins(app.dto_serialization_plugins)
+        self._handle_serialization_plugins(app.serialization_plugins)
         self._init_handler_dtos()
         self._set_runtime_callables()
         self._create_signature_model(app)
@@ -443,7 +443,7 @@ class BaseRouteHandler(Generic[T]):
                     ),
                 )
 
-    def _handle_serialization_plugins(self, plugins: list[DTOSerializationPluginProtocol]) -> None:
+    def _handle_serialization_plugins(self, plugins: list[SerializationPluginProtocol]) -> None:
         """Handle the serialization plugins for the handler."""
         if (data_param := self.parsed_fn_signature.parameters.get("data")) and self.resolve_dto() is None:
             for plugin in plugins:

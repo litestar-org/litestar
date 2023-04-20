@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import Schema
     from litestar.utils.signature import ParsedType
 
-__all__ = ("DTOSerializationPluginProtocol", "InitPluginProtocol", "OpenAPISchemaPluginProtocol", "PluginProtocol")
+__all__ = ("SerializationPluginProtocol", "InitPluginProtocol", "OpenAPISchemaPluginProtocol", "PluginProtocol")
 
 ModelT = TypeVar("ModelT")
 DataContainerT = TypeVar("DataContainerT", bound=Union[BaseModel, DataclassProtocol, TypedDict])  # type: ignore[valid-type]
@@ -60,7 +60,7 @@ class InitPluginProtocol(Protocol):
 
 
 @runtime_checkable
-class DTOSerializationPluginProtocol(Protocol):
+class SerializationPluginProtocol(Protocol):
     """Protocol used to define a serialization plugin for DTOs."""
 
     __slots__ = ()
@@ -119,4 +119,4 @@ class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
         raise NotImplementedError()
 
 
-PluginProtocol = Union[DTOSerializationPluginProtocol, InitPluginProtocol, OpenAPISchemaPluginProtocol]
+PluginProtocol = Union[SerializationPluginProtocol, InitPluginProtocol, OpenAPISchemaPluginProtocol]

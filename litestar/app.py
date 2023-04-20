@@ -27,9 +27,9 @@ from litestar.middleware.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec.components import Components
 from litestar.plugins import (
-    DTOSerializationPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPluginProtocol,
+    SerializationPluginProtocol,
 )
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
@@ -139,13 +139,11 @@ class Litestar(Router):
         "compression_config",
         "cors_config",
         "csrf_config",
-        "dto_serialization_plugins",
         "event_emitter",
         "get_logger",
         "logger",
         "logging_config",
         "multipart_form_part_limit",
-        "signature_namespace",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -154,6 +152,8 @@ class Litestar(Router):
         "request_class",
         "response_cache_config",
         "route_map",
+        "serialization_plugins",
+        "signature_namespace",
         "state",
         "static_files_config",
         "stores",
@@ -393,7 +393,7 @@ class Litestar(Router):
         self.preferred_validation_backend: Literal["pydantic", "attrs"] = config.preferred_validation_backend
         self.request_class = config.request_class or Request
         self.response_cache_config = config.response_cache_config
-        self.dto_serialization_plugins = [p for p in config.plugins if isinstance(p, DTOSerializationPluginProtocol)]
+        self.serialization_plugins = [p for p in config.plugins if isinstance(p, SerializationPluginProtocol)]
         self.state = config.state
         self.static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
