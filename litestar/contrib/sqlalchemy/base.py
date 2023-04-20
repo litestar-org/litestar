@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, runtime_chec
 from uuid import UUID, uuid4
 
 from pydantic import AnyHttpUrl, AnyUrl, EmailStr
-from sqlalchemy import JSON, MetaData, String, Uuid
+from sqlalchemy import MetaData, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -18,6 +18,8 @@ from sqlalchemy.orm import (
     mapped_column,
     registry,
 )
+
+from .types import GUID, JSON
 
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause
@@ -120,7 +122,7 @@ class CommonTableAttributes:
 meta = MetaData(naming_convention=convention)
 orm_registry = registry(
     metadata=meta,
-    type_annotation_map={UUID: Uuid, EmailStr: String, AnyUrl: String, AnyHttpUrl: String, dict: JSON},
+    type_annotation_map={UUID: GUID, EmailStr: String, AnyUrl: String, AnyHttpUrl: String, dict: JSON},
 )
 
 

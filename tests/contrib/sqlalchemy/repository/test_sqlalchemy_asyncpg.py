@@ -35,6 +35,7 @@ pytestmark = pytest.mark.skipif(sys.platform != "linux", reason="docker not avai
 here = Path(__file__).parent
 
 
+@pytest.mark.sqlalchemy_asyncpg
 @pytest.fixture(scope="session")
 def event_loop() -> Iterator[AbstractEventLoop]:
     """Need the event loop scoped to the session so that we can use it to check
@@ -45,6 +46,7 @@ def event_loop() -> Iterator[AbstractEventLoop]:
     loop.close()
 
 
+@pytest.mark.sqlalchemy_asyncpg
 @pytest.fixture(scope="session")
 def docker_compose_file() -> Path:
     """
@@ -95,6 +97,7 @@ async def db_responsive(host: str) -> bool:
         await conn.close()
 
 
+@pytest.mark.sqlalchemy_asyncpg
 @pytest.fixture(scope="session", autouse=True)
 async def _containers(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
     """Starts containers for required services, fixture waits until they are
@@ -107,6 +110,7 @@ async def _containers(docker_ip: str, docker_services: Services) -> None:  # pyl
     await wait_until_responsive(timeout=30.0, pause=0.1, check=db_responsive, host=docker_ip)
 
 
+@pytest.mark.sqlalchemy_asyncpg
 @pytest.fixture(name="engine")
 async def fx_engine(docker_ip: str) -> AsyncEngine:
     """Postgresql instance for end-to-end testing.
@@ -132,6 +136,7 @@ async def fx_engine(docker_ip: str) -> AsyncEngine:
     )
 
 
+@pytest.mark.sqlalchemy_asyncpg
 @pytest.fixture(name="raw_authors")
 def fx_raw_authors() -> list[dict[str, Any]]:
     """Unstructured author representations."""
@@ -144,7 +149,7 @@ def fx_raw_authors() -> list[dict[str, Any]]:
             "updated": "0001-01-01T00:00:00",
         },
         {
-            "id": UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"),
+            "id": "5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2",
             "name": "Leo Tolstoy",
             "dob": "1828-09-09",
             "created": "0001-01-01T00:00:00",
@@ -153,6 +158,7 @@ def fx_raw_authors() -> list[dict[str, Any]]:
     ]
 
 
+@pytest.mark.sqlalchemy_asyncpg
 @pytest.fixture(name="raw_books")
 def fx_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Unstructured book representations."""
@@ -162,6 +168,21 @@ def fx_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "title": "Murder on the Orient Express",
             "author_id": "97108ac1-ffcb-411d-8b1e-d9183399f63b",
             "author": raw_authors[0],
+            "created": "0001-01-01T00:00:00",
+            "updated": "0001-01-01T00:00:00",
+        },
+    ]
+
+
+@pytest.mark.sqlalchemy_asyncpg
+@pytest.fixture(name="raw_log_events")
+def fx_raw_log_events() -> list[dict[str, Any]]:
+    """Unstructured log events representations."""
+    return [
+        {
+            "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
+            "logged_at": "0001-01-01T00:00:00",
+            "payload": {"foo": "bar", "baz": datetime.now()},
             "created": "0001-01-01T00:00:00",
             "updated": "0001-01-01T00:00:00",
         },
@@ -186,6 +207,7 @@ async def _seed_db(engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_b
         await conn.execute(insert(Author).values(raw_authors))
 
 
+@pytest.mark.sqlalchemy_asyncpg
 @pytest.fixture(
     name="session",
 )
@@ -201,16 +223,19 @@ async def fx_session(
         await session.close()
 
 
+@pytest.mark.sqlalchemy_asyncpg
 @pytest.fixture(name="author_repo")
 def fx_author_repo(session: AsyncSession) -> AuthorRepository:
     return AuthorRepository(session=session)
 
 
+@pytest.mark.sqlalchemy_asyncpg
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: AsyncSession) -> BookRepository:
     return BookRepository(session=session)
 
 
+@pytest.mark.sqlalchemy_asyncpg
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
 
@@ -221,6 +246,7 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepos
         author_repo.filter_collection_by_kwargs(author_repo.statement, whoops="silly me")
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_count_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy count with asyncpg.
 
@@ -230,6 +256,7 @@ async def test_repo_count_method(author_repo: AuthorRepository) -> None:
     assert await author_repo.count() == 2
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_list_and_count_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
     """Test SQLALchemy list with count in asyncpg.
 
@@ -244,6 +271,7 @@ async def test_repo_list_and_count_method(raw_authors: list[dict[str, Any]], aut
     assert len(collection) == exp_count
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> None:
     """Test SQLALchemy list with count in asyncpg.
 
@@ -258,6 +286,7 @@ async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> No
     assert len(collection) == 0
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
     """Test SQLALchemy list with asyncpg.
 
@@ -271,6 +300,7 @@ async def test_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: 
     assert len(collection) == exp_count
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
     """Test SQLALchemy Add with asyncpg.
 
@@ -288,6 +318,7 @@ async def test_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: A
     assert obj.id is not None
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
     """Test SQLALchemy Add Many with asyncpg.
 
@@ -308,6 +339,7 @@ async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_re
         assert obj.name in {"Testing 2", "Cody"}
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy Update Many with asyncpg.
 
@@ -322,6 +354,7 @@ async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
         assert obj.name.startswith("Update")
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_exists_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy exists with asyncpg.
 
@@ -332,6 +365,7 @@ async def test_repo_exists_method(author_repo: AuthorRepository) -> None:
     assert exists
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_update_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy Update with asyncpg.
 
@@ -344,6 +378,7 @@ async def test_repo_update_method(author_repo: AuthorRepository) -> None:
     assert updated_obj.name == obj.name
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_delete_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy delete with asyncpg.
 
@@ -354,6 +389,7 @@ async def test_repo_delete_method(author_repo: AuthorRepository) -> None:
     assert obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_delete_many_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy delete many with asyncpg.
 
@@ -378,6 +414,7 @@ async def test_repo_delete_many_method(author_repo: AuthorRepository) -> None:
     assert count == 0
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_get_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy Get with asyncpg.
 
@@ -388,6 +425,7 @@ async def test_repo_get_method(author_repo: AuthorRepository) -> None:
     assert obj.name == "Agatha Christie"
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_get_one_or_none_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy Get One with asyncpg.
 
@@ -401,6 +439,7 @@ async def test_repo_get_one_or_none_method(author_repo: AuthorRepository) -> Non
     assert none_obj is None
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_get_one_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy Get One with asyncpg.
 
@@ -414,6 +453,7 @@ async def test_repo_get_one_method(author_repo: AuthorRepository) -> None:
         _ = await author_repo.get_one(name="I don't exist")
 
 
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy Get or create with asyncpg.
 
@@ -429,6 +469,23 @@ async def test_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
     assert new_created
 
 
+@pytest.mark.sqlalchemy_asyncpg
+async def test_repo_get_or_create_match_filter(author_repo: AuthorRepository) -> None:
+    """Test SQLALchemy Get or create with a match filter
+
+    Args:
+        author_repo (AuthorRepository): The author mock repository
+    """
+    now = datetime.now()
+    existing_obj, existing_created = await author_repo.get_or_create(
+        match_fields="name", name="Agatha Christie", dob=now
+    )
+    assert existing_obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
+    assert existing_obj.dob == now
+    assert existing_created is False
+
+
+@pytest.mark.sqlalchemy_asyncpg
 async def test_repo_upsert_method(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy upsert with asyncpg.
 
