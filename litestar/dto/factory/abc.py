@@ -71,16 +71,20 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         if parsed_type.is_forward_ref:
             raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
 
+        # if a configuration is not provided, and the type narrowing is a type var, we don't want to create a subclass
         configs = parse_configs_from_annotation(parsed_type)
-        if configs:
-            config = configs[0]
-        elif hasattr(cls, "config"):
-            config = cls.config
-        else:
-            config = DTOConfig()
-
         if parsed_type.is_type_var and not configs:
             return cls
+
+        if configs:
+            # provided config is always preferred
+            config = configs[0]
+        elif hasattr(cls, "config"):
+            # if no config is provided, but the class has one assigned, use that
+            config = cls.config
+        else:
+            # otherwise, create a new config
+            config = DTOConfig()
 
         cls_dict: dict[str, Any] = {
             "config": config,
