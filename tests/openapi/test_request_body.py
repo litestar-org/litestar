@@ -1,10 +1,13 @@
-from typing import List
+from typing import Any, Dict, List
+from unittest.mock import MagicMock
 
 from pydantic import BaseConfig, BaseModel
 
 from litestar import Litestar, post
 from litestar._openapi.request_body import create_request_body
+from litestar._signature.field import SignatureField
 from litestar.datastructures.upload_file import UploadFile
+from litestar.dto.interface import DTOInterface
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from tests.openapi.utils import PersonController
@@ -86,3 +89,21 @@ def test_upload_file_request_body_generation() -> None:
             }
         }
     }
+
+
+def test_request_body_generation_with_dto() -> None:
+    mock_dto = MagicMock(spec=DTOInterface)
+
+    @post(path="/form-upload", dto=mock_dto)
+    async def handler(data: Dict[str, Any]) -> None:
+        return None
+
+    create_request_body(
+        route_handler=handler,
+        field=SignatureField.create(Dict[str, Any]),
+        generate_examples=False,
+        plugins=[],
+        schemas={},
+    )
+
+    mock_dto.create_openapi_schema.assert_called_once_with("data", handler, False, {})
