@@ -380,12 +380,13 @@ class BaseRouteHandler(Generic[T]):
     def on_registration(self, app: Litestar) -> None:
         """Called once per handler when the app object is instantiated."""
         self._validate_handler_function()
-        self.resolve_guards()
-        self.resolve_middleware()
-        self.resolve_opts()
         self._init_handler_dtos()
         self._set_runtime_callables()
         self._create_signature_model(app)
+        self._create_provider_signature_models(app)
+        self.resolve_guards()
+        self.resolve_middleware()
+        self.resolve_opts()
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
@@ -410,7 +411,7 @@ class BaseRouteHandler(Generic[T]):
                     provider.has_sync_callable = True
 
     def _create_signature_model(self, app: Litestar) -> None:
-        """Create signature model for handler function and dependencies."""
+        """Create signature model for handler function."""
         if not self.signature_model:
             self.signature_model = create_signature_model(
                 dependency_name_set=self.dependency_name_set,
@@ -420,6 +421,8 @@ class BaseRouteHandler(Generic[T]):
                 parsed_signature=self.parsed_fn_signature,
             )
 
+    def _create_provider_signature_models(self, app: Litestar) -> None:
+        """Create signature models for dependency providers."""
         for provider in self.resolve_dependencies().values():
             if not getattr(provider, "signature_model", None):
                 provider.signature_model = create_signature_model(
