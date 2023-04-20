@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from typing_extensions import TypeGuard
 
     from litestar.config.app import AppConfig
-    from litestar.dto.factory.abc import AbstractDTOFactory
+    from litestar.dto.interface import DTOInterface
     from litestar.openapi.spec import Schema
     from litestar.utils.signature import ParsedType
 
