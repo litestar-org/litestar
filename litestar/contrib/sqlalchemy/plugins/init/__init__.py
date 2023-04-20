@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from .config import (
     AsyncSessionConfig,
+    GenericSessionConfig,
+    GenericSQLAlchemyConfig,
     EngineConfig,
     SQLAlchemyAsyncConfig,
     SQLAlchemySyncConfig,
@@ -12,6 +14,8 @@ from .plugin import SQLAlchemyInitPlugin
 __all__ = (
     "AsyncSessionConfig",
     "EngineConfig",
+    "GenericSQLAlchemyConfig",
+    "GenericSessionConfig",
     "SQLAlchemyAsyncConfig",
     "SQLAlchemyInitPlugin",
     "SQLAlchemySyncConfig",
