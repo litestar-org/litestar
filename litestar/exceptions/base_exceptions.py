@@ -29,7 +29,7 @@ class LitestarException(Exception):
         return " ".join(self.args).strip()
 
 
-class MissingDependencyException(LitestarException):
+class MissingDependencyException(LitestarException, ImportError):
     """Missing optional dependency.
 
     This exception is raised only when a module depends on a dependency that has not been installed.
