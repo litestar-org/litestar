@@ -11,6 +11,7 @@ from litestar._parsers import (
     parse_url_encoded_form_data,
 )
 from litestar.datastructures.upload_file import UploadFile
+from litestar.dto.interface import ConnectionContext
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
@@ -330,7 +331,8 @@ def create_multipart_extractor(
             return None
 
         if dto_type:
-            return dto_type(connection).builtins_to_data_type(form_values)
+            ctx = ConnectionContext.from_connection(connection)
+            return dto_type(ctx).builtins_to_data_type(form_values)
 
         return form_values
 
@@ -362,7 +364,8 @@ def create_url_encoded_data_extractor(
             return None
 
         if dto_type:
-            return dto_type(connection).builtins_to_data_type(form_values)
+            ctx = ConnectionContext.from_connection(connection)
+            return dto_type(ctx).builtins_to_data_type(form_values)
 
         return form_values
 
@@ -427,6 +430,7 @@ def create_dto_extractor(
     """
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        return dto_type(connection).bytes_to_data_type(await connection.body())
+        ctx = ConnectionContext.from_connection(connection)
+        return dto_type(ctx).bytes_to_data_type(await connection.body())
 
     return dto_extractor  # type:ignore[return-value]

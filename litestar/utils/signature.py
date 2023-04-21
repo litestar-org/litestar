@@ -5,7 +5,7 @@ import typing
 from dataclasses import dataclass
 from inspect import Parameter, Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import Any, AnyStr, Collection, ForwardRef, TypeVar, Union
+from typing import TYPE_CHECKING, Any, AnyStr, Collection, ForwardRef, TypeVar, Union
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin, get_type_hints
 
@@ -16,6 +16,9 @@ from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from litestar.types import AnyCallable, Empty
 from litestar.types.builtin_types import UNION_TYPES, NoneType
 from litestar.utils.typing import get_safe_generic_origin, unwrap_annotation
+
+if TYPE_CHECKING:
+    from litestar.enums import RequestEncodingType
 
 _GLOBAL_NAMES = {
     namespace: export
@@ -30,7 +33,13 @@ _GLOBAL_NAMES = {
 This allows users to include these names within an `if TYPE_CHECKING:` block in their handler module.
 """
 
-__all__ = ("get_fn_type_hints", "ParsedType", "ParsedParameter", "ParsedSignature")
+__all__ = (
+    "get_fn_type_hints",
+    "ParsedType",
+    "ParsedParameter",
+    "ParsedSignature",
+    "infer_request_encoding_from_parameter",
+)
 
 
 def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -314,3 +323,21 @@ class ParsedSignature:
             return_type=ParsedType(fn_type_hints.get("return", Empty)),
             original_signature=signature,
         )
+
+
+def infer_request_encoding_from_parameter(param: ParsedParameter) -> RequestEncodingType | str | None:
+    """Infer the request encoding type from a parsed type.
+
+    Args:
+        param: The parsed parameter to infer the request encoding type from.
+
+    Returns:
+        The inferred request encoding type.
+    """
+    if param.has_default and isinstance(param.default, BodyKwarg):
+        return param.default.media_type
+    if param.parsed_type.metadata:
+        for item in param.parsed_type.metadata:
+            if isinstance(item, BodyKwarg):
+                return item.media_type
+    return None

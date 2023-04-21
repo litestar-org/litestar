@@ -15,9 +15,8 @@ from .utils import build_annotation_for_backend
 if TYPE_CHECKING:
     from typing import Any
 
-    from litestar.connection import Request
     from litestar.dto.factory.types import FieldDefinitionsType
-    from litestar.enums import MediaType
+    from litestar.dto.interface import ConnectionContext
     from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
     from litestar.utils.signature import ParsedType
@@ -65,12 +64,12 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
 
     @abstractmethod
-    def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Any:
+    def parse_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
         """Parse raw bytes into primitive python types.
 
         Args:
             raw: bytes
-            media_type: encoding of raw data
+            connection_context: Information about the active connection.
 
         Returns:
             The raw bytes parsed into primitive python types.
@@ -89,25 +88,24 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
 
     @abstractmethod
-    def populate_data_from_raw(self, raw: bytes, media_type: MediaType | str) -> Any:
+    def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> Any:
         """Parse raw bytes into instance of `model_type`.
 
         Args:
-            model_type: Type of model to populate.
             raw: bytes
-            media_type: encoding of raw data
+            connection_context: Information about the active connection.
 
         Returns:
             Instance or collection of ``model_type`` instances.
         """
 
     @abstractmethod
-    def encode_data(self, data: Any, connection: Request[Any, Any, Any]) -> LitestarEncodableType:
+    def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType:
         """Encode data into a ``LitestarEncodableType``.
 
         Args:
             data: Data to encode.
-            connection: Connection - can be used for content negotiation.
+            connection_context: Information about the active connection.
 
         Returns:
             Encoded data.

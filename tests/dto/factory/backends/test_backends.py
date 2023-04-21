@@ -11,11 +11,11 @@ from pydantic import BaseModel
 from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.factory.backends.abc import BackendContext
 from litestar.dto.factory.types import FieldDefinition, NestedFieldDefinition
+from litestar.dto.interface import ConnectionContext
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.openapi.spec.reference import Reference
 from litestar.serialization import encode_json
-from litestar.testing import RequestFactory
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
 
@@ -89,38 +89,47 @@ def fx_backend(request: Any, field_definitions: FieldDefinitionsType) -> Abstrac
     return request.param(ctx)  # type:ignore[no-any-return]
 
 
+@pytest.fixture(name="connection_context")
+def fx_connection_context() -> ConnectionContext:
+    return ConnectionContext(handler_id="handler_id", request_encoding_type="application/json")
+
+
 def _destructure(model: BaseModel | Struct) -> dict[str, Any]:
     if isinstance(model, BaseModel):
         return model.dict()
     return to_builtins(model)  # type:ignore[no-any-return]
 
 
-def test_backend_parse_raw_json(backend: AbstractDTOBackend) -> None:
+def test_backend_parse_raw_json(backend: AbstractDTOBackend, connection_context: ConnectionContext) -> None:
     assert (
         _destructure(
             backend.parse_raw(
-                b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', media_type=MediaType.JSON
+                b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', connection_context
             )
         )
         == DESTRUCTURED
     )
 
 
-def test_backend_parse_raw_msgpack(backend: AbstractDTOBackend) -> None:
+def test_backend_parse_raw_msgpack(backend: AbstractDTOBackend, connection_context: ConnectionContext) -> None:
+    connection_context.request_encoding_type = MediaType.MESSAGEPACK
     assert (
         _destructure(
             backend.parse_raw(
                 b"\x83\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two",
-                media_type=MediaType.MESSAGEPACK,
+                connection_context,
             )
         )
         == DESTRUCTURED
     )
 
 
-def test_backend_parse_unsupported_media_type(backend: AbstractDTOBackend) -> None:
+def test_backend_parse_unsupported_media_type(
+    backend: AbstractDTOBackend, connection_context: ConnectionContext
+) -> None:
+    connection_context.request_encoding_type = MediaType.CSS
     with pytest.raises(SerializationException):
-        backend.parse_raw(b"", media_type=MediaType.CSS)
+        backend.parse_raw(b"", connection_context)
 
 
 @pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
@@ -183,37 +192,47 @@ def test_backend_create_openapi_schema(
 
 @pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
 def test_backend_populate_data_from_raw(
-    backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
+    backend_type: type[AbstractDTOBackend],
+    field_definitions: FieldDefinitionsType,
+    connection_context: ConnectionContext,
 ) -> None:
     ctx = BackendContext(ParsedType(DC), field_definitions, DC)
     backend = backend_type(ctx)
-    data = backend.populate_data_from_raw(RAW, media_type=MediaType.JSON)
+    data = backend.populate_data_from_raw(RAW, connection_context)
     assert data == STRUCTURED
 
 
 @pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
 def test_backend_populate_collection_data_from_raw(
-    backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
+    backend_type: type[AbstractDTOBackend],
+    field_definitions: FieldDefinitionsType,
+    connection_context: ConnectionContext,
 ) -> None:
     ctx = BackendContext(ParsedType(List[DC]), field_definitions, DC)
     backend = backend_type(ctx)
-    data = backend.populate_data_from_raw(COLLECTION_RAW, media_type=MediaType.JSON)
+    data = backend.populate_data_from_raw(COLLECTION_RAW, connection_context)
     assert data == [STRUCTURED]
 
 
 @pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
-def test_backend_encode_data(backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType) -> None:
+def test_backend_encode_data(
+    backend_type: type[AbstractDTOBackend],
+    field_definitions: FieldDefinitionsType,
+    connection_context: ConnectionContext,
+) -> None:
     ctx = BackendContext(ParsedType(DC), field_definitions, DC)
     backend = backend_type(ctx)
-    data = backend.encode_data(STRUCTURED, RequestFactory().post())
+    data = backend.encode_data(STRUCTURED, connection_context)
     assert encode_json(data) == RAW
 
 
 @pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
 def test_backend_encode_collection_data(
-    backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
+    backend_type: type[AbstractDTOBackend],
+    field_definitions: FieldDefinitionsType,
+    connection_context: ConnectionContext,
 ) -> None:
     ctx = BackendContext(ParsedType(List[DC]), field_definitions, DC)
     backend = backend_type(ctx)
-    data = backend.encode_data([STRUCTURED], RequestFactory().post())
+    data = backend.encode_data([STRUCTURED], connection_context)
     assert encode_json(data) == COLLECTION_RAW
