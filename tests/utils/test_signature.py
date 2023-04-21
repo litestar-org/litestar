@@ -8,13 +8,21 @@ from typing import Any, ForwardRef, List, Optional, Tuple, TypeVar, Union
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
 
+from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
+from litestar.params import Body
 from litestar.static_files import StaticFiles
 from litestar.types.asgi_types import Receive, Scope, Send
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
-from litestar.utils.signature import ParsedParameter, ParsedSignature, ParsedType, get_fn_type_hints
+from litestar.utils.signature import (
+    ParsedParameter,
+    ParsedSignature,
+    ParsedType,
+    get_fn_type_hints,
+    infer_request_encoding_from_parameter,
+)
 
 T = TypeVar("T")
 
@@ -367,3 +375,18 @@ def test_parsed_type_equality() -> None:
     assert ParsedType(List[int]) != ParsedType(List[str])
     assert ParsedType(List[str]) != ParsedType(Tuple[str])
     assert ParsedType(Optional[str]) == ParsedType(Union[str, None])
+
+
+@pytest.mark.parametrize(
+    ("annotation", "default", "expected"),
+    [
+        (int, None, RequestEncodingType.JSON),
+        (int, Body(media_type=RequestEncodingType.MESSAGEPACK), RequestEncodingType.MESSAGEPACK),
+        (Annotated[int, Body(media_type=RequestEncodingType.MESSAGEPACK)], None, RequestEncodingType.MESSAGEPACK),
+    ],
+)
+def test_infer_request_encoding_type_from_parameter(
+    annotation: Any, default: Any, expected: RequestEncodingType
+) -> None:
+    """Test infer_request_encoding_type_from_parameter."""
+    assert infer_request_encoding_from_parameter(ParsedParameter("foo", default, ParsedType(annotation))) == expected
