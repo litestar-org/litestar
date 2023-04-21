@@ -4,11 +4,10 @@ from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
+from litestar.dto.interface import ConnectionContext
 from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
-from litestar.plugins import get_plugin_for_value
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from litestar.utils import is_async_callable
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -16,7 +15,6 @@ if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.datastructures import Cookie, ResponseHeader
     from litestar.dto.interface import DTOInterface
-    from litestar.plugins import SerializationPluginProtocol
     from litestar.response import Response
     from litestar.response_containers import ResponseContainer
     from litestar.types import (
@@ -37,7 +35,6 @@ __all__ = (
     "get_default_status_code",
     "normalize_headers",
     "normalize_http_method",
-    "normalize_response_data",
 )
 
 
@@ -73,7 +70,7 @@ def create_data_handler(
     cookie_headers = [cookie.to_encoded_header() for cookie in cookies if not cookie.documentation_only]
     raw_headers = [*normalized_headers, *cookie_headers]
 
-    async def create_response(data: Any) -> "ASGIApp":
+    async def create_response(data: Any) -> ASGIApp:
         response = response_class(
             background=background,
             content=data,
@@ -90,18 +87,16 @@ def create_data_handler(
 
     async def handler(
         data: Any,
-        plugins: list["SerializationPluginProtocol"],
         return_dto: type[DTOInterface] | None,
         request: Request[Any, Any, Any],
         **kwargs: Any,
-    ) -> "ASGIApp":
+    ) -> ASGIApp:
         if isawaitable(data):
             data = await data
 
         if return_dto:
-            data = return_dto(request).data_to_encodable_type(data)
-        elif plugins:
-            data = await normalize_response_data(data=data, plugins=plugins)
+            ctx = ConnectionContext.from_connection(request)
+            data = return_dto(ctx).data_to_encodable_type(data)
 
         return await create_response(data=data)
 
@@ -135,7 +130,7 @@ def create_generic_asgi_response_handler(
         A handler function.
     """
 
-    async def handler(data: "ASGIApp", **kwargs: Any) -> "ASGIApp":
+    async def handler(data: ASGIApp, **kwargs: Any) -> ASGIApp:
         if hasattr(data, "set_cookie"):
             for cookie in cookies:
                 data.set_cookie(**cookie.dict)
@@ -162,30 +157,6 @@ def normalize_headers(headers: frozenset[ResponseHeader]) -> dict[str, str]:
     }
 
 
-async def normalize_response_data(data: Any, plugins: list["SerializationPluginProtocol"]) -> Any:
-    """Normalize the response's data by awaiting any async values and resolving plugins.
-
-    Args:
-        data: An arbitrary value
-        plugins: A list of :class:`plugins <litestar.plugins.base.SerializationPluginProtocol>`
-    Returns:
-        Value for the response body
-    """
-
-    plugin = get_plugin_for_value(value=data, plugins=plugins)
-    if not plugin:
-        return data
-
-    if is_async_callable(plugin.to_dict):
-        if isinstance(data, (list, tuple)):
-            return [await plugin.to_dict(datum) for datum in data]
-        return await plugin.to_dict(data)
-
-    if isinstance(data, (list, tuple)):
-        return [plugin.to_dict(datum) for datum in data]
-    return plugin.to_dict(data)
-
-
 def create_response_container_handler(
     after_request: AfterRequestHookHandler | None,
     cookies: frozenset[Cookie],
@@ -207,7 +178,7 @@ def create_response_container_handler(
     """
     normalized_headers = normalize_headers(headers)
 
-    async def handler(data: ResponseContainer, app: Litestar, request: Request, **kwargs: Any) -> "ASGIApp":
+    async def handler(data: ResponseContainer, app: Litestar, request: Request, **kwargs: Any) -> ASGIApp:
         response = data.to_response(
             app=app,
             headers={**normalized_headers, **data.headers},
@@ -235,7 +206,7 @@ def create_response_handler(
         A handler function.
     """
 
-    async def handler(data: Response, **kwargs: Any) -> "ASGIApp":
+    async def handler(data: Response, **kwargs: Any) -> ASGIApp:
         data.cookies = filter_cookies(frozenset(data.cookies), cookies)
         return await after_request(data) if after_request else data  # type: ignore
 

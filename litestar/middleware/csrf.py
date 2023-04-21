@@ -82,7 +82,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         self.config = config
         self.exclude = build_exclude_path_pattern(exclude=config.exclude)
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         Args:
@@ -135,7 +135,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             An ASGI send function.
         """
 
-        async def send_wrapper(message: "Message") -> None:
+        async def send_wrapper(message: Message) -> None:
             """Send function that wraps the original send to inject a cookie.
 
             Args:

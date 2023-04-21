@@ -57,7 +57,7 @@ class TestClientTransport(Generic[T]):
 
     @staticmethod
     def create_receive(request: Request, context: SendReceiveContext) -> Receive:
-        async def receive() -> "ReceiveMessage":
+        async def receive() -> ReceiveMessage:
             if context["request_complete"]:
                 if not context["response_complete"].is_set():
                     await context["response_complete"].wait()
@@ -82,7 +82,7 @@ class TestClientTransport(Generic[T]):
 
     @staticmethod
     def create_send(request: Request, context: SendReceiveContext) -> Send:
-        async def send(message: "Message") -> None:
+        async def send(message: Message) -> None:
             if message["type"] == "http.response.start":
                 assert not context[  # noqa: S101
                     "response_started"
@@ -193,5 +193,5 @@ class TestClientTransport(Generic[T]):
             setattr(response, "context", context["context"])
             return response
 
-    async def handle_async_request(self, request: "Request") -> "Response":
+    async def handle_async_request(self, request: Request) -> Response:
         return self.handle_request(request=request)

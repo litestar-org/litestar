@@ -37,7 +37,7 @@ def _normalize_example_value(value: Any) -> Any:
     return value
 
 
-def _create_field_meta(field: "SignatureField") -> FieldMeta:
+def _create_field_meta(field: SignatureField) -> FieldMeta:
     return FieldMeta(
         name=field.name,
         annotation=field.field_type,
@@ -47,7 +47,7 @@ def _create_field_meta(field: "SignatureField") -> FieldMeta:
     )
 
 
-def create_examples_for_field(field: "SignatureField") -> list["Example"]:
+def create_examples_for_field(field: SignatureField) -> list[Example]:
     """Create an OpenAPI Example instance.
 
     Args:

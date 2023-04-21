@@ -36,7 +36,7 @@ class ASGIRoute(BaseRoute):
             handler_names=[unwrap_partial(route_handler.handler_name)],
         )
 
-    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI app that authorizes the connection and then awaits the handler function.
 
         Args:

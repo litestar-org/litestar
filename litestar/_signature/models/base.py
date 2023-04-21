@@ -9,7 +9,6 @@ from litestar.exceptions import InternalServerException, ValidationException
 if TYPE_CHECKING:
     from litestar._signature.field import SignatureField
     from litestar.connection import ASGIConnection
-    from litestar.plugins import PluginMapping
     from litestar.utils.signature import ParsedSignature
 
 __all__ = ("SignatureModel",)
@@ -24,7 +23,6 @@ class SignatureModel(ABC):
     """Base model for Signature modelling."""
 
     dependency_name_set: ClassVar[set[str]]
-    field_plugin_mappings: ClassVar[dict[str, PluginMapping]]
     return_annotation: ClassVar[Any]
     fields: ClassVar[dict[str, SignatureField]]
 
@@ -93,7 +91,6 @@ class SignatureModel(ABC):
         fn_name: str,
         fn_module: str | None,
         parsed_signature: ParsedSignature,
-        field_plugin_mappings: dict[str, PluginMapping],
         dependency_names: set[str],
         type_overrides: dict[str, Any],
     ) -> type[SignatureModel]:
@@ -103,7 +100,6 @@ class SignatureModel(ABC):
             fn_name: Name of the callable.
             fn_module: Name of the function's module, if any.
             parsed_signature: A parsed signature.
-            field_plugin_mappings: A mapping of field names to plugin mappings.
             dependency_names: A set of dependency names.
             type_overrides: A dictionary of type overrides, either will override a parameter type with a type derived
                 from a plugin, or set the type to ``Any`` if validation should be skipped for the parameter.

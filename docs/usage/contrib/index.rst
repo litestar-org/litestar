@@ -6,3 +6,4 @@ Contrib
     open-telemetry
     jwt
     htmx
+    sqlalchemy

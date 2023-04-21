@@ -84,6 +84,7 @@ uvicorn = {extras = ["standard"], version = "^0.21.1", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 aiosqlite = "*"
+asyncmy = "*"
 asyncpg = "*"
 attrs = "*"
 beautifulsoup4 = "*"
@@ -185,6 +186,9 @@ build-backend = "poetry.core.masonry.api"
 line-length = 120
 include = '\.pyi?$'
 
+[tool.codespell]
+ignore-words-list = "selectin"
+
 [tool.coverage.run]
 omit = ["*/tests/*", "litestar/contrib/sqlalchemy_1/*"]
 
@@ -205,6 +209,10 @@ filterwarnings = [
     "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:164",
     "ignore::DeprecationWarning:pkg_resources:2803",
 ]
+markers = [
+    "sqlalchemy_asyncmy: SQLAlchemy MySQL (asyncmy) Tests",
+    "sqlalchemy_asyncpg: SQLAlchemy Postgres (asyncpg) Tests"
+]
 
 [tool.pyright]
 include = ["litestar", "tests", "examples"]
@@ -213,6 +221,7 @@ exclude = [
     "litestar/contrib/sqlalchemy_1",
     "litestar/openapi",
     "litestar/plugins",
+    "tests/contrib/sqlalchemy/test_dto.py",
     "tests/contrib/sqlalchemy_1",
     "tests/openapi",
     "tests/plugins",
@@ -274,7 +283,6 @@ ignore = [
     "D205",  # pydocstyle - 1 blank line required between summary line and description
     "D415",  # pydocstyle - first line should end with a period, question mark, or exclamation point
     "E501",  # pycodestyle line too long, handled by black
-    "UP037", # pyupgrade - removes quotes from type annotation
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]

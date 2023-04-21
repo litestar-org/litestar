@@ -46,7 +46,6 @@ except ImportError as e:
     raise MissingDependencyException("pytimeparse", "attrs") from e
 
 if TYPE_CHECKING:
-    from litestar.plugins import PluginMapping
     from litestar.utils.signature import ParsedSignature
 
 key_re = re.compile("@ attribute (.*)|'(.*)'")
@@ -219,7 +218,7 @@ def _extract_exceptions(e: Any) -> list[ErrorMessage]:
     Returns:
         A list of normalized exception messages.
     """
-    messages: "list[ErrorMessage]" = []
+    messages: list[ErrorMessage] = []
     if hasattr(e, "exceptions"):
         for exc in cast("list[Exception]", e.exceptions):
             if hasattr(exc, "exceptions"):  # pragma: no cover
@@ -302,7 +301,6 @@ class AttrsSignatureModel(SignatureModel):
         fn_name: str,
         fn_module: str | None,
         parsed_signature: ParsedSignature,
-        field_plugin_mappings: dict[str, PluginMapping],
         dependency_names: set[str],
         type_overrides: dict[str, Any],
     ) -> type[SignatureModel]:
@@ -349,7 +347,6 @@ class AttrsSignatureModel(SignatureModel):
             kw_only=True,
         )
         model.return_annotation = parsed_signature.return_type.annotation  # pyright: ignore
-        model.field_plugin_mappings = field_plugin_mappings  # pyright: ignore
         model.dependency_name_set = dependency_names  # pyright: ignore
         model.populate_signature_fields()  # pyright: ignore
         return model

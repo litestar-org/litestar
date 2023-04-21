@@ -37,7 +37,7 @@ class MiddlewareWrapper:
         self.config = config
         self.has_wrapped_middleware = False
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """Handle creating a middleware stack and calling it.
 
         Args:
@@ -93,7 +93,7 @@ class SessionAuthMiddleware(AbstractAuthenticationMiddleware):
         super().__init__(app=app, exclude=exclude, exclude_from_auth_key=exclude_opt_key, scopes=scopes)
         self.retrieve_user_handler = retrieve_user_handler
 
-    async def authenticate_request(self, connection: "ASGIConnection[Any, Any, Any, Any]") -> AuthenticationResult:
+    async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Authenticate an incoming connection.
 
         Args:

@@ -44,7 +44,7 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
-from litestar.utils import AsyncCallable, is_async_callable
+from litestar.utils import AsyncCallable, async_partial, is_async_callable
 
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
@@ -59,7 +59,6 @@ if TYPE_CHECKING:
     from litestar.dto.interface import DTOInterface
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
-    from litestar.plugins import SerializationPluginProtocol
     from litestar.types import MaybePartial  # noqa: F401
 
 
@@ -450,26 +449,23 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
             else self._response_handler_mapping["default_handler"],
         )
 
-    async def to_response(
-        self, app: Litestar, data: Any, plugins: list["SerializationPluginProtocol"], request: Request
-    ) -> ASGIApp:
+    async def to_response(self, app: Litestar, data: Any, request: Request) -> ASGIApp:
         """Return a :class:`Response <.response.Response>` from the handler by resolving and calling it.
 
         Args:
             app: The :class:`Litestar <litestar.app.Litestar>` app instance
             data: Either an instance of a :class:`ResponseContainer <.response_containers.ResponseContainer>`,
                 a Response instance or an arbitrary value.
-            plugins: An optional mapping of plugins
             request: A :class:`Request <.connection.Request>` instance
 
         Returns:
             A Response instance
         """
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
-        return await response_handler(app=app, data=data, plugins=plugins, request=request, return_dto=self.resolve_return_dto())  # type: ignore
+        return await response_handler(app=app, data=data, request=request, return_dto=self.resolve_return_dto())  # type: ignore
 
-    def on_registration(self) -> None:
-        super().on_registration()
+    def on_registration(self, app: Litestar) -> None:
+        super().on_registration(app)
         if before_request := self.resolve_before_request():
             before_request.set_parsed_signature(self.resolve_signature_namespace())
         self.resolve_after_response()
@@ -507,6 +503,16 @@ class HTTPRouteHandler(BaseRouteHandler["HTTPRouteHandler"]):
 
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
+
+    def _set_runtime_callables(self) -> None:
+        """Set the runtime callables for the route handler."""
+        super()._set_runtime_callables()
+        self.has_sync_callable = False
+        if not is_async_callable(self.fn.value):
+            if self.sync_to_thread:
+                self.fn.value = async_partial(self.fn.value)
+            else:
+                self.has_sync_callable = True
 
 
 route = HTTPRouteHandler

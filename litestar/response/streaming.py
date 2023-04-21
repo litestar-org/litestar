@@ -73,7 +73,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
             content if isinstance(content, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(content)
         )
 
-    async def _listen_for_disconnect(self, cancel_scope: "CancelScope", receive: "Receive") -> None:
+    async def _listen_for_disconnect(self, cancel_scope: CancelScope, receive: Receive) -> None:
         """Listen for a cancellation message, and if received - call cancel on the cancel scope.
 
         Args:
@@ -92,7 +92,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
             else:
                 await self._listen_for_disconnect(cancel_scope=cancel_scope, receive=receive)
 
-    async def _stream(self, send: "Send") -> None:
+    async def _stream(self, send: Send) -> None:
         """Send the chunks from the iterator as a stream of ASGI 'http.response.body' events.
 
         Args:
@@ -111,7 +111,7 @@ class StreamingResponse(Response[StreamType[Union[str, bytes]]]):
         terminus_event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": b"", "more_body": False}
         await send(terminus_event)
 
-    async def send_body(self, send: "Send", receive: "Receive") -> None:
+    async def send_body(self, send: Send, receive: Receive) -> None:
         """Emit a stream of events correlating with the response body.
 
         Args:

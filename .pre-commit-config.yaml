@@ -54,6 +54,7 @@ repos:
           [
             aiosqlite,
             async_timeout,
+            asyncmy,
             asyncpg,
             attrs,
             beanie,
@@ -107,6 +108,7 @@ repos:
           [
             aiosqlite,
             async_timeout,
+            asyncmy,
             asyncpg,
             attrs,
             beanie,

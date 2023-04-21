@@ -74,11 +74,11 @@
         :type: feature
         :pr: 1395
 
-        A :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.init_plugin.plugin.SQLAlchemyInitPlugin>` was added,
+        A :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` was added,
         providing support for managed synchronous and asynchronous sessions.
 
         .. seealso::
-            :doc:`/usage/plugins/sqlalchemy`
+            :doc:`/usage/plugins/sqlalchemy/index`
 
     .. change:: Attrs signature modelling
         :type: feature

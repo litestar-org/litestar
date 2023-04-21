@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 class BaseLocalFileSystem(FileSystemProtocol):
     """Base class for a local file system."""
 
-    async def info(self, path: "PathType", **kwargs: Any) -> "FileInfo":
+    async def info(self, path: PathType, **kwargs: Any) -> FileInfo:
         """Retrieve information about a given file path.
 
         Args:
@@ -38,7 +38,7 @@ class BaseLocalFileSystem(FileSystemProtocol):
         result = await Path(path).stat()
         return await FileSystemAdapter.parse_stat_result(path=path, result=result)
 
-    async def open(self, file: "PathType", mode: str, buffering: int = -1) -> AsyncFile[AnyStr]:
+    async def open(self, file: PathType, mode: str, buffering: int = -1) -> AsyncFile[AnyStr]:
         """Return a file-like object from the filesystem.
 
         Notes:
@@ -63,7 +63,7 @@ class FileSystemAdapter:
         """
         self.file_system = file_system
 
-    async def info(self, path: "PathType") -> "FileInfo":
+    async def info(self, path: PathType) -> FileInfo:
         """Proxies the call to the underlying FS Spec's ``info`` method, ensuring it's done in an async fashion and with
         strong typing.
 
@@ -89,8 +89,8 @@ class FileSystemAdapter:
 
     async def open(
         self,
-        file: "PathType",
-        mode: "OpenBinaryMode" = "rb",
+        file: PathType,
+        mode: OpenBinaryMode = "rb",
         buffering: int = -1,
     ) -> AsyncFile[bytes]:
         """Return a file-like object from the filesystem.
@@ -120,7 +120,7 @@ class FileSystemAdapter:
             raise InternalServerException from e
 
     @staticmethod
-    async def parse_stat_result(path: "PathType", result: "stat_result") -> "FileInfo":
+    async def parse_stat_result(path: PathType, result: stat_result) -> FileInfo:
         """Convert a ``stat_result`` instance into a ``FileInfo``.
 
         Args:

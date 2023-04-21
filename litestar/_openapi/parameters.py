@@ -30,8 +30,8 @@ if TYPE_CHECKING:
 
 
 def create_path_parameter_schema(
-    path_parameter: "PathParameterDefinition",
-    field: "SignatureField",
+    path_parameter: PathParameterDefinition,
+    field: SignatureField,
     generate_examples: bool,
     schemas: dict[str, Schema],
 ) -> Schema | Reference:
@@ -59,7 +59,7 @@ class ParameterCollection:
     instances are not the same, an exception is raised.
     """
 
-    def __init__(self, route_handler: "BaseRouteHandler") -> None:
+    def __init__(self, route_handler: BaseRouteHandler) -> None:
         """Initialize ``ParameterCollection``.
 
         Args:
@@ -96,11 +96,11 @@ class ParameterCollection:
 
 
 def create_parameter(
-    signature_field: "SignatureField",
+    signature_field: SignatureField,
     parameter_name: str,
-    path_parameters: tuple["PathParameterDefinition", ...],
+    path_parameters: tuple[PathParameterDefinition, ...],
     generate_examples: bool,
-    schemas: dict[str, "Schema"],
+    schemas: dict[str, Schema],
 ) -> Parameter:
     """Create an OpenAPI Parameter instance."""
     result: Schema | Reference | None = None
@@ -143,12 +143,12 @@ def create_parameter(
 
 def get_recursive_handler_parameters(
     field_name: str,
-    signature_field: "SignatureField",
-    dependencies: "Dependencies",
-    route_handler: "BaseRouteHandler",
-    path_parameters: tuple["PathParameterDefinition", ...],
+    signature_field: SignatureField,
+    dependencies: Dependencies,
+    route_handler: BaseRouteHandler,
+    path_parameters: tuple[PathParameterDefinition, ...],
     generate_examples: bool,
-    schemas: dict[str, "Schema"],
+    schemas: dict[str, Schema],
 ) -> list[Parameter]:
     """Create and return parameters for a handler.
 
@@ -174,11 +174,11 @@ def get_recursive_handler_parameters(
 
 def get_layered_parameter(
     field_name: str,
-    signature_field: "SignatureField",
-    layered_parameters: dict[str, "SignatureField"],
-    path_parameters: tuple["PathParameterDefinition", ...],
+    signature_field: SignatureField,
+    layered_parameters: dict[str, SignatureField],
+    path_parameters: tuple[PathParameterDefinition, ...],
     generate_examples: bool,
-    schemas: dict[str, "Schema"],
+    schemas: dict[str, Schema],
 ) -> Parameter:
     """Create a layered parameter for a given signature model field.
 
@@ -211,11 +211,11 @@ def get_layered_parameter(
 
 
 def create_parameter_for_handler(
-    route_handler: "BaseRouteHandler",
-    handler_fields: dict[str, "SignatureField"],
-    path_parameters: tuple["PathParameterDefinition", ...],
+    route_handler: BaseRouteHandler,
+    handler_fields: dict[str, SignatureField],
+    path_parameters: tuple[PathParameterDefinition, ...],
     generate_examples: bool,
-    schemas: dict[str, "Schema"],
+    schemas: dict[str, Schema],
 ) -> list[Parameter]:
     """Create a list of path/query/header Parameter models for the given PathHandler."""
     parameters = ParameterCollection(route_handler=route_handler)
