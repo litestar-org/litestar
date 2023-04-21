@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, Any, Iterable, List, Literal, Optional, Sequence
+from unittest.mock import MagicMock
 
 import pytest
 from pydantic import BaseModel
@@ -265,3 +266,18 @@ def test_signature_field_is_non_string_sequence(preferred_validation_backend: Li
 
     assert model.fields["a"].is_non_string_sequence
     assert model.fields["b"].is_non_string_sequence
+
+
+@pytest.mark.parametrize("signature_backend", ["pydantic", "attrs"])
+@pytest.mark.parametrize("query,expected", [("1", True), ("true", True), ("0", False), ("false", False)])
+def test_query_param_bool(query: str, expected: bool, signature_backend: Literal["pydantic", "attrs"]) -> None:
+    mock = MagicMock()
+
+    @get("/")
+    def handler(param: bool) -> None:
+        mock(param)
+
+    with create_test_client(route_handlers=[handler], preferred_validation_backend=signature_backend) as client:
+        response = client.get(f"/?param={query}")
+        assert response.status_code == HTTP_200_OK, response.json()
+        mock.assert_called_once_with(expected)
