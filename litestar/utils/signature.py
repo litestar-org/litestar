@@ -7,7 +7,7 @@ from inspect import Parameter, Signature, getmembers, isclass, ismethod
 from itertools import chain
 from typing import Any, AnyStr, Collection, ForwardRef, TypeVar, Union
 
-from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin, get_type_hints
+from typing_extensions import Annotated, NotRequired, Required, Self, get_args, get_origin, get_type_hints
 
 from litestar import connection, datastructures, types
 from litestar.datastructures import ImmutableState
@@ -298,11 +298,11 @@ class ParsedSignature:
     """The raw signature as returned by :func:`inspect.signature`"""
 
     @classmethod
-    def from_fn(cls, fn: AnyCallable, signature_namespace: dict[str, Any]) -> ParsedSignature:
-        """Parse a function signature into data used for the generation of a signature model.
+    def from_fn(cls, fn: AnyCallable, signature_namespace: dict[str, Any]) -> Self:
+        """Parse a function signature.
 
         Args:
-            fn: A callable.
+            fn: Any callable.
             signature_namespace: mapping of names to types for forward reference resolution
 
         Returns:
@@ -316,11 +316,33 @@ class ParsedSignature:
             for name, parameter in signature.parameters.items()
             if name not in ("self", "cls")
         )
-        return ParsedSignature(
+        return cls(
             parameters={p.name: p for p in parameters},
             return_type=ParsedType(fn_type_hints.get("return", Empty)),
             original_signature=signature,
         )
+
+    @classmethod
+    def from_signature(cls, signature: Signature, signature_namespace: dict[str, Any]) -> Self:
+        """Parse an :class:`inspect.Signature` instance.
+
+        Python's `get_type_hints()` function does not support parsing signatures directly, so we need to create a dummy
+        function to pass to it. Maybe there's a better way to do this, but this does work.
+
+        Args:
+            signature: An :class:`inspect.Signature` instance.
+            signature_namespace: mapping of names to types for forward reference resolution
+
+        Returns:
+            ParsedSignature
+        """
+
+        def fn() -> None:
+            ...
+
+        fn.__signature__ = signature  # type:ignore[attr-defined]
+        fn.__annotations__ = {p.name: p.annotation for p in signature.parameters.values()}
+        return cls.from_fn(fn, signature_namespace)
 
 
 def infer_request_encoding_from_parameter(param: ParsedParameter) -> RequestEncodingType | str:
