@@ -10,6 +10,7 @@ from msgspec import Struct, field, to_builtins
 from pydantic import BaseModel, Field
 
 from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
+from litestar.dto.factory.backends.abc import BackendContext
 from litestar.dto.factory.types import FieldDefinition, NestedFieldDefinition
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
@@ -89,9 +90,8 @@ def fx_field_definitions() -> FieldDefinitionsType:
 
 @pytest.fixture(name="backend", params=[(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)])
 def fx_backend(request: Any, field_definitions: FieldDefinitionsType) -> AbstractDTOBackend:
-    return request.param[0](  # type:ignore[no-any-return]
-        parsed_type=ParsedType(DC), data_container_type=request.param[1], field_definitions=field_definitions
-    )
+    ctx = BackendContext(ParsedType(DC), field_definitions)
+    return request.param[0](ctx, data_container_type=request.param[1])  # type:ignore[no-any-return]
 
 
 def _destructure(model: BaseModel | Struct) -> dict[str, Any]:
@@ -127,7 +127,8 @@ def test_backend_parse_unsupported_media_type(backend: AbstractDTOBackend) -> No
 def test_backend_iterable_annotation(
     backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
 ) -> None:
-    backend = backend_type(ParsedType(List[DC]), data_container_type=backend_model, field_definitions=field_definitions)
+    ctx = BackendContext(ParsedType(List[DC]), field_definitions)
+    backend = backend_type(ctx, backend_model)
     if sys.version_info < (3, 9):
         assert backend.annotation == List[backend_model]
     else:
@@ -140,7 +141,8 @@ def test_backend_iterable_annotation(
 def test_backend_scalar_annotation(
     backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
 ) -> None:
-    backend = backend_type(ParsedType(DC), data_container_type=backend_model, field_definitions=field_definitions)
+    ctx = BackendContext(ParsedType(DC), field_definitions)
+    backend = backend_type(ctx, backend_model)
     assert backend.annotation == backend_model
 
 
@@ -150,7 +152,8 @@ def test_backend_scalar_annotation(
 def test_backend_populate_data_from_builtins(
     backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
 ) -> None:
-    backend = backend_type(ParsedType(DC), data_container_type=backend_model, field_definitions=field_definitions)
+    ctx = BackendContext(ParsedType(DC), field_definitions)
+    backend = backend_type(ctx, backend_model)
     data = backend.populate_data_from_builtins(DC, data=DESTRUCTURED)
     assert data == DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"))
 
@@ -161,7 +164,8 @@ def test_backend_populate_data_from_builtins(
 def test_backend_create_openapi_schema(
     backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
 ) -> None:
-    backend = backend_type(ParsedType(DC), data_container_type=backend_model, field_definitions=field_definitions)
+    ctx = BackendContext(ParsedType(DC), field_definitions)
+    backend = backend_type(ctx, backend_model)
     schemas: dict[str, Any] = {}
     ref = backend.create_openapi_schema(False, schemas)
     assert isinstance(ref, Reference)

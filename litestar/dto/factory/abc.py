@@ -172,7 +172,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             backend = cls._type_backend_map.setdefault(
                 key,
                 backend_type.from_field_definitions(
-                    parsed_type, _parse_model(cls, cls.model_type, cls.config, handler_context.dto_for)
+                    parsed_type, _parse_model(cls, handler_type.annotation, cls.config, handler_context.dto_for)
                 ),
             )
         cls._handler_backend_map[(handler_context.dto_for, handler_context.route_handler)] = backend

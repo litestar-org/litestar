@@ -1,9 +1,10 @@
 """DTO backends do the heavy lifting of decoding and validating raw bytes into domain models, and
-and back again, to bytes.
+back again, to bytes.
 """
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar._openapi.schema_generation import create_schema
@@ -23,34 +24,37 @@ if TYPE_CHECKING:
     from litestar.types.serialization import LitestarEncodableType
     from litestar.utils.signature import ParsedType
 
-__all__ = ("AbstractDTOBackend",)
+__all__ = ("AbstractDTOBackend", "BackendContext")
 
 T = TypeVar("T")
 BackendT = TypeVar("BackendT")
+
+
+@dataclass
+class BackendContext:
+    """Context required by DTO backends to perform their work."""
+
+    parsed_type: ParsedType
+    field_definitions: FieldDefinitionsType
 
 
 class AbstractDTOBackend(ABC, Generic[BackendT]):
     __slots__ = (
         "data_container_type",
         "annotation",
-        "field_definitions",
-        "parsed_type",
+        "context",
     )
 
-    def __init__(
-        self, parsed_type: ParsedType, data_container_type: type[BackendT], field_definitions: FieldDefinitionsType
-    ) -> None:
+    def __init__(self, context: BackendContext, data_container_type: type[BackendT]) -> None:
         """Create dto backend instance.
 
         Args:
-            parsed_type: Annotation received by the DTO.
+            context: context of the type represented by this backend.
             data_container_type: Parsing/validation/serialization model.
-            field_definitions: Info about the model fields that should be included in transfer data.
         """
         self.data_container_type = data_container_type
-        self.annotation = build_annotation_for_backend(parsed_type.annotation, data_container_type)
-        self.field_definitions = field_definitions
-        self.parsed_type = parsed_type
+        self.annotation = build_annotation_for_backend(context.parsed_type.annotation, data_container_type)
+        self.context = context
 
     @classmethod
     @abstractmethod

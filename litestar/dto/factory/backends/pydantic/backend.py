@@ -6,7 +6,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, parse_obj_as
 
-from litestar.dto.factory.backends.abc import AbstractDTOBackend
+from litestar.dto.factory.backends.abc import AbstractDTOBackend, BackendContext
 from litestar.serialization import decode_media_type
 
 from .utils import _build_data_from_pydantic_model, _create_model_for_field_definitions
@@ -33,19 +33,20 @@ class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
 
     def populate_data_from_builtins(self, model_type: type[T], data: Any) -> T | Collection[T]:
         parsed_data = cast("BaseModel | Collection[BaseModel]", parse_obj_as(self.annotation, data))
-        return _build_data_from_pydantic_model(model_type, parsed_data, self.field_definitions)
+        return _build_data_from_pydantic_model(model_type, parsed_data, self.context.field_definitions)
 
     def populate_data_from_raw(self, model_type: type[T], raw: bytes, media_type: MediaType | str) -> T | Collection[T]:
         parsed_data = self.parse_raw(raw, media_type)
-        return _build_data_from_pydantic_model(model_type, parsed_data, self.field_definitions)
+        return _build_data_from_pydantic_model(model_type, parsed_data, self.context.field_definitions)
 
     def encode_data(self, data: Any, connection: Request) -> LitestarEncodableType:
         if isinstance(data, CollectionsCollection):
-            return self.parsed_type.origin(  # type:ignore[no-any-return]
+            return self.context.parsed_type.origin(  # type:ignore[no-any-return]
                 self.data_container_type.from_orm(datum) for datum in data  # pyright:ignore
             )
         return self.data_container_type.from_orm(data)
 
     @classmethod
     def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:
-        return cls(annotation, _create_model_for_field_definitions(str(uuid4()), field_definitions), field_definitions)
+        context = BackendContext(annotation, field_definitions)
+        return cls(context, _create_model_for_field_definitions(str(uuid4()), field_definitions))
