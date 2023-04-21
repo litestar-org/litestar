@@ -83,7 +83,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             ),
         )
 
-    async def __aenter__(self) -> "AsyncTestClient[T]":
+    async def __aenter__(self) -> AsyncTestClient[T]:
         async with AsyncExitStack() as stack:
             self.blocking_portal = portal = stack.enter_context(self.portal())
             self.lifespan_handler = LifeSpanHandler(client=self)
@@ -158,7 +158,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
 
     async def get(  # type: ignore [override]
         self,
-        url: "URLTypes",
+        url: URLTypes,
         *,
         params: QueryParamTypes | None = None,
         headers: HeaderTypes | None = None,

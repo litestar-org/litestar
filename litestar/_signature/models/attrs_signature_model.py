@@ -218,7 +218,7 @@ def _extract_exceptions(e: Any) -> list[ErrorMessage]:
     Returns:
         A list of normalized exception messages.
     """
-    messages: "list[ErrorMessage]" = []
+    messages: list[ErrorMessage] = []
     if hasattr(e, "exceptions"):
         for exc in cast("list[Exception]", e.exceptions):
             if hasattr(exc, "exceptions"):  # pragma: no cover

@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
 
 async def async_file_iterator(
-    file_path: "PathType", chunk_size: int, adapter: "FileSystemAdapter"
+    file_path: PathType, chunk_size: int, adapter: FileSystemAdapter
 ) -> AsyncGenerator[bytes, None]:
     """Return an async that asynchronously reads a file and yields its chunks.
 
@@ -178,7 +178,7 @@ class FileResponse(StreamingResponse):
             return self.file_info["size"]
         return 0
 
-    async def send_body(self, send: "Send", receive: "Receive") -> None:
+    async def send_body(self, send: Send, receive: Receive) -> None:
         """Emit a stream of events correlating with the response body.
 
         Args:
@@ -200,7 +200,7 @@ class FileResponse(StreamingResponse):
             }
             await send(body_event)
 
-    async def start_response(self, send: "Send") -> None:
+    async def start_response(self, send: Send) -> None:
         """Emit the start event of the response. This event includes the headers and status codes.
 
         Args:

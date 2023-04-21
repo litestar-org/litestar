@@ -96,7 +96,7 @@ class BaseRoute(ABC):
         self.methods = set(methods or [])
 
     @abstractmethod
-    async def handle(self, scope: "Scope", receive: "Receive", send: "Send") -> None:  # pragma: no cover
+    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:  # pragma: no cover
         """ASGI App of the route.
 
         Args:

@@ -116,7 +116,7 @@ class CompressionMiddleware(AbstractMiddleware):
         )
         self.config = config
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         Args:
@@ -176,7 +176,7 @@ class CompressionMiddleware(AbstractMiddleware):
         initial_message = Ref[Optional["HTTPResponseStartEvent"]](None)
         started = Ref[bool](False)
 
-        async def send_wrapper(message: "Message") -> None:
+        async def send_wrapper(message: Message) -> None:
             """Handle and compresses the HTTP Message with brotli.
 
             Args:

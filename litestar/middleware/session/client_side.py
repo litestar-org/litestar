@@ -126,9 +126,7 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
             for i, datum in enumerate(data)
         ]
 
-    async def store_in_message(
-        self, scope_session: "ScopeSession", message: "Message", connection: "ASGIConnection"
-    ) -> None:
+    async def store_in_message(self, scope_session: ScopeSession, message: Message, connection: ASGIConnection) -> None:
         """Store data from ``scope_session`` in ``Message`` in the form of cookies. If the contents of ``scope_session``
         are too large to fit a single cookie, it will be split across several cookies, following the naming scheme of
         ``<cookie key>-<n>``. If the session is empty or shrinks, cookies will be cleared by setting their value to
@@ -179,7 +177,7 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
                 Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
             )
 
-    async def load_from_connection(self, connection: "ASGIConnection") -> dict[str, Any]:
+    async def load_from_connection(self, connection: ASGIConnection) -> dict[str, Any]:
         """Load session data from a connection's session-cookies and return it as a dictionary.
 
         Args:

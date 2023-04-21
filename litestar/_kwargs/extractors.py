@@ -305,7 +305,7 @@ def create_multipart_extractor(
         body_kwarg_multipart_form_part_limit = signature_field.kwarg_model.multipart_form_part_limit
 
     async def extract_multipart(
-        connection: "Request[Any, Any, Any]",
+        connection: Request[Any, Any, Any],
     ) -> Any:
         multipart_form_part_limit = (
             body_kwarg_multipart_form_part_limit
@@ -353,7 +353,7 @@ def create_url_encoded_data_extractor(
     """
 
     async def extract_url_encoded_extractor(
-        connection: "Request[Any, Any, Any]",
+        connection: Request[Any, Any, Any],
     ) -> Any:
         connection.scope["_form"] = form_values = (  # type: ignore[typeddict-unknown-key]
             connection.scope["_form"]  # type: ignore[typeddict-item]

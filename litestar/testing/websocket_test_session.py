@@ -70,12 +70,12 @@ class WebSocketTestSession:
     async def do_asgi_call(self) -> None:
         """The sub-thread in which the websocket session runs."""
 
-        async def receive() -> "WebSocketReceiveMessage":
+        async def receive() -> WebSocketReceiveMessage:
             while self.receive_queue.empty():
                 await sleep(0)
             return self.receive_queue.get()
 
-        async def send(message: "WebSocketSendMessage") -> None:
+        async def send(message: WebSocketSendMessage) -> None:
             if message["type"] == "websocket.accept":
                 headers = message.get("headers", [])
                 if headers:

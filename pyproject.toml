@@ -283,7 +283,6 @@ ignore = [
     "D205",  # pydocstyle - 1 blank line required between summary line and description
     "D415",  # pydocstyle - first line should end with a period, question mark, or exclamation point
     "E501",  # pycodestyle line too long, handled by black
-    "UP037", # pyupgrade - removes quotes from type annotation
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]

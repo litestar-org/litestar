@@ -383,9 +383,7 @@ class KwargsModel:
 
         return output
 
-    async def resolve_dependencies(
-        self, connection: "ASGIConnection", kwargs: dict[str, Any]
-    ) -> "DependencyCleanupGroup":
+    async def resolve_dependencies(self, connection: ASGIConnection, kwargs: dict[str, Any]) -> DependencyCleanupGroup:
         """Resolve all dependencies into the kwargs, recursively.
 
         Args:

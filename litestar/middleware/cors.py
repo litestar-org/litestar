@@ -29,7 +29,7 @@ class CORSMiddleware(AbstractMiddleware):
         super().__init__(app=app, scopes={ScopeType.HTTP})
         self.config = config
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
 
         Args:
@@ -60,7 +60,7 @@ class CORSMiddleware(AbstractMiddleware):
             An ASGI send function.
         """
 
-        async def wrapped_send(message: "Message") -> None:
+        async def wrapped_send(message: Message) -> None:
             if message["type"] == "http.response.start":
                 message.setdefault("headers", [])
                 headers = MutableScopeHeaders.from_message(message=message)

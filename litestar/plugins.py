@@ -107,7 +107,7 @@ class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
         """
         raise NotImplementedError()
 
-    def to_openapi_schema(self, model_class: type[ModelT]) -> "Schema":
+    def to_openapi_schema(self, model_class: type[ModelT]) -> Schema:
         """Given a model class, transform it into an OpenAPI schema class.
 
         Args:

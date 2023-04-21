@@ -59,7 +59,7 @@ def normalize_typescript_namespace(value: str, allow_quoted: bool) -> str:
     return invalid_namespace_re.sub("", value)
 
 
-def is_schema_value(value: Any) -> "TypeGuard[Schema]":
+def is_schema_value(value: Any) -> TypeGuard[Schema]:
     """Typeguard for a schema value.
 
     Args:

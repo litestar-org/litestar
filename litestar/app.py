@@ -722,7 +722,7 @@ class Litestar(Router):
         """
         if self.before_send:
 
-            async def wrapped_send(message: "Message") -> None:
+            async def wrapped_send(message: Message) -> None:
                 for hook in self.before_send:
                     await hook(message, self.state, scope)
                 await send(message)

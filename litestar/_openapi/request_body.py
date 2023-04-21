@@ -20,10 +20,10 @@ if TYPE_CHECKING:
 
 def create_request_body(
     route_handler: BaseRouteHandler,
-    field: "SignatureField",
+    field: SignatureField,
     generate_examples: bool,
-    plugins: list["OpenAPISchemaPluginProtocol"],
-    schemas: dict[str, "Schema"],
+    plugins: list[OpenAPISchemaPluginProtocol],
+    schemas: dict[str, Schema],
 ) -> RequestBody | None:
     """Create a RequestBody model for the given RouteHandler or return None."""
     media_type: RequestEncodingType | str = RequestEncodingType.JSON
