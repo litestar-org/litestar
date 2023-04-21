@@ -288,13 +288,8 @@ def _handle_nested(
         nested_type=_get_model_type(field_definition.annotation),
     )
 
-    if (
-        is_recursive := nested.is_recursive(dto_factory_type.model_type)
-    ) and recursive_depth == config.max_nested_recursion:
-        return None
-
     nested.nested_field_definitions = _parse_model(
-        dto_factory_type, nested.nested_type, config, dto_for, nested_depth + 1, recursive_depth + is_recursive
+        dto_factory_type, nested.nested_type, config, dto_for, nested_depth + 1
     )
     return nested
 

@@ -25,7 +25,5 @@ class DTOConfig:
     """Mapping of field names, to new name, or tuple of new name, new type."""
     field_definitions: Sequence[FieldDefinition] = field(default_factory=tuple)
     """Additional fields for data transfer."""
-    max_nested_recursion: int = 0
-    """The maximum number of times a self-referencing nested field should be followed."""
     max_nested_depth: int = 1
     """The maximum depth of nested items allowed for data transfer."""
