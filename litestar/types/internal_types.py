@@ -18,6 +18,7 @@ __all__ = (
     "AnyConnection",
     "PathParameterDefinition",
     "ControllerRouterHandler",
+    "PathParameterDefinition",
     "ReservedKwargs",
     "ResponseType",
     "RouteHandlerMapItem",
@@ -36,6 +37,7 @@ if TYPE_CHECKING:
     from litestar.router import Router
 else:
     Litestar = Any
+    ASGIConnection = Any
     ASGIRouteHandler = Any
     WebsocketRouteHandler = Any
     HTTPRouteHandler = Any

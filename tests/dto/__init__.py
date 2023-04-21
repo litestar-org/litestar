@@ -4,13 +4,12 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from litestar.dto.interface import DTOInterface
+from litestar.types.internal_types import AnyConnection
 from litestar.types.protocols import DataclassProtocol
 from litestar.types.serialization import LitestarEncodableType
 
 if TYPE_CHECKING:
     from typing import Any
-
-    from litestar.connection import Request
 
 
 @dataclass
@@ -20,7 +19,7 @@ class Model:
 
 
 class MockDTO(DTOInterface):
-    def __init__(self, connection: Request[Any, Any, Any]) -> None:
+    def __init__(self, connection: AnyConnection) -> None:
         pass
 
     def builtins_to_data_type(self, builtins: Any) -> Model:
@@ -34,7 +33,7 @@ class MockDTO(DTOInterface):
 
 
 class MockReturnDTO(DTOInterface):
-    def __init__(self, connection: Request[Any, Any, Any]) -> None:
+    def __init__(self, connection: AnyConnection) -> None:
         pass
 
     def builtins_to_data_type(self, builtins: Any) -> Model:

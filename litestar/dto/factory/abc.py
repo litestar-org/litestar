@@ -18,11 +18,10 @@ from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
 from .utils import parse_configs_from_annotation
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Collection, Generator, TypeAlias
+    from typing import Any, ClassVar, Collection, Generator
 
     from typing_extensions import Self
 
-    from litestar.connection import Request
     from litestar.dto.interface import HandlerContext
     from litestar.dto.types import ForType
     from litestar.openapi.spec import Reference, Schema
@@ -32,7 +31,6 @@ if TYPE_CHECKING:
 
 __all__ = ["AbstractDTOFactory"]
 
-AnyRequest: TypeAlias = "Request[Any, Any, Any]"
 DataT = TypeVar("DataT")
 
 
