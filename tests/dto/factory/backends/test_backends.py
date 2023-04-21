@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, List
 
 import pytest
-from msgspec import Struct, field, to_builtins
-from pydantic import BaseModel, Field
+from msgspec import Struct, to_builtins
+from pydantic import BaseModel
 
 from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.factory.backends.abc import BackendContext
@@ -14,6 +14,8 @@ from litestar.dto.factory.types import FieldDefinition, NestedFieldDefinition
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.openapi.spec.reference import Reference
+from litestar.serialization import encode_json
+from litestar.testing import RequestFactory
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
 
@@ -22,14 +24,6 @@ if TYPE_CHECKING:
 
     from litestar.dto.factory.backends import AbstractDTOBackend
     from litestar.dto.factory.types import FieldDefinitionsType
-
-
-DESTRUCTURED = {
-    "a": 1,
-    "b": "b",
-    "c": [],
-    "nested": {"a": 1, "b": "two"},
-}
 
 
 @dataclass
@@ -44,30 +38,18 @@ class DC:
     b: str
     c: List[int]
     nested: NestedDC
+    nested_list: List[NestedDC]
 
 
-class NestedModel(BaseModel):
-    a: int
-    b: str
-
-
-class MyModel(BaseModel):
-    a: int
-    b: str = "b"
-    c: List[int] = Field(default_factory=list)
-    nested: NestedModel
-
-
-class NestedStruct(Struct):
-    a: int
-    b: str
-
-
-class MyStruct(Struct):
-    a: int
-    nested: NestedStruct
-    b: str = "b"
-    c: List[int] = field(default_factory=list)
+DESTRUCTURED = {
+    "a": 1,
+    "b": "b",
+    "c": [],
+    "nested": {"a": 1, "b": "two"},
+    "nested_list": [{"a": 1, "b": "two"}],
+}
+RAW = b'{"a":1,"b":"b","c":[],"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}'
+STRUCTURED = DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"), nested_list=[NestedDC(a=1, b="two")])
 
 
 @pytest.fixture(name="field_definitions")
@@ -78,6 +60,14 @@ def fx_field_definitions() -> FieldDefinitionsType:
         "c": FieldDefinition(name="c", parsed_type=ParsedType(List[int]), default_factory=list, default=Empty),
         "nested": NestedFieldDefinition(
             field_definition=FieldDefinition(name="nested", parsed_type=ParsedType(NestedDC), default=Empty),
+            nested_type=NestedDC,
+            nested_field_definitions={
+                "a": FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty),
+                "b": FieldDefinition(name="b", parsed_type=ParsedType(str), default=Empty),
+            },
+        ),
+        "nested_list": NestedFieldDefinition(
+            field_definition=FieldDefinition(name="nested_list", parsed_type=ParsedType(List[NestedDC]), default=Empty),
             nested_type=NestedDC,
             nested_field_definitions={
                 "a": FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty),
@@ -101,7 +91,11 @@ def _destructure(model: BaseModel | Struct) -> dict[str, Any]:
 
 def test_backend_parse_raw_json(backend: AbstractDTOBackend) -> None:
     assert (
-        _destructure(backend.parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"}}', media_type=MediaType.JSON))
+        _destructure(
+            backend.parse_raw(
+                b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', media_type=MediaType.JSON
+            )
+        )
         == DESTRUCTURED
     )
 
@@ -109,7 +103,10 @@ def test_backend_parse_raw_json(backend: AbstractDTOBackend) -> None:
 def test_backend_parse_raw_msgpack(backend: AbstractDTOBackend) -> None:
     assert (
         _destructure(
-            backend.parse_raw(b"\x82\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two", media_type=MediaType.MESSAGEPACK)
+            backend.parse_raw(
+                b"\x83\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two",
+                media_type=MediaType.MESSAGEPACK,
+            )
         )
         == DESTRUCTURED
     )
@@ -155,7 +152,7 @@ def test_backend_populate_data_from_builtins(
     ctx = BackendContext(ParsedType(DC), field_definitions, DC)
     backend = backend_type(ctx)
     data = backend.populate_data_from_builtins(data=DESTRUCTURED)
-    assert data == DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"))
+    assert data == STRUCTURED
 
 
 @pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
@@ -176,3 +173,21 @@ def test_backend_create_openapi_schema(
     nested_schema = schemas[nested.value]
     assert nested_schema.properties["a"].type == "integer"
     assert nested_schema.properties["b"].type == "string"
+
+
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
+def test_backend_populate_data_from_raw(
+    backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
+) -> None:
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
+    backend = backend_type(ctx)
+    data = backend.populate_data_from_raw(RAW, media_type=MediaType.JSON)
+    assert data == STRUCTURED
+
+
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
+def test_backend_encode_data(backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType) -> None:
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
+    backend = backend_type(ctx)
+    data = backend.encode_data(STRUCTURED, RequestFactory().post())
+    assert encode_json(data) == RAW
