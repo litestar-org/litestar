@@ -77,10 +77,16 @@ def _pass_through_unstructure_hook(value: Any) -> Any:
 
 
 def _structure_bool(value: Any, _: type[bool]) -> bool:
-    if value == 0 or str(value).lower() in FALSE_SET:
+    if isinstance(value, bytes):
+        value = value.decode("utf-8").lower()
+
+    if isinstance(value, str):
+        value = value.lower()
+
+    if value == 0 or value in FALSE_SET:
         return False
 
-    if value == 1 or str(value).lower() in TRUE_SET:
+    if value == 1 or value in TRUE_SET:
         return True
 
     raise ValueError(f"Cannot convert {value} to bool")
