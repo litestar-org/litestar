@@ -23,3 +23,7 @@ Features
 
     0-getting-started
     1-data-modelling
+    2-plugin-configuration
+    3-defining-routes
+    4-configuring-the-application
+    5-recap
