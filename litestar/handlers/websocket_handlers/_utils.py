@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 from typing import TYPE_CHECKING, Any, Callable, Coroutine, cast
 
+from litestar.dto.interface import ConnectionContext
 from litestar.exceptions import WebSocketDisconnect
 from litestar.serialization import decode_json
 from litestar.utils import AsyncCallable
@@ -117,8 +118,9 @@ def create_handler_function(
         await socket.accept()
 
         listener_callback = AsyncCallable(listener_context.listener_callback)
-        data_dto = listener_context.resolved_data_dto(socket) if listener_context.resolved_data_dto else None
-        return_dto = listener_context.resolved_return_dto(socket) if listener_context.resolved_return_dto else None
+        ctx = ConnectionContext.from_connection(socket)
+        data_dto = listener_context.resolved_data_dto(ctx) if listener_context.resolved_data_dto else None
+        return_dto = listener_context.resolved_return_dto(ctx) if listener_context.resolved_return_dto else None
 
         if on_accept:
             await on_accept(socket)

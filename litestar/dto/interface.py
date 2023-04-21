@@ -3,11 +3,12 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
+from litestar.enums import RequestEncodingType
 from litestar.openapi.spec import Schema
 
 if TYPE_CHECKING:
-    from litestar.enums import RequestEncodingType
-    from litestar.handlers import BaseRouteHandler
+    from typing_extensions import Self
+
     from litestar.openapi.spec import Reference
     from litestar.types import LitestarEncodableType
     from litestar.types.internal_types import AnyConnection
@@ -15,25 +16,44 @@ if TYPE_CHECKING:
 
     from .types import ForType
 
-__all__ = ("DTOInterface", "HandlerContext")
+__all__ = (
+    "ConnectionContext",
+    "DTOInterface",
+    "HandlerContext",
+)
 
 
 class HandlerContext:
     """Context object passed to the ``on_registration`` method of a DTO."""
 
-    __slots__ = ("dto_for", "route_handler", "parsed_type", "request_encoding_type")
+    __slots__ = ("dto_for", "handler_id", "parsed_type", "request_encoding_type")
 
     def __init__(
         self,
         dto_for: ForType,
-        route_handler: BaseRouteHandler,
+        handler_id: str,
         parsed_type: ParsedType,
         request_encoding_type: RequestEncodingType | str | None = None,
     ) -> None:
         self.dto_for: ForType = dto_for
-        self.route_handler = route_handler
+        self.handler_id = handler_id
         self.parsed_type = parsed_type
         self.request_encoding_type = request_encoding_type
+
+
+class ConnectionContext:
+    __slots__ = ("handler_id", "request_encoding_type")
+
+    def __init__(self, handler_id: str, request_encoding_type: RequestEncodingType | str) -> None:
+        self.handler_id = handler_id
+        self.request_encoding_type = request_encoding_type
+
+    @classmethod
+    def from_connection(cls, connection: AnyConnection) -> Self:
+        return cls(
+            handler_id=str(connection.route_handler),
+            request_encoding_type=getattr(connection, "content_type", (RequestEncodingType.JSON,))[0],
+        )
 
 
 @runtime_checkable
@@ -41,11 +61,12 @@ class DTOInterface(Protocol):
     __slots__ = ()
 
     @abstractmethod
-    def __init__(self, connection: AnyConnection) -> None:
+    def __init__(self, connection_context: ConnectionContext) -> None:
         """Initialize the DTO.
 
         Args:
-            connection: :class:`ASGIConnection <.connection.ASGIConnection>` instance.
+            connection_context: A :class:`ConnectionContext <.ConnectionContext>` instance, which provides
+                information about the connection.
         """
 
     @abstractmethod
@@ -84,7 +105,7 @@ class DTOInterface(Protocol):
     def create_openapi_schema(
         cls,
         dto_for: ForType,
-        handler: BaseRouteHandler,
+        handler_id: str,
         generate_examples: bool,
         schemas: dict[str, Schema],
     ) -> Reference | Schema:

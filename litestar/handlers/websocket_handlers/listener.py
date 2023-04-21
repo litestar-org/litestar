@@ -134,11 +134,11 @@ class websocket_listener(WebsocketRouteHandler):
         """Initialize the data and return DTOs for the handler."""
         if dto := self.resolve_dto():
             data_parameter = self._listener_context.listener_callback_signature.parameters["data"]
-            dto.on_registration(HandlerContext("data", self, data_parameter.parsed_type))
+            dto.on_registration(HandlerContext("data", str(self), data_parameter.parsed_type))
 
         if return_dto := self.resolve_return_dto():
             return_type = self._listener_context.listener_callback_signature.return_type
-            return_dto.on_registration(HandlerContext("return", self, return_type))
+            return_dto.on_registration(HandlerContext("return", str(self), return_type))
 
     def __call__(self, listener_callback: AnyCallable) -> websocket_listener:
         self._listener_context.listener_callback = listener_callback

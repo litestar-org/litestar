@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
 from litestar.dto.factory.backends.abc import BackendContext
-from litestar.dto.interface import DTOInterface
+from litestar.dto.interface import ConnectionContext, DTOInterface
 from litestar.enums import RequestEncodingType
 from litestar.types.builtin_types import NoneType
 from litestar.utils.signature import ParsedType
@@ -24,9 +24,7 @@ if TYPE_CHECKING:
 
     from litestar.dto.interface import HandlerContext
     from litestar.dto.types import ForType
-    from litestar.handlers import BaseRouteHandler
     from litestar.openapi.spec import Reference, Schema
-    from litestar.types.internal_types import AnyConnection
     from litestar.types.serialization import LitestarEncodableType
 
     from .backends import AbstractDTOBackend
@@ -39,7 +37,7 @@ DataT = TypeVar("DataT")
 class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     """Base class for DTO types."""
 
-    __slots__ = ("connection",)
+    __slots__ = ("connection_context",)
 
     config: ClassVar[DTOConfig]
     """Config objects to define properties of the DTO."""
@@ -48,15 +46,16 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
     _reverse_field_mappings: ClassVar[dict[str, FieldDefinition]]
     _type_backend_map: ClassVar[dict[tuple[ForType, ParsedType, RequestEncodingType | str | None], AbstractDTOBackend]]
-    _handler_backend_map: ClassVar[dict[tuple[ForType, BaseRouteHandler], AbstractDTOBackend]]
+    _handler_backend_map: ClassVar[dict[tuple[ForType, str], AbstractDTOBackend]]
 
-    def __init__(self, connection: AnyConnection) -> None:
+    def __init__(self, connection_context: ConnectionContext) -> None:
         """Create an AbstractDTOFactory type.
 
         Args:
-            connection: Request object.
+            connection_context: A :class:`ConnectionContext <.ConnectionContext>` instance, which provides
+                information about the connection.
         """
-        self.connection = connection
+        self.connection_context = connection_context
 
     def __class_getitem__(cls, annotation: Any) -> type[Self]:
         parsed_type = ParsedType(annotation)
@@ -99,18 +98,17 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
     def builtins_to_data_type(self, builtins: Any) -> Any:
         """Coerce the unstructured data into the data type."""
-        backend = self._handler_backend_map[("data", self.connection.route_handler)]
+        backend = self._handler_backend_map[("data", self.connection_context.handler_id)]
         return backend.populate_data_from_builtins(builtins)
 
     def bytes_to_data_type(self, raw: bytes) -> Any:
         """Return the data held by the DTO."""
-        backend = self._handler_backend_map[("data", self.connection.route_handler)]
-        content_type = getattr(self.connection, "content_type", (RequestEncodingType.JSON,))[0]
-        return backend.populate_data_from_raw(raw, content_type)
+        backend = self._handler_backend_map[("data", self.connection_context.handler_id)]
+        return backend.populate_data_from_raw(raw, self.connection_context)
 
     def data_to_encodable_type(self, data: DataT | Collection[DataT]) -> LitestarEncodableType:
-        backend = self._handler_backend_map[("return", self.connection.route_handler)]
-        return backend.encode_data(data, self.connection)
+        backend = self._handler_backend_map[("return", self.connection_context.handler_id)]
+        return backend.encode_data(data, self.connection_context)
 
     @classmethod
     @abstractmethod
@@ -142,18 +140,19 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
                 handler and application of the DTO.
         """
 
-        parsed_type = handler_context.parsed_type
-        if parsed_type.is_collection:
-            if len(parsed_type.inner_types) != 1:
+        if handler_context.parsed_type.is_collection:
+            if len(handler_context.parsed_type.inner_types) != 1:
                 raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
-            handler_type = parsed_type.inner_types[0]
+            handler_type = handler_context.parsed_type.inner_types[0]
         else:
-            handler_type = parsed_type
+            handler_type = handler_context.parsed_type
 
         if not handler_type.is_subclass_of(cls.model_type):
-            raise InvalidAnnotation(f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'")
+            raise InvalidAnnotation(
+                f"DTO narrowed with '{cls.model_type}', handler type is '{handler_context.parsed_type.annotation}'"
+            )
 
-        key = (handler_context.dto_for, parsed_type, handler_context.request_encoding_type)
+        key = (handler_context.dto_for, handler_context.parsed_type, handler_context.request_encoding_type)
         backend = cls._type_backend_map.get(key)
         if backend is None:
             backend_type: type[AbstractDTOBackend]
@@ -166,18 +165,18 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
                 backend_type = MsgspecDTOBackend
 
             backend_context = BackendContext(
-                parsed_type,
+                handler_context.parsed_type,
                 _parse_model(cls, handler_type.annotation, cls.config, handler_context.dto_for),
                 handler_type.annotation,
             )
             backend = cls._type_backend_map.setdefault(key, backend_type(backend_context))
-        cls._handler_backend_map[(handler_context.dto_for, handler_context.route_handler)] = backend
+        cls._handler_backend_map[(handler_context.dto_for, handler_context.handler_id)] = backend
 
     @classmethod
     def create_openapi_schema(
         cls,
         dto_for: ForType,
-        handler: BaseRouteHandler,
+        handler_id: str,
         generate_examples: bool,
         schemas: dict[str, Schema],
     ) -> Reference | Schema:
@@ -186,7 +185,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         Returns:
             OpenAPI request body.
         """
-        backend = cls._handler_backend_map[(dto_for, handler)]
+        backend = cls._handler_backend_map[(dto_for, handler_id)]
         return backend.create_openapi_schema(generate_examples, schemas)
 
 

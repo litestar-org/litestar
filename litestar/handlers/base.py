@@ -346,12 +346,12 @@ class BaseRouteHandler(Generic[T]):
         if (dto := self.resolve_dto()) and (data_parameter := self.parsed_fn_signature.parameters.get("data")):
             dto.on_registration(
                 HandlerContext(
-                    "data", self, data_parameter.parsed_type, infer_request_encoding_from_parameter(data_parameter)
+                    "data", str(self), data_parameter.parsed_type, infer_request_encoding_from_parameter(data_parameter)
                 )
             )
 
         if return_dto := self.resolve_return_dto():
-            return_dto.on_registration(HandlerContext("return", self, self.parsed_fn_signature.return_type))
+            return_dto.on_registration(HandlerContext("return", str(self), self.parsed_fn_signature.return_type))
 
     async def authorize_connection(self, connection: "ASGIConnection") -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""

@@ -16,6 +16,7 @@ from litestar.types import Method
 
 __all__ = (
     "AnyConnection",
+    "PathParameterDefinition",
     "ControllerRouterHandler",
     "PathParameterDefinition",
     "ReservedKwargs",

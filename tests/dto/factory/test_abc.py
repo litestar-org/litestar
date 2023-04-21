@@ -8,15 +8,13 @@ from unittest.mock import patch
 import pytest
 from typing_extensions import Annotated
 
-from litestar import post
 from litestar.dto.factory.backends import PydanticDTOBackend
 from litestar.dto.factory.config import DTOConfig
 from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.dto.factory.types import FieldDefinition
-from litestar.dto.interface import HandlerContext
+from litestar.dto.interface import ConnectionContext, HandlerContext
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
 
@@ -27,20 +25,10 @@ if TYPE_CHECKING:
 
     from pytest import MonkeyPatch
 
-    from litestar.connection import Request
     from litestar.dto.factory.backends.abc import AbstractDTOBackend
-    from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.testing import RequestFactory
 
 T = TypeVar("T", bound=Model)
-
-
-def make_connection(
-    request_factory: RequestFactory, handler: HTTPRouteHandler, **kwargs: Any
-) -> Request[Any, Any, Any]:
-    connection = request_factory.post(**kwargs)
-    connection.scope["route_handler"] = handler
-    return connection
 
 
 def get_backend(dto_type: type[DataclassDTO[Any]]) -> AbstractDTOBackend:
@@ -121,49 +109,33 @@ def test_config_assigned_via_subclassing() -> None:
 
 
 async def test_from_bytes(request_factory: RequestFactory) -> None:
-    @post()
-    def handler(data: Model) -> Model:
-        return data
-
     dto_type = DataclassDTO[Model]
-    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data", parsed_type=ParsedType(Model)))
-    connection = make_connection(request_factory, handler, data={"a": 1, "b": "two"})
-    assert dto_type(connection).bytes_to_data_type(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
+    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
+    conn_ctx = ConnectionContext(handler_id="handler", request_encoding_type="application/json")
+    assert dto_type(conn_ctx).bytes_to_data_type(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 
 
 def test_config_field_definitions() -> None:
-    @post()
-    def handler(data: Model) -> Model:
-        return data
-
     new_def = FieldDefinition(name="z", parsed_type=ParsedType(str), default="something")
     config = DTOConfig(field_definitions=(new_def,))
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data", parsed_type=ParsedType(Model)))
+    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
     assert get_backend(dto_type).context.field_definitions["z"] is new_def
 
 
 def test_config_field_mapping() -> None:
-    @post()
-    def handler(data: Model) -> Model:
-        return data
-
     config = DTOConfig(field_mapping={"a": "z"})
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data", parsed_type=ParsedType(Model)))
+    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
     field_definitions = get_backend(dto_type).context.field_definitions
     assert "a" not in field_definitions
     assert "z" in field_definitions
 
 
 def test_config_field_mapping_new_definition() -> None:
-    @post()
-    def handler(data: Model) -> Model:
-        return data
-
     config = DTOConfig(field_mapping={"a": FieldDefinition(name="z", parsed_type=ParsedType(str), default=Empty)})
     dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data", parsed_type=ParsedType(Model)))
+    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
     field_definitions = get_backend(dto_type).context.field_definitions
     assert "a" not in field_definitions
     z = field_definitions["z"]
@@ -181,37 +153,24 @@ def test_type_narrowing_with_multiple_configs() -> None:
 
 @pytest.mark.parametrize("request_encoding_type", [RequestEncodingType.MULTI_PART, RequestEncodingType.URL_ENCODED])
 def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestEncodingType) -> None:
-    @post()
-    def handler_1(data: Model = Body(media_type=request_encoding_type)) -> Model:
-        return data
-
-    @post()
-    def handler_2(data: Annotated[Model, Body(media_type=request_encoding_type)]) -> Model:
-        return data
-
-    for handler in handler_1, handler_2:
-        dto_type = DataclassDTO[Model]
-        dto_type.on_registration(
-            HandlerContext(
-                route_handler=handler,
-                dto_for="data",
-                parsed_type=ParsedType(Model),
-                request_encoding_type=request_encoding_type,
-            )
+    dto_type = DataclassDTO[Model]
+    dto_type.on_registration(
+        HandlerContext(
+            handler_id="handler",
+            dto_for="data",
+            parsed_type=ParsedType(Model),
+            request_encoding_type=request_encoding_type,
         )
-        assert isinstance(dto_type._handler_backend_map[("data", handler)], PydanticDTOBackend)
+    )
+    assert isinstance(dto_type._handler_backend_map[("data", "handler")], PydanticDTOBackend)
 
 
 def test_raises_invalid_annotation_for_non_homogenous_collection_types() -> None:
     dto_type = DataclassDTO[Model]
 
-    @post(dto=dto_type)
-    def handler(data: Tuple[Model, str]) -> Model:
-        return data[0]
-
     with pytest.raises(InvalidAnnotation):
         dto_type.on_registration(
-            HandlerContext(route_handler=handler, dto_for="data", parsed_type=ParsedType(Tuple[Model, str]))
+            HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Tuple[Model, str]))
         )
 
 
@@ -222,13 +181,9 @@ def test_raises_invalid_annotation_for_mismatched_types() -> None:
     class OtherModel:
         a: int
 
-    @post(dto=dto_type, signature_namespace={"OtherModel": OtherModel})
-    def handler(data: OtherModel) -> OtherModel:
-        return data
-
     with pytest.raises(InvalidAnnotation):
         dto_type.on_registration(
-            HandlerContext(route_handler=handler, dto_for="data", parsed_type=ParsedType(OtherModel))
+            HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(OtherModel))
         )
 
 
@@ -239,23 +194,14 @@ def test_sub_types_supported() -> None:
     class SubType(Model):
         c: int
 
-    @post(dto=dto_type, signature_namespace={"SubType": SubType})
-    def handler(data: SubType) -> SubType:
-        return data
-
-    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data", parsed_type=ParsedType(SubType)))
-    assert "c" in dto_type._handler_backend_map[("data", handler)].context.field_definitions
+    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(SubType)))
+    assert "c" in dto_type._handler_backend_map[("data", "handler")].context.field_definitions
 
 
 def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:
     dto_type = DataclassDTO[Model]
-
-    @post(dto=dto_type)
-    def handler(data: Model) -> Model:
-        return data
-
-    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data", parsed_type=ParsedType(Model)))
+    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
 
     with patch("litestar.dto.factory.backends.abc.AbstractDTOBackend.create_openapi_schema") as mock:
-        dto_type.create_openapi_schema("data", handler, True, {})
+        dto_type.create_openapi_schema("data", "handler", True, {})
         mock.assert_called_once_with(True, {})

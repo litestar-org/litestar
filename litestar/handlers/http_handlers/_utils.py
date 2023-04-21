@@ -4,6 +4,7 @@ from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
+from litestar.dto.interface import ConnectionContext
 from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.plugins import get_plugin_for_value
@@ -99,7 +100,8 @@ def create_data_handler(
             data = await data
 
         if return_dto:
-            data = return_dto(request).data_to_encodable_type(data)
+            ctx = ConnectionContext.from_connection(request)
+            data = return_dto(ctx).data_to_encodable_type(data)
         elif plugins:
             data = await normalize_response_data(data=data, plugins=plugins)
 
