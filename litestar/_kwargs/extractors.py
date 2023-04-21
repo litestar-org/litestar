@@ -11,6 +11,7 @@ from litestar._parsers import (
     parse_url_encoded_form_data,
 )
 from litestar.datastructures.upload_file import UploadFile
+from litestar.dto.interface import ConnectionContext
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
@@ -287,13 +288,14 @@ async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
 
 
 def create_multipart_extractor(
-    signature_field: SignatureField, is_data_optional: bool
+    signature_field: SignatureField, is_data_optional: bool, dto_type: type[DTOInterface] | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
     Args:
         signature_field: A SignatureField instance.
         is_data_optional: Boolean dictating whether the field is optional.
+        dto_type: The DTO type, if configured for handler.
 
     Returns:
         An extractor function.
@@ -325,18 +327,26 @@ def create_multipart_extractor(
         if signature_field.is_simple_type and signature_field.field_type is UploadFile and form_values:
             return [v for v in form_values.values() if isinstance(v, UploadFile)][0]
 
-        return form_values if form_values or not is_data_optional else None
+        if not form_values and is_data_optional:
+            return None
+
+        if dto_type:
+            ctx = ConnectionContext.from_connection(connection)
+            return dto_type(ctx).builtins_to_data_type(form_values)
+
+        return form_values
 
     return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
 
 
 def create_url_encoded_data_extractor(
-    is_data_optional: bool,
+    is_data_optional: bool, dto_type: type[DTOInterface] | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create extractor for url encoded form-data.
 
     Args:
         is_data_optional: Boolean dictating whether the field is optional.
+        dto_type: The DTO type, if configured for handler.
 
     Returns:
         An extractor function.
@@ -350,7 +360,14 @@ def create_url_encoded_data_extractor(
             if "_form" in connection.scope
             else parse_url_encoded_form_data(await connection.body())
         )
-        return form_values if form_values or not is_data_optional else None
+        if not form_values and is_data_optional:
+            return None
+
+        if dto_type:
+            ctx = ConnectionContext.from_connection(connection)
+            return dto_type(ctx).builtins_to_data_type(form_values)
+
+        return form_values
 
     return cast(
         "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor
@@ -368,15 +385,18 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
     """
 
     if kwargs_model.expected_form_data:
-        media_type, signature_field = kwargs_model.expected_form_data
+        media_type, signature_field, dto_type = kwargs_model.expected_form_data
 
         if media_type == RequestEncodingType.MULTI_PART:
             data_extractor = create_multipart_extractor(
                 signature_field=signature_field,
                 is_data_optional=kwargs_model.is_data_optional,
+                dto_type=dto_type,
             )
         else:
-            data_extractor = create_url_encoded_data_extractor(is_data_optional=kwargs_model.is_data_optional)
+            data_extractor = create_url_encoded_data_extractor(
+                is_data_optional=kwargs_model.is_data_optional, dto_type=dto_type
+            )
     elif kwargs_model.expected_msgpack_data:
         data_extractor = cast(
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
@@ -410,6 +430,7 @@ def create_dto_extractor(
     """
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        return dto_type(connection).bytes_to_data_type(await connection.body())
+        ctx = ConnectionContext.from_connection(connection)
+        return dto_type(ctx).bytes_to_data_type(await connection.body())
 
     return dto_extractor  # type:ignore[return-value]

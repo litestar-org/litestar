@@ -62,7 +62,7 @@ def create_cookie_schema(cookie: "Cookie") -> Schema:
     return Schema(description=cookie.description or "", example=value)
 
 
-def create_success_response(
+def create_success_response(  # noqa: C901
     route_handler: "HTTPRouteHandler",
     generate_examples: bool,
     plugins: list["OpenAPISchemaPluginProtocol"],
@@ -88,12 +88,15 @@ def create_success_response(
         elif is_class_and_subclass(get_origin(return_annotation), LitestarResponse):
             return_annotation = get_args(return_annotation)[0] or Any
 
-        result = create_schema(
-            field=SignatureField.create(field_type=return_annotation),
-            generate_examples=generate_examples,
-            plugins=plugins,
-            schemas=schemas,
-        )
+        if dto := route_handler.resolve_return_dto():
+            result = dto.create_openapi_schema("return", str(route_handler), generate_examples, schemas)
+        else:
+            result = create_schema(
+                field=SignatureField.create(field_type=return_annotation),
+                generate_examples=generate_examples,
+                plugins=plugins,
+                schemas=schemas,
+            )
 
         schema = result if isinstance(result, Schema) else schemas[result.value]
 

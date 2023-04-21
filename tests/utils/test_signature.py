@@ -3,18 +3,28 @@ from __future__ import annotations
 
 import inspect
 from inspect import Parameter
-from typing import Any, List, Optional, Union
+from typing import Any, ForwardRef, List, Optional, Tuple, TypeVar, Union
 
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
 
+from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
+from litestar.params import Body
 from litestar.static_files import StaticFiles
 from litestar.types.asgi_types import Receive, Scope, Send
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
-from litestar.utils.signature import ParsedParameter, ParsedSignature, ParsedType, get_fn_type_hints
+from litestar.utils.signature import (
+    ParsedParameter,
+    ParsedSignature,
+    ParsedType,
+    get_fn_type_hints,
+    infer_request_encoding_from_parameter,
+)
+
+T = TypeVar("T")
 
 
 def test_get_fn_type_hints_asgi_app() -> None:
@@ -64,139 +74,247 @@ class _TD(TypedDict):
 
 
 test_type_hints = get_type_hints(_TD, include_extras=True)
-parsed_type_int = ParsedType.from_annotation(int)
+parsed_type_int = ParsedType(int)
+
+
+def _check_parsed_type(parsed_type: ParsedType, expected: dict[str, Any]) -> None:
+    for key, value in expected.items():
+        assert getattr(parsed_type, key) == value
 
 
 @pytest.mark.parametrize(
     ("annotation", "expected"),
     [
-        (int, ParsedType(int, int, None, (), (), False, False, False, None, ())),
-        (List[int], ParsedType(List[int], List[int], list, (int,), (), False, False, False, List, (parsed_type_int,))),
+        (
+            int,
+            {
+                "raw": int,
+                "annotation": int,
+                "origin": None,
+                "args": (),
+                "metadata": (),
+                "is_annotated": False,
+                "is_required": False,
+                "is_not_required": False,
+                "safe_generic_origin": None,
+                "inner_types": (),
+            },
+        ),
+        (
+            List[int],
+            {
+                "raw": List[int],
+                "annotation": List[int],
+                "origin": list,
+                "args": (int,),
+                "metadata": (),
+                "is_annotated": False,
+                "is_required": False,
+                "is_not_required": False,
+                "safe_generic_origin": List,
+                "inner_types": (parsed_type_int,),
+            },
+        ),
         (
             Annotated[int, "foo"],
-            ParsedType(Annotated[int, "foo"], int, None, (), ("foo",), True, False, False, None, ()),
+            {
+                "raw": Annotated[int, "foo"],
+                "annotation": int,
+                "origin": None,
+                "args": (),
+                "metadata": ("foo",),
+                "is_annotated": True,
+                "is_required": False,
+                "is_not_required": False,
+                "safe_generic_origin": None,
+                "inner_types": (),
+            },
         ),
         (
             Annotated[List[int], "foo"],
-            ParsedType(
-                Annotated[List[int], "foo"],
-                List[int],
-                list,
-                (int,),
-                ("foo",),
-                True,
-                False,
-                False,
-                List,
-                (parsed_type_int,),
-            ),
+            {
+                "raw": Annotated[List[int], "foo"],
+                "annotation": List[int],
+                "origin": list,
+                "args": (int,),
+                "metadata": ("foo",),
+                "is_annotated": True,
+                "is_required": False,
+                "is_not_required": False,
+                "safe_generic_origin": List,
+                "inner_types": (parsed_type_int,),
+            },
         ),
         (
             test_type_hints["req_int"],
-            ParsedType(test_type_hints["req_int"], int, None, (), (), False, True, False, None, ()),
+            {
+                "raw": test_type_hints["req_int"],
+                "annotation": int,
+                "origin": None,
+                "args": (),
+                "metadata": (),
+                "is_annotated": False,
+                "is_required": True,
+                "is_not_required": False,
+                "safe_generic_origin": None,
+                "inner_types": (),
+            },
         ),
         (
             test_type_hints["req_list_int"],
-            ParsedType(
-                test_type_hints["req_list_int"],
-                List[int],
-                list,
-                (int,),
-                (),
-                False,
-                True,
-                False,
-                List,
-                (parsed_type_int,),
-            ),
+            {
+                "raw": test_type_hints["req_list_int"],
+                "annotation": List[int],
+                "origin": list,
+                "args": (int,),
+                "metadata": (),
+                "is_annotated": False,
+                "is_required": True,
+                "is_not_required": False,
+                "safe_generic_origin": List,
+                "inner_types": (parsed_type_int,),
+            },
         ),
         (
             test_type_hints["not_req_int"],
-            ParsedType(test_type_hints["not_req_int"], int, None, (), (), False, False, True, None, ()),
+            {
+                "raw": test_type_hints["not_req_int"],
+                "annotation": int,
+                "origin": None,
+                "args": (),
+                "metadata": (),
+                "is_annotated": False,
+                "is_required": False,
+                "is_not_required": True,
+                "safe_generic_origin": None,
+                "inner_types": (),
+            },
         ),
         (
             test_type_hints["not_req_list_int"],
-            ParsedType(
-                test_type_hints["not_req_list_int"],
-                List[int],
-                list,
-                (int,),
-                (),
-                False,
-                False,
-                True,
-                List,
-                (parsed_type_int,),
-            ),
+            {
+                "raw": test_type_hints["not_req_list_int"],
+                "annotation": List[int],
+                "origin": list,
+                "args": (int,),
+                "metadata": (),
+                "is_annotated": False,
+                "is_required": False,
+                "is_not_required": True,
+                "safe_generic_origin": List,
+                "inner_types": (parsed_type_int,),
+            },
         ),
         (
             test_type_hints["ann_req_int"],
-            ParsedType(test_type_hints["ann_req_int"], int, None, (), ("foo",), True, True, False, None, ()),
+            {
+                "raw": test_type_hints["ann_req_int"],
+                "annotation": int,
+                "origin": None,
+                "args": (),
+                "metadata": ("foo",),
+                "is_annotated": True,
+                "is_required": True,
+                "is_not_required": False,
+                "safe_generic_origin": None,
+                "inner_types": (),
+            },
         ),
         (
             test_type_hints["ann_req_list_int"],
-            ParsedType(
-                test_type_hints["ann_req_list_int"],
-                List[int],
-                list,
-                (int,),
-                ("foo",),
-                True,
-                True,
-                False,
-                List,
-                (parsed_type_int,),
-            ),
+            {
+                "raw": test_type_hints["ann_req_list_int"],
+                "annotation": List[int],
+                "origin": list,
+                "args": (int,),
+                "metadata": ("foo",),
+                "is_annotated": True,
+                "is_required": True,
+                "is_not_required": False,
+                "safe_generic_origin": List,
+                "inner_types": (parsed_type_int,),
+            },
         ),
     ],
 )
-def test_parsed_type_from_annotation(annotation: Any, expected: ParsedType) -> None:
+def test_parsed_type_from_annotation(annotation: Any, expected: dict[str, Any]) -> None:
     """Test ParsedType.from_annotation."""
-    assert ParsedType.from_annotation(annotation) == expected
+    _check_parsed_type(ParsedType(annotation), expected)
 
 
 def test_parsed_type_from_union_annotation() -> None:
     """Test ParsedType.from_annotation for Union."""
     annotation = Union[int, List[int]]
-    expected = ParsedType(
-        annotation,
-        annotation,
-        Union,
-        (int, List[int]),
-        (),
-        False,
-        False,
-        False,
-        Union,
-        (ParsedType.from_annotation(int), ParsedType.from_annotation(List[int])),
-    )
-    assert ParsedType.from_annotation(annotation) == expected
+    expected = {
+        "raw": annotation,
+        "annotation": annotation,
+        "origin": Union,
+        "args": (int, List[int]),
+        "metadata": (),
+        "is_annotated": False,
+        "is_required": False,
+        "is_not_required": False,
+        "safe_generic_origin": Union,
+        "inner_types": (ParsedType(int), ParsedType(List[int])),
+    }
+    _check_parsed_type(ParsedType(annotation), expected)
+
+
+@pytest.mark.parametrize("value", ["int", ForwardRef("int")])
+def test_parsed_type_is_forward_ref_predicate(value: Any) -> None:
+    """Test ParsedType with ForwardRef."""
+    parsed_type = ParsedType(value)
+    assert parsed_type.is_forward_ref is True
+    assert parsed_type.annotation == value
+    assert parsed_type.origin is None
+    assert parsed_type.args == ()
+    assert parsed_type.metadata == ()
+    assert parsed_type.is_annotated is False
+    assert parsed_type.is_required is False
+    assert parsed_type.is_not_required is False
+    assert parsed_type.safe_generic_origin is None
+    assert parsed_type.inner_types == ()
+
+
+def test_parsed_type_is_type_var_predicate() -> None:
+    """Test ParsedType.is_type_var."""
+    assert ParsedType(int).is_type_var is False
+    assert ParsedType(T).is_type_var is True
+    assert ParsedType(Union[int, T]).is_type_var is False
+
+
+def test_parsed_type_is_union_predicate() -> None:
+    """Test ParsedType.is_union."""
+    assert ParsedType(int).is_union is False
+    assert ParsedType(Optional[int]).is_union is True
+    assert ParsedType(Union[int, None]).is_union is True
+    assert ParsedType(Union[int, str]).is_union is True
 
 
 def test_parsed_type_is_optional_predicate() -> None:
     """Test ParsedType.is_optional."""
-    assert ParsedType.from_annotation(int).is_optional is False
-    assert ParsedType.from_annotation(Optional[int]).is_optional is True
-    assert ParsedType.from_annotation(Union[int, None]).is_optional is True
-    assert ParsedType.from_annotation(Union[int, None, str]).is_optional is True
-    assert ParsedType.from_annotation(Union[int, str]).is_optional is False
+    assert ParsedType(int).is_optional is False
+    assert ParsedType(Optional[int]).is_optional is True
+    assert ParsedType(Union[int, None]).is_optional is True
+    assert ParsedType(Union[int, None, str]).is_optional is True
+    assert ParsedType(Union[int, str]).is_optional is False
 
 
 def test_parsed_type_is_subclass_of() -> None:
     """Test ParsedType.is_type_of."""
-    assert ParsedType.from_annotation(bool).is_subclass_of(int) is True
-    assert ParsedType.from_annotation(bool).is_subclass_of(str) is False
-    assert ParsedType.from_annotation(Union[int, str]).is_subclass_of(int) is False
-    assert ParsedType.from_annotation(List[int]).is_subclass_of(list) is True
-    assert ParsedType.from_annotation(List[int]).is_subclass_of(int) is False
-    assert ParsedType.from_annotation(Optional[int]).is_subclass_of(int) is False
+    assert ParsedType(bool).is_subclass_of(int) is True
+    assert ParsedType(bool).is_subclass_of(str) is False
+    assert ParsedType(Union[int, str]).is_subclass_of(int) is False
+    assert ParsedType(List[int]).is_subclass_of(list) is True
+    assert ParsedType(List[int]).is_subclass_of(int) is False
+    assert ParsedType(Optional[int]).is_subclass_of(int) is False
 
 
 def test_parsed_type_has_inner_subclass_of() -> None:
     """Test ParsedType.has_type_of."""
-    assert ParsedType.from_annotation(List[int]).has_inner_subclass_of(int) is True
-    assert ParsedType.from_annotation(List[int]).has_inner_subclass_of(str) is False
-    assert ParsedType.from_annotation(List[Union[int, str]]).has_inner_subclass_of(int) is False
+    assert ParsedType(List[int]).has_inner_subclass_of(int) is True
+    assert ParsedType(List[int]).has_inner_subclass_of(str) is False
+    assert ParsedType(List[Union[int, str]]).has_inner_subclass_of(int) is False
 
 
 def test_parsed_parameter() -> None:
@@ -247,3 +365,28 @@ def test_parsed_signature() -> None:
     assert parsed_sig.parameters["bar"].parsed_type.annotation == Union[List[int], NoneType]
     assert parsed_sig.parameters["bar"].default is None
     assert parsed_sig.original_signature == inspect.signature(fn)
+
+
+def test_parsed_type_equality() -> None:
+    assert ParsedType(int) == ParsedType(int)
+    assert ParsedType(int) == ParsedType(Annotated[int, "meta"])
+    assert ParsedType(int) != int
+    assert ParsedType(List[int]) == ParsedType(List[int])
+    assert ParsedType(List[int]) != ParsedType(List[str])
+    assert ParsedType(List[str]) != ParsedType(Tuple[str])
+    assert ParsedType(Optional[str]) == ParsedType(Union[str, None])
+
+
+@pytest.mark.parametrize(
+    ("annotation", "default", "expected"),
+    [
+        (int, None, RequestEncodingType.JSON),
+        (int, Body(media_type=RequestEncodingType.MESSAGEPACK), RequestEncodingType.MESSAGEPACK),
+        (Annotated[int, Body(media_type=RequestEncodingType.MESSAGEPACK)], None, RequestEncodingType.MESSAGEPACK),
+    ],
+)
+def test_infer_request_encoding_type_from_parameter(
+    annotation: Any, default: Any, expected: RequestEncodingType
+) -> None:
+    """Test infer_request_encoding_type_from_parameter."""
+    assert infer_request_encoding_from_parameter(ParsedParameter("foo", default, ParsedType(annotation))) == expected
