@@ -4,7 +4,6 @@ back again, to bytes.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar._openapi.schema_generation import create_schema
@@ -13,7 +12,7 @@ from litestar._signature.field import SignatureField
 from .utils import build_annotation_for_backend
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Final
 
     from litestar.dto.factory.types import FieldDefinitionsType
     from litestar.dto.interface import ConnectionContext
@@ -26,13 +25,22 @@ __all__ = ("AbstractDTOBackend", "BackendContext")
 BackendT = TypeVar("BackendT")
 
 
-@dataclass
 class BackendContext:
     """Context required by DTO backends to perform their work."""
 
-    parsed_type: ParsedType
-    field_definitions: FieldDefinitionsType
-    model_type: type[Any]
+    __slots__ = ("parsed_type", "field_definitions", "model_type")
+
+    def __init__(self, parsed_type: ParsedType, field_definitions: FieldDefinitionsType, model_type: type[Any]) -> None:
+        """Create a backend context.
+
+        Args:
+            parsed_type: Parsed type.
+            field_definitions: Field definitions.
+            model_type: Model type.
+        """
+        self.parsed_type: Final[ParsedType] = parsed_type
+        self.field_definitions: Final[FieldDefinitionsType] = field_definitions
+        self.model_type: Final[type[Any]] = model_type
 
 
 class AbstractDTOBackend(ABC, Generic[BackendT]):

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 from litestar.enums import RequestEncodingType
 from litestar.openapi.spec import Schema
 
 if TYPE_CHECKING:
+    from typing import Any, Final
+
     from typing_extensions import Self
 
     from litestar.openapi.spec import Reference
@@ -33,20 +35,22 @@ class HandlerContext:
         dto_for: ForType,
         handler_id: str,
         parsed_type: ParsedType,
-        request_encoding_type: RequestEncodingType | str | None = None,
+        request_encoding_type: RequestEncodingType | str = RequestEncodingType.JSON,
     ) -> None:
-        self.dto_for: ForType = dto_for
-        self.handler_id = handler_id
-        self.parsed_type = parsed_type
-        self.request_encoding_type = request_encoding_type
+        self.dto_for: Final[ForType] = dto_for
+        self.handler_id: Final[str] = handler_id
+        self.parsed_type: Final[ParsedType] = parsed_type
+        self.request_encoding_type: Final[RequestEncodingType | str] = request_encoding_type
 
 
 class ConnectionContext:
+    """Context object passed to the ``__init__`` method of a DTO."""
+
     __slots__ = ("handler_id", "request_encoding_type")
 
     def __init__(self, handler_id: str, request_encoding_type: RequestEncodingType | str) -> None:
-        self.handler_id = handler_id
-        self.request_encoding_type = request_encoding_type
+        self.handler_id: Final[str] = handler_id
+        self.request_encoding_type: Final[RequestEncodingType | str] = request_encoding_type
 
     @classmethod
     def from_connection(cls, connection: AnyConnection) -> Self:
