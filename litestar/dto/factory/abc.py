@@ -98,15 +98,15 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
 
-    def builtins_to_data_type(self, builtins: Any) -> DataT | Collection[DataT]:
+    def builtins_to_data_type(self, builtins: Any) -> Any:
         """Coerce the unstructured data into the data type."""
         backend = self._handler_backend_map[("data", self.connection.route_handler)]
-        return backend.populate_data_from_builtins(self.model_type, builtins)
+        return backend.populate_data_from_builtins(builtins)
 
-    def bytes_to_data_type(self, raw: bytes) -> DataT | Collection[DataT]:
+    def bytes_to_data_type(self, raw: bytes) -> Any:
         """Return the data held by the DTO."""
         backend = self._handler_backend_map[("data", self.connection.route_handler)]
-        return backend.populate_data_from_raw(self.model_type, raw, self.connection.content_type[0])
+        return backend.populate_data_from_raw(raw, self.connection.content_type[0])
 
     def data_to_encodable_type(self, data: DataT | Collection[DataT]) -> LitestarEncodableType:
         backend = self._handler_backend_map[("return", self.connection.route_handler)]
@@ -173,6 +173,7 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             backend_context = BackendContext(
                 parsed_type,
                 _parse_model(cls, handler_type.annotation, cls.config, handler_context.dto_for),
+                handler_type.annotation,
             )
             backend = cls._type_backend_map.setdefault(key, backend_type(backend_context))
         cls._handler_backend_map[(handler_context.dto_for, handler_context.route_handler)] = backend

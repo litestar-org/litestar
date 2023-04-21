@@ -1,7 +1,6 @@
 # ruff: noqa: UP006
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, List
 
@@ -90,7 +89,7 @@ def fx_field_definitions() -> FieldDefinitionsType:
 
 @pytest.fixture(name="backend", params=[MsgspecDTOBackend, PydanticDTOBackend])
 def fx_backend(request: Any, field_definitions: FieldDefinitionsType) -> AbstractDTOBackend:
-    ctx = BackendContext(ParsedType(DC), field_definitions)
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
     return request.param(ctx)  # type:ignore[no-any-return]
 
 
@@ -125,7 +124,7 @@ def test_backend_parse_unsupported_media_type(backend: AbstractDTOBackend) -> No
 def test_backend_iterable_annotation(
     backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
 ) -> None:
-    ctx = BackendContext(ParsedType(List[DC]), field_definitions)
+    ctx = BackendContext(ParsedType(List[DC]), field_definitions, DC)
     backend = backend_type(ctx)
     parsed_type = ParsedType(backend.annotation)
     assert parsed_type.origin is list
@@ -140,7 +139,7 @@ def test_backend_iterable_annotation(
 def test_backend_scalar_annotation(
     backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
 ) -> None:
-    ctx = BackendContext(ParsedType(DC), field_definitions)
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
     backend = backend_type(ctx)
     if backend_type is MsgspecDTOBackend:
         assert ParsedType(backend.annotation).is_subclass_of(Struct)
@@ -153,9 +152,9 @@ def test_backend_scalar_annotation(
 def test_backend_populate_data_from_builtins(
     backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
 ) -> None:
-    ctx = BackendContext(ParsedType(DC), field_definitions)
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
     backend = backend_type(ctx)
-    data = backend.populate_data_from_builtins(DC, data=DESTRUCTURED)
+    data = backend.populate_data_from_builtins(data=DESTRUCTURED)
     assert data == DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"))
 
 
@@ -163,7 +162,7 @@ def test_backend_populate_data_from_builtins(
 def test_backend_create_openapi_schema(
     backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
 ) -> None:
-    ctx = BackendContext(ParsedType(DC), field_definitions)
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
     backend = backend_type(ctx)
     schemas: dict[str, Any] = {}
     ref = backend.create_openapi_schema(False, schemas)

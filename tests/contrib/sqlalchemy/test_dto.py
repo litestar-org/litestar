@@ -21,7 +21,7 @@ from litestar.serialization import encode_json
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import ModuleType
-    from typing import Any, Collection
+    from typing import Any
 
     from litestar.connection import Request
     from litestar.testing import RequestFactory
@@ -72,7 +72,7 @@ T = TypeVar("T")
 
 async def get_model_from_dto(
     dto_type: type[SQLAlchemyDTO[DataT]], annotation: Any, connection: Request[Any, Any, Any]
-) -> DataT | Collection[DataT]:
+) -> Any:
     @post(signature_namespace={"annotation": annotation})
     def handler(data: annotation) -> annotation:
         return data

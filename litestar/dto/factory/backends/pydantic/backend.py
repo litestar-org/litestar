@@ -33,13 +33,13 @@ class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
     def parse_raw(self, raw: bytes, media_type: MediaType | str) -> BaseModel | Collection[BaseModel]:
         return decode_media_type(raw, media_type, type_=self.annotation)  # type:ignore[no-any-return]
 
-    def populate_data_from_builtins(self, model_type: type[T], data: Any) -> T | Collection[T]:
+    def populate_data_from_builtins(self, data: Any) -> T | Collection[T]:
         parsed_data = cast("BaseModel | Collection[BaseModel]", parse_obj_as(self.annotation, data))
-        return _build_data_from_pydantic_model(model_type, parsed_data, self.context.field_definitions)
+        return _build_data_from_pydantic_model(self.context.model_type, parsed_data, self.context.field_definitions)
 
-    def populate_data_from_raw(self, model_type: type[T], raw: bytes, media_type: MediaType | str) -> T | Collection[T]:
+    def populate_data_from_raw(self, raw: bytes, media_type: MediaType | str) -> T | Collection[T]:
         parsed_data = self.parse_raw(raw, media_type)
-        return _build_data_from_pydantic_model(model_type, parsed_data, self.context.field_definitions)
+        return _build_data_from_pydantic_model(self.context.model_type, parsed_data, self.context.field_definitions)
 
     def encode_data(self, data: Any, connection: Request) -> LitestarEncodableType:
         if isinstance(data, CollectionsCollection):
