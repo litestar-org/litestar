@@ -48,9 +48,10 @@ except ImportError as e:
 if TYPE_CHECKING:
     from litestar.utils.signature import ParsedSignature
 
-key_re = re.compile("@ attribute (.*)|'(.*)'")
-
 __all__ = ("AttrsSignatureModel",)
+key_re = re.compile("@ attribute (.*)|'(.*)'")
+TRUE_SET = {"1", "true", "on", "t", "y", "yes"}
+FALSE_SET = {"0", "false", "off", "f", "n", "no"}
 
 try:
     import pydantic
@@ -73,6 +74,16 @@ def _pass_through_structure_hook(value: Any, _: type[Any]) -> Any:
 
 def _pass_through_unstructure_hook(value: Any) -> Any:
     return value
+
+
+def _structure_bool(value: Any, _: type[bool]) -> bool:
+    if value == 0 or str(value).lower() in FALSE_SET:
+        return False
+
+    if value == 1 or str(value).lower() in TRUE_SET:
+        return True
+
+    raise ValueError(f"Cannot convert {value} to bool")
 
 
 def _structure_datetime(value: Any, cls: type[datetime]) -> datetime:
@@ -151,6 +162,7 @@ hooks: list[tuple[type[Any], Callable[[Any, type[Any]], Any]]] = [
     (UUID, _structure_uuid),
     (UploadFile, _pass_through_structure_hook),
     (WebSocket, _pass_through_structure_hook),
+    (bool, _structure_bool),
     (date, _structure_date),
     (datetime, _structure_datetime),
     (str, _structure_str),
