@@ -9,4 +9,5 @@ contrib
     jwt
     mako
     opentelemetry
+    repository/index
     sqlalchemy/index

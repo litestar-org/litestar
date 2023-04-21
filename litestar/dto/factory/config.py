@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 __all__ = ("DTOConfig",)
 
 
-@dataclass(frozen=True, eq=True)
+@dataclass(frozen=True)
 class DTOConfig:
     """Control the generated DTO."""
 
@@ -25,19 +25,5 @@ class DTOConfig:
     """Mapping of field names, to new name, or tuple of new name, new type."""
     field_definitions: Sequence[FieldDefinition] = field(default_factory=tuple)
     """Additional fields for data transfer."""
-    max_nested_recursion: int = 0
-    """The maximum number of times a self-referencing nested field should be followed."""
     max_nested_depth: int = 1
     """The maximum depth of nested items allowed for data transfer."""
-
-    def __hash__(self) -> int:
-        return hash(
-            (
-                tuple(self.exclude),
-                tuple(self.include),
-                tuple(self.field_mapping),
-                self.field_definitions,
-                self.max_nested_recursion,
-                self.max_nested_depth,
-            )
-        )

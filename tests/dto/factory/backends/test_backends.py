@@ -1,18 +1,21 @@
 # ruff: noqa: UP006
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 import pytest
-from msgspec import Struct, field, to_builtins
-from pydantic import BaseModel, Field
+from msgspec import Struct, to_builtins
+from pydantic import BaseModel
 
 from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
+from litestar.dto.factory.backends.abc import BackendContext
 from litestar.dto.factory.types import FieldDefinition, NestedFieldDefinition
+from litestar.dto.interface import ConnectionContext
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
+from litestar.openapi.spec.reference import Reference
+from litestar.serialization import encode_json
 from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
 
@@ -21,14 +24,6 @@ if TYPE_CHECKING:
 
     from litestar.dto.factory.backends import AbstractDTOBackend
     from litestar.dto.factory.types import FieldDefinitionsType
-
-
-DESTRUCTURED = {
-    "a": 1,
-    "b": "b",
-    "c": [],
-    "nested": {"a": 1, "b": "two"},
-}
 
 
 @dataclass
@@ -43,30 +38,23 @@ class DC:
     b: str
     c: List[int]
     nested: NestedDC
+    nested_list: List[NestedDC]
+    optional: str | None = None
 
 
-class NestedModel(BaseModel):
-    a: int
-    b: str
-
-
-class MyModel(BaseModel):
-    a: int
-    b: str = "b"
-    c: List[int] = Field(default_factory=list)
-    nested: NestedModel
-
-
-class NestedStruct(Struct):
-    a: int
-    b: str
-
-
-class MyStruct(Struct):
-    a: int
-    nested: NestedStruct
-    b: str = "b"
-    c: List[int] = field(default_factory=list)
+DESTRUCTURED = {
+    "a": 1,
+    "b": "b",
+    "c": [],
+    "nested": {"a": 1, "b": "two"},
+    "nested_list": [{"a": 1, "b": "two"}],
+    "optional": None,
+}
+RAW = b'{"a":1,"b":"b","c":[],"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"optional":null}'
+COLLECTION_RAW = (
+    b'[{"a":1,"b":"b","c":[],"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"optional":null}]'
+)
+STRUCTURED = DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"), nested_list=[NestedDC(a=1, b="two")], optional=None)
 
 
 @pytest.fixture(name="field_definitions")
@@ -83,14 +71,27 @@ def fx_field_definitions() -> FieldDefinitionsType:
                 "b": FieldDefinition(name="b", parsed_type=ParsedType(str), default=Empty),
             },
         ),
+        "nested_list": NestedFieldDefinition(
+            field_definition=FieldDefinition(name="nested_list", parsed_type=ParsedType(List[NestedDC]), default=Empty),
+            nested_type=NestedDC,
+            nested_field_definitions={
+                "a": FieldDefinition(name="a", parsed_type=ParsedType(int), default=Empty),
+                "b": FieldDefinition(name="b", parsed_type=ParsedType(str), default=Empty),
+            },
+        ),
+        "optional": FieldDefinition(name="optional", parsed_type=ParsedType(Optional[str]), default=None),
     }
 
 
-@pytest.fixture(name="backend", params=[(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)])
+@pytest.fixture(name="backend", params=[MsgspecDTOBackend, PydanticDTOBackend])
 def fx_backend(request: Any, field_definitions: FieldDefinitionsType) -> AbstractDTOBackend:
-    return request.param[0](  # type:ignore[no-any-return]
-        parsed_type=ParsedType(DC), data_container_type=request.param[1], field_definitions=field_definitions
-    )
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
+    return request.param(ctx)  # type:ignore[no-any-return]
+
+
+@pytest.fixture(name="connection_context")
+def fx_connection_context() -> ConnectionContext:
+    return ConnectionContext(handler_id="handler_id", request_encoding_type="application/json")
 
 
 def _destructure(model: BaseModel | Struct) -> dict[str, Any]:
@@ -99,56 +100,139 @@ def _destructure(model: BaseModel | Struct) -> dict[str, Any]:
     return to_builtins(model)  # type:ignore[no-any-return]
 
 
-def test_backend_parse_raw_json(backend: AbstractDTOBackend) -> None:
-    assert (
-        _destructure(backend.parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"}}', media_type=MediaType.JSON))
-        == DESTRUCTURED
-    )
-
-
-def test_backend_parse_raw_msgpack(backend: AbstractDTOBackend) -> None:
+def test_backend_parse_raw_json(backend: AbstractDTOBackend, connection_context: ConnectionContext) -> None:
     assert (
         _destructure(
-            backend.parse_raw(b"\x82\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two", media_type=MediaType.MESSAGEPACK)
+            backend.parse_raw(
+                b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', connection_context
+            )
         )
         == DESTRUCTURED
     )
 
 
-def test_backend_parse_unsupported_media_type(backend: AbstractDTOBackend) -> None:
+def test_backend_parse_raw_msgpack(backend: AbstractDTOBackend, connection_context: ConnectionContext) -> None:
+    connection_context.request_encoding_type = MediaType.MESSAGEPACK  # type:ignore[misc]
+    assert (
+        _destructure(
+            backend.parse_raw(
+                b"\x83\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two",
+                connection_context,
+            )
+        )
+        == DESTRUCTURED
+    )
+
+
+def test_backend_parse_unsupported_media_type(
+    backend: AbstractDTOBackend, connection_context: ConnectionContext
+) -> None:
+    connection_context.request_encoding_type = MediaType.CSS  # type:ignore[misc]
     with pytest.raises(SerializationException):
-        backend.parse_raw(b"", media_type=MediaType.CSS)
+        backend.parse_raw(b"", connection_context)
 
 
-@pytest.mark.parametrize(
-    ("backend_type", "backend_model"), [(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)]
-)
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
 def test_backend_iterable_annotation(
-    backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
+    backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
 ) -> None:
-    backend = backend_type(ParsedType(List[DC]), data_container_type=backend_model, field_definitions=field_definitions)
-    if sys.version_info < (3, 9):
-        assert backend.annotation == List[backend_model]
-    else:
-        assert backend.annotation == list[backend_model]
+    ctx = BackendContext(ParsedType(List[DC]), field_definitions, DC)
+    backend = backend_type(ctx)
+    parsed_type = ParsedType(backend.annotation)
+    assert parsed_type.origin is list
+    if backend_type is MsgspecDTOBackend:
+        assert parsed_type.has_inner_subclass_of(Struct)
+
+    if backend_type is PydanticDTOBackend:
+        assert parsed_type.has_inner_subclass_of(BaseModel)
 
 
-@pytest.mark.parametrize(
-    ("backend_type", "backend_model"), [(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)]
-)
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
 def test_backend_scalar_annotation(
-    backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
+    backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
 ) -> None:
-    backend = backend_type(ParsedType(DC), data_container_type=backend_model, field_definitions=field_definitions)
-    assert backend.annotation == backend_model
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
+    backend = backend_type(ctx)
+    if backend_type is MsgspecDTOBackend:
+        assert ParsedType(backend.annotation).is_subclass_of(Struct)
+
+    if backend_type is PydanticDTOBackend:
+        assert ParsedType(backend.annotation).is_subclass_of(BaseModel)
 
 
-@pytest.mark.parametrize(
-    ("backend_type", "backend_model"), [(MsgspecDTOBackend, MyStruct), (PydanticDTOBackend, MyModel)]
-)
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
 def test_backend_populate_data_from_builtins(
-    backend_type: type[AbstractDTOBackend], backend_model: Any, field_definitions: FieldDefinitionsType
+    backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
 ) -> None:
-    backend = backend_type(ParsedType(DC), data_container_type=backend_model, field_definitions=field_definitions)
-    data = backend.populate_data_from_builtins(DC, data=DESTRUCTURED)
-    assert data == DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"))
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
+    backend = backend_type(ctx)
+    data = backend.populate_data_from_builtins(data=DESTRUCTURED)
+    assert data == STRUCTURED
+
+
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
+def test_backend_create_openapi_schema(
+    backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
+) -> None:
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
+    backend = backend_type(ctx)
+    schemas: dict[str, Any] = {}
+    ref = backend.create_openapi_schema(False, schemas)
+    assert isinstance(ref, Reference)
+    schema = schemas[ref.value]
+    assert schema.properties["a"].type == "integer"
+    assert schema.properties["b"].type == "string"
+    assert schema.properties["c"].items.type == "integer"
+    assert schema.properties["c"].type == "array"
+    assert isinstance(nested := schema.properties["nested"], Reference)
+    nested_schema = schemas[nested.value]
+    assert nested_schema.properties["a"].type == "integer"
+    assert nested_schema.properties["b"].type == "string"
+
+
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
+def test_backend_populate_data_from_raw(
+    backend_type: type[AbstractDTOBackend],
+    field_definitions: FieldDefinitionsType,
+    connection_context: ConnectionContext,
+) -> None:
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
+    backend = backend_type(ctx)
+    data = backend.populate_data_from_raw(RAW, connection_context)
+    assert data == STRUCTURED
+
+
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
+def test_backend_populate_collection_data_from_raw(
+    backend_type: type[AbstractDTOBackend],
+    field_definitions: FieldDefinitionsType,
+    connection_context: ConnectionContext,
+) -> None:
+    ctx = BackendContext(ParsedType(List[DC]), field_definitions, DC)
+    backend = backend_type(ctx)
+    data = backend.populate_data_from_raw(COLLECTION_RAW, connection_context)
+    assert data == [STRUCTURED]
+
+
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
+def test_backend_encode_data(
+    backend_type: type[AbstractDTOBackend],
+    field_definitions: FieldDefinitionsType,
+    connection_context: ConnectionContext,
+) -> None:
+    ctx = BackendContext(ParsedType(DC), field_definitions, DC)
+    backend = backend_type(ctx)
+    data = backend.encode_data(STRUCTURED, connection_context)
+    assert encode_json(data) == RAW
+
+
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
+def test_backend_encode_collection_data(
+    backend_type: type[AbstractDTOBackend],
+    field_definitions: FieldDefinitionsType,
+    connection_context: ConnectionContext,
+) -> None:
+    ctx = BackendContext(ParsedType(List[DC]), field_definitions, DC)
+    backend = backend_type(ctx)
+    data = backend.encode_data([STRUCTURED], connection_context)
+    assert encode_json(data) == COLLECTION_RAW

@@ -11,6 +11,7 @@ from typing_extensions import Annotated, NotRequired, Required, get_args, get_or
 
 from litestar import connection, datastructures, types
 from litestar.datastructures import ImmutableState
+from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from litestar.types import AnyCallable, Empty
@@ -30,7 +31,13 @@ _GLOBAL_NAMES = {
 This allows users to include these names within an `if TYPE_CHECKING:` block in their handler module.
 """
 
-__all__ = ("get_fn_type_hints", "ParsedType", "ParsedParameter", "ParsedSignature")
+__all__ = (
+    "get_fn_type_hints",
+    "ParsedType",
+    "ParsedParameter",
+    "ParsedSignature",
+    "infer_request_encoding_from_parameter",
+)
 
 
 def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -316,23 +323,19 @@ class ParsedSignature:
         )
 
 
-@dataclass(frozen=True, init=False)
-class ParsedModel:
-    parameters: dict[str, ParsedParameter]
+def infer_request_encoding_from_parameter(param: ParsedParameter) -> RequestEncodingType | str:
+    """Infer the request encoding type from a parsed type.
 
-    def __init__(self, model: type[Any], namespace: dict[str, Any] | None = None) -> None:
-        """Initialize ParsedModel.
+    Args:
+        param: The parsed parameter to infer the request encoding type from.
 
-        Args:
-            model: The model to parse.
-            namespace: The namespace to use for forward reference resolution.
-        """
-        type_hints = get_type_hints(model, localns=namespace)
-        object.__setattr__(
-            self,
-            "parameters",
-            {
-                name: ParsedParameter(name=name, default=getattr(model, name, Empty), parsed_type=ParsedType(type_hint))
-                for name, type_hint in type_hints.items()
-            },
-        )
+    Returns:
+        The inferred request encoding type.
+    """
+    if param.has_default and isinstance(param.default, BodyKwarg):
+        return param.default.media_type
+    if param.parsed_type.metadata:
+        for item in param.parsed_type.metadata:
+            if isinstance(item, BodyKwarg):
+                return item.media_type
+    return RequestEncodingType.JSON

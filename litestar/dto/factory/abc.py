@@ -5,7 +5,8 @@ from itertools import chain
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
-from litestar.dto.interface import DTOInterface
+from litestar.dto.factory.backends.abc import BackendContext
+from litestar.dto.interface import ConnectionContext, DTOInterface
 from litestar.enums import RequestEncodingType
 from litestar.types.builtin_types import NoneType
 from litestar.utils.signature import ParsedType
@@ -14,7 +15,7 @@ from .config import DTOConfig
 from .exc import InvalidAnnotation
 from .field import Mark
 from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
-from .utils import infer_request_encoding_from_parameter, parse_configs_from_annotation
+from .utils import parse_configs_from_annotation
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator, TypeAlias
@@ -22,8 +23,9 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar.connection import Request
+    from litestar.dto.interface import HandlerContext
     from litestar.dto.types import ForType
-    from litestar.handlers import BaseRouteHandler
+    from litestar.openapi.spec import Reference, Schema
     from litestar.types.serialization import LitestarEncodableType
 
     from .backends import AbstractDTOBackend
@@ -37,7 +39,7 @@ DataT = TypeVar("DataT")
 class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
     """Base class for DTO types."""
 
-    __slots__ = ("connection",)
+    __slots__ = ("connection_context",)
 
     config: ClassVar[DTOConfig]
     """Config objects to define properties of the DTO."""
@@ -46,15 +48,16 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
     _reverse_field_mappings: ClassVar[dict[str, FieldDefinition]]
     _type_backend_map: ClassVar[dict[tuple[ForType, ParsedType, RequestEncodingType | str | None], AbstractDTOBackend]]
-    _handler_backend_map: ClassVar[dict[tuple[ForType, BaseRouteHandler], AbstractDTOBackend]]
+    _handler_backend_map: ClassVar[dict[tuple[ForType, str], AbstractDTOBackend]]
 
-    def __init__(self, connection: AnyRequest) -> None:
+    def __init__(self, connection_context: ConnectionContext) -> None:
         """Create an AbstractDTOFactory type.
 
         Args:
-            connection: Request object.
+            connection_context: A :class:`ConnectionContext <.ConnectionContext>` instance, which provides
+                information about the connection.
         """
-        self.connection = connection
+        self.connection_context = connection_context
 
     def __class_getitem__(cls, annotation: Any) -> type[Self]:
         parsed_type = ParsedType(annotation)
@@ -69,16 +72,20 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         if parsed_type.is_forward_ref:
             raise InvalidAnnotation("Forward references are not supported as type argument to DTO")
 
+        # if a configuration is not provided, and the type narrowing is a type var, we don't want to create a subclass
         configs = parse_configs_from_annotation(parsed_type)
-        if configs:
-            config = configs[0]
-        elif hasattr(cls, "config"):
-            config = cls.config
-        else:
-            config = DTOConfig()
-
         if parsed_type.is_type_var and not configs:
             return cls
+
+        if configs:
+            # provided config is always preferred
+            config = configs[0]
+        elif hasattr(cls, "config"):
+            # if no config is provided, but the class has one assigned, use that
+            config = cls.config
+        else:
+            # otherwise, create a new config
+            config = DTOConfig()
 
         cls_dict: dict[str, Any] = {
             "config": config,
@@ -91,19 +98,19 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
 
-    def builtins_to_data_type(self, builtins: Any) -> DataT | Collection[DataT]:
+    def builtins_to_data_type(self, builtins: Any) -> Any:
         """Coerce the unstructured data into the data type."""
-        backend = self._handler_backend_map[("data", self.connection.route_handler)]
-        return backend.populate_data_from_builtins(self.model_type, builtins)
+        backend = self._handler_backend_map[("data", self.connection_context.handler_id)]
+        return backend.populate_data_from_builtins(builtins)
 
-    def bytes_to_data_type(self, raw: bytes) -> DataT | Collection[DataT]:
+    def bytes_to_data_type(self, raw: bytes) -> Any:
         """Return the data held by the DTO."""
-        backend = self._handler_backend_map[("data", self.connection.route_handler)]
-        return backend.populate_data_from_raw(self.model_type, raw, self.connection.content_type[0])
+        backend = self._handler_backend_map[("data", self.connection_context.handler_id)]
+        return backend.populate_data_from_raw(raw, self.connection_context)
 
     def data_to_encodable_type(self, data: DataT | Collection[DataT]) -> LitestarEncodableType:
-        backend = self._handler_backend_map[("return", self.connection.route_handler)]
-        return backend.encode_data(data, self.connection)
+        backend = self._handler_backend_map[("return", self.connection_context.handler_id)]
+        return backend.encode_data(data, self.connection_context)
 
     @classmethod
     @abstractmethod
@@ -127,52 +134,61 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
         """
 
     @classmethod
-    def on_registration(cls, route_handler: BaseRouteHandler, dto_for: ForType) -> None:
+    def on_registration(cls, handler_context: HandlerContext) -> None:
         """Called each time the DTO type is encountered during signature modelling.
 
         Args:
-            route_handler: :class:`HTTPRouteHandler <.handlers.HTTPRouteHandler>` DTO type is declared upon.
-            dto_for: indicates whether the DTO is for the request body or response.
+            handler_context: A :class:`HandlerContext <.HandlerContext>` instance. Provides information about the
+                handler and application of the DTO.
         """
 
-        parsed_signature = route_handler.parsed_fn_signature
-        request_encoding_type: RequestEncodingType | str | None = None
-        if dto_for == "data":
-            data_param = parsed_signature.parameters["data"]
-            request_encoding_type = infer_request_encoding_from_parameter(data_param)
-            parsed_type = parsed_signature.parameters["data"].parsed_type
-        else:
-            parsed_type = parsed_signature.return_type
-
-        if parsed_type.is_subclass_of(AbstractDTOFactory):
-            raise InvalidAnnotation("AbstractDTOFactory does not support being set as a handler annotation")
-
-        if parsed_type.is_collection:
-            if len(parsed_type.inner_types) != 1:
+        if handler_context.parsed_type.is_collection:
+            if len(handler_context.parsed_type.inner_types) != 1:
                 raise InvalidAnnotation("AbstractDTOFactory only supports homogeneous collection types")
-            handler_type = parsed_type.inner_types[0]
+            handler_type = handler_context.parsed_type.inner_types[0]
         else:
-            handler_type = parsed_type
+            handler_type = handler_context.parsed_type
 
         if not handler_type.is_subclass_of(cls.model_type):
-            raise InvalidAnnotation(f"DTO narrowed with '{cls.model_type}', handler type is '{parsed_type.annotation}'")
+            raise InvalidAnnotation(
+                f"DTO narrowed with '{cls.model_type}', handler type is '{handler_context.parsed_type.annotation}'"
+            )
 
-        key = (dto_for, parsed_type, request_encoding_type)
+        key = (handler_context.dto_for, handler_context.parsed_type, handler_context.request_encoding_type)
         backend = cls._type_backend_map.get(key)
         if backend is None:
             backend_type: type[AbstractDTOBackend]
-            if request_encoding_type in {RequestEncodingType.URL_ENCODED, RequestEncodingType.MULTI_PART}:
+            if handler_context.request_encoding_type in {
+                RequestEncodingType.URL_ENCODED,
+                RequestEncodingType.MULTI_PART,
+            }:
                 backend_type = PydanticDTOBackend
             else:
                 backend_type = MsgspecDTOBackend
 
-            backend = cls._type_backend_map.setdefault(
-                key,
-                backend_type.from_field_definitions(
-                    parsed_type, _parse_model(cls, cls.model_type, cls.config, dto_for)
-                ),
+            backend_context = BackendContext(
+                handler_context.parsed_type,
+                _parse_model(cls, handler_type.annotation, cls.config, handler_context.dto_for),
+                handler_type.annotation,
             )
-        cls._handler_backend_map[(dto_for, route_handler)] = backend
+            backend = cls._type_backend_map.setdefault(key, backend_type(backend_context))
+        cls._handler_backend_map[(handler_context.dto_for, handler_context.handler_id)] = backend
+
+    @classmethod
+    def create_openapi_schema(
+        cls,
+        dto_for: ForType,
+        handler_id: str,
+        generate_examples: bool,
+        schemas: dict[str, Schema],
+    ) -> Reference | Schema:
+        """Create an OpenAPI request body.
+
+        Returns:
+            OpenAPI request body.
+        """
+        backend = cls._handler_backend_map[(dto_for, handler_id)]
+        return backend.create_openapi_schema(generate_examples, schemas)
 
 
 def _parse_model(
@@ -181,7 +197,6 @@ def _parse_model(
     config: DTOConfig,
     dto_for: ForType,
     nested_depth: int = 0,
-    recursive_depth: int = 0,
 ) -> FieldDefinitionsType:
     """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
 
@@ -221,9 +236,7 @@ def _parse_model(
                 field_definition = field_mapping  # noqa: PLW2901
 
         if dto_factory_type.detect_nested_field(field_definition):
-            nested_field_definition = _handle_nested(
-                dto_factory_type, field_definition, nested_depth, recursive_depth, config, dto_for
-            )
+            nested_field_definition = _handle_nested(dto_factory_type, field_definition, nested_depth, config, dto_for)
             if nested_field_definition is not None:
                 defined_fields[field_definition.name] = nested_field_definition
             continue
@@ -256,7 +269,6 @@ def _handle_nested(
     dto_factory_type: type[AbstractDTOFactory],
     field_definition: FieldDefinition,
     nested_depth: int,
-    recursive_depth: int,
     config: DTOConfig,
     dto_for: ForType,
 ) -> NestedFieldDefinition | None:
@@ -268,13 +280,8 @@ def _handle_nested(
         nested_type=_get_model_type(field_definition.annotation),
     )
 
-    if (
-        is_recursive := nested.is_recursive(dto_factory_type.model_type)
-    ) and recursive_depth == config.max_nested_recursion:
-        return None
-
     nested.nested_field_definitions = _parse_model(
-        dto_factory_type, nested.nested_type, config, dto_for, nested_depth + 1, recursive_depth + is_recursive
+        dto_factory_type, nested.nested_type, config, dto_for, nested_depth + 1
     )
     return nested
 

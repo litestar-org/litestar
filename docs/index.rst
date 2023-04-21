@@ -24,10 +24,13 @@ Installation
     :ref:`Brotli Compression Middleware <usage/middleware/builtin-middleware:brotli>`:
         :code:`pip install litestar[brotli]`
 
-    :ref:`Cookie based sessions <usage/middleware/builtin-middleware:client-side sessions>`
+    :ref:`Cookie Based Sessions <usage/middleware/builtin-middleware:client-side sessions>`
         :code:`pip install litestar[cryptography]`
 
-    :class:`RedisStore <litestar.stores.redis.RedisStore>`
+    :doc:`JWT Security Backends </usage/contrib/jwt>`
+        :code:`pip install litestar[jwt]`
+
+    :doc:`RedisStore </usage/stores>`
         :code:`pip install litestar[redis]`
 
     :ref:`Picologging <usage/the-litestar-app:using picologging>`
@@ -36,16 +39,28 @@ Installation
     :ref:`StructLog <usage/the-litestar-app:using structlog>`
         :code:`pip install litestar[structlog]`
 
-    :doc:`/usage/contrib/open-telemetry`
+    :doc:`Open Telemetry Instrumentation </usage/contrib/open-telemetry>`
         :code:`pip install litestar[openetelemetry]`
 
-    :doc:`/usage/cli`
+    :doc:`SQLAlchemy </usage/plugins/sqlalchemy>`
+        :code:`pip install litestar[sqlalchemy]`
+
+    :doc:`Tortoise ORM </usage/plugins/tortoise-orm>`
+        :code:`pip install litestar[tortois-orm]`
+
+    :doc:`CLI </usage/cli>`
         :code:`pip install litestar[cli]`
 
-    Standard installation (includes CLI, picologging and Jinja2 templating):
+    :doc:`Jinja Templating </usage/templating>`
+        :code:`pip install litestar[jinja]`
+
+    Attrs
+        :code:`pip install litestar[attrs]`
+
+    Standard Installation (includes CLI and Jinja templating):
         :code:`pip install litestar[standard]`
 
-    All extras:
+    All Extras:
         :code:`pip install litestar[full]`
 
 

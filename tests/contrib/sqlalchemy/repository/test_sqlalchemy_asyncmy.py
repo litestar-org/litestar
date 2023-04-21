@@ -1,14 +1,19 @@
 """Unit tests for the SQLAlchemy Repository implementation."""
 from __future__ import annotations
 
+import asyncio
+import sys
+import timeit
 from asyncio import AbstractEventLoop, get_event_loop_policy
 from datetime import datetime
 from pathlib import Path
-from typing import Any, AsyncGenerator, Iterator
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Iterator
 from uuid import UUID, uuid4
 
+import asyncmy
 import pytest
-from sqlalchemy import NullPool, insert, select
+from sqlalchemy import NullPool, insert
+from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -20,7 +25,17 @@ from litestar.contrib.repository.exceptions import RepositoryError
 from litestar.contrib.sqlalchemy import base
 from tests.contrib.sqlalchemy.models import Author, AuthorRepository, BookRepository
 
+if TYPE_CHECKING:
+    from pytest_docker.plugin import Services
 
+
+pytestmark = pytest.mark.skipif(sys.platform != "linux", reason="docker not available on this platform")
+
+
+here = Path(__file__).parent
+
+
+@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(scope="session")
 def event_loop() -> Iterator[AbstractEventLoop]:
     """Need the event loop scoped to the session so that we can use it to check
@@ -31,24 +46,101 @@ def event_loop() -> Iterator[AbstractEventLoop]:
     loop.close()
 
 
+@pytest.mark.sqlalchemy_asyncmy
+@pytest.fixture(scope="session")
+def docker_compose_file() -> Path:
+    """
+    Returns:
+        Path to the docker-compose file for end-to-end test environment.
+    """
+    return here / "docker-compose.yml"
+
+
+async def wait_until_responsive(check: Callable[..., Awaitable], timeout: float, pause: float, **kwargs: Any) -> None:
+    """Wait until a service is responsive.
+
+    Args:
+        check: Coroutine, return truthy value when waiting should stop.
+        timeout: Maximum seconds to wait.
+        pause: Seconds to wait between calls to `check`.
+        **kwargs: Given as kwargs to `check`.
+    """
+    ref = timeit.default_timer()
+    now = ref
+    while (now - ref) < timeout:
+        if await check(**kwargs):
+            return
+        await asyncio.sleep(pause)
+        now = timeit.default_timer()
+
+    raise ConnectionError("Timeout reached while waiting on service!")
+
+
+async def db_responsive(host: str) -> bool:
+    """
+    Args:
+        host: docker IP address.
+
+    Returns:
+        Boolean indicating if we can connect to the database.
+    """
+
+    try:
+        conn = await asyncmy.connect(
+            host=host,
+            port=3360,
+            user="app",
+            database="db",
+            password="super-secret",
+        )
+        async with conn.cursor() as cursor:
+            await cursor.execute("select 1 as is_available")
+            resp = await cursor.fetchone()
+        return bool(resp[0] == 1)
+    except asyncmy.errors.OperationalError:
+        return False
+
+
+@pytest.mark.sqlalchemy_asyncmy
+@pytest.fixture(scope="session", autouse=True)
+async def _containers(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
+    """Starts containers for required services, fixture waits until they are
+    responsive before returning.
+
+    Args:
+        docker_ip:
+        docker_services:
+    """
+    await wait_until_responsive(timeout=30.0, pause=0.1, check=db_responsive, host=docker_ip)
+
+
+@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(name="engine")
-async def fx_engine(tmp_path: Path) -> AsyncGenerator[AsyncEngine, None]:
-    """SQLite engine for end-to-end testing.
+async def fx_engine(docker_ip: str) -> AsyncEngine:
+    """Postgresql instance for end-to-end testing.
+
+    Args:
+        docker_ip: IP address for TCP connection to Docker containers.
 
     Returns:
         Async SQLAlchemy engine instance.
     """
-    engine = create_async_engine(
-        f"sqlite+aiosqlite:///{tmp_path}/test.db",
+    return create_async_engine(
+        URL(
+            drivername="mysql+asyncmy",
+            username="app",
+            password="super-secret",
+            host=docker_ip,
+            port=3360,
+            database="db",
+            query={},  # type:ignore[arg-type]
+        ),
         echo=True,
         poolclass=NullPool,
     )
-    try:
-        yield engine
-    finally:
-        await engine.dispose()
 
 
+@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(name="raw_authors")
 def fx_raw_authors() -> list[dict[str, Any]]:
     """Unstructured author representations."""
@@ -70,6 +162,7 @@ def fx_raw_authors() -> list[dict[str, Any]]:
     ]
 
 
+@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(name="raw_books")
 def fx_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Unstructured book representations."""
@@ -85,9 +178,10 @@ def fx_raw_books(raw_authors: list[dict[str, Any]]) -> list[dict[str, Any]]:
     ]
 
 
+@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(name="raw_log_events")
 def fx_raw_log_events() -> list[dict[str, Any]]:
-    """Unstructured log event representations."""
+    """Unstructured log events representations."""
     return [
         {
             "id": "f34545b9-663c-4fce-915d-dd1ae9cea42a",
@@ -117,6 +211,7 @@ async def _seed_db(engine: AsyncEngine, raw_authors: list[dict[str, Any]], raw_b
         await conn.execute(insert(Author).values(raw_authors))
 
 
+@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(
     name="session",
 )
@@ -132,26 +227,19 @@ async def fx_session(
         await session.close()
 
 
+@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(name="author_repo")
 def fx_author_repo(session: AsyncSession) -> AuthorRepository:
     return AuthorRepository(session=session)
 
 
+@pytest.mark.sqlalchemy_asyncmy
 @pytest.fixture(name="book_repo")
 def fx_book_repo(session: AsyncSession) -> BookRepository:
     return BookRepository(session=session)
 
 
-def test_json_type(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy filter by kwargs with invalid column name.
-
-    Args:
-        author_repo (AuthorRepository): The author mock repository
-    """
-    with pytest.raises(RepositoryError):
-        author_repo.filter_collection_by_kwargs(author_repo.statement, whoops="silly me")
-
-
+@pytest.mark.sqlalchemy_asyncmy
 def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy filter by kwargs with invalid column name.
 
@@ -162,8 +250,9 @@ def test_filter_by_kwargs_with_incorrect_attribute_name(author_repo: AuthorRepos
         author_repo.filter_collection_by_kwargs(author_repo.statement, whoops="silly me")
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_count_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy count with sqlite.
+    """Test SQLALchemy count with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -171,22 +260,9 @@ async def test_repo_count_method(author_repo: AuthorRepository) -> None:
     assert await author_repo.count() == 2
 
 
-async def test_repo_statement_override(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy base select override with sqlite.
-
-    Args:
-        author_repo (AuthorRepository): The author mock repository
-    """
-    all_count = await author_repo.count()
-    filtered_count = await author_repo.count(
-        statement=select(Author).where(Author.id == UUID("5ef29f3c-3560-4d15-ba6b-a2e5c721e4d2"))
-    )
-    assert all_count == 2
-    assert filtered_count == 1
-
-
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_list_and_count_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy list with count in sqlite.
+    """Test SQLALchemy list with count in asyncmy.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -199,8 +275,9 @@ async def test_repo_list_and_count_method(raw_authors: list[dict[str, Any]], aut
     assert len(collection) == exp_count
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> None:
-    """Test SQLALchemy list with count in sqlite.
+    """Test SQLALchemy list with count in asyncmy.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -213,8 +290,9 @@ async def test_repo_list_and_count_method_empty(book_repo: BookRepository) -> No
     assert len(collection) == 0
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy list with sqlite.
+    """Test SQLALchemy list with asyncmy.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -226,8 +304,9 @@ async def test_repo_list_method(raw_authors: list[dict[str, Any]], author_repo: 
     assert len(collection) == exp_count
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Add with sqlite.
+    """Test SQLALchemy Add with asyncmy.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -243,8 +322,9 @@ async def test_repo_add_method(raw_authors: list[dict[str, Any]], author_repo: A
     assert obj.id is not None
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Add Many with sqlite.
+    """Test SQLALchemy Add Many with asyncmy.
 
     Args:
         raw_authors (list[dict[str, Any]]): list of authors pre-seeded into the mock repository
@@ -263,8 +343,9 @@ async def test_repo_add_many_method(raw_authors: list[dict[str, Any]], author_re
         assert obj.name in {"Testing 2", "Cody"}
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Update Many with sqlite.
+    """Test SQLALchemy Update Many with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -277,8 +358,9 @@ async def test_repo_update_many_method(author_repo: AuthorRepository) -> None:
         assert obj.name.startswith("Update")
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_exists_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy exists with sqlite.
+    """Test SQLALchemy exists with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -287,8 +369,9 @@ async def test_repo_exists_method(author_repo: AuthorRepository) -> None:
     assert exists
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_update_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Update with sqlite.
+    """Test SQLALchemy Update with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -299,8 +382,9 @@ async def test_repo_update_method(author_repo: AuthorRepository) -> None:
     assert updated_obj.name == obj.name
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_delete_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy delete with sqlite.
+    """Test SQLALchemy delete with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -309,8 +393,9 @@ async def test_repo_delete_method(author_repo: AuthorRepository) -> None:
     assert obj.id == UUID("97108ac1-ffcb-411d-8b1e-d9183399f63b")
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_delete_many_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy delete many with sqlite.
+    """Test SQLALchemy delete many with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -333,8 +418,9 @@ async def test_repo_delete_many_method(author_repo: AuthorRepository) -> None:
     assert count == 0
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_get_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get with sqlite.
+    """Test SQLALchemy Get with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -343,8 +429,9 @@ async def test_repo_get_method(author_repo: AuthorRepository) -> None:
     assert obj.name == "Agatha Christie"
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_get_one_or_none_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get One with sqlite.
+    """Test SQLALchemy Get One with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -356,8 +443,9 @@ async def test_repo_get_one_or_none_method(author_repo: AuthorRepository) -> Non
     assert none_obj is None
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_get_one_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get One with sqlite.
+    """Test SQLALchemy Get One with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -369,8 +457,9 @@ async def test_repo_get_one_method(author_repo: AuthorRepository) -> None:
         _ = await author_repo.get_one(name="I don't exist")
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy Get or create with sqlite.
+    """Test SQLALchemy Get or create with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
@@ -384,6 +473,7 @@ async def test_repo_get_or_create_method(author_repo: AuthorRepository) -> None:
     assert new_created
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_get_or_create_match_filter(author_repo: AuthorRepository) -> None:
     """Test SQLALchemy Get or create with a match filter
 
@@ -399,8 +489,9 @@ async def test_repo_get_or_create_match_filter(author_repo: AuthorRepository) ->
     assert existing_created is False
 
 
+@pytest.mark.sqlalchemy_asyncmy
 async def test_repo_upsert_method(author_repo: AuthorRepository) -> None:
-    """Test SQLALchemy upsert with sqlite.
+    """Test SQLALchemy upsert with asyncmy.
 
     Args:
         author_repo (AuthorRepository): The author mock repository
