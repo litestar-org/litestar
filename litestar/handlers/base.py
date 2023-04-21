@@ -444,17 +444,18 @@ class BaseRouteHandler(Generic[T]):
 
     def _handle_serialization_plugins(self, plugins: list[SerializationPluginProtocol]) -> None:
         """Handle the serialization plugins for the handler."""
-        if (data_param := self.parsed_fn_signature.parameters.get("data")) and self.resolve_dto() is None:
-            for plugin in plugins:
-                if plugin.supports_type(data_param.parsed_type):
-                    self._set_dto(plugin.create_dto_for_type(data_param.parsed_type))
-                    break
-
+        # must do the return dto first, otherwise it will resolve to the same as the data dto
         if self.resolve_return_dto() is None:
             return_type = self.parsed_fn_signature.return_type
             for plugin in plugins:
                 if plugin.supports_type(return_type):
                     self._set_return_dto(plugin.create_dto_for_type(return_type))
+                    break
+
+        if (data_param := self.parsed_fn_signature.parameters.get("data")) and self.resolve_dto() is None:
+            for plugin in plugins:
+                if plugin.supports_type(data_param.parsed_type):
+                    self._set_dto(plugin.create_dto_for_type(data_param.parsed_type))
                     break
 
     def __str__(self) -> str:
