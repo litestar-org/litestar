@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 import pytest
 from msgspec import Struct, to_builtins
@@ -39,6 +39,7 @@ class DC:
     c: List[int]
     nested: NestedDC
     nested_list: List[NestedDC]
+    optional: Optional[str] = None
 
 
 DESTRUCTURED = {
@@ -47,9 +48,13 @@ DESTRUCTURED = {
     "c": [],
     "nested": {"a": 1, "b": "two"},
     "nested_list": [{"a": 1, "b": "two"}],
+    "optional": None,
 }
-RAW = b'{"a":1,"b":"b","c":[],"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}'
-STRUCTURED = DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"), nested_list=[NestedDC(a=1, b="two")])
+RAW = b'{"a":1,"b":"b","c":[],"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"optional":null}'
+COLLECTION_RAW = (
+    b'[{"a":1,"b":"b","c":[],"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"optional":null}]'
+)
+STRUCTURED = DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"), nested_list=[NestedDC(a=1, b="two")], optional=None)
 
 
 @pytest.fixture(name="field_definitions")
@@ -74,6 +79,7 @@ def fx_field_definitions() -> FieldDefinitionsType:
                 "b": FieldDefinition(name="b", parsed_type=ParsedType(str), default=Empty),
             },
         ),
+        "optional": FieldDefinition(name="optional", parsed_type=ParsedType(Optional[str]), default=None),
     }
 
 
@@ -191,3 +197,13 @@ def test_backend_encode_data(backend_type: type[AbstractDTOBackend], field_defin
     backend = backend_type(ctx)
     data = backend.encode_data(STRUCTURED, RequestFactory().post())
     assert encode_json(data) == RAW
+
+
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
+def test_backend_encode_collection_data(
+    backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
+) -> None:
+    ctx = BackendContext(ParsedType(List[DC]), field_definitions, DC)
+    backend = backend_type(ctx)
+    data = backend.encode_data([STRUCTURED], RequestFactory().post())
+    assert encode_json(data) == COLLECTION_RAW
