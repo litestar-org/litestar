@@ -192,6 +192,16 @@ def test_backend_populate_data_from_raw(
 
 
 @pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
+def test_backend_populate_collection_data_from_raw(
+    backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType
+) -> None:
+    ctx = BackendContext(ParsedType(List[DC]), field_definitions, DC)
+    backend = backend_type(ctx)
+    data = backend.populate_data_from_raw(COLLECTION_RAW, media_type=MediaType.JSON)
+    assert data == [STRUCTURED]
+
+
+@pytest.mark.parametrize("backend_type", [MsgspecDTOBackend, PydanticDTOBackend])
 def test_backend_encode_data(backend_type: type[AbstractDTOBackend], field_definitions: FieldDefinitionsType) -> None:
     ctx = BackendContext(ParsedType(DC), field_definitions, DC)
     backend = backend_type(ctx)
