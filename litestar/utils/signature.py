@@ -5,20 +5,18 @@ import typing
 from dataclasses import dataclass
 from inspect import Parameter, Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import TYPE_CHECKING, Any, AnyStr, Collection, ForwardRef, TypeVar, Union
+from typing import Any, AnyStr, Collection, ForwardRef, TypeVar, Union
 
 from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin, get_type_hints
 
 from litestar import connection, datastructures, types
 from litestar.datastructures import ImmutableState
+from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg, DependencyKwarg, ParameterKwarg
 from litestar.types import AnyCallable, Empty
 from litestar.types.builtin_types import UNION_TYPES, NoneType
 from litestar.utils.typing import get_safe_generic_origin, unwrap_annotation
-
-if TYPE_CHECKING:
-    from litestar.enums import RequestEncodingType
 
 _GLOBAL_NAMES = {
     namespace: export
@@ -325,7 +323,7 @@ class ParsedSignature:
         )
 
 
-def infer_request_encoding_from_parameter(param: ParsedParameter) -> RequestEncodingType | str | None:
+def infer_request_encoding_from_parameter(param: ParsedParameter) -> RequestEncodingType | str:
     """Infer the request encoding type from a parsed type.
 
     Args:
@@ -340,4 +338,4 @@ def infer_request_encoding_from_parameter(param: ParsedParameter) -> RequestEnco
         for item in param.parsed_type.metadata:
             if isinstance(item, BodyKwarg):
                 return item.media_type
-    return None
+    return RequestEncodingType.JSON

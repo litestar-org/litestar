@@ -112,7 +112,7 @@ def test_backend_parse_raw_json(backend: AbstractDTOBackend, connection_context:
 
 
 def test_backend_parse_raw_msgpack(backend: AbstractDTOBackend, connection_context: ConnectionContext) -> None:
-    connection_context.request_encoding_type = MediaType.MESSAGEPACK
+    connection_context.request_encoding_type = MediaType.MESSAGEPACK  # type:ignore[misc]
     assert (
         _destructure(
             backend.parse_raw(
@@ -127,7 +127,7 @@ def test_backend_parse_raw_msgpack(backend: AbstractDTOBackend, connection_conte
 def test_backend_parse_unsupported_media_type(
     backend: AbstractDTOBackend, connection_context: ConnectionContext
 ) -> None:
-    connection_context.request_encoding_type = MediaType.CSS
+    connection_context.request_encoding_type = MediaType.CSS  # type:ignore[misc]
     with pytest.raises(SerializationException):
         backend.parse_raw(b"", connection_context)
 
