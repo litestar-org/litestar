@@ -1,6 +1,9 @@
+# ruff: noqa: UP006
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeVar
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Tuple, TypeVar, Union
+from unittest.mock import patch
 
 import pytest
 from typing_extensions import Annotated
@@ -22,10 +25,14 @@ from . import Model
 if TYPE_CHECKING:
     from typing import Any
 
+    from pytest import MonkeyPatch
+
     from litestar.connection import Request
     from litestar.dto.factory.backends.abc import AbstractDTOBackend
     from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.testing import RequestFactory
+
+T = TypeVar("T", bound=Model)
 
 
 def make_connection(
@@ -43,6 +50,14 @@ def get_backend(dto_type: type[DataclassDTO[Any]]) -> AbstractDTOBackend:
 def test_forward_referenced_type_argument_raises_exception() -> None:
     with pytest.raises(InvalidAnnotation):
         DataclassDTO["Model"]
+
+
+def test_union_type_argument_raises_exception() -> None:
+    class ModelB(Model):
+        ...
+
+    with pytest.raises(InvalidAnnotation):
+        DataclassDTO[Union[Model, ModelB]]
 
 
 def test_type_narrowing_with_scalar_type_arg() -> None:
@@ -81,12 +96,28 @@ def test_extra_annotated_metadata_ignored() -> None:
 
 
 def test_overwrite_config() -> None:
-    t = TypeVar("t", bound=Model)
     first = DTOConfig(exclude={"a"})
-    generic_dto = DataclassDTO[Annotated[t, first]]
+    generic_dto = DataclassDTO[Annotated[T, first]]
     second = DTOConfig(exclude={"b"})
     dto = generic_dto[Annotated[Model, second]]  # pyright: ignore
     assert dto.config is second
+
+
+def test_existing_config_not_overwritten() -> None:
+    assert getattr(DataclassDTO, "_config", None) is None
+    first = DTOConfig(exclude={"a"})
+    generic_dto = DataclassDTO[Annotated[T, first]]
+    dto = generic_dto[Model]  # pyright: ignore
+    assert dto.config is first
+
+
+def test_config_assigned_via_subclassing() -> None:
+    class CustomGenericDTO(DataclassDTO[T]):
+        config = DTOConfig(exclude={"a"})
+
+    concrete_dto = CustomGenericDTO[Model]
+
+    assert concrete_dto.config.exclude == {"a"}
 
 
 async def test_from_bytes(request_factory: RequestFactory) -> None:
@@ -133,7 +164,7 @@ def test_config_field_mapping_new_definition() -> None:
     config = DTOConfig(field_mapping={"a": FieldDefinition(name="z", parsed_type=ParsedType(str), default=Empty)})
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
-    field_definitions = get_backend(dto_type).field_definitions
+    field_definitions = get_backend(dto_type).context.field_definitions
     assert "a" not in field_definitions
     z = field_definitions["z"]
     assert isinstance(z, FieldDefinition)
@@ -162,3 +193,58 @@ def test_form_encoded_data_uses_pydantic_backend(request_encoding_type: RequestE
         dto_type = DataclassDTO[Model]
         dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
         assert isinstance(dto_type._handler_backend_map[("data", handler)], PydanticDTOBackend)
+
+
+def test_raises_invalid_annotation_for_non_homogenous_collection_types() -> None:
+    dto_type = DataclassDTO[Model]
+
+    @post(dto=dto_type)
+    def handler(data: Tuple[Model, str]) -> Model:
+        return data[0]
+
+    with pytest.raises(InvalidAnnotation):
+        dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
+
+
+def test_raises_invalid_annotation_for_mismatched_types() -> None:
+    dto_type = DataclassDTO[Model]
+
+    @dataclass
+    class OtherModel:
+        a: int
+
+    @post(dto=dto_type, signature_namespace={"OtherModel": OtherModel})
+    def handler(data: OtherModel) -> OtherModel:
+        return data
+
+    with pytest.raises(InvalidAnnotation):
+        dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
+
+
+def test_sub_types_supported() -> None:
+    dto_type = DataclassDTO[Model]
+
+    @dataclass
+    class SubType(Model):
+        c: int
+
+    @post(dto=dto_type, signature_namespace={"SubType": SubType})
+    def handler(data: SubType) -> SubType:
+        return data
+
+    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
+    assert "c" in dto_type._handler_backend_map[("data", handler)].context.field_definitions
+
+
+def test_create_openapi_schema(monkeypatch: MonkeyPatch) -> None:
+    dto_type = DataclassDTO[Model]
+
+    @post(dto=dto_type)
+    def handler(data: Model) -> Model:
+        return data
+
+    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
+
+    with patch("litestar.dto.factory.backends.abc.AbstractDTOBackend.create_openapi_schema") as mock:
+        dto_type.create_openapi_schema("data", handler, True, {})
+        mock.assert_called_once_with(True, {})
