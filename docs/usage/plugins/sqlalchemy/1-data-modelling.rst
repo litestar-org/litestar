@@ -8,9 +8,7 @@ these items.
    :language: python
    :caption: modelling.py
 
-Did I mention that we love SQLAlchemy? We love it so much that we've included a suite of utilities for working with
-SQLAlchemy in ``litestar.contrib.sqlalchemy``. One of these utilities is a ``UUIDBase`` class that we can use to declare our
-models:
+The first element that we import is SQLAlchemy's :class:`Mapped <sqlalchemy.orm.Mapped>` class.
 
 .. literalinclude:: /examples/plugins/sqlalchemy/modelling.py
    :language: python
@@ -20,14 +18,17 @@ models:
 ``UUIDBase`` is a subclass of :class:`DeclarativeBase <sqlalchemy.orm.DeclarativeBase>`, and in addition to instrumenting
 the class with SQLAlchemy's internals, it also gives us a ``UUID`` identity column, and automatic table name generation.
 
-The next element that we import is SQLAlchemy's :class:`Mapped <sqlalchemy.orm.Mapped>` class.
+Did I mention that we love SQLAlchemy? We love it so much that we've included a suite of utilities for working with
+SQLAlchemy in ``litestar.contrib.sqlalchemy``. One of these utilities is a ``Base`` class that we can use to declare our
+models:
 
 .. literalinclude:: /examples/plugins/sqlalchemy/modelling.py
    :language: python
    :emphasize-lines: 3
    :linenos:
 
-This is used to declare attributes of the model that should be mapped to a column in the database.
+``Base`` is a subclass of :class:`DeclarativeBase <sqlalchemy.orm.DeclarativeBase>`, and in addition to instrumenting
+the class with SQLAlchemy's internals, it also gives us a ``UUID`` identity column, and automatic table name generation.
 
 Then, we define our model:
 
