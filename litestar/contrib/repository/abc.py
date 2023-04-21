@@ -9,19 +9,19 @@ from .exceptions import NotFoundError
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
-    from .filters import BeforeAfter, CollectionFilter, LimitOffset
+    from .filters import BeforeAfter, CollectionFilter, LimitOffset, OrderBy, SearchFilter
 
-__all__ = ("AbstractRepository", "FilterTypes")
+__all__ = ("AbstractAsyncRepository", "FilterTypes")
 
 T = TypeVar("T")
-RepoT = TypeVar("RepoT", bound="AbstractRepository")
+RepoT = TypeVar("RepoT", bound="AbstractAsyncRepository")
 CollectionT = TypeVar("CollectionT")
 
-FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset"
+FilterTypes: TypeAlias = "BeforeAfter | CollectionFilter[Any] | LimitOffset | OrderBy | SearchFilter"
 """Aggregate type alias of the types supported for collection filtering."""
 
 
-class AbstractRepository(Generic[T], metaclass=ABCMeta):
+class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
     """Interface for persistent data interaction."""
 
     model_type: type[T]
@@ -160,7 +160,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """Update instance with the attribute values present on ``data``.
 
         Args:
-            data: An instance that should have a value for :attr:`id_attribute <AbstractRepository.id_attribute>` that exists in the
+            data: An instance that should have a value for :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` that exists in the
                 collection.
 
         Returns:
@@ -175,7 +175,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """Update multiple instances with the attribute values present on instances in ``data``.
 
         Args:
-            data: A list of instance that should have a value for :attr:`id_attribute <AbstractRepository.id_attribute>` that exists in the
+            data: A list of instance that should have a value for :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` that exists in the
                 collection.
 
         Returns:
@@ -195,7 +195,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         Args:
             data: Instance to update existing, or be created. Identifier used to determine if an
                 existing instance exists is the value of an attribute on ``data`` named as value of
-                :attr:`id_attribute <AbstractRepository.id_attribute>`.
+                :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
 
         Returns:
             The updated or created instance.
@@ -221,11 +221,11 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """Get a list of instances, optionally filtered.
 
         Args:
-            *filters: Types for specific filtering operations.
+            *filters: filters for specific filtering operations
             **kwargs: Instance attribute value filters.
 
         Returns:
-            The list of instances, after filtering applied.
+            The list of instances, after filtering applied
         """
 
     @abstractmethod
@@ -235,12 +235,16 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         Has ``AND`` semantics where multiple kwargs name/value pairs are provided.
 
         Args:
-            collection: the collection to be filtered
+            collection: the objects to be filtered
             **kwargs: key/value pairs such that objects remaining in the collection after filtering
                 have the property that their attribute named ``key`` has value equal to ``value``.
 
+
+        Returns:
+            The filtered objects
+
         Raises:
-            RepositoryError: if a named attribute doesn't exist on :attr:`model_type <AbstractRepository.model_type>`.
+            RepositoryError: if a named attribute doesn't exist on :attr:`model_type <AbstractAsyncRepository.model_type>`.
         """
 
     @staticmethod
@@ -248,7 +252,7 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
         """Raise :class:`NotFoundError` if ``item_or_none`` is ``None``.
 
         Args:
-            item_or_none: Item to be tested for existence.
+            item_or_none: Item (:class:`T <T>`) to be tested for existence.
 
         Returns:
             The item, if it exists.
@@ -259,13 +263,13 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
     @classmethod
     def get_id_attribute_value(cls, item: T | type[T]) -> Any:
-        """Get value of attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` on ``item``.
+        """Get value of attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` on ``item``.
 
         Args:
-            item: Anything that should have an attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` value.
+            item: Anything that should have an attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` value.
 
         Returns:
-            The value of attribute on ``item`` named as :attr:`id_attribute <AbstractRepository.id_attribute>`.
+            The value of attribute on ``item`` named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`.
         """
         return getattr(item, cls.id_attribute)
 
@@ -275,10 +279,10 @@ class AbstractRepository(Generic[T], metaclass=ABCMeta):
 
         Args:
             item_id: Value of ID to be set on instance
-            item: Anything that should have an attribute named as :attr:`id_attribute <AbstractRepository.id_attribute>` value.
+            item: Anything that should have an attribute named as :attr:`id_attribute <AbstractAsyncRepository.id_attribute>` value.
 
         Returns:
-            Item with ``item_id`` set to :attr:`id_attribute <AbstractRepository.id_attribute>`
+            Item with ``item_id`` set to :attr:`id_attribute <AbstractAsyncRepository.id_attribute>`
         """
         setattr(item, cls.id_attribute, item_id)
         return item

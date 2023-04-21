@@ -54,19 +54,6 @@ class NestedFieldDefinition:
     nested_type: Any
     nested_field_definitions: FieldDefinitionsType = field(default_factory=dict)
 
-    def is_recursive(self, model_type: type) -> bool:
-        """Indicate if ``nested_type`` is a subtype of ``model_type``.
-
-        Args:
-            model_type: type that is having a DTO generated.
-
-        Returns:
-            Indication if the nested field is recursive.
-        """
-        return any(
-            inner_type.is_subclass_of(model_type) for inner_type in self.field_definition.parsed_type.inner_types
-        )
-
     def make_field_type(self, inner_type: type) -> Any:
         if self.field_definition.parsed_type.is_collection:
             return self.field_definition.parsed_type.safe_generic_origin[inner_type]

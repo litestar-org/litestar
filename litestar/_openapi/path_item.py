@@ -107,6 +107,7 @@ def create_path_item(
             request_body = None
             if "data" in handler_fields:
                 request_body = create_request_body(
+                    route_handler=route_handler,
                     field=handler_fields["data"],
                     generate_examples=create_examples,
                     plugins=plugins,

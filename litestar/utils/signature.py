@@ -347,28 +347,6 @@ class ParsedSignature:
         return cls.from_fn(fn, signature_namespace)
 
 
-@dataclass(frozen=True, init=False)
-class ParsedModel:
-    parameters: dict[str, ParsedParameter]
-
-    def __init__(self, model: type[Any], namespace: dict[str, Any] | None = None) -> None:
-        """Initialize ParsedModel.
-
-        Args:
-            model: The model to parse.
-            namespace: The namespace to use for forward reference resolution.
-        """
-        type_hints = get_type_hints(model, localns=namespace)
-        object.__setattr__(
-            self,
-            "parameters",
-            {
-                name: ParsedParameter(name=name, default=getattr(model, name, Empty), parsed_type=ParsedType(type_hint))
-                for name, type_hint in type_hints.items()
-            },
-        )
-
-
 def infer_request_encoding_from_parameter(param: ParsedParameter) -> RequestEncodingType | str | None:
     """Infer the request encoding type from a parsed type.
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import inspect
 from inspect import Parameter
-from typing import Any, ForwardRef, List, Optional, TypeVar, Union
+from typing import Any, ForwardRef, List, Optional, Tuple, TypeVar, Union
 
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
@@ -357,3 +357,13 @@ def test_parsed_signature() -> None:
     assert parsed_sig.parameters["bar"].parsed_type.annotation == Union[List[int], NoneType]
     assert parsed_sig.parameters["bar"].default is None
     assert parsed_sig.original_signature == inspect.signature(fn)
+
+
+def test_parsed_type_equality() -> None:
+    assert ParsedType(int) == ParsedType(int)
+    assert ParsedType(int) == ParsedType(Annotated[int, "meta"])
+    assert ParsedType(int) != int
+    assert ParsedType(List[int]) == ParsedType(List[int])
+    assert ParsedType(List[int]) != ParsedType(List[str])
+    assert ParsedType(List[str]) != ParsedType(Tuple[str])
+    assert ParsedType(Optional[str]) == ParsedType(Union[str, None])

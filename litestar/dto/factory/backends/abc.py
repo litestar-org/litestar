@@ -1,66 +1,67 @@
 """DTO backends do the heavy lifting of decoding and validating raw bytes into domain models, and
-and back again, to bytes.
+back again, to bytes.
 """
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
+
+from litestar._openapi.schema_generation import create_schema
+from litestar._signature.field import SignatureField
 
 from .utils import build_annotation_for_backend
 
 if TYPE_CHECKING:
-    from typing import Any, Collection
-
-    from typing_extensions import Self
+    from typing import Any
 
     from litestar.dto.factory.types import FieldDefinitionsType
     from litestar.enums import MediaType
+    from litestar.openapi.spec import Reference, Schema
     from litestar.types.internal_types import AnyConnection
     from litestar.types.serialization import LitestarEncodableType
     from litestar.utils.signature import ParsedType
 
-__all__ = ("AbstractDTOBackend",)
+__all__ = ("AbstractDTOBackend", "BackendContext")
 
-T = TypeVar("T")
 BackendT = TypeVar("BackendT")
+
+
+@dataclass
+class BackendContext:
+    """Context required by DTO backends to perform their work."""
+
+    parsed_type: ParsedType
+    field_definitions: FieldDefinitionsType
+    model_type: type[Any]
 
 
 class AbstractDTOBackend(ABC, Generic[BackendT]):
     __slots__ = (
         "data_container_type",
         "annotation",
-        "field_definitions",
-        "parsed_type",
+        "context",
     )
 
-    def __init__(
-        self, parsed_type: ParsedType, data_container_type: type[BackendT], field_definitions: FieldDefinitionsType
-    ) -> None:
+    def __init__(self, context: BackendContext) -> None:
         """Create dto backend instance.
 
         Args:
-            parsed_type: Annotation received by the DTO.
-            data_container_type: Parsing/validation/serialization model.
-            field_definitions: Info about the model fields that should be included in transfer data.
+            context: context of the type represented by this backend.
         """
-        self.data_container_type = data_container_type
-        self.annotation = build_annotation_for_backend(parsed_type.annotation, data_container_type)
-        self.field_definitions = field_definitions
-        self.parsed_type = parsed_type
+        self.context = context
+        self.data_container_type = self.create_data_container_type(context)
+        self.annotation = build_annotation_for_backend(context.parsed_type.annotation, self.data_container_type)
 
-    @classmethod
     @abstractmethod
-    def from_field_definitions(cls, annotation: ParsedType, field_definitions: FieldDefinitionsType) -> Self:
-        """Create a backend instance per model field definitions and annotation.
-
-        The annotation is required in order to detect if the backend is representing scalar or sequence data.
+    def create_data_container_type(self, context: BackendContext) -> type[BackendT]:
+        """Create a data container type to represent the context type.
 
         Args:
-            annotation: DTO parameter annotation.
-            field_definitions: Info about the model fields that should be included in transfer data.
+            context: Context of the type to create a data container for.
 
         Returns:
-            A DTO backend instance.
+            A ``BackendT`` class.
         """
 
     @abstractmethod
@@ -76,7 +77,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
 
     @abstractmethod
-    def populate_data_from_builtins(self, model_type: type[T], data: Any) -> T | Collection[T]:
+    def populate_data_from_builtins(self, data: Any) -> Any:
         """Populate model instance from builtin types.
 
         Args:
@@ -88,7 +89,7 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         """
 
     @abstractmethod
-    def populate_data_from_raw(self, model_type: type[T], raw: bytes, media_type: MediaType | str) -> T | Collection[T]:
+    def populate_data_from_raw(self, raw: bytes, media_type: MediaType | str) -> Any:
         """Parse raw bytes into instance of `model_type`.
 
         Args:
@@ -111,3 +112,8 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         Returns:
             Encoded data.
         """
+
+    def create_openapi_schema(self, generate_examples: bool, schemas: dict[str, Schema]) -> Reference | Schema:
+        """Create a RequestBody model for the given RouteHandler or return None."""
+        field = SignatureField.create(self.annotation)
+        return create_schema(field=field, generate_examples=generate_examples, plugins=[], schemas=schemas)

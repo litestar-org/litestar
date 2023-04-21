@@ -14,6 +14,7 @@ from litestar import post
 from litestar.contrib.sqlalchemy.dto import DataT, SQLAlchemyDTO
 from litestar.dto.factory import DTOConfig, DTOField, Mark
 from litestar.dto.factory.field import DTO_FIELD_META_KEY
+from litestar.dto.interface import HandlerContext
 from litestar.dto.types import ForType
 from litestar.serialization import encode_json
 from litestar.utils.signature import ParsedType
@@ -21,7 +22,7 @@ from litestar.utils.signature import ParsedType
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import ModuleType
-    from typing import Any, Collection
+    from typing import Any
 
     from litestar.connection import Request
     from litestar.testing import RequestFactory
@@ -72,14 +73,16 @@ T = TypeVar("T")
 
 async def get_model_from_dto(
     dto_type: type[SQLAlchemyDTO[DataT]], annotation: Any, connection: Request[Any, Any, Any]
-) -> DataT | Collection[DataT]:
+) -> Any:
     @post(signature_namespace={"annotation": annotation})
     def handler(data: annotation) -> annotation:
         return data
 
     connection.scope["route_handler"] = handler
-    dto_type.on_registration(handler, "data", ParsedType(annotation))
-    dto_type.on_registration(handler, "return", ParsedType(annotation))
+    dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data", parsed_type=ParsedType(annotation)))
+    dto_type.on_registration(
+        HandlerContext(route_handler=handler, dto_for="return", parsed_type=ParsedType(annotation))
+    )
     return dto_type(connection).bytes_to_data_type(await connection.body())
 
 

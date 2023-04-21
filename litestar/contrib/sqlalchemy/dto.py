@@ -16,12 +16,14 @@ if TYPE_CHECKING:
 
     from sqlalchemy import Column
     from sqlalchemy.orm import RelationshipProperty
+    from typing_extensions import TypeAlias
 
 
 __all__ = ("SQLAlchemyDTO", "DataT")
 
 DataT = TypeVar("DataT", bound="DeclarativeBase | Collection[DeclarativeBase]")
 AnyDeclarativeT = TypeVar("AnyDeclarativeT", bound="DeclarativeBase")
+ElementType: TypeAlias = "Column[Any] | RelationshipProperty[Any]"
 
 
 class SQLAlchemyDTO(AbstractDTOFactory[DataT], Generic[DataT]):
@@ -45,7 +47,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[DataT], Generic[DataT]):
         namespace.update({m.class_.__name__: m.class_ for m in mapper.registry.mappers if m is not mapper})
 
         for key, parsed_type in get_model_type_hints(model_type, namespace=namespace).items():
-            elem: Column[Any] | RelationshipProperty[Any] | None
+            elem: ElementType | None
             elem = columns.get(key, relationships.get(key))  # pyright:ignore
             if elem is None:
                 continue
@@ -53,21 +55,7 @@ class SQLAlchemyDTO(AbstractDTOFactory[DataT], Generic[DataT]):
             if parsed_type.origin is Mapped:
                 (parsed_type,) = parsed_type.inner_types  # noqa: PLW2901
 
-            default: Any = Empty
-            default_factory: Any = Empty  # pyright:ignore
-            if sqla_default := getattr(elem, "default", None):
-                if sqla_default.is_scalar:
-                    default = sqla_default.arg
-                elif sqla_default.is_callable:
-
-                    def default_factory(d: Any = sqla_default) -> Any:
-                        return d.arg({})
-
-                else:
-                    raise ValueError("Unexpected default type")
-            else:
-                if getattr(elem, "nullable", False):
-                    default = None
+            default, default_factory = _detect_defaults(elem)
 
             field_def = FieldDefinition(
                 name=key,
@@ -84,3 +72,22 @@ class SQLAlchemyDTO(AbstractDTOFactory[DataT], Generic[DataT]):
         if field_definition.parsed_type.inner_types:
             return any(inner.is_subclass_of(DeclarativeBase) for inner in field_definition.parsed_type.inner_types)
         return field_definition.parsed_type.is_subclass_of(DeclarativeBase)
+
+
+def _detect_defaults(elem: ElementType) -> tuple[Any, Any]:
+    default: Any = Empty
+    default_factory: Any = Empty  # pyright:ignore
+    if sqla_default := getattr(elem, "default", None):
+        if sqla_default.is_scalar:
+            default = sqla_default.arg
+        elif sqla_default.is_callable:
+
+            def default_factory(d: Any = sqla_default) -> Any:
+                return d.arg({})
+
+        else:
+            raise ValueError("Unexpected default type")
+    else:
+        if getattr(elem, "nullable", False):
+            default = None
+    return default, default_factory

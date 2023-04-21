@@ -43,7 +43,7 @@ def _create_model_for_field_definitions(model_name: str, field_definitions: Fiel
     for k, v in field_definitions.items():
         if isinstance(v, NestedFieldDefinition):
             nested_model = _create_model_for_field_definitions(f"{model_name}.{k}", v.nested_field_definitions)
-            model_fields[k] = (nested_model, _create_field_info(v.field_definition))
+            model_fields[k] = (v.make_field_type(nested_model), _create_field_info(v.field_definition))
         else:
             model_fields[k] = (v.parsed_type.annotation, _create_field_info(v))
     return create_model(

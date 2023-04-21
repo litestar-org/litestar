@@ -1,3 +1,5 @@
+from typing import Optional
+
 from litestar import post
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -13,4 +15,14 @@ def test_request_body_url_encoded() -> None:
 
     with create_test_client(test_method) as client:
         response = client.post("/test", data=Form(name="Moishe Zuchmir", age=30, programmer=True).dict())
+        assert response.status_code == HTTP_201_CREATED
+
+
+def test_optional_request_body_url_encoded() -> None:
+    @post(path="/test")
+    def test_method(data: Optional[Form] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> None:
+        assert data is None
+
+    with create_test_client(test_method, debug=True) as client:
+        response = client.post("/test", data={})
         assert response.status_code == HTTP_201_CREATED
