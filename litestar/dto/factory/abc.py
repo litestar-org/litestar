@@ -201,7 +201,6 @@ def _parse_model(
     config: DTOConfig,
     dto_for: ForType,
     nested_depth: int = 0,
-    recursive_depth: int = 0,
 ) -> FieldDefinitionsType:
     """Reduce :attr:`model_type` to :class:`FieldDefinitionsType`.
 
@@ -241,9 +240,7 @@ def _parse_model(
                 field_definition = field_mapping  # noqa: PLW2901
 
         if dto_factory_type.detect_nested_field(field_definition):
-            nested_field_definition = _handle_nested(
-                dto_factory_type, field_definition, nested_depth, recursive_depth, config, dto_for
-            )
+            nested_field_definition = _handle_nested(dto_factory_type, field_definition, nested_depth, config, dto_for)
             if nested_field_definition is not None:
                 defined_fields[field_definition.name] = nested_field_definition
             continue
@@ -276,7 +273,6 @@ def _handle_nested(
     dto_factory_type: type[AbstractDTOFactory],
     field_definition: FieldDefinition,
     nested_depth: int,
-    recursive_depth: int,
     config: DTOConfig,
     dto_for: ForType,
 ) -> NestedFieldDefinition | None:

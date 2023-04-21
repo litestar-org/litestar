@@ -39,7 +39,7 @@ class DC:
     c: List[int]
     nested: NestedDC
     nested_list: List[NestedDC]
-    optional: Optional[str] = None
+    optional: str | None = None
 
 
 DESTRUCTURED = {
