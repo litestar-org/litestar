@@ -106,6 +106,7 @@ Therefore, state offers an easy way to share contextual data between disparate p
     :caption: Using Application State
     :language: python
 
+.. _Initializing Application State:
 
 Initializing Application State
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
