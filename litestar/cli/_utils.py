@@ -332,10 +332,6 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
             )
         table.add_row("Static files", "\n".join(static_files_info))
 
-    if app.serialization_plugins:
-        plugin_names = [type(plugin).__name__ for plugin in app.serialization_plugins]
-        table.add_row("Plugins", ", ".join(plugin_names))
-
     middlewares = []
     for middleware in app.middleware:
         updated_middleware = middleware.middleware if isinstance(middleware, DefineMiddleware) else middleware

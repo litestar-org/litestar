@@ -1,36 +1,20 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Awaitable,
-    NamedTuple,
-    Protocol,
-    TypedDict,
-    TypeVar,
-    Union,
-    runtime_checkable,
-)
+from typing import TYPE_CHECKING, Any, Protocol, TypedDict, TypeVar, Union, runtime_checkable
 
 from pydantic import BaseModel
-from typing_extensions import TypeGuard, get_args
 
 from litestar.types.protocols import DataclassProtocol
-from litestar.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
-    from litestar.config.app import AppConfig
-    from litestar.openapi.spec import Schema
+    from typing_extensions import TypeGuard
 
-__all__ = (
-    "InitPluginProtocol",
-    "OpenAPISchemaPluginProtocol",
-    "PluginMapping",
-    "PluginProtocol",
-    "SerializationPluginProtocol",
-    "get_plugin_for_value",
-)
+    from litestar.config.app import AppConfig
+    from litestar.dto.interface import DTOInterface
+    from litestar.openapi.spec import Schema
+    from litestar.utils.signature import ParsedType
+
+__all__ = ("SerializationPluginProtocol", "InitPluginProtocol", "OpenAPISchemaPluginProtocol", "PluginProtocol")
 
 ModelT = TypeVar("ModelT")
 DataContainerT = TypeVar("DataContainerT", bound=Union[BaseModel, DataclassProtocol, TypedDict])  # type: ignore[valid-type]
@@ -76,74 +60,31 @@ class InitPluginProtocol(Protocol):
 
 
 @runtime_checkable
-class SerializationPluginProtocol(Protocol[ModelT, DataContainerT]):
-    """Protocol used to define a serialization plugin.
-    Serialization plugins are used to extend serialization and deserialization support.
-    """
+class SerializationPluginProtocol(Protocol):
+    """Protocol used to define a serialization plugin for DTOs."""
 
     __slots__ = ()
 
     @staticmethod
-    def is_plugin_supported_type(value: Any) -> TypeGuard[ModelT]:
+    def supports_type(parsed_type: ParsedType) -> bool:
         """Given a value of indeterminate type, determine if this value is supported by the plugin.
 
         Args:
-            value: An arbitrary value.
+            parsed_type: A parsed type.
 
         Returns:
-            A typeguard dictating whether the value is supported by the plugin.
+            Whether the type is supported by the plugin.
         """
         raise NotImplementedError()
 
-    def to_dict(self, model_instance: ModelT) -> dict[str, Any] | Awaitable[dict[str, Any]]:
-        """Given an instance of a model supported by the plugin, return a dictionary of serializable values.
+    def create_dto_for_type(self, parsed_type: ParsedType) -> type[DTOInterface]:
+        """Given a parsed type, create a DTO class.
 
         Args:
-            model_instance: A model instance of the type supported by the plugin.
-
-        Notes:
-            - This method can be async as well.
+            parsed_type: A parsed type.
 
         Returns:
-            A string keyed dictionary of values.
-        """
-        raise NotImplementedError()
-
-    def from_dict(self, model_class: type[ModelT], **kwargs: Any) -> ModelT:
-        """Given a class supported by this plugin and a dict of values, create an instance of the class.
-
-        Args:
-            model_class: A model class supported by the plugin.
-            **kwargs: A string keyed mapping of values.
-
-        Returns:
-            A model instance.
-        """
-        raise NotImplementedError()
-
-    def to_data_container_class(self, model_class: type[ModelT], **kwargs: Any) -> type[DataContainerT]:
-        """Create a data container class corresponding to the given model class.
-
-        Args:
-            model_class: The model class that serves as a basis.
-            **kwargs: Any kwargs.
-
-        Returns:
-            The generated data container class.
-        """
-        raise NotImplementedError()
-
-    def from_data_container_instance(
-        self, model_class: type[ModelT], data_container_instance: DataContainerT
-    ) -> ModelT:
-        """Create a model instance from the given data container instance.
-
-        Args:
-            model_class: The model class to be instantiated.
-            data_container_instance: The data container instance.
-
-        Returns:
-            A model instance.
+            A DTO class.
         """
         raise NotImplementedError()
 
@@ -176,51 +117,6 @@ class OpenAPISchemaPluginProtocol(Protocol[ModelT]):
             An :class:`OpenAPI <litestar.openapi.spec.schema.Schema>` instance.
         """
         raise NotImplementedError()
-
-
-def get_plugin_for_value(value: Any, plugins: list[SerializationPluginProtocol]) -> SerializationPluginProtocol | None:
-    """Return a plugin for handling the given value, if any plugin supports it.
-
-    Args:
-        value: An arbitrary value.
-        plugins: A list of plugins
-
-    Returns:
-        A plugin supporting the given value, or ``None``.
-    """
-    if plugins:
-        if value and isinstance(value, (list, tuple)):
-            value = value[0]
-        if is_class_and_subclass(value, Iterable) and (args := get_args(value)):  # type:ignore[type-abstract]
-            value = args[0]
-        for plugin in plugins:
-            if plugin.is_plugin_supported_type(value):
-                return plugin
-    return None
-
-
-class PluginMapping(NamedTuple):
-    """Named tuple, mapping plugins > models."""
-
-    plugin: SerializationPluginProtocol[Any, Any]
-    model_class: Any
-
-    def get_model_instance_for_value(
-        self, value: DataContainerT | list[DataContainerT] | tuple[DataContainerT, ...]
-    ) -> Any:
-        """Given a value generated by plugin, return an instance of the original class.
-
-        Can also accept a list or tuple of values.
-
-        Args:
-            value: A pydantic model instance or sequence of instances.
-
-        Returns:
-            Any
-        """
-        if isinstance(value, (list, tuple)):
-            return [self.plugin.from_data_container_instance(self.model_class, item) for item in value]
-        return self.plugin.from_data_container_instance(self.model_class, value)
 
 
 PluginProtocol = Union[SerializationPluginProtocol, InitPluginProtocol, OpenAPISchemaPluginProtocol]

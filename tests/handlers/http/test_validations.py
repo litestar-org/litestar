@@ -35,6 +35,8 @@ def test_route_handler_validation_http_method() -> None:
 
 
 async def test_function_validation() -> None:
+    Litestar()
+
     with pytest.raises(ImproperlyConfiguredException):
 
         @get(path="/")

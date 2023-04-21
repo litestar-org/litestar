@@ -132,11 +132,9 @@ ignore_missing_refs = {
     "litestar.template.base.TemplateEngineProtocol.get_template": {"litestar.template.base.T_co"},
     "litestar.template": {"litestar.template.base.T_co"},
     "litestar.openapi.OpenAPIController.security": {"SecurityRequirement"},
-    "litestar.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.handle_string_type": {"BINARY", "VARBINARY", "LargeBinary"},
-    "litestar.contrib.sqlalchemy_1.plugin.SQLAlchemyPlugin.is_plugin_supported_type": {"DeclarativeMeta"},
-    re.compile(r"litestar\.plugins.*"): re.compile(".*(ModelT|DataContainerT)"),
-    re.compile(r"litestar\.contrib\.sqlalchemy\.init_plugin\.config.*"): re.compile(
-        ".*(ConnectionT|EngineT|SessionT|SessionMakerT)"
+    re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
+    re.compile(r"litestar\.contrib\.sqlalchemy\.plugins.*"): re.compile(
+        ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase)"
     ),
 }
 

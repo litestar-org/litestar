@@ -10,7 +10,4 @@ contrib
     mako
     opentelemetry
     repository/index
-    piccolo_orm
     sqlalchemy/index
-    sqlalchemy_1/index
-    tortoise_orm

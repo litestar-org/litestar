@@ -32,4 +32,4 @@ def test_any_pydantic_annotation(annotation: Any) -> None:
     def fn(bar: annotation) -> None:
         ...
 
-    assert _any_pydantic_annotation(ParsedSignature.from_fn(fn, {"annotation": annotation}), {}) is True
+    assert _any_pydantic_annotation(ParsedSignature.from_fn(fn, {"annotation": annotation})) is True

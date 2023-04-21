@@ -4,8 +4,7 @@ sqlalchemy
 .. toctree::
     :titlesonly:
 
-    config
-    plugin
+    plugins
     repository
     types
     base

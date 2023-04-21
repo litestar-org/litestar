@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from litestar.contrib.sqlalchemy.plugins import _slots_base
 from litestar.di import Provide
 from litestar.plugins import InitPluginProtocol
 
@@ -13,10 +14,10 @@ if TYPE_CHECKING:
 __all__ = ("SQLAlchemyInitPlugin",)
 
 
-class SQLAlchemyInitPlugin(InitPluginProtocol):
+class SQLAlchemyInitPlugin(InitPluginProtocol, _slots_base.SlotsBase):
     """SQLAlchemy application lifecycle configuration."""
 
-    __slots__ = ("_config",)
+    __slots__ = ()
 
     def __init__(self, config: SQLAlchemyAsyncConfig | SQLAlchemySyncConfig) -> None:
         """Initialize ``SQLAlchemyPlugin``.

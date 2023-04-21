@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from litestar.di import Provide
     from litestar.dto.interface import DTOInterface
     from litestar.params import ParameterKwarg
+    from litestar.plugins import SerializationPluginProtocol
     from litestar.router import Router
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
     from litestar.types.composite_types import MaybePartial
@@ -341,6 +342,22 @@ class BaseRouteHandler(Generic[T]):
 
         return cast("type[DTOInterface] | None", self._resolved_return_dto)
 
+    def _set_dto(self, dto: type[DTOInterface]) -> None:
+        """Set the dto for the handler.
+
+        Args:
+            dto: The :class:`DTO type <.dto.interface.DTOInterface>` to set.
+        """
+        self._resolved_dto = dto
+
+    def _set_return_dto(self, dto: type[DTOInterface]) -> None:
+        """Set the return_dto for the handler.
+
+        Args:
+            dto: The :class:`DTO type <.dto.interface.DTOInterface>` to set.
+        """
+        self._resolved_return_dto = dto
+
     def _init_handler_dtos(self) -> None:
         """Initialize the data and return DTOs for the handler."""
         if (dto := self.resolve_dto()) and (data_parameter := self.parsed_fn_signature.parameters.get("data")):
@@ -371,6 +388,7 @@ class BaseRouteHandler(Generic[T]):
     def on_registration(self, app: Litestar) -> None:
         """Called once per handler when the app object is instantiated."""
         self._validate_handler_function()
+        self._handle_serialization_plugins(app.serialization_plugins)
         self._init_handler_dtos()
         self._set_runtime_callables()
         self._create_signature_model(app)
@@ -407,7 +425,6 @@ class BaseRouteHandler(Generic[T]):
             self.signature_model = create_signature_model(
                 dependency_name_set=self.dependency_name_set,
                 fn=cast("AnyCallable", self.fn.value),
-                plugins=app.serialization_plugins,
                 preferred_validation_backend=app.preferred_validation_backend,
                 parsed_signature=self.parsed_fn_signature,
             )
@@ -419,12 +436,27 @@ class BaseRouteHandler(Generic[T]):
                 provider.signature_model = create_signature_model(
                     dependency_name_set=self.dependency_name_set,
                     fn=provider.dependency.value,
-                    plugins=app.serialization_plugins,
                     preferred_validation_backend=app.preferred_validation_backend,
                     parsed_signature=ParsedSignature.from_fn(
                         unwrap_partial(provider.dependency.value), self.resolve_signature_namespace()
                     ),
                 )
+
+    def _handle_serialization_plugins(self, plugins: list[SerializationPluginProtocol]) -> None:
+        """Handle the serialization plugins for the handler."""
+        # must do the return dto first, otherwise it will resolve to the same as the data dto
+        if self.resolve_return_dto() is None:
+            return_type = self.parsed_fn_signature.return_type
+            for plugin in plugins:
+                if plugin.supports_type(return_type):
+                    self._set_return_dto(plugin.create_dto_for_type(return_type))
+                    break
+
+        if (data_param := self.parsed_fn_signature.parameters.get("data")) and self.resolve_dto() is None:
+            for plugin in plugins:
+                if plugin.supports_type(data_param.parsed_type):
+                    self._set_dto(plugin.create_dto_for_type(data_param.parsed_type))
+                    break
 
     def __str__(self) -> str:
         """Return a unique identifier for the route handler.
