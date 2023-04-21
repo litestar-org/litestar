@@ -371,7 +371,7 @@ dto_type = SQLAlchemyDTO[A]
 
 
 async def test_dto_self_referencing_relationships(
-    create_module: "Callable[[str], ModuleType]", connection_context: ConnectionContext
+    create_module: Callable[[str], ModuleType], connection_context: ConnectionContext
 ) -> None:
     module = create_module(
         """

@@ -25,12 +25,12 @@ class GUID(TypeDecorator):
     impl = CHAR
     cache_ok = True
 
-    def load_dialect_impl(self, dialect: "Dialect") -> Any:
+    def load_dialect_impl(self, dialect: Dialect) -> Any:
         if dialect.name == "postgresql":
             return dialect.type_descriptor(PG_UUID())
         return dialect.type_descriptor(CHAR(32))
 
-    def process_bind_param(self, value: str | uuid.UUID | None, dialect: "Dialect") -> str | None:
+    def process_bind_param(self, value: str | uuid.UUID | None, dialect: Dialect) -> str | None:
         if value is None:
             return value
         if dialect.name == "postgresql":
@@ -42,7 +42,7 @@ class GUID(TypeDecorator):
         # hexstring
         return "%.32x" % value.int
 
-    def process_result_value(self, value: str | uuid.UUID | None, dialect: "Dialect") -> uuid.UUID | None:
+    def process_result_value(self, value: str | uuid.UUID | None, dialect: Dialect) -> uuid.UUID | None:
         if value is None:
             return value
         if not isinstance(value, uuid.UUID):
@@ -56,7 +56,7 @@ class JSON(_JSON):
     Uses JSONB type for postgres, otherwise uses the generic JSON data type.
     """
 
-    def load_dialect_impl(self, dialect: "Dialect") -> Any:
+    def load_dialect_impl(self, dialect: Dialect) -> Any:
         if dialect.name == "postgresql":
             return dialect.type_descriptor(PG_JSONB())  # type: ignore[no-untyped-call]
         return dialect.type_descriptor(_JSON())

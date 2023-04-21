@@ -171,7 +171,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def update_many(self, data: "list[T]") -> list[T]:
+    async def update_many(self, data: list[T]) -> list[T]:
         """Update multiple instances with the attribute values present on instances in ``data``.
 
         Args:
@@ -217,7 +217,7 @@ class AbstractAsyncRepository(Generic[T], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    async def list(self, *filters: FilterTypes, **kwargs: Any) -> "list[T]":
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[T]:
         """Get a list of instances, optionally filtered.
 
         Args:

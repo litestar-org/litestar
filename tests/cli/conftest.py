@@ -113,12 +113,12 @@ def runner() -> CliRunner:
 
 
 @pytest.fixture
-def mock_uvicorn_run(mocker: MockerFixture) -> "MagicMock":
+def mock_uvicorn_run(mocker: MockerFixture) -> MagicMock:
     return mocker.patch("uvicorn.run")
 
 
 @pytest.fixture
-def mock_confirm_ask(mocker: MockerFixture) -> Generator["MagicMock", None, None]:
+def mock_confirm_ask(mocker: MockerFixture) -> Generator[MagicMock, None, None]:
     yield mocker.patch("rich.prompt.Confirm.ask", return_value=True)
 
 

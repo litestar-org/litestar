@@ -452,7 +452,7 @@ def create_schema_for_builtin_generics(
     generate_examples: bool,
     plugins: list[OpenAPISchemaPluginProtocol],
     schemas: dict[str, Schema],
-) -> "Schema":
+) -> Schema:
     """Handle builtin generic types.
 
     Args:

@@ -29,7 +29,7 @@ HandlerT = TypeVar("HandlerT")
 StateT = TypeVar("StateT", bound=State)
 
 
-async def empty_receive() -> "NoReturn":  # pragma: no cover
+async def empty_receive() -> NoReturn:  # pragma: no cover
     """Raise a ``RuntimeError``.
 
     Serves as a placeholder ``send`` function.
@@ -40,7 +40,7 @@ async def empty_receive() -> "NoReturn":  # pragma: no cover
     raise RuntimeError()
 
 
-async def empty_send(_: "Message") -> "NoReturn":  # pragma: no cover
+async def empty_send(_: Message) -> NoReturn:  # pragma: no cover
     """Raise a ``RuntimeError``.
 
     Serves as a placeholder ``send`` function.

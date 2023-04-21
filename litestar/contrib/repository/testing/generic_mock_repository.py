@@ -333,7 +333,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         """
         return await self.list(*filters, **kwargs), await self.count(*filters, **kwargs)
 
-    async def list(self, *filters: "FilterTypes", **kwargs: Any) -> list[ModelT]:
+    async def list(self, *filters: FilterTypes, **kwargs: Any) -> list[ModelT]:
         """Get a list of instances, optionally filtered.
 
         Args:

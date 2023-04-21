@@ -70,7 +70,7 @@ def create_data_handler(
     cookie_headers = [cookie.to_encoded_header() for cookie in cookies if not cookie.documentation_only]
     raw_headers = [*normalized_headers, *cookie_headers]
 
-    async def create_response(data: Any) -> "ASGIApp":
+    async def create_response(data: Any) -> ASGIApp:
         response = response_class(
             background=background,
             content=data,
@@ -90,7 +90,7 @@ def create_data_handler(
         return_dto: type[DTOInterface] | None,
         request: Request[Any, Any, Any],
         **kwargs: Any,
-    ) -> "ASGIApp":
+    ) -> ASGIApp:
         if isawaitable(data):
             data = await data
 
@@ -130,7 +130,7 @@ def create_generic_asgi_response_handler(
         A handler function.
     """
 
-    async def handler(data: "ASGIApp", **kwargs: Any) -> "ASGIApp":
+    async def handler(data: ASGIApp, **kwargs: Any) -> ASGIApp:
         if hasattr(data, "set_cookie"):
             for cookie in cookies:
                 data.set_cookie(**cookie.dict)
@@ -178,7 +178,7 @@ def create_response_container_handler(
     """
     normalized_headers = normalize_headers(headers)
 
-    async def handler(data: ResponseContainer, app: Litestar, request: Request, **kwargs: Any) -> "ASGIApp":
+    async def handler(data: ResponseContainer, app: Litestar, request: Request, **kwargs: Any) -> ASGIApp:
         response = data.to_response(
             app=app,
             headers={**normalized_headers, **data.headers},
@@ -206,7 +206,7 @@ def create_response_handler(
         A handler function.
     """
 
-    async def handler(data: Response, **kwargs: Any) -> "ASGIApp":
+    async def handler(data: Response, **kwargs: Any) -> ASGIApp:
         data.cookies = filter_cookies(frozenset(data.cookies), cookies)
         return await after_request(data) if after_request else data  # type: ignore
 

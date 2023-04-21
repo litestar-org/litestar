@@ -31,7 +31,7 @@ class LifeSpanHandler(Generic[T]):
             self.task = portal.start_task_soon(self.lifespan)
             portal.call(self.wait_startup)
 
-    async def receive(self) -> "LifeSpanSendMessage":
+    async def receive(self) -> LifeSpanSendMessage:
         message = await self.stream_send.receive()
         if message is None:
             self.task.result()

@@ -86,9 +86,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         """
         return secrets.token_hex(self.config.session_id_bytes)
 
-    async def store_in_message(
-        self, scope_session: "ScopeSession", message: "Message", connection: "ASGIConnection"
-    ) -> None:
+    async def store_in_message(self, scope_session: ScopeSession, message: Message, connection: ASGIConnection) -> None:
         """Store the necessary information in the outgoing ``Message`` by setting a cookie containing the session-ID.
 
         If the session is empty, a null-cookie will be set. Otherwise, the serialised
@@ -123,7 +121,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
             await self.set(session_id=session_id, data=serialised_data, store=store)
             headers["Set-Cookie"] = Cookie(value=session_id, key=self.config.key, **cookie_params).to_header(header="")
 
-    async def load_from_connection(self, connection: "ASGIConnection") -> dict[str, Any]:
+    async def load_from_connection(self, connection: ASGIConnection) -> dict[str, Any]:
         """Load session data from a connection and return it as a dictionary to be used in the current application
         scope.
 
