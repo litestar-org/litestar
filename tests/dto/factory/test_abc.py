@@ -109,7 +109,7 @@ def test_config_field_definitions() -> None:
     config = DTOConfig(field_definitions=(new_def,))
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
-    assert get_backend(dto_type).field_definitions["z"] is new_def
+    assert get_backend(dto_type).context.field_definitions["z"] is new_def
 
 
 def test_config_field_mapping() -> None:
@@ -120,7 +120,7 @@ def test_config_field_mapping() -> None:
     config = DTOConfig(field_mapping={"a": "z"})
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.on_registration(HandlerContext(route_handler=handler, dto_for="data"))
-    field_definitions = get_backend(dto_type).field_definitions
+    field_definitions = get_backend(dto_type).context.field_definitions
     assert "a" not in field_definitions
     assert "z" in field_definitions
 

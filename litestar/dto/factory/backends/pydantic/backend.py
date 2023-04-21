@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from typing import Any, Collection
 
     from litestar.connection import Request
-    from litestar.dto.factory.types import FieldDefinitionsType
     from litestar.enums import MediaType
     from litestar.types.serialization import LitestarEncodableType
 
@@ -27,6 +26,9 @@ T = TypeVar("T")
 
 class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
     __slots__ = ()
+
+    def create_data_container_type(self, context: BackendContext) -> type[BaseModel]:
+        return _create_model_for_field_definitions(str(uuid4()), context.field_definitions)
 
     def parse_raw(self, raw: bytes, media_type: MediaType | str) -> BaseModel | Collection[BaseModel]:
         return decode_media_type(raw, media_type, type_=self.annotation)  # type:ignore[no-any-return]
@@ -45,8 +47,3 @@ class PydanticDTOBackend(AbstractDTOBackend[BaseModel]):
                 self.data_container_type.from_orm(datum) for datum in data  # pyright:ignore
             )
         return self.data_container_type.from_orm(data)
-
-    @classmethod
-    def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:
-        context = BackendContext(annotation, field_definitions)
-        return cls(context, _create_model_for_field_definitions(str(uuid4()), field_definitions))

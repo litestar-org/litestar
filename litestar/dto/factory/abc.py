@@ -5,6 +5,7 @@ from itertools import chain
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
+from litestar.dto.factory.backends.abc import BackendContext
 from litestar.dto.interface import DTOInterface
 from litestar.enums import RequestEncodingType
 from litestar.types.builtin_types import NoneType
@@ -169,12 +170,11 @@ class AbstractDTOFactory(DTOInterface, Generic[DataT], metaclass=ABCMeta):
             else:
                 backend_type = MsgspecDTOBackend
 
-            backend = cls._type_backend_map.setdefault(
-                key,
-                backend_type.from_field_definitions(
-                    parsed_type, _parse_model(cls, handler_type.annotation, cls.config, handler_context.dto_for)
-                ),
+            backend_context = BackendContext(
+                parsed_type,
+                _parse_model(cls, handler_type.annotation, cls.config, handler_context.dto_for),
             )
+            backend = cls._type_backend_map.setdefault(key, backend_type(backend_context))
         cls._handler_backend_map[(handler_context.dto_for, handler_context.route_handler)] = backend
 
     @classmethod

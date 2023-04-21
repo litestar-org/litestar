@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from typing import Any, Collection
 
     from litestar.connection import Request
-    from litestar.dto.factory.types import FieldDefinitionsType
     from litestar.enums import MediaType
     from litestar.types.serialization import LitestarEncodableType
 
@@ -28,6 +27,9 @@ T = TypeVar("T")
 
 class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
     __slots__ = ()
+
+    def create_data_container_type(self, context: BackendContext) -> type[Struct]:
+        return _create_struct_for_field_definitions(str(uuid4()), context.field_definitions)
 
     def parse_raw(self, raw: bytes, media_type: MediaType | str) -> Struct | Collection[Struct]:
         return decode_media_type(raw, media_type, type_=self.annotation)  # type:ignore[no-any-return]
@@ -46,8 +48,3 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
                 _build_struct_from_model(datum, self.data_container_type) for datum in data  # pyright:ignore
             )
         return _build_struct_from_model(data, self.data_container_type)
-
-    @classmethod
-    def from_field_definitions(cls, annotation: Any, field_definitions: FieldDefinitionsType) -> Any:
-        context = BackendContext(annotation, field_definitions)
-        return cls(context, _create_struct_for_field_definitions(str(uuid4()), field_definitions))

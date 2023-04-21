@@ -15,8 +15,6 @@ from .utils import build_annotation_for_backend
 if TYPE_CHECKING:
     from typing import Any, Collection
 
-    from typing_extensions import Self
-
     from litestar.connection import Request
     from litestar.dto.factory.types import FieldDefinitionsType
     from litestar.enums import MediaType
@@ -45,30 +43,25 @@ class AbstractDTOBackend(ABC, Generic[BackendT]):
         "context",
     )
 
-    def __init__(self, context: BackendContext, data_container_type: type[BackendT]) -> None:
+    def __init__(self, context: BackendContext) -> None:
         """Create dto backend instance.
 
         Args:
             context: context of the type represented by this backend.
-            data_container_type: Parsing/validation/serialization model.
         """
-        self.data_container_type = data_container_type
-        self.annotation = build_annotation_for_backend(context.parsed_type.annotation, data_container_type)
         self.context = context
+        self.data_container_type = self.create_data_container_type(context)
+        self.annotation = build_annotation_for_backend(context.parsed_type.annotation, self.data_container_type)
 
-    @classmethod
     @abstractmethod
-    def from_field_definitions(cls, annotation: ParsedType, field_definitions: FieldDefinitionsType) -> Self:
-        """Create a backend instance per model field definitions and annotation.
-
-        The annotation is required in order to detect if the backend is representing scalar or sequence data.
+    def create_data_container_type(self, context: BackendContext) -> type[BackendT]:
+        """Create a data container type to represent the context type.
 
         Args:
-            annotation: DTO parameter annotation.
-            field_definitions: Info about the model fields that should be included in transfer data.
+            context: Context of the type to create a data container for.
 
         Returns:
-            A DTO backend instance.
+            A ``BackendT`` class.
         """
 
     @abstractmethod
