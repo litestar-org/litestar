@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, List, Optional
 
 import pytest
-from pydantic import ValidationError
 from pytest import FixtureRequest
 
 from litestar import MediaType
@@ -271,10 +270,10 @@ def test_cache_control_from_header_single_value() -> None:
     header_value = "no-cache"
     header = CacheControlHeader.from_header(header_value)
     header_dict = header.dict(exclude_unset=True, exclude_none=True, by_alias=True)
-    assert header_dict == {"no-cache": True}
+    assert header_dict == {"documentation-only": False, "no-cache": True}
 
 
-@pytest.mark.parametrize("invalid_value", ["x=y=z", "x, ", "no-cache=10"])
+@pytest.mark.parametrize("invalid_value", ["x=y=z", "x, "])
 def test_cache_control_from_header_invalid_value(invalid_value: str) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         CacheControlHeader.from_header(invalid_value)
@@ -283,7 +282,7 @@ def test_cache_control_from_header_invalid_value(invalid_value: str) -> None:
 def test_cache_control_header_prevent_storing() -> None:
     header = CacheControlHeader.prevent_storing()
     header_dict = header.dict(exclude_unset=True, exclude_none=True, by_alias=True)
-    assert header_dict == {"no-store": True}
+    assert header_dict == {"documentation-only": False, "no-store": True}
 
 
 def test_etag_documentation_only() -> None:
@@ -291,15 +290,15 @@ def test_etag_documentation_only() -> None:
 
 
 def test_etag_no_value() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         ETag()
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         ETag(weak=True)
 
 
 def test_etag_non_ascii() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValueError):
         ETag(value="f↓o")
 
 

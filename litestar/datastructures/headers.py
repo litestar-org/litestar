@@ -2,6 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from contextlib import suppress
 from copy import copy
+from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -16,16 +17,17 @@ from typing import (
     Tuple,
     Union,
     cast,
+    get_args,
 )
 
 from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
-from pydantic import BaseModel, Extra, Field, ValidationError, validator
-from typing_extensions import Annotated
+from pydantic import Extra
 
 from litestar._multipart import parse_content_header
 from litestar._parsers import parse_headers
 from litestar.datastructures.multi_dicts import MultiMixin
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.utils.dataclass import simple_asdict
 
 __all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
 
@@ -235,7 +237,8 @@ class MutableScopeHeaders(MutableMapping):
         return iter(h[0].decode("latin-1") for h in self.headers)
 
 
-class Header(BaseModel, ABC):
+@dataclass(kw_only=True)
+class Header(ABC):
     """An abstract type for HTTP headers."""
 
     HEADER_NAME: ClassVar[str] = ""
@@ -276,7 +279,20 @@ class Header(BaseModel, ABC):
 
         return (f"{self.HEADER_NAME}: " if include_header_name else "") + self._get_header_value()
 
+    def dict(
+        self,
+        exclude_none: bool = False,
+        exclude_empty: bool = False,
+        by_alias: bool = False,
+        exclude: Optional[set] = None,
+        **kwargs: bool,
+    ) -> dict[str, Any]:
+        return simple_asdict(
+            self, exclude_empty=exclude_empty, exclude_none=exclude_none, by_alias=by_alias, exclude=exclude
+        )
 
+
+@dataclass
 class CacheControlHeader(Header):
     """A ``cache-control`` header."""
 
@@ -333,16 +349,17 @@ class CacheControlHeader(Header):
         kwargs: Dict[str, Any] = {}
         for cc_item in cc_items:
             key_value = cc_item.split("=")
+            key_value[0] = "_".join(key_value[0].split("-"))
             if len(key_value) == 1:
                 kwargs[key_value[0]] = True
             elif len(key_value) == 2:
-                kwargs[key_value[0]] = key_value[1]
+                kwargs[key_value[0]] = cls.cast_to_type(*key_value)
             else:
                 raise ImproperlyConfiguredException("Invalid cache-control header value")
 
         try:
             return CacheControlHeader(**kwargs)
-        except ValidationError as exc:
+        except TypeError as exc:
             raise ImproperlyConfiguredException from exc
 
     @classmethod
@@ -353,14 +370,22 @@ class CacheControlHeader(Header):
 
         return cls(no_store=True)
 
+    @classmethod
+    def cast_to_type(cls, field_name: str, value: str) -> Any:
+        annotation = get_args(cls.__annotations__[field_name])
+        if len(annotation):
+            return annotation[0](value)
+        return value
 
+
+@dataclass
 class ETag(Header):
     """An ``etag`` header."""
 
     HEADER_NAME: ClassVar[str] = "etag"
 
     weak: bool = False
-    value: Annotated[Optional[str], Field(regex=r"^[ -~]+$")] = None  # only ASCII characters
+    value: Optional[str] = None  # only ASCII characters
 
     def _get_header_value(self) -> str:
         value = f'"{self.value}"'
@@ -380,15 +405,15 @@ class ETag(Header):
         weak, value = match.group(1, 2)
         try:
             return cls(weak=bool(weak), value=value)
-        except ValidationError as exc:
+        except ValueError as exc:
             raise ImproperlyConfiguredException from exc
 
-    @validator("value", always=True)
-    def validate_value(cls, value: Any, values: Dict[str, Any]) -> Any:
-        """Ensure that either value is set or the instance is for ``documentation_only``."""
-        if values.get("documentation_only") or value is not None:
-            return value
-        raise ValueError("value must be set if documentation_only is false")
+    def __post_init__(self) -> None:
+        pattern = re.compile(r"^[ -~]+$")
+        if self.documentation_only is False and self.value is None:
+            raise ValueError("value must be set if documentation_only is false")
+        if self.value and not pattern.fullmatch(self.value):
+            raise ValueError("Invalid value for attribute value")
 
 
 class _MediaType:

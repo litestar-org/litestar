@@ -80,7 +80,13 @@ def extract_dataclass_items(
     return tuple((field.name, getattr(dt, field.name)) for field in dataclass_fields)
 
 
-def simple_asdict(obj: DataclassProtocol, exclude_none: bool = False, exclude_empty: bool = False) -> dict[str, Any]:
+def simple_asdict(
+    obj: DataclassProtocol,
+    exclude_none: bool = False,
+    exclude_empty: bool = False,
+    by_alias: bool = False,
+    exclude: set | None = None,
+) -> dict[str, Any]:
     """Convert a dataclass to a dictionary.
 
     This method has important differences to the standard library version:
@@ -91,15 +97,18 @@ def simple_asdict(obj: DataclassProtocol, exclude_none: bool = False, exclude_em
         obj: A dataclass instance.
         exclude_none: Whether to exclude None values.
         exclude_empty: Whether to exclude Empty values.
+        by_alias: Whether to use alias for the field name.
+        exclude: Name of attributes to be excluded.
 
     Returns:
         A dictionary of key/value pairs.
     """
     ret = {}
-    for field in extract_dataclass_fields(obj, exclude_none, exclude_empty):
+    for field in extract_dataclass_fields(obj, exclude_none, exclude_empty, exclude=exclude):
+        field_name = field.name if not by_alias else "-".join(field.name.split("_"))
         value = getattr(obj, field.name)
         if isinstance(value, DataclassProtocol):
-            ret[field.name] = simple_asdict(value, exclude_none, exclude_empty)
+            ret[field_name] = simple_asdict(value, exclude_none, exclude_empty)
         else:
-            ret[field.name] = getattr(obj, field.name)
+            ret[field_name] = getattr(obj, field.name)
     return ret
