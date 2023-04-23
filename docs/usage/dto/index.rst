@@ -37,21 +37,34 @@ Data moves between each of the participants in the DTO chart, and as it does so,
 data, and it takes different forms depending on the direction of data transfer, and the participants on either end of
 the transfer. Lets take a look at each of these data movements:
 
-Client -> Litestar -> DTO
+Client → Litestar → DTO
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-TODO
+- Data is received from the client as encoded bytes
+- In most cases, the unencoded bytes are passed directly to the DTO
+- Exception is multipart and URL encoded data, which is decoded into python built-in types before being passed to the
+  DTO
 
-DTO -> Developer
+DTO → Developer
 ~~~~~~~~~~~~~~~~
-TODO
+- DTO receives data from client
+- Performs primitive type validation
+- Marshals the data into the data type declared in the handler annotation
 
-Developer -> DTO
+Developer → DTO
 ~~~~~~~~~~~~~~~~
-TODO
+- Developer receives data as type declared in handler signature
+- Developer performs business logic
+- Developer returns data from handler
 
-DTO -> Litestar -> Client
+DTO → Litestar
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-TODO
+- DTO receives data from developer
+- Marshals the data into a type that can be encoded into bytes by Litestar
+
+Litestar → Client
+~~~~~~~~~~~~~~~~~~
+- Data is received from the DTO as a type that Litestar can encode into bytes
+- Data is encoded into bytes and sent to the client
 
 Contents
 --------
