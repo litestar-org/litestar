@@ -70,3 +70,6 @@ defined in the ownership chain, closest to the handler in question.
 In this example, the ``User`` instance received by any handler that declares a ``data`` kwarg, is marshalled by the
 ``UserDTO`` type, and all handler return values are marshalled into an encodable type by ``UserReturnDTO`` (except for
 the ``delete()`` route, which has the ``return_dto`` disabled).
+
+DTOs can similarly be defined on :class:`Routers <litestar.router.Router>` and
+:class:`The application <litestar.app.Litestar>` itself.
