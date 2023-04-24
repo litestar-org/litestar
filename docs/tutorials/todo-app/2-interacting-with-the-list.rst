@@ -109,9 +109,10 @@ as ``greeter(name="john")``, similar to how query parameters are injected.
     here: :ref:`usage/parameters:supported path parameter types`
 
 
-By using this pattern and combining it those from the earlier section about receiving
-data you can now set up a route handler that takes in the title of a TODO-item, an
-updated item in form of a dataclass instance, and updates the item in the list.
+By using this pattern and combining it with those from the earlier section about
+receiving data you can now set up a route handler that takes in the title of a
+TODO-item, an updated item in form of a dataclass instance, and updates the item in the
+list.
 
 
 .. literalinclude:: /examples/todo_app/update.py
