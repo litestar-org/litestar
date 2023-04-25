@@ -653,7 +653,7 @@ class Litestar(Router):
             .. code-block: python
 
                 from litestar import Litestar
-                from litestar.config.static_files import StaticFilesConfig
+                from litestar.static_files.config import StaticFilesConfig
 
                 app = Litestar(
                     static_files_config=[StaticFilesConfig(directories=["css"], path="/static/css")]

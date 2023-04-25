@@ -340,7 +340,7 @@ class LoggingMiddlewareConfig:
             .. code-block: python
 
                 from litestar import Litestar, Request, get
-                from litestar.config.logging import LoggingConfig
+                from litestar.logging import LoggingConfig
                 from litestar.middleware.logging import LoggingMiddlewareConfig
 
                 logging_config = LoggingConfig()
