@@ -919,6 +919,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "SanderWegter",
+      "name": "Sander",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7465799?v=4",
+      "profile": "https://sanderwegter.nl",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
