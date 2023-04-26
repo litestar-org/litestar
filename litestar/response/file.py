@@ -125,14 +125,11 @@ class FileResponse(StreamingResponse):
                 providing an :class:`os.stat_result`.
         """
         if not media_type:
-            mimetype, _encoding = guess_type(filename) if filename else (None, None)
+            mimetype, content_encoding = guess_type(filename) if filename else (None, None)
             media_type = mimetype or "application/octet-stream"
-            if _encoding is not None:
-                encoding_header = {"content-encoding": _encoding}
-                if headers is None:
-                    headers = encoding_header
-                else:
-                    headers.update(encoding_header)
+            if content_encoding is not None:
+                headers = headers or {}
+                headers.update({"content-encoding": content_encoding})
 
         self.chunk_size = chunk_size
         self.content_disposition_type = content_disposition_type
