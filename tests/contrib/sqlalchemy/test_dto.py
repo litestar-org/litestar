@@ -144,7 +144,7 @@ async def test_write_dto_field_default(base: type[DeclarativeBase], connection_c
     class Model(base):
         field: Mapped[int] = mapped_column(default=3)
 
-    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(include={"field"})]]
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(exclude={"id", "created", "updated"})]]
     model = await get_model_from_dto(dto_type, Model, connection_context, b'{"a":"b"}')
     assert_model_values(model, {"field": 3})
 
@@ -157,7 +157,7 @@ async def test_write_dto_for_model_field_factory_default(
     class Model(base):
         field: Mapped[UUID] = mapped_column(default=lambda: val)
 
-    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(include={"field"})]]
+    dto_type = SQLAlchemyDTO[Annotated[Model, DTOConfig(exclude={"id", "created", "updated"})]]
     model = await get_model_from_dto(dto_type, Model, connection_context, b'{"a":"b"}')
     assert_model_values(model, {"field": val})
 

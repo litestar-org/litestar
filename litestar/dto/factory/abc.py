@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
-from itertools import chain
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.dto.factory.backends import MsgspecDTOBackend, PydanticDTOBackend
@@ -221,17 +220,12 @@ def _parse_model(
         {"new_field": (str | None, None)}
     """
     defined_fields: dict[str, FieldDefinition | NestedFieldDefinition] = {}
-    for field_definition in chain(dto_factory_type.generate_field_definitions(model_type), config.field_definitions):
+    for field_definition in dto_factory_type.generate_field_definitions(model_type):
         if _should_exclude_field(field_definition, config, dto_for):
             continue
 
-        if field_mapping := config.field_mapping.get(field_definition.name):
-            if isinstance(field_mapping, str):
-                dto_factory_type._reverse_field_mappings[field_mapping] = field_definition
-                field_definition = field_definition.copy_with(name=field_mapping)  # noqa: PLW2901
-            else:
-                dto_factory_type._reverse_field_mappings[field_mapping.name] = field_definition
-                field_definition = field_mapping  # noqa: PLW2901
+        if rename := config.rename_fields.get(field_definition.name):
+            field_definition = field_definition.copy_with(serialization_name=rename)  # noqa: PLW2901
 
         if dto_factory_type.detect_nested_field(field_definition):
             nested_field_definition = _handle_nested(dto_factory_type, field_definition, nested_depth, config, dto_for)
@@ -257,10 +251,9 @@ def _should_exclude_field(field_definition: FieldDefinition, config: DTOConfig, 
     field_name = field_definition.name
     dto_field = field_definition.dto_field
     excluded = field_name in config.exclude
-    not_included = config.include and field_name not in config.include
     private = dto_field and dto_field.mark is Mark.PRIVATE
     read_only_for_write = dto_for == "data" and dto_field and dto_field.mark is Mark.READ_ONLY
-    return bool(excluded or not_included or private or read_only_for_write)
+    return bool(excluded or private or read_only_for_write)
 
 
 def _handle_nested(

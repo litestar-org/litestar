@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from typing_extensions import Annotated
+
 from litestar import post
 from litestar.datastructures import UploadFile
-from litestar.dto.factory import dto_field
+from litestar.dto.factory import DTOConfig, dto_field
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
@@ -52,3 +54,21 @@ async def test_multipart_encoded_form_data() -> None:
             files={"file": b"abc123", "forbidden": b"123abc"},
         )
         assert response.content == b"forbidden"
+
+
+def test_renamed_field() -> None:
+    @dataclass
+    class Foo:
+        bar: str
+
+    config = DTOConfig(rename_fields={"bar": "baz"})
+    dto = DataclassDTO[Annotated[Foo, config]]
+
+    @post(dto=dto, signature_namespace={"Foo": Foo})
+    def handler(data: Foo) -> Foo:
+        assert data.bar == "hello"
+        return data
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post("/", json={"baz": "hello"})
+        assert response.json() == {"baz": "hello"}

@@ -12,10 +12,8 @@ from litestar.dto.factory.backends import PydanticDTOBackend
 from litestar.dto.factory.config import DTOConfig
 from litestar.dto.factory.exc import InvalidAnnotation
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
-from litestar.dto.factory.types import FieldDefinition
 from litestar.dto.interface import ConnectionContext, HandlerContext
 from litestar.enums import RequestEncodingType
-from litestar.types.empty import Empty
 from litestar.utils.signature import ParsedType
 
 from . import Model
@@ -115,33 +113,12 @@ async def test_from_bytes(request_factory: RequestFactory) -> None:
     assert dto_type(conn_ctx).bytes_to_data_type(b'{"a":1,"b":"two"}') == Model(a=1, b="two")
 
 
-def test_config_field_definitions() -> None:
-    new_def = FieldDefinition(name="z", parsed_type=ParsedType(str), default="something")
-    config = DTOConfig(field_definitions=(new_def,))
-    dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
-    assert get_backend(dto_type).context.field_definitions["z"] is new_def
-
-
-def test_config_field_mapping() -> None:
-    config = DTOConfig(field_mapping={"a": "z"})
+def test_config_field_rename() -> None:
+    config = DTOConfig(rename_fields={"a": "z"})
     dto_type = DataclassDTO[Annotated[Model, config]]
     dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
     field_definitions = get_backend(dto_type).context.field_definitions
-    assert "a" not in field_definitions
-    assert "z" in field_definitions
-
-
-def test_config_field_mapping_new_definition() -> None:
-    config = DTOConfig(field_mapping={"a": FieldDefinition(name="z", parsed_type=ParsedType(str), default=Empty)})
-    dto_type = DataclassDTO[Annotated[Model, config]]
-    dto_type.on_registration(HandlerContext(handler_id="handler", dto_for="data", parsed_type=ParsedType(Model)))
-    field_definitions = get_backend(dto_type).context.field_definitions
-    assert "a" not in field_definitions
-    z = field_definitions["z"]
-    assert isinstance(z, FieldDefinition)
-    assert z.name == "z"
-    assert z.annotation is str
+    assert field_definitions["a"].serialization_name == "z"
 
 
 def test_type_narrowing_with_multiple_configs() -> None:

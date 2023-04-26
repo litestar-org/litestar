@@ -17,12 +17,7 @@ if TYPE_CHECKING:
 
     from .field import DTOField
 
-__all__ = (
-    "FieldDefinition",
-    "FieldDefinitionsType",
-    "FieldMappingType",
-    "NestedFieldDefinition",
-)
+__all__ = ("FieldDefinition", "FieldDefinitionsType", "NestedFieldDefinition")
 
 
 @dataclass(frozen=True)
@@ -33,6 +28,7 @@ class FieldDefinition(ParsedParameter):
     """Default factory of the field."""
     dto_field: DTOField | None = field(default=None)
     """DTO field configuration."""
+    serialization_name: str | None = field(default=None)
 
     def copy_with(self, **kwargs: Any) -> FieldDefinition:
         """Copy the field definition with the given keyword arguments.
@@ -54,6 +50,16 @@ class NestedFieldDefinition:
     nested_type: Any
     nested_field_definitions: FieldDefinitionsType = field(default_factory=dict)
 
+    @property
+    def name(self) -> str:
+        """Name of the field."""
+        return self.field_definition.name
+
+    @property
+    def serialization_name(self) -> str | None:
+        """Serialization name of the field."""
+        return self.field_definition.serialization_name
+
     def make_field_type(self, inner_type: type) -> Any:
         if self.field_definition.parsed_type.is_collection:
             return self.field_definition.parsed_type.safe_generic_origin[inner_type]
@@ -64,6 +70,3 @@ class NestedFieldDefinition:
 
 FieldDefinitionsType: TypeAlias = "Mapping[str, FieldDefinition | NestedFieldDefinition]"
 """Generic representation of names and types."""
-
-FieldMappingType: TypeAlias = "Mapping[str, str | FieldDefinition]"
-"""Type of the field mappings configuration property."""
