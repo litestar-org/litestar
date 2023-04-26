@@ -1100,12 +1100,17 @@ document.write(`
 <section id="install-litestar">
 <h3>Install Litestar<a class="headerlink" href="#install-litestar" title="Permalink to this heading">#</a></h3>
 <p>To install Litestar, run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[standard]</span></code>. This will install Litestar
-as well as <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a> -  a web server to serve your application.
-.. note:: You can use any ASGI-capable web server, but this tutorial will use - and Litestar recommends - Uvicorn.</p>
+as well as <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a> -  a web server to serve your application.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can use any ASGI-capable web server, but this tutorial will use - and Litestar
+recommends - Uvicorn.</p>
+</div>
 </section>
 <section id="hello-world">
 <h3>Hello, world!<a class="headerlink" href="#hello-world" title="Permalink to this heading">#</a></h3>
-<p>The most basic application you can implement - and a classic one at that - is of course one that prints <code class="docutils literal notranslate"><span class="pre">&quot;Hello,</span> <span class="pre">world!&quot;</span></code>:</p>
+<p>The most basic application you can implement - and a classic one at that - is of course
+one that prints <code class="docutils literal notranslate"><span class="pre">&quot;Hello,</span> <span class="pre">world!&quot;</span></code>:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
