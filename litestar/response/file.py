@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from email.utils import formatdate
 from inspect import iscoroutine
-from mimetypes import guess_type
+from mimetypes import encodings_map, guess_type
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Coroutine, Literal, cast
 from urllib.parse import quote
 from zlib import adler32
@@ -27,6 +27,8 @@ if TYPE_CHECKING:
     from litestar.enums import MediaType
     from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Send
     from litestar.types.file_types import FileInfo, FileSystemProtocol
+
+encodings_map[".br"] = "br"
 
 
 async def async_file_iterator(
