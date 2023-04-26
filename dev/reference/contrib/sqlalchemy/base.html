@@ -1213,15 +1213,28 @@ for new <code class="xref py py-class docutils literal notranslate"><span class=
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDPrimaryKey">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">UUIDPrimaryKey</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>UUID Primary Key Field Mixin.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id">
-<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.11)"><span class="pre">UUID</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;sqlalchemy.orm.properties.MappedColumn</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id" title="Permalink to this definition">#</a></dt>
-<dd><p>UUID Primary key column.</p>
+<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.ModelProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">ModelProtocol</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.ModelProtocol" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>The base SQLAlchemy model protocol.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.ModelProtocol.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.11)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.11)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.ModelProtocol.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Convert model to dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dict representation of the model</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)">str</a>, Any]</p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.ModelProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.ModelProtocol.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -1238,6 +1251,19 @@ timestamp on modified instances.</p>
 session.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDPrimaryKey">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">UUIDPrimaryKey</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>UUID Primary Key Field Mixin.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.11)"><span class="pre">UUID</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;sqlalchemy.orm.properties.MappedColumn</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id" title="Permalink to this definition">#</a></dt>
+<dd><p>UUID Primary key column.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -1310,11 +1336,16 @@ session.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.CommonTableAttributes.to_dict"><code class="docutils literal notranslate"><span class="pre">CommonTableAttributes.to_dict()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.ModelProtocol"><code class="docutils literal notranslate"><span class="pre">ModelProtocol</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.ModelProtocol.to_dict"><code class="docutils literal notranslate"><span class="pre">ModelProtocol.to_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.ModelProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">ModelProtocol.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.touch_updated_timestamp"><code class="docutils literal notranslate"><span class="pre">touch_updated_timestamp()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey"><code class="docutils literal notranslate"><span class="pre">UUIDPrimaryKey</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id"><code class="docutils literal notranslate"><span class="pre">UUIDPrimaryKey.id</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.touch_updated_timestamp"><code class="docutils literal notranslate"><span class="pre">touch_updated_timestamp()</span></code></a></li>
 </ul>
   </nav></div>
 
