@@ -37,15 +37,20 @@ class MsgspecDTOBackend(AbstractDTOBackend[Struct]):
 
     def populate_data_from_builtins(self, data: Any) -> Any:
         parsed_data = cast("Struct | Collection[Struct]", from_builtins(data, self.annotation))
-        return _build_data_from_struct(self.context.model_type, parsed_data, self.context.field_definitions)
+        return _build_data_from_struct(
+            self.context.model_type, parsed_data, self.context.field_definitions, self.context.reverse_name_map
+        )
 
     def populate_data_from_raw(self, raw: bytes, connection_context: ConnectionContext) -> T | Collection[T]:
         parsed_data = self.parse_raw(raw, connection_context)
-        return _build_data_from_struct(self.context.model_type, parsed_data, self.context.field_definitions)
+        return _build_data_from_struct(
+            self.context.model_type, parsed_data, self.context.field_definitions, self.context.reverse_name_map
+        )
 
     def encode_data(self, data: Any, connection_context: ConnectionContext) -> LitestarEncodableType:
         if isinstance(data, CollectionsCollection):
             return self.context.parsed_type.origin(  # type:ignore[no-any-return]
-                _build_struct_from_model(datum, self.data_container_type) for datum in data  # pyright:ignore
+                _build_struct_from_model(datum, self.data_container_type, self.context.reverse_name_map)
+                for datum in data  # pyright:ignore
             )
-        return _build_struct_from_model(data, self.data_container_type)
+        return _build_struct_from_model(data, self.data_container_type, self.context.reverse_name_map)

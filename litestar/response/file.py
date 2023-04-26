@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from email.utils import formatdate
 from inspect import iscoroutine
-from mimetypes import guess_type
+from mimetypes import encodings_map, guess_type
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Coroutine, Literal, cast
 from urllib.parse import quote
 from zlib import adler32
@@ -27,6 +27,9 @@ if TYPE_CHECKING:
     from litestar.enums import MediaType
     from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Send
     from litestar.types.file_types import FileInfo, FileSystemProtocol
+
+# brotli not supported in 'mimetypes.encodings_map' until py 3.9.
+encodings_map[".br"] = "br"
 
 
 async def async_file_iterator(
@@ -125,8 +128,11 @@ class FileResponse(StreamingResponse):
                 providing an :class:`os.stat_result`.
         """
         if not media_type:
-            mimetype, _ = guess_type(filename) if filename else (None, None)
+            mimetype, content_encoding = guess_type(filename) if filename else (None, None)
             media_type = mimetype or "application/octet-stream"
+            if content_encoding is not None:
+                headers = headers or {}
+                headers.update({"content-encoding": content_encoding})
 
         self.chunk_size = chunk_size
         self.content_disposition_type = content_disposition_type

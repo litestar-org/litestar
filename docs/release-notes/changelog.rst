@@ -3,6 +3,224 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.0.0alpha5
+
+    .. change:: Pass template context to HTMX template response
+        :type: feature
+        :pr: 1488
+
+        Pass the template context to the :class:`Template <litestar.response_containers.Template>` returned by
+        :class:`htmx.Response <litestar.contrib.htmx.response>`.
+
+
+    .. change:: OpenAPI support for attrs and msgspec classes
+        :type: feature
+        :pr: 1487
+
+        Support OpenAPI schema generation for `attrs <https://www.attrs.org>`_ classes and
+        `msgspec <https://jcristharif.com/msgspec/>`_ ``Struct``\ s.
+
+    .. change:: SQLAlchemy repository: Add ``ModelProtocol``
+        :type: feature
+        :pr: 1503
+
+        Add a new class ``contrib.sqlalchemy.base.ModelProtocol``, serving as a generic model base type, allowing to
+        specify custom base classes while preserving typing information
+
+    .. change:: SQLAlchemy repository: Support MySQL/MariaDB
+        :type: feature
+        :pr: 1345
+
+        Add support for MySQL/MariaDB to the SQLAlchemy repository, using the
+        `asyncmy <https://github.com/long2ice/asyncmy>`_ driver.
+
+    .. change:: SQLAlchemy repository: Support MySQL/MariaDB
+        :type: feature
+        :pr: 1345
+
+        Add support for MySQL/MariaDB to the SQLAlchemy repository, using the
+        `asyncmy <https://github.com/long2ice/asyncmy>`_ driver.
+
+    .. change:: SQLAlchemy repository: Add matching logic to ``get_or_create``
+        :type: feature
+        :pr: 1345
+
+        Add a ``match_fields`` argument to
+        :meth:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_or_create>`.
+        This lets you lookup a model using a subset of the kwargs you've provided. If the remaining kwargs are different
+        from the retrieved model's stored values, an update is performed.
+
+    .. change:: Repository: Extend filter types
+        :type: feature
+        :pr: 1345
+
+        Add new filters :class:`OrderBy <litestar.contrib.repository.filters.OrderBy>` and
+        :class:`SearchFilter <litestar.contrib.repository.filters.SearchFilter>`, providing ``ORDER BY ...`` and
+        ``LIKE ...`` / ``ILIKE ...`` clauses respectively
+
+    .. change:: SQLAlchemy repository: Rename ``SQLAlchemyRepository`` > ``SQLAlchemyAsyncRepository``
+        :breaking:
+        :type: misc
+        :pr: 1345
+
+        ``SQLAlchemyRepository`` has been renamed to
+        :class:`SQLAlchemyAsyncRepository <litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository>`.
+
+
+    .. change:: DTO: Add ``AbstractDTOFactory`` and backends
+        :type: feature
+        :pr: 1461
+
+        An all-new DTO implementation was added, using ``AbstractDTOFactory`` as a base class, providing Pydantic and
+        msgspec backends to facilitate (de)serialization and validation.
+
+    .. change:: DTO: Remove ``from_connection`` / extend ``from_data``
+        :breaking:
+        :type: misc
+        :pr: 1500
+
+        The method ``DTOInterface.from_connection`` has been removed and replaced by ``DTOInterface.from_bytes``, which
+        receives both the raw bytes from the connection, and the connection instance. Since ``from_bytes`` now does not
+        handle connections anymore, it can also be a synchronous method, improving symmetry with
+        ``DTOInterface.from_bytes``.
+
+        The signature of ``from_data`` has been changed to also accept the connection, matching ``from_bytes``'
+        signature.
+
+        As a result of these changes,
+        :meth:`DTOInterface.from_bytes <litestar.dto.interface.DTOInterface.data_to_encodable_type>` no longer needs to
+        receive the connection instance, so the ``request`` parameter has been dropped.
+
+    .. change:: WebSockets: Support DTOs in listeners
+        :type: feature
+        :pr: 1518
+
+        Support for DTOs has been added to :class:`WebSocketListener <litestar.handlers.WebsocketListener>` and
+        :class:`WebSocketListener <litestar.handlers.websocket_listener>`. A ``dto`` and ``return_dto`` parameter has
+        been added, providing the same functionality as their route handler counterparts.
+
+    .. change:: DTO based serialization plugin
+        :breaking:
+        :type: feature
+        :pr: 1501
+
+        :class:`SerializationPluginProtocol <litestar.plugins.SerializationPluginProtocol>` has been re-implemented,
+        leveraging the new :class:`DTOInterface <litestar.dto.interface.DTOInterface>`.
+
+        If a handler defines a plugin supported type as either the ``data`` kwarg type annotation, or as the return
+        annotation for a handler function, and no DTO has otherwise been resolved to handle the type, the protocol
+        creates a DTO implementation to represent that type which is then used to de-serialize into, and serialize from
+        instances of that supported type.
+
+        .. important::
+            The `Piccolo ORM <https://piccolo-orm.com/>`_ and `Tortoise ORM <https://tortoise.github.io/>`_ plugins have
+            been removed by this change, but will be re-implemented using the new patterns in a future release leading
+            up to the 2.0 release.
+
+    .. change:: SQLAlchemy 1 contrib module removed
+        :breaking:
+        :type: misc
+        :pr: 1501
+
+        As a result of the changes introduced in `#1501 <https://github.com/litestar-org/litestar/pull/1501>`_,
+        SQLAlchemy 1 support has been dropped.
+
+        .. note::
+            If you rely on SQLAlchemy 1, you can stick to Starlite *1.51* for now. In the future, a SQLAlchemy 1 plugin
+            may be released as a standalone package.
+
+    .. change:: Fix inconsistent parsing of unix timestamp between pydantic and cattrs
+        :type: bugfix
+        :pr: 1492
+        :issue: 1491
+
+        Timestamps parsed as :class:`date <datetime.date>` with pydantic return a UTC date, while cattrs implementation
+        return a date with the local timezone.
+
+        This was corrected by forcing dates to UTC when being parsed by attrs.
+
+    .. change:: Fix: Retrieve type hints from class with no ``__init__`` method causes error
+        :type: bugfix
+        :pr: 1505
+        :issue: 1504
+
+        An error would occur when using a callable without an :meth:`object.__init__` method was used in a placed that
+        would cause it to be inspected (such as a route handler's signature).
+
+        This was caused by trying to access the ``__module__`` attribute of :meth:`object.__init__`, which would fail
+        with
+
+        .. code-block::
+
+            'wrapper_descriptor' object has no attribute '__module__'
+
+    .. change:: Fix error raised for partially installed attrs dependencies
+        :type: bugfix
+        :pr: 1543
+
+        An error was fixed that would cause a :exc:`MissingDependencyException` to be raised when dependencies for
+        `attrs <https://www.attrs.org>`_ were partially installed. This was fixed by being more specific about the
+        missing dependencies in the error messages.
+
+    .. change:: Change ``MissingDependencyException`` to be a subclass of ``ImportError``
+        :type: misc
+        :pr: 1557
+
+        :exc:`MissingDependencyException` is now a subclass of :exc:`ImportError`, to make handling cases where both
+        of them might be raised easier.
+
+    .. change:: Remove bool coercion in URL parsing
+        :breaking:
+        :type: bugfix
+        :pr: 1550
+        :issue: 1547
+
+        When defining a query parameter as ``param: str``, and passing it a string value of ``"true"``, the value
+        received by the route handler was the string ``"True"``, having been title cased. The same was true for the value
+        of ``"false"``.
+
+        This has been fixed by removing the coercing of boolean-like values during URL parsing and leaving it up to
+        the parsing utilities of the receiving side (i.e. the handler's signature model) to handle these values
+        according to the associated type annotations.
+
+    .. change:: Update ``standard`` and ``full`` package extras
+        :type: misc
+        :pr: 1494
+
+        - Add SQLAlchemy, uvicorn, attrs and structlog to the ``full`` extra
+        - Add uvicorn to the ``standard`` extra
+        - Add ``uvicorn[standard]`` as an optional dependency to be used in the extras
+
+    .. change:: Remove support for declaring DTOs as handler types
+        :breaking:
+        :type: misc
+        :pr: 1534
+
+        Prior to this, a DTO type could be declared implicitly using type annotations. With the addition of the ``dto``
+        and ``return_dto`` parameters, this feature has become superfluous and, in the spirit of offering only one clear
+        way of doing things, has been removed.
+
+    .. change:: Fix missing ``content-encoding`` headers on gzip/brotli compressed files
+        :type: bugfix
+        :pr: 1577
+        :issue: 1576
+
+        Fixed a bug that would cause static files served via ``StaticFilesConfig`` that have been compressed with gripz
+        or brotli to miss the appropriate ``content-encoding`` header.
+
+    .. change:: DTO: Simplify ``DTOConfig``
+        :type: misc
+        :breaking:
+        :pr: 1580
+
+        - The ``include`` parameter has been removed, to provide a more accessible interface and avoid overly complex
+          interplay with ``exclude`` and its support for dotted attributes
+        - ``field_mapping`` has been renamed to ``rename_fields`` and support to remap field types has been dropped
+        - experimental ``field_definitions`` has been removed. It may be replaced with a "ComputedField" in a future
+          release that will allow multiple field definitions to be added to the model, and a callable that transforms
+          them into a value for a model field. See
+
+
 .. changelog:: 2.0.0alpha4
 
     .. change:: ``attrs`` and ``msgspec`` support in :class:`Partial <litestar.partial.Partial>`

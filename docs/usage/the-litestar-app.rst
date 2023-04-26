@@ -163,7 +163,7 @@ and the **html files** on the ``/html`` path:
 .. code-block:: python
 
    from litestar import Litestar
-   from litestar.config.static_files import StaticFilesConfig
+   from litestar.static_files.config import StaticFilesConfig
 
    app = Litestar(
        route_handlers=[...],
@@ -247,7 +247,7 @@ Litestar has builtin pydantic based logging configuration that allows users to e
 .. code-block:: python
 
    from litestar import Litestar, Request, get
-   from litestar.config.logging import LoggingConfig
+   from litestar.logging import LoggingConfig
 
 
    @get("/")
@@ -289,7 +289,7 @@ logging config for using it:
 .. code-block:: python
 
    from litestar import Litestar, Request, get
-   from litestar.config.logging import StructLoggingConfig
+   from litestar.logging import StructLoggingConfig
 
 
    @get("/")

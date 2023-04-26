@@ -29,9 +29,10 @@ __all__ = (
     "AuditColumns",
     "Base",
     "CommonTableAttributes",
-    "UUIDPrimaryKey",
     "create_registry",
+    "ModelProtocol",
     "touch_updated_timestamp",
+    "UUIDPrimaryKey",
 )
 
 
