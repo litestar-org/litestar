@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from litestar.types import HTTPResponseBodyEvent, PathType, Receive, ResponseCookies, Send
     from litestar.types.file_types import FileInfo, FileSystemProtocol
 
+# brotli not supported in 'mimetypes.encodings_map' until py 3.9.
 encodings_map[".br"] = "br"
 
 
