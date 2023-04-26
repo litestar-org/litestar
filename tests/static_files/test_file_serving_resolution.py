@@ -16,6 +16,8 @@ from litestar.testing import create_test_client
 if TYPE_CHECKING:
     from litestar.types import FileSystemProtocol
 
+mimetypes.encodings_map[".br"] = "br"
+
 
 def test_default_static_files_config(tmpdir: "Path") -> None:
     path = tmpdir / "test.txt"
