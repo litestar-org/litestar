@@ -33,7 +33,7 @@ class MemoryChannelsBackend(ChannelsBackend):
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         self._channels = self._channels - (set(channels))
 
-    async def received_events(self) -> AsyncGenerator[tuple[Any, set[str]], None]:
+    async def stream_events(self) -> AsyncGenerator[tuple[Any, set[str]], None]:
         while self._queue:
             yield await self._queue.get()
             self._queue.task_done()

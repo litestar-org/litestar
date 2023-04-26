@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, AsyncGenerator, Iterable
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable
 
-from litestar.types import LitestarEncodableType
+if TYPE_CHECKING:
+    from litestar.types import LitestarEncodableType
 
 
 class ChannelsBackend(ABC):
@@ -28,5 +29,5 @@ class ChannelsBackend(ABC):
         ...
 
     @abstractmethod
-    def received_events(self) -> AsyncGenerator[tuple[Any, set[str]], None]:
+    def stream_events(self) -> AsyncGenerator[tuple[Any, set[str]], None]:
         ...

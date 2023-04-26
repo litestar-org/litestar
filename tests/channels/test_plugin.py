@@ -9,6 +9,7 @@ from litestar.channels import ChannelsBackend, ChannelsPlugin
 from litestar.channels.memory import MemoryChannelsBackend
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import TestClient, create_test_client
+from litestar.types.asgi_types import WebSocketMode
 
 
 @pytest.fixture
@@ -36,7 +37,9 @@ def test_channels_no_channels_arbitrary_not_allowed_raises(memory_channels_backe
         ChannelsPlugin(backend=memory_channels_backend)
 
 
-def test_pub_sub(channels_backend: MemoryChannelsBackend) -> None:
+@pytest.mark.parametrize("send_json", [True, False])
+@pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
+def test_pub_sub(channels_backend: MemoryChannelsBackend, socket_send_mode: WebSocketMode, send_json: bool) -> None:
     @websocket("/")
     async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
         await socket.accept()
@@ -44,27 +47,45 @@ def test_pub_sub(channels_backend: MemoryChannelsBackend) -> None:
         while True:
             await socket.receive()
 
-    channels_plugin = ChannelsPlugin(backend=channels_backend, channels=["something"])
+    channels_plugin = ChannelsPlugin(
+        backend=channels_backend, channels=["something"], socket_send_mode=socket_send_mode, socket_send_json=send_json
+    )
     app = Litestar([handler], plugins=[channels_plugin])
 
     with TestClient(app) as client, client.websocket_connect("/") as ws:
         channels_plugin.broadcast("foo", "something")
-        assert ws.receive_json() == "foo"
+        if send_json:
+            assert ws.receive_json(mode=socket_send_mode) == "foo"
+        elif socket_send_mode == "text":
+            assert ws.receive_text() == "foo"
+        else:
+            assert ws.receive_bytes() == b"foo"
 
 
+@pytest.mark.parametrize("send_json", [True, False])
+@pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
 @pytest.mark.parametrize("handler_base_path", [None, "/ws"])
-def test_pub_sub_create_route_handlers(channels_backend: ChannelsBackend, handler_base_path: str | None) -> None:
+def test_pub_sub_create_route_handlers(
+    channels_backend: ChannelsBackend, handler_base_path: str | None, socket_send_mode: WebSocketMode, send_json: bool
+) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
         create_route_handlers=True,
         channels=["something"],
         handler_base_path=handler_base_path or "/",
+        socket_send_mode=socket_send_mode,
+        socket_send_json=send_json,
     )
     app = Litestar(plugins=[channels_plugin])
 
     with TestClient(app) as client, client.websocket_connect(f"{handler_base_path or ''}/something") as ws:
         channels_plugin.broadcast("foo", "something")
-        assert ws.receive_json() == "foo"
+        if send_json:
+            assert ws.receive_json(mode=socket_send_mode) == "foo"
+        elif socket_send_mode == "text":
+            assert ws.receive_text() == "foo"
+        else:
+            assert ws.receive_bytes() == b"foo"
 
 
 def test_create_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
@@ -112,8 +133,8 @@ async def test_subscribe(
         channels=["foo", "bar"] if not arbitrary_channels_allowed else None,
         arbitrary_channels_allowed=arbitrary_channels_allowed,
     )
-    memory_channels_backend.subscribe = async_mock
-    socket = object()
+    memory_channels_backend.subscribe = async_mock  # type: ignore[method-assign]
+    socket = MagicMock()
 
     await plugin.subscribe(socket=socket, channels=channels)
 
@@ -132,7 +153,7 @@ async def test_subscribe_non_existent_channel_raises(memory_channels_backend: Me
     plugin = ChannelsPlugin(backend=memory_channels_backend, channels=["foo"])
 
     with pytest.raises(LitestarException):
-        await plugin.subscribe(object(), "bar")
+        await plugin.subscribe(MagicMock(), "bar")
 
 
 @pytest.mark.parametrize("channels", ["foo", ["foo", "bar"]])
@@ -142,9 +163,9 @@ async def test_unsubscribe(
     channels: str | list[str],
 ) -> None:
     plugin = ChannelsPlugin(backend=memory_channels_backend, channels=["foo", "bar"])
-    memory_channels_backend.unsubscribe = async_mock
-    socket_1 = object()
-    socket_2 = object()
+    memory_channels_backend.unsubscribe = async_mock  # type: ignore[method-assign]
+    socket_1 = MagicMock()
+    socket_2 = MagicMock()
     await plugin.subscribe(socket=socket_1, channels=channels)
     await plugin.subscribe(socket=socket_2, channels=channels)
 
@@ -165,9 +186,9 @@ async def test_unsubscribe_last_subscriber_unsubscribes_backend(
     memory_channels_backend: MemoryChannelsBackend, async_mock: AsyncMock
 ) -> None:
     plugin = ChannelsPlugin(backend=memory_channels_backend, channels=["foo"])
-    memory_channels_backend.unsubscribe = async_mock
-    socket_1 = object()
-    socket_2 = object()
+    memory_channels_backend.unsubscribe = async_mock  # type: ignore[method-assign]
+    socket_1 = MagicMock()
+    socket_2 = MagicMock()
     await plugin.subscribe(socket=socket_1, channels="foo")
     await plugin.subscribe(socket=socket_2, channels="foo")
 

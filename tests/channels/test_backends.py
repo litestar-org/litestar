@@ -1,4 +1,4 @@
-from typing import cast
+from typing import AsyncGenerator, cast
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -14,7 +14,7 @@ async def channels_backend_instance(request: FixtureRequest) -> ChannelsBackend:
 
 
 @pytest.fixture()
-async def channels_backend(channels_backend_instance: ChannelsBackend) -> None:
+async def channels_backend(channels_backend_instance: ChannelsBackend) -> AsyncGenerator[ChannelsBackend, None]:
     await channels_backend_instance.on_startup()
     yield channels_backend_instance
     await channels_backend_instance.on_shutdown()
@@ -24,6 +24,6 @@ async def channels_backend(channels_backend_instance: ChannelsBackend) -> None:
 async def test_pub_sub(channels_backend: ChannelsBackend, channels: set[str]) -> None:
     await channels_backend.publish("something", channels)
 
-    event_generator = channels_backend.received_events()
+    event_generator = channels_backend.stream_events()
     event = await anext(event_generator)
     assert event == ("something", channels)

@@ -2,19 +2,25 @@ from __future__ import annotations
 
 from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import suppress
+from functools import partial
 from os.path import join as join_path
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable
 
-from litestar.channels.base import ChannelsBackend
+import anyio
+import msgspec.json
+
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException, WebSocketDisconnect
 from litestar.handlers import WebsocketRouteHandler
 from litestar.plugins import InitPluginProtocol
+from litestar.serialization import default_serializer
 
 if TYPE_CHECKING:
-    from litestar import WebSocket
+    from litestar.channels.base import ChannelsBackend
     from litestar.config.app import AppConfig
-    from litestar.types import LitestarEncodableType
+    from litestar.connection import WebSocket
+    from litestar.types import LitestarEncodableType, TypeEncodersMap
+    from litestar.types.asgi_types import WebSocketMode
 
 
 class ChannelsPlugin(InitPluginProtocol):
@@ -26,6 +32,9 @@ class ChannelsPlugin(InitPluginProtocol):
         arbitrary_channels_allowed: bool = False,
         create_route_handlers: bool = False,
         handler_base_path: str = "/",
+        socket_send_json: bool = True,
+        socket_send_mode: WebSocketMode = "text",
+        type_encoders: TypeEncodersMap | None = None,
     ) -> None:
         self._backend = backend
         self._pub_queue: Queue[tuple[Any, list[str]]] | None = None
@@ -38,24 +47,13 @@ class ChannelsPlugin(InitPluginProtocol):
         self._arbitrary_channels_allowed = arbitrary_channels_allowed
         self._create_route_handlers = create_route_handlers
         self._handler_root_path = handler_base_path
+        self._socket_send_json = socket_send_json
+        self._socket_send_mode = socket_send_mode
+        self._encode_json = msgspec.json.Encoder(
+            enc_hook=partial(default_serializer, type_encoders=type_encoders)
+        ).encode
 
         self._channels: dict[str, set[WebSocket]] = {channel: set() for channel in channels or []}
-
-    async def _ws_handler_func(self, channel_name: str, socket: WebSocket) -> None:
-        await socket.accept()
-        await self.subscribe(socket, [channel_name])
-        while True:
-            try:
-                await socket.receive()
-            except WebSocketDisconnect:
-                await self.unsubscribe(socket, [channel_name])
-                break
-
-    def _create_ws_handler_func(self, channel_name: str) -> Callable[[WebSocket], Awaitable[None]]:
-        async def ws_handler_func(socket: WebSocket) -> None:
-            await self._ws_handler_func(channel_name=channel_name, socket=socket)
-
-        return ws_handler_func
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         app_config.dependencies["channels"] = Provide(lambda: self, use_cache=True)
@@ -64,11 +62,11 @@ class ChannelsPlugin(InitPluginProtocol):
 
         if self._create_route_handlers:
             if self._arbitrary_channels_allowed:
-                path = join_path(self._handler_root_path, "{channel_name:str}")
+                path = join_path(self._handler_root_path, "{channel_name:str}")  # noqa: PTH118
                 route_handlers = [WebsocketRouteHandler(path)(self._ws_handler_func)]
             else:
                 route_handlers = [
-                    WebsocketRouteHandler(join_path(self._handler_root_path, channel_name))(
+                    WebsocketRouteHandler(join_path(self._handler_root_path, channel_name))(  # noqa: PTH118
                         self._create_ws_handler_func(channel_name)
                     )
                     for channel_name in self._channels
@@ -126,6 +124,27 @@ class ChannelsPlugin(InitPluginProtocol):
     def get_subscriptions(self, socket: WebSocket) -> set[str]:
         return {channel_name for channel_name, subscribers in self._channels.items() if socket in subscribers}
 
+    async def _ws_handler_func(self, channel_name: str, socket: WebSocket) -> None:
+        await socket.accept()
+        await self.subscribe(socket, [channel_name])
+        while True:
+            try:
+                await socket.receive()
+            except WebSocketDisconnect:
+                await self.unsubscribe(socket, [channel_name])
+                break
+
+    def _create_ws_handler_func(self, channel_name: str) -> Callable[[WebSocket], Awaitable[None]]:
+        async def ws_handler_func(socket: WebSocket) -> None:
+            await self._ws_handler_func(channel_name=channel_name, socket=socket)
+
+        return ws_handler_func
+
+    async def handle_socket_send(self, socket: WebSocket, data: Any) -> None:
+        if self._socket_send_json:
+            data = self._encode_json(data)
+        await socket.send_data(data, mode=self._socket_send_mode)
+
     async def _pub_worker(self) -> None:
         while self._pub_queue:
             data, channels = await self._pub_queue.get()
@@ -133,10 +152,11 @@ class ChannelsPlugin(InitPluginProtocol):
             self._pub_queue.task_done()
 
     async def _sub_worker(self) -> None:
-        async for payload, channels in self._backend.received_events():
-            for channel in channels:
-                for socket in self._channels[channel]:
-                    await socket.send_json(payload)
+        async with anyio.create_task_group() as task_group:
+            async for payload, channels in self._backend.stream_events():
+                for channel in channels:
+                    for socket in self._channels[channel]:
+                        task_group.start_soon(self.handle_socket_send, socket, payload)
 
     async def _on_startup(self) -> None:
         self._pub_queue = Queue()
