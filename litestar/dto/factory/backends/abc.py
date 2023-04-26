@@ -28,7 +28,7 @@ BackendT = TypeVar("BackendT")
 class BackendContext:
     """Context required by DTO backends to perform their work."""
 
-    __slots__ = ("parsed_type", "field_definitions", "model_type")
+    __slots__ = ("parsed_type", "field_definitions", "model_type", "reverse_name_map")
 
     def __init__(self, parsed_type: ParsedType, field_definitions: FieldDefinitionsType, model_type: type[Any]) -> None:
         """Create a backend context.
@@ -41,6 +41,9 @@ class BackendContext:
         self.parsed_type: Final[ParsedType] = parsed_type
         self.field_definitions: Final[FieldDefinitionsType] = field_definitions
         self.model_type: Final[type[Any]] = model_type
+        self.reverse_name_map = {
+            f.serialization_name: f.name for f in field_definitions.values() if f.serialization_name
+        }
 
 
 class AbstractDTOBackend(ABC, Generic[BackendT]):

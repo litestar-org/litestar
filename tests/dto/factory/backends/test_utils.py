@@ -41,5 +41,5 @@ class FooBarStruct(Struct):
 
 def test_build_struct_from_model_with_non_optional_nested_union() -> None:
     model = FooBarDC(baz=BarDC(bar="bar"))
-    struct = _build_struct_from_model(model, FooBarStruct)
+    struct = _build_struct_from_model(model, FooBarStruct, {})
     assert isinstance(struct.baz, BarStruct)
