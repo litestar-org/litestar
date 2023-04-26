@@ -62,7 +62,7 @@ class websocket_listener(WebsocketRouteHandler):
         self,
         path: str | None | list[str] | None = None,
         *,
-        accept_connection_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
+        connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
         dependencies: Dependencies | None = None,
         dto: type[DTOInterface] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
@@ -84,7 +84,7 @@ class websocket_listener(WebsocketRouteHandler):
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
-            accept_connection_handler: A callable that accepts a :class:`WebSocket <.connection.WebSocket>` instance
+            connection_accept_handler: A callable that accepts a :class:`WebSocket <.connection.WebSocket>` instance
                 and returns a coroutine that when awaited, will accept the connection. Defaults to ``WebSocket.accept``.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             dto: :class:`DTOInterface <.dto.interface.DTOInterface>` to use for (de)serializing and
@@ -114,7 +114,7 @@ class websocket_listener(WebsocketRouteHandler):
         self._send_mode: WebSocketMode = send_mode
         self._on_accept = AsyncCallable(on_accept) if on_accept else None
         self._on_disconnect = AsyncCallable(on_disconnect) if on_disconnect else None
-        self.accept_connection_handler = accept_connection_handler
+        self.accept_connection_handler = connection_accept_handler
         self.type_encoders = type_encoders
 
         super().__init__(

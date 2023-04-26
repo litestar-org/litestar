@@ -268,7 +268,7 @@ def test_listener_accept_connection_callback() -> None:
     async def accept_connection(socket: WebSocket) -> None:
         await socket.accept(headers={"Cookie": "custom-cookie"})
 
-    @websocket_listener("/", accept_connection_handler=accept_connection)
+    @websocket_listener("/", connection_accept_handler=accept_connection)
     def handler(data: bytes) -> None:
         return None
 
