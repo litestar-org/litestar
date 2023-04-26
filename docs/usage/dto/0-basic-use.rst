@@ -46,7 +46,7 @@ responsible for marshalling the ``User`` instance into a type that Litestar can 
 Overriding implicit ``return_dto``
 ----------------------------------
 
-If no ``return_dto`` type is declared for a handler, the type declared for the ``dto`` parameter is used for both
+If a ``return_dto`` type is not declared for a handler, the type declared for the ``dto`` parameter is used for both
 decoding and encoding request and response data. If this behavior is undesirable, it can be disabled by explicitly
 setting the ``return_dto`` to ``None``.
 

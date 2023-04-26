@@ -31,15 +31,32 @@ ever be set once, and defined internally.
 
 Lets explore how we can configure DTOs to manage these limitations.
 
-Excluding fields
-----------------
-
-TODO
-
 Marking fields
 --------------
 
-TODO
+The :func:`dto_field <litestar.dto.factory.dto_field>` function can be used to mark model attributes with DTO-based
+configuration.
+
+Fields marked as `"private"` or `"read-only"` will not be parsed from client data into the user model, and `"private"`
+fields are never serialized into return data.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/marking_fields.py
+    :caption: Marking fields
+    :language: python
+    :emphasize-lines: 6,14,15
+    :linenos:
+
+Excluding fields
+----------------
+
+Fields can be explicitly excluded using :class:`DTOConfig <litestar.dto.factory.DTOConfig>`. The following example
+creates an explicit DTO for outbound data the excludes the `id` field from the serialized data.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/excluding_fields.py
+    :caption: Excluding fields
+    :language: python
+    :emphasize-lines: 4,7,20,23
+    :linenos:
 
 Renaming fields
 ---------------
