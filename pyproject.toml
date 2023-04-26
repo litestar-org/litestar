@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "litestar"
-version = "2.0.0alpha4"
+version = "2.0.0alpha5"
 description = "Performant, light and flexible ASGI API Framework"
 authors = [
     "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
