@@ -941,14 +941,14 @@ python-dateutil = ">=2.4"
 
 [[package]]
 name = "fakeredis"
-version = "2.11.1"
+version = "2.11.0"
 description = "Fake implementation of redis API for testing purposes."
 category = "dev"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "fakeredis-2.11.1-py3-none-any.whl", hash = "sha256:3679ffa1a7299e10681f6e18d84eb88ed5eba6fcf5eb97f1b76b371470ac6580"},
-    {file = "fakeredis-2.11.1.tar.gz", hash = "sha256:20120bceb3feb639c0b59a8f882c6c66bbde416e7717ec2732dae258be769660"},
+    {file = "fakeredis-2.11.0-py3-none-any.whl", hash = "sha256:156ef67713dd53000c28dd341be61a365c20230bc17c8fb8320b0c123e667aff"},
+    {file = "fakeredis-2.11.0.tar.gz", hash = "sha256:d25883dc52c31546e586b6ec3c49c5999b3025bfc4812532d71dedcfed56fee1"},
 ]
 
 [package.dependencies]
@@ -3567,4 +3567,4 @@ tortoise-orm = []
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "46f783735bb2cd52de75ab404d454ba576fa9bb7b3378570ad490f84259b5a38"
+content-hash = "c68d01a3d807a2f838bfce3352cd04b6e67b1b4b24f0124945f3e98afe248009"
