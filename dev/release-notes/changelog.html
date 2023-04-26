@@ -905,9 +905,11 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/piccolo-orm.html">Piccolo ORM Plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/sqlalchemy.html">SQLAlchemy Plugins</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/tortoise-orm.html">Tortoise ORM Plugin</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../usage/plugins/sqlalchemy/index.html">SQLAlchemy Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../usage/plugins/sqlalchemy/0-getting-started.html">Getting Started</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../usage/plugins/sqlalchemy/1-data-modelling.html">Data Modelling</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/events.html">Event Emitters and Listeners</a></li>
@@ -916,46 +918,48 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../usage/caching.html">Caching</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/exceptions.html">Exceptions and exception handling</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/contrib/index.html">Contrib</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/open-telemetry.html">Open Telemetry Instrumentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/jwt.html">JWT Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/contrib/htmx.html">HTMX Request Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/contrib/sqlalchemy.html">SQLAlchemy Models &amp; Repository</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/cli.html">CLI</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/background_tasks.html">background_tasks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/htmx.html">HTMX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo_orm.html">piccolo_orm</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/config.html">config</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugin.html">plugin</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/repository/abc.html">abc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/repository/filters.html">filters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/repository/testing.html">testing</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/index.html">sqlalchemy_1</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/config.html">config</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/plugin.html">plugin</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy_1/types.html">types</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/base.html">base</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/tortoise_orm.html">tortoise_orm</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/exceptions.html">exceptions</a></li>
 </ul>
@@ -964,13 +968,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
@@ -979,7 +983,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
@@ -987,7 +991,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
 </ul>
@@ -999,14 +1003,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/response.html">response</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/response_containers.html">response_containers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
@@ -1020,7 +1024,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
@@ -1082,6 +1086,203 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.0.0alpha5">
+<h2>2.0.0alpha5<a class="headerlink" href="#2.0.0alpha5" title="Permalink to this heading">#</a></h2>
+<section id="2.0.0alpha5-feature">
+<h3>Features<a class="headerlink" href="#2.0.0alpha5-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Pass template context to HTMX template response</dt><dd><div class="changelog-change docutils container">
+<p>Pass the template context to the <a class="reference internal" href="../reference/response_containers.html#litestar.response_containers.Template" title="litestar.response_containers.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> returned by
+<a class="reference internal" href="../reference/contrib/htmx.html#module-litestar.contrib.htmx.response" title="litestar.contrib.htmx.response"><code class="xref py py-class docutils literal notranslate"><span class="pre">htmx.Response</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1488">litestar-org/litestar#1488</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI support for attrs and msgspec classes</dt><dd><div class="changelog-change docutils container">
+<p>Support OpenAPI schema generation for <a class="reference external" href="https://www.attrs.org">attrs</a> classes and
+<a class="reference external" href="https://jcristharif.com/msgspec/">msgspec</a> <code class="docutils literal notranslate"><span class="pre">Struct</span></code>s.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1487">litestar-org/litestar#1487</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy repository: Add <code class="docutils literal notranslate"><span class="pre">ModelProtocol</span></code></dt><dd><div class="changelog-change docutils container">
+<p>Add a new class <code class="docutils literal notranslate"><span class="pre">contrib.sqlalchemy.base.ModelProtocol</span></code>, serving as a generic model base type, allowing to
+specify custom base classes while preserving typing information</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1503">litestar-org/litestar#1503</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy repository: Support MySQL/MariaDB</dt><dd><div class="changelog-change docutils container">
+<p>Add support for MySQL/MariaDB to the SQLAlchemy repository, using the
+<a class="reference external" href="https://github.com/long2ice/asyncmy">asyncmy</a> driver.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1345">litestar-org/litestar#1345</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy repository: Support MySQL/MariaDB</dt><dd><div class="changelog-change docutils container">
+<p>Add support for MySQL/MariaDB to the SQLAlchemy repository, using the
+<a class="reference external" href="https://github.com/long2ice/asyncmy">asyncmy</a> driver.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1345">litestar-org/litestar#1345</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy repository: Add matching logic to <code class="docutils literal notranslate"><span class="pre">get_or_create</span></code></dt><dd><div class="changelog-change docutils container">
+<p>Add a <code class="docutils literal notranslate"><span class="pre">match_fields</span></code> argument to
+<a class="reference internal" href="../reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_or_create" title="litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_or_create"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>.
+This lets you lookup a model using a subset of the kwargs you’ve provided. If the remaining kwargs are different
+from the retrieved model’s stored values, an update is performed.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1345">litestar-org/litestar#1345</a></span></p>
+</div>
+</dd>
+<dt>Repository: Extend filter types</dt><dd><div class="changelog-change docutils container">
+<p>Add new filters <a class="reference internal" href="../reference/contrib/repository/filters.html#litestar.contrib.repository.filters.OrderBy" title="litestar.contrib.repository.filters.OrderBy"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrderBy</span></code></a> and
+<a class="reference internal" href="../reference/contrib/repository/filters.html#litestar.contrib.repository.filters.SearchFilter" title="litestar.contrib.repository.filters.SearchFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchFilter</span></code></a>, providing <code class="docutils literal notranslate"><span class="pre">ORDER</span> <span class="pre">BY</span> <span class="pre">...</span></code> and
+<code class="docutils literal notranslate"><span class="pre">LIKE</span> <span class="pre">...</span></code> / <code class="docutils literal notranslate"><span class="pre">ILIKE</span> <span class="pre">...</span></code> clauses respectively</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1345">litestar-org/litestar#1345</a></span></p>
+</div>
+</dd>
+<dt>DTO: Add <code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory</span></code> and backends</dt><dd><div class="changelog-change docutils container">
+<p>An all-new DTO implementation was added, using <code class="docutils literal notranslate"><span class="pre">AbstractDTOFactory</span></code> as a base class, providing Pydantic and
+msgspec backends to facilitate (de)serialization and validation.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1461">litestar-org/litestar#1461</a></span></p>
+</div>
+</dd>
+<dt>WebSockets: Support DTOs in listeners</dt><dd><div class="changelog-change docutils container">
+<p>Support for DTOs has been added to <a class="reference internal" href="../reference/handlers.html#litestar.handlers.WebsocketListener" title="litestar.handlers.WebsocketListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a> and
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a>. A <code class="docutils literal notranslate"><span class="pre">dto</span></code> and <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> parameter has
+been added, providing the same functionality as their route handler counterparts.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1518">litestar-org/litestar#1518</a></span></p>
+</div>
+</dd>
+<dt>DTO based serialization plugin<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a> has been re-implemented,
+leveraging the new <a class="reference internal" href="../reference/dto/interface.html#litestar.dto.interface.DTOInterface" title="litestar.dto.interface.DTOInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOInterface</span></code></a>.</p>
+<p>If a handler defines a plugin supported type as either the <code class="docutils literal notranslate"><span class="pre">data</span></code> kwarg type annotation, or as the return
+annotation for a handler function, and no DTO has otherwise been resolved to handle the type, the protocol
+creates a DTO implementation to represent that type which is then used to de-serialize into, and serialize from
+instances of that supported type.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The <a class="reference external" href="https://piccolo-orm.com/">Piccolo ORM</a> and <a class="reference external" href="https://tortoise.github.io/">Tortoise ORM</a> plugins have
+been removed by this change, but will be re-implemented using the new patterns in a future release leading
+up to the 2.0 release.</p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1501">litestar-org/litestar#1501</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.0.0alpha5-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.0.0alpha5-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix inconsistent parsing of unix timestamp between pydantic and cattrs</dt><dd><div class="changelog-change docutils container">
+<p>Timestamps parsed as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.date" title="(in Python v3.11)"><code class="xref py py-class docutils literal notranslate"><span class="pre">date</span></code></a> with pydantic return a UTC date, while cattrs implementation
+return a date with the local timezone.</p>
+<p>This was corrected by forcing dates to UTC when being parsed by attrs.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1491">litestar-org/litestar#1491</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1492">litestar-org/litestar#1492</a></span></p>
+</div>
+</dd>
+<dt>Fix: Retrieve type hints from class with no <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method causes error</dt><dd><div class="changelog-change docutils container">
+<p>An error would occur when using a callable without an <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__init__" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__init__()</span></code></a> method was used in a placed that
+would cause it to be inspected (such as a route handler’s signature).</p>
+<p>This was caused by trying to access the <code class="docutils literal notranslate"><span class="pre">__module__</span></code> attribute of <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__init__" title="(in Python v3.11)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__init__()</span></code></a>, which would fail
+with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;wrapper_descriptor&#39;</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">&#39;__module__&#39;</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1504">litestar-org/litestar#1504</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1505">litestar-org/litestar#1505</a></span></p>
+</div>
+</dd>
+<dt>Fix error raised for partially installed attrs dependencies</dt><dd><div class="changelog-change docutils container">
+<p>An error was fixed that would cause a <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.MissingDependencyException" title="litestar.exceptions.MissingDependencyException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a> to be raised when dependencies for
+<a class="reference external" href="https://www.attrs.org">attrs</a> were partially installed. This was fixed by being more specific about the
+missing dependencies in the error messages.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1543">litestar-org/litestar#1543</a></span></p>
+</div>
+</dd>
+<dt>Remove bool coercion in URL parsing<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>When defining a query parameter as <code class="docutils literal notranslate"><span class="pre">param:</span> <span class="pre">str</span></code>, and passing it a string value of <code class="docutils literal notranslate"><span class="pre">&quot;true&quot;</span></code>, the value
+received by the route handler was the string <code class="docutils literal notranslate"><span class="pre">&quot;True&quot;</span></code>, having been title cased. The same was true for the value
+of <code class="docutils literal notranslate"><span class="pre">&quot;false&quot;</span></code>.</p>
+<p>This has been fixed by removing the coercing of boolean-like values during URL parsing and leaving it up to
+the parsing utilities of the receiving side (i.e. the handler’s signature model) to handle these values
+according to the associated type annotations.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1547">litestar-org/litestar#1547</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1550">litestar-org/litestar#1550</a></span></p>
+</div>
+</dd>
+<dt>Fix missing <code class="docutils literal notranslate"><span class="pre">content-encoding</span></code> headers on gzip/brotli compressed files</dt><dd><div class="changelog-change docutils container">
+<p>Fixed a bug that would cause static files served via <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code> that have been compressed with gripz
+or brotli to miss the appropriate <code class="docutils literal notranslate"><span class="pre">content-encoding</span></code> header.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1576">litestar-org/litestar#1576</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1577">litestar-org/litestar#1577</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.0.0alpha5-misc">
+<h3>Other changes<a class="headerlink" href="#2.0.0alpha5-misc" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>SQLAlchemy repository: Rename <code class="docutils literal notranslate"><span class="pre">SQLAlchemyRepository</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">SQLAlchemyRepository</span></code> has been renamed to
+<a class="reference internal" href="../reference/contrib/sqlalchemy/repository.html#litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository" title="litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncRepository</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1345">litestar-org/litestar#1345</a></span></p>
+</div>
+</dd>
+<dt>DTO: Remove <code class="docutils literal notranslate"><span class="pre">from_connection</span></code> / extend <code class="docutils literal notranslate"><span class="pre">from_data</span></code><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>The method <code class="docutils literal notranslate"><span class="pre">DTOInterface.from_connection</span></code> has been removed and replaced by <code class="docutils literal notranslate"><span class="pre">DTOInterface.from_bytes</span></code>, which
+receives both the raw bytes from the connection, and the connection instance. Since <code class="docutils literal notranslate"><span class="pre">from_bytes</span></code> now does not
+handle connections anymore, it can also be a synchronous method, improving symmetry with
+<code class="docutils literal notranslate"><span class="pre">DTOInterface.from_bytes</span></code>.</p>
+<p>The signature of <code class="docutils literal notranslate"><span class="pre">from_data</span></code> has been changed to also accept the connection, matching <code class="docutils literal notranslate"><span class="pre">from_bytes</span></code>’
+signature.</p>
+<p>As a result of these changes,
+<a class="reference internal" href="../reference/dto/interface.html#litestar.dto.interface.DTOInterface.data_to_encodable_type" title="litestar.dto.interface.DTOInterface.data_to_encodable_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DTOInterface.from_bytes</span></code></a> no longer needs to
+receive the connection instance, so the <code class="docutils literal notranslate"><span class="pre">request</span></code> parameter has been dropped.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1500">litestar-org/litestar#1500</a></span></p>
+</div>
+</dd>
+<dt>SQLAlchemy 1 contrib module removed<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>As a result of the changes introduced in <a class="reference external" href="https://github.com/litestar-org/litestar/pull/1501">#1501</a>,
+SQLAlchemy 1 support has been dropped.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you rely on SQLAlchemy 1, you can stick to Starlite <em>1.51</em> for now. In the future, a SQLAlchemy 1 plugin
+may be released as a standalone package.</p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1501">litestar-org/litestar#1501</a></span></p>
+</div>
+</dd>
+<dt>Change <code class="docutils literal notranslate"><span class="pre">MissingDependencyException</span></code> to be a subclass of <code class="docutils literal notranslate"><span class="pre">ImportError</span></code></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.MissingDependencyException" title="litestar.exceptions.MissingDependencyException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a> is now a subclass of <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.11)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a>, to make handling cases where both
+of them might be raised easier.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1557">litestar-org/litestar#1557</a></span></p>
+</div>
+</dd>
+<dt>Update <code class="docutils literal notranslate"><span class="pre">standard</span></code> and <code class="docutils literal notranslate"><span class="pre">full</span></code> package extras</dt><dd><div class="changelog-change docutils container">
+<ul class="simple">
+<li><p>Add SQLAlchemy, uvicorn, attrs and structlog to the <code class="docutils literal notranslate"><span class="pre">full</span></code> extra</p></li>
+<li><p>Add uvicorn to the <code class="docutils literal notranslate"><span class="pre">standard</span></code> extra</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">uvicorn[standard]</span></code> as an optional dependency to be used in the extras</p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1494">litestar-org/litestar#1494</a></span></p>
+</div>
+</dd>
+<dt>Remove support for declaring DTOs as handler types<span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<p>Prior to this, a DTO type could be declared implicitly using type annotations. With the addition of the <code class="docutils literal notranslate"><span class="pre">dto</span></code>
+and <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> parameters, this feature has become superfluous and, in the spirit of offering only one clear
+way of doing things, has been removed.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1534">litestar-org/litestar#1534</a></span></p>
+</div>
+</dd>
+<dt>DTO: Simplify <code class="docutils literal notranslate"><span class="pre">DTOConfig</span></code><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">include</span></code> parameter has been removed, to provide a more accessible interface and avoid overly complex
+interplay with <code class="docutils literal notranslate"><span class="pre">exclude</span></code> and its support for dotted attributes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">field_mapping</span></code> has been renamed to <code class="docutils literal notranslate"><span class="pre">rename_fields</span></code> and support to remap field types has been dropped</p></li>
+<li><p>experimental <code class="docutils literal notranslate"><span class="pre">field_definitions</span></code> has been removed. It may be replaced with a “ComputedField” in a future
+release that will allow multiple field definitions to be added to the model, and a callable that transforms
+them into a value for a model field. See</p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1580">litestar-org/litestar#1580</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.0.0alpha4">
 <h2>2.0.0alpha4<a class="headerlink" href="#2.0.0alpha4" title="Permalink to this heading">#</a></h2>
 <section id="2.0.0alpha4-feature">
@@ -1147,11 +1348,11 @@ desired affect, as loggers would still be on the <code class="docutils literal n
 <h3>Features<a class="headerlink" href="#2.0.0alpha3-feature" title="Permalink to this heading">#</a></h3>
 <dl>
 <dt>SQLAlchemy 2.0 Plugin</dt><dd><div class="changelog-change docutils container">
-<p>A <a class="reference internal" href="../reference/contrib/sqlalchemy/plugin.html#litestar.contrib.sqlalchemy.init_plugin.plugin.SQLAlchemyInitPlugin" title="litestar.contrib.sqlalchemy.init_plugin.plugin.SQLAlchemyInitPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code></a> was added,
+<p>A <a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code></a> was added,
 providing support for managed synchronous and asynchronous sessions.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../usage/plugins/sqlalchemy.html"><span class="doc">SQLAlchemy Plugins</span></a></p>
+<p><a class="reference internal" href="../usage/plugins/sqlalchemy/index.html"><span class="doc">SQLAlchemy Plugins</span></a></p>
 </div>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1395">litestar-org/litestar#1395</a></span></p>
 </div>
@@ -1789,6 +1990,12 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha5">2.0.0alpha5</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha5-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha5-bugfix">Bugfixes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha5-misc">Other changes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha4">2.0.0alpha4</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha4-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.0.0alpha4-bugfix">Bugfixes</a></li>

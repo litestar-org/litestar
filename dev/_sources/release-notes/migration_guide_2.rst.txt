@@ -22,7 +22,7 @@ Changed module paths
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.AllowedHostsConfig``                    | ``litestar.config.allowed_hosts.AllowedHostsConfig``                   |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.BaseLoggingConfig``                     | ``litestar.config.logging.BaseLoggingConfig``                          |
+| ``starlite.BaseLoggingConfig``                     | ``litestar.logging.BaseLoggingConfig``                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.CacheConfig``                           | ``litestar.config.cache.CacheConfig``                                  |
 +----------------------------------------------------+------------------------------------------------------------------------+
@@ -32,15 +32,15 @@ Changed module paths
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.CSRFConfig``                            | ``litestar.config.csrf.CSRFConfig``                                    |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.LoggingConfig``                         | ``litestar.config.logging.LoggingConfig``                              |
+| ``starlite.LoggingConfig``                         | ``litestar.logging.LoggingConfig``                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.StructLoggingConfig``                   | ``litestar.config.logging.StructLoggingConfig``                        |
+| ``starlite.StructLoggingConfig``                   | ``litestar.logging.StructLoggingConfig``                               |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.OpenAPIConfig``                         | ``litestar.config.openapi.OpenAPIConfig``                              |
+| ``starlite.OpenAPIConfig``                         | ``litestar.openapi.OpenAPIConfig``                                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.StaticFilesConfig``                     | ``litestar.config.static_files.StaticFilesConfig``                     |
+| ``starlite.StaticFilesConfig``                     | ``litestar.static_files.config.StaticFilesConfig``                     |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.TemplateConfig``                        | ``litestar.config.templates.TemplateConfig``                           |
+| ``starlite.TemplateConfig``                        | ``litestar.template.TemplateConfig``                                   |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | **Provide**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
