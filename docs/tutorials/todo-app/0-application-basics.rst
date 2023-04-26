@@ -12,13 +12,17 @@ Install Litestar
 
 To install Litestar, run ``pip install litestar[standard]``. This will install Litestar
 as well as `uvicorn <https://www.uvicorn.org/>`_ -  a web server to serve your application.
-.. note:: You can use any ASGI-capable web server, but this tutorial will use - and Litestar recommends - Uvicorn.
+
+.. note::
+    You can use any ASGI-capable web server, but this tutorial will use - and Litestar
+    recommends - Uvicorn.
 
 
 Hello, world!
 +++++++++++++
 
-The most basic application you can implement - and a classic one at that - is of course one that prints ``"Hello, world!"``:
+The most basic application you can implement - and a classic one at that - is of course
+one that prints ``"Hello, world!"``:
 
 
 .. literalinclude:: /examples/todo_app/hello_world.py
