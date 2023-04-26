@@ -24,7 +24,15 @@ from .types import GUID, JSON
 if TYPE_CHECKING:
     from sqlalchemy.sql import FromClause
 
-__all__ = ("AuditBase", "AuditColumns", "Base", "CommonTableAttributes", "UUIDPrimaryKey", "touch_updated_timestamp")
+__all__ = (
+    "AuditBase",
+    "AuditColumns",
+    "Base",
+    "CommonTableAttributes",
+    "ModelProtocol",
+    "touch_updated_timestamp",
+    "UUIDPrimaryKey",
+)
 
 
 BaseT = TypeVar("BaseT", bound="Base")
