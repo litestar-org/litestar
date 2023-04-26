@@ -1,6 +1,6 @@
 from email.utils import formatdate
 from inspect import iscoroutine
-from mimetypes import guess_type
+from mimetypes import encodings_map, guess_type
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -37,6 +37,9 @@ if TYPE_CHECKING:
         Send,
     )
     from starlite.types.file_types import FileInfo, FileSystemProtocol
+
+# brotli not supported in 'mimetypes.encodings_map' until py 3.9.
+encodings_map[".br"] = "br"
 
 
 async def async_file_iterator(
@@ -133,8 +136,11 @@ class FileResponse(StreamingResponse):
             file_info: The output of calling ``file_system.info(..)``, equivalent to providing a ``stat_result``.
         """
         if not media_type:
-            mimetype, _ = guess_type(filename) if filename else (None, None)
+            mimetype, content_encoding = guess_type(filename) if filename else (None, None)
             media_type = mimetype or "application/octet-stream"
+            if content_encoding is not None:
+                headers = headers or {}
+                headers.update({"content-encoding": content_encoding})
 
         self.chunk_size = chunk_size
         self.content_disposition_type = content_disposition_type
