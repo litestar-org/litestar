@@ -379,10 +379,8 @@ from __future__ import annotations
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from typing_extensions import Annotated
 
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
-from litestar.dto.factory import DTOConfig
 
 class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
