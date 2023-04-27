@@ -5,13 +5,18 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 
 from litestar.channels import ChannelsBackend
-from litestar.channels.memory import MemoryChannelsBackend
+from litestar.channels.redis import RedisChannelsPubSubBackend
 
 
-@pytest.fixture(params=[pytest.param(MemoryChannelsBackend, id="memory")])
-async def channels_backend_instance(request: FixtureRequest) -> ChannelsBackend:
-    backend = cast(type[ChannelsBackend], request.param)
-    return backend(history=10)
+@pytest.fixture(
+    params=[
+        pytest.param("redis_pub_sub_backend", id="redis:pubsub"),
+        pytest.param("redis_stream_backend", id="redis:stream"),
+        pytest.param("memory_backend", id="memory"),
+    ]
+)
+def channels_backend_instance(request: FixtureRequest) -> ChannelsBackend:
+    return cast(ChannelsBackend, request.getfixturevalue(request.param))
 
 
 @pytest.fixture()
@@ -23,6 +28,7 @@ async def channels_backend(channels_backend_instance: ChannelsBackend) -> AsyncG
 
 @pytest.mark.parametrize("channels", [{"foo"}, {"foo", "bar"}])
 async def test_pub_sub(channels_backend: ChannelsBackend, channels: set[str]) -> None:
+    await channels_backend.subscribe(channels)
     await channels_backend.publish(b"something", channels)
 
     event_generator = channels_backend.stream_events()
@@ -30,6 +36,27 @@ async def test_pub_sub(channels_backend: ChannelsBackend, channels: set[str]) ->
     for _ in channels:
         received.add(await anext(event_generator))
     assert received == {(c, b"something") for c in channels}
+
+
+async def test_pub_sub_no_subscriptions(channels_backend: ChannelsBackend) -> None:
+    await channels_backend.publish(b"something", ["foo"])
+
+    event_generator = channels_backend.stream_events()
+    with pytest.raises(TimeoutError):
+        await asyncio.wait_for(anext(event_generator), timeout=0.01)
+
+
+async def test_pub_sub_no_subscriptions_by_unsubscribes(channels_backend: ChannelsBackend) -> None:
+    await channels_backend.subscribe(["foo"])
+    await channels_backend.publish(b"something", ["foo"])
+
+    event_generator = channels_backend.stream_events()
+    await asyncio.wait_for(anext(event_generator), timeout=0.01)
+    await channels_backend.unsubscribe(["foo"])
+    await channels_backend.publish(b"something", ["foo"])
+
+    with pytest.raises(TimeoutError):
+        await asyncio.wait_for(anext(event_generator), timeout=0.01)
 
 
 async def test_pub_sub_shutdown_leftover_messages(channels_backend_instance: ChannelsBackend) -> None:
@@ -44,6 +71,8 @@ async def test_pub_sub_shutdown_leftover_messages(channels_backend_instance: Cha
 async def test_get_history(
     channels_backend: ChannelsBackend, history_limit: int | None, expected_history_length: int
 ) -> None:
+    if isinstance(channels_backend, RedisChannelsPubSubBackend):
+        pytest.skip()
     messages = [str(i).encode() for i in range(100)]
     for message in messages:
         await channels_backend.publish(message, {"something"})
@@ -56,6 +85,9 @@ async def test_get_history(
 
 
 async def test_memory_backend_discards_history_entries(channels_backend: ChannelsBackend) -> None:
+    if isinstance(channels_backend, RedisChannelsPubSubBackend):
+        pytest.skip()
+
     for _ in range(20):
         await channels_backend.publish(b"foo", {"bar"})
 

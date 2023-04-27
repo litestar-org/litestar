@@ -22,23 +22,24 @@ def async_mock() -> AsyncMock:
     return AsyncMock()
 
 
-@pytest.fixture()
-def memory_channels_backend() -> MemoryChannelsBackend:
-    return MemoryChannelsBackend()
-
-
-@pytest.fixture(params=[pytest.param("memory_channels_backend", id="memory")])
+@pytest.fixture(
+    params=[
+        pytest.param("memory_backend", id="memory"),
+        pytest.param("redis_stream_backend", id="redis:stream"),
+        pytest.param("redis_pub_sub_backend", id="redis:pubsub"),
+    ]
+)
 def channels_backend(request: FixtureRequest) -> ChannelsBackend:
     return cast(ChannelsBackend, request.getfixturevalue(request.param))
 
 
-def test_channels_no_channels_arbitrary_not_allowed_raises(memory_channels_backend: MemoryChannelsBackend) -> None:
+def test_channels_no_channels_arbitrary_not_allowed_raises(memory_backend: MemoryChannelsBackend) -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        ChannelsPlugin(backend=memory_channels_backend)
+        ChannelsPlugin(backend=memory_backend)
 
 
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
-def test_pub_sub(channels_backend: MemoryChannelsBackend, socket_send_mode: WebSocketMode) -> None:
+def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebSocketMode) -> None:
     @websocket("/")
     async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
         await socket.accept()
@@ -92,12 +93,12 @@ def test_create_route_handlers_arbitrary_channels_allowed(channels_backend: Chan
             assert ws.receive_json() == "something else"
 
 
-def test_plugin_dependency(mock: MagicMock, memory_channels_backend: MemoryChannelsBackend) -> None:
+def test_plugin_dependency(mock: MagicMock, memory_backend: MemoryChannelsBackend) -> None:
     @get()
     def handler(channels: ChannelsPlugin) -> None:
         mock(channels)
 
-    channels_plugin = ChannelsPlugin(backend=memory_channels_backend, arbitrary_channels_allowed=True)
+    channels_plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
 
     with create_test_client(handler, plugins=[channels_plugin]) as client:
         res = client.get("/")
@@ -111,16 +112,16 @@ def test_plugin_dependency(mock: MagicMock, memory_channels_backend: MemoryChann
 @pytest.mark.parametrize("channels", ["foo", ["foo", "bar"]])
 async def test_subscribe(
     async_mock: AsyncMock,
-    memory_channels_backend: MemoryChannelsBackend,
+    memory_backend: MemoryChannelsBackend,
     channels: str | list[str],
     arbitrary_channels_allowed: bool,
 ) -> None:
     plugin = ChannelsPlugin(
-        backend=memory_channels_backend,
+        backend=memory_backend,
         channels=["foo", "bar"] if not arbitrary_channels_allowed else None,
         arbitrary_channels_allowed=arbitrary_channels_allowed,
     )
-    memory_channels_backend.subscribe = async_mock  # type: ignore[method-assign]
+    memory_backend.subscribe = async_mock  # type: ignore[method-assign]
     socket = MagicMock()
 
     await plugin.subscribe(socket=socket, channels=channels)
@@ -136,8 +137,8 @@ async def test_subscribe(
     async_mock.assert_called_once_with(set(channels))
 
 
-async def test_subscribe_non_existent_channel_raises(memory_channels_backend: MemoryChannelsBackend) -> None:
-    plugin = ChannelsPlugin(backend=memory_channels_backend, channels=["foo"])
+async def test_subscribe_non_existent_channel_raises(memory_backend: MemoryChannelsBackend) -> None:
+    plugin = ChannelsPlugin(backend=memory_backend, channels=["foo"])
 
     with pytest.raises(LitestarException):
         await plugin.subscribe(MagicMock(), "bar")
@@ -146,11 +147,11 @@ async def test_subscribe_non_existent_channel_raises(memory_channels_backend: Me
 @pytest.mark.parametrize("channels", ["foo", ["foo", "bar"]])
 async def test_unsubscribe(
     async_mock: AsyncMock,
-    memory_channels_backend: MemoryChannelsBackend,
+    memory_backend: MemoryChannelsBackend,
     channels: str | list[str],
 ) -> None:
-    plugin = ChannelsPlugin(backend=memory_channels_backend, channels=["foo", "bar"])
-    memory_channels_backend.unsubscribe = async_mock  # type: ignore[method-assign]
+    plugin = ChannelsPlugin(backend=memory_backend, channels=["foo", "bar"])
+    memory_backend.unsubscribe = async_mock  # type: ignore[method-assign]
     socket_1 = MagicMock()
     socket_2 = MagicMock()
     await plugin.subscribe(socket=socket_1, channels=channels)
@@ -170,10 +171,10 @@ async def test_unsubscribe(
 
 
 async def test_unsubscribe_last_subscriber_unsubscribes_backend(
-    memory_channels_backend: MemoryChannelsBackend, async_mock: AsyncMock
+    memory_backend: MemoryChannelsBackend, async_mock: AsyncMock
 ) -> None:
-    plugin = ChannelsPlugin(backend=memory_channels_backend, channels=["foo"])
-    memory_channels_backend.unsubscribe = async_mock  # type: ignore[method-assign]
+    plugin = ChannelsPlugin(backend=memory_backend, channels=["foo"])
+    memory_backend.unsubscribe = async_mock  # type: ignore[method-assign]
     socket_1 = MagicMock()
     socket_2 = MagicMock()
     await plugin.subscribe(socket=socket_1, channels="foo")
@@ -215,15 +216,15 @@ class MockPluginHandleSocketSend(AsyncMock):
     ],
 )
 async def test_send_history(
-    memory_channels_backend: MemoryChannelsBackend,
+    memory_backend: MemoryChannelsBackend,
     message_count: int,
     history_limit: int,
     chronological_order: bool,
     expected_history_count: int,
 ) -> None:
-    memory_channels_backend._max_history_length = 10
+    memory_backend._max_history_length = 10
     plugin = ChannelsPlugin(
-        backend=memory_channels_backend,
+        backend=memory_backend,
         arbitrary_channels_allowed=True,
         send_history_chronological=chronological_order,
     )
@@ -231,10 +232,8 @@ async def test_send_history(
     mock_socket = AsyncMock()
     plugin.handle_socket_send = mock_handle_send  # type: ignore[method-assign]
 
-    await memory_channels_backend.on_startup()
-    messages = await _populate_channels_backend(
-        message_count=message_count, channel="foo", backend=memory_channels_backend
-    )
+    await memory_backend.on_startup()
+    messages = await _populate_channels_backend(message_count=message_count, channel="foo", backend=memory_backend)
 
     await plugin.subscribe(mock_socket, channels=["foo"])
 
@@ -262,15 +261,15 @@ async def test_send_history(
     ],
 )
 async def test_handler_sends_history(
-    memory_channels_backend: MemoryChannelsBackend,
+    memory_backend: MemoryChannelsBackend,
     message_count: int,
     history: int,
     expected_history_count: int,
     chronological_order: bool,
 ) -> None:
-    memory_channels_backend._max_history_length = 10
+    memory_backend._max_history_length = 10
     plugin = ChannelsPlugin(
-        backend=memory_channels_backend,
+        backend=memory_backend,
         arbitrary_channels_allowed=True,
         history=history,
         create_route_handlers=True,
@@ -282,9 +281,8 @@ async def test_handler_sends_history(
 
     app = Litestar([], plugins=[plugin])
     with TestClient(app) as client:
-        messages = await _populate_channels_backend(
-            message_count=message_count, channel="foo", backend=memory_channels_backend
-        )
+        await memory_backend.subscribe(["foo"])
+        messages = await _populate_channels_backend(message_count=message_count, channel="foo", backend=memory_backend)
 
         with client.websocket_connect("/foo"):
             pass

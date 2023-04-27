@@ -193,6 +193,7 @@ class ChannelsPlugin(InitPluginProtocol):
         self._pub_task = create_task(self._pub_worker())
         self._sub_task = create_task(self._sub_worker())
         await self._backend.on_startup()
+        await self._backend.subscribe(list(self._channels))
 
     async def _on_shutdown(self) -> None:
         if self._pub_queue:
