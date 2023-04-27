@@ -113,9 +113,10 @@ def create_handler_function(
     listener_context: ListenerContext,
     on_accept: AsyncCallable | None,
     on_disconnect: AsyncCallable | None,
+    accept_connection_handler: Callable[[WebSocket], Coroutine[Any, Any, None]],
 ) -> Callable[..., Coroutine[None, None, None]]:
     async def handler_fn(socket: WebSocket, **kwargs: Any) -> None:
-        await socket.accept()
+        await accept_connection_handler(socket)
 
         listener_callback = AsyncCallable(listener_context.listener_callback)
         ctx = ConnectionContext.from_connection(socket)

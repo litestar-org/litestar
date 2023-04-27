@@ -217,6 +217,17 @@ function via the ``socket`` argument:
     to be asynchronous.
 
 
+Customising connection acceptance
+---------------------------------
+
+By default, Litestar will accept all incoming connections by awaiting ``WebSocket.accept()`` without arguments.
+This behavior can be customized by passing a custom ``connection_accept_handler`` function. Litestar will await this
+function to accept the connection.
+
+.. literalinclude:: /examples/websockets/setting_custom_connection_headers.py
+    :language: python
+
+
 Class based WebSocket handling
 ------------------------------
 
