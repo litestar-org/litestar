@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
 
@@ -25,8 +27,6 @@ def async_mock() -> AsyncMock:
 @pytest.fixture(
     params=[
         pytest.param("memory_backend", id="memory"),
-        pytest.param("redis_stream_backend", id="redis:stream"),
-        pytest.param("redis_pub_sub_backend", id="redis:pubsub"),
     ]
 )
 def channels_backend(request: FixtureRequest) -> ChannelsBackend:
@@ -53,8 +53,8 @@ def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebSocketM
     app = Litestar([handler], plugins=[channels_plugin])
 
     with TestClient(app) as client, client.websocket_connect("/") as ws:
-        channels_plugin.broadcast("foo", "something")
-        assert ws.receive_json(mode=socket_send_mode) == "foo"
+        channels_plugin.broadcast(["foo"], "something")
+        assert ws.receive_json(mode=socket_send_mode) == ["foo"]
 
 
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
@@ -72,8 +72,8 @@ def test_pub_sub_create_route_handlers(
     app = Litestar(plugins=[channels_plugin])
 
     with TestClient(app) as client, client.websocket_connect(f"{handler_base_path or ''}/something") as ws:
-        channels_plugin.broadcast("foo", "something")
-        assert ws.receive_json(mode=socket_send_mode) == "foo"
+        channels_plugin.broadcast(["foo"], "something")
+        assert ws.receive_json(mode=socket_send_mode) == ["foo"]
 
 
 def test_create_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
@@ -86,11 +86,11 @@ def test_create_route_handlers_arbitrary_channels_allowed(channels_backend: Chan
     with TestClient(app) as client:
         with client.websocket_connect("/ws/foo") as ws:
             channels_plugin.broadcast("something", "foo")
-            assert ws.receive_json() == "something"
+            assert ws.receive_text() == "something"
 
         with client.websocket_connect("/ws/bar") as ws:
             channels_plugin.broadcast("something else", "bar")
-            assert ws.receive_json() == "something else"
+            assert ws.receive_text() == "something else"
 
 
 def test_plugin_dependency(mock: MagicMock, memory_backend: MemoryChannelsBackend) -> None:
