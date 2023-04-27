@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from asyncio import Queue
 from collections import defaultdict, deque
 from typing import Any, AsyncGenerator, Iterable
@@ -39,6 +40,9 @@ class MemoryChannelsBackend(ChannelsBackend):
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         while self._queue:
+            if not len(self._channels):
+                await asyncio.sleep(0)
+                continue
             yield await self._queue.get()
             self._queue.task_done()
 
