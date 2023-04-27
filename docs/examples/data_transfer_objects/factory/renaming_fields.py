@@ -16,17 +16,17 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(info=dto_field("read-only"))
 
 
-UserDTO = SQLAlchemyDTO[User]
-config = DTOConfig(exclude={"id"})
-ReadUserDTO = SQLAlchemyDTO[Annotated[User, config]]
+config = DTOConfig(rename_fields={"name": "userName"})
+UserDTO = SQLAlchemyDTO[Annotated[User, config]]
 
 
-@post("/users", dto=UserDTO, return_dto=ReadUserDTO)
+@post("/users", dto=UserDTO)
 def create_user(data: User) -> User:
+    assert data.name == "Litestar User"
     data.created_at = datetime.min
     return data
 
 
 app = Litestar(route_handlers=[create_user])
 
-# run: /users -H "Content-Type: application/json" -d '{"name":"Litestar User","password":"xyz","created_at":"2023-04-24T00:00:00Z"}'
+# run: /users -H "Content-Type: application/json" -d '{"userName":"Litestar User","password":"xyz","created_at":"2023-04-24T00:00:00Z"}'
