@@ -35,6 +35,8 @@ class ChannelsPlugin(InitPluginProtocol):
         socket_send_json: bool = True,
         socket_send_mode: WebSocketMode = "text",
         type_encoders: TypeEncodersMap | None = None,
+        history: int = 0,
+        send_history_chronological: bool = True,
     ) -> None:
         self._backend = backend
         self._pub_queue: Queue[tuple[Any, list[str]]] | None = None
@@ -48,10 +50,13 @@ class ChannelsPlugin(InitPluginProtocol):
         self._create_route_handlers = create_route_handlers
         self._handler_root_path = handler_base_path
         self._socket_send_json = socket_send_json
-        self._socket_send_mode = socket_send_mode
+        self._socket_send_mode: WebSocketMode = socket_send_mode
         self._encode_json = msgspec.json.Encoder(
             enc_hook=partial(default_serializer, type_encoders=type_encoders)
         ).encode
+        self._handler_should_send_history = bool(history)
+        self._history_limit = None if history < 0 else history
+        self._send_history_chronological = send_history_chronological
 
         self._channels: dict[str, set[WebSocket]] = {channel: set() for channel in channels or []}
 
@@ -87,6 +92,7 @@ class ChannelsPlugin(InitPluginProtocol):
             channels = [channels]
 
         channels_to_subscribe = set()
+
         for channel in channels:
             if channel not in self._channels:
                 if not self._arbitrary_channels_allowed:
@@ -100,8 +106,29 @@ class ChannelsPlugin(InitPluginProtocol):
                 channels_to_subscribe.add(channel)
 
             channel_subscribers.add(socket)
+
         if channels_to_subscribe:
             await self._backend.subscribe(channels_to_subscribe)
+
+    async def send_history(
+        self, socket: WebSocket, channels: Iterable[str], limit: int | None, chronological: bool = True
+    ) -> None:
+        async with anyio.create_task_group() as task_group:
+            for channel in channels:
+                task_group.start_soon(self.send_channel_history, channel, socket, limit, chronological)
+
+    async def send_channel_history(
+        self, channel: str, socket: WebSocket, limit: int | None, chronological: bool = True
+    ) -> None:
+        history = await self._backend.get_history(channel, limit)
+        if chronological:
+            for entry in history:
+                await self.handle_socket_send(socket, entry)
+            return
+
+        async with anyio.create_task_group() as task_group:
+            for entry in history:
+                task_group.start_soon(self.handle_socket_send, socket, entry)
 
     async def unsubscribe(self, socket: WebSocket, channels: str | list[str]) -> None:
         if isinstance(channels, str):
@@ -127,6 +154,13 @@ class ChannelsPlugin(InitPluginProtocol):
     async def _ws_handler_func(self, channel_name: str, socket: WebSocket) -> None:
         await socket.accept()
         await self.subscribe(socket, [channel_name])
+        if self._handler_should_send_history:
+            await self.send_channel_history(
+                channel=channel_name,
+                socket=socket,
+                limit=self._history_limit,
+                chronological=self._send_history_chronological,
+            )
         while True:
             try:
                 await socket.receive()
@@ -155,7 +189,7 @@ class ChannelsPlugin(InitPluginProtocol):
         async with anyio.create_task_group() as task_group:
             async for payload, channels in self._backend.stream_events():
                 for channel in channels:
-                    for socket in self._channels[channel]:
+                    for socket in self._channels.get(channel, []):
                         task_group.start_soon(self.handle_socket_send, socket, payload)
 
     async def _on_startup(self) -> None:

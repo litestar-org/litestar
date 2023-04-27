@@ -1,3 +1,4 @@
+import asyncio
 from typing import AsyncGenerator, cast
 
 import pytest
@@ -9,8 +10,8 @@ from litestar.channels.memory import MemoryChannelsBackend
 
 @pytest.fixture(params=[pytest.param(MemoryChannelsBackend, id="memory")])
 async def channels_backend_instance(request: FixtureRequest) -> ChannelsBackend:
-    backend_class = cast(type[ChannelsBackend], request.param)
-    return backend_class()
+    backend = cast(type[ChannelsBackend], request.param)
+    return backend(history=10)
 
 
 @pytest.fixture()
@@ -27,3 +28,33 @@ async def test_pub_sub(channels_backend: ChannelsBackend, channels: set[str]) ->
     event_generator = channels_backend.stream_events()
     event = await anext(event_generator)
     assert event == ("something", channels)
+
+
+async def test_pub_sub_shutdown_leftover_messages(channels_backend_instance: ChannelsBackend) -> None:
+    await channels_backend_instance.on_startup()
+
+    await channels_backend_instance.publish("something", {"foo"})
+
+    await asyncio.wait_for(channels_backend_instance.on_shutdown(), timeout=0.1)
+
+
+@pytest.mark.parametrize("history_limit,expected_history_length", [(None, 10), (1, 1), (5, 5), (10, 10)])
+async def test_get_history(
+    channels_backend: ChannelsBackend, history_limit: int | None, expected_history_length: int
+) -> None:
+    messages = [str(i) for i in range(100)]
+    for message in messages:
+        await channels_backend.publish(message, {"something"})
+
+    history = await channels_backend.get_history("something", history_limit)
+
+    expected_messages = messages[-expected_history_length:]
+    assert len(history) == expected_history_length
+    assert history == expected_messages
+
+
+async def test_memory_backend_discards_history_entries(channels_backend: ChannelsBackend) -> None:
+    for _ in range(20):
+        await channels_backend.publish("foo", {"bar"})
+
+    assert len(await channels_backend.get_history("bar")) == 10

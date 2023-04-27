@@ -198,3 +198,113 @@ async def test_unsubscribe_last_subscriber_unsubscribes_backend(
     assert async_mock.call_count == 1
 
     assert not plugin._channels.get("foo")
+
+
+async def _populate_channels_backend(*, message_count: int, channel: str, backend: ChannelsBackend) -> list[str]:
+    messages = [f"message {i}" for i in range(message_count)]
+
+    for message in messages:
+        await backend.publish(message, {channel})
+    await backend.publish("some other message", {"bar"})
+    return messages
+
+
+class MockPluginHandleSocketSend(AsyncMock):
+    def get_data_call_args(self, ordered: bool) -> list[str]:
+        call_args = [call.args[1] for call in self.call_args_list]
+        if not ordered:
+            call_args = sorted(call_args)
+        return call_args
+
+
+@pytest.mark.parametrize("chronological_order", [True, False])
+@pytest.mark.parametrize(
+    "message_count,history_limit,expected_history_count",
+    [
+        (2, None, 2),
+        (2, 1, 1),
+        (2, 2, 2),
+        (3, 2, 2),
+    ],
+)
+async def test_send_history(
+    memory_channels_backend: MemoryChannelsBackend,
+    message_count: int,
+    history_limit: int,
+    chronological_order: bool,
+    expected_history_count: int,
+) -> None:
+    memory_channels_backend._max_history_length = 10
+    plugin = ChannelsPlugin(
+        backend=memory_channels_backend,
+        arbitrary_channels_allowed=True,
+        send_history_chronological=chronological_order,
+    )
+    mock_handle_send = MockPluginHandleSocketSend()
+    mock_socket = AsyncMock()
+    plugin.handle_socket_send = mock_handle_send  # type: ignore[method-assign]
+
+    await memory_channels_backend.on_startup()
+    messages = await _populate_channels_backend(
+        message_count=message_count, channel="foo", backend=memory_channels_backend
+    )
+
+    await plugin.subscribe(mock_socket, channels=["foo"])
+
+    await plugin.send_history(
+        socket=mock_socket, channels=["foo"], limit=history_limit, chronological=chronological_order
+    )
+
+    assert mock_handle_send.call_count == expected_history_count
+    if expected_history_count:
+        expected_messages = messages[-expected_history_count:]
+        if not chronological_order:
+            expected_messages = sorted(expected_messages)
+        assert mock_handle_send.get_data_call_args(ordered=chronological_order) == expected_messages
+
+
+@pytest.mark.parametrize("chronological_order", [True, False])
+@pytest.mark.parametrize(
+    "message_count,history,expected_history_count",
+    [
+        (2, -1, 2),
+        (2, 1, 1),
+        (2, 2, 2),
+        (3, 2, 2),
+        (2, 0, 0),
+    ],
+)
+async def test_handler_sends_history(
+    memory_channels_backend: MemoryChannelsBackend,
+    message_count: int,
+    history: int,
+    expected_history_count: int,
+    chronological_order: bool,
+) -> None:
+    memory_channels_backend._max_history_length = 10
+    plugin = ChannelsPlugin(
+        backend=memory_channels_backend,
+        arbitrary_channels_allowed=True,
+        history=history,
+        create_route_handlers=True,
+        send_history_chronological=chronological_order,
+    )
+
+    mock_handle_send = MockPluginHandleSocketSend()
+    plugin.handle_socket_send = mock_handle_send  # type: ignore[method-assign]
+
+    app = Litestar([], plugins=[plugin])
+    with TestClient(app) as client:
+        messages = await _populate_channels_backend(
+            message_count=message_count, channel="foo", backend=memory_channels_backend
+        )
+
+        with client.websocket_connect("/foo"):
+            pass
+
+    assert mock_handle_send.call_count == expected_history_count
+    if expected_history_count:
+        expected_messages = messages[-expected_history_count:]
+        if not chronological_order:
+            expected_messages = sorted(expected_messages)
+        assert mock_handle_send.get_data_call_args(ordered=chronological_order) == expected_messages

@@ -9,6 +9,10 @@ if TYPE_CHECKING:
 
 class ChannelsBackend(ABC):
     @abstractmethod
+    def __init__(self, history: int = -1) -> None:
+        ...
+
+    @abstractmethod
     async def on_startup(self) -> None:
         ...
 
@@ -30,4 +34,8 @@ class ChannelsBackend(ABC):
 
     @abstractmethod
     def stream_events(self) -> AsyncGenerator[tuple[Any, set[str]], None]:
+        ...
+
+    @abstractmethod
+    async def get_history(self, channel: str, limit: int | None = None) -> list[str]:
         ...
