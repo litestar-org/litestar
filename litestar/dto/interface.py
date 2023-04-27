@@ -62,9 +62,10 @@ class ConnectionContext:
 
 @runtime_checkable
 class DTOInterface(Protocol):
-    __slots__ = ()
+    __slots__ = ("connection_context",)
 
-    @abstractmethod
+    connection_context: ConnectionContext
+
     def __init__(self, connection_context: ConnectionContext) -> None:
         """Initialize the DTO.
 
@@ -72,6 +73,7 @@ class DTOInterface(Protocol):
             connection_context: A :class:`ConnectionContext <.ConnectionContext>` instance, which provides
                 information about the connection.
         """
+        self.connection_context = connection_context
 
     @abstractmethod
     def data_to_encodable_type(self, data: Any) -> bytes | LitestarEncodableType:
