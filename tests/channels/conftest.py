@@ -1,11 +1,14 @@
+import abc
 import asyncio
+import timeit
 from asyncio import AbstractEventLoop, get_event_loop_policy
 from pathlib import Path
-from typing import Iterator
+from typing import Any, Iterator
 
 import pytest
 from pytest_docker.plugin import Services
 from redis.asyncio import Redis
+from redis.exceptions import ConnectionError as RedisConnectionError
 
 from litestar.channels.memory import MemoryChannelsBackend
 from litestar.channels.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
@@ -30,30 +33,66 @@ def event_loop() -> Iterator[AbstractEventLoop]:
     loop.close()
 
 
-@pytest.fixture(scope="session")
-async def redis_service(docker_ip: str, docker_services: Services) -> Redis:
-    redis_port = docker_services.port_for("redis", 6379)
-    redis: Redis = Redis(host=docker_ip, port=redis_port)
+async def wait_until_responsive(
+    check: "abc.Callable[..., abc.Awaitable]",
+    timeout: float,
+    pause: float,
+    **kwargs: Any,
+) -> None:
+    """Wait until a service is responsive.
 
-    async def ping() -> None:
-        for _ in range(10):
-            if await redis.ping():
-                break
-            await asyncio.sleep(0.1)
+    Args:
+        check: Coroutine, return truthy value when waiting should stop.
+        timeout: Maximum seconds to wait.
+        pause: Seconds to wait between calls to `check`.
+        **kwargs: Given as kwargs to `check`.
+    """
+    ref = timeit.default_timer()
+    now = ref
+    while (now - ref) < timeout:
+        if await check(**kwargs):
+            return
+        await asyncio.sleep(pause)
+        now = timeit.default_timer()
 
-    await asyncio.wait_for(ping(), timeout=10)
+    raise Exception("Timeout reached while waiting on service!")
 
-    return redis
+
+async def redis_responsive(host: str) -> bool:
+    """Args:
+        host: docker IP address.
+
+    Returns:
+        Boolean indicating if we can connect to the redis server.
+    """
+    client: Redis = Redis(host=host, port=6397)
+    try:
+        return await client.ping()
+    except (ConnectionError, RedisConnectionError):
+        return False
+    finally:
+        await client.close()
+
+
+@pytest.fixture(scope="session", autouse=True)
+async def _containers(docker_ip: str, docker_services: "Services") -> None:  # pylint: disable=unused-argument
+    """Starts containers for required services, fixture waits until they are
+    responsive before returning.
+
+    Args:
+        docker_ip: the test docker IP
+        docker_services: the test docker services
+    """
+    await wait_until_responsive(timeout=30.0, pause=0.1, check=redis_responsive, host=docker_ip)
 
 
 @pytest.fixture()
-async def redis_client(redis_service: Redis) -> Redis:
-    await redis_service.flushall()
-    return redis_service
+def redis_client(docker_ip: str, docker_services: Services) -> Redis:
+    return Redis(host=docker_ip, port=6397)
 
 
 @pytest.fixture()
-async def redis_stream_backend(redis_client: Redis) -> RedisChannelsStreamBackend:
+def redis_stream_backend(redis_client: Redis) -> RedisChannelsStreamBackend:
     return RedisChannelsStreamBackend(history=10, redis=redis_client, cap_streams_approximate=False)
 
 
