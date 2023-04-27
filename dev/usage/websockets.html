@@ -1490,6 +1490,27 @@ methods on <a class="reference internal" href="../reference/connection.html#lite
 to be asynchronous.</p>
 </div>
 </section>
+<section id="customising-connection-acceptance">
+<h2>Customising connection acceptance<a class="headerlink" href="#customising-connection-acceptance" title="Permalink to this heading">#</a></h2>
+<p>By default, Litestar will accept all incoming connections by awaiting <code class="docutils literal notranslate"><span class="pre">WebSocket.accept()</span></code> without arguments.
+This behavior can be customized by passing a custom <code class="docutils literal notranslate"><span class="pre">connection_accept_handler</span></code> function. Litestar will await this
+function to accept the connection.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket_listener</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">accept_connection</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;custom-cookie&quot;</span><span class="p">})</span>
+
+
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">connection_accept_handler</span><span class="o">=</span><span class="n">accept_connection</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
 <section id="class-based-websocket-handling">
 <h2>Class based WebSocket handling<a class="headerlink" href="#class-based-websocket-handling" title="Permalink to this heading">#</a></h2>
 <p>In addition to using a simple function as in the examples above, a class based approach
@@ -1606,6 +1627,7 @@ Async</label><div class="sd-tab-content docutils">
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-injection">Dependency injection</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interacting-with-the-websocket-directly">Interacting with the WebSocket directly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customising-connection-acceptance">Customising connection acceptance</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-based-websocket-handling">Class based WebSocket handling</a></li>
 </ul>
   </nav></div>
