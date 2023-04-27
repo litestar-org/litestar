@@ -58,6 +58,13 @@ class ChannelsPlugin(InitPluginProtocol):
 
         self._channels: dict[str, set[WebSocket]] = {channel: set() for channel in channels or []}
 
+    def encode_data(self, data: LitestarEncodableType) -> bytes:
+        if isinstance(data, str):
+            data = data.encode()
+        if isinstance(data, bytes):
+            return data
+        return self._encode_json(data)
+
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         app_config.dependencies["channels"] = Provide(lambda: self, use_cache=True)
         app_config.on_startup.append(self._on_startup)
@@ -83,8 +90,8 @@ class ChannelsPlugin(InitPluginProtocol):
             channels = [channels]
         if self._pub_queue is None:
             raise RuntimeError()
-        encoded_data = self._encode_json(data)
-        self._pub_queue.put_nowait((encoded_data, channels))
+        data = self.encode_data(data)
+        self._pub_queue.put_nowait((data, channels))
 
     async def subscribe(self, socket: WebSocket, channels: str | list[str]) -> None:
         if isinstance(channels, str):
