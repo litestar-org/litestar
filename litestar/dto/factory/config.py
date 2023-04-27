@@ -16,7 +16,7 @@ class DTOConfig:
     """Control the generated DTO."""
 
     exclude: AbstractSet[str] = field(default_factory=set)
-    """Explicitly exclude fields from the generated DTO, incompatible with ``include``."""
+    """Explicitly exclude fields from the generated DTO."""
     rename_fields: dict[str, str] = field(default_factory=dict)
     """Mapping of field names, to new name."""
     fields_alias_generator: Callable[[str], str] | None = None
