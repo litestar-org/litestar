@@ -27,6 +27,8 @@ def async_mock() -> AsyncMock:
 @pytest.fixture(
     params=[
         pytest.param("memory_backend", id="memory"),
+        # pytest.param("redis_pub_sub_backend", id="redis:pubsub"),  # noqa: ERA001
+        # pytest.param("redis_stream_backend", id="redis:stream"),  # noqa: ERA001
     ]
 )
 def channels_backend(request: FixtureRequest) -> ChannelsBackend:
