@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable
-
-if TYPE_CHECKING:
-    from litestar.types import LitestarEncodableType
+from typing import AsyncGenerator, Iterable
 
 
 class ChannelsBackend(ABC):
@@ -21,7 +18,7 @@ class ChannelsBackend(ABC):
         ...
 
     @abstractmethod
-    async def publish(self, data: LitestarEncodableType, channels: Iterable[str]) -> None:
+    async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         ...
 
     @abstractmethod
@@ -33,9 +30,9 @@ class ChannelsBackend(ABC):
         ...
 
     @abstractmethod
-    def stream_events(self) -> AsyncGenerator[tuple[Any, str], None]:
+    def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
         ...
 
     @abstractmethod
-    async def get_history(self, channel: str, limit: int | None = None) -> list[str]:
+    async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
         ...

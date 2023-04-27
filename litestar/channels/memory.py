@@ -2,20 +2,17 @@ from __future__ import annotations
 
 from asyncio import Queue
 from collections import defaultdict, deque
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable
+from typing import Any, AsyncGenerator, Iterable
 
 from litestar.channels.base import ChannelsBackend
-
-if TYPE_CHECKING:
-    from litestar.types import LitestarEncodableType
 
 
 class MemoryChannelsBackend(ChannelsBackend):
     def __init__(self, history: int = 0) -> None:
         self._max_history_length = history
         self._channels: set[str] = set()
-        self._queue: Queue[tuple[str, Any]] | None = None
-        self._history: defaultdict[str, deque] = defaultdict(lambda: deque(maxlen=self._max_history_length))
+        self._queue: Queue[tuple[str, bytes]] | None = None
+        self._history: defaultdict[str, deque[bytes]] = defaultdict(lambda: deque(maxlen=self._max_history_length))
 
     async def on_startup(self) -> None:
         self._queue = Queue()
@@ -23,7 +20,7 @@ class MemoryChannelsBackend(ChannelsBackend):
     async def on_shutdown(self) -> None:
         self._queue = None
 
-    async def publish(self, data: LitestarEncodableType, channels: Iterable[str]) -> None:
+    async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         if not self._queue:
             raise RuntimeError()
         for channel in channels:
@@ -45,7 +42,7 @@ class MemoryChannelsBackend(ChannelsBackend):
             yield await self._queue.get()
             self._queue.task_done()
 
-    async def get_history(self, channel: str, limit: int | None = None) -> list[str]:
+    async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
         history = list(self._history[channel])
         if limit:
             history = history[-limit:]

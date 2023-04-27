@@ -23,19 +23,19 @@ async def channels_backend(channels_backend_instance: ChannelsBackend) -> AsyncG
 
 @pytest.mark.parametrize("channels", [{"foo"}, {"foo", "bar"}])
 async def test_pub_sub(channels_backend: ChannelsBackend, channels: set[str]) -> None:
-    await channels_backend.publish("something", channels)
+    await channels_backend.publish(b"something", channels)
 
     event_generator = channels_backend.stream_events()
     received = set()
     for _ in channels:
         received.add(await anext(event_generator))
-    assert received == {(c, "something") for c in channels}
+    assert received == {(c, b"something") for c in channels}
 
 
 async def test_pub_sub_shutdown_leftover_messages(channels_backend_instance: ChannelsBackend) -> None:
     await channels_backend_instance.on_startup()
 
-    await channels_backend_instance.publish("something", {"foo"})
+    await channels_backend_instance.publish(b"something", {"foo"})
 
     await asyncio.wait_for(channels_backend_instance.on_shutdown(), timeout=0.1)
 
@@ -44,7 +44,7 @@ async def test_pub_sub_shutdown_leftover_messages(channels_backend_instance: Cha
 async def test_get_history(
     channels_backend: ChannelsBackend, history_limit: int | None, expected_history_length: int
 ) -> None:
-    messages = [str(i) for i in range(100)]
+    messages = [str(i).encode() for i in range(100)]
     for message in messages:
         await channels_backend.publish(message, {"something"})
 
@@ -57,6 +57,6 @@ async def test_get_history(
 
 async def test_memory_backend_discards_history_entries(channels_backend: ChannelsBackend) -> None:
     for _ in range(20):
-        await channels_backend.publish("foo", {"bar"})
+        await channels_backend.publish(b"foo", {"bar"})
 
     assert len(await channels_backend.get_history("bar")) == 10

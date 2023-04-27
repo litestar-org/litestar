@@ -37,9 +37,8 @@ def test_channels_no_channels_arbitrary_not_allowed_raises(memory_channels_backe
         ChannelsPlugin(backend=memory_channels_backend)
 
 
-@pytest.mark.parametrize("send_json", [True, False])
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
-def test_pub_sub(channels_backend: MemoryChannelsBackend, socket_send_mode: WebSocketMode, send_json: bool) -> None:
+def test_pub_sub(channels_backend: MemoryChannelsBackend, socket_send_mode: WebSocketMode) -> None:
     @websocket("/")
     async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
         await socket.accept()
@@ -48,25 +47,19 @@ def test_pub_sub(channels_backend: MemoryChannelsBackend, socket_send_mode: WebS
             await socket.receive()
 
     channels_plugin = ChannelsPlugin(
-        backend=channels_backend, channels=["something"], socket_send_mode=socket_send_mode, socket_send_json=send_json
+        backend=channels_backend, channels=["something"], socket_send_mode=socket_send_mode
     )
     app = Litestar([handler], plugins=[channels_plugin])
 
     with TestClient(app) as client, client.websocket_connect("/") as ws:
         channels_plugin.broadcast("foo", "something")
-        if send_json:
-            assert ws.receive_json(mode=socket_send_mode) == "foo"
-        elif socket_send_mode == "text":
-            assert ws.receive_text() == "foo"
-        else:
-            assert ws.receive_bytes() == b"foo"
+        assert ws.receive_json(mode=socket_send_mode) == "foo"
 
 
-@pytest.mark.parametrize("send_json", [True, False])
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
 @pytest.mark.parametrize("handler_base_path", [None, "/ws"])
 def test_pub_sub_create_route_handlers(
-    channels_backend: ChannelsBackend, handler_base_path: str | None, socket_send_mode: WebSocketMode, send_json: bool
+    channels_backend: ChannelsBackend, handler_base_path: str | None, socket_send_mode: WebSocketMode
 ) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
@@ -74,18 +67,12 @@ def test_pub_sub_create_route_handlers(
         channels=["something"],
         handler_base_path=handler_base_path or "/",
         socket_send_mode=socket_send_mode,
-        socket_send_json=send_json,
     )
     app = Litestar(plugins=[channels_plugin])
 
     with TestClient(app) as client, client.websocket_connect(f"{handler_base_path or ''}/something") as ws:
         channels_plugin.broadcast("foo", "something")
-        if send_json:
-            assert ws.receive_json(mode=socket_send_mode) == "foo"
-        elif socket_send_mode == "text":
-            assert ws.receive_text() == "foo"
-        else:
-            assert ws.receive_bytes() == b"foo"
+        assert ws.receive_json(mode=socket_send_mode) == "foo"
 
 
 def test_create_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
@@ -200,17 +187,17 @@ async def test_unsubscribe_last_subscriber_unsubscribes_backend(
     assert not plugin._channels.get("foo")
 
 
-async def _populate_channels_backend(*, message_count: int, channel: str, backend: ChannelsBackend) -> list[str]:
-    messages = [f"message {i}" for i in range(message_count)]
+async def _populate_channels_backend(*, message_count: int, channel: str, backend: ChannelsBackend) -> list[bytes]:
+    messages = [f"message {i}".encode() for i in range(message_count)]
 
     for message in messages:
         await backend.publish(message, {channel})
-    await backend.publish("some other message", {"bar"})
+    await backend.publish(b"some other message", {"bar"})
     return messages
 
 
 class MockPluginHandleSocketSend(AsyncMock):
-    def get_data_call_args(self, ordered: bool) -> list[str]:
+    def get_data_call_args(self, ordered: bool) -> list[bytes]:
         call_args = [call.args[1] for call in self.call_args_list]
         if not ordered:
             call_args = sorted(call_args)

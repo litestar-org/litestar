@@ -4,7 +4,7 @@ from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import suppress
 from functools import partial
 from os.path import join as join_path
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Iterable
+from typing import TYPE_CHECKING, Awaitable, Callable, Iterable
 
 import anyio
 import msgspec.json
@@ -32,14 +32,13 @@ class ChannelsPlugin(InitPluginProtocol):
         arbitrary_channels_allowed: bool = False,
         create_route_handlers: bool = False,
         handler_base_path: str = "/",
-        socket_send_json: bool = True,
         socket_send_mode: WebSocketMode = "text",
         type_encoders: TypeEncodersMap | None = None,
         history: int = 0,
         send_history_chronological: bool = True,
     ) -> None:
         self._backend = backend
-        self._pub_queue: Queue[tuple[Any, list[str]]] | None = None
+        self._pub_queue: Queue[tuple[bytes, list[str]]] | None = None
         self._pub_task: Task | None = None
         self._sub_task: Task | None = None
 
@@ -49,7 +48,6 @@ class ChannelsPlugin(InitPluginProtocol):
         self._arbitrary_channels_allowed = arbitrary_channels_allowed
         self._create_route_handlers = create_route_handlers
         self._handler_root_path = handler_base_path
-        self._socket_send_json = socket_send_json
         self._socket_send_mode: WebSocketMode = socket_send_mode
         self._encode_json = msgspec.json.Encoder(
             enc_hook=partial(default_serializer, type_encoders=type_encoders)
@@ -85,7 +83,8 @@ class ChannelsPlugin(InitPluginProtocol):
             channels = [channels]
         if self._pub_queue is None:
             raise RuntimeError()
-        self._pub_queue.put_nowait((data, channels))
+        encoded_data = self._encode_json(data)
+        self._pub_queue.put_nowait((encoded_data, channels))
 
     async def subscribe(self, socket: WebSocket, channels: str | list[str]) -> None:
         if isinstance(channels, str):
@@ -174,9 +173,7 @@ class ChannelsPlugin(InitPluginProtocol):
 
         return ws_handler_func
 
-    async def handle_socket_send(self, socket: WebSocket, data: Any) -> None:
-        if self._socket_send_json:
-            data = self._encode_json(data)
+    async def handle_socket_send(self, socket: WebSocket, data: bytes) -> None:
         await socket.send_data(data, mode=self._socket_send_mode)
 
     async def _pub_worker(self) -> None:
