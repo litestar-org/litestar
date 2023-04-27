@@ -72,3 +72,21 @@ def test_renamed_field() -> None:
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.post("/", json={"baz": "hello"})
         assert response.json() == {"baz": "hello"}
+
+
+def test_fields_alias_generator() -> None:
+    @dataclass
+    class Foo:
+        bar: str
+
+    config = DTOConfig(fields_alias_generator=lambda x: x.upper())
+    dto = DataclassDTO[Annotated[Foo, config]]
+
+    @post(dto=dto, signature_namespace={"Foo": Foo})
+    def handler(data: Foo) -> Foo:
+        assert data.bar == "hello"
+        return data
+
+    with create_test_client(route_handlers=[handler], debug=True) as client:
+        response = client.post("/", json={"BAR": "hello"})
+        assert response.json() == {"BAR": "hello"}

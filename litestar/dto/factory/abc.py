@@ -226,6 +226,9 @@ def _parse_model(
 
         if rename := config.rename_fields.get(field_definition.name):
             field_definition = field_definition.copy_with(serialization_name=rename)  # noqa: PLW2901
+        elif field_alias_generator := config.fields_alias_generator:
+            alias = field_alias_generator(field_definition.name)
+            field_definition = field_definition.copy_with(serialization_name=alias)  # noqa: PLW2901
 
         if dto_factory_type.detect_nested_field(field_definition):
             nested_field_definition = _handle_nested(dto_factory_type, field_definition, nested_depth, config, dto_for)
