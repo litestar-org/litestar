@@ -33,7 +33,7 @@ class ChannelsBackend(ABC):
         ...
 
     @abstractmethod
-    def stream_events(self) -> AsyncGenerator[tuple[Any, set[str]], None]:
+    def stream_events(self) -> AsyncGenerator[tuple[Any, str], None]:
         ...
 
     @abstractmethod

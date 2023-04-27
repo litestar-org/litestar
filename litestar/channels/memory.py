@@ -14,7 +14,7 @@ class MemoryChannelsBackend(ChannelsBackend):
     def __init__(self, history: int = 0) -> None:
         self._max_history_length = history
         self._channels: set[str] = set()
-        self._queue: Queue[tuple[Any, set[str]]] | None = None
+        self._queue: Queue[tuple[str, Any]] | None = None
         self._history: defaultdict[str, deque] = defaultdict(lambda: deque(maxlen=self._max_history_length))
 
     async def on_startup(self) -> None:
@@ -26,7 +26,8 @@ class MemoryChannelsBackend(ChannelsBackend):
     async def publish(self, data: LitestarEncodableType, channels: Iterable[str]) -> None:
         if not self._queue:
             raise RuntimeError()
-        await self._queue.put((data, set(channels)))
+        for channel in channels:
+            await self._queue.put((channel, data))
         if self._max_history_length:
             for channel in channels:
                 self._history[channel].append(data)
@@ -39,7 +40,7 @@ class MemoryChannelsBackend(ChannelsBackend):
         for channel in channels:
             del self._history[channel]
 
-    async def stream_events(self) -> AsyncGenerator[tuple[Any, set[str]], None]:
+    async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         while self._queue:
             yield await self._queue.get()
             self._queue.task_done()

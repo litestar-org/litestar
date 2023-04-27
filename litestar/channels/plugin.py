@@ -187,10 +187,9 @@ class ChannelsPlugin(InitPluginProtocol):
 
     async def _sub_worker(self) -> None:
         async with anyio.create_task_group() as task_group:
-            async for payload, channels in self._backend.stream_events():
-                for channel in channels:
-                    for socket in self._channels.get(channel, []):
-                        task_group.start_soon(self.handle_socket_send, socket, payload)
+            async for channel, payload in self._backend.stream_events():
+                for socket in self._channels.get(channel, []):
+                    task_group.start_soon(self.handle_socket_send, socket, payload)
 
     async def _on_startup(self) -> None:
         self._pub_queue = Queue()

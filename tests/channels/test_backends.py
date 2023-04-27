@@ -26,8 +26,10 @@ async def test_pub_sub(channels_backend: ChannelsBackend, channels: set[str]) ->
     await channels_backend.publish("something", channels)
 
     event_generator = channels_backend.stream_events()
-    event = await anext(event_generator)
-    assert event == ("something", channels)
+    received = set()
+    for _ in channels:
+        received.add(await anext(event_generator))
+    assert received == {(c, "something") for c in channels}
 
 
 async def test_pub_sub_shutdown_leftover_messages(channels_backend_instance: ChannelsBackend) -> None:
