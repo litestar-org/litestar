@@ -262,3 +262,16 @@ def test_listener_callback_request_and_body_arg_raises() -> None:
             ...
 
         handler_body.on_registration(Litestar())
+
+
+def test_listener_accept_connection_callback() -> None:
+    async def accept_connection(socket: WebSocket) -> None:
+        await socket.accept(headers={"Cookie": "custom-cookie"})
+
+    @websocket_listener("/", connection_accept_handler=accept_connection)
+    def handler(data: bytes) -> None:
+        return None
+
+    client = create_test_client([handler])
+    with client.websocket_connect("/") as ws:
+        assert ws.extra_headers == [(b"cookie", b"custom-cookie")]
