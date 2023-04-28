@@ -1,10 +1,13 @@
-from typing import TYPE_CHECKING, Any, NoReturn
+from __future__ import annotations
+
+from queue import Empty
+from typing import TYPE_CHECKING, Any, Callable, NoReturn
 
 import pytest
 
-from litestar import Controller, Litestar, delete, get, head, patch, post, put
+from litestar import Controller, Litestar, WebSocket, delete, get, head, patch, post, put, websocket
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from litestar.testing import TestClient
+from litestar.testing import TestClient, WebSocketTestSession, create_test_client
 
 if TYPE_CHECKING:
     from litestar.types import (
@@ -17,7 +20,7 @@ if TYPE_CHECKING:
     )
 
 
-def test_use_testclient_in_endpoint(test_client_backend: "AnyIOBackend") -> None:
+def test_use_testclient_in_endpoint(test_client_backend: AnyIOBackend) -> None:
     """this test is taken from starlette."""
 
     @get("/")
@@ -43,26 +46,26 @@ def raise_error() -> NoReturn:
     raise RuntimeError()
 
 
-def test_error_handling_on_startup(test_client_backend: "AnyIOBackend") -> None:
+def test_error_handling_on_startup(test_client_backend: AnyIOBackend) -> None:
     with pytest.raises(RuntimeError), TestClient(Litestar(on_startup=[raise_error]), backend=test_client_backend):
         pass
 
 
-def test_error_handling_on_shutdown(test_client_backend: "AnyIOBackend") -> None:
+def test_error_handling_on_shutdown(test_client_backend: AnyIOBackend) -> None:
     with pytest.raises(RuntimeError), TestClient(Litestar(on_shutdown=[raise_error]), backend=test_client_backend):
         pass
 
 
 @pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
-def test_client_interface(method: str, test_client_backend: "AnyIOBackend") -> None:
-    async def asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
-        start_event: "HTTPResponseStartEvent" = {
+def test_client_interface(method: str, test_client_backend: AnyIOBackend) -> None:
+    async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
+        start_event: HTTPResponseStartEvent = {
             "type": "http.response.start",
             "status": HTTP_200_OK,
             "headers": [(b"content-type", b"text/plain")],
         }
         await send(start_event)
-        body_event: "HTTPResponseBodyEvent" = {"type": "http.response.body", "body": b"", "more_body": False}
+        body_event: HTTPResponseBodyEvent = {"type": "http.response.body", "body": b"", "more_body": False}
         await send(body_event)
 
     client = TestClient(asgi_app, backend=test_client_backend)
@@ -83,7 +86,7 @@ def test_client_interface(method: str, test_client_backend: "AnyIOBackend") -> N
     assert response.status_code == HTTP_200_OK
 
 
-async def mock_asgi_app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+async def mock_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
     pass
 
 
@@ -93,7 +96,7 @@ def test_warns_problematic_domain() -> None:
 
 
 @pytest.mark.parametrize("method", ["get", "post", "put", "patch", "delete", "head", "options"])
-def test_client_interface_context_manager(method: str, test_client_backend: "AnyIOBackend") -> None:
+def test_client_interface_context_manager(method: str, test_client_backend: AnyIOBackend) -> None:
     class MockController(Controller):
         @get("/")
         def mock_service_endpoint_get(self) -> dict:
@@ -142,3 +145,25 @@ def test_client_interface_context_manager(method: str, test_client_backend: "Any
         else:
             response = client.options("/")
             assert response.status_code == HTTP_204_NO_CONTENT
+
+
+@pytest.mark.parametrize("block,timeout", [(False, None), (False, 0.001), (True, 0.001)])
+@pytest.mark.parametrize(
+    "receive_method",
+    [
+        WebSocketTestSession.receive,
+        WebSocketTestSession.receive_json,
+        WebSocketTestSession.receive_text,
+        WebSocketTestSession.receive_bytes,
+    ],
+)
+def test_websocket_test_session_block_timeout(
+    receive_method: Callable[..., Any], block: bool, timeout: float | None, anyio_backend: AnyIOBackend
+) -> None:
+    @websocket()
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+
+    with pytest.raises(Empty):
+        with create_test_client(handler, backend=anyio_backend) as client, client.websocket_connect("/") as ws:
+            receive_method(ws, timeout=timeout, block=block)

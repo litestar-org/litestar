@@ -162,8 +162,12 @@ class WebSocketTestSession:
         event: WebSocketDisconnectEvent = {"type": "websocket.disconnect", "code": code}
         self.receive_queue.put(event)
 
-    def receive(self) -> WebSocketSendMessage:
+    def receive(self, block: bool = True, timeout: float | None = None) -> WebSocketSendMessage:
         """This is the base receive method.
+
+        Args:
+            block: Block until a message is received
+            timeout: If ``block`` is ``True``, block at most ``timeout`` seconds
 
         Notes:
             - you can use one of the other receive methods to extract the data from the message.
@@ -171,7 +175,8 @@ class WebSocketTestSession:
         Returns:
             A websocket message.
         """
-        message = cast("WebSocketSendMessage", self.send_queue.get())
+        message = cast("WebSocketSendMessage", self.send_queue.get(block=block, timeout=timeout))
+
         if isinstance(message, BaseException):
             raise message
 
@@ -182,30 +187,46 @@ class WebSocketTestSession:
             )
         return message
 
-    def receive_text(self) -> str:
-        """Returns:
-        A string value.
+    def receive_text(self, block: bool = True, timeout: float | None = None) -> str:
+        """Receive data in ``text`` mode and return a string
+
+        Args:
+            block: Block until a message is received
+            timeout: If ``block`` is ``True``, block at most ``timeout`` seconds
+
+        Returns:
+            A string value.
         """
-        message = self.receive()
+        message = self.receive(block=block, timeout=timeout)
         return cast("str", message.get("text", ""))
 
-    def receive_bytes(self) -> bytes:
-        """Returns:
-        A bytes string value.
+    def receive_bytes(self, block: bool = True, timeout: float | None = None) -> bytes:
+        """Receive data in ``binary`` mode and return bytes
+
+        Args:
+            block: Block until a message is received
+            timeout: If ``block`` is ``True``, block at most ``timeout`` seconds
+
+        Returns:
+            A string value.
         """
-        message = self.receive()
+        message = self.receive(block=block, timeout=timeout)
         return cast("bytes", message.get("bytes", b""))
 
-    def receive_json(self, mode: Literal["text", "binary"] = "text") -> Any:
-        """Receives JSON.
+    def receive_json(
+        self, mode: Literal["text", "binary"] = "text", block: bool = True, timeout: float | None = None
+    ) -> Any:
+        """Receive data in either ``text`` or ``binary`` mode and decode it as JSON.
 
         Args:
             mode: Either ``text`` or ``binary``
+            block: Block until a message is received
+            timeout: If ``block`` is ``True``, block at most ``timeout`` seconds
 
         Returns:
             An arbitrary value
         """
-        message = self.receive()
+        message = self.receive(block=block, timeout=timeout)
 
         if mode == "text":
             return decode_json(cast("str", message.get("text", "")))
