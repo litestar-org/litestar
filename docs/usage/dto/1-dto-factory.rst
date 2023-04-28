@@ -76,6 +76,18 @@ Fields can be renamed using :class:`DTOConfig <litestar.dto.factory.DTOConfig>`.
     :emphasize-lines: 4,8,19,20,24
     :linenos:
 
+Fields can also be renamed using a renaming strategy that will be applied to all fields. The following example uses a pre-defined rename strategy that will convert all field names to camel case on client-side.
+
+.. literalinclude:: /examples/data_transfer_objects/factory/renaming_all_fields.py
+    :caption: Renaming fields
+    :language: python
+    :emphasize-lines: 4,8,19,20,21,22,24
+    :linenos:
+
+Fields that are directly renamed using `rename_fields` mapping will be excluded from `rename_strategy`.
+
+The rename strategy either accepts one of the pre-defined strategies: "camel", "pascal", "upper", "lower" or it can be provided a callback that accepts the field name as an argument and should return a string.
+
 Type checking
 -------------
 
