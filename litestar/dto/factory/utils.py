@@ -78,10 +78,23 @@ class RenameStrategies:
 
     @staticmethod
     def camel(field_name: str) -> str:
-        # TODO
-        return field_name
+        return RenameStrategies._camelize(field_name)
 
     @staticmethod
     def pascal(field_name: str) -> str:
-        # TODO
-        return field_name
+        return RenameStrategies._camelize(field_name, capitalize_first_letter=True)
+
+    @staticmethod
+    def _camelize(string: str, capitalize_first_letter: bool = False) -> str:
+        """Convert a string to camel case.
+
+        Args:
+            string (str): The string to convert
+            capitalize_first_letter (bool): Default is False, a True value will convert to PascalCase
+        Returns:
+            str: The string converted to camel case or Pascal case
+        """
+        return "".join(
+            word if index == 0 and not capitalize_first_letter else word.capitalize()
+            for index, word in enumerate(string.split("_"))
+        )

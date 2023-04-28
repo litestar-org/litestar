@@ -80,6 +80,7 @@ def test_renamed_field() -> None:
 class Foo:
     bar: str = "hello"
     SPAM: str = "bye"
+    spam_bar: str = "welcome"
 
 
 @pytest.mark.parametrize(
@@ -88,6 +89,8 @@ class Foo:
         ("upper", Foo(bar="hi"), ["BAR"], {"BAR": "hi"}),
         ("lower", Foo(SPAM="goodbye"), ["spam"], {"spam": "goodbye"}),
         (lambda x: x[::-1], Foo(bar="h", SPAM="bye!"), ["rab", "MAPS"], {"rab": "h", "MAPS": "bye!"}),
+        ("camel", Foo(spam_bar="star"), ["spamBar"], {"spamBar": "star"}),
+        ("pascal", Foo(spam_bar="star"), ["SpamBar"], {"SpamBar": "star"}),
     ],
 )
 def test_fields_alias_generator(
