@@ -1,6 +1,11 @@
 1.x Changelog
 =============
 
+1.51.11
+-------
+
+* Fix missing ``content-encoding`` headers for gzip/brotli compressed files
+
 1.51.10
 -------
 
