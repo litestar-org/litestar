@@ -971,7 +971,7 @@ document.write(`
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/exceptions.html">exceptions</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/dto/factory/index.html">dto.factory</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/dto/factory/index.html">factory</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/abc.html">abc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/stdlib.html">stdlib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/types.html">types</a></li>
@@ -1160,7 +1160,7 @@ provided, the DTO described by the <code class="docutils literal notranslate"><s
 </div>
 </div>
 <p>In this example, <code class="docutils literal notranslate"><span class="pre">UserDTO</span></code> performs decoding of client data into the <code class="docutils literal notranslate"><span class="pre">User</span></code> type, and <code class="docutils literal notranslate"><span class="pre">UserReturnDTO</span></code> is
-responsible for marshalling the <code class="docutils literal notranslate"><span class="pre">User</span></code> instance into a type that Litestar can encode into bytes.</p>
+responsible for converting the <code class="docutils literal notranslate"><span class="pre">User</span></code> instance into a type that Litestar can encode into bytes.</p>
 </section>
 <section id="overriding-implicit-return-dto">
 <h3>Overriding implicit <code class="docutils literal notranslate"><span class="pre">return_dto</span></code><a class="headerlink" href="#overriding-implicit-return-dto" title="Permalink to this heading">#</a></h3>
@@ -1180,7 +1180,7 @@ setting the <code class="docutils literal notranslate"><span class="pre">return_
 </pre></div>
 </div>
 </div>
-<p>In this example, we use <code class="docutils literal notranslate"><span class="pre">UserDTO</span></code> to decode request data, and marshal it into the <code class="docutils literal notranslate"><span class="pre">User</span></code> type, but we want to manage
+<p>In this example, we use <code class="docutils literal notranslate"><span class="pre">UserDTO</span></code> to decode request data, and convert it into the <code class="docutils literal notranslate"><span class="pre">User</span></code> type, but we want to manage
 encoding the response data ourselves, and so we explicitly declare the <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> as <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </section>
 </section>
@@ -1269,8 +1269,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<p>In this example, the <code class="docutils literal notranslate"><span class="pre">User</span></code> instance received by any handler that declares a <code class="docutils literal notranslate"><span class="pre">data</span></code> kwarg, is marshalled by the
-<code class="docutils literal notranslate"><span class="pre">UserDTO</span></code> type, and all handler return values are marshalled into an encodable type by <code class="docutils literal notranslate"><span class="pre">UserReturnDTO</span></code> (except for
+<p>In this example, the <code class="docutils literal notranslate"><span class="pre">User</span></code> instance received by any handler that declares a <code class="docutils literal notranslate"><span class="pre">data</span></code> kwarg, is converted by the
+<code class="docutils literal notranslate"><span class="pre">UserDTO</span></code> type, and all handler return values are converted into an encodable type by <code class="docutils literal notranslate"><span class="pre">UserReturnDTO</span></code> (except for
 the <code class="docutils literal notranslate"><span class="pre">delete()</span></code> route, which has the <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> disabled).</p>
 <p>DTOs can similarly be defined on <a class="reference internal" href="../../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Routers</span></code></a> and
 <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">The</span> <span class="pre">application</span></code></a> itself.</p>

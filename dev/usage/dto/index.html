@@ -971,7 +971,7 @@ document.write(`
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/exceptions.html">exceptions</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/dto/factory/index.html">dto.factory</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/dto/factory/index.html">factory</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/abc.html">abc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/stdlib.html">stdlib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/types.html">types</a></li>
@@ -1116,7 +1116,7 @@ document.write(`
     Litestar-&gt;&gt;DTO: Encoded data
     deactivate Litestar
     activate DTO
-    Note over DTO: Perform primitive type validation&lt;br&gt;and marshalling into data model
+    Note over DTO: Perform primitive type validation&lt;br&gt;and converting into data model
     DTO-&gt;&gt;Developer: Data injected into handler
     deactivate DTO
     activate Developer
@@ -1124,7 +1124,7 @@ document.write(`
     Developer-&gt;&gt;DTO: Data returned from handler
     deactivate Developer
     activate DTO
-    Note over DTO: Data returned from the handler&lt;br&gt;marshalled into type that can be&lt;br&gt;encoded into bytes by Litestar
+    Note over DTO: Data returned from the handler&lt;br&gt;converted into type that can be&lt;br&gt;encoded into bytes by Litestar
     DTO-&gt;&gt;Litestar: Litestar encodable type
     deactivate DTO
     activate Litestar
@@ -1202,15 +1202,15 @@ DTO</p></li>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="2-dto-interface.html">DTO Interface</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="2-dto-interface.html#abstract-methods">Abstract Methods</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#data-to-encodable-type">data_to_encodable_type</a></li>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#bytes-to-data-type">bytes_to_data_type</a></li>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#builtins-to-data-type">builtins_to_data_type</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#data-to-encodable-type"><code class="docutils literal notranslate"><span class="pre">data_to_encodable_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#bytes-to-data-type"><code class="docutils literal notranslate"><span class="pre">bytes_to_data_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#builtins-to-data-type"><code class="docutils literal notranslate"><span class="pre">builtins_to_data_type</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="2-dto-interface.html#additional-methods">Additional Methods</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#init">__init__</a></li>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#create-openapi-schema">create_openapi_schema</a></li>
-<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#on-registration">on_registration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#init"><code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#create-openapi-schema"><code class="docutils literal notranslate"><span class="pre">create_openapi_schema</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="2-dto-interface.html#on-registration"><code class="docutils literal notranslate"><span class="pre">on_registration</span></code></a></li>
 </ul>
 </li>
 </ul>

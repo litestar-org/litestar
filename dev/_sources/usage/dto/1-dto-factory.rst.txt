@@ -29,7 +29,7 @@ However, we do have some issues with the above example. Firstly, the user's pass
 response from the handler. Secondly, the user is able to set the ``created_at`` field on the model, which should only
 ever be set once, and defined internally.
 
-Lets explore how we can configure DTOs to manage scenarios like these.
+Let's explore how we can configure DTOs to manage scenarios like these.
 
 Marking fields
 --------------
@@ -46,7 +46,7 @@ fields are never serialized into return data.
     :emphasize-lines: 6,14,15
     :linenos:
 
-Note:
+.. note:
 
     The procedure for "marking" a model field will vary depending on the library. For example,
     :class:`DataclassDTO <.dto.factory.stdlib.dataclass.DataclassDTO>` expects that the mark is made in the ``metadata``

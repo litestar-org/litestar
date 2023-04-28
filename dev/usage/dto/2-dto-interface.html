@@ -971,7 +971,7 @@ document.write(`
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/interface.html">interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/dto/exceptions.html">exceptions</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/dto/factory/index.html">dto.factory</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../reference/dto/factory/index.html">factory</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/abc.html">abc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/stdlib.html">stdlib</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/dto/factory/types.html">types</a></li>
@@ -1115,20 +1115,20 @@ information on the signature of each method, see the <a class="reference interna
 <h2>Abstract Methods<a class="headerlink" href="#abstract-methods" title="Permalink to this heading">#</a></h2>
 <p>These methods must be implemented on any <a class="reference internal" href="../../reference/dto/interface.html#litestar.dto.interface.DTOInterface" title="litestar.dto.interface.DTOInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOInterface</span></code></a> subtype.</p>
 <section id="data-to-encodable-type">
-<h3>data_to_encodable_type<a class="headerlink" href="#data-to-encodable-type" title="Permalink to this heading">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">data_to_encodable_type</span></code><a class="headerlink" href="#data-to-encodable-type" title="Permalink to this heading">#</a></h3>
 <p>This method receives the data that is returned from a handler and is responsible for converting it to a type that
 Litestar can encode to bytes, or bytes. Litestar calls this method with data returned from the route handler in order
 to generate the response payload.</p>
 </section>
 <section id="bytes-to-data-type">
-<h3>bytes_to_data_type<a class="headerlink" href="#bytes-to-data-type" title="Permalink to this heading">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">bytes_to_data_type</span></code><a class="headerlink" href="#bytes-to-data-type" title="Permalink to this heading">#</a></h3>
 <p>This method receives raw bytes, as received from the client connection.</p>
 <p>The DTO instance is responsible for parsing those bytes into the appropriate data type for the handler. This method is
 called for all requests that do not specify URL or multipart encoded form data.</p>
 <p>The return value is injected into the handler as the <code class="docutils literal notranslate"><span class="pre">data</span></code> argument.</p>
 </section>
 <section id="builtins-to-data-type">
-<h3>builtins_to_data_type<a class="headerlink" href="#builtins-to-data-type" title="Permalink to this heading">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">builtins_to_data_type</span></code><a class="headerlink" href="#builtins-to-data-type" title="Permalink to this heading">#</a></h3>
 <p>This method receives data that has already been parsed into primitive python types (<code class="docutils literal notranslate"><span class="pre">list</span></code>, <code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>, etc)
 but has not yet been validated according to the model type declarations.</p>
 <p>This method is only called when the handler receives URL encoded, or multipart form data. In this case, the data is
@@ -1141,18 +1141,18 @@ first parsed from the request body into primitive types and then passed to this 
 <p>The following methods have default implementations on the <a class="reference internal" href="../../reference/dto/interface.html#litestar.dto.interface.DTOInterface" title="litestar.dto.interface.DTOInterface"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOInterface</span></code></a>
 types, but can be overridden if necessary.</p>
 <section id="init">
-<h3>__init__<a class="headerlink" href="#init" title="Permalink to this heading">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">__init__</span></code><a class="headerlink" href="#init" title="Permalink to this heading">#</a></h3>
 <p>A DTO instance is created for each use per connection. The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method receives an instance of
 <a class="reference internal" href="../../reference/dto/interface.html#litestar.dto.interface.ConnectionContext" title="litestar.dto.interface.ConnectionContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConnectionContext</span></code></a> which contains information about the connection
 such as the ID of the handler that is being called and the request encoding type.</p>
 </section>
 <section id="create-openapi-schema">
-<h3>create_openapi_schema<a class="headerlink" href="#create-openapi-schema" title="Permalink to this heading">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">create_openapi_schema</span></code><a class="headerlink" href="#create-openapi-schema" title="Permalink to this heading">#</a></h3>
 <p>This method is called when generating the OpenAPI schema for the handler. It should return an instance of
 <a class="reference internal" href="../../reference/openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">Schema</span></code></a> that reflects the data accepted by, or returned from the handler.</p>
 </section>
 <section id="on-registration">
-<h3>on_registration<a class="headerlink" href="#on-registration" title="Permalink to this heading">#</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">on_registration</span></code><a class="headerlink" href="#on-registration" title="Permalink to this heading">#</a></h3>
 <p>This class method is called for each handler that the DTO type is registered upon. It receives an instance of
 <a class="reference internal" href="../../reference/dto/interface.html#litestar.dto.interface.HandlerContext" title="litestar.dto.interface.HandlerContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">HandlerContext</span></code></a> which contains information about the handler and the
 DTOs application including whether the DTO is being applied to “data” or “return” type of the handler, the type
@@ -1211,15 +1211,15 @@ type.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#abstract-methods">Abstract Methods</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-to-encodable-type">data_to_encodable_type</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bytes-to-data-type">bytes_to_data_type</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#builtins-to-data-type">builtins_to_data_type</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-to-encodable-type"><code class="docutils literal notranslate"><span class="pre">data_to_encodable_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bytes-to-data-type"><code class="docutils literal notranslate"><span class="pre">bytes_to_data_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#builtins-to-data-type"><code class="docutils literal notranslate"><span class="pre">builtins_to_data_type</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-methods">Additional Methods</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#init">__init__</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-openapi-schema">create_openapi_schema</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#on-registration">on_registration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#init"><code class="docutils literal notranslate"><span class="pre">__init__</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-openapi-schema"><code class="docutils literal notranslate"><span class="pre">create_openapi_schema</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#on-registration"><code class="docutils literal notranslate"><span class="pre">on_registration</span></code></a></li>
 </ul>
 </li>
 </ul>
