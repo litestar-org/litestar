@@ -22,6 +22,13 @@ class DTOConfig:
     rename_fields: dict[str, str] = field(default_factory=dict)
     """Mapping of field names, to new name."""
     rename_strategy: RenameStrategy | None = None
-    """A callback for generating aliases of field names. Fields defined in ``rename_fields`` are ignored."""
+    """Rename all fields using a pre-defined strategy or a custom strategy.
+
+    The pre-defined strategies are: `upper`, `lower`, `camel`, `pascal`.
+
+    A custom strategy is any callable that accepts a string as an argument and
+    return a string.
+
+    Fields defined in ``rename_fields`` are ignored."""
     max_nested_depth: int = 1
     """The maximum depth of nested items allowed for data transfer."""
