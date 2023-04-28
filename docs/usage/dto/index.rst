@@ -14,7 +14,7 @@ Data Transfer Object (DTO)
             Litestar->>DTO: Encoded data
             deactivate Litestar
             activate DTO
-            Note over DTO: Perform primitive type validation<br>and marshalling into data model
+            Note over DTO: Perform primitive type validation<br>and converting into data model
             DTO->>Developer: Data injected into handler
             deactivate DTO
             activate Developer
@@ -22,7 +22,7 @@ Data Transfer Object (DTO)
             Developer->>DTO: Data returned from handler
             deactivate Developer
             activate DTO
-            Note over DTO: Data returned from the handler<br>marshalled into type that can be<br>encoded into bytes by Litestar
+            Note over DTO: Data returned from the handler<br>converted into type that can be<br>encoded into bytes by Litestar
             DTO->>Litestar: Litestar encodable type
             deactivate DTO
             activate Litestar
