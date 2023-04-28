@@ -26,6 +26,7 @@ import asyncmy
 import asyncpg
 import pytest
 from _pytest.fixtures import FixtureRequest
+from _pytest.nodes import Item
 from fakeredis.aioredis import FakeRedis
 from freezegun import freeze_time
 from pytest_docker.plugin import Services
@@ -293,6 +294,32 @@ def reset_httpx_logging() -> Generator[None, None, None]:
 # Docker services
 
 
+class DockerServiceRegistry:
+    """Registry for docker services. Allows to register fixtures and collect requested
+    services for this test session
+    """
+
+    def __init__(self) -> None:
+        self._fixture_services: dict[str, str] = {}
+        self.requested_services: set[str] = set()
+
+    def register(self, service_name: str) -> Callable[[Callable], Callable]:
+        """Register a service, making it available via a fixture"""
+
+        def decorator(fn: Callable) -> Callable:
+            self._fixture_services[fn.__name__] = service_name
+            return pytest.fixture(scope="session")(fn)
+
+        return decorator
+
+    def notify_fixture(self, fixture_name: str) -> None:
+        if service_name := self._fixture_services.get(fixture_name):
+            self.requested_services.add(service_name)
+
+
+docker_service_registry = DockerServiceRegistry()
+
+
 @pytest.fixture(scope="session")
 def docker_compose_file() -> Path:
     """
@@ -310,6 +337,22 @@ def event_loop() -> Iterator[AbstractEventLoop]:
     loop = policy.new_event_loop()
     yield loop
     loop.close()
+
+
+@pytest.fixture(scope="session")
+def docker_setup() -> str:
+    command = "up --build -d"
+    for item in docker_service_registry.requested_services:
+        command += f" {item}"
+    return command
+
+
+def pytest_collection_modifyitems(items: list[Item]) -> None:
+    """Check items if they make use of docker service fixtures and notify the registry"""
+    for item in items:
+        for marker in item.iter_markers(name="usefixtures"):
+            for arg in marker.args:
+                docker_service_registry.notify_fixture(arg)
 
 
 async def wait_until_responsive(
@@ -353,7 +396,7 @@ async def redis_responsive(host: str) -> bool:
         await client.close()
 
 
-@pytest.fixture(scope="session")
+@docker_service_registry.register("redis")
 async def redis_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
     """Starts containers for required services, fixture waits until they are
     responsive before returning.
@@ -390,7 +433,7 @@ async def mysql_responsive(host: str) -> bool:
         return False
 
 
-@pytest.fixture(scope="session")
+@docker_service_registry.register("mysql")
 async def mysql_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
     """Starts containers for required services, fixture waits until they are
     responsive before returning.
@@ -423,7 +466,7 @@ async def postgres_responsive(host: str) -> bool:
         await conn.close()
 
 
-@pytest.fixture(scope="session")
+@docker_service_registry.register("postgres")
 async def postgres_service(docker_ip: str, docker_services: Services) -> None:  # pylint: disable=unused-argument
     """Starts containers for required services, fixture waits until they are
     responsive before returning.
