@@ -117,7 +117,7 @@ class ChannelsPlugin(InitPluginProtocol):
             await self._backend.subscribe(channels_to_subscribe)
 
     @asynccontextmanager
-    async def subscription(self, socket: WebSocket, channels: str | list[str]) -> AsyncGenerator[None, None]:
+    async def start_subscription(self, socket: WebSocket, channels: str | list[str]) -> AsyncGenerator[None, None]:
         await self.subscribe(socket, channels)
         try:
             yield
@@ -170,7 +170,7 @@ class ChannelsPlugin(InitPluginProtocol):
 
     async def _ws_handler_func(self, channel_name: str, socket: WebSocket) -> None:
         await socket.accept()
-        async with self.subscription(socket, [channel_name]):
+        async with self.start_subscription(socket, [channel_name]):
             if self._handler_should_send_history:
                 await self.send_channel_history(
                     channel=channel_name,

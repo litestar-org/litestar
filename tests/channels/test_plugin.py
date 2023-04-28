@@ -44,7 +44,7 @@ async def test_pub_sub(channels_backend: ChannelsBackend, socket_send_mode: WebS
     @websocket("/")
     async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
         await socket.accept()
-        async with channels.subscription(socket, "something"):
+        async with channels.start_subscription(socket, "something"):
             while True:
                 await socket.receive()
 
