@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 from inspect import getmodule
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, TypeVar, cast
 
 from msgspec import Struct
 from typing_extensions import get_type_hints
@@ -14,9 +14,12 @@ from .config import DTOConfig
 if TYPE_CHECKING:
     from typing import Any
 
+    from .types import RenameStrategy
+
 __all__ = (
     "get_model_type_hints",
     "parse_configs_from_annotation",
+    "RenameStrategies",
 )
 
 T = TypeVar("T")
@@ -51,3 +54,47 @@ def parse_configs_from_annotation(parsed_type: ParsedType) -> tuple[DTOConfig, .
         The type and config object extracted from the annotation.
     """
     return tuple(item for item in parsed_type.metadata if isinstance(item, DTOConfig))
+
+
+class RenameStrategies:
+    """Useful renaming strategies than be used with :class:`DTOConfig`"""
+
+    def __init__(self, renaming_strategy: RenameStrategy) -> None:
+        self.renaming_strategy = renaming_strategy
+
+    def __call__(self, field_name: str) -> str:
+        if not isinstance(self.renaming_strategy, str):
+            return self.renaming_strategy(field_name)
+
+        return cast(str, getattr(self, self.renaming_strategy)(field_name))
+
+    @staticmethod
+    def upper(field_name: str) -> str:
+        return field_name.upper()
+
+    @staticmethod
+    def lower(field_name: str) -> str:
+        return field_name.lower()
+
+    @staticmethod
+    def camel(field_name: str) -> str:
+        return RenameStrategies._camelize(field_name)
+
+    @staticmethod
+    def pascal(field_name: str) -> str:
+        return RenameStrategies._camelize(field_name, capitalize_first_letter=True)
+
+    @staticmethod
+    def _camelize(string: str, capitalize_first_letter: bool = False) -> str:
+        """Convert a string to camel case.
+
+        Args:
+            string (str): The string to convert
+            capitalize_first_letter (bool): Default is False, a True value will convert to PascalCase
+        Returns:
+            str: The string converted to camel case or Pascal case
+        """
+        return "".join(
+            word if index == 0 and not capitalize_first_letter else word.capitalize()
+            for index, word in enumerate(string.split("_"))
+        )

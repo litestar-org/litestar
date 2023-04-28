@@ -14,7 +14,7 @@ from .config import DTOConfig
 from .exc import InvalidAnnotation
 from .field import Mark
 from .types import FieldDefinition, FieldDefinitionsType, NestedFieldDefinition
-from .utils import parse_configs_from_annotation
+from .utils import RenameStrategies, parse_configs_from_annotation
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Collection, Generator
@@ -225,6 +225,9 @@ def _parse_model(
 
         if rename := config.rename_fields.get(field_definition.name):
             field_definition = field_definition.copy_with(serialization_name=rename)  # noqa: PLW2901
+        elif config.rename_strategy:
+            alias = RenameStrategies(config.rename_strategy)(field_definition.name)
+            field_definition = field_definition.copy_with(serialization_name=alias)  # noqa: PLW2901
 
         if dto_factory_type.detect_nested_field(field_definition):
             nested_field_definition = _handle_nested(dto_factory_type, field_definition, nested_depth, config, dto_for)

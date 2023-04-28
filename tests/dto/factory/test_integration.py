@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+import pytest
 from typing_extensions import Annotated
 
 from litestar import post
 from litestar.datastructures import UploadFile
 from litestar.dto.factory import DTOConfig, dto_field
 from litestar.dto.factory.stdlib.dataclass import DataclassDTO
+from litestar.dto.factory.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
 from litestar.params import Body
 from litestar.testing import create_test_client
@@ -72,3 +74,45 @@ def test_renamed_field() -> None:
     with create_test_client(route_handlers=[handler], debug=True) as client:
         response = client.post("/", json={"baz": "hello"})
         assert response.json() == {"baz": "hello"}
+
+
+@dataclass
+class Foo:
+    bar: str = "hello"
+    SPAM: str = "bye"
+    spam_bar: str = "welcome"
+
+
+@pytest.mark.parametrize(
+    "rename_strategy, instance, tested_fields, data",
+    [
+        ("upper", Foo(bar="hi"), ["BAR"], {"BAR": "hi"}),
+        ("lower", Foo(SPAM="goodbye"), ["spam"], {"spam": "goodbye"}),
+        (lambda x: x[::-1], Foo(bar="h", SPAM="bye!"), ["rab", "MAPS"], {"rab": "h", "MAPS": "bye!"}),
+        ("camel", Foo(spam_bar="star"), ["spamBar"], {"spamBar": "star"}),
+        ("pascal", Foo(spam_bar="star"), ["SpamBar"], {"SpamBar": "star"}),
+    ],
+)
+def test_fields_alias_generator(
+    rename_strategy: RenameStrategy,
+    instance: Foo,
+    tested_fields: list[str],
+    data: dict[str, str],
+) -> None:
+    config = DTOConfig(rename_strategy=rename_strategy)
+    dto = DataclassDTO[Annotated[Foo, config]]
+
+    @post(dto=dto, signature_namespace={"Foo": Foo})
+    def handler(data: Foo) -> Foo:
+        assert data.bar == instance.bar
+        assert data.SPAM == instance.SPAM
+        return data
+
+    with create_test_client(
+        route_handlers=[
+            handler,
+        ],
+        debug=True,
+    ) as client:
+        response_callback = client.post("/", json=data)
+        assert all([response_callback.json()[f] == data[f] for f in tested_fields])
