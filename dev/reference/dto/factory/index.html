@@ -1115,18 +1115,28 @@ document.write(`
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.dto.factory.DTOConfig.exclude">
 <span class="sig-name descname"><span class="pre">exclude</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AbstractSet</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.dto.factory.DTOConfig.exclude" title="Permalink to this definition">#</a></dt>
-<dd><p>Explicitly exclude fields from the generated DTO, incompatible with <code class="docutils literal notranslate"><span class="pre">include</span></code>.</p>
+<dd><p>Explicitly exclude fields from the generated DTO.</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.dto.factory.DTOConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">AbstractSet[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_fields:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nested_depth:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.factory.DTOConfig.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.dto.factory.DTOConfig.rename_fields">
 <span class="sig-name descname"><span class="pre">rename_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.11)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.dto.factory.DTOConfig.rename_fields" title="Permalink to this definition">#</a></dt>
 <dd><p>Mapping of field names, to new name.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.dto.factory.DTOConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">AbstractSet[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_fields:</span> <span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_strategy:</span> <span class="pre">RenameStrategy</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_nested_depth:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.dto.factory.DTOConfig.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.dto.factory.DTOConfig.rename_strategy">
+<span class="sig-name descname"><span class="pre">rename_strategy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">RenameStrategy</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.dto.factory.DTOConfig.rename_strategy" title="Permalink to this definition">#</a></dt>
+<dd><p>Rename all fields using a pre-defined strategy or a custom strategy.</p>
+<p>The pre-defined strategies are: <cite>upper</cite>, <cite>lower</cite>, <cite>camel</cite>, <cite>pascal</cite>.</p>
+<p>A custom strategy is any callable that accepts a string as an argument and
+return a string.</p>
+<p>Fields defined in <code class="docutils literal notranslate"><span class="pre">rename_fields</span></code> are ignored.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1254,8 +1264,9 @@ field.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig"><code class="docutils literal notranslate"><span class="pre">DTOConfig</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig.exclude"><code class="docutils literal notranslate"><span class="pre">DTOConfig.exclude</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig.__init__"><code class="docutils literal notranslate"><span class="pre">DTOConfig.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig.rename_fields"><code class="docutils literal notranslate"><span class="pre">DTOConfig.rename_fields</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig.__init__"><code class="docutils literal notranslate"><span class="pre">DTOConfig.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig.rename_strategy"><code class="docutils literal notranslate"><span class="pre">DTOConfig.rename_strategy</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.factory.DTOConfig.max_nested_depth"><code class="docutils literal notranslate"><span class="pre">DTOConfig.max_nested_depth</span></code></a></li>
 </ul>
 </li>
